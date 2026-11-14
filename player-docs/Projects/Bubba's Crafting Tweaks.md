@@ -15,7 +15,6 @@ A handful of extra recipes that make awkward or grindy items reachable: renewabl
 - **Black dye:** 1 coal or charcoal → 1 black dye.
 - **Charcoal Block:** 9 charcoal → 1 block of coal.
 - **Elytra:** diamond, bamboo, diamond on top; phantom membrane on both sides of the middle row; feathers on both sides of the bottom row.
-- **Saddle:** a lead on top, 3 leather across the middle, leather in the bottom corners. (Vanilla's own saddle recipe still works too.)
 - **Trident:** 3 prismarine shards on top; prismarine crystals down both sides; sticks down the middle.
 
 **Blast furnace**
