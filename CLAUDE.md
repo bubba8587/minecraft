@@ -1,4 +1,4 @@
-<!-- dte:A2,B1,B3,B4,B5,B6,B7,B8 -->
+<!-- dte:A2,B1,B3,B4,B5,B6,B7,B8,B9 -->
 # Working in this repo
 
 A home for a series of Minecraft mods, datapacks and resource packs, made with Fabric and released on Modrinth. The owner is technically minded but not a programmer: explain in plain language and hand over things they can run or look at (A3 ownerSteersByPlay).
@@ -12,7 +12,9 @@ This repo keeps its decisions as a Decision Tree Engineering tree. Follow `vendo
 - Start each session with `python3 tools/dte.py outbox` and `python3 tools/dte.py inbox`. Open inbox questions block what they say they block (publishing, notably).
 - Finish with `DTE_RING=B python3 tools/dte.py validate --as B`.
 
-## Before designing anything: prior art (B8 priorArtFirst)
+## Before designing anything: prior art (B8 priorArtFirst, B9 libsOverHandroll)
+
+**Reminder from the owner (B9 libsOverHandroll): use outside libraries and mods aggressively; hand-roll only what's necessary for a well-designed, performant mod.** Hand-rolling is justified when no library does it, the library has no build for our Minecraft version, or it would cost real performance or design quality. Say which of those applies when you hand-roll something a library could have done. Every dependency goes in `fabric.mod.json` `depends` and in the Modrinth version's dependency list.
 
 Lots of mods already exist. Before designing a mod, pack or tool:
 
