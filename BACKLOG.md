@@ -9,7 +9,7 @@ Parked ideas and open items, newest first within each project. Agents add to it 
 - Anti-waking magic (on the player, applied to sleepers). `specs/undead.md`.
 - Mob spawner tweaks. `specs/undead.md`.
 - Part 1 next pass: remaining undead variants, armor-shredding fists, Smite insta-kill, bow and headshot rules, stagger animation, zombie grouping, graves and crypts in worldgen, hybrid rendering, real 16x/32x art.
-- Later parts: creepers, monster camps.
+- Later parts: creepers; **monster camps and the blood moon** (structures with fixed rosters and key blocks, a 7-day blood moon that respawns uncleared structures, red-sky effects; owner's earlier idea with integration notes in `docs/research/camps-blood-moon-idea.md`).
 
 ## Bubba's Crafting Tweaks
 - Person-made mod icon (none yet).
