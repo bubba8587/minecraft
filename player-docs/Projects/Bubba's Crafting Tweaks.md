@@ -6,7 +6,7 @@ modrinth:
 ---
 # Bubba's Crafting Tweaks
 
-A handful of extra recipes that make awkward or grindy items reachable: renewable sand, quartz and glowstone, a way to make elytra and tridents, uses for rotten flesh and spare charcoal.
+A handful of extra recipes that make awkward or grindy items reachable: renewable sand, quartz and glowstone, a way to make tridents, uses for rotten flesh and spare charcoal.
 
 ## Recipes
 
@@ -14,7 +14,6 @@ A handful of extra recipes that make awkward or grindy items reachable: renewabl
 - **Bamboo Paper:** 3 bamboo in a row → 2 paper.
 - **Black dye:** 1 coal or charcoal → 1 black dye.
 - **Charcoal Block:** 9 charcoal → 1 block of coal.
-- **Elytra:** diamond, bamboo, diamond on top; phantom membrane on both sides of the middle row; feathers on both sides of the bottom row.
 - **Trident:** 3 prismarine shards on top; prismarine crystals down both sides; sticks down the middle.
 
 **Blast furnace**
