@@ -26,6 +26,8 @@ jobs:
       - uses: gradle/actions/setup-gradle@v6
         with:
           cache-provider: basic
+      - name: 16x/32x texture pairs (B16)
+        run: python3 tools/texcheck.py
       - run: ./gradlew build --stacktrace
       - name: Upload reports on failure
         if: failure()

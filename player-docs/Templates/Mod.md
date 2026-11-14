@@ -18,6 +18,10 @@ One or two sentences: what this mod adds or changes, in player terms.
 
 Step by step: crafting, controls, where things appear in the world.
 
+## Textures
+
+Comes with vanilla-style 16x textures. For higher resolution, turn on **{{title}} 32x (Faithful style)** in Options, Resource Packs (place it above Faithful 32x if you use it). Credit any Faithful-based textures here, with a link to https://faithfulpack.net.
+
 ## Commands and settings
 
 Commands, keybinds (and their defaults), and config options in plain words. Leave out if none.
