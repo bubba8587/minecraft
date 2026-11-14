@@ -11,3 +11,6 @@ dte.cfg
 # why: package manifests and toolchain configuration serve the build, not a product decision
 # package.json
 # tsconfig*.json
+why: repository housekeeping files; no decision governs them
+.gitignore
+LICENSE

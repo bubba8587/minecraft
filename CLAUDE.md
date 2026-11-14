@@ -1,4 +1,4 @@
-<!-- dte:A2,B1,B3,B4,B5,B6,B7 -->
+<!-- dte:A2,B1,B3,B4,B5,B6,B7,B8 -->
 # Working in this repo
 
 A home for a series of Minecraft mods, datapacks and resource packs, made with Fabric and released on Modrinth. The owner is technically minded but not a programmer: explain in plain language and hand over things they can run or look at (A3 ownerSteersByPlay).

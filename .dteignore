@@ -15,3 +15,7 @@ __pycache__
 dte.py
 # Vendored DTE rule text: its citations are DTE's tree, not this one.
 vendor/dte/
+.gradle
+build
+run
+*.jar
