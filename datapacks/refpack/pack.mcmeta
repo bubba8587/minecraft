@@ -1,0 +1,7 @@
+{
+  "pack": {
+    "description": "Reference datapack: proves the pack pipeline on 26.3. Not published.",
+    "min_format": 121,
+    "max_format": 121
+  }
+}

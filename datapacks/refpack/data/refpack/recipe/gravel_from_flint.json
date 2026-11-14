@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    "minecraft:flint",
+    "minecraft:flint",
+    "minecraft:flint",
+    "minecraft:flint"
+  ],
+  "result": {
+    "count": 2,
+    "id": "minecraft:gravel"
+  }
+}

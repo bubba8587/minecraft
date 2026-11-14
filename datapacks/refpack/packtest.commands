@@ -1,0 +1,5 @@
+# Console commands run after the server starts; any error reply fails the test.
+function refpack:hello
+function refpack:greet {name:"Steve"}
+function refpack:count
+scoreboard players get #loads refpack.counter

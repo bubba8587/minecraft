@@ -1,0 +1,11 @@
+{
+  "criteria": {
+    "crafted": {
+      "trigger": "minecraft:recipe_crafted",
+      "conditions": {
+        "recipes": "refpack:gravel_from_flint"
+      }
+    }
+  },
+  "requirements": [["crafted"]]
+}
