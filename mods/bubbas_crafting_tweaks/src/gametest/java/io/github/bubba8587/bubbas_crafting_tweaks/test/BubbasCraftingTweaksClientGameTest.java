@@ -108,8 +108,11 @@ public class BubbasCraftingTweaksClientGameTest implements FabricClientGameTest 
 		context.waitFor(mc -> !mc.player.onGround() && mc.player.getItemBySlot(EquipmentSlot.CHEST).is(ModItems.GLIDER));
 		context.getInput().lookAt(30.0F, 10.0F);
 		context.waitTicks(3);
-		context.getInput().pressKey(options -> options.keyJump);
-		context.waitFor(mc -> mc.player.isFallFlying());
+		context.getInput().holdKeyFor(options -> options.keyJump, 2);
+		context.waitTicks(3);
+		if (!context.computeOnClient(mc -> mc.player.isFallFlying())) {
+			throw new AssertionError("pressing jump in the air with the Glider on did not start gliding");
+		}
 		context.runOnClient(mc -> mc.options.setCameraType(camera));
 		context.waitTicks(10);
 		context.takeScreenshot("bubbas_crafting_tweaks-" + shot);
