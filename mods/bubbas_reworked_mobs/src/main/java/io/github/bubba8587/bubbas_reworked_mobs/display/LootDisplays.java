@@ -110,6 +110,11 @@ public final class LootDisplays {
 		return best;
 	}
 
+	/** Whether {@code pos} still holds a loot display with an item (cheap: one block entity lookup). */
+	public static boolean hasItemAt(Level level, BlockPos pos) {
+		return level.getBlockEntity(pos) instanceof LootDisplayBlockEntity display && !display.isRemoved() && !display.getItem().isEmpty();
+	}
+
 	/**
 	 * A mob taking the item off the display at {@code pos} (any placement: undead don't need shovels). The block goes.
 	 *

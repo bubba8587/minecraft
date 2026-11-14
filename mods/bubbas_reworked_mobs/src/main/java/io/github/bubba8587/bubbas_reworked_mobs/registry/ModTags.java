@@ -17,8 +17,10 @@ public final class ModTags {
 	public static final TagKey<EntityType<?>> WOKEN_UNDEAD = TagKey.create(Registries.ENTITY_TYPE, BubbasReworkedMobs.id("woken_undead"));
 	/** Tools that mine a sleeper into its item. */
 	public static final TagKey<Item> SLEEPER_HARVEST_TOOLS = TagKey.create(Registries.ITEM, BubbasReworkedMobs.id("sleeper_harvest_tools"));
-	/** Weapons a waking undead takes from a loot display or (zombies) picks up from the ground. Skeletons also take bows. */
-	public static final TagKey<Item> SLEEPER_WEAPONS = TagKey.create(Registries.ITEM, BubbasReworkedMobs.id("sleeper_weapons"));
+	/** Weapons a mob in {@link #GRABS_LOOT} reaches for first when it wakes (before any other item lying around). */
+	public static final TagKey<Item> PREFERRED_ON_WAKE = TagKey.create(Registries.ITEM, BubbasReworkedMobs.id("preferred_on_wake"));
+	/** Mobs that grab whatever is lying around (loot displays, loose items): on waking and, when idle, by walking to it. */
+	public static final TagKey<EntityType<?>> GRABS_LOOT = TagKey.create(Registries.ENTITY_TYPE, BubbasReworkedMobs.id("grabs_loot"));
 
 	private ModTags() {
 	}

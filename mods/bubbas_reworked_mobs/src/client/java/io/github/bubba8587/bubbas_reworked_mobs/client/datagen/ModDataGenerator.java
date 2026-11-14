@@ -28,6 +28,8 @@ import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.tags.GameEventTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.gameevent.GameEvent;
@@ -102,7 +104,13 @@ public class ModDataGenerator implements DataGeneratorEntrypoint {
 		@Override
 		protected void addTags(HolderLookup.Provider registries) {
 			builder(ModTags.SLEEPER_HARVEST_TOOLS).forceAddTag(ItemTags.PICKAXES);
-			builder(ModTags.SLEEPER_WEAPONS).forceAddTag(ItemTags.SWORDS).forceAddTag(ItemTags.AXES).forceAddTag(ItemTags.SPEARS);
+			// What a waking mob reaches for first; anything else lying around comes after (loot/LootGrabbing).
+			builder(ModTags.PREFERRED_ON_WAKE).forceAddTag(ItemTags.SWORDS).forceAddTag(ItemTags.AXES).forceAddTag(ItemTags.SPEARS)
+					.add(key(Items.BOW), key(Items.CROSSBOW), key(Items.TRIDENT), key(Items.MACE));
+		}
+
+		private static ResourceKey<Item> key(Item item) {
+			return item.builtInRegistryHolder().key();
 		}
 	}
 
@@ -116,6 +124,7 @@ public class ModDataGenerator implements DataGeneratorEntrypoint {
 			ResourceKey<EntityType<?>> skeleton = key(UndeadVariant.SKELETON);
 			ResourceKey<EntityType<?>> zombie = key(UndeadVariant.ZOMBIE);
 			builder(ModTags.WOKEN_UNDEAD).add(skeleton, zombie);
+			builder(ModTags.GRABS_LOOT).add(skeleton, zombie);
 			// #skeletons and #zombies feed #minecraft:undead (smite, potions, wither targeting).
 			builder(EntityTypeTags.SKELETONS).add(skeleton);
 			builder(EntityTypeTags.ZOMBIES).add(zombie);
