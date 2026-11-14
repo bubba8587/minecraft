@@ -4,6 +4,7 @@ package io.github.bubba8587.refmod.client;
 import com.mojang.blaze3d.platform.InputConstants;
 import io.github.bubba8587.refmod.RefMod;
 import io.github.bubba8587.refmod.component.TallyCount;
+import io.github.bubba8587.refmod.network.ExtraStatesHandshake;
 import io.github.bubba8587.refmod.network.LampTogglePayload;
 import io.github.bubba8587.refmod.registry.ModAttachments;
 import io.github.bubba8587.refmod.registry.ModComponents;
@@ -22,6 +23,7 @@ import net.minecraft.world.item.ItemStack;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
+import net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationNetworking;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
@@ -35,6 +37,9 @@ public class RefModClient implements ClientModInitializer {
 	public void onInitializeClient() {
 		// Entity: thrown-item renderer for pebbles.
 		EntityRenderers.register(ModEntities.PEBBLE, ThrownItemRenderer::new);
+
+		// Requirement 18: announce that this client has the extra block states, or the server turns it away.
+		ClientConfigurationNetworking.registerGlobalReceiver(ExtraStatesHandshake.TYPE, (payload, context) -> { });
 
 		// Networking: log the lamp toggle and show it in the action bar.
 		ClientPlayNetworking.registerGlobalReceiver(LampTogglePayload.TYPE, (payload, context) -> {

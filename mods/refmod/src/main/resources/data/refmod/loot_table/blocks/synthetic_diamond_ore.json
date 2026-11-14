@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "condition": "minecraft:tool/can_silk_touch",
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:deepslate_diamond_ore",
+          "modifier": {
+            "type": "minecraft:set_components",
+            "components": {
+              "minecraft:item_name": "Synthetic Diamond Ore",
+              "minecraft:block_state": {
+                "synthetic": "true"
+              }
+            }
+          }
+        }
+      ],
+      "rolls": 1
+    }
+  ],
+  "random_sequence": "refmod:blocks/synthetic_diamond_ore"
+}

@@ -2,6 +2,7 @@
 package io.github.bubba8587.refmod;
 
 import io.github.bubba8587.refmod.blockdata.BarrelTallyEvents;
+import io.github.bubba8587.refmod.blockstate.SyntheticOre;
 import io.github.bubba8587.refmod.command.RefModCommands;
 import io.github.bubba8587.refmod.event.LampBreakEvents;
 import io.github.bubba8587.refmod.network.RefModNetworking;
@@ -44,6 +45,7 @@ public class RefMod implements ModInitializer {
 		LampBreakEvents.initialize();
 		CharmPseudoBlock.initialize();
 		BarrelTallyEvents.initialize();
+		SyntheticOre.initialize();
 		LOGGER.info("refmod init");
 	}
 }

@@ -2,6 +2,7 @@
 package io.github.bubba8587.refmod.test;
 
 import io.github.bubba8587.refmod.block.SignalLampBlock;
+import io.github.bubba8587.refmod.blockstate.SyntheticOre;
 import io.github.bubba8587.refmod.client.RefModClient;
 import io.github.bubba8587.refmod.registry.ModAttachments;
 import io.github.bubba8587.refmod.registry.ModBlocks;
@@ -62,6 +63,19 @@ public class RefModClientGameTest implements FabricClientGameTest {
 			context.getInput().lookAt(lamp.east());
 			context.waitTicks(5);
 			context.takeScreenshot("refmod-lantern-charm");
+
+			// Requirement 18: synthetic (left, west) and natural (right) deepslate diamond ore side by side. Vanilla's blockstate
+			// file has one "" variant, which matches every state, so both must show the vanilla ore model.
+			BlockPos ore = lamp.west(2);
+			singleplayer.getServer().runCommand("setblock %d %d %d minecraft:deepslate_diamond_ore".formatted(ore.getX(), ore.getY(), ore.getZ()));
+			BlockPos synth = ore.west();
+			singleplayer.getServer().runCommand("setblock %d %d %d minecraft:deepslate_diamond_ore[synthetic=true]".formatted(synth.getX(), synth.getY(), synth.getZ()));
+			context.waitFor(mc -> mc.level.getBlockState(ore).is(Blocks.DEEPSLATE_DIAMOND_ORE)
+					&& !mc.level.getBlockState(ore).getValue(SyntheticOre.SYNTHETIC)
+					&& mc.level.getBlockState(synth).getValue(SyntheticOre.SYNTHETIC));
+			context.getInput().lookAt(ore);
+			context.waitTicks(5);
+			context.takeScreenshot("refmod-synthetic-ore");
 		}
 	}
 }

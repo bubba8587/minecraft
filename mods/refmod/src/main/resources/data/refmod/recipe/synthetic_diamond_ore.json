@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:blasting",
+  "category": "blocks",
+  "ingredient": "minecraft:coal_block",
+  "result": {
+    "id": "minecraft:deepslate_diamond_ore",
+    "components": {
+      "minecraft:item_name": "Synthetic Diamond Ore",
+      "minecraft:block_state": {
+        "synthetic": "true"
+      }
+    }
+  },
+  "experience": 5,
+  "cookingtime": 4000
+}
