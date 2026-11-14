@@ -30,7 +30,7 @@ import net.fabricmc.fabric.api.gametest.v1.GameTest;
  * Grabbing what's lying around (specs/undead.md "Loot on display"): the waking grab (weapons first, then anything)
  * and the idle {@code GrabLootGoal} (real pathing in the level). Each walking test has its own environment, so it runs
  * in a batch of its own: tests in a batch sit 5 blocks apart, inside the 8-block notice range, and mobs would take
- * each other's loot (and chase other batches' players).
+ * each other's loot. All at night: in daylight woken undead burn and flee the sun instead.
  */
 public class GrabLootGameTest {
 	private static final String ENV = "bubbas_reworked_mobs-test:grab_loot";

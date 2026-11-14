@@ -59,8 +59,8 @@ public class GrabLootGoal extends Goal {
 			return false;
 		}
 		this.nextSearch = this.mob.tickCount + SEARCH_INTERVAL;
-		if (!this.idle()) {
-			return false;
+		if (!this.idle() || !(this.mob.onGround() || this.mob.isInLiquid())) {
+			return false; // mid-air (just spawned, falling, jumping) a ground mob can't path yet: try next time, skip nothing
 		}
 		int now = this.mob.tickCount;
 		this.skipped.values().removeIf(until -> until <= now);
@@ -77,7 +77,6 @@ public class GrabLootGoal extends Goal {
 			return false;
 		}
 		this.path = this.findPath();
-		System.out.println("GLDBG " + this.mob.getType() + " " + this.mob.blockPosition() + " target " + this.display + " / " + this.item + " path " + this.path + " skipped " + this.skipped);
 		if (this.path == null) {
 			this.skipTarget();
 			return false;
@@ -92,7 +91,6 @@ public class GrabLootGoal extends Goal {
 	}
 
 	private void skipTarget() {
-		System.out.println("GLDBG skip " + this.mob.blockPosition() + " " + this.display + " / " + this.item + " t=" + (this.mob.tickCount - this.startedAt));
 		Object target = this.display != null ? this.display : this.item;
 		if (target != null) {
 			this.skipped.put(target, this.mob.tickCount + SKIP_TICKS);
@@ -149,16 +147,6 @@ public class GrabLootGoal extends Goal {
 
 	@Override
 	public void stop() {
-		System.out.println("GLDBG stop " + this.mob.getType() + " " + this.mob.blockPosition() + " idle=" + this.idle() + " target=" + this.mob.getTarget() + " valid=" + this.targetValid() + " t=" + (this.mob.tickCount - this.startedAt) + " nav=" + this.mob.getNavigation().isDone());
-		try {
-			java.lang.reflect.Field f = Mob.class.getDeclaredField("goalSelector");
-			f.setAccessible(true);
-			net.minecraft.world.entity.ai.goal.GoalSelector sel = (net.minecraft.world.entity.ai.goal.GoalSelector) f.get(this.mob);
-			sel.getAvailableGoals().forEach(g -> { if (g.isRunning()) System.out.println("GLDBG   running " + g.getPriority() + " " + g.getGoal()); });
-			new Throwable("GLDBG trace").printStackTrace(System.out);
-		} catch (ReflectiveOperationException e) {
-			System.out.println("GLDBG " + e);
-		}
 		if (this.targetValid() && this.mob.tickCount - this.startedAt >= TIMEOUT) {
 			this.skipTarget();
 		}
