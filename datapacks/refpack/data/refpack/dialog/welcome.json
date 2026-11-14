@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:notice",
+  "title": {
+    "text": "refpack"
+  },
+  "body": {
+    "type": "minecraft:plain_message",
+    "contents": {
+      "text": "Hello from refpack."
+    }
+  },
+  "action": {
+    "label": {
+      "text": "OK"
+    },
+    "action": {
+      "type": "minecraft:run_command",
+      "command": "/say dialog ok"
+    }
+  }
+}

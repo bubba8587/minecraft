@@ -1,7 +1,7 @@
 # Data-driven registries in Java 26.3: JSON shapes with vanilla examples
 
 Scope: every registry a 26.3 data pack can add to or override (`data/<ns>/<registry path>/<id>.json`), with its codec fields, a minimal real vanilla example, and what the 26.x registries do. Commands, functions, loot/predicate/advancement/recipe syntax and tooling are in `datapacks.md`.
-Verified 2026-11-14 against 26.3 (data pack format 121.0): codecs in `src: = /tmp/claude-0/mcsrc/common/`, examples from `jar: = /tmp/claude-0/mcsrc/vanilla-jar/data/minecraft/`, plus the minecraft.wiki 26.1/26.2/26.3 changelogs where noted.
+Verified 2026-11-14 against 26.3 (data pack format 121.0): codecs in `src: = build/mcsrc/26.3/common/`, examples from `jar: = build/mcsrc/26.3/vanilla/data/minecraft/` (unpacked by `tools/mcsrc.py`), plus the minecraft.wiki 26.1/26.2/26.3 changelogs where noted.
 
 The registry list comes from `src: net/minecraft/resources/RegistryDataLoader.java` (`WORLD_REGISTRIES`, `DIMENSION_REGISTRIES`, `RELOADABLE_REGISTRIES`, `SYNCHRONIZED_REGISTRIES`). Folder = `Registries.<KEY>` path (`src: net/minecraft/core/registries/Registries.java`).
 
@@ -438,7 +438,7 @@ Fields:
     { "type": "minecraft:filtered", "item_filter": { "items": "minecraft:iron_pickaxe", "predicates": { "minecraft:enchantments": [{}] } }, "on_fail": { "type": "minecraft:discard" } } ] }
 ```
 - `include_additional_cost_component` puts the transient `additional_trade_cost` component on the result, which raises the emerald cost.
-- The wiki says this field does not accept item modifier IDs. The source codec is `LootItemFunctions.CODEC`, which accepts IDs, so it is UNVERIFIED whether validation rejects them.
+- The wiki is right that this field does not accept item modifier IDs. The codec (`LootItemFunctions.CODEC`) would, but `villager_trade` is a static registry that loads before `item_modifier` exists, so `"given_item_modifier": "mypack:mod"` stops the server with `Registry does not exist: minecraft:item_modifier` (verified on the server). The same applies to `merchant_predicate` and the int/float provider fields: write them inline.
 
 ### `trade_set` (`TradeSet.java`)
 `{trades: villager_trade holder set (usually a tag), amount: int provider, allow_duplicates?: false, random_sequence?}`.
@@ -475,7 +475,7 @@ Rule fields:
 ### `context_int_provider` / `context_float_provider` (26.3, reloadable; `src: net/minecraft/world/level/storage/loot/providers/number/{ints,floats}/`)
 Named, reusable number providers evaluated against a loot context. A file holds one provider: a bare number = constant, or a typed object (type list in `datapacks.md` §8). They are used by:
 - `/compute`, `data modify ... compute`
-- loot `rolls`/`set_count`/etc. by ID
+- loot `rolls`/`set_count`/etc. by ID, and other **reloadable** files (predicates, item modifiers, recipes, the providers themselves). Static registries cannot refer to them by ID: `villager_trade` `max_uses`/`xp`/`wants.count`, `trade_set.amount` and the like must be inline numbers or objects, or the server stops with `Registry does not exist: minecraft:context_int_provider` (verified on the server)
 - item components `cooking_fuel` (burn time and speed: `cooking/time_*`, `cooking/speed_default`), `brewing_fuel` (`brewing/uses_default`, `brewing/speed_default`) and `compostable` (`compostable/low|low_medium|medium|medium_high|always_add_one`)
 
 Contexts: `container_process` for furnace/brewing fuel (container, block_entity, block_state, origin), and the composter context with block_state.
@@ -529,7 +529,7 @@ These are reloadable. Shapes are in `datapacks.md` §8–10.
 { "type": "minecraft:notice", "title": "Welcome", "body": { "type": "minecraft:plain_message", "contents": "Hello!" },
   "action": { "label": "OK", "action": { "type": "minecraft:run_command", "command": "/trigger welcomed" } } }
 ```
-The vanilla `dialog/*.json` files are only `dialog_list`/`server_links` menus. The notice example above is assembled from the codec fields (`NoticeDialog`, `ActionButton`, `CommonButtonData`, `body/PlainMessage`), so treat the exact nesting as UNVERIFIED and validate it with misode's generator.
+The vanilla `dialog/*.json` files are only `dialog_list`/`server_links` menus. The notice example above is assembled from the codec fields (`NoticeDialog`, `ActionButton`, `CommonButtonData`, `body/PlainMessage`), and this nesting (with `label` as a text component) loads on the 26.3 server (refpack `dialog/welcome.json`). `pause` defaults to `true`, and `CommonDialogData` rejects a pausing dialog whose `after_action` does not unpause (`none`); `close` (the default) is fine.
 
 ### `trial_spawner` (`TrialSpawnerConfig`)
 Fields: `spawn_range? total_mobs? simultaneous_mobs? total_mobs_added_per_player? simultaneous_mobs_added_per_player? ticks_between_spawn? spawn_potentials loot_tables_to_eject? items_to_drop_when_ominous?`. Spawner blocks reference configs by ID (`normal_config`/`ominous_config` in block entity data).

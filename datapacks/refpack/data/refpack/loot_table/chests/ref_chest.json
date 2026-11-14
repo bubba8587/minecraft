@@ -1,0 +1,44 @@
+{
+  "type": "minecraft:chest",
+  "random_sequence": "refpack:chests/ref_chest",
+  "pools": [
+    {
+      "rolls": "refpack:chest_rolls",
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:flint",
+          "weight": 3,
+          "modifier": {
+            "type": "minecraft:set_count",
+            "count": {
+              "type": "minecraft:uniform",
+              "min": 1,
+              "max": 4
+            }
+          }
+        },
+        {
+          "type": "minecraft:tag",
+          "items": "#refpack:ref_valuables",
+          "expand": true,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "condition": {
+        "type": "minecraft:random_chance",
+        "chance": 1.0
+      },
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:amethyst_shard",
+          "modifier": "refpack:named_relic"
+        }
+      ]
+    }
+  ]
+}

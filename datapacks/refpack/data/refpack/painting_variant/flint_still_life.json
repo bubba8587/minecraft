@@ -1,0 +1,13 @@
+{
+  "asset_id": "minecraft:kebab",
+  "width": 1,
+  "height": 1,
+  "title": {
+    "text": "Flint Still Life",
+    "color": "yellow"
+  },
+  "author": {
+    "text": "refpack",
+    "color": "gray"
+  }
+}

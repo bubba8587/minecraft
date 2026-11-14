@@ -1,0 +1,6 @@
+{
+  "message_id": "refpack.shard_cut",
+  "scaling": "never",
+  "exhaustion": 0.1,
+  "effects": "poking"
+}

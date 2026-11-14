@@ -1,0 +1,53 @@
+{
+  "has_precipitation": false,
+  "temperature": 0.7,
+  "downfall": 0.3,
+  "effects": {
+    "water_color": "#3f76e4"
+  },
+  "attributes": {
+    "minecraft:visual/sky_color": "#88aaff",
+    "minecraft:gameplay/natural_mob_spawns": {
+      "modifier": "overlay",
+      "argument": {
+        "spawn_costs": {},
+        "spawns_by_category": {
+          "ambient": [],
+          "axolotls": [],
+          "creature": [
+            {
+              "type": "minecraft:wolf",
+              "count": {
+                "type": "minecraft:uniform",
+                "min_inclusive": 1,
+                "max_inclusive": 2
+              },
+              "weight": 5
+            }
+          ],
+          "misc": [],
+          "monster": [],
+          "underground_water_creature": [],
+          "water_ambient": [],
+          "water_creature": []
+        }
+      }
+    }
+  },
+  "carvers": [],
+  "features": [
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [
+      "refpack:amethyst_rock"
+    ],
+    []
+  ]
+}

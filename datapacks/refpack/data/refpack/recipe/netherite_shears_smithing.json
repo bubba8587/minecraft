@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": "minecraft:netherite_upgrade_smithing_template",
+  "base": "minecraft:shears",
+  "addition": "#minecraft:netherite_tool_materials",
+  "result": {
+    "id": "minecraft:shears",
+    "components": {
+      "minecraft:custom_name": {
+        "text": "Netherite Shears"
+      },
+      "minecraft:max_damage": 1024
+    }
+  }
+}

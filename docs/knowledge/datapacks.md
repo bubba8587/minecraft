@@ -1,9 +1,10 @@
 # Vanilla data packs for Minecraft Java 26.3 (data pack format 121.0)
 
 Scope: how to write, load, test and debug vanilla data packs (pack.mcmeta, folder layout, functions/macros, every command, selectors, components-in-commands, loot/predicates/item modifiers, advancements, recipes, tags, game tests, tooling, headless server testing). Per-registry JSON shapes are in `datapack-registries.md`.
-Verified 2026-11-14 against the 26.3 release (`version.json`: `world_version` 5023, `data_major` 121, `data_minor` 0, `resource_major` 97, `resource_minor` 1), decompiled source in `/tmp/claude-0/mcsrc/common`, vanilla data in `/tmp/claude-0/mcsrc/vanilla-jar/data/minecraft`, and the minecraft.wiki changelogs for 26.1/26.2/26.3.
+Verified 2026-11-14 against the 26.3 release (`version.json`: `world_version` 5023, `data_major` 121, `data_minor` 0, `resource_major` 97, `resource_minor` 1), decompiled source in `build/mcsrc/26.3/common`, vanilla data in `build/mcsrc/26.3/vanilla/data/minecraft` (both unpacked by `tools/mcsrc.py`; first written against a temporary copy in `/tmp/claude-0/mcsrc`), and the minecraft.wiki changelogs for 26.1/26.2/26.3.
 
-Path shorthand: `src:` = `/tmp/claude-0/mcsrc/common/`, `jar:` = `/tmp/claude-0/mcsrc/vanilla-jar/data/minecraft/`.
+Path shorthand: `src:` = `build/mcsrc/26.3/common/`, `jar:` = `build/mcsrc/26.3/vanilla/data/minecraft/` (run `python3 tools/mcsrc.py` to create them).
+Packed shapes in this file were load-tested on the vanilla 26.3 server by `datapacks/refpack` (`tools/packload.py`) on 2026-11-14 where marked "verified on the server".
 
 ---
 
@@ -131,7 +132,7 @@ From `src: net/minecraft/resources/RegistryDataLoader.java` (60 registries).
 **Diff against `jar:`**
 - In the source but absent from the vanilla jar (valid, just empty in vanilla): `dimension` (vanilla dimensions come from `worldgen/world_preset`), `item_modifier`, `slot_source`, `tags/function`.
 - In the jar but not registries: `datapacks/` (built-in feature packs), `structure/` (NBT templates), `tags/`.
-- Vanilla tag folders in 26.3: `tags/{banner_pattern,block,damage_type,dialog,enchantment,entity_type,fluid,game_event,instrument,item,painting_variant,point_of_interest_type,potion,timeline,villager_trade}` and `tags/worldgen/{biome,feature,flat_level_generator_preset,structure,world_preset}`. Any registry can have tags, e.g. `tags/predicate`, `tags/item_modifier`, `tags/context_int_provider`, `tags/trade_set`, `tags/zombie_nautilus_variant`.
+- Vanilla tag folders in 26.3: `tags/{banner_pattern,block,damage_type,dialog,enchantment,entity_type,fluid,game_event,instrument,item,painting_variant,point_of_interest_type,potion,timeline,villager_trade}` and `tags/worldgen/{biome,feature,flat_level_generator_preset,structure,world_preset}`. Any registry can have tags, e.g. `tags/predicate`, `tags/item_modifier`, `tags/context_int_provider`, `tags/trade_set`, `tags/zombie_nautilus_variant`, and **`tags/recipe`** (reloadable registries get tags too: `ResourceManagerRegistryLoadTask` calls `TagLoader.loadTagsForRegistry` for every registry it loads). A recipe tag works wherever a recipe holder set is taken, e.g. `recipe_crafted.recipes: "#mypack:cooking"` (verified on the server: refpack `tags/recipe/ref_cooking.json`, `advancement/cook_anything.json`).
 - Brand-new folders since 1.21.11: `block_transformer`, `context_float_provider`, `context_int_provider`, `slot_source`, `sulfur_cube_archetype`, `trade_set`, `villager_trade`, `world_clock`, `*_sound_variant` (cat/pig/cow/chicken; wolf already existed), `worldgen/block_state_provider`, `worldgen/material_rule`, `worldgen/material_condition`, `decorated_pot_pattern` (now data-driven and synced), and `recipe/brewing/*` (a vanilla subfolder only; any recipe path works).
 - Renamed: `worldgen/configured_feature`→`worldgen/feature`, `worldgen/configured_carver`→`worldgen/carver`, plus `tags/worldgen/configured_feature`→`tags/worldgen/feature`.
 
@@ -250,6 +251,7 @@ Registered in `src: net/minecraft/commands/Commands.java` (constructor). Impleme
   - `count=5` or `count~{min:2}`
   - `!test` (negate), `a|b` (alternatives)
   - Example: `clear @s *[custom_data~{mypack:{token:1b}}]`.
+  - `custom_data~` compares NBT **with types**: `{relic:1}` (int) does not match a stored `relic:1b`. JSON files that write custom data (`set_components`/`set_custom_data` in loot, item stacks in recipes) store a JSON number such as `1` as a **byte** (`1b`), so match it with `1b` (verified on the server: refpack `item_modifier/named_relic.json` + `function/loot_demo.mcfunction`).
 
 ---
 
@@ -288,7 +290,7 @@ Registered in `src: net/minecraft/commands/Commands.java` (constructor). Impleme
 Codecs: `src: net/minecraft/world/level/storage/loot/{LootTable,LootPool}.java`, `entries/LootPoolEntries.java`, `functions/LootItemFunctions.java`, `predicates/LootItemConditionTypes.java`, `providers/number/**`, `parameters/LootContextParamSets.java`.
 
 ### The holder rule (applies everywhere in 26.3)
-Every field typed as predicate, item modifier, loot table, number provider, slot source, recipe or advancement accepts:
+Every field typed as predicate, item modifier, loot table, number provider, slot source, recipe or advancement accepts the forms below. **Exception: files in static (world) registries** (`villager_trade`, `trade_set`, `enchantment`, worldgen, ...) load before the reloadable registries exist, so there only the inline form works. An ID there stops the server with `Registry does not exist: minecraft:context_int_provider` (or `minecraft:item_modifier`, ...), e.g. `villager_trade.max_uses: "mypack:rolls"` or `given_item_modifier: "mypack:mod"` (verified on the server). IDs do work in reloadable files (loot tables, predicates, item modifiers, recipes, advancements, the providers themselves) and in commands:
 - an **inline object**, or
 - a **string ID** (a reference into the registry folder).
 
@@ -312,7 +314,7 @@ List-typed fields (e.g. `all_of.terms`, `sequence.functions`, `slot_source group
   "minecraft:entity_tags": { "all_of": ["boss"], "none_of": ["dead"] }
 }
 ```
-- Keys (`EntitySubPredicates`): `components distance effects entity_tags entity_type equipment flags location movement movement_affected_by nbt passenger periodic_tick predicates slots stepping_on targeted_entity team vehicle type_specific/cube_mob type_specific/fishing_hook type_specific/lightning type_specific/player type_specific/raider type_specific/sheep`.
+- Keys (`EntitySubPredicates`) are identifiers, so the `minecraft:` prefix may be left out (`"equipment": {...}` loads; refpack `predicate/holding_flint.json`): `components distance effects entity_tags entity_type equipment flags location movement movement_affected_by nbt passenger periodic_tick predicates slots stepping_on targeted_entity team vehicle type_specific/cube_mob type_specific/fishing_hook type_specific/lightning type_specific/player type_specific/raider type_specific/sheep`.
 - Mob variants are matched through `components`/`predicates`, e.g. `"minecraft:components": {"minecraft:villager/variant": "minecraft:desert"}`.
 
 ### Loot table
@@ -342,7 +344,7 @@ List-typed fields (e.g. `all_of.terms`, `sequence.functions`, `slot_source group
   - `loot_table` uses `value` (ID/list/inline/tag) + `expand`.
   - `slots` (new) uses `slot_source`.
 - Loot function types (`LootItemFunctions.bootstrap`): `set_count set_item enchant_with_levels enchant_randomly set_enchantments set_custom_data set_components furnace_smelt enchanted_count_increase set_damage set_attributes set_name exploration_map set_stew_effect copy_name set_contents modify_contents filtered limit_count apply_bonus set_loot_table explosion_decay set_lore fill_player_head copy_custom_data copy_state set_banner_pattern set_potion set_random_dyes set_random_potion set_instrument sequence copy_components set_fireworks set_firework_explosion set_book_cover set_written_book_pages set_writable_book_pages toggle_tooltips set_ominous_bottle_amplifier set_custom_model_data discard`. Every function takes `condition?`.
-- Item modifier file (`data/<ns>/item_modifier/*.json`): one function object, or a list (= sequence). Use it with `item modify entity @s weapon.mainhand mypack:upgrade`.
+- Item modifier file (`data/<ns>/item_modifier/*.json`): exactly **one typed function object**. The registry loads files with `LootItemFunctions.TYPED_CODEC`, so a bare top-level list fails with `Not a JSON object` and stops the server; wrap several functions in `{"type":"minecraft:sequence","functions":[...]}` (`functions` is a holder set: inline objects, IDs or a `#tag`). The bare-list shorthand only works in *fields* typed as a modifier (`modifier`, `given_item_modifier`, inline SNBT in `item modify`), which use `DIRECT_CODEC` (src: `RegistryDataLoader.RELOADABLE_REGISTRIES`, `LootItemFunctions.java`; verified on the 26.3 server). Use it with `item modify entity @s weapon.mainhand mypack:upgrade`.
 
 ### Number providers (`context_int_provider` / `context_float_provider`)
 - Int types: `abs avg binomial{n,p} conditional{condition,on_true,on_false?} constant{value} sub{left,right} environment_attribute{attribute} from_float{input} max/min/add/mul/avg{inputs} floor_mod floor_div mod div{left,right} negate{input} number_dispatcher{cases:[{condition,value}],default?} pow{base,exponent} score{target,score} storage{storage,path} uniform{min,max} weighted_list{distribution:[{data,weight}]}`.
@@ -424,7 +426,7 @@ Common fields (`Recipe.BookInfo`/`CommonInfo`): `category` (crafting: `building|
   - `crafting_decorated_pot{back,left,right,front,result}`
   - `crafting_special_repairitem{}`
 - Recipes are **not** auto-unlocked. Unlock them through `advancement` rewards, `recipe give`, or the `limited_crafting` gamerule semantics.
-- Override a vanilla recipe by using the same path. To remove one, use `filter` or a recipe the game rejects. (Vanilla has no empty-recipe type; an invalid file is logged and skipped. UNVERIFIED whether a skipped override removes the vanilla entry or whether vanilla stays.)
+- Override a vanilla recipe by using the same path. To remove one, use the pack.mcmeta `filter` section. There is no empty-recipe type, and an invalid recipe is **not** skipped: in 26.3 recipes load through `RegistryDataLoader` like other registries, so one bad file (e.g. a shapeless recipe with `"ingredients": []`: `List is too short: 0, expected range [1-9]`) logs `Registry loading errors` and the server refuses to start (verified on the server).
 
 ---
 
@@ -491,6 +493,13 @@ Source: `src: net/minecraft/gametest/framework/{GameTestInstance,TestData,TestEn
   ```
   `--packs` copies every zip or folder with a pack.mcmeta into `<universe>/gametestworld/datapacks`. The universe dir is **deleted and recreated** on each run. The exit status reflects required-test failures (UNVERIFIED exact exit codes).
 
+### PackTest (third-party, `misode/packtest` README, read 2026-11-14)
+Not vanilla: a Fabric mod that turns `data/<ns>/test/*.mcfunction` into game tests. Running it needs the mod jar (here `tools/packtest.py`, owner approval required).
+- Directives are comments at the top: `# @environment <id>`, `# @dimension <id>`, `# @template <structure>` (default `minecraft:empty`), `# @timeout <ticks>` (default 100), `# @setup_ticks`, `# @optional`, `# @skyaccess`, `# @rotation`, `# @manual`, `# @max_attempts`, `# @required_successes`, `# @padding`, and `# @dummy [<pos>]` (spawns a fake player and makes it `@s`; needed for anything that targets a player).
+- Commands: `assert [not] <condition>`, `await [not] <condition>`, `await delay <time>`, `fail <text>`, `succeed`, `log <text>`, and `dummy <name> spawn|respawn|leave|jump|sneak|sprint|drop|swap|selectslot|use item|use block <pos>|use entity <e>|attack <e>|mine <pos>`.
+- Conditions: `block <pos> <block>`, `data ...`, `entity <selector>`, `predicate <id>`, `score ...` (same syntax as `execute if`), `chat <regex> [<receivers>]`. There is no `items` condition: write `execute store result score #n obj if items entity @s container.* <predicate>` and then `assert score #n obj matches 1..`.
+- Examples: `datapacks/refpack/data/refpack/test/*.mcfunction`.
+
 ---
 
 ## 14. Performance practices
@@ -508,7 +517,7 @@ Source: `src: net/minecraft/gametest/framework/{GameTestInstance,TestData,TestEn
 
 ## 15. Debugging
 
-- `/reload` output plus `logs/latest.log`. Search for `Failed to load function`, `Couldn't parse element`, `Failed to parse`, `Unknown registry key`, `Errors in registry`. Static-registry parse errors (worldgen, enchantment, ...) abort world load with a "Datapack validation failed" screen or a server crash. `--safeMode` on the server starts with vanilla packs only.
+- `/reload` output plus `logs/latest.log`. Search for `Failed to load function`, `Couldn't parse element`, `Failed to parse`, `Unknown registry key`, `Errors in registry`. Registry parse errors abort world load with a "Datapack validation failed" screen or, on a dedicated server, `Failed to load datapacks, can't proceed with server load`. In 26.3 this is true for the **reloadable** registries too (loot_table, predicate, item_modifier, recipe, advancement, context providers, slot_source), because they load through `RegistryDataLoader`; only functions still fail one by one. The log block reads `Registry loading errors:` / `> Errors in registry minecraft:<registry>:` / `>> Errors in element <ns:id>:` followed by a `Caused by:` line with the codec message, plus a follow-up `Unbound values in registry` for the same ID (verified on the server). `--safeMode` on the server starts with vanilla packs only.
 - `/datapack list [available|enabled]` and `/datapack enable|disable "file/<name>"`. Pack IDs are `file/<folder or zip name>`. A pack that fails pack.mcmeta validation does not appear in the list (check the log).
 - `/debug function <fn>` writes a per-command trace with results to `debug/debug-trace-*.txt`. `/debug start` … `/debug stop` profiles ticks. `/perf start|stop` (dedicated) writes zips to `debug/profiling` (`MetricsPersister.PROFILING_RESULTS_DIR`). `/jfr start|stop` writes a JFR recording.
 - `/tick freeze` + `/tick step 1` to step logic. `/tick rate 100` / `/tick sprint 1d` to fast-forward.
@@ -558,5 +567,6 @@ java -Xmx4G -jar server.jar --nogui
 - **26.3 defaults `white-list=true`**, so set it false or whitelist your test account. With `online-mode=false`, offline clients can join.
 - `initial-enabled-packs`/`initial-disabled-packs` only apply when the world is **first created**. Afterwards use `/datapack enable`. Packs dropped into `world/datapacks/` are auto-enabled at world creation and listed as available later.
 - Drive the server non-interactively through stdin (a fifo or `tmux send-keys`), RCON (`mcrcon -p dev "reload"`), or the Minecraft Server Management Protocol (`management-server-enabled=true`, JSON-RPC over WebSocket, v3.1.0 in 26.3). Note that 26.3 removed some log lines that server wrappers used to grep, and the changelog points to the management protocol instead.
+- **No players means no loaded chunks.** At startup nothing is loaded around spawn for an empty server, so `setblock`/`summon` at spawn fail or do nothing. `forceload add` loads its chunk over the following ticks: run it in a `#minecraft:load` function so blocks are usable by the time console commands arrive. Entities in a freshly forceloaded chunk become visible to selectors only a few ticks (about a second) later: `summon` still prints `Summoned new Pig`, but `@e` then finds nothing (`No entity was found`) and the entity is gone (verified on the server with refpack and `tools/packload.py`).
 - Iterate: edit the files, run `reload`, and check `logs/latest.log`. Restart for worldgen or other static-registry changes, and for new dimensions use a fresh world (`rm -rf world/dimensions world/level.dat`, or a new `level-name`).
 - For loot/predicate/function work, `level-type=minecraft:flat` with `generate-structures=false` starts fastest. For worldgen packs use a new world each time, and consider `/locate`, `/place feature`, `/place structure` and `/fillbiome`.

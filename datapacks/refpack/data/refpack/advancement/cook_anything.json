@@ -1,0 +1,20 @@
+{
+  "criteria": {
+    "cooked": {
+      "trigger": "minecraft:recipe_crafted",
+      "conditions": {
+        "recipes": "#refpack:ref_cooking"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "cooked"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "refpack:flint_block_shaped"
+    ]
+  }
+}

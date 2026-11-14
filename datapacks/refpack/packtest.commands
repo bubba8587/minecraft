@@ -1,0 +1,31 @@
+# Console checks run by tools/packload.py (no players online, so nothing here may need one;
+# player parts are PackTest tests in data/refpack/test/).
+# Entity checks come last: refpack:load forceloads chunk 0 0, but entities in it only become
+# visible about a second (some ticks) after startup, and packload has no way to wait.
+function refpack:hello
+function refpack:greet {name:"Console"}
+function refpack:count
+loot spawn 0 300 0 loot refpack:chests/ref_chest
+function refpack:loot_demo
+data get block 0 300 0 Items
+function refpack:set_state {key:"mode",value:'"demo"'}
+data get storage refpack:state mode
+function refpack:dice
+function refpack:compute_demo
+compute default integer refpack:chest_rolls
+compute default float {type:"minecraft:uniform",min:0.0,max:1.0} 100
+tick query
+function refpack:stopwatch_demo
+execute if predicate {type:"minecraft:random_chance",chance:1.0} run say inline predicate ok
+function refpack:flatland_demo
+execute in refpack:flatland run locate biome refpack:flat_meadow
+function refpack:registry_demo
+data get storage refpack:state keen
+data get block 1 300 0 Items
+function refpack:swing_demo
+data get storage refpack:state swung
+summon minecraft:wolf 0 300 4 {Tags:["refpack.reg"],variant:"refpack:flint"}
+data get entity @e[type=minecraft:wolf,tag=refpack.reg,limit=1] variant
+summon minecraft:pig 0 300 6 {Tags:["refpack.reg"]}
+damage @e[type=minecraft:pig,tag=refpack.reg,limit=1] 1 refpack:shard_cut
+kill @e[tag=refpack.reg]

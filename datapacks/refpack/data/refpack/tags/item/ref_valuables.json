@@ -1,0 +1,10 @@
+{
+  "values": [
+    "minecraft:emerald",
+    "minecraft:diamond",
+    {
+      "id": "#c:gems",
+      "required": false
+    }
+  ]
+}

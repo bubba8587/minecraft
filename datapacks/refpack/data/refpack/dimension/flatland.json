@@ -1,0 +1,25 @@
+{
+  "type": "refpack:flatland",
+  "generator": {
+    "type": "minecraft:flat",
+    "settings": {
+      "biome": "refpack:flat_meadow",
+      "features": true,
+      "lakes": false,
+      "layers": [
+        {
+          "block": "minecraft:bedrock",
+          "height": 1
+        },
+        {
+          "block": "minecraft:stone",
+          "height": 3
+        },
+        {
+          "block": "minecraft:grass_block",
+          "height": 1
+        }
+      ]
+    }
+  }
+}

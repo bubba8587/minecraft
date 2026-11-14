@@ -1,0 +1,7 @@
+{
+  "trades": [
+    "refpack:farmer/1/flint_emerald"
+  ],
+  "amount": 1,
+  "random_sequence": "refpack:trade_set/flint_dealer"
+}
