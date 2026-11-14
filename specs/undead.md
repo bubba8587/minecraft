@@ -1,8 +1,8 @@
 <!-- dte:C1,B15 -->
 <!-- covers: docs/research/undead-* -->
-# Undead rework (spec)
+# Bubba's Reworked Mobs, part 1: undead (spec)
 
-Builds the C1 undeadRework direction. Background research: `docs/research/undead-prior-art.md` (nothing on any loader does "dormant until disturbed"; closest mechanic is vanilla 26.3's copper golem statue) and `docs/research/undead-feasibility.md` (26.3 classes, code sketches, performance budget). Everything here is fluid: change it when a better or faster way turns up.
+Builds part 1 of the C1 reworkedMobs direction (mod id `bubbas_reworked_mobs`; later parts get their own specs). Background research: `docs/research/undead-prior-art.md` (nothing on any loader does "dormant until disturbed"; closest mechanic is vanilla 26.3's copper golem statue) and `docs/research/undead-feasibility.md` (26.3 classes, code sketches, performance budget). Everything here is fluid: change it when a better or faster way turns up.
 
 ## Dormant undead are real blocks
 
@@ -64,4 +64,4 @@ Sleeper on the server: 0 per tick. Hearing: under 0.05 ms per tick with 200 slee
 
 ## Open questions for the owner
 
-- Mod name (not decided; working mod id `dormant_undead`, renamed before the first release).
+- None open. (Name: Bubba's Reworked Mobs, mod id `bubbas_reworked_mobs`.)

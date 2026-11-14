@@ -14,7 +14,7 @@ This repo keeps its decisions as a Decision Tree Engineering tree. Follow `vendo
 - Most work creates **no leaf at all**. Technical choices go in the relevant spec under `specs/` and can change whenever a better or faster way is found.
 - The owner will usually say when something should be a leaf. When they haven't, the default is spec.
 - The test: would flipping it change what the project *is* or *is for*, for players or for the owner? A leaf. Would it only change how the code does it? A spec, even if the choice is significant. Example from the owner: "are static undead a real block or not" totally depends on what the best, most performant code system is. Switching it is technical, so it's a spec (`specs/undead.md`), not a leaf.
-- Don't record the owner's design bullets one leaf per bullet. A project gets one leaf for its direction (e.g. C1 undeadRework); its details live in its spec.
+- Don't record the owner's design bullets one leaf per bullet. A project gets one leaf for its direction (e.g. C1 reworkedMobs); its details live in its spec.
 - When in doubt, write the spec and mention in chat that it could be a leaf if the owner wants it preserved.
 
 ### Mechanics
