@@ -1,0 +1,21 @@
+// dte:C1
+package io.github.bubba8587.bubbas_reworked_mobs.registry;
+
+import io.github.bubba8587.bubbas_reworked_mobs.BubbasReworkedMobs;
+import io.github.bubba8587.bubbas_reworked_mobs.display.LootDisplayCommand;
+import net.minecraft.commands.Commands;
+
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+
+/** {@code /bubbas_reworked_mobs ...}: building and testing helpers for ops (permission level 2, like /setblock). */
+public final class ModCommands {
+	private ModCommands() {
+	}
+
+	public static void initialize() {
+		CommandRegistrationCallback.EVENT.register((dispatcher, context, selection) -> dispatcher.register(
+				Commands.literal(BubbasReworkedMobs.MOD_ID)
+						.requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+						.then(LootDisplayCommand.build(context))));
+	}
+}

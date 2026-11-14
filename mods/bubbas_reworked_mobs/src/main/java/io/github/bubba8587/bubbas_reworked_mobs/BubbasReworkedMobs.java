@@ -3,6 +3,7 @@ package io.github.bubba8587.bubbas_reworked_mobs;
 
 import io.github.bubba8587.bubbas_reworked_mobs.registry.ModBlockEntities;
 import io.github.bubba8587.bubbas_reworked_mobs.registry.ModBlocks;
+import io.github.bubba8587.bubbas_reworked_mobs.registry.ModCommands;
 import io.github.bubba8587.bubbas_reworked_mobs.registry.ModCreativeTabs;
 import io.github.bubba8587.bubbas_reworked_mobs.registry.ModEntities;
 import io.github.bubba8587.bubbas_reworked_mobs.registry.ModGameEvents;
@@ -15,7 +16,7 @@ import org.slf4j.LoggerFactory;
 import net.fabricmc.api.ModInitializer;
 
 /**
- * Bubba's Reworked Mobs. Shared infrastructure (registries, spawn-cap control) lives at the top level;
+ * Bubba's Reworked Mobs. Shared infrastructure (registries, spawn-cap control, loot on display) lives at the top level;
  * each mob family has its own package ({@code undead} is part 1, specs/undead.md).
  */
 public class BubbasReworkedMobs implements ModInitializer {
@@ -37,5 +38,6 @@ public class BubbasReworkedMobs implements ModInitializer {
 		ModItems.initialize();
 		ModBlockEntities.initialize();
 		ModCreativeTabs.initialize();
+		ModCommands.initialize();
 	}
 }

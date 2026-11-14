@@ -5,6 +5,7 @@ import java.util.EnumMap;
 import java.util.Map;
 
 import io.github.bubba8587.bubbas_reworked_mobs.BubbasReworkedMobs;
+import io.github.bubba8587.bubbas_reworked_mobs.display.LootDisplayBlock;
 import io.github.bubba8587.bubbas_reworked_mobs.undead.UndeadVariant;
 import io.github.bubba8587.bubbas_reworked_mobs.undead.sleeper.SleeperBlock;
 import net.minecraft.core.Registry;
@@ -13,11 +14,15 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 
 /** Registered blocks. Sleepers are the owner-approved B15 exception (specs/undead.md). */
 public final class ModBlocks {
 	public static final Map<UndeadVariant, SleeperBlock> SLEEPERS = new EnumMap<>(UndeadVariant.class);
+
+	/** Loot on display: one item shown with its own model (owner-approved B15 exception, specs/undead.md "Loot on display"). */
+	public static final LootDisplayBlock LOOT_DISPLAY;
 
 	static {
 		for (UndeadVariant variant : UndeadVariant.values()) {
@@ -28,6 +33,11 @@ public final class ModBlocks {
 					.isSuffocating((s, l, p) -> false).isViewBlocking((s, l, p, box) -> false);
 			SLEEPERS.put(variant, Registry.register(BuiltInRegistries.BLOCK, key, new SleeperBlock(variant, props)));
 		}
+		ResourceKey<Block> displayKey = ResourceKey.create(Registries.BLOCK, BubbasReworkedMobs.id("loot_display"));
+		// No loot table and no item: the block entity drops the displayed item whenever the block goes.
+		LOOT_DISPLAY = Registry.register(BuiltInRegistries.BLOCK, displayKey, new LootDisplayBlock(BlockBehaviour.Properties.of().setId(displayKey)
+				.mapColor(MapColor.NONE).strength(0.2F).noCollision().noOcclusion().noLootTable().pushReaction(PushReaction.POPPED)
+				.isSuffocating((s, l, p) -> false).isViewBlocking((s, l, p, box) -> false)));
 	}
 
 	private ModBlocks() {

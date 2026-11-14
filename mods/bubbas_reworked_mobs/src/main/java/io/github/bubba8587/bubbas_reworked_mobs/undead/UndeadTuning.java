@@ -25,7 +25,7 @@ public final class UndeadTuning {
 	public static final int HEARING_COOLDOWN_TICKS = 20;
 	/** One awaken game event wakes at most this many sleepers (Lorespawn capped cascades at 4). */
 	public static final int AWAKEN_CAP = 4;
-	/** Woken zombies grab a weapon lying this close if their hands are empty. */
+	/** Empty-handed woken undead grab a weapon this close: from a loot display first, else (zombies) one lying loose. */
 	public static final double WEAPON_PICKUP_RANGE = 3.0;
 
 	private UndeadTuning() {

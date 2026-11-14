@@ -2,6 +2,7 @@
 package io.github.bubba8587.bubbas_reworked_mobs.client;
 
 import io.github.bubba8587.bubbas_reworked_mobs.BubbasReworkedMobs;
+import io.github.bubba8587.bubbas_reworked_mobs.client.display.LootDisplayRenderer;
 import io.github.bubba8587.bubbas_reworked_mobs.client.undead.SleeperRenderer;
 import io.github.bubba8587.bubbas_reworked_mobs.registry.ModBlockEntities;
 import io.github.bubba8587.bubbas_reworked_mobs.registry.ModEntities;
@@ -33,5 +34,8 @@ public class BubbasReworkedMobsClient implements ClientModInitializer {
 		BlockEntityRenderers.register(ModBlockEntities.SLEEPER, SleeperRenderer::new);
 		EntityRenderers.register((EntityType<? extends Skeleton>) ModEntities.woken(UndeadVariant.SKELETON), SkeletonRenderer::new);
 		EntityRenderers.register((EntityType<? extends Zombie>) ModEntities.woken(UndeadVariant.ZOMBIE), ZombieRenderer::new);
+
+		// Loot on display: the item's own model, posed per placement.
+		BlockEntityRenderers.register(ModBlockEntities.LOOT_DISPLAY, LootDisplayRenderer::new);
 	}
 }

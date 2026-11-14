@@ -24,6 +24,7 @@ import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.SimpleWaterloggedBlock;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.SupportType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -110,6 +111,12 @@ public class LootDisplayBlock extends BaseEntityBlock implements SimpleWaterlogg
 			return super.getDestroyProgress(state, player, level, pos);
 		}
 		return player.getDestroySpeed(state) / BURIED_HARDNESS / 30.0F;
+	}
+
+	/** Buried loot sounds like the ground it is dug from; the rest like the metal it mostly is. */
+	@Override
+	protected SoundType getSoundType(BlockState state) {
+		return state.getValue(PLACEMENT) == DisplayPlacement.BURIED ? SoundType.ROOTED_DIRT : SoundType.CHAIN;
 	}
 
 	// --- taking -----------------------------------------------------------------------------------

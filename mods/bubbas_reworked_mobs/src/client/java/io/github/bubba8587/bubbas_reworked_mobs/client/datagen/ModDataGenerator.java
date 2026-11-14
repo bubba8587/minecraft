@@ -3,6 +3,8 @@ package io.github.bubba8587.bubbas_reworked_mobs.client.datagen;
 
 import java.util.concurrent.CompletableFuture;
 
+import io.github.bubba8587.bubbas_reworked_mobs.BubbasReworkedMobs;
+import io.github.bubba8587.bubbas_reworked_mobs.display.LootDisplays;
 import io.github.bubba8587.bubbas_reworked_mobs.registry.ModBlocks;
 import io.github.bubba8587.bubbas_reworked_mobs.registry.ModCreativeTabs;
 import io.github.bubba8587.bubbas_reworked_mobs.registry.ModEntities;
@@ -21,6 +23,7 @@ import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.tags.GameEventTags;
 import net.minecraft.tags.ItemTags;
@@ -50,6 +53,7 @@ public class ModDataGenerator implements DataGeneratorEntrypoint {
 	public void onInitializeDataGenerator(FabricDataGenerator generator) {
 		FabricDataGenerator.Pack pack = generator.createPack();
 		pack.addProvider(BlockLoot::new);
+		pack.addProvider(BlockTagsGen::new);
 		pack.addProvider(ItemTagsGen::new);
 		pack.addProvider(EntityTypeTagsGen::new);
 		pack.addProvider(GameEventTagsGen::new);
@@ -75,6 +79,18 @@ public class ModDataGenerator implements DataGeneratorEntrypoint {
 								.apply(CopyBlockState.copyState(block).copy(SleeperBlock.POSE))
 								.otherwise(LootItem.lootTableItem(variant.remains())))));
 			}
+		}
+	}
+
+	static class BlockTagsGen extends FabricTagsProvider.BlockTagsProvider {
+		BlockTagsGen(FabricPackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
+			super(output, registries);
+		}
+
+		@Override
+		protected void addTags(HolderLookup.Provider registries) {
+			// Buried loot digs faster with a shovel (the other placements break at once anyway).
+			builder(BlockTags.MINEABLE_WITH_SHOVEL).add(ModBlocks.LOOT_DISPLAY.builtInRegistryHolder().key());
 		}
 	}
 
@@ -136,6 +152,14 @@ public class ModDataGenerator implements DataGeneratorEntrypoint {
 			builder.add(ModEntities.woken(UndeadVariant.SKELETON), "Skeleton");
 			builder.add(ModEntities.woken(UndeadVariant.ZOMBIE), "Zombie");
 			builder.add(ModCreativeTabs.MAIN_KEY, "Bubba's Reworked Mobs");
+			builder.add(ModBlocks.LOOT_DISPLAY, "Loot on Display");
+			builder.add(LootDisplays.BURIED_HINT, "It's buried. Dig it up with a shovel.");
+			String display = "commands." + BubbasReworkedMobs.MOD_ID + ".display.";
+			builder.add(display + "success", "Put %s on display (%s) at %s, %s, %s");
+			builder.add(display + "not_looking", "Look at a block within 20 blocks");
+			builder.add(display + "needs_wall", "Look at the side of a block to hang it on the wall");
+			builder.add(display + "no_room", "There is a block in the way");
+			builder.add(display + "no_support", "Nothing there to hold it up");
 			builder.add(ModGameRules.CUT_MONSTER_SPAWNS.getDescriptionId(), "Cut natural monster spawns");
 			builder.add(ModGameRules.MONSTER_CAP_PERCENT.getDescriptionId(), "Natural monster cap (% of vanilla)");
 		}
@@ -151,6 +175,8 @@ public class ModDataGenerator implements DataGeneratorEntrypoint {
 			// The renderer draws the sleeper; the block model only gives the break particles.
 			particleOnly(gen, ModBlocks.sleeper(UndeadVariant.SKELETON), TextureMapping.getBlockTexture(Blocks.BONE_BLOCK, "_side"));
 			particleOnly(gen, ModBlocks.sleeper(UndeadVariant.ZOMBIE), TextureMapping.getBlockTexture(Blocks.MUD));
+			// Loot on display: the renderer draws the item; break particles are neutral iron.
+			particleOnly(gen, ModBlocks.LOOT_DISPLAY, TextureMapping.getBlockTexture(Blocks.IRON_BLOCK));
 		}
 
 		private static void particleOnly(BlockModelGenerators gen, Block block, Material particle) {

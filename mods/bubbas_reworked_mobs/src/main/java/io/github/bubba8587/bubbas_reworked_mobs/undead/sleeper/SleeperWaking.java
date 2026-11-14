@@ -4,6 +4,7 @@ package io.github.bubba8587.bubbas_reworked_mobs.undead.sleeper;
 import java.util.Comparator;
 import java.util.List;
 
+import io.github.bubba8587.bubbas_reworked_mobs.display.LootDisplays;
 import io.github.bubba8587.bubbas_reworked_mobs.registry.ModEntities;
 import io.github.bubba8587.bubbas_reworked_mobs.registry.ModGameEvents;
 import io.github.bubba8587.bubbas_reworked_mobs.registry.ModTags;
@@ -22,9 +23,11 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.entity.monster.skeleton.AbstractSkeleton;
 import net.minecraft.world.entity.monster.zombie.Zombie;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -68,11 +71,11 @@ public final class SleeperWaking {
 				mob.setGuaranteedDrop(slot);
 			}
 		}
-		if (mob instanceof Zombie && mob.getMainHandItem().isEmpty()) {
-			pickUpNearbyWeapon(level, pos, mob);
-		}
 		if (!level.addFreshEntity(mob)) {
 			return null;
+		}
+		if (mob.getMainHandItem().isEmpty()) {
+			pickUpNearbyWeapon(level, pos, mob);
 		}
 		NonNullList<ItemStack> unused = sleeper.takeAllGear(); // the mob has it now; keep it from dropping as the block goes
 		unused.clear();
@@ -98,17 +101,37 @@ public final class SleeperWaking {
 		}
 	}
 
-	/** A zombie that wakes empty-handed grabs the nearest weapon lying close by (e.g. the one stolen from it and dropped). */
+	/**
+	 * An undead that wakes empty-handed arms itself: first from a loot display within reach (the block goes), else,
+	 * zombies only, from the nearest weapon lying loose close by (e.g. the one stolen from it and dropped).
+	 */
 	private static void pickUpNearbyWeapon(ServerLevel level, BlockPos pos, Monster mob) {
+		ItemStack displayed = LootDisplays.takeNearest(level, mob, UndeadTuning.WEAPON_PICKUP_RANGE, stack -> isWeaponFor(mob, stack));
+		if (!displayed.isEmpty()) {
+			arm(mob, displayed);
+			return;
+		}
+		if (!(mob instanceof Zombie)) {
+			return;
+		}
 		List<ItemEntity> weapons = level.getEntitiesOfClass(ItemEntity.class, mob.getBoundingBox().inflate(UndeadTuning.WEAPON_PICKUP_RANGE),
-				item -> item.isAlive() && item.getItem().is(ModTags.SLEEPER_WEAPONS));
+				item -> item.isAlive() && isWeaponFor(mob, item.getItem()));
 		weapons.stream().min(Comparator.comparingDouble(item -> item.distanceToSqr(Vec3.atCenterOf(pos)))).ifPresent(item -> {
-			mob.setItemSlot(EquipmentSlot.MAINHAND, item.getItem().split(1));
-			mob.setGuaranteedDrop(EquipmentSlot.MAINHAND);
+			arm(mob, item.getItem().split(1));
 			if (item.getItem().isEmpty()) {
 				item.discard();
 			}
 		});
+	}
+
+	/** {@code #sleeper_weapons} for every undead; skeletons can also use a bow. */
+	static boolean isWeaponFor(Monster mob, ItemStack stack) {
+		return stack.is(ModTags.SLEEPER_WEAPONS) || (mob instanceof AbstractSkeleton && stack.is(Items.BOW));
+	}
+
+	private static void arm(Monster mob, ItemStack weapon) {
+		mob.setItemSlot(EquipmentSlot.MAINHAND, weapon);
+		mob.setGuaranteedDrop(EquipmentSlot.MAINHAND);
 	}
 
 	/** Empty-hand use: take one item (weapon first, then armor top-down) and roll the wake chance (armor always riskier). */
