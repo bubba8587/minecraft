@@ -220,7 +220,7 @@ Vanilla tab keys: `BUILDING_BLOCKS, COLORED_BLOCKS, NATURAL_BLOCKS, FUNCTIONAL_B
 - Music disc: `.jukeboxPlayable(ResourceKey<JukeboxSong>)` + `data/<ns>/jukebox_song/<id>.json` (data-driven only).
 
 ## 10. Item model/texture link (pointers only)
-`ITEM_MODEL` defaults to the item id -> `assets/<ns>/items/<path>.json` (item model definition, 1.21.4+) -> e.g. `{"model":{"type":"minecraft:model","model":"<ns>:item/<path>"}}` -> `assets/<ns>/models/item/<path>.json` -> `textures/item/<path>.png`. Lang: `assets/<ns>/lang/en_us.json` keys `item.<ns>.<path>`, `block.<ns>.<path>`. Override model id: `Item.Properties#modelId(Identifier)` (Fabric) or `.component(DataComponents.ITEM_MODEL, id)`. Datagen: `FabricModelProvider` (client doc / datagen doc).
+`ITEM_MODEL` defaults to the item id -> `assets/<ns>/items/<path>.json` (item model definition, 1.21.4+) -> e.g. `{"model":{"type":"minecraft:model","model":"<ns>:item/<path>"}}` -> `assets/<ns>/models/item/<path>.json` -> `textures/item/<path>.png`. Lang: `assets/<ns>/lang/en_us.json` keys `item.<ns>.<path>`, `block.<ns>.<path>`. Override model id: `Item.Properties#modelId(Identifier)` (Fabric) or `.component(DataComponents.ITEM_MODEL, id)`. Datagen: `FabricModelProvider` (toolchain.md section 7 "Datagen").
 
 ---
 

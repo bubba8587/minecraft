@@ -111,7 +111,7 @@ Examples from vanilla (assets `items/bow.json`, `items/shield.json`, `items/leat
 ```
 Custom code-driven types (register in client init; all mappers are `public static final ExtraCodecs.LateBoundIdMapper`): `ItemModels.ID_MAPPER`, `SpecialModelRenderers.ID_MAPPER`, `ItemTintSources.ID_MAPPER`, `ConditionalItemModelProperties.ID_MAPPER`, `RangeSelectItemModelProperties.ID_MAPPER`, `SelectItemModelProperties.ID_MAPPER`. Special renderer walkthrough: `client-rendering.md` section 8.
 
-Datagen of these files (`FabricModelProvider`, `BlockModelGenerators`, `ItemModelGenerators`, `ItemModelUtils.plainModel/conditional/...`) is covered by the datagen knowledge file; fabric-docs reference `ExampleModModelProvider.java`.
+Datagen of these files (`FabricModelProvider`, `BlockModelGenerators`, `ItemModelGenerators`, `ItemModelUtils.plainModel/conditional/...`) is covered in toolchain.md section 7 "Datagen"; fabric-docs reference `ExampleModModelProvider.java`.
 
 ## 4. Runtime access to baked models
 - `Minecraft.getInstance().getModelManager()`; `getItemModel(Identifier)`, `getItemProperties(Identifier)`, `getBlockStateModelSet()`, `getBlockModelSet()`, `getFluidStateModelSet()` (src: client `resources/model/ModelManager.java`); per-state `BlockStateModel` with `collectParts(RandomSource, List<BlockStateModelPart>)`, `particleMaterial()`, `materialFlags()`.

@@ -6,7 +6,7 @@ Scope: entity types, attributes, mob classes, AI (goals and Brain), spawning (bi
 - Vanilla `EntityType.ZOMBIE` etc. moved to **`EntityTypes`** (26.2); keys in `EntityTypeIds` (src: common world/entity/EntityTypes.java, EntityTypeIds.java). Use `EntityTypes.LIGHTNING_BOLT`, `EntityTypes.COW`.
 - `EntityType.Builder#build(ResourceKey<EntityType<?>>)` requires the key (1.21.2+).
 - Save/load uses `ValueOutput`/`ValueInput` (1.21.6+): `addAdditionalSaveData(ValueOutput)`, `readAdditionalSaveData(ValueInput)`.
-- `Entity#hurt` is gone: `hurtServer(ServerLevel, DamageSource, float)` (abstract on Entity) / `hurtClient(DamageSource)`; `hurtOrSimulate(...)` when side is unknown.
+- Damage is split by side: `hurtServer(ServerLevel, DamageSource, float)` (abstract on Entity, returns boolean) / `hurtClient(DamageSource)`; `hurtOrSimulate(...)` when side is unknown. `Entity#hurt(DamageSource, float)` still exists but is `@Deprecated public final void` and only forwards to `hurtServer` when the level is a `ServerLevel` (vanilla `Snowball#onHitEntity` still calls it); new code should call `hurtServer` (src: common world/entity/Entity.java:1957-1969).
 - `Entity#interactAt` removed (26.1); `interact(Player, InteractionHand, Vec3 location)` now receives the hit location.
 - Brain rework (26.1): `ActivityData`, `Brain.Provider` stored as a static on the entity, `makeBrain(Brain.Packed)`; `brainProvider()` removed.
 - Projectile classes moved to subpackages, e.g. `net.minecraft.world.entity.projectile.throwableitemprojectile.ThrowableItemProjectile`, `...projectile.arrow.*`, `...projectile.hurtingprojectile.*`.

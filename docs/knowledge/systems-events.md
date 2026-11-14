@@ -76,7 +76,7 @@ Cancelling on the server only (e.g. claim protection with `UseBlockCallback` ret
 ## 4. Other event-ish modules (pointers)
 - Chat: `ServerMessageEvents`, `ServerMessageDecoratorEvent` (systems-networking.md section 6).
 - Commands: `CommandRegistrationCallback`, `ClientCommandRegistrationCallback` (systems-commands-text.md).
-- Loot: `LootTableEvents` (fabric-loot-api-v3; covered in loot/datagen docs).
+- Loot: `LootTableEvents` (fabric-loot-api-v3; content.md section 8, datagen in toolchain.md section 7).
 - Items: `DefaultItemComponentEvents.MODIFY` (26.3 fuel/compost now components), `CreativeModeTabEvents` (was ItemGroupEvents).
 - Block transformers: `BlockTransformerEvents.MODIFY` (26.3, replaces Strippable/Tillable/FlattenableBlockRegistry).
 - Fluids: `FluidFlowCallback.EVENT` (26.3) `(fluid, level, pos) -> boolean`.

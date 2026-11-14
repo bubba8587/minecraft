@@ -247,7 +247,7 @@ public class ModRecipeProvider extends FabricRecipeProvider {
     @Override public String getName() { return "Recipes"; }
 }
 ```
-`withConditions(output, ResourceCondition...)` for conditional recipes. Builders take `ItemStackTemplate` for results (26.1), `oreSmelting/oreBlasting` take a `CookingBookCategory`, cooking builders no longer take a `RecipeSerializer`. Full datagen details: datagen doc.
+`withConditions(output, ResourceCondition...)` for conditional recipes. Builders take `ItemStackTemplate` for results (26.1), `oreSmelting/oreBlasting` take a `CookingBookCategory`, cooking builders no longer take a `RecipeSerializer`. Full datagen setup: toolchain.md section 7 "Datagen".
 
 ## 8. Loot tables
 - Block drops default to `data/<ns>/loot_table/blocks/<path>.json` (key from block id; `BlockBehaviour.Properties#noLootTable()`, `overrideLootTable(Optional<ResourceKey<LootTable>>)`). Entities: `entities/<path>`, `EntityType.Builder#noLootTable()`.

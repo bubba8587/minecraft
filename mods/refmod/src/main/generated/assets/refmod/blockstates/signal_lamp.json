@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "lit=false": {
+      "model": "refmod:block/signal_lamp"
+    },
+    "lit=true": {
+      "model": "refmod:block/signal_lamp_on"
+    }
+  }
+}

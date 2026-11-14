@@ -1,4 +1,13 @@
+// dte:B5,B6
 plugins {
 	id 'net.fabricmc.fabric-loom'
 }
 apply from: rootProject.file('gradle/fabric-mod.gradle')
+
+// Datagen (spec item 14): `./gradlew :refmod:runDatagen` writes src/main/generated (committed, added to main resources).
+// client = true because the model provider uses client classes; the datagen entrypoint lives in src/client.
+fabricApi {
+	configureDataGeneration {
+		client = true
+	}
+}

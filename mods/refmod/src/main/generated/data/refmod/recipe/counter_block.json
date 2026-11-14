@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "key": {
+    "C": "minecraft:cobblestone",
+    "K": "minecraft:clock"
+  },
+  "pattern": [
+    "CCC",
+    "CKC",
+    "CCC"
+  ],
+  "result": {
+    "id": "refmod:counter_block"
+  }
+}

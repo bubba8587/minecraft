@@ -200,8 +200,10 @@ All positions are relative to the structure; convert with `absolutePos` and `rel
   - `assertValueInBetween(lo, v, hi, name)`
 - **Players**:
   - `makeMockPlayer(GameType)`: an anonymous `Player`, not on a connection.
-  - `makeMockServerPlayer(GameType)`
-  - `makeMockServerPlayerInLevel()`: a real `ServerPlayer` added to the level.
+  - `makeMockServerPlayer(GameType)`: declared return type is `Player` (cast to `ServerPlayer`); not in the level and `connection` is null, so anything that sends it packets (`ServerPlayNetworking.send`, `sendSystemMessage`) NPEs.
+  - `makeMockServerPlayerInLevel()`: a real `ServerPlayer` joined through `PlayerList#placeNewPlayer` on an embedded connection (packets work, attachment sync works). It stays in the player list after the test: call `helper.getLevel().getServer().getPlayerList().remove(player)`. Every mock player is named `test-mock-player`, so select a specific one in commands by tag (`player.addTag(..)` + `@a[tag=..,limit=1]`), not by name.
+  - Breaking as a player (fires `PlayerBlockBreakEvents`): `serverPlayer.gameMode.destroyBlock(helper.absolutePos(pos))`. Respawn: `getPlayerList().respawn(player, false, Entity.RemovalReason.KILLED)`.
+  - Projectiles: throw them like the game does, from a mock player positioned with `player.snapTo(x, y, z, yRot, xRot)` and `Projectile.spawnProjectileFromRotation(Factory::new, level, stack, player, 0, 1.5F, 0)`. In refmod a hand-built owner-less `new Snowball(level, x, y, z, stack)` with `setDeltaMovement(0, -1, 0)` dropped through a pig onto the block below without hitting it (cause not traced, UNVERIFIED); the player-thrown version hits.
 - **World**: `getLevel()` (a `ServerLevel`), `setTime(ticks)`, `getHeight(Heightmap.Types, x, z)`, `getBounds()`, `getTestRotation()`, `getTestDirection()`.
 
 Name changes that bite you: assertions throw `GameTestAssertException(Component, int tick)`, not the old `GameTestException(String)`. Use `helper.assertionException("translation.key", args)` or `Component.literal`.

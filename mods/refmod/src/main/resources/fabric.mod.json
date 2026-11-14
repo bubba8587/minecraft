@@ -4,17 +4,29 @@
 	"version": "${version}",
 	"name": "Reference Mod",
 	"description": "Internal reference mod exercising many Fabric and Minecraft systems. Not published.",
-	"authors": ["bubba8587"],
+	"authors": [
+		"bubba8587"
+	],
 	"license": "All-Rights-Reserved",
 	"environment": "*",
 	"entrypoints": {
-		"main": ["io.github.bubba8587.refmod.RefMod"],
-		"client": ["io.github.bubba8587.refmod.client.RefModClient"]
+		"main": [
+			"io.github.bubba8587.refmod.RefMod"
+		],
+		"client": [
+			"io.github.bubba8587.refmod.client.RefModClient"
+		],
+		"fabric-datagen": [
+			"io.github.bubba8587.refmod.client.datagen.RefModDataGenerator"
+		]
 	},
 	"depends": {
 		"fabricloader": ">=${loader_version}",
 		"minecraft": "~${minecraft_version}",
 		"java": ">=${java_version}",
 		"fabric-api": "*"
-	}
+	},
+	"mixins": [
+		"refmod.mixins.json"
+	]
 }

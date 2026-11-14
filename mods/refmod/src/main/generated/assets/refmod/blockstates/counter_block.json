@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "refmod:block/counter_block"
+    }
+  }
+}

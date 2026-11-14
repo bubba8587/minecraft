@@ -689,7 +689,7 @@ There is no `transparency` chain any more (OIT is built in).
 ## 13. Fabric mods shipping assets
 - A mod's `src/main/resources/assets/<modid>/...` is served as a mod resource pack, using every format above. Use your mod ID as the namespace.
 - Built-in optional packs: `ResourceLoader.registerBuiltinPack(Identifier id, ModContainer container, PackActivationType type)`, with overloads taking a `Component` display name and/or a sub-path. Content lives in `resources/resourcepacks/<id path>/` (src: fabric-api `fabric-resource-loader-v1/src/main/java/net/fabricmc/fabric/api/resource/v1/ResourceLoader.java`).
-- Datagen providers exist for models, blockstates and item definitions (fabric-data-generation-api). See the separate datagen knowledge file if present.
+- Datagen providers exist for models, blockstates and item definitions (fabric-data-generation-api). See toolchain.md section 7 "Datagen".
 - Do not look for `BlockRenderLayerMap`/`ItemBlockRenderTypes`. Layering is per texture (§4).
 
 ---
