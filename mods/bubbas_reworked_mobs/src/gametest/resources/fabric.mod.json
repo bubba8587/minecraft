@@ -6,7 +6,8 @@
 	"environment": "*",
 	"entrypoints": {
 		"fabric-gametest": [
-			"io.github.bubba8587.bubbas_reworked_mobs.test.BubbasReworkedMobsGameTest"
+			"io.github.bubba8587.bubbas_reworked_mobs.test.BubbasReworkedMobsGameTest",
+			"io.github.bubba8587.bubbas_reworked_mobs.test.LootDisplayGameTest"
 		],
 		"fabric-client-gametest": [
 			"io.github.bubba8587.bubbas_reworked_mobs.test.BubbasReworkedMobsClientGameTest"

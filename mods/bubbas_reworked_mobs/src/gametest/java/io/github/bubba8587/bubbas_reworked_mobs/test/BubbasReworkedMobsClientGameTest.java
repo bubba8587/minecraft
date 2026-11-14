@@ -15,7 +15,7 @@ import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContex
 
 /**
  * Looks at the sleepers: a sitting skeleton holding a sword, a lying zombie in armor, from the front, the side and
- * close up; the sleeper items in the hotbar; a sleeper placed from its item; and a woken zombie in armor.
+ * close up; the sleeper items in the hotbar; a sleeper placed from its item; a woken zombie in armor; and loot on display.
  * Screenshots land in build/run/clientGameTest/screenshots/.
  */
 @SuppressWarnings("UnstableApiUsage")
@@ -94,7 +94,75 @@ public class BubbasReworkedMobsClientGameTest implements FabricClientGameTest {
 			context.waitFor(mc -> !mc.level.getEntitiesOfClass(net.minecraft.world.entity.Entity.class,
 					new AABB(base.offset(-3, 0, 4)).inflate(1.0), e -> e.getType() == ModEntities.woken(UndeadVariant.ZOMBIE)).isEmpty());
 			view(context, server, x - 2.5, y, z + 1.5, 0.0F, 15.0F, "woken-zombie");
+
+			lootDisplays(context, server, base);
 		}
+	}
+
+	/**
+	 * Loot on display, north of the spawn: rows of the four placements (ground, buried, wall, stuck) for an iron sword,
+	 * a bow and a trident, all facing south toward the camera; a sword and a bow hung on a stone wall; and a grave
+	 * (dirt patch, lying zombie sleeper, a shovel and a sword buried at its head).
+	 */
+	private static void lootDisplays(ClientGameTestContext context, TestServerContext server, BlockPos base) {
+		int x = base.getX();
+		int y = base.getY();
+		int z = base.getZ();
+		server.runCommand("gamemode creative @p");
+		server.runCommand("fill %d %d %d %d %d %d minecraft:air".formatted(x - 4, y, z - 30, x + 12, y + 5, z - 5));
+		server.runCommand("fill %d %d %d %d %d %d minecraft:stone".formatted(x - 4, y - 2, z - 30, x + 12, y - 1, z - 5));
+		String[] items = {"iron_sword", "bow", "trident"};
+		for (int row = 0; row < items.length; row++) {
+			int rz = z - 8 - row * 5;
+			// Columns: ground, buried (in dirt), wall (stone behind, to the north), stuck.
+			server.runCommand("setblock %d %d %d minecraft:dirt".formatted(x + 2, y - 1, rz));
+			server.runCommand("fill %d %d %d %d %d %d minecraft:stone".formatted(x + 4, y, rz - 1, x + 4, y + 1, rz - 1));
+			display(server, "ground", items[row], x, y, rz);
+			display(server, "buried", items[row], x + 2, y, rz);
+			display(server, "wall", items[row], x + 4, y, rz);
+			display(server, "stuck", items[row], x + 6, y, rz);
+		}
+		// A stone wall with a sword and a bow hung on it.
+		int wz = z - 24;
+		server.runCommand("fill %d %d %d %d %d %d minecraft:stone_bricks".formatted(x - 1, y, wz - 1, x + 3, y + 2, wz - 1));
+		display(server, "wall", "iron_sword", x + 1, y + 1, wz);
+		display(server, "wall", "bow", x + 2, y, wz);
+		// A grave: a dirt patch, a lying zombie sleeper beside it, a shovel and a sword buried at its head.
+		int gx = x + 8;
+		int gz = z - 24;
+		server.runCommand("fill %d %d %d %d %d %d minecraft:coarse_dirt".formatted(gx, y - 1, gz - 1, gx + 1, y - 1, gz + 1));
+		server.runCommand("setblock %d %d %d minecraft:rooted_dirt".formatted(gx, y - 1, gz));
+		server.runCommand(cmd("setblock %d %d %d " + ID + ":zombie_sleeper[facing=east,pose=lying]{sensitivity:0f}", new BlockPos(gx + 3, y, gz)));
+		display(server, "buried", "iron_shovel", gx, y, gz - 1);
+		display(server, "buried", "iron_sword", gx + 1, y, gz - 1);
+		BlockPos last = new BlockPos(gx + 1, y, gz - 1);
+		context.waitFor(mc -> mc.level.getBlockState(last).is(ModBlocks.LOOT_DISPLAY));
+		context.waitTicks(10);
+
+		// Sword row: front, side, close-ups.
+		int sz = z - 8;
+		view(context, server, x + 3.5, y + 0.2, sz + 4.5, 180.0F, 28.0F, "display-sword-front");
+		view(context, server, x + 9.5, y + 0.3, sz + 0.5, 90.0F, 30.0F, "display-sword-side");
+		view(context, server, x + 1.5, y - 0.4, sz + 2.0, 180.0F, 40.0F, "display-sword-close-ground-buried");
+		view(context, server, x + 5.5, y - 0.4, sz + 2.0, 180.0F, 30.0F, "display-sword-close-wall-stuck");
+		server.runCommand("gamemode spectator @p"); // eye level, nearly flat: does anything float or clip?
+		view(context, server, x + 3.5, y - 1.3, sz + 3.5, 180.0F, 5.0F, "display-sword-low");
+		server.runCommand("gamemode creative @p");
+		// Bow and trident rows.
+		view(context, server, x + 3.5, y + 0.2, sz - 5 + 4.5, 180.0F, 28.0F, "display-bow-front");
+		view(context, server, x + 9.5, y + 0.3, sz - 5 + 0.5, 90.0F, 30.0F, "display-bow-side");
+		view(context, server, x + 3.5, y + 0.2, sz - 10 + 4.5, 180.0F, 28.0F, "display-trident-front");
+		view(context, server, x + 9.5, y + 0.3, sz - 10 + 0.5, 90.0F, 30.0F, "display-trident-side");
+		// The wall, straight on and from the side.
+		view(context, server, x + 1.5, y, wz + 3.5, 180.0F, 10.0F, "display-wall");
+		view(context, server, x + 4.5, y, wz + 1.5, 125.0F, 15.0F, "display-wall-angle");
+		// The grave, from the foot and from the side.
+		view(context, server, gx + 1.0, y + 0.5, gz + 4.0, 180.0F, 35.0F, "display-grave");
+		view(context, server, gx - 2.5, y + 0.2, gz - 0.5, 270.0F, 30.0F, "display-grave-side");
+	}
+
+	private static void display(TestServerContext server, String placement, String item, int x, int y, int z) {
+		server.runCommand("%s display %s minecraft:%s %d %d %d south".formatted(ID, placement, item, x, y, z));
 	}
 
 	private static String cmd(String format, BlockPos pos) {
