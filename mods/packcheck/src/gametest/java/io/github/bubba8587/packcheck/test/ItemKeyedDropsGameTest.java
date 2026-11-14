@@ -19,6 +19,7 @@ import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.BlockItemStateProperties;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.SingleRecipeInput;
@@ -26,6 +27,7 @@ import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
@@ -153,6 +155,14 @@ public class ItemKeyedDropsGameTest {
 		List<ItemStack> drops = placeAndBreak(helper, player, synthetic, new ItemStack(Items.IRON_PICKAXE));
 		helper.assertTrue(level.getBlockState(helper.absolutePos(PLACED)).isAir(), "ore still there");
 		assertSingleDrop(helper, drops, new ItemStack(Items.DIAMOND), "Synthetic Diamond Ore (pack only)");
+
+		// A block_state component naming a property the block doesn't have is skipped on placement
+		// (BlockItemStateProperties#apply), so the approach-C item degrades to plain ore when the mod is missing.
+		level.getEntities(EntityTypes.ITEM, new AABB(helper.absolutePos(PLACED)).inflate(3), e -> true).forEach(ItemEntity::discard);
+		ItemStack withState = recipe.assemble(input); // the first stack was used up placing it
+		withState.set(DataComponents.BLOCK_STATE, BlockItemStateProperties.EMPTY.with(BooleanProperty.create("synthetic"), true));
+		List<ItemStack> drops2 = placeAndBreak(helper, survivalPlayer(helper), withState, new ItemStack(Items.IRON_PICKAXE));
+		assertSingleDrop(helper, drops2, new ItemStack(Items.DIAMOND), "ore item with block_state {synthetic:true}, no mod");
 		helper.succeed();
 	}
 }

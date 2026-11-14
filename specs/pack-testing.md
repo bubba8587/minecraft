@@ -50,4 +50,8 @@ The client test (`PackcheckClientGameTest`) gives a survival player the assemble
 - **Disabled packs** (`DISABLED` file) are not bundled. Their tests must be skipped or removed in the same change.
 - Gotcha: a test table that is built when the class loads must not create `ItemStack`s. Item components aren't bound until the world loads, and creating one throws `Components not bound yet`. That's why grids and cooking inputs are suppliers.
 
+## Item-keyed block drops (refpack, bubbas_crafting_tweaks)
+
+`ItemKeyedDropsGameTest` places blocks as a survival mock player (`ServerPlayerGameMode#useItemOn`) and mines them (`ServerPlayerGameMode#destroyBlock`), the path a player's packets take, then reads the item entities. It proves refpack's barrel loot override (a marked barrel's own drop, vanilla drops otherwise, and that `location_check` sees air on a player break) and that bubbas_crafting_tweaks' "Synthetic Diamond Ore" places plain ore that mines like natural ore, also when the item carries `block_state {synthetic:"true"}` without the mod. Background: `docs/knowledge/item-keyed-block-drops.md`.
+
 PackTest functions in each pack (`data/<ns>/test/`) are still the pack's own behaviour tests for CI (`specs/quality.md`). Packcheck adds the Java-level and visual checks on top.
