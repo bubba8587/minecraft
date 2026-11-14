@@ -8,7 +8,6 @@
 		"bubba8587"
 	],
 	"license": "MIT",
-	"icon": "assets/bubbas_crafting_tweaks/icon.png",
 	"environment": "*",
 	"entrypoints": {
 		"main": [

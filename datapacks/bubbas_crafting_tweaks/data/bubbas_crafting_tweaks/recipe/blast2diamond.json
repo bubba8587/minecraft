@@ -6,7 +6,10 @@
   "result": {
     "id": "minecraft:deepslate_diamond_ore",
     "components": {
-      "minecraft:item_name": "Synthetic Diamond Ore"
+      "minecraft:item_name": "Synthetic Diamond Ore",
+      "minecraft:block_state": {
+        "synthetic": "true"
+      }
     }
   },
   "experience": 5,

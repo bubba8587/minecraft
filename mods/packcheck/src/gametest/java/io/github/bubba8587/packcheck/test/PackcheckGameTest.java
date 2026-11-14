@@ -19,6 +19,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.BlockItemStateProperties;
 import net.minecraft.world.item.component.ItemLore;
 import net.minecraft.world.item.crafting.AbstractCookingRecipe;
 import net.minecraft.world.item.crafting.CraftingInput;
@@ -60,8 +61,9 @@ public class PackcheckGameTest {
 		crafting("trident", Items.TRIDENT, 1, null, List.of(),
 			grid(Map.of('#', Items.PRISMARINE_SHARD, 'P', Items.PRISMARINE_CRYSTALS, '/', Items.STICK),
 				"###", "P/P", "P/P")),
+		// block_state {synthetic:"true"}: read by the companion mod (specs/crafting-tweaks-mod.md); ignored without it.
 		cooking(RecipeType.BLASTING, "blast2diamond", Items.DEEPSLATE_DIAMOND_ORE, "Synthetic Diamond Ore", List.of(), 4000, 5.0F,
-			Items.COAL_BLOCK),
+			Items.COAL_BLOCK).withBlockState(Map.of("synthetic", "true")),
 		cooking(RecipeType.BLASTING, "blast2sand", Items.SAND, null, List.of(), 200, 0.0F,
 			Items.GRAVEL, Items.GLASS),
 		cooking(RecipeType.BLASTING, "blast_quartz", Items.QUARTZ, null, List.of(), 200, 0.1F,
@@ -173,6 +175,8 @@ public class PackcheckGameTest {
 			helper.assertTrue(out.is(c.result), where + ": result is " + out + ", expected " + c.result);
 			helper.assertValueEqual(out.getCount(), c.count, where + ": result count");
 			assertNameAndLore(helper, where, out, c.name, c.lore);
+			BlockItemStateProperties state = out.getOrDefault(DataComponents.BLOCK_STATE, BlockItemStateProperties.EMPTY);
+			helper.assertValueEqual(state.properties(), c.blockState, where + ": block_state component");
 		}
 
 		if (holder.value() instanceof AbstractCookingRecipe cooking) {
@@ -209,7 +213,17 @@ public class PackcheckGameTest {
 	 * components are bound (this table is built when the class loads).
 	 */
 	private record RecipeCase(String id, RecipeType<?> type, List<Supplier<RecipeInput>> inputSuppliers, Item result, int count,
-			String name, List<String> lore, int cookingTime, float experience) {
+			String name, List<String> lore, int cookingTime, float experience, Map<String, String> blockState) {
+		RecipeCase(String id, RecipeType<?> type, List<Supplier<RecipeInput>> inputSuppliers, Item result, int count,
+				String name, List<String> lore, int cookingTime, float experience) {
+			this(id, type, inputSuppliers, result, count, name, lore, cookingTime, experience, Map.of());
+		}
+
+		/** The result's expected minecraft:block_state properties (none by default). */
+		RecipeCase withBlockState(Map<String, String> state) {
+			return new RecipeCase(id, type, inputSuppliers, result, count, name, lore, cookingTime, experience, state);
+		}
+
 		List<RecipeInput> inputs() {
 			return inputSuppliers.stream().map(Supplier::get).toList();
 		}
