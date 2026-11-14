@@ -81,7 +81,9 @@ The repo always targets the latest non-snapshot release and moves promptly when 
 
 ## Quality bar (`specs/quality.md`)
 
-Every mod has server game tests for its main behavior; anything visual gets a client game test with a screenshot you look at before saying it works. Every datapack has PackTest test functions (misode's PackTest, see `docs/knowledge/datapacks.md`) covering its behavior, loads clean with `tools/packload.py`, and passes `tools/packtest.py` in CI. A bug fix ships with the test that would have caught it.
+Every mod has server game tests for its main behavior.
+
+**Check yourself visually as you go (owner's instruction).** Every time something visible is added or changed (blocks, models, poses, mobs, items and icons, GUI, HUD, particles, textures at both 16x and 32x), add or update a client game test screenshot of it and look at the PNG (Read tool) before moving on, not just at the end. Use more than one angle when it matters, get close enough to see details, and fix what looks wrong (floating, clipping, wrong facing, missing or purple-black textures, offsets) before continuing. Subagents get the same instruction and list their screenshots in their report; the orchestrator looks at them too before telling the owner something works. Every datapack has PackTest test functions (misode's PackTest, see `docs/knowledge/datapacks.md`) covering its behavior, loads clean with `tools/packload.py`, and passes `tools/packtest.py` in CI. A bug fix ships with the test that would have caught it.
 
 ## Releasing (B14 modrinthAiCompliant; how: `specs/releasing.md`)
 
