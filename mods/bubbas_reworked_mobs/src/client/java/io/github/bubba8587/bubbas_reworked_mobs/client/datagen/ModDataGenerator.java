@@ -84,8 +84,8 @@ public class ModDataGenerator implements DataGeneratorEntrypoint {
 
 		@Override
 		protected void addTags(HolderLookup.Provider registries) {
-			builder(ModTags.SLEEPER_HARVEST_TOOLS).addTag(ItemTags.PICKAXES).addTag(ItemTags.AXES).addTag(ItemTags.SHOVELS).addTag(ItemTags.HOES);
-			builder(ModTags.SLEEPER_WEAPONS).addTag(ItemTags.SWORDS).addTag(ItemTags.AXES).addTag(ItemTags.SPEARS);
+			builder(ModTags.SLEEPER_HARVEST_TOOLS).forceAddTag(ItemTags.PICKAXES).forceAddTag(ItemTags.AXES).forceAddTag(ItemTags.SHOVELS).forceAddTag(ItemTags.HOES);
+			builder(ModTags.SLEEPER_WEAPONS).forceAddTag(ItemTags.SWORDS).forceAddTag(ItemTags.AXES).forceAddTag(ItemTags.SPEARS);
 		}
 	}
 
@@ -104,7 +104,7 @@ public class ModDataGenerator implements DataGeneratorEntrypoint {
 			builder(EntityTypeTags.ZOMBIES).add(zombie);
 			builder(EntityTypeTags.BURN_IN_DAYLIGHT).addTag(ModTags.WOKEN_UNDEAD);
 			builder(EntityTypeTags.NO_ANGER_FROM_WIND_CHARGE).addTag(ModTags.WOKEN_UNDEAD);
-			builder(ModTags.DOES_NOT_WAKE_SLEEPERS).addTag(EntityTypeTags.UNDEAD);
+			builder(ModTags.DOES_NOT_WAKE_SLEEPERS).forceAddTag(EntityTypeTags.UNDEAD);
 		}
 
 		private static ResourceKey<EntityType<?>> key(UndeadVariant variant) {
@@ -119,7 +119,7 @@ public class ModDataGenerator implements DataGeneratorEntrypoint {
 
 		@Override
 		protected void addTags(HolderLookup.Provider registries) {
-			builder(ModTags.SLEEPERS_HEAR).addTag(GameEventTags.VIBRATIONS).add(ModGameEvents.AWAKEN.key());
+			builder(ModTags.SLEEPERS_HEAR).forceAddTag(GameEventTags.VIBRATIONS).add(ModGameEvents.AWAKEN.key());
 		}
 	}
 

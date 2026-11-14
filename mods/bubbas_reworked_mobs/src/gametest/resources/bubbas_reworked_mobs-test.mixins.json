@@ -1,0 +1,11 @@
+{
+	"required": true,
+	"package": "io.github.bubba8587.bubbas_reworked_mobs.test.mixin",
+	"compatibilityLevel": "JAVA_25",
+	"mixins": [
+		"RefuseSpawnMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

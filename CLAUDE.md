@@ -63,6 +63,7 @@ export JAVA_HOME=/opt/jdk25                      # Java 25 is required for 26.x
 ./gradlew :<mod>:build                           # compile + server game tests
 ./gradlew :<mod>:runClientGameTest               # client game tests (see container notes)
 ./gradlew build                                  # every mod
+./gradlew :packcheck:build                       # datapack recipe/content game tests
 python3 tools/pack.py check|build [name]         # static checks / zip packs into build/packs/
 python3 tools/texcheck.py [project]              # every 16x texture has a 32x twin (B16)
 python3 tools/packload.py [name]                 # load datapacks on the vanilla server (no mods)
