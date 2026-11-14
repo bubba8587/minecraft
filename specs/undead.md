@@ -71,11 +71,11 @@ One small mixin cuts the global monster cap to a game-rule percentage (`bubbas_r
 ## Tuning
 
 - Speed, health and damage are our entity types' default attributes (`FabricDefaultAttributeRegistry.register`; values in `UndeadTuning`): skeleton 60 health, speed 0.15; zombie 80 health, speed 0.13; fists 1 damage (vanilla: 20 health, 0.25/0.23, 2-3 damage). Zombies get no reinforcements and don't turn into vanilla drowned.
-- Fist hits deal low damage but extra armor durability damage, applied in Fabric's after-damage event.
+- Fist hits deal low damage. Armor shredding only builds on repeated fist hits in quick succession (owner): one hit does almost nothing; an undead that traps you and keeps hitting starts tearing your armor apart (escalating extra durability damage per hit; a short pause resets it).
 - The early game is meant to be quite a bit tougher: high health and armor-shredding hits, balanced by undead being slow and easy to escape. (A separate future mod will drastically reduce unenchanted mining speed.)
 - Bows: zombies take extra damage from headshots; skeletons take much less damage from arrows.
 - Smite: chance per level to kill instantly with particles and a sound, using a damage type that bypasses armor and hit cooldown; added through Fabric's enchantment modify event (composes with other packs) rather than overriding `smite.json`.
-- Staggering: a client mixin at the end of the shared humanoid model setup adds the wobble (armor follows). No GeckoLib.
+- Walk animations (owner): zombies do the classic media shamble: arms hanging down, one leg dragging, the other stepping less than normal. Skeletons walk the way vanilla zombies do, both arms reaching straight out, grabbing at you. Client mixin on the humanoid model setup for our undead only (armor follows). No GeckoLib.
 - Zombies: a low-priority goal checks for nearby zombies about every 10 seconds and drifts toward them.
 
 ## Worldgen
