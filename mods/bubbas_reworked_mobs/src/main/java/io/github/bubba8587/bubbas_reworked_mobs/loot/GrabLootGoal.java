@@ -77,6 +77,7 @@ public class GrabLootGoal extends Goal {
 			return false;
 		}
 		this.path = this.findPath();
+		System.out.println("GLDBG use " + this.mob.getType() + " " + this.mob.position() + " -> " + this.display + " / " + this.item + " path " + this.path);
 		if (this.path == null) {
 			this.skipTarget();
 			return false;
@@ -125,6 +126,7 @@ public class GrabLootGoal extends Goal {
 			return;
 		}
 		this.mob.getLookControl().setLookAt(at.x, at.y + 0.25, at.z);
+		if (this.mob.tickCount % 40 == 0) System.out.println("GLDBG tick " + this.mob.position() + " at " + at + " nav=" + this.mob.getNavigation().isDone());
 		if (this.mob.distanceToSqr(at) <= REACH_SQR) {
 			ServerLevel level = getServerLevel(this.mob);
 			if (this.display != null) {
@@ -147,6 +149,7 @@ public class GrabLootGoal extends Goal {
 
 	@Override
 	public void stop() {
+		System.out.println("GLDBG stop " + this.mob.getType() + " " + this.mob.position() + " idle=" + this.idle() + " target=" + this.mob.getTarget() + " hand=" + this.mob.getMainHandItem() + " valid=" + this.targetValid() + " t=" + (this.mob.tickCount - this.startedAt) + " nav=" + this.mob.getNavigation().isDone() + " fire=" + this.mob.isOnFire());
 		if (this.targetValid() && this.mob.tickCount - this.startedAt >= TIMEOUT) {
 			this.skipTarget();
 		}
