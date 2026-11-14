@@ -275,13 +275,14 @@ LootTableEvents.MODIFY_DROPS.register((Holder<LootTable> table, LootContext ctx,
 ## 9. Tags
 ```java
 public static final TagKey<Item> GEMS = TagKey.create(Registries.ITEM, ExampleMod.id("gems"));
-stack.is(GEMS); state.is(BlockTags.MINEABLE_WITH_PICKAXE); entity.getType().is(EntityTypeTags.UNDEAD);
+stack.is(GEMS); state.is(BlockTags.MINEABLE_WITH_PICKAXE); entity.is(EntityTypeTags.UNDEAD); // Entity is a TypedInstance<EntityType<?>>; EntityType itself has no is(TagKey) in 26.3 (use type.builtInRegistryHolder().is(tag))
 holder.is(tag); BuiltInRegistries.ITEM.getTagOrEmpty(tag)  // iterate
 ```
 - JSON at `data/<ns>/tags/<registry path>/<name>.json` (`tags/item`, `tags/block`, `tags/entity_type`, `tags/enchantment`, `tags/villager_trade/<profession>/...`, ...).
 - Convention tags `c:` (fapi fabric-convention-tags-v2): `ConventionalItemTags` (e.g. `TOOLS`, `MELEE_WEAPON_TOOLS`, `WRENCH_TOOLS`, ingots/gems/ores...), `ConventionalBlockTags`, `ConventionalEntityTypeTags`, `ConventionalBiomeTags`, `ConventionalFluidTags`, `ConventionalEnchantmentTags`, `ConventionalPotionTags`, `ConventionalStructureTags`, `ConventionalBlockItemTags`; `TagUtil.isIn(tag, entry)`, `TagUtil.C_TAG_NAMESPACE = "c"`. Convention-tags v1 removed in 26.1, deprecated tags slated for 1.22 removed.
 - Tag entry removal (fapi fabric-tag-api-v1, since 0.150.1/26.2): `"fabric:remove": ["minecraft:brick"]` next to `"values"`.
 - Datagen 26.2: tag providers take `ResourceKey`s/`TagKey`s only (no raw objects); `FabricTagsProvider.ItemTagsProvider` etc. (renamed from `FabricTagProvider.*`).
+  - `builder(tag).addTag(otherTag)` fails the datagen run ("Couldn't define tag ... missing following references") when `otherTag` is a vanilla tag the provider doesn't itself build (e.g. `ItemTags.PICKAXES`, `EntityTypeTags.UNDEAD`, `GameEventTags.VIBRATIONS`): use `forceAddTag(otherTag)` (fapi `FabricTagAppender`). Adding your entries to a vanilla tag (`builder(EntityTypeTags.SKELETONS).add(key)`) is fine. Tags of registries without a built-in provider class: `new FabricTagsProvider<GameEvent>(output, Registries.GAME_EVENT, registries)`. (Verified in bubbas_reworked_mobs datagen.)
 
 ## 10. Game rules (fapi fabric-game-rule-api-v1)
 ```java

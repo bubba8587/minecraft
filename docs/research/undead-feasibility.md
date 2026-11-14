@@ -67,7 +67,7 @@ public class DormantUndeadBlock extends BaseEntityBlock implements SimpleWaterlo
 ```
 - Shapes: sitting is about `Block.box(2,0,2,14,10,14)` and lying is slab-high. Use `noOcclusion()` and `isSuffocating`/`isViewBlocking` false. Model on the copper statue: `Block.column(10.0, 0.0, 14.0)`, waterlogged, `FACING` from placement.
 - **Lying is 2 blocks long** visually (a humanoid is 32 px tall). Choose (owner decision D3): (a) a single block whose model overhangs into the next space (the element `from`/`to` range is −16..32, so it fits; collision only in one space), or (b) a two-part block like `BedBlock` (`PART=HEAD/FOOT`, more code, correct collision, both halves break together).
-- Hardness about bone block (2.0, pickaxe), sound `BONE_BLOCK`/`MUD`, `PushReaction.DESTROY` (or wake on piston: owner).
+- Hardness about bone block (2.0, pickaxe), sound `BONE_BLOCK`/`MUD`, `PushReaction.POPPED` (26.3's name for the old DESTROY; or wake on piston: owner).
 - Hooks: `wasExploded`/`onExplosionHit` → wake (src: `Block.java:445`, `BlockBehaviour.java:167`). `AttackBlockCallback` or `playerWillDestroy` (start of mining) → wake chance (D4).
 
 ### 2.2 Block entity: gear and state
@@ -134,7 +134,7 @@ final class SleeperListener implements GameEventListener {
         if (!ev.is(UndeadTags.SLEEPERS_HEAR)) return false;                    // our game_event tag (start from #minecraft:vibrations, minus noise we don't want)
         if (level.getGameTime() < be.cooldownUntil()) return false;
         Entity e = ctx.sourceEntity();
-        if (e != null && (e.isSpectator() || e.dampensVibrations() || e.getType().is(UndeadTags.DOES_NOT_WAKE))) return false;
+        if (e != null && (e.isSpectator() || e.dampensVibrations() || e.is(UndeadTags.DOES_NOT_WAKE))) return false;
         if (e != null && e.isSteppingCarefully() && ev.is(GameEventTags.IGNORE_VIBRATIONS_SNEAKING)) return false; // sneaking = silent steps
         if (ctx.affectedState() != null && ctx.affectedState().is(BlockTags.DAMPENS_VIBRATIONS)) return false;     // walking on wool/carpet
         double d = from.distanceTo(Vec3.atCenterOf(be.getBlockPos()));

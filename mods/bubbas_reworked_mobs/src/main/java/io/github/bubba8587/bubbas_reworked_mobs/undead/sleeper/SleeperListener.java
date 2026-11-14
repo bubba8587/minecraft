@@ -83,6 +83,9 @@ public final class SleeperListener implements GameEventListener {
 			return false;
 		}
 		BlockPos pos = sleeper.getBlockPos();
+		if (BlockPos.containing(from).equals(pos)) {
+			return false; // its own block being placed or changed is not a noise to it
+		}
 		Vec3 here = Vec3.atCenterOf(pos);
 		double distance = from.distanceTo(here);
 		float chance = SleeperHearing.wakeChance(event, distance) * sleeper.getSensitivity();

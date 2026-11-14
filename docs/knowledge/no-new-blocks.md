@@ -76,7 +76,7 @@ Gotcha: a display entity's bounding box has zero size, so `level.getEntitiesOfCl
 - Display and interaction entities save like any entity: in the region's **entity** storage (`entities/*.mca`), with their own NBT (`Display#addAdditionalSaveData`). The look survives restarts with no extra code. refmod `lanternCharmEntitiesSaveAndLoad` round-trips both, including the `item_model` component and the link attachment.
 - Link the parts with a persistent entity attachment (UUID), entity tags (`Tags`), or riding (`Passengers`). refmod stores the display's UUID on the hitbox (`ModAttachments.CHARM_DISPLAY`). Its presence also marks the interaction entity as "ours", so other mods' interaction entities are left alone.
 - Entity chunks load separately from block chunks (asynchronously). Code that runs on chunk load may not see the entities yet. Look them up lazily, as refmod does when the hitbox is clicked.
-- These are entities, so `/kill @e`, entity-clearing mods and `/execute ... run tp` affect them. No block-update path ever touches them: no pistons (`PushReaction.IGNORE`/`IGNORE_ENTITY`), no explosions, no fluids.
+- These are entities, so `/kill @e`, entity-clearing mods and `/execute ... run tp` affect them. No block-update path ever touches them: no pistons (`Display` and `Interaction` return `PushReaction.IGNORE_ENTITY`; src: common `world/entity/Display.java:270`, `Interaction.java:93`), no explosions, no fluids.
 
 ### 1.5 What a pseudo-block does not do (each fix uses an existing block, so B15 holds)
 | Missing | Why | No-new-block fix |
