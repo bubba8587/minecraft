@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# dte:B6
+# dte:A4
 """Build and statically check datapacks and resource packs.
 
   python tools/pack.py check [NAME ...]   check packs (all if none named)

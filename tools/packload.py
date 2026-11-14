@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# dte:B6
+# dte:A4
 """Load datapacks on the official vanilla server (no mods) and fail on any load error.
 
 Use this for a fast load check with no third-party code; tools/packtest.py runs the

@@ -1,9 +1,9 @@
-<!-- dte:B5,B8 -->
+<!-- dte:A2,A1 -->
 # Knowledge base
 
 Reference notes for building Fabric mods, datapacks and resource packs on **Minecraft 26.3** (Fabric Loader 0.20.1, Fabric API 0.166.2+26.3, Loom 1.19.4, Java 25, data pack format 121.0, resource pack format 97.1). Written 2026-11-14 by research agents working from the decompiled 26.3 source, Fabric API's 26.3 branch, vanilla data files and current docs. Claims carry `(src: ...)` pointers. `UNVERIFIED` marks the few that couldn't be checked.
 
-These notes are a map, not the territory. Check names against the source before relying on them (B5 sourceVerified), and fix a note when the source disagrees.
+These notes are a map, not the territory. Check names against the source before relying on them (`specs/knowledge-base.md`), and fix a note when the source disagrees.
 
 ## Start here
 
@@ -12,7 +12,7 @@ These notes are a map, not the territory. Check names against the source before 
 | New to 26.x or porting from 1.21 | `porting-26x.md` (breaking changes + Yarn to Mojang name cheat sheet) |
 | Setting up a build, fabric.mod.json, class tweakers | `toolchain.md` |
 | Changing vanilla behavior | `mixins.md` |
-| Looking for prior art or a library | `reference-mods.md`, `libraries.md` (B8 priorArtFirst) |
+| Looking for prior art or a library | `reference-mods.md`, `libraries.md` (`specs/prior-art.md`, B9 libsOverHandroll) |
 | Wanting a block-like feature (B15 fewNewBlocks) | `no-new-blocks.md` (display entities, retextures, borrowed states, data on existing blocks, decision guide) |
 
 ## Mods

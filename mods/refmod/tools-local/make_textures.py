@@ -1,4 +1,4 @@
-# dte:B5,B6
+# dte:A2,A4
 """Writes the solid-colour 16x16 placeholder textures for refmod (internal mod, never published). No PIL needed."""
 import struct
 import zlib

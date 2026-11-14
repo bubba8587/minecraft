@@ -2,3 +2,10 @@
 # id	date	action	successor	by	authorized_by	title
 B3	2026-11-14	superseded	B10	claude	-	latestRelease: Mods target the newest stable Minecraft release, 26.3 today
 B2	2026-11-14	superseded	B14	claude	-	modrinthReleases: Releases go to Modrinth
+D1	2026-11-14	to-spec	specs/undead.md	claude	bubba8587	dormantAreBlocks: Dormant undead are real blocks: Silk-Touch-minable, no tick cost, outside mob caps
+B4	2026-11-14	to-spec	specs/build.md	claude	-	oneRepo: Every mod and pack lives in this one repo under one Gradle build
+B13	2026-11-14	to-spec	specs/build.md	claude	-	ownerNamespace: Author bubba8587, Java packages under io.github.bubba8587
+B5	2026-11-14	to-spec	specs/knowledge-base.md	claude	-	sourceVerified: Agents check API names against the target version's decompiled source, not memory
+B6	2026-11-14	to-spec	specs/quality.md	claude	-	gametestGate: Every mod has automated game tests that must pass before release
+B7	2026-11-14	to-spec	specs/releasing.md	claude	-	tagPublishes: Pushing a version tag publishes that release to Modrinth from CI
+B8	2026-11-14	to-spec	specs/prior-art.md	claude	-	priorArtFirst: Reuse existing mods, libraries and tools before building anything new

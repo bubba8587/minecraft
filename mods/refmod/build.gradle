@@ -1,4 +1,4 @@
-// dte:B5,B6
+// dte:A2,A4
 plugins {
 	id 'net.fabricmc.fabric-loom'
 }

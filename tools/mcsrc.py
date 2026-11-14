@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# dte:B5
+# dte:A2
 """Unpack the decompiled Minecraft source and vanilla data into build/mcsrc/ for grepping.
 
   ./gradlew :refmod:genSources      (once per Minecraft version, any mod works)

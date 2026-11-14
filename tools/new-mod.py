@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# dte:B4,B6,B12,B13,B16
+# dte:A2,A4,B12,A1,B16
 """Create a new Fabric mod under mods/<modid>/, wired into the shared build with game tests.
 
   python3 tools/new-mod.py <modid> "<Display Name>" [--description "..."]
@@ -11,8 +11,8 @@ import json, re, sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-AUTHOR = "bubba8587"            # B13 ownerNamespace
-GROUP = "io.github.bubba8587"   # B13 ownerNamespace
+AUTHOR = "bubba8587"            # specs/build.md
+GROUP = "io.github.bubba8587"   # specs/build.md
 LICENSE = "MIT"                 # B12 mitLicense
 
 

@@ -1,4 +1,4 @@
-// dte:B5,B6
+// dte:A2,A4
 package io.github.bubba8587.refmod.test;
 
 import io.github.bubba8587.refmod.block.SignalLampBlock;

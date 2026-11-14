@@ -1,4 +1,4 @@
-<!-- dte:B5,B6 -->
+<!-- dte:A2,A4 -->
 <!-- covers: mods/refmod/*, datapacks/refpack/* -->
 # Reference projects
 

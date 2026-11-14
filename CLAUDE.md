@@ -1,4 +1,4 @@
-<!-- dte:A2,B1,B4,B5,B6,B7,B8,B9,B10,B11,B12,B13,B14,B15,B16 -->
+<!-- dte:A2,B1,A4,A1,B9,B10,B11,B12,B14,B15,B16 -->
 # Working in this repo
 
 A home for a series of Minecraft mods, datapacks and resource packs, made with Fabric and released on Modrinth. The owner is technically minded but not a programmer: explain in plain language and hand over things they can run or look at (A3 ownerSteersByPlay).
@@ -7,12 +7,25 @@ A home for a series of Minecraft mods, datapacks and resource packs, made with F
 
 This repo keeps its decisions as a Decision Tree Engineering tree. Follow `vendor/dte/PROTOCOL.md` (rules in `vendor/dte/SPEC.md`). The tool is `python3 tools/dte.py`.
 
+### Use the tree sparingly (the owner's standing instruction, and very important to them)
+
+**The tree is for decisions with stakes: critical, product-direction-altering calls that must be preserved through all the tweaking around them. Everything that describes how a system works, or how something is built, is a spec.**
+
+- Most work creates **no leaf at all**. Technical choices go in the relevant spec under `specs/` and can change whenever a better or faster way is found.
+- The owner will usually say when something should be a leaf. When they haven't, the default is spec.
+- The test: would flipping it change what the project *is* or *is for*, for players or for the owner? A leaf. Would it only change how the code does it? A spec, even if the choice is significant. Example from the owner: "are static undead a real block or not" totally depends on what the best, most performant code system is. Switching it is technical, so it's a spec (`specs/undead.md`), not a leaf.
+- Don't record the owner's design bullets one leaf per bullet. A project gets one leaf for its direction (e.g. C1 undeadRework); its details live in its spec.
+- When in doubt, write the spec and mention in chat that it could be a leaf if the owner wants it preserved.
+
+### Mechanics
+
 - **Your ring until the owner says otherwise: B.** The owner holds A. Subagents get C or deeper.
-- **Rings here:** `A` the project's goals (owner's). `B` repo-wide calls: platform, versions, layout, quality bar, release flow. `C` per-project calls (one mod or pack's design choices worth asking the owner about). Deeper rings for sub-features if a project needs them.
-- Start each session with `python3 tools/dte.py outbox` and `python3 tools/dte.py inbox`. Open inbox questions block what they say they block (publishing, notably).
+- **Rings here:** `A` the project's goals (owner's). `B` repo-wide product calls (platform, target version, licensing, release channel, design rules the owner sets). `C` one leaf per project for its direction. Deeper rings only for a project-direction call the owner wants preserved.
+- Start each session with `python3 tools/dte.py outbox` and `python3 tools/dte.py inbox`.
+- Turning a leaf that turned out to be mechanics into spec text: `python3 tools/dte.py to-spec <ID> specs/<file>.md --by <you>` (a human-held leaf also needs the owner's go-ahead).
 - Finish with `DTE_RING=B python3 tools/dte.py validate --as B`.
 
-## Before designing anything: prior art (B8 priorArtFirst, B9 libsOverHandroll)
+## Before designing anything: prior art (B9 libsOverHandroll; how: `specs/prior-art.md`)
 
 **Reminder from the owner (B9 libsOverHandroll): use outside libraries and mods aggressively; hand-roll only what's necessary for a well-designed, performant mod.** Hand-rolling is justified when no library does it, the library has no build for our Minecraft version, or it would cost real performance or design quality. Say which of those applies when you hand-roll something a library could have done. Every dependency goes in `fabric.mod.json` `depends` and in the Modrinth version's dependency list.
 
@@ -26,7 +39,7 @@ Lots of mods already exist. Before designing a mod, pack or tool:
 2. Use an existing library or tool instead of writing one (`docs/knowledge/libraries.md`), and check `docs/knowledge/reference-mods.md` for open-source mods that solve the same problem: read how they did it (mind their license; learning from code is fine, copying needs a compatible license and credit).
 3. Fabric API's testmods and `FabricMC/fabric-docs` reference code come before anything written from scratch.
 
-## Before writing any Minecraft code (B5 sourceVerified)
+## Before writing any Minecraft code (`specs/knowledge-base.md`)
 
 Minecraft renames things every release and memory from older versions is wrong more often than right. Target is **26.3**, the latest non-snapshot release (B10 alwaysLatest): unobfuscated, Mojang names, no Yarn, no remapping.
 
@@ -34,7 +47,7 @@ Minecraft renames things every release and memory from older versions is wrong m
 2. Check every class and method you use against the decompiled source. Run `./gradlew :<mod>:genSources` once per Minecraft version, then `python3 tools/mcsrc.py` to unpack it into `build/mcsrc/` (common, client, vanilla data/assets) for grepping. Fabric API source: clone `FabricMC/fabric-api` at the branch named after the Minecraft version. Its testmods are the best examples.
 3. When the docs and the source disagree, the source wins; fix the doc in the same change.
 
-## Layout (B4 oneRepo)
+## Layout (`specs/build.md`)
 
 - `mods/<name>/`: one Fabric mod per folder, auto-included by `settings.gradle`. Shared build logic in `gradle/fabric-mod.gradle`; toolchain versions in root `gradle.properties`. New mod: `python3 tools/new-mod.py <modid> "<Display Name>"`.
 - `mods/<name>/src/gametest/`: game tests (separate source set and fabric.mod.json).
@@ -66,11 +79,11 @@ The repo always targets the latest non-snapshot release and moves promptly when 
 4. A project that can't move yet (its library has no build, or the port is big) is **disabled, not left behind**: `disabled=<reason>` in the mod's `gradle.properties`, or a `DISABLED` file with the reason in a pack folder. Inside a mod, a feature that depends on a missing optional library is switched off behind `FabricLoader.getInstance().isModLoaded(...)`. Tell the owner what's disabled and why; re-enable as soon as the blocker clears.
 5. The player docs vault (B11 playerVault) says which projects are on the new version and which are paused.
 
-## Quality bar (B6 gametestGate)
+## Quality bar (`specs/quality.md`)
 
 Every mod has server game tests for its main behavior; anything visual gets a client game test with a screenshot you look at before saying it works. Every datapack has PackTest test functions (misode's PackTest, see `docs/knowledge/datapacks.md`) covering its behavior, loads clean with `tools/packload.py`, and passes `tools/packtest.py` in CI. A bug fix ships with the test that would have caught it.
 
-## Releasing (B14 modrinthAiCompliant, B7 tagPublishes)
+## Releasing (B14 modrinthAiCompliant; how: `specs/releasing.md`)
 
 Releases go out from CI on a tag `<project>/v<version>`. A project goes to **Modrinth** only when it meets Modrinth's generative-AI rules (`docs/knowledge/publishing.md`): the "Contains AI-generated content" disclosure is always on, no icon, gallery or page image is AI-generated, and a person made a substantial part of the project (design, textures, models or code). Otherwise it is released on **GitHub Releases** until it qualifies. Before the first Modrinth release of a project, say to the owner which human-made parts carry it over the bar. Never make AI-generated images for a project page.
 
@@ -83,5 +96,5 @@ Releases go out from CI on a tag `<project>/v<version>`. A project goes to **Mod
 
 ## Style
 
-- Java: tabs, Mojang names, one class per registered concept group (`ModItems`, `ModBlocks`...). Mod id lowercase with underscores; author `bubba8587`, Java packages `io.github.bubba8587.<modid>` (B13 ownerNamespace); license MIT (B12 mitLicense).
+- Java: tabs, Mojang names, one class per registered concept group (`ModItems`, `ModBlocks`...). Mod id lowercase with underscores; author `bubba8587`, Java packages `io.github.bubba8587.<modid>` (`specs/build.md`); license MIT (B12 mitLicense).
 - Commit and push as you go on the session's branch. Messages say what changed and which leaf governs it.

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# dte:B5,B6
+# dte:A2,A4
 # Prepare a fresh Linux container (cloud session or CI runner) to build and test this repo.
 # Idempotent. Installs JDK 25, software Vulkan + Xvfb for client game tests, and, when
 # Maven Central rate-limits us, a Gradle init script that uses Google's Central mirror.

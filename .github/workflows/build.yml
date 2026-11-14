@@ -1,4 +1,4 @@
-# dte:B6
+# dte:A4
 # Build every mod and run its server game tests; run client game tests on a virtual display;
 # load every datapack on a real headless server. Runs on every push and pull request.
 name: Build

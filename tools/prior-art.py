@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-# dte:B8
-"""Search Modrinth for existing projects before building something (B8 priorArtFirst).
+# dte:A1
+"""Search Modrinth for existing projects before building something (specs/prior-art.md).
 
   python3 tools/prior-art.py "<idea in a few words>" [--type mod|datapack|resourcepack|shader] [--limit N] [--all-versions]
 

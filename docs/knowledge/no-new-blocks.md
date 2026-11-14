@@ -1,4 +1,4 @@
-<!-- dte:B5,B15 -->
+<!-- dte:A2,B15 -->
 # Block-like features without new blocks (26.3)
 
 B15 fewNewBlocks says: build from custom items, variants of existing blocks and deeper existing systems; custom textures and models on existing blocks are fine; a new registered block needs a reason given to the owner first. This note is the toolbox for that. It covers MC 26.3 and Fabric API 0.166.2+26.3. It was verified 2026-11-14 against the decompiled 26.3 source (`common`/`client`/`vanilla` below mean `build/mcsrc/26.3/<x>/`), Fabric API's `26.3` branch (`fapi:<module>`), Polymer `dev/26.3` (commit 2843277) and Filament `main` (eca6292, `minecraft_version=26.3`).
@@ -13,7 +13,7 @@ Related notes (not repeated here): `client-models.md` (blockstate/model/item-def
 
 ## 1. Display and interaction entities as pseudo-blocks
 
-> **Not used for blocks in this repo.** The owner doesn't like display-entity "fake blocks" (B15 fewNewBlocks, corrected 2026-11-14). When something needs to behave like a placed block, use an existing block (sections 2-5) or, with the owner's stated reason, a real block (D1 dormantAreBlocks is the first such case). This section stays as reference for display entities used as visual effects (floating labels, held-item displays, animations), which is still fine.
+> **Not used for blocks in this repo.** The owner doesn't like display-entity "fake blocks" (B15 fewNewBlocks, corrected 2026-11-14). When something needs to behave like a placed block, use an existing block (sections 2-5) or, with the owner's stated reason, a real block (the undead mod's dormant-undead blocks are the first such case, `specs/undead.md`). This section stays as reference for display entities used as visual effects (floating labels, held-item displays, animations), which is still fine.
 
 ### 1.1 The entities
 All four are plain vanilla entity types, so they are safe for vanilla clients (`EntityTypes.BLOCK_DISPLAY`, `ITEM_DISPLAY`, `TEXT_DISPLAY`, `INTERACTION`). (src: common `world/entity/Display.java`, `Interaction.java`, `EntityTypes.java:222,547,562,938`)

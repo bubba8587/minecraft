@@ -1,4 +1,4 @@
-// dte:B5,B6
+// dte:A2,A4
 package io.github.bubba8587.refmod.event;
 
 import java.util.concurrent.atomic.AtomicInteger;

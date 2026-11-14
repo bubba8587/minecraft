@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# dte:B6,B8
+# dte:A4,A1
 """Run datapack tests with misode's PackTest on a real headless Fabric server.
 
   python tools/packtest.py [NAME ...]     test packs in datapacks/ (all if none named)
