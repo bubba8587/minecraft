@@ -1,0 +1,34 @@
+{
+	"schemaVersion": 1,
+	"id": "${mod_id}",
+	"version": "${version}",
+	"name": "Bubba's Reworked Mobs",
+	"description": "",
+	"authors": [
+		"bubba8587"
+	],
+	"license": "MIT",
+	"icon": "assets/bubbas_reworked_mobs/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"io.github.bubba8587.bubbas_reworked_mobs.BubbasReworkedMobs"
+		],
+		"client": [
+			"io.github.bubba8587.bubbas_reworked_mobs.client.BubbasReworkedMobsClient"
+		]
+	},
+	"mixins": [
+		"bubbas_reworked_mobs.mixins.json",
+		{
+			"config": "bubbas_reworked_mobs.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=${loader_version}",
+		"minecraft": "~${minecraft_version}",
+		"java": ">=${java_version}",
+		"fabric-api": "*"
+	}
+}

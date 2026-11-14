@@ -1,0 +1,15 @@
+{
+	"schemaVersion": 1,
+	"id": "bubbas_reworked_mobs-test",
+	"version": "1.0.0",
+	"name": "Bubba's Reworked Mobs Tests",
+	"environment": "*",
+	"entrypoints": {
+		"fabric-gametest": [
+			"io.github.bubba8587.bubbas_reworked_mobs.test.BubbasReworkedMobsGameTest"
+		],
+		"fabric-client-gametest": [
+			"io.github.bubba8587.bubbas_reworked_mobs.test.BubbasReworkedMobsClientGameTest"
+		]
+	}
+}
