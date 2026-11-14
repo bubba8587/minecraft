@@ -8,23 +8,12 @@
 		"bubba8587"
 	],
 	"license": "MIT",
-	"icon": "assets/packcheck/icon.png",
 	"environment": "*",
 	"entrypoints": {
 		"main": [
 			"io.github.bubba8587.packcheck.Packcheck"
-		],
-		"client": [
-			"io.github.bubba8587.packcheck.client.PackcheckClient"
 		]
 	},
-	"mixins": [
-		"packcheck.mixins.json",
-		{
-			"config": "packcheck.client.mixins.json",
-			"environment": "client"
-		}
-	],
 	"depends": {
 		"fabricloader": ">=${loader_version}",
 		"minecraft": "~${minecraft_version}",

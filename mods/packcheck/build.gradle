@@ -1,8 +1,31 @@
+// dte:A4
+// Internal test harness (never published): every datapack under datapacks/ is bundled into this mod's
+// resources and registered as an always-enabled built-in data pack, so the game tests in src/gametest/
+// run against the real packs. See specs/pack-testing.md.
 plugins {
 	id 'net.fabricmc.fabric-loom'
 }
 apply from: rootProject.file('gradle/fabric-mod.gradle')
 
 dependencies {
-	// Extra mod dependencies go here; see docs/knowledge/libraries.md.
 }
+
+// datapacks/<name>/ -> build/generated/packcheck/datapacks/<name>/ -> jar path datapacks/<name>/.
+// Packs with a DISABLED file (B10 alwaysLatest) are left out. Packcheck.onInitialize registers each folder.
+def datapacksRoot = rootProject.file('datapacks')
+def bundledPacks = (datapacksRoot.listFiles() ?: [] as File[])
+	.findAll { it.isDirectory() && new File(it, 'pack.mcmeta').exists() && !new File(it, 'DISABLED').exists() }
+	.sort { it.name }
+
+def bundleDatapacks = tasks.register('bundleDatapacks', Sync) {
+	description = 'Copies every enabled datapack in datapacks/ into packcheck\'s resources as a built-in pack.'
+	inputs.property 'packs', bundledPacks*.name
+	into layout.buildDirectory.dir('generated/packcheck')
+	bundledPacks.each { pack ->
+		from(pack) {
+			into "datapacks/${pack.name}"
+			exclude 'VERSION', 'packtest.commands', 'DISABLED'
+		}
+	}
+}
+sourceSets.main.resources.srcDir(bundleDatapacks)
