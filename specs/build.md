@@ -1,4 +1,4 @@
-<!-- dte:B4,B1,B3 -->
+<!-- dte:B4,B1,B10 -->
 <!-- covers: build.gradle, settings.gradle, gradle.properties, gradlew, gradlew.bat, gradle/*, gradle/wrapper/*, mods/*/build.gradle, mods/*/gradle.properties -->
 # Build
 

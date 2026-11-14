@@ -22,3 +22,4 @@ Thumbs.db
 # Obsidian per-user state
 decisions/.obsidian/workspace.json
 mods/*/src/main/generated/.cache/
+player-docs/.obsidian/workspace*.json

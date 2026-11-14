@@ -19,3 +19,4 @@ vendor/dte/
 build
 run
 *.jar
+player-docs/.obsidian

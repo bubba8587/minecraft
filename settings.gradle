@@ -14,9 +14,18 @@ plugins {
 rootProject.name = 'minecraft'
 
 // Every folder under mods/ with a build.gradle is a mod subproject, named after its folder.
+// A mod whose gradle.properties sets `disabled=<reason>` is left out of the build (B10 alwaysLatest:
+// the repo moves to a new Minecraft release even when a mod isn't ready yet).
 file('mods').eachDir { dir ->
-	if (new File(dir, 'build.gradle').exists()) {
-		include ":${dir.name}"
-		project(":${dir.name}").projectDir = dir
+	if (!new File(dir, 'build.gradle').exists()) return
+	def props = new Properties()
+	def pf = new File(dir, 'gradle.properties')
+	if (pf.exists()) pf.withInputStream { props.load(it) }
+	def reason = props.getProperty('disabled', '').trim()
+	if (reason) {
+		logger.warn("mods/${dir.name} is DISABLED: ${reason}")
+		return
 	}
+	include ":${dir.name}"
+	project(":${dir.name}").projectDir = dir
 }

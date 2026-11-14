@@ -1,0 +1,3 @@
+# Retired decision ids. Never reissued. Text lives in git history.  dte:B24
+# id	date	action	successor	by	authorized_by	title
+B3	2026-11-14	superseded	B10	claude	-	latestRelease: Mods target the newest stable Minecraft release, 26.3 today

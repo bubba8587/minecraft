@@ -87,7 +87,8 @@ def main(argv):
     if subprocess.run([sys.executable, str(ROOT / "tools" / "pack.py"), "build", *names]).returncode:
         sys.exit("static checks failed; fix those first")
     dps = sorted(p for p in (ROOT / "datapacks").iterdir()
-                 if (p / "pack.mcmeta").is_file() and (not names or p.name in names))
+                 if (p / "pack.mcmeta").is_file() and not (p / "DISABLED").is_file()
+                 and (not names or p.name in names))
     if not dps:
         sys.exit("no datapacks to test")
     zips = [max((ROOT / "build" / "packs").glob(f"{p.name}-*.zip"), key=os.path.getmtime) for p in dps]

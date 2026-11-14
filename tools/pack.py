@@ -6,7 +6,8 @@
   python tools/pack.py build [NAME ...]   check, then zip into build/packs/<name>-<version>.zip
 
 A pack is a folder under datapacks/ or resourcepacks/ with a pack.mcmeta.
-Its version comes from an optional pack.toml-free file `VERSION` (one line); default 0.1.0.
+Its version comes from an optional file `VERSION` (one line); default 0.1.0.
+A pack with a `DISABLED` file (one line: why) is skipped by every pack tool.
 Standard library only.
 """
 import json, re, sys, zipfile
@@ -28,8 +29,12 @@ def packs(names):
             continue
         for d in sorted(base.iterdir()):
             if (d / "pack.mcmeta").is_file() and (not names or d.name in names):
+                if (d / "DISABLED").is_file():  # B10 alwaysLatest: parked until it works on this version
+                    print(f"skip {kind}/{d.name}: DISABLED: {(d / 'DISABLED').read_text().strip()}")
+                    continue
                 found.append((kind, d))
-    missing = set(names) - {d.name for _, d in found}
+    disabled = {d.name for k in KINDS if (ROOT / k).is_dir() for d in (ROOT / k).iterdir() if (d / "DISABLED").is_file()}
+    missing = set(names) - {d.name for _, d in found} - disabled
     if missing:
         sys.exit(f"no such pack: {', '.join(sorted(missing))}")
     return found

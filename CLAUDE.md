@@ -1,4 +1,4 @@
-<!-- dte:A2,B1,B3,B4,B5,B6,B7,B8,B9 -->
+<!-- dte:A2,B1,B10,B11,B4,B5,B6,B7,B8,B9 -->
 # Working in this repo
 
 A home for a series of Minecraft mods, datapacks and resource packs, made with Fabric and released on Modrinth. The owner is technically minded but not a programmer: explain in plain language and hand over things they can run or look at (A3 ownerSteersByPlay).
@@ -24,7 +24,7 @@ Lots of mods already exist. Before designing a mod, pack or tool:
 
 ## Before writing any Minecraft code (B5 sourceVerified)
 
-Minecraft renames things every release and memory from older versions is wrong more often than right. Target is **26.3** (B3 latestRelease): unobfuscated, Mojang names, no Yarn, no remapping.
+Minecraft renames things every release and memory from older versions is wrong more often than right. Target is **26.3**, the latest non-snapshot release (B10 alwaysLatest): unobfuscated, Mojang names, no Yarn, no remapping.
 
 1. Read the relevant file in `docs/knowledge/` (index: `docs/knowledge/README.md`).
 2. Check every class and method you use against the decompiled source. Run `./gradlew :<mod>:genSources` once per Minecraft version, then `python3 tools/mcsrc.py` to unpack it into `build/mcsrc/` (common, client, vanilla data/assets) for grepping. Fabric API source: clone `FabricMC/fabric-api` at the branch named after the Minecraft version. Its testmods are the best examples.
@@ -35,6 +35,7 @@ Minecraft renames things every release and memory from older versions is wrong m
 - `mods/<name>/`: one Fabric mod per folder, auto-included by `settings.gradle`. Shared build logic in `gradle/fabric-mod.gradle`; toolchain versions in root `gradle.properties`. New mod: `python3 tools/new-mod.py <modid> "<Display Name>"`.
 - `mods/<name>/src/gametest/`: game tests (separate source set and fabric.mod.json).
 - `datapacks/<name>/`, `resourcepacks/<name>/`: one pack per folder with `pack.mcmeta`, optional `VERSION`, PackTest tests in `data/<ns>/test/*.mcfunction`, and optional `packtest.commands` for the vanilla load check.
+- `player-docs/`: Obsidian vault of **player-facing** docs, separate from the tree and code (B11 playerVault, rules in `specs/player-docs.md`). Any change players would notice updates the project's page there in the same change; no `dte:` tokens or code detail inside it.
 - `docs/knowledge/`: the reference knowledge base. `decisions/`: the tree. `vendor/dte/`: DTE rule text, do not edit.
 - `mods/refmod`, `datapacks/refpack`: internal reference projects that prove the toolchain. Never published.
 
@@ -49,6 +50,16 @@ python3 tools/pack.py check|build [name]         # static checks / zip packs int
 python3 tools/packload.py [name]                 # load datapacks on the vanilla server (no mods)
 python3 tools/packtest.py [name]                 # run PackTest tests on a Fabric server (third-party jars: needs owner OK to run locally)
 ```
+
+## New Minecraft release (B10 alwaysLatest)
+
+The repo always targets the latest non-snapshot release and moves promptly when one comes out, even if some things have to be switched off for a while. On a new release:
+
+1. Bump `minecraft_version`, `loader_version`, `fabric_api_version` (and Loom if needed) in root `gradle.properties` from https://fabricmc.net/develop, and the pack formats in each `pack.mcmeta` from the new jar's `version.json`.
+2. `./gradlew :refmod:genSources && python3 tools/mcsrc.py`, then read the Fabric blog post and fabric-docs `develop/porting/` for the release; update `docs/knowledge/porting-26x.md` and any note that names a changed API.
+3. Port `refmod` and `refpack` first (they prove the notes), then every project.
+4. A project that can't move yet (its library has no build, or the port is big) is **disabled, not left behind**: `disabled=<reason>` in the mod's `gradle.properties`, or a `DISABLED` file with the reason in a pack folder. Inside a mod, a feature that depends on a missing optional library is switched off behind `FabricLoader.getInstance().isModLoaded(...)`. Tell the owner what's disabled and why; re-enable as soon as the blocker clears.
+5. The player docs vault (B11 playerVault) says which projects are on the new version and which are paused.
 
 ## Quality bar (B6 gametestGate)
 
