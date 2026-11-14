@@ -9,7 +9,8 @@ on:
 
 concurrency:
   group: build-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
+  # Only pull requests cancel a superseded run; every push to a branch gets a real result.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 permissions:
   contents: read
@@ -55,8 +56,10 @@ jobs:
       - uses: gradle/actions/setup-gradle@v6
         with:
           cache-provider: basic
+      # --no-parallel: one game client at a time. Clients started together crashed the JVM (SIGBUS while
+      # loading native libraries) on GitHub runners.
       - run: sudo apt-get update -qq && sudo apt-get install -y -qq xvfb mesa-vulkan-drivers libvulkan1
-      - run: xvfb-run -a -s "-screen 0 1280x720x24 +extension GLX +render -noreset" ./gradlew runClientGameTest --stacktrace
+      - run: xvfb-run -a -s "-screen 0 1280x720x24 +extension GLX +render -noreset" ./gradlew runClientGameTest --no-parallel --stacktrace
       - if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v7
         with:

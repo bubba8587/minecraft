@@ -111,4 +111,4 @@ Releases go out from CI on a tag `<project>/v<version>`. A project goes to **Mod
 ## Style
 
 - Java: tabs, Mojang names, one class per registered concept group (`ModItems`, `ModBlocks`...). Mod id lowercase with underscores; author `bubba8587`, Java packages `io.github.bubba8587.<modid>` (`specs/build.md`); license MIT (B12 mitLicense).
-- Commit and push as you go on the session's branch. Messages say what changed and which leaf governs it.
+- Commit and push as you go on the session's branch. Messages say what changed and which leaf governs it. A snapshot commit of unfinished work (an agent mid-task) ends its message with `[skip ci]`, so half-written code doesn't turn CI red; finished work never skips CI.
