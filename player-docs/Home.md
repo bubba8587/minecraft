@@ -7,6 +7,7 @@ All projects target the latest full release of Minecraft. See [[Version Status]]
 ## Projects
 
 - [[Bubba's Crafting Tweaks]] (datapack)
+- [[Bubba's Reworked Mobs]] (mod)
 
 Each project gets a page in `Projects/` when it's ready for players.
 

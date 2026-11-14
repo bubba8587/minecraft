@@ -11,22 +11,28 @@ Dormant undead are real blocks, not entities or display-entity pseudo-blocks. Th
 - Modeled on vanilla's copper golem statue: block + block entity, **no ticker**. Blockstate: `facing`, `pose`, `waterlogged`. Block entity holds the gear as the vanilla `minecraft:container` component, a lazy gear loot table (rolled on first interaction or wake), a wake cooldown and who woke it.
 - Rendering (hybrid): the body is a baked block model per pose (part of the chunk mesh, free per frame; 26.3 block models allow free per-element rotation). A block entity renderer draws only armor and held items, only when the sleeper has gear and is within 32 blocks. Pose models and renderer poses are generated from one Java pose table by datagen so they never drift apart. Armor in the renderer needs one client accessor mixin for the equipment asset manager.
 - Lying sleepers are one block with an overhanging model (collision stays one block).
-- First playable version: the block entity renderer draws the whole sleeper with the vanilla mob model and texture as placeholder art. The hybrid baked-body version and our own 16x/32x textures come before release.
+- First playable version (built): the block entity renderer draws the whole sleeper with the vanilla mob model and texture as placeholder art, one baked model per pose, and reuses vanilla's own `HumanoidArmorLayer` and `ItemInHandLayer` for gear (they only need a `RenderLayerParent`, so armor, trims, dye and glint come free). Poses are part rotations applied after the vanilla model's `setupAnim` (`SleeperPoses`, the pose table), so armor models pose identically. The block's own model is particle-only. The hybrid baked-body version and our own 16x/32x textures come before release; item icons are solid-colour placeholders until then.
+- Code layout: one block class, one block entity type and one renderer serve every variant; a variant is one `UndeadVariant` entry (block + item `<name>_sleeper`, entity `woken_<name>`) plus one entry in the renderer's client table.
 
 ## Hearing and waking
 
 - The block entity implements `GameEventListener.Provider` (registered automatically for loaded full chunks, like sculk sensors), so hearing costs nothing between events. Vanilla vibration rules apply: sneaking silences steps, wool blocks, carpet muffles.
 - A heard event rolls a wake chance (by event type and distance), then schedules a block tick as the travel delay; the tick removes the block and spawns the real mob with the same gear, facing the source.
-- A wake emits a custom `undead:awaken` game event; other sleepers hear it through the same path (wool included). Chains are throttled by a per-sleeper cooldown and capped per event (prior art capped cascades at 4).
+- A wake emits a custom `bubbas_reworked_mobs:awaken` game event; other sleepers hear it through the same path (wool included). Chains are throttled by a per-sleeper cooldown and capped per event (prior art capped cascades at 4).
 - If another mod cancels the spawn, the block stays (nothing is lost).
+- Details as built: the listener copies vanilla's `VibrationSystem` checks (spectators, sneaking on `#ignore_vibrations_sneaking`, `#dampens_vibrations`, the 6-ray wool occlusion) and hears `#bubbas_reworked_mobs:sleepers_hear` (= `#minecraft:vibrations` + awaken). Order: tag, cooldown, source filter, chance, raycast. Loudness is a Java table (`SleeperHearing`; explosion 1.0, block break/place 0.3, chest 0.2, step 0.04 ... with linear falloff to 25 % at 16 blocks). After any roll a sleeper ignores sounds for 1 s. A sleeper ignores noise from its own block (its own placement).
+- Noise from `#bubbas_reworked_mobs:does_not_wake_sleepers` (default `#minecraft:undead`) never wakes sleepers, so a woken horde shuffling past doesn't cascade by footsteps; only the awaken event chains. Animals and other mobs do wake them.
+- The awaken cap is per dispatch: game events are delivered synchronously, nearest listener first (`BY_DISTANCE`), so a budget set around the dispatch gives the nearest 4 the chance.
+- Each sleeper has a `sensitivity` (block entity NBT, default 1) that multiplies every wake chance: 0 never wakes (decor, warded), large always wakes (traps). It is the hook for the planned anti-waking magic, and tests use it instead of seeding randomness.
+- The woken mob is persistent (never despawns, outside the mob cap), keeps the sleeper's custom name, always drops its gear, targets the waker if it is a survival player, and a zombie that wakes empty-handed grabs a sword/axe/spear lying within 3 blocks.
 
 ## Robbing
 
-Using a sleeper with an empty hand takes one item: held weapon first, then armor from the top down. Weapon theft rolls a small wake chance; armor theft always rolls a larger one. Opening a nearby chest makes the normal container-open noise, which sleepers hear.
+Using a sleeper with an empty hand takes one item: held weapon first (main hand, then off hand), then armor from the top down. Weapon theft rolls a small wake chance (10 %); armor theft always rolls a larger one (30 %); both times the sleeper's sensitivity. A failed roll wakes it 2 ticks later, angry at the thief. Opening a nearby chest makes the normal container-open noise, which sleepers hear.
 
 ## Mining and placing sleepers
 
-- Mining a sleeper with any tool gives the whole mob as an item (a "sleeper" item of that undead type, no gear on it); its armor and weapons drop as separate items.
+- Mining a sleeper with any tool gives the whole mob as an item (a "sleeper" item of that undead type, no gear on it, pose kept); its armor and weapons drop as separate items. "Any tool" is the item tag `#bubbas_reworked_mobs:sleeper_harvest_tools` (pickaxes, axes, shovels, hoes). Breaking it bare-handed leaves remains (a bone or rotten flesh) and the gear. The gear drops from the block entity whenever the block goes (mining, explosions, commands), except on waking, when the mob takes it.
 - Sleeper items can be placed back as sleepers, and placed sleepers can come alive like generated ones (decor, traps).
 - Planned later: magic that prevents waking (on the player, applied to sleepers, etc.).
 
@@ -38,11 +44,11 @@ Using a sleeper with an empty hand takes one item: held weapon first, then armor
 
 ## Natural spawning
 
-A small mixin scales the global and per-player monster caps by a game rule (default 15 % of vanilla). Other categories are untouched; light rules, spawners, trial spawners and structure spawns (witch huts, fortresses, monuments, outposts) stay at full strength (second mixin gates biome spawn entries only). Config to turn the cut off for compatibility with spawn-control mods.
+One small mixin cuts the global monster cap to a game-rule percentage (`bubbas_reworked_mobs:monster_cap_percent`, default 15) with an off switch for spawn-control mods (`bubbas_reworked_mobs:cut_monster_spawns`). It sits at HEAD of `NaturalSpawner$SpawnState#canSpawn`, the per-mob test natural spawning runs after it has picked a mob and a spot, so it sees the type and the position: biome spawns get the cut cap, while spots whose monster list comes from a structure (witch huts, monuments, outposts, fortresses) keep vanilla's cap. This replaced the earlier two-mixin plan (cap scaling + a biome-only gate) because one hook does both, and it only ever says no, so it composes with other spawn mods. The per-player cap is left at vanilla's; in multiplayer the cut global cap is what binds. Other categories, light rules, spawners, trial spawners and raids are untouched.
 
 ## Tuning
 
-- Speed, health and damage through Fabric's default-attribute modify event.
+- Speed, health and damage are our entity types' default attributes (`FabricDefaultAttributeRegistry.register`; values in `UndeadTuning`): skeleton 60 health, speed 0.15; zombie 80 health, speed 0.13; fists 1 damage (vanilla: 20 health, 0.25/0.23, 2-3 damage). Zombies get no reinforcements and don't turn into vanilla drowned.
 - Fist hits deal low damage but extra armor durability damage, applied in Fabric's after-damage event.
 - The early game is meant to be quite a bit tougher: high health and armor-shredding hits, balanced by undead being slow and easy to escape. (A separate future mod will drastically reduce unenchanted mining speed.)
 - Bows: zombies take extra damage from headshots; skeletons take much less damage from arrows.
