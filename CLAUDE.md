@@ -80,6 +80,15 @@ The repo always targets the latest non-snapshot release and moves promptly when 
 4. A project that can't move yet (its library has no build, or the port is big) is **disabled, not left behind**: `disabled=<reason>` in the mod's `gradle.properties`, or a `DISABLED` file with the reason in a pack folder. Inside a mod, a feature that depends on a missing optional library is switched off behind `FabricLoader.getInstance().isModLoaded(...)`. Tell the owner what's disabled and why; re-enable as soon as the blocker clears.
 5. The player docs vault (B11 playerVault) says which projects are on the new version and which are paused.
 
+## Speed of the build and test loop (owner's standing instruction)
+
+Agents do all building and testing here; the owner never touches it. So keeping the suite and harness fast is the agent's job, **without being asked**: always be looking for ways to speed up development (building, testing, tooling), measure, fix, and record what changed.
+
+- Build and test only what you touched: `./gradlew :<mod>:build`, not `./gradlew build`. Run client game tests only when something visible changed.
+- Configuration cache is on, and server game tests skip themselves when a mod's code and resources match the last passing run (`gradle/fabric-mod.gradle`). `-PrerunGametests` forces them. Don't undo either without measuring.
+- When a step feels slow, time it, find the cause, fix it, and update the timings table in `specs/quality.md`. Mention speedups (and slowdowns) to the owner in a line.
+- Slow things worth attacking next are listed in `specs/quality.md` under Speed.
+
 ## Quality bar (`specs/quality.md`)
 
 Every mod has server game tests for its main behavior.

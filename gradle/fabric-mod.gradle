@@ -75,3 +75,29 @@ fabricApi {
 test {
 	useJUnitPlatform()
 }
+
+// Speed: skip server game tests when nothing they run on has changed since the last passing run. Loom declares
+// the run folder (which the game writes logs into) as an input, so Gradle never treats the task as up to date on its
+// own; instead we fingerprint the mod's compiled code and resources (main, client, gametest, which also hold bundled
+// packs) and skip when it matches the fingerprint a passing run recorded. Force a run with -PrerunGametests.
+def gametestInputs = files(sourceSets.main.output, sourceSets.client.output,
+		sourceSets.findByName('gametest')?.output ?: files())
+def gametestMarker = layout.buildDirectory.file('gametest/passed.fingerprint')
+def forceGametests = providers.gradleProperty('rerunGametests').isPresent()
+def fingerprintOf = { FileCollection fc ->
+	def md = java.security.MessageDigest.getInstance('SHA-256')
+	fc.asFileTree.files.sort { it.path }.each { f -> md.update("${f.path}|${f.length()}|${f.lastModified()}\n".bytes) }
+	md.digest().encodeHex().toString()
+}
+tasks.matching { it.name == 'runGameTest' }.configureEach { t ->
+	t.inputs.files(gametestInputs).withPropertyName('gametestFingerprintInputs')
+	t.onlyIf('code or resources changed since the last passing game test run') {
+		def m = gametestMarker.get().asFile
+		forceGametests || !m.exists() || m.text.trim() != fingerprintOf(gametestInputs)
+	}
+	t.doLast {
+		def m = gametestMarker.get().asFile
+		m.parentFile.mkdirs()
+		m.text = fingerprintOf(gametestInputs) + '\n'
+	}
+}
