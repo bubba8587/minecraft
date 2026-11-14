@@ -36,7 +36,7 @@ Weapons near sleepers, and later other loot, are shown with a dedicated block ra
 - Taking: use with an empty hand takes the item and removes the block. `buried` needs a shovel and makes more noise (sleepers hear it). Breaking the block drops the item.
 - A woken undead without a weapon grabs one from a display block within 3 blocks.
 - Worldgen and structures place it next to sleepers, half-buried in graves, hung on crypt walls.
-- Player placement (decor) not decided yet.
+- Player placement (decor): backlogged, needs care (BACKLOG.md).
 
 As built (`display/` package; renderer in `client/display/`):
 

@@ -53,6 +53,7 @@ Minecraft renames things every release and memory from older versions is wrong m
 - `mods/<name>/src/gametest/`: game tests (separate source set and fabric.mod.json).
 - `datapacks/<name>/`, `resourcepacks/<name>/`: one pack per folder with `pack.mcmeta`, optional `VERSION`, PackTest tests in `data/<ns>/test/*.mcfunction`, and optional `packtest.commands` for the vanilla load check.
 - `player-docs/`: Obsidian vault of **player-facing** docs, separate from the tree and code (B11 playerVault, rules in `specs/player-docs.md`). Any change players would notice updates the project's page there in the same change; no `dte:` tokens or code detail inside it.
+- `BACKLOG.md`: parked ideas and open items. Add to it whenever the owner parks something.
 - `docs/knowledge/`: the reference knowledge base. `decisions/`: the tree. `vendor/dte/`: DTE rule text, do not edit.
 - `mods/refmod`, `datapacks/refpack`: internal reference projects that prove the toolchain. Never published.
 
