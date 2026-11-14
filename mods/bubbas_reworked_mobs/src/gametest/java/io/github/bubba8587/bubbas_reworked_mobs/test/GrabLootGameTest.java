@@ -28,8 +28,9 @@ import net.fabricmc.fabric.api.gametest.v1.GameTest;
 
 /**
  * Grabbing what's lying around (specs/undead.md "Loot on display"): the waking grab (weapons first, then anything)
- * and the idle {@code GrabLootGoal} (real pathing in the level). Own environments: no players from other batches to
- * chase, and the chase tests' villagers stay away from the other tests' zombies.
+ * and the idle {@code GrabLootGoal} (real pathing in the level). Each walking test has its own environment, so it runs
+ * in a batch of its own: tests in a batch sit 5 blocks apart, inside the 8-block notice range, and mobs would take
+ * each other's loot (and chase other batches' players).
  */
 public class GrabLootGameTest {
 	private static final String ENV = "bubbas_reworked_mobs-test:grab_loot";
@@ -105,7 +106,7 @@ public class GrabLootGameTest {
 	// --- the idle goal ----------------------------------------------------------------------------
 
 	/** An empty-handed woken zombie walks 6 blocks to a pickaxe on display and ends up holding it; the block goes. */
-	@GameTest(environment = ENV, maxTicks = 400)
+	@GameTest(environment = "bubbas_reworked_mobs-test:grab_walk_display", maxTicks = 400)
 	public void idleZombieWalksToADisplayAndTakesIt(GameTestHelper helper) {
 		floor(helper);
 		Monster zombie = zombie(helper, new BlockPos(1, 1, 1));
@@ -118,7 +119,7 @@ public class GrabLootGameTest {
 	}
 
 	/** Displays come first: the zombie goes for a display 5 blocks off rather than a golden carrot lying 2 blocks off. */
-	@GameTest(environment = ENV, maxTicks = 400)
+	@GameTest(environment = "bubbas_reworked_mobs-test:grab_prefers_display", maxTicks = 400)
 	public void idleZombiePrefersADisplayOverACloserLooseItem(GameTestHelper helper) {
 		floor(helper);
 		Monster zombie = zombie(helper, new BlockPos(1, 1, 1));
@@ -133,7 +134,7 @@ public class GrabLootGameTest {
 	}
 
 	/** With nothing on display, a loose item is the target: picked up after walking to it. */
-	@GameTest(environment = ENV, maxTicks = 400)
+	@GameTest(environment = "bubbas_reworked_mobs-test:grab_walk_item", maxTicks = 400)
 	public void idleZombieWalksToALooseItem(GameTestHelper helper) {
 		floor(helper);
 		Monster zombie = zombie(helper, new BlockPos(1, 1, 1));
@@ -145,7 +146,7 @@ public class GrabLootGameTest {
 	}
 
 	/** Skeletons grab too, and not only bows: a sword stuck in the ground. */
-	@GameTest(environment = ENV, maxTicks = 400)
+	@GameTest(environment = "bubbas_reworked_mobs-test:grab_skeleton_sword", maxTicks = 400)
 	public void idleSkeletonTakesADisplayedSword(GameTestHelper helper) {
 		floor(helper);
 		Monster skeleton = mob(helper, ModEntities.woken(UndeadVariant.SKELETON), new BlockPos(1, 1, 1));
@@ -158,7 +159,7 @@ public class GrabLootGameTest {
 	}
 
 	/** A full hand ignores displays (5 s, five searches). */
-	@GameTest(environment = ENV, maxTicks = 120)
+	@GameTest(environment = "bubbas_reworked_mobs-test:grab_full_hand", maxTicks = 120)
 	public void mobAlreadyHoldingSomethingIgnoresDisplays(GameTestHelper helper) {
 		floor(helper);
 		Monster zombie = zombie(helper, new BlockPos(1, 1, 1));
@@ -173,7 +174,7 @@ public class GrabLootGameTest {
 	}
 
 	/** Only mobs in #grabs_loot: a vanilla zombie leaves displays alone. */
-	@GameTest(environment = ENV, maxTicks = 120)
+	@GameTest(environment = "bubbas_reworked_mobs-test:grab_vanilla_zombie", maxTicks = 120)
 	public void mobNotInTheTagIgnoresDisplays(GameTestHelper helper) {
 		floor(helper);
 		Mob vanilla = mob(helper, EntityTypes.ZOMBIE, new BlockPos(1, 1, 1));
