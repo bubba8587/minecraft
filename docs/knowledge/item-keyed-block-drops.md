@@ -18,6 +18,8 @@ Scope: making a **placed vanilla block** use its own drops depending on the **it
 
 ---
 
+**Reopen if** (owner, 2026-11-14): Minecraft adds more data-driven blocks, or lets blocks without a block entity carry data from their item. Then every use of approach C (an added property on a vanilla block) should move to the pure-data version, merging back toward vanilla, and the tiny mod parts and their mod-required-on-both-sides cost go away. Current uses: Synthetic Diamond Ore (`specs/crafting-tweaks-mod.md`). Check on every Minecraft release (CLAUDE.md, New Minecraft release).
+
 ## A. Blocks with a block entity: pure datapack (works)
 
 ### Verified claims

@@ -77,6 +77,7 @@ The repo always targets the latest non-snapshot release and moves promptly when 
 1. Bump `minecraft_version`, `loader_version`, `fabric_api_version` (and Loom if needed) in root `gradle.properties` from https://fabricmc.net/develop, and the pack formats in each `pack.mcmeta` from the new jar's `version.json`.
 2. `./gradlew :refmod:genSources && python3 tools/mcsrc.py`, then read the Fabric blog post and fabric-docs `develop/porting/` for the release; update `docs/knowledge/porting-26x.md` and any note that names a changed API.
 3. Port `refmod` and `refpack` first (they prove the notes), then every project.
+   Also read the release's changelog for anything that reopens a workaround: data-driven blocks, or blocks carrying item data without a block entity, reopen B15 fewNewBlocks' exceptions and every use of the added-property technique in `docs/knowledge/item-keyed-block-drops.md` (move them to pure data and merge back toward vanilla). Tell the owner when one reopens.
 4. A project that can't move yet (its library has no build, or the port is big) is **disabled, not left behind**: `disabled=<reason>` in the mod's `gradle.properties`, or a `DISABLED` file with the reason in a pack folder. Inside a mod, a feature that depends on a missing optional library is switched off behind `FabricLoader.getInstance().isModLoaded(...)`. Tell the owner what's disabled and why; re-enable as soon as the blocker clears.
 5. The player docs vault (B11 playerVault) says which projects are on the new version and which are paused.
 
