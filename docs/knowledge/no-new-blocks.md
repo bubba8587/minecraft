@@ -13,6 +13,8 @@ Related notes (not repeated here): `client-models.md` (blockstate/model/item-def
 
 ## 1. Display and interaction entities as pseudo-blocks
 
+> **Not used for blocks in this repo.** The owner doesn't like display-entity "fake blocks" (B15 fewNewBlocks, corrected 2026-11-14). When something needs to behave like a placed block, use an existing block (sections 2-5) or, with the owner's stated reason, a real block (D1 dormantAreBlocks is the first such case). This section stays as reference for display entities used as visual effects (floating labels, held-item displays, animations), which is still fine.
+
 ### 1.1 The entities
 All four are plain vanilla entity types, so they are safe for vanilla clients (`EntityTypes.BLOCK_DISPLAY`, `ITEM_DISPLAY`, `TEXT_DISPLAY`, `INTERACTION`). (src: common `world/entity/Display.java`, `Interaction.java`, `EntityTypes.java:222,547,562,938`)
 
