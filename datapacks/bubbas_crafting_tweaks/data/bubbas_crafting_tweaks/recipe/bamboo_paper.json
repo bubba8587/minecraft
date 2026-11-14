@@ -10,7 +10,12 @@
   "result": {
     "id": "minecraft:paper",
     "components": {
-      "minecraft:item_name": "Bamboo Paper"
+      "minecraft:item_name": "Bamboo Paper",
+      "minecraft:custom_model_data": {
+        "colors": [
+          14217408
+        ]
+      }
     },
     "count": 2
   },

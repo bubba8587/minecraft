@@ -77,6 +77,16 @@ public class PackcheckGameTest {
 	);
 
 	@GameTest public void bambooPaper(GameTestHelper helper) { check(helper, "bamboo_paper"); }
+
+	/** Bamboo Paper carries a green tint color that the companion resource pack applies to the paper model. */
+	@GameTest public void bambooPaperCarriesTint(GameTestHelper helper) {
+		ItemStack out = assembledResults(helper.getLevel()).stream()
+				.filter(s -> s.is(Items.PAPER)).findFirst().orElseThrow();
+		var cmd = out.get(net.minecraft.core.component.DataComponents.CUSTOM_MODEL_DATA);
+		helper.assertTrue(cmd != null && !cmd.colors().isEmpty() && cmd.colors().getFirst() == 0xD8F0C0,
+				net.minecraft.network.chat.Component.literal("bamboo paper tint: " + cmd));
+		helper.succeed();
+	}
 	@GameTest public void blackDye(GameTestHelper helper) { check(helper, "blackdye"); }
 	@GameTest public void charcoalBlock(GameTestHelper helper) { check(helper, "charcoal_block"); }
 	@GameTest public void trident(GameTestHelper helper) { check(helper, "trident"); }

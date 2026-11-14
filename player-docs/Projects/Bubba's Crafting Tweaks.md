@@ -11,7 +11,7 @@ A handful of extra recipes that make awkward or grindy items reachable: renewabl
 ## Recipes
 
 **Crafting table**
-- **Bamboo Paper:** 3 bamboo in a row → 2 paper.
+- **Bamboo Paper:** 3 bamboo in a row → 2 Bamboo Paper. Works anywhere paper does; it's a light green with the optional *Bubba's Crafting Tweaks* resource pack, plain paper-colored without it.
 - **Black dye:** 1 coal or charcoal → 1 black dye.
 - **Charcoal Block:** 9 charcoal → 1 block of coal.
 - **Trident:** 3 prismarine shards on top; prismarine crystals down both sides; sticks down the middle.

@@ -45,6 +45,7 @@ public class PackcheckClientGameTest implements FabricClientGameTest {
 				player.getInventory().clearContent();
 				List<ItemStack> results = PackcheckGameTest.assembledResults(server.overworld());
 				results.forEach(stack -> player.getInventory().add(stack.copy()));
+				player.getInventory().setItem(40, new ItemStack(Items.PAPER, 3)); // offhand: searched after the hotbar, so hover checks still find Bamboo Paper first // plain paper, to compare with Bamboo Paper
 				return results.size();
 			});
 			if (given != PackcheckGameTest.recipeCaseCount()) {

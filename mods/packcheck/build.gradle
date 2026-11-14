@@ -29,3 +29,22 @@ def bundleDatapacks = tasks.register('bundleDatapacks', Sync) {
 	}
 }
 sourceSets.main.resources.srcDir(bundleDatapacks)
+
+// resourcepacks/<name>/ -> jar path resourcepacks/<name>/, registered as always-enabled built-in resource packs
+// so client game tests render with them.
+def resourcepacksRoot = rootProject.file('resourcepacks')
+def bundledResourcePacks = (resourcepacksRoot.listFiles() ?: [] as File[])
+	.findAll { it.isDirectory() && new File(it, 'pack.mcmeta').exists() && !new File(it, 'DISABLED').exists() }
+	.sort { it.name }
+def bundleResourcePacks = tasks.register('bundleResourcePacks', Sync) {
+	description = 'Copies every enabled resource pack in resourcepacks/ into packcheck\'s resources as a built-in pack.'
+	inputs.property 'packs', bundledResourcePacks*.name
+	into layout.buildDirectory.dir('generated/packcheck-rp')
+	bundledResourcePacks.each { pack ->
+		from(pack) {
+			into "resourcepacks/${pack.name}"
+			exclude 'VERSION', 'DISABLED'
+		}
+	}
+}
+sourceSets.main.resources.srcDir(bundleResourcePacks)

@@ -28,6 +28,8 @@ public class Packcheck implements ModInitializer {
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 	/** Folder inside the mod's resources that holds the bundled datapacks. */
 	public static final String DATAPACKS_DIR = "datapacks";
+	/** Folder inside the mod's resources that holds the bundled resource packs. */
+	public static final String RESOURCEPACKS_DIR = "resourcepacks";
 
 	private static List<String> bundled = List.of();
 
@@ -65,5 +67,18 @@ public class Packcheck implements ModInitializer {
 		}
 		bundled = names;
 		LOGGER.info("Registered {} bundled datapack(s): {}", names.size(), names);
+
+		// Resource packs from the repo's resourcepacks/ folder, for client game tests.
+		mod.findPath(RESOURCEPACKS_DIR).ifPresent(rpRoot -> {
+			try (Stream<Path> dirs = Files.list(rpRoot)) {
+				for (String name : dirs.filter(Files::isDirectory).map(p -> p.getFileName().toString().replace("/", "")).sorted().toList()) {
+					boolean ok = ResourceLoader.registerBuiltinPack(id("rp_" + name), RESOURCEPACKS_DIR + "/" + name, mod,
+							Component.literal("Pack Check RP: " + name), PackActivationType.ALWAYS_ENABLED);
+					LOGGER.info("Bundled resource pack {}: {}", name, ok ? "registered" : "not registered");
+				}
+			} catch (IOException e) {
+				throw new UncheckedIOException(e);
+			}
+		});
 	}
 }
