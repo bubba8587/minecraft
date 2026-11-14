@@ -87,7 +87,7 @@ user.openMenu(new ExtendedMenuProvider<BagData>() {
 ```
 (src: fabric-api fabric-menu-api-v1 testmod MenuTest.java, block/BoxBlockEntity.java, item/PositionedBagItem.java, menu/PositionedBagMenu.java)
 
-Server-side-only mods: custom `MenuType`s are synced registry entries (vanilla clients cannot open them and Fabric registry sync rejects vanilla clients). Use vanilla types: `MenuType.GENERIC_9x1..9x6`, `GENERIC_3x3`, `ANVIL`, `HOPPER`, etc. with vanilla menus (`ChestMenu.threeRows(id, inv, container)`, `ChestMenu.sixRows(...)`) and intercept clicks by subclassing `ChestMenu` (override `clicked(...)`, UNVERIFIED exact signature) or use the sgui library (eu.pb4:sgui `2.2.1+26.3` on maven.nucleoid.xyz).
+Server-side-only mods: custom `MenuType`s are synced registry entries (vanilla clients cannot open them and Fabric registry sync rejects vanilla clients). Use vanilla types: `MenuType.GENERIC_9x1..9x6`, `GENERIC_3x3`, `ANVIL`, `HOPPER`, etc. with vanilla menus (`ChestMenu.threeRows(id, inv, container)`, `ChestMenu.sixRows(...)`) and intercept clicks by subclassing `ChestMenu` and overriding `clicked(int slotIndex, int buttonNum, ContainerInput containerInput, Player player)` (26.x: `ContainerInput` replaced `ClickType`) or use the sgui library (eu.pb4:sgui `2.2.1+26.3` on maven.nucleoid.xyz).
 
 ## 3. fabric-transfer-api-v1 (items and fluids between blocks)
 
@@ -105,7 +105,7 @@ try (Transaction tx = Transaction.openOuter()) {
 long moved = StorageUtil.move(from, to, variant -> true, FluidConstants.BUCKET, null); // null = open its own outer tx
 ```
 Lookups:
-- `ItemStorage.SIDED : BlockApiLookup<Storage<ItemVariant>, @Nullable Direction>`; `FluidStorage.SIDED` likewise; `ItemStorage.ITEM` / `FluidStorage.ITEM : ItemApiLookup<Storage<...>, ContainerItemContext>` (fluid in buckets/tanks held as items; query via `ContainerItemContext.forPlayerInteraction(player, hand)` UNVERIFIED method name, see `context/ContainerItemContext.java`).
+- `ItemStorage.SIDED : BlockApiLookup<Storage<ItemVariant>, @Nullable Direction>`; `FluidStorage.SIDED` likewise; `ItemStorage.ITEM` / `FluidStorage.ITEM : ItemApiLookup<Storage<...>, ContainerItemContext>` (fluid in buckets/tanks held as items; query via `ContainerItemContext.forPlayerInteraction(player, hand)`, `ofPlayerHand`, `ofPlayerCursor(player, menu)`, `ofSingleSlot(slot)`, `withConstant(stack)`; then `ctx.find(FluidStorage.ITEM)`).
 - Vanilla `Container`/`WorldlyContainer` block entities are wrapped automatically (hoppers interop both ways). Manual wrap: `ContainerStorage.of(container, direction)` (was InventoryStorage). Player: `PlayerInventoryStorage.of(player)`, `PlayerInventoryStorage.getCursorStorage(menu)`.
 - Implementing: easiest `SingleFluidStorage.withFixedCapacity(capacity, this::setChanged)` / `SingleStackStorage` / `SingleVariantStorage<T>` (override `getBlankVariant()`, `getCapacity(T)`, `onFinalCommit()` to mark dirty), combine with `CombinedStorage`, `FilteringStorage`, `InsertionOnlyStorage`, `ExtractionOnlyStorage`; or extend `SidedStorageBlockEntity`. Custom participants extend `SnapshotParticipant<S>`.
 - Persist: `storage.writeValue(ValueOutput)` / `readValue(ValueInput)` on `SingleFluidStorage`; static `SingleVariantStorage.readValue(storage, codec, fallback, input)` / `writeValue(storage, codec, output)`.
@@ -117,8 +117,8 @@ public class TankBlockEntity extends BlockEntity {
     @Override protected void loadAdditional(ValueInput in) { super.loadAdditional(in); tank.readValue(in); }
 }
 // registration (common init)
-FluidStorage.SIDED.registerForBlockEntity((be, dir) -> be.tank, ModBlockEntities.TANK);   // UNVERIFIED singular helper; generic form below is verified
-FluidStorage.SIDED.registerForBlockEntities((be, dir) -> ((TankBlockEntity) be).tank, ModBlockEntities.TANK);
+FluidStorage.SIDED.registerForBlockEntity((be, dir) -> be.tank, ModBlockEntities.TANK);   // typed single-type helper (BlockApiLookup.java:220)
+FluidStorage.SIDED.registerForBlockEntities((be, dir) -> ((TankBlockEntity) be).tank, TYPE_A, TYPE_B); // multi-type, untyped BE
 ```
 (src: transfer testmod ingame/FluidChuteBlockEntity.java, TransferTestInitializer.java)
 26.3 change: `FluidVariantAttributes#enableColoredVanillaFluidNames` removed, use `FluidVariantAttributes#getColoredName` (Fabric 26.3 blog).

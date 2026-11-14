@@ -161,7 +161,7 @@ AutoConfig (src: ClothConfig v26.3 `common/.../autoconfig/example/ExampleInits.j
 public class MyConfig implements ConfigData { public boolean enabled = true; @ConfigEntry.BoundedDiscrete(min = 0, max = 10) public int power = 5; }
 ConfigHolder<MyConfig> holder = AutoConfig.register(MyConfig.class, GsonConfigSerializer::new); // also JanksonConfigSerializer, Toml4jConfigSerializer, PartitioningSerializer.wrap(...)
 MyConfig cfg = holder.getConfig();      // or AutoConfig.getConfigHolder(MyConfig.class).getConfig()
-Screen s = AutoConfig.getConfigScreen(MyConfig.class, parent).get();   // client
+Screen s = AutoConfigClient.getConfigScreen(MyConfig.class, parent).get();   // client-only class me.shedaniel.autoconfig.AutoConfigClient (moved out of AutoConfig)
 ```
 Manual builder: `ConfigBuilder b = ConfigBuilder.create().setParentScreen(parent).setTitle(...); ConfigEntryBuilder e = b.entryBuilder(); b.getOrCreateCategory(Component.literal("General")).addEntry(e.startBooleanToggle(Component.literal("Enabled"), cfg.enabled).setDefaultValue(true).setSaveConsumer(v -> cfg.enabled = v).build()); b.setSavingRunnable(holder::save); return b.build();`
 
@@ -178,7 +178,7 @@ dependencies { implementation "me.fzzyhmstrs:fzzy_config:0.7.7+fix3+26.3"; runti
 public class MyConfig extends me.fzzyhmstrs.fzzy_config.config.Config {
     public MyConfig() { super(Identifier.fromNamespaceAndPath("mymod", "main")); }  // open class Config(identifier, subfolder="", folder=ns, name=path)
     public boolean enabled = true;
-    public ValidatedInt power = new ValidatedInt(5, 10, 0);   // UNVERIFIED ctor arg order (default, max, min); check validation/number/ValidatedInt.kt
+    public ValidatedInt power = new ValidatedInt(5, 10, 0);   // ctor (defaultValue, maxValue, minValue[, WidgetType]) - src: validation/number/ValidatedInt.kt
 }
 public static final MyConfig CONFIG = ConfigApiJava.registerAndLoadConfig(MyConfig::new, RegisterType.BOTH); // BOTH = synced + GUI; SERVER; CLIENT
 ```
@@ -237,7 +237,7 @@ public final class PlayerMana implements ManaComponent, AutoSyncedComponent {
     public PlayerMana(Player p) { owner = p; }
     public int get() { return mana; }
     public void set(int v) { mana = v; MyComponents.MANA.sync(owner); }
-    @Override public void readData(ValueInput in) { mana = in.getIntOr("mana", 0); }   // ValueInput API: see vanilla net/minecraft/world/level/storage/ValueInput.java
+    @Override public void readData(ValueInput in) { mana = in.getIntOr("mana", 0); }   // vanilla net/minecraft/world/level/storage/ValueInput.java
     @Override public void writeData(ValueOutput out) { out.putInt("mana", mana); }
 }
 public final class MyComponents implements EntityComponentInitializer {
@@ -319,7 +319,7 @@ public class DrakeRenderer extends AzEntityRenderer<Drake> {
 - **Accessories (wisp-forest) has no 26.x build** either (latest 1.4.3-beta for 1.21.10; the newest branch is `1.21.11`).
 - **Trinkets Updated (Patbox fork) is OK: `eu.pb4:trinkets:4.2.1+26.3`** at maven.nucleoid.xyz. It's a universal jar for Fabric and NeoForge. **The package changed to `eu.pb4.trinkets.api`**, so it's not source-compatible with `dev.emi.trinkets`. There's also a `trinkets-polymer` add-on (Modrinth, 4.2.0.0+26.3 beta) that makes it server-side.
 ```java
-public class Ring extends Item implements eu.pb4.trinkets.api.callback.TrinketCallback {   // UNVERIFIED exact package of TrinketCallback (api/callback/)
+public class Ring extends Item implements eu.pb4.trinkets.api.callback.TrinketCallback {
     @Override public void tick(ItemStack stack, TrinketSlotAccess slot, LivingEntity entity) { ... }
     @Override public void forEachTrinketModifier(ItemStack stack, TrinketSlotAccess slot, LivingEntity e, Identifier id,
                                                  BiConsumer<Holder<Attribute>, AttributeModifier> out) {
@@ -410,7 +410,7 @@ public class MyJei implements mezz.jei.api.IModPlugin {
     @Override public Identifier getPluginUid() { return Identifier.fromNamespaceAndPath("mymod", "jei"); }
     @Override public void registerCategories(IRecipeCategoryRegistration r) { r.addRecipeCategories(new MyCategory(r.getJeiHelpers().getGuiHelper())); }
     @Override public void registerRecipes(IRecipeRegistration r) { r.addRecipes(GRINDING, list); r.addIngredientInfo(MyItems.RUBY, Component.literal("...")); }
-    @Override public void registerRecipeCatalysts(IRecipeCatalystRegistration r) { r.addCraftingStation(GRINDING, MyBlocks.GRINDER); } // UNVERIFIED method name in 26.3
+    @Override public void registerRecipeCatalysts(IRecipeCatalystRegistration r) { r.addCraftingStation(GRINDING, MyBlocks.GRINDER); } // (IRecipeType<?>, ItemLike...)
 }
 // IRecipeCategory<T>: getRecipeType(), getTitle(), getWidth(), getHeight(), getIcon(), setRecipe(IRecipeLayoutBuilder, T, IFocusGroup),
 //   draw(T, IRecipeSlotsView, GuiGraphicsExtractor g, double mx, double my)   <- 26.x vanilla renamed GuiGraphics -> GuiGraphicsExtractor
@@ -493,7 +493,8 @@ Polymer rules from its docs: code must be thread-safe (it can run on the network
 Text formatting (QuickText/Simplified Text Format tags) plus `%namespace:placeholder%` placeholders. **The 3.x API changed**: there are separate server and common registries.
 ```java
 Placeholders.registerServer(Identifier.fromNamespaceAndPath("mymod", "mana"),
-    (ServerPlaceholderContext ctx, String arg) -> ctx.hasPlayer() ? PlaceholderResult.value(String.valueOf(Mana.get(ctx.player()))) : PlaceholderResult.invalid("no player")); // UNVERIFIED accessor names hasPlayer()/player()
+    (ServerPlaceholderContext ctx, String arg) -> ctx.hasServerPlayer() ? PlaceholderResult.value(String.valueOf(Mana.get(ctx.serverPlayer()))) : PlaceholderResult.invalid("no player"));
+// ServerPlaceholderContext.of(ServerPlayer | MinecraftServer | ServerLevel | CommandSourceStack | Entity | GameProfile+server); PlaceholderContext has hasPlayer()/player(), hasLevel(), hasEntity()...
 // common (client+server): Placeholders.registerCommon(id, (PlaceholderContext ctx, String arg) -> ...)
 Component c = NodeParser.builder().quickText().serverPlaceholders().build()
     .parseComponent("<red>Mana:</red> %mymod:mana%", ServerPlaceholderContext.of(player).asParserContext());
@@ -527,7 +528,7 @@ gui.open();
 - The vanilla level type is `net.minecraft.server.permissions.PermissionLevel` with `isEqualOrHigherThan`.
 ```java
 static final PermissionNode<Boolean> FLY = PermissionNode.of(Identifier.fromNamespaceAndPath("mymod", "fly"));
-dispatcher.register(Commands.literal("fly").requires(PermissionPredicates.require(FLY, PermissionLevel.GAMEMASTERS)).executes(...)); // UNVERIFIED enum constant name; see PermissionLevel.java
+dispatcher.register(Commands.literal("fly").requires(PermissionPredicates.require(FLY, PermissionLevel.GAMEMASTERS)).executes(...)); // PermissionLevel: ALL(0) MODERATORS(1) GAMEMASTERS(2) ADMINS(3) OWNERS(4)
 if (player.checkPermission(FLY, false)) { ... }
 int homes = player.checkPermission(PermissionNode.ofInteger(Identifier.fromNamespaceAndPath("mymod", "max_homes")), 3);
 ```

@@ -119,6 +119,7 @@ Fabric events instead of subclassing (fapi fabric-events-interaction-v0): `UseIt
 ## 4. Tools, weapons, shields
 
 ```java
+// Numbers below = vanilla iron tools (common world/item/Items.java:1629-1633)
 // ToolMaterial is a record (src: common world/item/ToolMaterial.java)
 // (TagKey<Block> incorrectBlocksForDrops, int durability, float speed, float attackDamageBonus, int enchantmentValue, TagKey<Item> repairItems)
 public static final TagKey<Block> INCORRECT_FOR_GUIDITE = TagKey.create(Registries.BLOCK, ExampleMod.id("incorrect_for_guidite_tool"));
@@ -129,7 +130,7 @@ GUIDITE_PICKAXE = register(ids.PICKAXE, Item::new, new Item.Properties().pickaxe
 GUIDITE_AXE     = register(ids.AXE,     Item::new, new Item.Properties().axe(GUIDITE, 6.0F, -3.1F));   // 26.3: no AxeItem
 GUIDITE_SHOVEL  = register(ids.SHOVEL,  Item::new, new Item.Properties().shovel(GUIDITE, 1.5F, -3.0F));
 GUIDITE_HOE     = register(ids.HOE,     Item::new, new Item.Properties().hoe(GUIDITE, -2.0F, -1.0F));
-GUIDITE_SPEAR   = register(ids.SPEAR,   Item::new, new Item.Properties().spear(GUIDITE, 0.95F, 0.95F, 0.6F, 2.5F, 8.0F, 6.75F, 5.1F, 11.25F, 4.6F)); // see Items.java for vanilla numbers
+GUIDITE_SPEAR   = register(ids.SPEAR,   Item::new, new Item.Properties().spear(GUIDITE, 0.95F, 0.95F, 0.6F, 2.5F, 11.0F, 6.75F, 5.1F, 11.25F, 4.6F)); // = vanilla IRON_SPEAR numbers
 ```
 - `pickaxe/axe/hoe/shovel` = `tool(material, BlockTags.MINEABLE_WITH_X, dmg, speed, disableBlocking)` + for axe/hoe/shovel a delayed `BLOCK_TRANSFORMER` pointing at `BlockTransformers.AXE/HOE/SHOVEL` (that is how stripping/tilling/pathing works in 26.3). Axes set `disableBlockingSeconds = 5`.
 - Attack damage/speed args are added to the player base (1 dmg, 4.0 speed) via `ATTRIBUTE_MODIFIERS` with ids `Item.BASE_ATTACK_DAMAGE_ID` / `BASE_ATTACK_SPEED_ID`.
