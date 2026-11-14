@@ -30,7 +30,7 @@ Codec: client `renderer/block/dispatch/BlockStateModelDispatcher.java`, `Variant
 ] }
 ```
 - Variant keys: `""` for blocks without properties; `prop=value,prop2=value` partial matches allowed. Variant fields: `model` (required), `x`, `y`, `z` (0/90/180/270), `uvlock` (bool), `weight` (in arrays, positive int, default 1).
-- Multipart `when`: map of property -> `"a|b"` alternatives, or `{"AND": [...]}` / `{"OR": [...]}`; `"!value"` negation is supported by `KeyValueCondition` (UNVERIFIED syntax beyond vanilla usage: vanilla uses plain values and `|`).
+- Multipart `when`: map of property -> `"a|b"` alternatives, or `{"AND": [...]}` / `{"OR": [...]}`; `"!value"` negates a term (src: client `multipart/KeyValueCondition.java`, `NEGATE = "!"`).
 - Custom Fabric blockstate model types: `"fabric:type": "<ns>:<id>"` inside a variant (section 5.3).
 
 ## 2. Block/item model JSON: `assets/<ns>/models/<path>.json`
@@ -114,8 +114,8 @@ Custom code-driven types (register in client init; all mappers are `public stati
 Datagen of these files (`FabricModelProvider`, `BlockModelGenerators`, `ItemModelGenerators`, `ItemModelUtils.plainModel/conditional/...`) is covered by the datagen knowledge file; fabric-docs reference `ExampleModModelProvider.java`.
 
 ## 4. Runtime access to baked models
-- `Minecraft.getInstance().getModelManager()`; block models via `mc.getModelManager().getBlockStateModelSet()`-style accessors (see client `resources/model/ModelManager.java`); per-state `BlockStateModel` with `collectParts(RandomSource, List<BlockStateModelPart>)`, `particleMaterial()`, `materialFlags()`.
-- Extra standalone models (not referenced by any blockstate/item): register with the Model Loading API (`ExtraModelKey`, 5.1) and fetch with `((FabricModelManager) mc.getModelManager()).getModel(KEY)` (interface-injected; on 26.3 `ModelManager` implements `FabricModelManager`).
+- `Minecraft.getInstance().getModelManager()`; `getItemModel(Identifier)`, `getItemProperties(Identifier)`, `getBlockStateModelSet()`, `getBlockModelSet()`, `getFluidStateModelSet()` (src: client `resources/model/ModelManager.java`); per-state `BlockStateModel` with `collectParts(RandomSource, List<BlockStateModelPart>)`, `particleMaterial()`, `materialFlags()`.
+- Extra standalone models (not referenced by any blockstate/item): register with the Model Loading API (`ExtraModelKey`, 5.1) and fetch with `((FabricModelManager) mc.getModelManager()).getModel(KEY)` (`ModelManager implements FabricModelManager` in 26.3, so a cast is not even needed).
 - Render a block model from a BER/entity: `collector.submitBlockModel(poseStack, renderType, parts, tintLayers, light, overlay, outlineColor)` or the vanilla `BlockModelResolver` from the renderer context.
 
 ## 5. Fabric Model Loading API (fabric-model-loading-api-v1)
