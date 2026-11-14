@@ -14,6 +14,7 @@ These notes are a map, not the territory. Check names against the source before 
 | Changing vanilla behavior | `mixins.md` |
 | Looking for prior art or a library | `reference-mods.md`, `libraries.md` (`specs/prior-art.md`, B9 libsOverHandroll) |
 | Wanting a block-like feature (B15 fewNewBlocks) | `no-new-blocks.md` (display entities, retextures, borrowed states, data on existing blocks, decision guide) |
+| Making a placed vanilla block drop something depending on the item it was placed from ("Synthetic Diamond Ore") | `item-keyed-block-drops.md` (block entity: datapack `match_block`; no block entity: a mod-added state property) |
 
 ## Mods
 

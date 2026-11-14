@@ -7,6 +7,8 @@ Two patterns are proven in `mods/refmod` (spec `specs/reference-projects.md` req
 - **Display-entity pseudo-block**: `pseudoblock/CharmPseudoBlock.java`, `item/LanternCharmItem.java`. Tests: `lanternCharmPlacesDisplayAndHitboxAndPicksUp`, `lanternCharmConsumesItemAndNeedsFreeSpace`, `lanternCharmEntitiesSaveAndLoad`, plus the client screenshot `refmod-lantern-charm`.
 - **Per-position data on a vanilla block**: `blockdata/BarrelTallies.java`, `blockdata/BarrelTallyEvents.java`, `mixin/BarrelBlockMixin.java`. Tests: `barrelTallyLivesInChunkAttachmentAndSurvivesChunkSaveLoad`, `barrelTallyClearedWhenBarrelRemoved`.
 
+Drops that depend on the item a vanilla block was placed from (a named or `custom_data` variant, "Synthetic Diamond Ore"): `item-keyed-block-drops.md`, with tested datapack and mod recipes (refmod requirement 18, packcheck `ItemKeyedDropsGameTest`).
+
 Related notes (not repeated here): `client-models.md` (blockstate/model/item-definition JSON, Model Loading API, FRAPI), `resourcepacks.md` (pack formats), `systems-persistence.md` (attachment API), `systems-events.md` (event signatures), `content-items-blocks.md` (items, components, block transformers), `systems-resources-config-serverside.md` section 5 (what vanilla clients tolerate), `libraries.md` (Polymer modules), `reference-mods.md` 1.12 (Polymer-based mods), `mixins.md`.
 
 ---
@@ -223,7 +225,8 @@ Validate on read means: treat an entry whose block no longer matches as absent (
 
 ### 5.1 A vanilla item with components is already a variant (datapack-only, verified from source)
 - `minecraft:block_state` (`BlockItemStateProperties`) is applied to the placed state (`BlockItem#updateBlockStateFromTag`). `minecraft:block_entity_data` is loaded into the block entity, and only ops can set it for types where `onlyOpCanSetNbt()` is true (`BlockItem#updateCustomBlockEntityTag`).
-- **Any other components on the stack** (custom name, `custom_data`, your own data component types, `item_model`) are kept in the placed block entity's `components` map (saved as `"components"`; `BlockEntity#applyComponents` keeps everything the block entity didn't consume). The vanilla loot function `minecraft:copy_components` with `"source": "block_entity"` puts them back on the drop. Vanilla's barrel loot copies only `custom_name`, so a pack overriding `loot_table/blocks/barrel.json` with `include` set to your components (or no `include`) makes a "fancy barrel" survive breaking. Ctrl-pick also copies them (`ServerGamePacketListenerImpl.java:728`). (src: common `world/item/BlockItem.java:55-160`, `world/level/block/entity/BlockEntity.java:275-320`, `world/level/storage/loot/functions/CopyComponentsFunction.java`, vanilla `data/minecraft/loot_table/blocks/barrel.json`.) UNVERIFIED in game: run it before shipping.
+- **Any other components on the stack** (custom name, `custom_data`, your own data component types, `item_model`) are kept in the placed block entity's `components` map (saved as `"components"`; `BlockEntity#applyComponents` keeps everything the block entity didn't consume). The vanilla loot function `minecraft:copy_components` with `"source": "block_entity"` puts them back on the drop. Vanilla's barrel loot copies only `custom_name`, so a pack overriding `loot_table/blocks/barrel.json` with `include` set to your components (or no `include`) makes a "fancy barrel" survive breaking. Ctrl-pick also copies them (`ServerGamePacketListenerImpl.java:728`). (src: common `world/item/BlockItem.java:55-160`, `world/level/block/entity/BlockEntity.java:275-320`, `world/level/storage/loot/functions/CopyComponentsFunction.java`, vanilla `data/minecraft/loot_table/blocks/barrel.json`.) Verified in game for `custom_name` and `custom_data` on a barrel (packcheck `ItemKeyedDropsGameTest`). A loot table can also **branch** on these kept components with `match_block` + `components`/`predicates` (not `location_check`, which sees air on a player break): `item-keyed-block-drops.md` approach A.
+- A block **without** a block entity keeps nothing but its state, so a plain variant item of it (e.g. an ore with an `item_name`) places the ordinary block. Per-item drops for those need a mod-added state property: `item-keyed-block-drops.md` approach C.
 - Its inventory look comes from `item_model` and name. The placed block looks vanilla unless you add a display entity or blockstate trick.
 
 ### 5.2 Your own item that places a vanilla block
@@ -244,6 +247,7 @@ Validate on read means: treat an entry whose block no longer matches as absent (
 | A new look for a vanilla block everywhere | Resource-pack retexture or remodel (2.1). |
 | A few look variants of a vanilla block | Its existing properties, or a variant item that sets `block_state` (5.1). If the block has no spare properties, look at 3.3, then at a display entity. |
 | Furniture, decorations, a lamp, a statue | Display entity + interaction (1). Add a vanilla `barrier` for collision or a `light` block for light (one per space, 1.5). Polymer virtual entities if the mod already uses Polymer. |
+| A variant item of a vanilla block that drops differently once placed | `item-keyed-block-drops.md`: datapack only if the block has a block entity, else a property added by a small mod. |
 | A "special" version of a vanilla container or workstation | The vanilla block plus components on the item (5.1), data on its block entity (4.1), and events (4.2). |
 | Per-block counters, ownership, upgrades, timers | Attachment: on the block entity if there is one, otherwise on the chunk keyed by position (4.1), with cleanup (4.3) and validate on read. |
 | Block-like logic that ticks | An index plus `END_LEVEL_TICK` (4.4), or a display entity with its own logic. |
@@ -264,7 +268,8 @@ The reason to give in that case: what the feature needs (from the list above), w
 
 ## 7. Status
 - Verified by refmod game tests (server, `./gradlew :refmod:build`): spawning and linking an item display and interaction, the `item_model` component on the displayed stack, culling size, brightness, the right-click packet path with `UseEntityCallback`, entity save/load, chunk-attachment write and read through `SerializableChunkData`, `UseBlockCallback` blocking the barrel menu, mixin cleanup on a non-player break. Client game test screenshot `refmod-lantern-charm` shows the charm model sitting on a stone block (checked by eye 2026-11-14).
-- Verified from source only (not run): sections 2.1, 3.2, 4.3 hook coverage, 4.4, 5.1, 5.2, the Polymer and Filament descriptions.
+- Verified in game since: 5.1's components kept on a placed barrel and readable by its loot table (packcheck `ItemKeyedDropsGameTest`), and adding a property to a vanilla block (refmod `SyntheticOreGameTest`, requirement 18).
+- Verified from source only (not run): sections 2.1, 3.2, 4.3 hook coverage, 4.4, 5.1's ctrl-pick and other block entity types, 5.2, the Polymer and Filament descriptions.
 - UNVERIFIED: performance numbers (1.6), datapack command and spawn-egg flow (1.8), player-head `profile.texture` rendering, the client FRAPI per-position wrapper (2.3), and chunk-attachment sync arriving on the client.
 
 ## Where to look
