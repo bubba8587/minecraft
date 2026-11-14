@@ -1,4 +1,4 @@
-package dev.refmod.client;
+package io.github.bubba8587.refmod.client;
 
 import net.fabricmc.api.ClientModInitializer;
 

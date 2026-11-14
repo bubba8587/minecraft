@@ -1,3 +1,4 @@
+// dte:B4
 // Shared build logic for every mod in mods/. Applied from each mod's build.gradle with:
 //   apply from: rootProject.file('gradle/fabric-mod.gradle')
 // Expects the mod's gradle.properties to set mod_id, mod_version, maven_group.
@@ -57,4 +58,20 @@ jar {
 	def name = project.mod_id
 	inputs.property 'mod_id', name
 	from(rootProject.file('LICENSE')) { rename { "${it}_${name}" } }
+}
+
+// Game tests (B6 gametestGate): src/gametest/ is its own source set with its own fabric.mod.json.
+// Server game tests run as part of `build`; client game tests run with `runClientGameTest`.
+fabricApi {
+	configureTests {
+		createSourceSet = true
+		modId = "${project.mod_id}-test"
+		enableGameTests = true
+		enableClientGameTests = true
+		eula = true // Agrees to the Minecraft EULA for the dev test server.
+	}
+}
+
+test {
+	useJUnitPlatform()
 }

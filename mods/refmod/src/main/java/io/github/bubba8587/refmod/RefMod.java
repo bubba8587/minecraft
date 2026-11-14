@@ -1,4 +1,4 @@
-package dev.refmod;
+package io.github.bubba8587.refmod;
 
 import net.fabricmc.api.ModInitializer;
 import org.slf4j.Logger;
