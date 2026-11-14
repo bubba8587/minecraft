@@ -3,7 +3,7 @@
 	"id": "${mod_id}",
 	"version": "${version}",
 	"name": "Bubba's Reworked Mobs",
-	"description": "",
+	"description": "Reworks Minecraft's mobs. Part 1: undead lie dormant as blocks until disturbed.",
 	"authors": [
 		"bubba8587"
 	],
@@ -16,6 +16,9 @@
 		],
 		"client": [
 			"io.github.bubba8587.bubbas_reworked_mobs.client.BubbasReworkedMobsClient"
+		],
+		"fabric-datagen": [
+			"io.github.bubba8587.bubbas_reworked_mobs.client.datagen.ModDataGenerator"
 		]
 	},
 	"mixins": [

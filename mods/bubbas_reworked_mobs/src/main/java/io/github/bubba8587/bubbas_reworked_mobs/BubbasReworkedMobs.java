@@ -1,11 +1,25 @@
+// dte:C1
 package io.github.bubba8587.bubbas_reworked_mobs;
 
-import net.fabricmc.api.ModInitializer;
+import io.github.bubba8587.bubbas_reworked_mobs.registry.ModBlockEntities;
+import io.github.bubba8587.bubbas_reworked_mobs.registry.ModBlocks;
+import io.github.bubba8587.bubbas_reworked_mobs.registry.ModCreativeTabs;
+import io.github.bubba8587.bubbas_reworked_mobs.registry.ModEntities;
+import io.github.bubba8587.bubbas_reworked_mobs.registry.ModGameEvents;
+import io.github.bubba8587.bubbas_reworked_mobs.registry.ModGameRules;
+import io.github.bubba8587.bubbas_reworked_mobs.registry.ModItems;
 import net.minecraft.resources.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import net.fabricmc.api.ModInitializer;
+
+/**
+ * Bubba's Reworked Mobs. Shared infrastructure (registries, spawn-cap control) lives at the top level;
+ * each mob family has its own package ({@code undead} is part 1, specs/undead.md).
+ */
 public class BubbasReworkedMobs implements ModInitializer {
+	/** The only place the mod id is written in Java. */
 	public static final String MOD_ID = "bubbas_reworked_mobs";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
@@ -15,5 +29,13 @@ public class BubbasReworkedMobs implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
+		// Order: game events and entities before the blocks that use them, blocks before items and block entities.
+		ModGameEvents.initialize();
+		ModGameRules.initialize();
+		ModEntities.initialize();
+		ModBlocks.initialize();
+		ModItems.initialize();
+		ModBlockEntities.initialize();
+		ModCreativeTabs.initialize();
 	}
 }

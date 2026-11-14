@@ -6,3 +6,11 @@ apply from: rootProject.file('gradle/fabric-mod.gradle')
 dependencies {
 	// Extra mod dependencies go here; see docs/knowledge/libraries.md.
 }
+
+// Datagen: `./gradlew :bubbas_reworked_mobs:runDatagen` writes src/main/generated (committed, added to main resources).
+// client = true because the model provider uses client classes; the datagen entrypoint lives in src/client.
+fabricApi {
+	configureDataGeneration {
+		client = true
+	}
+}

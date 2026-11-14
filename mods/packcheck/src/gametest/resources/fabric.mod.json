@@ -1,0 +1,15 @@
+{
+	"schemaVersion": 1,
+	"id": "packcheck-test",
+	"version": "1.0.0",
+	"name": "Pack Check Tests",
+	"environment": "*",
+	"entrypoints": {
+		"fabric-gametest": [
+			"io.github.bubba8587.packcheck.test.PackcheckGameTest"
+		],
+		"fabric-client-gametest": [
+			"io.github.bubba8587.packcheck.test.PackcheckClientGameTest"
+		]
+	}
+}
