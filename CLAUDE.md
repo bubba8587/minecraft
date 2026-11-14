@@ -12,6 +12,14 @@ This repo keeps its decisions as a Decision Tree Engineering tree. Follow `vendo
 - Start each session with `python3 tools/dte.py outbox` and `python3 tools/dte.py inbox`. Open inbox questions block what they say they block (publishing, notably).
 - Finish with `DTE_RING=B python3 tools/dte.py validate --as B`.
 
+## Before designing anything: prior art (B8 priorArtFirst)
+
+Lots of mods already exist. Before designing a mod, pack or tool:
+
+1. `python3 tools/prior-art.py "<idea>" [--type mod|datapack|resourcepack]` and a GitHub search. If something already does most of it, tell the owner before building and say what ours would add.
+2. Use an existing library or tool instead of writing one (`docs/knowledge/libraries.md`), and check `docs/knowledge/reference-mods.md` for open-source mods that solve the same problem: read how they did it (mind their license; learning from code is fine, copying needs a compatible license and credit).
+3. Fabric API's testmods and `FabricMC/fabric-docs` reference code come before anything written from scratch.
+
 ## Before writing any Minecraft code (B5 sourceVerified)
 
 Minecraft renames things every release and memory from older versions is wrong more often than right. Target is **26.3** (B3 latestRelease): unobfuscated, Mojang names, no Yarn, no remapping.
@@ -24,7 +32,7 @@ Minecraft renames things every release and memory from older versions is wrong m
 
 - `mods/<name>/`: one Fabric mod per folder, auto-included by `settings.gradle`. Shared build logic in `gradle/fabric-mod.gradle`; toolchain versions in root `gradle.properties`. New mod: `python3 tools/new-mod.py <modid> "<Display Name>"`.
 - `mods/<name>/src/gametest/`: game tests (separate source set and fabric.mod.json).
-- `datapacks/<name>/`, `resourcepacks/<name>/`: one pack per folder with `pack.mcmeta`, optional `VERSION` and `packtest.commands`.
+- `datapacks/<name>/`, `resourcepacks/<name>/`: one pack per folder with `pack.mcmeta`, optional `VERSION`, PackTest tests in `data/<ns>/test/*.mcfunction`, and optional `packtest.commands` for the vanilla load check.
 - `docs/knowledge/`: the reference knowledge base. `decisions/`: the tree. `vendor/dte/`: DTE rule text, do not edit.
 - `mods/refmod`, `datapacks/refpack`: internal reference projects that prove the toolchain. Never published.
 
@@ -36,12 +44,13 @@ export JAVA_HOME=/opt/jdk25                      # Java 25 is required for 26.x
 ./gradlew :<mod>:runClientGameTest               # client game tests (see container notes)
 ./gradlew build                                  # every mod
 python3 tools/pack.py check|build [name]         # static checks / zip packs into build/packs/
-python3 tools/packtest.py [name]                 # load datapacks on a real headless server
+python3 tools/packload.py [name]                 # load datapacks on the vanilla server (no mods)
+python3 tools/packtest.py [name]                 # run PackTest tests on a Fabric server (third-party jars: needs owner OK to run locally)
 ```
 
 ## Quality bar (B6 gametestGate)
 
-Every mod has server game tests for its main behavior; anything visual gets a client game test with a screenshot you look at before saying it works. Every datapack has a `packtest.commands` exercising its functions and passes `tools/packtest.py`. A bug fix ships with the test that would have caught it.
+Every mod has server game tests for its main behavior; anything visual gets a client game test with a screenshot you look at before saying it works. Every datapack has PackTest test functions (misode's PackTest, see `docs/knowledge/datapacks.md`) covering its behavior, loads clean with `tools/packload.py`, and passes `tools/packtest.py` in CI. A bug fix ships with the test that would have caught it.
 
 ## Releasing (B2 modrinthReleases, B7 tagPublishes)
 

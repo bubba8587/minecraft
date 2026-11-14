@@ -125,7 +125,7 @@ ClientCommandRegistrationCallback.EVENT.register((dispatcher, buildContext) -> {
 (src: fabric-api fabric-command-api-v2/src/client/.../ClientCommands.java, FabricClientCommandSource.java)
 - `ClientCommands` (was `ClientCommandManager`): `literal`, `argument`, `getActiveDispatcher()`, `refreshCommandCompletions()`.
 - `FabricClientCommandSource`: `sendFeedback`, `sendError`, `getClient()`, `getPlayer()` (LocalPlayer), `getLevel()` (ClientLevel), `getEntity()`, `getPosition()`, `getRotation()`, `getMeta(String)`, `attended()`.
-- Client commands are handled locally and take priority over a same-named server command.
+- Client commands run on the client game thread (keep them light). Precedence between a client command and a same-named server command is explicitly unspecified (Fabric intends server commands to win in future): pick unique names. Gate destructive/privileged client commands with `attended()`. (src: ClientCommands.java javadoc)
 
 ## 5. Text: Component, Style, events
 

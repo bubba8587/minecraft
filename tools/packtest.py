@@ -1,58 +1,74 @@
 #!/usr/bin/env python3
-# dte:B6
-"""Load datapacks on a real headless vanilla server and fail on any load error.
+# dte:B6,B8
+"""Run datapack tests with misode's PackTest on a real headless Fabric server.
 
-  python tools/packtest.py [NAME ...]        test packs in datapacks/ (all if none named)
-  options: --mc VERSION   Minecraft version (default: minecraft_version in gradle.properties)
-           --keep         keep the server folder (build/packtest/server) for inspection
-           --timeout S    seconds to wait for the server (default 300)
+  python tools/packtest.py [NAME ...]     test packs in datapacks/ (all if none named)
+  options: --keep         keep the server folder (build/packtest/server) for inspection
+           --timeout S    seconds before giving up (default 600)
 
-Builds each pack with tools/pack.py, downloads the official server jar from Mojang (SHA-1
-checked, cached in build/packtest/), starts it in a fresh world with the packs installed,
-runs each pack's optional `packtest.commands` (one console command per line, # comments),
-and fails if the log shows an error or a warning that mentions a tested pack's namespace,
-or if a command answers with an error. Needs Java matching the Minecraft version on PATH
-or in JAVA_HOME. Standard library only.
+Tests are PackTest test functions: data/<ns>/test/*.mcfunction inside a pack, using
+assert / await / fail / succeed / dummy (see docs/knowledge/datapacks.md and
+https://github.com/misode/packtest). This script only wires things up: it builds the
+packs with tools/pack.py, downloads Fabric's server launcher, Fabric API and PackTest
+(SHA-512 checked against Modrinth), installs the packs in a fresh world and starts the
+server with -Dpacktest.auto, which runs every test and exits with the failure count.
+A pack with no tests still has to load: any ERROR in the log fails the run.
+
+Versions come from gradle.properties (minecraft_version, loader_version, fabric_api_version).
+Needs Java matching the Minecraft version (JAVA_HOME or PATH). Standard library only.
 """
-import hashlib, json, os, queue, re, shutil, subprocess, sys, threading, time, urllib.request
+import hashlib, json, os, shutil, subprocess, sys, urllib.parse, urllib.request
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 WORK = ROOT / "build" / "packtest"
-MANIFEST = "https://piston-meta.mojang.com/mc/game/version_manifest_v2.json"
+CACHE = WORK / "cache"
 UA = {"User-Agent": "minecraft-repo-packtest"}
-# Console replies that mean a command failed.
-CMD_ERRORS = re.compile(r"Unknown or incomplete command|Incorrect argument|Unknown function|"
-                        r"Expected |Invalid |No player was found|Can't find element|<--\[HERE\]")
+FABRIC_API = "P7dR8mSH"  # Modrinth project id of Fabric API
+PACKTEST = "XsKUhp45"    # Modrinth project id of PackTest
 
 
 def fetch(url):
-    with urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=120) as r:
+    with urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=300) as r:
         return r.read()
 
 
-def default_mc():
+def props():
+    out = {}
     for line in (ROOT / "gradle.properties").read_text().splitlines():
-        if line.startswith("minecraft_version="):
-            return line.split("=", 1)[1].strip()
-    sys.exit("minecraft_version not found in gradle.properties")
+        if "=" in line and not line.lstrip().startswith("#"):
+            k, v = line.split("=", 1)
+            out[k.strip()] = v.strip()
+    return out
 
 
-def server_jar(mc):
-    jar = WORK / f"server-{mc}.jar"
-    if jar.is_file():
-        return jar
-    versions = json.loads(fetch(MANIFEST))["versions"]
-    entry = next((v for v in versions if v["id"] == mc), None)
-    if not entry:
-        sys.exit(f"Minecraft {mc} not in Mojang's version manifest")
-    info = json.loads(fetch(entry["url"]))["downloads"]["server"]
-    data = fetch(info["url"])
-    if hashlib.sha1(data).hexdigest() != info["sha1"]:
-        sys.exit("server jar SHA-1 mismatch; refusing to run it")
-    WORK.mkdir(parents=True, exist_ok=True)
-    jar.write_bytes(data)
-    return jar
+def modrinth_file(project, mc, version_number=None):
+    """Download a Fabric version of a Modrinth project for mc; return its cached path."""
+    q = urllib.parse.urlencode({"game_versions": json.dumps([mc]), "loaders": json.dumps(["fabric"])})
+    versions = json.loads(fetch(f"https://api.modrinth.com/v2/project/{project}/version?{q}"))
+    if version_number:
+        versions = [v for v in versions if v["version_number"] == version_number]
+    if not versions:
+        sys.exit(f"Modrinth project {project} has no Fabric build for {mc}"
+                 + (f" numbered {version_number}" if version_number else ""))
+    f = next(x for x in versions[0]["files"] if x["primary"]) if any(x["primary"] for x in versions[0]["files"]) else versions[0]["files"][0]
+    path = CACHE / f["filename"]
+    if not path.is_file():
+        data = fetch(f["url"])
+        if hashlib.sha512(data).hexdigest() != f["hashes"]["sha512"]:
+            sys.exit(f"SHA-512 mismatch for {f['filename']}; refusing to use it")
+        CACHE.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(data)
+    return path
+
+
+def fabric_server(mc, loader):
+    installer = next(v["version"] for v in json.loads(fetch("https://meta.fabricmc.net/v2/versions/installer")) if v["stable"])
+    path = CACHE / f"fabric-server-{mc}-{loader}-{installer}.jar"
+    if not path.is_file():
+        CACHE.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(fetch(f"https://meta.fabricmc.net/v2/versions/loader/{mc}/{loader}/{installer}/server/jar"))
+    return path
 
 
 def java():
@@ -61,11 +77,10 @@ def java():
 
 
 def main(argv):
-    mc, keep, timeout, names = default_mc(), False, 300, []
+    keep, timeout, names = False, 600, []
     it = iter(argv)
     for a in it:
-        if a == "--mc": mc = next(it)
-        elif a == "--keep": keep = True
+        if a == "--keep": keep = True
         elif a == "--timeout": timeout = int(next(it))
         else: names.append(a)
 
@@ -75,98 +90,62 @@ def main(argv):
                  if (p / "pack.mcmeta").is_file() and (not names or p.name in names))
     if not dps:
         sys.exit("no datapacks to test")
-    namespaces = set()
-    for p in dps:
-        data = p / "data"
-        namespaces |= {d.name for d in data.iterdir() if d.is_dir() and d.name not in ("minecraft", "c")}
     zips = [max((ROOT / "build" / "packs").glob(f"{p.name}-*.zip"), key=os.path.getmtime) for p in dps]
+    tests = sum(len(list(p.glob("data/*/test/**/*.mcfunction"))) for p in dps)
 
-    jar = server_jar(mc)
+    p = props()
+    mc, loader = p["minecraft_version"], p["loader_version"]
+    server = fabric_server(mc, loader)
+    mods = [modrinth_file(FABRIC_API, mc, p["fabric_api_version"]), modrinth_file(PACKTEST, mc)]
+
     srv = WORK / "server"
-    shutil.rmtree(srv, ignore_errors=True)
-    (srv / "world" / "datapacks").mkdir(parents=True)
+    # Keep downloaded game libraries between runs; reset everything else.
+    for child in (srv.iterdir() if srv.is_dir() else []):
+        if child.name not in ("libraries", "versions", ".fabric"):
+            shutil.rmtree(child) if child.is_dir() else child.unlink()
+    (srv / "mods").mkdir(parents=True, exist_ok=True)
+    (srv / "world" / "datapacks").mkdir(parents=True, exist_ok=True)
+    for m in mods:
+        shutil.copy(m, srv / "mods" / m.name)
     for z in zips:
         shutil.copy(z, srv / "world" / "datapacks" / z.name)
     (srv / "eula.txt").write_text("eula=true\n")
-    (srv / "server.properties").write_text(
-        "online-mode=false\nspawn-protection=0\n"
-        "view-distance=4\nsimulation-distance=4\nsync-chunk-writes=false\nserver-port=25599\n"
-        "initial-enabled-packs=vanilla\n")
+    (srv / "server.properties").write_text("online-mode=false\nwhite-list=false\nserver-port=25599\n"
+                                           "view-distance=4\nsimulation-distance=4\n")
 
-    commands = ["datapack list"]
-    for p in dps:
-        f = p / "packtest.commands"
-        if f.is_file():
-            commands += [l.strip() for l in f.read_text().splitlines() if l.strip() and not l.startswith("#")]
-
-    print(f"starting Minecraft {mc} server with {', '.join(z.name for z in zips)}")
-    proc = subprocess.Popen([java(), "-Xmx2G", "-jar", str(jar), "--nogui"], cwd=srv,
-                            stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                            text=True, bufsize=1)
-    lines = queue.Queue()
-    threading.Thread(target=lambda: [lines.put(l) for l in proc.stdout] and lines.put(None), daemon=True).start()
-    log, problems = [], []
-
-    def read_until(pred, secs):
-        end = time.time() + secs
-        while time.time() < end:
-            try:
-                l = lines.get(timeout=1)
-            except queue.Empty:
-                continue
-            if l is None:
-                return False
-            log.append(l.rstrip())
-            if pred(l):
-                return True
-        return False
-
-    def send(cmd):
-        try:
-            proc.stdin.write(cmd + "\n"); proc.stdin.flush()
-        except (BrokenPipeError, OSError):
-            problems.append(f"server exited before command: {cmd}")
-
+    print(f"Minecraft {mc}, Fabric {loader}, {', '.join(m.name for m in mods)}")
+    print(f"packs: {', '.join(z.name for z in zips)}; {tests} test function(s)")
+    cmd = [java(), "-Xmx2G", "-Dpacktest.auto"]
+    if os.environ.get("GITHUB_ACTIONS"):
+        cmd.append("-Dpacktest.auto.annotations")
+    cmd += ["-jar", str(server), "nogui"]
     try:
-        if not read_until(lambda l: "Done (" in l and "For help" in l, timeout):
-            problems.append(f"server did not finish starting (exit code {proc.poll()})")
-        else:
-            for c in commands:
-                start = len(log)
-                send(c)
-                marker = f"packtest-marker-{start}"
-                send(f"say {marker}")
-                read_until(lambda l, m=marker: m in l, 60)
-                reply = log[start:-1]
-                print(f"> {c}")
-                for r in reply:
-                    print(f"  {r}")
-                if any(CMD_ERRORS.search(r) for r in reply):
-                    problems.append(f"command failed: {c}")
-            enabled = next((l for l in log if "data pack(s) enabled" in l), "")
-            for z in zips:
-                if z.name not in enabled:
-                    problems.append(f"{z.name} is not in the enabled pack list")
-        send("stop")
-        read_until(lambda l: False, 60)
-    finally:
-        if proc.poll() is None:
-            proc.kill()
+        run = subprocess.run(cmd, cwd=srv, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                             text=True, timeout=timeout)
+        log, code = run.stdout, run.returncode
+    except subprocess.TimeoutExpired as e:
+        log, code = (e.stdout or b"").decode() if isinstance(e.stdout, bytes) else (e.stdout or ""), "timeout"
+    (WORK / "latest.log").write_text(log)
 
-    ns_re = re.compile("|".join(re.escape(n) + ":" for n in namespaces)) if namespaces else None
-    for l in log:
-        if "/ERROR]" in l or (("/WARN]" in l) and ns_re and ns_re.search(l)):
-            problems.append(l)
-    (WORK / "latest.log").write_text("\n".join(log) + "\n")
+    lines = log.splitlines()
+    errors = [l for l in lines if "/ERROR]" in l]
+    results = [l for l in lines if "tests" in l.lower() and ("passed" in l.lower() or "failed" in l.lower())]
+    for l in results[-3:]:
+        print(f"  {l.strip()}")
+    for l in lines:
+        if "[FAIL]" in l or "failed!" in l.lower() or "assertion" in l.lower():
+            print(f"  {l.strip()}")
     if not keep:
-        shutil.rmtree(srv, ignore_errors=True)
-    if problems:
-        print("\nFAILED")
-        for p in problems:
-            print(f"  {p}")
+        for child in srv.iterdir():
+            if child.name not in ("libraries", "versions", ".fabric"):
+                shutil.rmtree(child) if child.is_dir() else child.unlink()
+    if code != 0 or errors:
+        print(f"\nFAILED (exit {code})")
+        for e in errors[:20]:
+            print(f"  {e.strip()}")
         print(f"full log: {(WORK / 'latest.log').relative_to(ROOT)}")
         sys.exit(1)
-    print("\nOK: all packs loaded clean")
+    print("\nOK: packs loaded clean and every test passed")
 
 
 if __name__ == "__main__":

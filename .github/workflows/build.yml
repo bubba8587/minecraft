@@ -70,9 +70,10 @@ jobs:
           distribution: temurin
           java-version: '25'
       - run: python3 tools/pack.py check
+      - run: python3 tools/packload.py
       - run: python3 tools/packtest.py
       - if: failure()
         uses: actions/upload-artifact@v7
         with:
           name: packtest-log
-          path: build/packtest/latest.log
+          path: build/pack*/latest.log

@@ -98,7 +98,7 @@ public class ClaimsData extends SavedData {
 - Preferred: persistent attachments on `ServerPlayer` (+ `copyOnDeath()` if it should survive death; data always survives logout because it is written into the player NBT).
 - Vanilla player file `<world>/playerdata/<uuid>.dat` is handled by `PlayerDataStorage` (src: common net/minecraft/world/level/storage/PlayerDataStorage.java); custom fields there require a mixin into `ServerPlayer#addAdditionalSaveData/readAdditionalSaveData` (ValueOutput/ValueInput).
 - Offline player data: not loaded; for offline queries keep a server-level index in `SavedData` keyed by UUID.
-- Respawn copy hook: `ServerPlayerEvents.COPY_FROM.register((oldPlayer, newPlayer, alive) -> ...)` (`alive` = true when returning from the End). `ServerPlayerEvents.AFTER_RESPAWN` after.
+- Respawn copy hook: `ServerPlayerEvents.COPY_FROM.register((oldPlayer, newPlayer, alive) -> ...)` (`alive` = whether the old player is still alive, i.e. true when returning from the End, false on death respawn). `ServerPlayerEvents.AFTER_RESPAWN` after.
 - There is no NeoForge-style `getPersistentData()` on entities in vanilla/Fabric.
 
 ## 4. Block entity save + client sync (vanilla)
