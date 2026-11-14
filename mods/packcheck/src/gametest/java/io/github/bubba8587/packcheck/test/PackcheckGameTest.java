@@ -64,7 +64,7 @@ public class PackcheckGameTest {
 			Items.COAL_BLOCK),
 		cooking(RecipeType.BLASTING, "blast2sand", Items.SAND, null, List.of(), 200, 0.0F,
 			Items.GRAVEL, Items.GLASS),
-		cooking(RecipeType.BLASTING, "blast_quartz", Items.QUARTZ, null, List.of(), 100, 0.1F,
+		cooking(RecipeType.BLASTING, "blast_quartz", Items.QUARTZ, null, List.of(), 200, 0.1F,
 			Items.ANDESITE, Items.DIORITE, Items.GRANITE),
 		cooking(RecipeType.BLASTING, "cobble2gravel", Items.GRAVEL, null, List.of(), 200, 0.0F,
 			Items.COBBLESTONE),
@@ -72,7 +72,7 @@ public class PackcheckGameTest {
 			Items.STONE),
 		cooking(RecipeType.SMOKING, "orgglo", Items.GLOWSTONE_DUST, "Organic Glowstone Dust", List.of(), 200, 0.1F,
 			Items.GLOW_BERRIES, Items.GLOW_LICHEN, Items.GLOW_INK_SAC),
-		cooking(RecipeType.SMOKING, "rotleather", Items.LEATHER, null, List.of("Cured zombie flesh. Gross..."), 300, 1.0F,
+		cooking(RecipeType.SMOKING, "rotleather", Items.LEATHER, null, List.of("Cured zombie flesh. Gross..."), 300, 0.1F,
 			Items.ROTTEN_FLESH)
 	);
 
