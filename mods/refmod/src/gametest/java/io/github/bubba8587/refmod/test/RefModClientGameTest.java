@@ -8,6 +8,9 @@ import io.github.bubba8587.refmod.registry.ModBlocks;
 import io.github.bubba8587.refmod.registry.ModItems;
 import net.minecraft.client.gui.screens.worldselection.WorldCreationUiState;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.Display;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.phys.AABB;
 
 import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
@@ -15,7 +18,8 @@ import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContex
 
 /**
  * Client game test (refmod requirement 16): place a signal lamp, hold the tally stick, toggle the lamp
- * (S2C payload to the action bar, synced attachment), press the stats key, and take a screenshot.
+ * (S2C payload to the action bar, synced attachment), press the stats key, and take a screenshot. Then place a
+ * lantern charm pseudo-block (requirement 17a) next to it and take a second screenshot.
  */
 @SuppressWarnings("UnstableApiUsage")
 public class RefModClientGameTest implements FabricClientGameTest {
@@ -44,6 +48,20 @@ public class RefModClientGameTest implements FabricClientGameTest {
 			context.waitTicks(5);
 
 			context.takeScreenshot("refmod-signal-lamp");
+
+			// No-new-blocks pseudo-block (requirement 17a): use the lantern charm on a stone block next to the lamp,
+			// which spawns an item_display (the look) and an interaction (the hitbox) on top of it.
+			BlockPos stone = lamp.below().east();
+			singleplayer.getServer().runCommand("setblock %d %d %d minecraft:stone".formatted(stone.getX(), stone.getY(), stone.getZ()));
+			singleplayer.getServer().runCommand("item replace entity @a hotbar.0 with refmod:lantern_charm");
+			context.waitFor(mc -> mc.level.getBlockState(stone).is(Blocks.STONE) && mc.player.getMainHandItem().is(ModItems.LANTERN_CHARM));
+			context.getInput().lookAt(stone);
+			context.waitTick();
+			context.getInput().pressKey(options -> options.keyUse);
+			context.waitFor(mc -> !mc.level.getEntitiesOfClass(Display.ItemDisplay.class, new AABB(stone.above()).inflate(0.5)).isEmpty()); // display entities have a zero-size bounding box
+			context.getInput().lookAt(lamp.east());
+			context.waitTicks(5);
+			context.takeScreenshot("refmod-lantern-charm");
 		}
 	}
 }

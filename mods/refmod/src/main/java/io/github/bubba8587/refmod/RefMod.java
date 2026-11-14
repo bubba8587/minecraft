@@ -1,9 +1,11 @@
 // dte:B5,B6
 package io.github.bubba8587.refmod;
 
+import io.github.bubba8587.refmod.blockdata.BarrelTallyEvents;
 import io.github.bubba8587.refmod.command.RefModCommands;
 import io.github.bubba8587.refmod.event.LampBreakEvents;
 import io.github.bubba8587.refmod.network.RefModNetworking;
+import io.github.bubba8587.refmod.pseudoblock.CharmPseudoBlock;
 import io.github.bubba8587.refmod.registry.ModAttachments;
 import io.github.bubba8587.refmod.registry.ModBlockEntities;
 import io.github.bubba8587.refmod.registry.ModBlocks;
@@ -40,6 +42,8 @@ public class RefMod implements ModInitializer {
 		RefModNetworking.initialize();
 		RefModCommands.initialize();
 		LampBreakEvents.initialize();
+		CharmPseudoBlock.initialize();
+		BarrelTallyEvents.initialize();
 		LOGGER.info("refmod init");
 	}
 }

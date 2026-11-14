@@ -62,6 +62,8 @@ public class RefModDataGenerator implements DataGeneratorEntrypoint {
 					shaped(RecipeCategory.TOOLS, ModItems.FLINT_HATCHET).define('F', Items.FLINT).define('S', Items.STICK)
 							.pattern("FF").pattern("FS").pattern(" S")
 							.unlockedBy("has_flint", has(Items.FLINT)).save(this.output);
+					shapeless(RecipeCategory.DECORATIONS, ModItems.LANTERN_CHARM).requires(Items.TORCH).requires(Items.IRON_NUGGET)
+							.unlockedBy("has_torch", has(Items.TORCH)).save(this.output);
 					shapeless(RecipeCategory.COMBAT, ModItems.PEBBLE, 4).requires(Items.COBBLESTONE)
 							.unlockedBy("has_cobblestone", has(Items.COBBLESTONE)).save(this.output);
 					shaped(RecipeCategory.REDSTONE, ModBlocks.SIGNAL_LAMP).define('G', Items.GLASS).define('L', Items.GLOWSTONE_DUST)
@@ -117,6 +119,7 @@ public class RefModDataGenerator implements DataGeneratorEntrypoint {
 			builder.add(ModItems.TALLY_STICK, "Tally Stick");
 			builder.add(ModItems.FLINT_HATCHET, "Flint Hatchet");
 			builder.add(ModItems.PEBBLE, "Pebble");
+			builder.add(ModItems.LANTERN_CHARM, "Lantern Charm");
 			builder.add(ModBlocks.SIGNAL_LAMP, "Signal Lamp");
 			builder.add(ModBlocks.COUNTER_BLOCK, "Counter Block");
 			builder.add(ModEntities.PEBBLE, "Pebble");
@@ -125,6 +128,7 @@ public class RefModDataGenerator implements DataGeneratorEntrypoint {
 			builder.add("hud.refmod.tally", "Tally: %s");
 			builder.add("message.refmod.lamp_on", "Signal lamp on (%s toggles)");
 			builder.add("message.refmod.lamp_off", "Signal lamp off (%s toggles)");
+			builder.add("message.refmod.barrel_tally", "Barrel tally: %s");
 			builder.add("message.refmod.stats_self", "You have toggled %s signal lamps");
 			builder.add("commands.refmod.stats", "%s has toggled %s signal lamps");
 			builder.add("key.refmod.show_stats", "Show lamp stats");
@@ -152,6 +156,8 @@ public class RefModDataGenerator implements DataGeneratorEntrypoint {
 		public void generateItemModels(ItemModelGenerators gen) {
 			gen.generateFlatItem(ModItems.TALLY_STICK, ModelTemplates.FLAT_ITEM);
 			gen.generateFlatItem(ModItems.PEBBLE, ModelTemplates.FLAT_ITEM);
+			// The placed look (items/lantern_charm_placed.json + models/block/lantern_charm_placed.json) is hand-written in src/main/resources.
+			gen.generateFlatItem(ModItems.LANTERN_CHARM, ModelTemplates.FLAT_ITEM);
 			gen.generateFlatItem(ModItems.FLINT_HATCHET, ModelTemplates.FLAT_HANDHELD_ITEM);
 		}
 	}

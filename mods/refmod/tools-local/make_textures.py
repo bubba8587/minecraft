@@ -12,6 +12,9 @@ TEXTURES = {
     "item/tally_stick": (150, 110, 60),
     "item/flint_hatchet": (60, 60, 70),
     "item/pebble": (140, 140, 140),
+    "item/lantern_charm": (230, 150, 50),
+    "block/lantern_charm_placed": (255, 190, 70),
+    "block/lantern_charm_cap": (50, 45, 40),
 }
 
 

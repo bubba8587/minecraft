@@ -5,6 +5,7 @@ import java.util.function.Function;
 
 import io.github.bubba8587.refmod.RefMod;
 import io.github.bubba8587.refmod.component.TallyCount;
+import io.github.bubba8587.refmod.item.LanternCharmItem;
 import io.github.bubba8587.refmod.item.PebbleItem;
 import io.github.bubba8587.refmod.item.TallyStickItem;
 import net.minecraft.core.Registry;
@@ -21,6 +22,8 @@ public final class ModItems {
 	public static final Item FLINT_HATCHET = register("flint_hatchet", Item::new,
 			new Item.Properties().axe(ToolMaterial.STONE, 6.0F, -3.2F));
 	public static final Item PEBBLE = register("pebble", PebbleItem::new, new Item.Properties().stacksTo(16));
+	/** No-new-blocks pattern (B15): places a display-entity pseudo-block instead of a registered block. */
+	public static final Item LANTERN_CHARM = register("lantern_charm", LanternCharmItem::new, new Item.Properties().stacksTo(16));
 
 	private ModItems() {
 	}

@@ -13,6 +13,7 @@ These notes are a map, not the territory. Check names against the source before 
 | Setting up a build, fabric.mod.json, class tweakers | `toolchain.md` |
 | Changing vanilla behavior | `mixins.md` |
 | Looking for prior art or a library | `reference-mods.md`, `libraries.md` (B8 priorArtFirst) |
+| Wanting a block-like feature (B15 fewNewBlocks) | `no-new-blocks.md` (display entities, retextures, borrowed states, data on existing blocks, decision guide) |
 
 ## Mods
 

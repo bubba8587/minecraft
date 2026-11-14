@@ -152,7 +152,9 @@ Gotchas:
 
 ## 3. Blockstates (`assets/<ns>/blockstates/<block>.json`)
 
-Codec: client `renderer/block/dispatch/BlockStateModelDispatcher.java`. The file must contain `variants` or `multipart` (or both, without overlapping states).
+Codec: client `renderer/block/dispatch/BlockStateModelDispatcher.java`. The file must contain `variants` or `multipart`, or both. With both, `variants` win and `multipart` fills only the states no variant matched (`putIfAbsent`). Two variant keys that match the same state log an "Overlapping definition" warning, and that key is skipped.
+
+Files stack across packs **per state**: `BlockStateModelLoader` instantiates every pack's file from bottom to top and lets later ones overwrite only the states they match. A pack that only lists `"instrument=banjo,note=7,powered=false"` for `note_block` changes that one state and keeps vanilla's look for the rest. A `multipart` covers every state, though, and so replaces all of them. (src: client `resources/model/BlockStateModelLoader.java:35-95`; uses in `no-new-blocks.md` 2-3)
 
 ### 3.1 Variants
 `"variants": { "<prop>=<val>,<prop>=<val>": <model-or-weighted-list>, "": ... }`

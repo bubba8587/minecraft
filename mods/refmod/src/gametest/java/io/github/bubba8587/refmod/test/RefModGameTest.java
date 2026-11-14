@@ -6,11 +6,13 @@ import java.util.Optional;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import io.github.bubba8587.refmod.blockdata.BarrelTallies;
 import io.github.bubba8587.refmod.block.CounterBlockEntity;
 import io.github.bubba8587.refmod.block.SignalLampBlock;
 import io.github.bubba8587.refmod.component.TallyCount;
 import io.github.bubba8587.refmod.entity.PebbleEntity;
 import io.github.bubba8587.refmod.event.LampBreakEvents;
+import io.github.bubba8587.refmod.pseudoblock.CharmPseudoBlock;
 import io.github.bubba8587.refmod.registry.ModAttachments;
 import io.github.bubba8587.refmod.registry.ModBlocks;
 import io.github.bubba8587.refmod.registry.ModComponents;
@@ -21,18 +23,24 @@ import io.github.bubba8587.refmod.registry.ModItems;
 import io.github.bubba8587.refmod.registry.ModTags;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.contents.TranslatableContents;
+import net.minecraft.network.protocol.game.ServerboundInteractPacket;
+import net.minecraft.network.protocol.game.ServerboundPlayerLoadedPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Brightness;
 import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.Display;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.Interaction;
 import net.minecraft.world.entity.animal.pig.Pig;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
@@ -40,6 +48,7 @@ import net.minecraft.world.entity.projectile.throwableitemprojectile.Snowball;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.CookingFuel;
@@ -49,14 +58,19 @@ import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.FurnaceBlockEntity;
+import net.minecraft.world.level.chunk.ChunkAccess;
+import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.chunk.storage.SerializableChunkData;
 import net.minecraft.world.level.storage.TagValueInput;
 import net.minecraft.world.level.storage.TagValueOutput;
 import net.minecraft.world.level.storage.loot.providers.number.ints.ResolvableInt;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 
-/** One server game test per refmod behaviour (spec reference-projects.md, refmod requirement 16). */
+/** One server game test per refmod behaviour (spec reference-projects.md, refmod requirements 16 and 17). */
 public class RefModGameTest {
 	private static final BlockPos POS = new BlockPos(2, 1, 2);
 
@@ -288,6 +302,158 @@ public class RefModGameTest {
 		helper.setBlock(POS, ModBlocks.SIGNAL_LAMP);
 		level.destroyBlock(helper.absolutePos(POS), true);
 		helper.assertItemEntityPresent(ModBlocks.SIGNAL_LAMP.asItem(), POS, 2.0);
+		helper.succeed();
+	}
+
+	// --- 17a. No new blocks: display-entity pseudo-block ----------------------------------------
+
+	/** Right-click a block with the charm (through ServerPlayerGameMode, like the real packet) and return the hitbox. */
+	private static Interaction placeCharm(GameTestHelper helper, ServerPlayer player) {
+		BlockPos abs = helper.absolutePos(POS);
+		BlockHitResult hit = new BlockHitResult(Vec3.atCenterOf(abs).add(0.0, 0.5, 0.0), Direction.UP, abs, false);
+		player.gameMode.useItemOn(player, helper.getLevel(), player.getMainHandItem(), InteractionHand.MAIN_HAND, hit);
+		List<Interaction> hitboxes = helper.getLevel().getEntitiesOfClass(Interaction.class, new AABB(abs.above()),
+				e -> e.hasAttached(ModAttachments.CHARM_DISPLAY));
+		helper.assertValueEqual(hitboxes.size(), 1, "charm hitboxes above the block");
+		return hitboxes.getFirst();
+	}
+
+	@GameTest
+	public void lanternCharmPlacesDisplayAndHitboxAndPicksUp(GameTestHelper helper) {
+		helper.setBlock(POS, Blocks.STONE);
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(ModItems.LANTERN_CHARM, 2));
+		Interaction hitbox = placeCharm(helper, player);
+
+		// The look: an item_display showing the charm with the item_model component pointing at the placed model.
+		Entity linked = helper.getLevel().getEntity(hitbox.getAttached(ModAttachments.CHARM_DISPLAY));
+		helper.assertTrue(linked instanceof Display.ItemDisplay, "hitbox does not point at an item_display: " + linked);
+		Display.ItemDisplay display = (Display.ItemDisplay) linked;
+		helper.assertValueEqual(display.getItemStack().get(DataComponents.ITEM_MODEL), CharmPseudoBlock.PLACED_MODEL, "display item_model");
+		helper.assertValueEqual(display.getItemTransform(), ItemDisplayContext.FIXED, "display item transform");
+		helper.assertValueEqual(display.getBrightnessOverride(), new Brightness(15, 15), "display brightness");
+		helper.assertTrue(display.affectedByCulling(), "display has no culling box (width/height unset)");
+		helper.assertValueEqual(hitbox.getWidth(), CharmPseudoBlock.SIZE, "hitbox width");
+		helper.assertValueEqual(hitbox.blockPosition(), helper.absolutePos(POS.above()), "hitbox position");
+
+		// Right-click the hitbox through the real server packet handler, where Fabric's UseEntityCallback fires.
+		player.connection.handleAcceptPlayerLoad(new ServerboundPlayerLoadedPacket());
+		Vec3 stand = helper.absoluteVec(Vec3.atBottomCenterOf(POS.above().north()));
+		player.snapTo(stand.x, stand.y, stand.z, 0.0F, 30.0F);
+		player.connection.handleInteract(new ServerboundInteractPacket(hitbox.getId(), InteractionHand.MAIN_HAND, Vec3.ZERO, false));
+		helper.assertTrue(hitbox.isRemoved() && display.isRemoved(), "charm entities not removed after right-click");
+		helper.assertItemEntityPresent(ModItems.LANTERN_CHARM, POS.above(), 1.0);
+		helper.getLevel().getServer().getPlayerList().remove(player);
+		helper.succeed();
+	}
+
+	@GameTest
+	public void lanternCharmConsumesItemAndNeedsFreeSpace(GameTestHelper helper) {
+		helper.setBlock(POS, Blocks.STONE);
+		helper.setBlock(POS.above(), Blocks.STONE);
+		ServerPlayer player = (ServerPlayer) helper.makeMockServerPlayer(GameType.SURVIVAL);
+		player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(ModItems.LANTERN_CHARM, 2));
+		BlockPos abs = helper.absolutePos(POS);
+		BlockHitResult hit = new BlockHitResult(Vec3.atCenterOf(abs), Direction.UP, abs, false);
+		player.gameMode.useItemOn(player, helper.getLevel(), player.getMainHandItem(), InteractionHand.MAIN_HAND, hit);
+		helper.assertEntityNotPresent(EntityTypes.INTERACTION);
+		helper.assertValueEqual(player.getMainHandItem().getCount(), 2, "charms after a blocked placement");
+
+		helper.setBlock(POS.above(), Blocks.AIR);
+		placeCharm(helper, player);
+		helper.assertValueEqual(player.getMainHandItem().getCount(), 1, "charms after placing one in survival");
+		helper.succeed();
+	}
+
+	@GameTest
+	public void lanternCharmEntitiesSaveAndLoad(GameTestHelper helper) {
+		helper.setBlock(POS, Blocks.STONE);
+		ServerLevel level = helper.getLevel();
+		Interaction hitbox = CharmPseudoBlock.place(level, helper.absolutePos(POS), 0.0F);
+		helper.assertTrue(hitbox != null, "charm not placed");
+		Display.ItemDisplay display = (Display.ItemDisplay) level.getEntity(hitbox.getAttached(ModAttachments.CHARM_DISPLAY));
+
+		// Both are ordinary entities, saved in the chunk's entity storage like any other.
+		TagValueOutput hitboxOut = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, level.registryAccess());
+		hitbox.saveWithoutId(hitboxOut);
+		Interaction hitboxLoaded = new Interaction(EntityTypes.INTERACTION, level);
+		hitboxLoaded.load(TagValueInput.create(ProblemReporter.DISCARDING, level.registryAccess(), hitboxOut.buildResult()));
+		helper.assertValueEqual(hitboxLoaded.getAttached(ModAttachments.CHARM_DISPLAY), display.getUUID(), "loaded hitbox link");
+		helper.assertValueEqual(hitboxLoaded.getHeight(), CharmPseudoBlock.SIZE, "loaded hitbox height");
+
+		TagValueOutput displayOut = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, level.registryAccess());
+		display.saveWithoutId(displayOut);
+		Display.ItemDisplay displayLoaded = new Display.ItemDisplay(EntityTypes.ITEM_DISPLAY, level);
+		displayLoaded.load(TagValueInput.create(ProblemReporter.DISCARDING, level.registryAccess(), displayOut.buildResult()));
+		helper.assertValueEqual(displayLoaded.getItemStack().get(DataComponents.ITEM_MODEL), CharmPseudoBlock.PLACED_MODEL, "loaded item_model");
+		helper.assertValueEqual(displayLoaded.getUUID(), display.getUUID(), "loaded display UUID");
+		hitbox.discard();
+		display.discard();
+		helper.succeed();
+	}
+
+	// --- 17b. No new blocks: per-position data on a vanilla barrel (chunk attachment) ----------
+
+	private static void useTallyOnBarrel(GameTestHelper helper, ServerPlayer player) {
+		BlockPos abs = helper.absolutePos(POS);
+		player.gameMode.useItemOn(player, helper.getLevel(), player.getMainHandItem(), InteractionHand.MAIN_HAND,
+				new BlockHitResult(Vec3.atCenterOf(abs), Direction.NORTH, abs, false));
+	}
+
+	@GameTest
+	public void barrelTallyLivesInChunkAttachmentAndSurvivesChunkSaveLoad(GameTestHelper helper) {
+		helper.setBlock(POS, Blocks.BARREL);
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(ModItems.TALLY_STICK));
+		useTallyOnBarrel(helper, player);
+		useTallyOnBarrel(helper, player);
+
+		ServerLevel level = helper.getLevel();
+		BlockPos abs = helper.absolutePos(POS);
+		helper.assertValueEqual(BarrelTallies.get(level, abs), 2, "barrel tally after two clicks");
+		helper.assertTrue(player.containerMenu == player.inventoryMenu, "the barrel menu opened");
+		helper.assertValueEqual(player.getMainHandItem().get(ModComponents.TALLY_COUNT), TallyCount.ZERO, "tally stick's own count");
+		helper.assertBlockPresent(Blocks.BARREL, POS);
+
+		// Save the chunk the way ChunkMap does, check the NBT, then read it back into a fresh chunk object.
+		LevelChunk chunk = level.getChunkAt(abs);
+		CompoundTag tag = SerializableChunkData.copyOf(level, chunk).write();
+		helper.assertTrue(tag.getCompoundOrEmpty("fabric:attachments").contains("refmod:barrel_tallies"),
+				"chunk NBT lacks the attachment: " + tag.getCompoundOrEmpty("fabric:attachments"));
+		// Drop the light data so reading the copy does not queue light updates for the live chunk.
+		tag.getListOrEmpty("sections").forEach(section -> {
+			if (section instanceof CompoundTag sectionTag) {
+				sectionTag.remove("BlockLight");
+				sectionTag.remove("SkyLight");
+			}
+		});
+		ChunkAccess reloaded = SerializableChunkData.parse(level, level.palettedContainerFactory(), tag)
+				.read(level, level.getPoiManager(), level.getChunkSource().chunkMap.storageInfo(), chunk.getPos());
+		helper.assertTrue(reloaded != chunk, "read returned the live chunk");
+		BarrelTallies loaded = reloaded.getAttached(ModAttachments.BARREL_TALLIES);
+		helper.assertTrue(loaded != null && loaded.get(abs) == 2, "tally after chunk reload: " + loaded);
+		level.getServer().getPlayerList().remove(player);
+		helper.succeed();
+	}
+
+	@GameTest
+	public void barrelTallyClearedWhenBarrelRemoved(GameTestHelper helper) {
+		helper.setBlock(POS, Blocks.BARREL);
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(ModItems.TALLY_STICK));
+		useTallyOnBarrel(helper, player);
+		ServerLevel level = helper.getLevel();
+		BlockPos abs = helper.absolutePos(POS);
+		helper.assertValueEqual(BarrelTallies.get(level, abs), 1, "tally before removal");
+
+		// Not a player break: PlayerBlockBreakEvents would miss this; the BarrelBlock mixin catches it.
+		level.destroyBlock(abs, false);
+		BarrelTallies left = level.getChunkAt(abs).getAttached(ModAttachments.BARREL_TALLIES);
+		helper.assertTrue(left == null || left.get(abs) == 0, "stale tally left in the chunk: " + left);
+
+		helper.setBlock(POS, Blocks.BARREL);
+		helper.assertValueEqual(BarrelTallies.get(level, abs), 0, "tally of a new barrel at the same spot");
+		level.getServer().getPlayerList().remove(player);
 		helper.succeed();
 	}
 }
