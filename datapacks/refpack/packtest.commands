@@ -24,6 +24,7 @@ data get storage refpack:state keen
 data get block 1 300 0 Items
 function refpack:swing_demo
 data get storage refpack:state swung
+wait 3
 summon minecraft:wolf 0 300 4 {Tags:["refpack.reg"],variant:"refpack:flint"}
 data get entity @e[type=minecraft:wolf,tag=refpack.reg,limit=1] variant
 summon minecraft:pig 0 300 6 {Tags:["refpack.reg"]}

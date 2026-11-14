@@ -12,7 +12,8 @@ PackTest test functions.
 
 Builds each pack with tools/pack.py, downloads the official server jar from Mojang (SHA-1
 checked, cached in build/packtest/), starts it in a fresh world with the packs installed,
-runs each pack's optional `packtest.commands` (one console command per line, # comments),
+runs each pack's optional `packtest.commands` (one console command per line, # comments,
+`wait <seconds>` to pause; failures inside functions print nothing, so check results directly),
 and fails if the log shows an error or a warning that mentions a tested pack's namespace,
 or if a command answers with an error. Needs Java matching the Minecraft version on PATH
 or in JAVA_HOME. Standard library only.
@@ -26,7 +27,10 @@ MANIFEST = "https://piston-meta.mojang.com/mc/game/version_manifest_v2.json"
 UA = {"User-Agent": "minecraft-repo-packtest"}
 # Console replies that mean a command failed.
 CMD_ERRORS = re.compile(r"Unknown or incomplete command|Incorrect argument|Unknown function|"
-                        r"Expected |Invalid |No player was found|Can't find element|<--\[HERE\]")
+                        r"Expected |Invalid (?:name|UUID|position|entity|block|item|number|integer|float)|"
+                        r"No player was found|No entity was found|Can't find element|<--\[HERE\]|"
+                        r"Test failed|That position is not loaded|Could not set the block|"
+                        r"Unknown (?:item|block|entity|dimension|predicate|loot table)")
 
 
 def fetch(url):
@@ -100,7 +104,7 @@ def main(argv):
     for p in dps:
         f = p / "packtest.commands"
         if f.is_file():
-            commands += [l.strip() for l in f.read_text().splitlines() if l.strip() and not l.startswith("#")]
+            commands += [l.strip() for l in f.read_text().splitlines() if l.strip() and not l.strip().startswith("#")]
 
     print(f"starting Minecraft {mc} server with {', '.join(z.name for z in zips)}")
     proc = subprocess.Popen([java(), "-Xmx2G", "-jar", str(jar), "--nogui"], cwd=srv,
@@ -135,6 +139,9 @@ def main(argv):
             problems.append(f"server did not finish starting (exit code {proc.poll()})")
         else:
             for c in commands:
+                if c.startswith("wait "):  # packtest.commands directive: wait N seconds
+                    read_until(lambda l: False, float(c.split()[1]))
+                    continue
                 start = len(log)
                 send(c)
                 marker = f"packtest-marker-{start}"
@@ -150,8 +157,9 @@ def main(argv):
             for z in zips:
                 if z.name not in enabled:
                     problems.append(f"{z.name} is not in the enabled pack list")
-        send("stop")
-        read_until(lambda l: False, 60)
+        if proc.poll() is None:
+            send("stop")
+            read_until(lambda l: False, 60)
     finally:
         if proc.poll() is None:
             proc.kill()
