@@ -9,6 +9,7 @@ import io.github.bubba8587.bubbas_reworked_mobs.registry.ModEntities;
 import io.github.bubba8587.bubbas_reworked_mobs.registry.ModGameEvents;
 import io.github.bubba8587.bubbas_reworked_mobs.registry.ModGameRules;
 import io.github.bubba8587.bubbas_reworked_mobs.registry.ModItems;
+import io.github.bubba8587.bubbas_reworked_mobs.undead.UndeadCombat;
 import net.minecraft.resources.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,5 +40,6 @@ public class BubbasReworkedMobs implements ModInitializer {
 		ModBlockEntities.initialize();
 		ModCreativeTabs.initialize();
 		ModCommands.initialize();
+		UndeadCombat.initialize();
 	}
 }

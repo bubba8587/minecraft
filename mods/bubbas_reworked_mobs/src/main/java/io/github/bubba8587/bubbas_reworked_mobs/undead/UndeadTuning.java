@@ -15,6 +15,28 @@ public final class UndeadTuning {
 	public static final double ZOMBIE_SPEED = 0.13;
 	public static final double FIST_DAMAGE = 1.0;
 
+	// Combat (specs/undead.md "Tuning"). Starting values, owner to tune.
+	/** Fist hits from the same undead on the same target keep a streak going while each comes within this many ticks of the last. */
+	public static final int FIST_STREAK_WINDOW_TICKS = 60;
+	/** Extra armor durability per fist hit by streak length (1st hit, 2nd, 3rd, 4th and later), spread over the worn pieces. */
+	public static final int[] FIST_STREAK_ARMOR_WEAR = {0, 1, 3, 6};
+	/** Smite's chance per level to kill one of our undead outright (level V = 20 %). */
+	public static final float SMITE_KILL_CHANCE_PER_LEVEL = 0.04F;
+	/** Arrows deal this fraction of their damage to our skeletons (arrows pass between the bones). */
+	public static final float SKELETON_ARROW_DAMAGE_FACTOR = 0.25F;
+	/** Arrows that hit a zombie's head deal this many times their damage. */
+	public static final float ZOMBIE_HEADSHOT_FACTOR = 2.0F;
+	/** The top quarter of a zombie's hitbox counts as its head (adult: 0.49 of 1.95 blocks, the head cube is 0.5). */
+	public static final float HEAD_FRACTION_OF_HEIGHT = 0.25F;
+	/** Idle woken zombies look for other woken zombies this often (ticks) ... */
+	public static final int DRIFT_INTERVAL_TICKS = 200;
+	/** ... within this many blocks horizontally (6 up and down) ... */
+	public static final double DRIFT_RANGE = 24.0;
+	/** ... where zombies within this distance of the nearest one count as its group ... */
+	public static final double DRIFT_GROUP_RADIUS = 8.0;
+	/** ... and walk to the group's centre, stopping this close. */
+	public static final double DRIFT_STOP_DISTANCE = 3.0;
+
 	// Robbing: one item per empty-hand use; armor always risks more than the weapon.
 	public static final float ROB_WEAPON_WAKE_CHANCE = 0.1F;
 	public static final float ROB_ARMOR_WAKE_CHANCE = 0.3F;
