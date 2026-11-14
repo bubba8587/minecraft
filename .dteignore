@@ -21,3 +21,4 @@ run
 *.jar
 player-docs/.obsidian
 .cache
+.claude
