@@ -19,7 +19,8 @@ Reworks Minecraft's mobs, a family at a time. Part 1 is the undead: skeletons an
 - **Dig them up.** Mining a sleeping undead with a Silk Touch pickaxe gives you its body as an item you can place again (careful: it can still wake up); its weapon and armor drop separately. Anything else only leaves a bone or rotten flesh (and the gear).
 - **Animals don't wake them.** Cows and pigs wandering through a graveyard are safe; you, other monsters and arrows landing nearby are not.
 - **Place them.** A sleeping-undead item can be placed again (it turns to face you). Placed ones can wake too, so they make good traps, or just decoration if you're careful.
-- **Woken undead are tougher and slower.** Much more health, weak fists, slow on their feet: easy to run from, hard to kill. They never despawn and keep the gear they slept with (it always drops when they die). A zombie that wakes with empty hands grabs a sword, axe or spear lying right next to it.
+- **Woken undead are tougher and slower.** Much more health, weak fists, slow on their feet: easy to run from, hard to kill. They never despawn and keep the gear they slept with (it always drops when they die). An undead that wakes with empty hands arms itself from loot on display within a few blocks (a skeleton will take a bow too); failing that, a zombie grabs a sword, axe or spear lying right next to it.
+- **Loot on display.** Weapons and tools can lie on the ground, hang on a wall, stand stuck point-down in the ground, or be buried with only the handle showing, looking just like the real item (resource packs and modded items too). Use one with an empty hand to take it. Buried ones have to be dug up with a shovel, which is noisy enough to wake sleeping undead nearby; picking up the others is quiet, and silent if you sneak. Breaking one drops the item. Watch out: a waking undead will grab a weapon on display near it.
 - **Fewer monsters at night.** Natural monster spawning is cut to 15 % of normal. Witch huts, ocean monuments, pillager outposts, Nether fortresses, spawners and trial spawners are unchanged.
 
 ## How to use
@@ -34,6 +35,7 @@ Comes with vanilla-style 16x textures. For higher resolution, turn on **Bubba's 
 
 - `/gamerule bubbas_reworked_mobs:monster_cap_percent <0-100>`: how many monsters spawn naturally, as a percentage of normal (default 15).
 - `/gamerule bubbas_reworked_mobs:cut_monster_spawns false`: turn the spawn cut off completely, for example if you use another mod that controls spawning.
+- `/bubbas_reworked_mobs display <ground|buried|wall|stuck> <item>` (operators, for building and testing): puts an item on display where you're looking, turned toward you; `wall` hangs it on the side of the block you look at. Add a position (and optionally `north`, `south`, `east` or `west`) to place it somewhere exact. There's no survival way to put items on display yet.
 
 ## Works with
 

@@ -149,9 +149,9 @@ public class BubbasReworkedMobsClientGameTest implements FabricClientGameTest {
 		view(context, server, x + 3.5, y - 1.3, sz + 3.5, 180.0F, 5.0F, "display-sword-low");
 		server.runCommand("gamemode creative @p");
 		// Bow and trident rows.
-		view(context, server, x + 3.5, y + 0.2, sz - 5 + 4.5, 180.0F, 28.0F, "display-bow-front");
+		view(context, server, x + 3.0, y + 0.2, sz - 5 + 3.6, 180.0F, 30.0F, "display-bow-front");
 		view(context, server, x + 9.5, y + 0.3, sz - 5 + 0.5, 90.0F, 30.0F, "display-bow-side");
-		view(context, server, x + 3.5, y + 0.2, sz - 10 + 4.5, 180.0F, 28.0F, "display-trident-front");
+		view(context, server, x + 3.0, y + 0.2, sz - 10 + 3.6, 180.0F, 30.0F, "display-trident-front");
 		view(context, server, x + 9.5, y + 0.3, sz - 10 + 0.5, 90.0F, 30.0F, "display-trident-side");
 		// The wall, straight on and from the side.
 		view(context, server, x + 1.5, y, wz + 3.5, 180.0F, 10.0F, "display-wall");
@@ -159,6 +159,7 @@ public class BubbasReworkedMobsClientGameTest implements FabricClientGameTest {
 		// The grave, from the foot and from the side.
 		view(context, server, gx + 1.0, y + 0.5, gz + 4.0, 180.0F, 35.0F, "display-grave");
 		view(context, server, gx - 2.5, y + 0.2, gz - 0.5, 270.0F, 30.0F, "display-grave-side");
+		view(context, server, gx + 1.0, y - 0.4, gz + 1.2, 180.0F, 45.0F, "display-grave-close");
 	}
 
 	private static void display(TestServerContext server, String placement, String item, int x, int y, int z) {

@@ -38,7 +38,7 @@ public class LootDisplayRenderer implements BlockEntityRenderer<LootDisplayBlock
 	/** How deep a stuck item's point goes into the ground. */
 	private static final float STUCK_DEPTH = 0.1F;
 	/** How far a buried item's grip end sticks up, and how far it leans toward {@code facing}. */
-	private static final float BURIED_TOP = 0.3F;
+	private static final float BURIED_TOP = 0.4F;
 	private static final float BURIED_LEAN = 25.0F;
 	/** The FIXED display transform of item/generated turns the model 180 degrees about Y; undo that. */
 	private static final float UNDO_FIXED = 180.0F;
