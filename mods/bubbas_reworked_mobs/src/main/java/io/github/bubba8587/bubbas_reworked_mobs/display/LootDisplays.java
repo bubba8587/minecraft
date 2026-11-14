@@ -80,7 +80,7 @@ public final class LootDisplays {
 	 * block entities of the (already loaded) chunks in range rather than every block position, so it costs the
 	 * number of block entities nearby, not the volume. Never loads chunks.
 	 */
-	public static @Nullable BlockPos findNearest(ServerLevel level, Vec3 centre, double range, Predicate<BlockPos> allowed) {
+	public static @Nullable BlockPos findNearest(ServerLevel level, Vec3 centre, double range, Predicate<LootDisplayBlockEntity> allowed) {
 		double rangeSqr = range * range;
 		@Nullable BlockPos best = null;
 		double bestSqr = Double.MAX_VALUE;
@@ -100,7 +100,7 @@ public final class LootDisplays {
 					}
 					BlockPos pos = display.getBlockPos();
 					double distSqr = centre.distanceToSqr(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
-					if (distSqr <= rangeSqr && distSqr < bestSqr && allowed.test(pos)) {
+					if (distSqr <= rangeSqr && distSqr < bestSqr && allowed.test(display)) {
 						best = pos;
 						bestSqr = distSqr;
 					}

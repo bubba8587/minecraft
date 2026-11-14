@@ -224,7 +224,10 @@ Store "synthetic" per position in a chunk attachment when the item is placed (`n
 
 ---
 
-## Exact files for bubbas_crafting_tweaks (not applied; the owner decides)
+## Exact files for bubbas_crafting_tweaks
+
+Applied 2026-11-14, with one change: the loot override and synthetic table live in the companion mod's own data (`mods/bubbas_crafting_tweaks/src/main/resources/data/`), not the datapack, and the synthetic table drops one diamond 25 % of the time (as built: `specs/crafting-tweaks-mod.md`). The plan as first written:
+
 
 With approach C the datapack needs only these (the property itself comes from the mod; without it the pack behaves as today):
 1. `data/bubbas_crafting_tweaks/recipe/blast2diamond.json`: add `"minecraft:block_state": { "synthetic": "true" }` to `result.components` (keep the `item_name`).
