@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# dte:B4,B6
+# dte:B4,B6,B12,B13
 """Create a new Fabric mod under mods/<modid>/, wired into the shared build with game tests.
 
   python3 tools/new-mod.py <modid> "<Display Name>" [--description "..."]
@@ -11,9 +11,9 @@ import json, re, sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-AUTHOR = "bubba8587"            # until the inbox item `namespace` is answered
-GROUP = "io.github.bubba8587"   # until the inbox item `namespace` is answered
-LICENSE = "All-Rights-Reserved"  # until the inbox item `license` is answered
+AUTHOR = "bubba8587"            # B13 ownerNamespace
+GROUP = "io.github.bubba8587"   # B13 ownerNamespace
+LICENSE = "MIT"                 # B12 mitLicense
 
 
 def camel(modid):

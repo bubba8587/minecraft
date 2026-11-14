@@ -7,7 +7,7 @@
 	"authors": [
 		"bubba8587"
 	],
-	"license": "All-Rights-Reserved",
+	"license": "MIT",
 	"environment": "*",
 	"entrypoints": {
 		"main": [

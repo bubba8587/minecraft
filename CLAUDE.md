@@ -1,4 +1,4 @@
-<!-- dte:A2,B1,B10,B11,B4,B5,B6,B7,B8,B9 -->
+<!-- dte:A2,B1,B4,B5,B6,B7,B8,B9,B10,B11,B12,B13,B14 -->
 # Working in this repo
 
 A home for a series of Minecraft mods, datapacks and resource packs, made with Fabric and released on Modrinth. The owner is technically minded but not a programmer: explain in plain language and hand over things they can run or look at (A3 ownerSteersByPlay).
@@ -65,9 +65,9 @@ The repo always targets the latest non-snapshot release and moves promptly when 
 
 Every mod has server game tests for its main behavior; anything visual gets a client game test with a screenshot you look at before saying it works. Every datapack has PackTest test functions (misode's PackTest, see `docs/knowledge/datapacks.md`) covering its behavior, loads clean with `tools/packload.py`, and passes `tools/packtest.py` in CI. A bug fix ships with the test that would have caught it.
 
-## Releasing (B2 modrinthReleases, B7 tagPublishes)
+## Releasing (B14 modrinthAiCompliant, B7 tagPublishes)
 
-Releases go out from CI on a tag `<project>/v<version>`. Nothing is published while the inbox items `license`, `namespace` and `modrinth-ai-rule` are open. Never make AI-generated images (icons, gallery, textures) for a Modrinth page: Modrinth's rules ban them (see `docs/knowledge/publishing.md`).
+Releases go out from CI on a tag `<project>/v<version>`. A project goes to **Modrinth** only when it meets Modrinth's generative-AI rules (`docs/knowledge/publishing.md`): the "Contains AI-generated content" disclosure is always on, no icon, gallery or page image is AI-generated, and a person made a substantial part of the project (design, textures, models or code). Otherwise it is released on **GitHub Releases** until it qualifies. Before the first Modrinth release of a project, say to the owner which human-made parts carry it over the bar. Never make AI-generated images for a project page.
 
 ## Container notes (cloud sessions)
 
@@ -78,5 +78,5 @@ Releases go out from CI on a tag `<project>/v<version>`. Nothing is published wh
 
 ## Style
 
-- Java: tabs, Mojang names, one class per registered concept group (`ModItems`, `ModBlocks`...). Mod id lowercase with underscores; Java packages `io.github.bubba8587.<modid>` until the `namespace` inbox item is answered.
+- Java: tabs, Mojang names, one class per registered concept group (`ModItems`, `ModBlocks`...). Mod id lowercase with underscores; author `bubba8587`, Java packages `io.github.bubba8587.<modid>` (B13 ownerNamespace); license MIT (B12 mitLicense).
 - Commit and push as you go on the session's branch. Messages say what changed and which leaf governs it.
