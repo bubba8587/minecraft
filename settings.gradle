@@ -1,0 +1,22 @@
+pluginManagement {
+	repositories {
+		maven { name = 'Fabric'; url = 'https://maven.fabricmc.net/' }
+		mavenCentral()
+		gradlePluginPortal()
+	}
+}
+
+plugins {
+	// Lets Gradle download the JDK named in each project's toolchain if it isn't installed.
+	id 'org.gradle.toolchains.foojay-resolver-convention' version '1.0.0'
+}
+
+rootProject.name = 'minecraft'
+
+// Every folder under mods/ with a build.gradle is a mod subproject, named after its folder.
+file('mods').eachDir { dir ->
+	if (new File(dir, 'build.gradle').exists()) {
+		include ":${dir.name}"
+		project(":${dir.name}").projectDir = dir
+	}
+}

@@ -1,0 +1,60 @@
+// Shared build logic for every mod in mods/. Applied from each mod's build.gradle with:
+//   apply from: rootProject.file('gradle/fabric-mod.gradle')
+// Expects the mod's gradle.properties to set mod_id, mod_version, maven_group.
+
+version = "${project.mod_version}+${project.minecraft_version}"
+group = project.maven_group
+base { archivesName = project.mod_id }
+
+loom {
+	splitEnvironmentSourceSets()
+	mods {
+		"${project.mod_id}" {
+			sourceSet sourceSets.main
+			sourceSet sourceSets.client
+		}
+	}
+}
+
+repositories {
+	maven { name = 'Modrinth'; url = 'https://api.modrinth.com/maven'; content { includeGroup 'maven.modrinth' } }
+	maven { name = 'TerraformersMC'; url = 'https://maven.terraformersmc.com/' }
+	maven { name = 'Shedaniel'; url = 'https://maven.shedaniel.me/' }
+	maven { name = 'isXander'; url = 'https://maven.isxander.dev/releases' }
+	maven { name = 'Ladysnake'; url = 'https://maven.ladysnake.org/releases' }
+	maven { name = 'Nucleoid'; url = 'https://maven.nucleoid.xyz/' }
+}
+
+dependencies {
+	minecraft "com.mojang:minecraft:${project.minecraft_version}"
+	implementation "net.fabricmc:fabric-loader:${project.loader_version}"
+	implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+}
+
+processResources {
+	def props = [
+		version          : project.version,
+		mod_id           : project.mod_id,
+		minecraft_version: project.minecraft_version,
+		loader_version   : project.loader_version,
+		java_version     : project.java_version,
+	]
+	inputs.properties props
+	filesMatching('fabric.mod.json') { expand props }
+}
+
+java {
+	toolchain { languageVersion = JavaLanguageVersion.of(project.java_version as int) }
+	withSourcesJar()
+}
+
+tasks.withType(JavaCompile).configureEach {
+	options.release = project.java_version as int
+	options.encoding = 'UTF-8'
+}
+
+jar {
+	def name = project.mod_id
+	inputs.property 'mod_id', name
+	from(rootProject.file('LICENSE')) { rename { "${it}_${name}" } }
+}

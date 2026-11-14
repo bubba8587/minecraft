@@ -1,0 +1,20 @@
+{
+	"schemaVersion": 1,
+	"id": "${mod_id}",
+	"version": "${version}",
+	"name": "Reference Mod",
+	"description": "Internal reference mod exercising many Fabric and Minecraft systems. Not published.",
+	"authors": ["bubba8587"],
+	"license": "All-Rights-Reserved",
+	"environment": "*",
+	"entrypoints": {
+		"main": ["dev.refmod.RefMod"],
+		"client": ["dev.refmod.client.RefModClient"]
+	},
+	"depends": {
+		"fabricloader": ">=${loader_version}",
+		"minecraft": "~${minecraft_version}",
+		"java": ">=${java_version}",
+		"fabric-api": "*"
+	}
+}
