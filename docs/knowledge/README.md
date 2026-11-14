@@ -18,7 +18,7 @@ These notes are a map, not the territory. Check names against the source before 
 
 - `content.md`: registries, sounds, particles, effects, potions, enchantments, recipes, loot, tags, game rules, trades, what's data-driven only. Then `content-items-blocks.md` (items, data components, tools, blocks, block entities, fluids) and `content-entities.md` (entities, AI, spawning, projectiles).
 - `systems.md`: index for `systems-serialization.md` (Codec, StreamCodec, ValueInput/Output), `systems-networking.md`, `systems-persistence.md` (attachments, SavedData), `systems-commands-text.md` (Brigadier, permissions, Components), `systems-events.md`, `systems-menus-transfer.md`, `systems-world.md` (dimensions, biomes, worldgen), `systems-resources-config-serverside.md` (resource loading, dynamic registries, config, server-side-only mods).
-- `client.md`: key mappings, HUD, screens, client events, client gametests. `client-rendering.md`: the 26.x renderer (RenderPipeline, render-state extraction, Vulkan backend), entity and block entity renderers, models, Sodium/Iris compatibility.
+- `client.md`: key mappings, HUD, GUI drawing (`GuiGraphicsExtractor`), screens, client events, sounds, toasts. `client-rendering.md`: the 26.x renderer (OpenGL/Vulkan backends, extract vs submit, RenderPipeline, shaders, `LevelRenderEvents`), entity and block entity renderers, tints, particles, Sodium/Iris compatibility. `client-models.md`: blockstate, model and item-model-definition JSON, Model Loading API, FRAPI meshes. `client-gametest.md`: client game tests and the headless recipe.
 
 ## Packs
 
