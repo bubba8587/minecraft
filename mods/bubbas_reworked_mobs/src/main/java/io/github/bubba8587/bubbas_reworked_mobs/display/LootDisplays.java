@@ -7,24 +7,27 @@ import io.github.bubba8587.bubbas_reworked_mobs.BubbasReworkedMobs;
 import io.github.bubba8587.bubbas_reworked_mobs.registry.ModBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.SectionPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Prediction;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 
 /**
  * Putting items on display and taking them off: by players (empty hand; a shovel for buried loot) and by mobs
- * (a woken undead grabbing a weapon). Taking always removes the block. Noise: an ordinary take is the quiet
+ * (any mob in {@code #grabs_loot} grabbing what is lying around, see {@code loot/LootGrabbing}). Taking always removes the block. Noise: an ordinary take is the quiet
  * {@code item_interact_finish} game event (vanilla: ignored while sneaking); digging is {@code block_destroy}, which
  * sleepers hear about three times as well (specs/undead.md "Hearing and waking").
  */
@@ -73,33 +76,50 @@ public final class LootDisplays {
 	}
 
 	/**
-	 * For a mob looking for gear: takes the nearest displayed item matching {@code wanted} whose block centre is within
-	 * {@code range} of {@code near}'s position (any placement: undead don't need shovels), removing its block.
-	 *
-	 * @return the item, or empty if none
+	 * The nearest loot display holding an item whose block centre is within {@code range} of {@code centre}. Walks the
+	 * block entities of the (already loaded) chunks in range rather than every block position, so it costs the
+	 * number of block entities nearby, not the volume. Never loads chunks.
 	 */
-	public static ItemStack takeNearest(ServerLevel level, Entity near, double range, Predicate<ItemStack> wanted) {
-		BlockPos centre = near.blockPosition();
-		int r = (int) Math.ceil(range);
+	public static @Nullable BlockPos findNearest(ServerLevel level, Vec3 centre, double range, Predicate<BlockPos> allowed) {
 		double rangeSqr = range * range;
 		@Nullable BlockPos best = null;
 		double bestSqr = Double.MAX_VALUE;
-		for (BlockPos pos : BlockPos.betweenClosed(centre.offset(-r, -r, -r), centre.offset(r, r, r))) {
-			if (!level.getBlockState(pos).is(ModBlocks.LOOT_DISPLAY)) {
-				continue;
-			}
-			double distSqr = near.distanceToSqr(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
-			if (distSqr <= rangeSqr && distSqr < bestSqr && level.getBlockEntity(pos) instanceof LootDisplayBlockEntity display
-					&& wanted.test(display.getItem())) {
-				best = pos.immutable();
-				bestSqr = distSqr;
+		int minX = SectionPos.blockToSectionCoord(centre.x - range);
+		int maxX = SectionPos.blockToSectionCoord(centre.x + range);
+		int minZ = SectionPos.blockToSectionCoord(centre.z - range);
+		int maxZ = SectionPos.blockToSectionCoord(centre.z + range);
+		for (int cx = minX; cx <= maxX; cx++) {
+			for (int cz = minZ; cz <= maxZ; cz++) {
+				LevelChunk chunk = level.getChunkSource().getChunkNow(cx, cz);
+				if (chunk == null) {
+					continue;
+				}
+				for (BlockEntity entity : chunk.getBlockEntities().values()) {
+					if (!(entity instanceof LootDisplayBlockEntity display) || display.isRemoved() || display.getItem().isEmpty()) {
+						continue;
+					}
+					BlockPos pos = display.getBlockPos();
+					double distSqr = centre.distanceToSqr(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
+					if (distSqr <= rangeSqr && distSqr < bestSqr && allowed.test(pos)) {
+						best = pos;
+						bestSqr = distSqr;
+					}
+				}
 			}
 		}
-		if (best == null) {
-			return ItemStack.EMPTY;
+		return best;
+	}
+
+	/**
+	 * A mob taking the item off the display at {@code pos} (any placement: undead don't need shovels). The block goes.
+	 *
+	 * @return the item, or empty if there was no display there
+	 */
+	public static ItemStack takeForMob(ServerLevel level, BlockPos pos) {
+		ItemStack stack = removeAndTake(level, pos);
+		if (!stack.isEmpty()) {
+			level.playSound(null, pos, SoundEvents.ITEM_PICKUP, SoundSource.HOSTILE, 0.3F, 0.7F);
 		}
-		ItemStack stack = removeAndTake(level, best);
-		level.playSound(null, best, SoundEvents.ITEM_PICKUP, SoundSource.HOSTILE, 0.3F, 0.7F);
 		return stack;
 	}
 

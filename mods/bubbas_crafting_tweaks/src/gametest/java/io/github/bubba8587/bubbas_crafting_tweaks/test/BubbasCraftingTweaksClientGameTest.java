@@ -16,7 +16,6 @@ import net.minecraft.server.packs.repository.PackRepository;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Blocks;
 
@@ -65,7 +64,6 @@ public class BubbasCraftingTweaksClientGameTest implements FabricClientGameTest 
 			player.setGameMode(GameType.SURVIVAL);
 			player.getInventory().clearContent();
 			player.getInventory().setItem(0, new ItemStack(ModItems.GLIDER));
-			player.getInventory().setItem(1, new ItemStack(Items.ELYTRA));
 		});
 		context.waitFor(mc -> mc.player.getInventory().getItem(0).is(ModItems.GLIDER));
 		context.runOnClient(mc -> mc.gui.setScreen(new InventoryScreen(mc.player)));
