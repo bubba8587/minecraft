@@ -6,11 +6,12 @@ Builds the C1 undeadRework direction. Background research: `docs/research/undead
 
 ## Dormant undead are real blocks
 
-Dormant undead are real blocks, not entities or display-entity pseudo-blocks. They can be mined with Silk Touch, cost nothing to tick in large numbers, and never count against mob caps. Waking one replaces the block with a real mob. (Moved here from the tree on the owner's word: it is a technical choice. B15 fewNewBlocks is satisfied because the owner gave the reason for these blocks.)
+Dormant undead are real blocks, not entities or display-entity pseudo-blocks. They can be mined into items (see Mining and placing sleepers), cost nothing to tick in large numbers, and never count against mob caps. Waking one replaces the block with a real mob. (Moved here from the tree on the owner's word: it is a technical choice. B15 fewNewBlocks is satisfied because the owner gave the reason for these blocks.)
 
 - Modeled on vanilla's copper golem statue: block + block entity, **no ticker**. Blockstate: `facing`, `pose`, `waterlogged`. Block entity holds the gear as the vanilla `minecraft:container` component, a lazy gear loot table (rolled on first interaction or wake), a wake cooldown and who woke it.
 - Rendering (hybrid): the body is a baked block model per pose (part of the chunk mesh, free per frame; 26.3 block models allow free per-element rotation). A block entity renderer draws only armor and held items, only when the sleeper has gear and is within 32 blocks. Pose models and renderer poses are generated from one Java pose table by datagen so they never drift apart. Armor in the renderer needs one client accessor mixin for the equipment asset manager.
 - Lying sleepers are one block with an overhanging model (collision stays one block).
+- First playable version: the block entity renderer draws the whole sleeper with the vanilla mob model and texture as placeholder art. The hybrid baked-body version and our own 16x/32x textures come before release.
 
 ## Hearing and waking
 
@@ -23,6 +24,18 @@ Dormant undead are real blocks, not entities or display-entity pseudo-blocks. Th
 
 Using a sleeper with an empty hand takes one item: held weapon first, then armor from the top down. Weapon theft rolls a small wake chance; armor theft always rolls a larger one. Opening a nearby chest makes the normal container-open noise, which sleepers hear.
 
+## Mining and placing sleepers
+
+- Mining a sleeper with any tool gives the whole mob as an item (a "sleeper" item of that undead type, no gear on it); its armor and weapons drop as separate items.
+- Sleeper items can be placed back as sleepers, and placed sleepers can come alive like generated ones (decor, traps).
+- Planned later: magic that prevents waking (on the player, applied to sleepers, etc.).
+
+## Scope and variants
+
+- Only this mod's undead change: our own entity types (woken sleepers and the rare natural spawns), tagged as undead. Vanilla zombies and skeletons elsewhere (other mods' spawners and structures) stay vanilla, and AI or animation mods that target vanilla classes don't override ours. Mob spawners will be tweaked as well (design to come).
+- Every humanoid undead variant sleeps, for now: skeleton, stray, bogged, parched, wither skeleton; zombie, husk, drowned, zombie villager. Some variants may get unique behavior later. Not yet: zombified piglin, skeleton/zombie horses, camel husk, zombie nautilus.
+- One sleeper block per variant (or a variant property), each with its own 16x and 32x textures.
+
 ## Natural spawning
 
 A small mixin scales the global and per-player monster caps by a game rule (default 15 % of vanilla). Other categories are untouched; light rules, spawners, trial spawners and structure spawns (witch huts, fortresses, monuments, outposts) stay at full strength (second mixin gates biome spawn entries only). Config to turn the cut off for compatibility with spawn-control mods.
@@ -31,6 +44,8 @@ A small mixin scales the global and per-player monster caps by a game rule (defa
 
 - Speed, health and damage through Fabric's default-attribute modify event.
 - Fist hits deal low damage but extra armor durability damage, applied in Fabric's after-damage event.
+- The early game is meant to be quite a bit tougher: high health and armor-shredding hits, balanced by undead being slow and easy to escape. (A separate future mod will drastically reduce unenchanted mining speed.)
+- Bows: zombies take extra damage from headshots; skeletons take much less damage from arrows.
 - Smite: chance per level to kill instantly with particles and a sound, using a damage type that bypasses armor and hit cooldown; added through Fabric's enchantment modify event (composes with other packs) rather than overriding `smite.json`.
 - Staggering: a client mixin at the end of the shared humanoid model setup adds the wobble (armor follows). No GeckoLib.
 - Zombies: a low-priority goal checks for nearby zombies about every 10 seconds and drifts toward them.
@@ -49,4 +64,4 @@ Sleeper on the server: 0 per tick. Hearing: under 0.05 ms per tick with 200 slee
 
 ## Open questions for the owner
 
-Listed in chat 2026-11-14; answers land here.
+- Mod name (not decided; working mod id `dormant_undead`, renamed before the first release).
