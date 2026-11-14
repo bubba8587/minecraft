@@ -362,7 +362,7 @@ public class LootDisplayGameTest {
 		});
 	}
 
-	/** Skeletons arm from displays too (they never pick up loose items), and can take a bow. */
+	/** Skeletons arm from displays too, and take a bow (one of #preferred_on_wake). */
 	@GameTest(maxTicks = 40)
 	public void wokenSkeletonTakesDisplayedBow(GameTestHelper helper) {
 		floor(helper);

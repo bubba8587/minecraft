@@ -13,6 +13,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.Monster;
@@ -175,7 +176,7 @@ public class GrabLootGameTest {
 	@GameTest(environment = ENV, maxTicks = 120)
 	public void mobNotInTheTagIgnoresDisplays(GameTestHelper helper) {
 		floor(helper);
-		Mob vanilla = mob(helper, EntityType.ZOMBIE, new BlockPos(1, 1, 1));
+		Mob vanilla = mob(helper, EntityTypes.ZOMBIE, new BlockPos(1, 1, 1));
 		helper.assertFalse(vanilla.is(ModTags.GRABS_LOOT), "vanilla zombie in #grabs_loot");
 		BlockPos pick = new BlockPos(3, 1, 1);
 		display(helper, pick, DisplayPlacement.GROUND, Items.IRON_PICKAXE);
@@ -196,8 +197,7 @@ public class GrabLootGameTest {
 	public void chasingIgnoresDisplaysIdleGoesBackForThem(GameTestHelper helper) {
 		floor(helper);
 		Monster zombie = zombie(helper, new BlockPos(0, 1, 4));
-		Villager villager = helper.spawnWithNoFreeWill(EntityType.VILLAGER, new BlockPos(7, 1, 4));
-		villager.setInvulnerable(true);
+		Villager villager = helper.spawnWithNoFreeWill(EntityTypes.VILLAGER, new BlockPos(7, 1, 4));
 		BlockPos carrot = new BlockPos(3, 1, 4);
 		display(helper, carrot, DisplayPlacement.GROUND, Items.GOLDEN_CARROT);
 		zombie.setTarget(villager);
@@ -228,8 +228,7 @@ public class GrabLootGameTest {
 				.canPickUpLoot(), "woken mobs start with vanilla pickup off");
 		Monster zombie = zombie(helper, new BlockPos(0, 1, 4));
 		zombie.setCanPickUpLoot(true);
-		Villager villager = helper.spawnWithNoFreeWill(EntityType.VILLAGER, new BlockPos(7, 1, 4));
-		villager.setInvulnerable(true);
+		Villager villager = helper.spawnWithNoFreeWill(EntityTypes.VILLAGER, new BlockPos(7, 1, 4));
 		ItemEntity sword = helper.spawnItem(Items.IRON_SWORD, Vec3.atBottomCenterOf(new BlockPos(3, 1, 4)));
 		zombie.setTarget(villager);
 		helper.succeedWhen(() -> {
