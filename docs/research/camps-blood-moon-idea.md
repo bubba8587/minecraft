@@ -1,6 +1,6 @@
 # Camps and blood moon: the owner's earlier idea (unreviewed)
 
-Shared by the owner on 2026-11-14 from a conversation several months earlier; the owner had not reviewed it against the current repo. Kept here as source material. The agent's integration notes are at the end.
+Shared by the owner on 2026-11-14 from a conversation several months earlier; the owner had not reviewed it against the current repo. Kept here as source material. **Decisions made in the repo on or after 2026-11-14 win over this older idea wherever they differ** (owner: "dont override anything from today"); e.g. natural spawning keeps the 15 % cut everywhere. The agent's integration notes are at the end.
 
 ## The idea (owner's words, condensed)
 
@@ -20,5 +20,5 @@ Earlier answers: Fabric (then "26.1"); structure generation undecided (hand-buil
 - Graveyards and crypts can use the dormant undead (sleeper blocks) as their roster: zero cost until woken, noise is the trigger, and a blood moon respawn re-places sleeper blocks in uncleared structures. No proximity spawning needed for those.
 - Camps of awake mobs (pillager-style, minibosses) still need a roster spawned on approach and restored at blood moons.
 - Key block: likely no new block needed: a vanilla block with a block entity (skull, banner) or the loot display block can carry a marker the clear logic reads (docs/knowledge/item-keyed-block-drops.md, approach A).
-- Conflicts to resolve with the owner: spawning rule (old: none above sea level, vanilla underground; current: 15 % monster cap everywhere, rare surface ambience spawns); structure authoring (old: hand-built NBT; current spec: code-generated templates).
+- Resolved: spawning keeps the current 15 % cut everywhere (owner). Still open: structure authoring (old: hand-built NBT; current spec: code-generated templates).
 - The old code plan (Yarn names, 1.21.x) is obsolete; 26.3 uses Mojang names (NaturalSpawner, SavedData, etc.).

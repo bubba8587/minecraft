@@ -66,6 +66,8 @@ Using a sleeper with an empty hand takes one item: held weapon first (main hand,
 
 ## Natural spawning
 
+Owner confirmed (2026-11-14): the cut applies everywhere (surface, caves, Nether, End), monsters only; the older camps idea's "no surface spawns, vanilla underground" does not override it.
+
 One small mixin cuts the global monster cap to a game-rule percentage (`bubbas_reworked_mobs:monster_cap_percent`, default 15) with an off switch for spawn-control mods (`bubbas_reworked_mobs:cut_monster_spawns`). It sits at HEAD of `NaturalSpawner$SpawnState#canSpawn`, the per-mob test natural spawning runs after it has picked a mob and a spot, so it sees the type and the position: biome spawns get the cut cap, while spots whose monster list comes from a structure (witch huts, monuments, outposts, fortresses) keep vanilla's cap. This replaced the earlier two-mixin plan (cap scaling + a biome-only gate) because one hook does both, and it only ever says no, so it composes with other spawn mods. The per-player cap is left at vanilla's; in multiplayer the cut global cap is what binds. Other categories, light rules, spawners, trial spawners and raids are untouched.
 
 ## Tuning
