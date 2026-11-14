@@ -1,0 +1,17 @@
+# Globs the dte scanner skips (in addition to .git and the decisions dir).
+node_modules
+vendor
+dist
+build
+target
+__pycache__
+*.min.js
+*.lock
+*.png
+*.jpg
+*.gif
+*.pdf
+# The dte tool itself: its dte: tokens belong to DTE's own tree, not this one.
+dte.py
+# Vendored DTE rule text: its citations are DTE's tree, not this one.
+vendor/dte/

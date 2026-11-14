@@ -1,0 +1,23 @@
+# Gradle / Loom
+.gradle/
+build/
+out/
+run/
+runs/
+*.class
+# IDEs
+.idea/
+*.iml
+.vscode/
+.classpath
+.project
+.settings/
+bin/
+# Python
+__pycache__/
+*.pyc
+# OS
+.DS_Store
+Thumbs.db
+# Obsidian per-user state
+decisions/.obsidian/workspace.json
