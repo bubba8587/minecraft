@@ -91,7 +91,7 @@ def main(argv):
                  and (not names or p.name in names))
     if not dps:
         sys.exit("no datapacks to test")
-    zips = [max((ROOT / "build" / "packs").glob(f"{p.name}-*.zip"), key=os.path.getmtime) for p in dps]
+    zips = [max((ROOT / "build" / "packs" / "datapacks").glob(f"{p.name}-*.zip"), key=os.path.getmtime) for p in dps]
     tests = sum(len(list(p.glob("data/*/test/**/*.mcfunction"))) for p in dps)
 
     p = props()

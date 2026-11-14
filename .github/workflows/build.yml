@@ -73,9 +73,8 @@ jobs:
           java-version: '25'
       - run: python3 tools/pack.py check
       - run: python3 tools/packload.py
-      # PackTest (misode's datapack test mod) downloads and runs third-party jars from Modrinth.
-      # Off until the owner OKs running it; enable by uncommenting.
-      # - run: python3 tools/packtest.py
+      # PackTest (misode's datapack test mod; owner approved running it 2026-11-14).
+      - run: python3 tools/packtest.py
       - if: failure()
         uses: actions/upload-artifact@v7
         with:

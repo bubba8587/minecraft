@@ -67,7 +67,7 @@ export JAVA_HOME=/opt/jdk25                      # Java 25 is required for 26.x
 python3 tools/pack.py check|build [name]         # static checks / zip packs into build/packs/
 python3 tools/texcheck.py [project]              # every 16x texture has a 32x twin (B16)
 python3 tools/packload.py [name]                 # load datapacks on the vanilla server (no mods)
-python3 tools/packtest.py [name]                 # run PackTest tests on a Fabric server (third-party jars: needs owner OK to run locally)
+python3 tools/packtest.py [name]                 # run PackTest tests on a Fabric server (owner approved)
 ```
 
 ## New Minecraft release (B10 alwaysLatest)

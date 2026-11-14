@@ -87,7 +87,7 @@ def main(argv):
     for p in dps:
         data = p / "data"
         namespaces |= {d.name for d in data.iterdir() if d.is_dir() and d.name not in ("minecraft", "c")}
-    zips = [max((ROOT / "build" / "packs").glob(f"{p.name}-*.zip"), key=os.path.getmtime) for p in dps]
+    zips = [max((ROOT / "build" / "packs" / "datapacks").glob(f"{p.name}-*.zip"), key=os.path.getmtime) for p in dps]
 
     jar = server_jar(mc)
     srv = WORK / "server"

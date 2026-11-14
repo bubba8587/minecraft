@@ -3,7 +3,7 @@
 """Build and statically check datapacks and resource packs.
 
   python tools/pack.py check [NAME ...]   check packs (all if none named)
-  python tools/pack.py build [NAME ...]   check, then zip into build/packs/<name>-<version>.zip
+  python tools/pack.py build [NAME ...]   check, then zip into build/packs/<datapacks|resourcepacks>/<name>-<version>.zip
 
 A pack is a folder under datapacks/ or resourcepacks/ with a pack.mcmeta.
 Its version comes from an optional file `VERSION` (one line); default 0.1.0.
@@ -84,7 +84,7 @@ def version(d):
 
 
 def build(kind, d):
-    out = ROOT / "build" / "packs"
+    out = ROOT / "build" / "packs" / kind  # datapacks/ and resourcepacks/ apart: a pack may have the same name in both
     out.mkdir(parents=True, exist_ok=True)
     z = out / f"{d.name}-{version(d)}.zip"
     with zipfile.ZipFile(z, "w", zipfile.ZIP_DEFLATED) as zf:
