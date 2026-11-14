@@ -77,6 +77,7 @@ public class GrabLootGoal extends Goal {
 			return false;
 		}
 		this.path = this.findPath();
+		System.out.println("GLDBG " + this.mob.getType() + " " + this.mob.blockPosition() + " target " + this.display + " / " + this.item + " path " + this.path + " skipped " + this.skipped);
 		if (this.path == null) {
 			this.skipTarget();
 			return false;
@@ -91,6 +92,7 @@ public class GrabLootGoal extends Goal {
 	}
 
 	private void skipTarget() {
+		System.out.println("GLDBG skip " + this.mob.blockPosition() + " " + this.display + " / " + this.item + " t=" + (this.mob.tickCount - this.startedAt));
 		Object target = this.display != null ? this.display : this.item;
 		if (target != null) {
 			this.skipped.put(target, this.mob.tickCount + SKIP_TICKS);
@@ -147,6 +149,7 @@ public class GrabLootGoal extends Goal {
 
 	@Override
 	public void stop() {
+		System.out.println("GLDBG stop " + this.mob.getType() + " " + this.mob.blockPosition() + " idle=" + this.idle() + " target=" + this.mob.getTarget() + " valid=" + this.targetValid() + " t=" + (this.mob.tickCount - this.startedAt) + " nav=" + this.mob.getNavigation().isDone());
 		if (this.targetValid() && this.mob.tickCount - this.startedAt >= TIMEOUT) {
 			this.skipTarget();
 		}
