@@ -21,6 +21,7 @@ import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
 import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.Identifier;
+import org.jspecify.annotations.Nullable;
 
 /**
  * One variant's vanilla mob model (placeholder art, v0), baked once per pose, with vanilla's own armor and held-item
@@ -51,7 +52,7 @@ final class PosedHumanoid<S extends HumanoidRenderState, M extends HumanoidModel
 
 	@SuppressWarnings("unchecked")
 	void submit(SleeperPose pose, HumanoidRenderState humanoid, PoseStack poseStack, SubmitNodeCollector collector, int light,
-			ModelFeatureRenderer.CrumblingOverlay breakProgress) {
+			ModelFeatureRenderer.@Nullable CrumblingOverlay breakProgress) {
 		S state = (S) humanoid;
 		M body = bodies.get(pose);
 		collector.submitModel(body, state, poseStack, body.renderType(texture), light, OverlayTexture.NO_OVERLAY, 0);

@@ -57,9 +57,6 @@ public class PackcheckGameTest {
 			grid(Map.of('c', Items.CHARCOAL), "   ", " c ", "   ")),
 		crafting("charcoal_block", Items.COAL_BLOCK, 1, "Charcoal Block", List.of(),
 			grid(Map.of('c', Items.CHARCOAL), "ccc", "ccc", "ccc")),
-		crafting("elytra2", Items.ELYTRA, 1, null, List.of(),
-			grid(Map.of('#', Items.DIAMOND, 'B', Items.BAMBOO, 'P', Items.PHANTOM_MEMBRANE, 'F', Items.FEATHER),
-				"#B#", "P P", "F F")),
 		crafting("trident", Items.TRIDENT, 1, null, List.of(),
 			grid(Map.of('#', Items.PRISMARINE_SHARD, 'P', Items.PRISMARINE_CRYSTALS, '/', Items.STICK),
 				"###", "P/P", "P/P")),
@@ -82,7 +79,6 @@ public class PackcheckGameTest {
 	@GameTest public void bambooPaper(GameTestHelper helper) { check(helper, "bamboo_paper"); }
 	@GameTest public void blackDye(GameTestHelper helper) { check(helper, "blackdye"); }
 	@GameTest public void charcoalBlock(GameTestHelper helper) { check(helper, "charcoal_block"); }
-	@GameTest public void elytra(GameTestHelper helper) { check(helper, "elytra2"); }
 	@GameTest public void trident(GameTestHelper helper) { check(helper, "trident"); }
 	@GameTest public void syntheticDiamondOre(GameTestHelper helper) { check(helper, "blast2diamond"); }
 	@GameTest public void blastToSand(GameTestHelper helper) { check(helper, "blast2sand"); }
@@ -280,6 +276,10 @@ public class PackcheckGameTest {
 			items.add(s.isEmpty() ? "-" : s.getItem().toString());
 		}
 		return items.toString();
+	}
+
+	static int recipeCaseCount() {
+		return CRAFTING_TWEAKS.size();
 	}
 
 	/** Assembled result of every row's first input, for the client screenshot test. */

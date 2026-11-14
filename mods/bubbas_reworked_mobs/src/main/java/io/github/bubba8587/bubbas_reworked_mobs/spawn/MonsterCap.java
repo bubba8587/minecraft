@@ -7,7 +7,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.NaturalSpawner;
-import net.minecraft.world.level.attribute.EnvironmentAttributes;
+import net.minecraft.world.attribute.EnvironmentAttributes;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 
 /**

@@ -24,7 +24,7 @@ public final class ModBlocks {
 			ResourceKey<Block> key = ResourceKey.create(Registries.BLOCK, BubbasReworkedMobs.id(variant.sleeperId()));
 			BlockBehaviour.Properties props = BlockBehaviour.Properties.of().setId(key)
 					.mapColor(variant.mapColor()).sound(variant.sound()).strength(1.5F)
-					.noOcclusion().pushReaction(PushReaction.DESTROY)
+					.noOcclusion().pushReaction(PushReaction.POPPED)
 					.isSuffocating((s, l, p) -> false).isViewBlocking((s, l, p) -> false);
 			SLEEPERS.put(variant, Registry.register(BuiltInRegistries.BLOCK, key, new SleeperBlock(variant, props)));
 		}

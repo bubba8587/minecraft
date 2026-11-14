@@ -75,7 +75,7 @@ public final class SleeperListener implements GameEventListener {
 			if (entity.isSteppingCarefully() && event.is(GameEventTags.IGNORE_VIBRATIONS_SNEAKING)) {
 				return false;
 			}
-			if (!awaken && entity.getType().is(ModTags.DOES_NOT_WAKE_SLEEPERS)) {
+			if (!awaken && entity.is(ModTags.DOES_NOT_WAKE_SLEEPERS)) {
 				return false;
 			}
 		}
