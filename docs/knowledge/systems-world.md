@@ -9,7 +9,7 @@ There is no code API to create a dimension: ship JSON in your mod's data pack (`
 - `data/<ns>/dimension_type/<name>.json`. 26.3 format (vanilla `the_end.json`): `ambient_light, attributes{"minecraft:visual/sky_color": "#000000", "minecraft:gameplay/bed_rule": {...}, "minecraft:audio/background_music": {...}, ...}, coordinate_scale, default_clock, has_ceiling, has_ender_dragon_fight, has_fixed_time, has_skylight, height, infiniburn, logical_height, min_y, monster_spawn_block_light_limit, monster_spawn_light_level, skybox ("overworld"|"end"|...), cardinal_light, timelines`. Old fields `ultrawarm`, `natural`, `piglin_safe`, `bed_works`, `respawn_anchor_works`, `has_raids`, `effects`, `fixed_time` are gone (moved to environment attributes / timelines). Required: `has_skylight, has_ceiling, has_ender_dragon_fight, coordinate_scale, min_y, height, logical_height, infiniburn, ambient_light, monster_spawn_light_level, monster_spawn_block_light_limit`. (src: common net/minecraft/world/level/dimension/DimensionType.java:85-133; vanilla-jar data/minecraft/dimension_type/*.json). The fabric-dimensions testmod `void_type.json` still uses the old field set; unknown fields are ignored by the codec, do not copy it.
 - Datagen: `registryBuilder.add(Registries.LEVEL_STEM, ctx -> ctx.register(KEY, new LevelStem(dimensionTypes.getOrThrow(BuiltinDimensionTypes.OVERWORLD), new FlatLevelSource(FlatLevelGeneratorSettings.getDefault(biomes, structureSets, placedFeatures)))))` (src: fabric-api biome testmod DataGeneratorEntrypoint.java).
 - Get the level: `ServerLevel lvl = server.getLevel(ResourceKey.create(Registries.DIMENSION, id))` (nullable), `server.overworld()`, `server.getAllLevels()`, `Level.OVERWORLD / NETHER / END`.
-- Custom chunk generator: `Registry.register(BuiltInRegistries.CHUNK_GENERATOR, id, MyGen.CODEC)` where `CODEC` is a `MapCodec<MyGen>`; override `codec()`, `buildTerrain(...)` (26.x signature `CompletableFuture<ChunkAccess> buildTerrain(ChunkAccess, Blender, RandomState, StructureManager, BiomeManager, @Nullable WorldGenRegion, Set<Holder<Biome>>)` UNVERIFIED as exact vanilla abstract name; testmod overrides it), `spawnOriginalMobs`, `getGenDepth`, `getSeaLevel`, `getMinY`, `getBaseHeight`, `getBaseColumn`, `addDebugScreenInfo`. Biome source via `RegistryOps.retrieveGetter(Registries.BIOME)` in the codec. (src: fabric-api fabric-dimensions-v1 testmod VoidChunkGenerator.java). Biome sources: `BuiltInRegistries.BIOME_SOURCE`.
+- Custom chunk generator: `Registry.register(BuiltInRegistries.CHUNK_GENERATOR, id, MyGen.CODEC)` where `CODEC` is a `MapCodec<MyGen>`; override `codec()`, `buildTerrain(...)` (26.x: abstract `CompletableFuture<ChunkAccess> buildTerrain(ChunkAccess, Blender, RandomState, StructureManager, BiomeManager, @Nullable WorldGenRegion, Set<Holder<Biome>>)`, was `fillFromNoise`; src ChunkGenerator.java:648), `spawnOriginalMobs`, `getGenDepth`, `getSeaLevel`, `getMinY`, `getBaseHeight`, `getBaseColumn`, `addDebugScreenInfo`. Biome source via `RegistryOps.retrieveGetter(Registries.BIOME)` in the codec. (src: fabric-api fabric-dimensions-v1 testmod VoidChunkGenerator.java). Biome sources: `BuiltInRegistries.BIOME_SOURCE`.
 - `DimensionEvents.MODIFY_ATTRIBUTES.register((Holder<DimensionType> dim, EnvironmentAttributeMap.Builder attrs, HolderLookup.Provider regs) -> { if (dim.is(BuiltinDimensionTypes.OVERWORLD)) attrs.set(EnvironmentAttributes.CLOUD_COLOR, ...); })` (new 26.1; whole fabric-dimensions-v1 API is just this event now). Dimension-level attributes rank below biome-specific ones.
 - Old `FabricDimensions.teleport(...)` is gone; vanilla `TeleportTransition` covers it.
 
@@ -38,7 +38,7 @@ BiomeModifications.addSpawn(BiomeSelectors.tag(BiomeTags.IS_FOREST), MobCategory
 BiomeModifications.addCarver(BiomeSelectors.foundInTheNether(), ResourceKey.create(Registries.CARVER, id("rift")));
 BiomeModifications.create(id("tweaks"))
     .add(ModificationPhase.REMOVALS, BiomeSelectors.includeByKey(Biomes.PLAINS),
-         ctx -> ctx.getMobSpawnSettings().removeSpawnsOfEntityType(EntityTypes.ZOMBIE))   // UNVERIFIED exact helper name; generic removeSpawns(BiPredicate) verified
+         ctx -> ctx.getMobSpawnSettings().removeSpawnsOfEntityType(EntityTypes.ZOMBIE))
     .add(ModificationPhase.ADDITIONS, BiomeSelectors.foundInOverworld(),
          ctx -> ctx.getAttributes().set(EnvironmentAttributes.SKY_COLOR, ARGB.vector3fFromRGB24(0x770000)));
 NetherBiomes.addNetherBiome(MY_BIOME, Climate.parameters(t, h, c, e, d, w, offset));
@@ -80,14 +80,14 @@ public interface Feature {
 - Registries: `Registries.FEATURE` = `worldgen/feature` (data `data/<ns>/worldgen/feature/*.json`, was `worldgen/configured_feature`), `Registries.PLACED_FEATURE` = `worldgen/placed_feature`, `BuiltInRegistries.FEATURE_TYPE` (= `worldgen/feature_type`) holds the `MapCodec`s of feature implementations. JSON has no `"config"` wrapper: `{"type": "minecraft:ore", "size": 4, "discard_chance_on_air_exposure": 0.5, "targets": [...]}`.
 - Custom feature type:
 ```java
-public record PillarFeature(BlockStateProvider block, int height) implements Feature {
+public record PillarFeature(Holder<BlockStateProvider> block, int height) implements Feature {
     public static final MapCodec<PillarFeature> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
-            BlockStateProvider.CODEC.fieldOf("block").forGetter(PillarFeature::block),   // UNVERIFIED BlockStateProvider.CODEC field name in 26.3
+            BlockStateProvider.CODEC.fieldOf("block").forGetter(PillarFeature::block),   // 26.3: CODEC is Codec<Holder<BlockStateProvider>> (id ref or inline); DIRECT_CODEC = inline only, accepts a bare BlockState
             Codec.intRange(1, 32).fieldOf("height").forGetter(PillarFeature::height)
     ).apply(i, PillarFeature::new));
     @Override public MapCodec<PillarFeature> codec() { return CODEC; }
     @Override public boolean place(WorldGenLevel level, ChunkGenerator gen, RandomSource rnd, BlockPos origin) {
-        for (int y = 0; y < height; y++) level.setBlock(origin.above(y), block.getState(level, rnd, origin.above(y)), Block.UPDATE_CLIENTS); // UNVERIFIED getState signature
+        for (int y = 0; y < height; y++) level.setBlock(origin.above(y), block.value().getState(level, rnd, origin.above(y)), Block.UPDATE_CLIENTS); // getState(LevelAccessor, RandomSource, BlockPos)
         return true;
     }
 }
@@ -120,13 +120,13 @@ Registry.register(BuiltInRegistries.FEATURE_TYPE, id("pillar"), PillarFeature.CO
 ## 6. Level / ServerLevel common operations
 
 (src: common net/minecraft/world/level/Level.java, LevelWriter.java, block/Block.java, server/level/ServerLevel.java)
-- Read: `level.getBlockState(pos)`, `getFluidState(pos)`, `getBlockEntity(pos)` (also typed `getBlockEntity(pos, type)` -> Optional UNVERIFIED), `isLoaded(pos)`, `getBiome(pos)` (Holder<Biome>), `getHeight(Heightmap.Types, x, z)`, `isClientSide()` (method, not field), `getGameTime()`, `getRandom()`, `registryAccess()`, `dimension()` (ResourceKey<Level>).
+- Read: `level.getBlockState(pos)`, `getFluidState(pos)`, `getBlockEntity(pos)` (also typed `getBlockEntity(pos, BlockEntityType<T>)` -> `Optional<T>`), `isLoaded(pos)`, `getBiome(pos)` (Holder<Biome>), `getHeight(Heightmap.Types, x, z)`, `isClientSide()` (method, not field), `getGameTime()`, `getRandom()`, `registryAccess()`, `dimension()` (ResourceKey<Level>).
 - Write: `setBlock(pos, state, flags)`, `setBlockAndUpdate(pos, state)` (= `Block.UPDATE_ALL`), `removeBlock(pos, movedByPiston)`, `destroyBlock(pos, dropResources[, breaker, updateLimit])`, `sendBlockUpdated(pos, old, new, flags)`, `updateNeighborsAt(pos, block, @Nullable Orientation)`, `blockEntityChanged(pos)`.
 - Flags (`Block.`): `UPDATE_NEIGHBORS=1, UPDATE_CLIENTS=2, UPDATE_INVISIBLE=4, UPDATE_IMMEDIATE=8, UPDATE_KNOWN_SHAPE=16, UPDATE_SUPPRESS_DROPS=32, UPDATE_MOVE_BY_PISTON=64, UPDATE_SKIP_SHAPE_UPDATE_ON_WIRE=128, UPDATE_SKIP_BLOCK_ENTITY_SIDEEFFECTS=256, UPDATE_SKIP_ON_PLACE=512`; combos `UPDATE_ALL=3`, `UPDATE_ALL_IMMEDIATE=11`, `UPDATE_NONE=260`, `UPDATE_SKIP_ALL_SIDEEFFECTS=816`; `UPDATE_LIMIT=512`.
 - Sound (server-side, plays for everyone near except `except`): `level.playSound(@Nullable Entity except, BlockPos pos, SoundEvent, SoundSource, float volume, float pitch)`; also `(except, x, y, z, SoundEvent|Holder<SoundEvent>, source, vol, pitch)`, `(except, Entity source, ...)`; pass `null` as `except` from server code so the triggering player hears it too (passing the player means "client already played it").
 - Particles (server -> clients): `serverLevel.sendParticles(ParticleOptions, x, y, z, int count, double dx, double dy, double dz, double speed)` returns count sent; overloads with `boolean overrideLimiter, boolean alwaysShow` and `ClientboundLevelParticlesPacket.RandomizationType`. `level.addParticle(...)` on the server does nothing visible.
 - Explosions: `level.explode(@Nullable Entity source, x, y, z, float radius, Level.ExplosionInteraction)` and overloads with `boolean fire`, `DamageSource`, `ExplosionDamageCalculator`; `ExplosionInteraction`: `NONE, BLOCK, MOB, TNT, TRIGGER`.
-- Entities: `serverLevel.addFreshEntity(entity)`; `EntityTypes.ZOMBIE.spawn(serverLevel, pos, EntitySpawnReason.COMMAND)` (nullable); `EntityType#create(level, EntitySpawnReason)`; `serverLevel.getEntity(int id)` / `getEntity(UUID)`; `level.getEntitiesOfClass(LivingEntity.class, aabb, e -> ...)`, `getEntities(@Nullable Entity except, AABB, Predicate)`, `getEntities(EntityTypeTest, AABB, Predicate)`, `level.getNearestPlayer(entity, maxDist)` UNVERIFIED overload; `server.getPlayerList().getPlayer(UUID)`, `getPlayerByName(String)`, `getPlayers()`. Entity type constants are in `EntityTypes` (26.x), ids in `EntityTypeIds`.
+- Entities: `serverLevel.addFreshEntity(entity)`; `EntityTypes.ZOMBIE.spawn(serverLevel, pos, EntitySpawnReason.COMMAND)` (nullable); `EntityType#create(level, EntitySpawnReason)`; `serverLevel.getEntity(int id)` / `getEntity(UUID)`; `level.getEntitiesOfClass(LivingEntity.class, aabb, e -> ...)`, `getEntities(@Nullable Entity except, AABB, Predicate)`, `getEntities(EntityTypeTest, AABB, Predicate)`, `level.getNearestPlayer(entity, maxDist)` / `getNearestPlayer(x, y, z, range, Predicate<Entity>)`; `server.getPlayerList().getPlayer(UUID)`, `getPlayerByName(String)`, `getPlayers()`. Entity type constants are in `EntityTypes` (26.x), ids in `EntityTypeIds`.
 - Game events / level events: `level.gameEvent(...)`, `level.levelEvent(@Nullable Player, int type, BlockPos, int data)` (vanilla effect ids, e.g. 2001 block break particles).
 - Chunk forcing: `serverLevel.setChunkForced(chunkX, chunkZ, true)`; tickets via `serverLevel.getChunkSource().addTicketWithRadius(TicketType.X, chunkPos, radius)` (`TicketType.FORCED, PORTAL, PLAYER_SPAWN, ...`).
 
@@ -134,7 +134,7 @@ Registry.register(BuiltInRegistries.FEATURE_TYPE, id("pillar"), PillarFeature.CO
 ```java
 HitResult hit = player.pick(5.0, 1.0f, /*fluids*/ false);                  // block (or MISS) along view
 BlockHitResult bhr = level.clip(new ClipContext(from, to, ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, entity));
-EntityHitResult ehr = ProjectileUtil.getEntityHitResult(level, shooter, from, to, aabb, e -> !e.isSpectator() && e.isPickable(), maxDistSqr); // UNVERIFIED arg order; see ProjectileUtil.java:109-157
+EntityHitResult ehr = ProjectileUtil.getEntityHitResult(player, from, to, aabb, e -> !e.isSpectator() && e.isPickable(), maxDistSqr); // (Entity except, Vec3 from, Vec3 to, AABB, Predicate, double); other overloads at ProjectileUtil.java:147-157
 HitResult any = ProjectileUtil.getHitResultOnViewVector(player, e -> true, 20.0);
 ```
 Check `hit.getType()` (`HitResult.Type.MISS/BLOCK/ENTITY`) before casting.
