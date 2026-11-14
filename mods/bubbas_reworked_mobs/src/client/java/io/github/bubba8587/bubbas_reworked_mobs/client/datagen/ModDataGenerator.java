@@ -57,7 +57,7 @@ public class ModDataGenerator implements DataGeneratorEntrypoint {
 		pack.addProvider(Models::new);
 	}
 
-	/** Any harvest tool gives the sleeper item (pose kept, gear not: the gear drops from the block entity); a bare hand leaves remains. */
+	/** A Silk Touch pickaxe gives the sleeper item (pose kept, gear not: the gear drops from the block entity); anything else leaves remains. */
 	static class BlockLoot extends FabricBlockLootSubProvider {
 		BlockLoot(FabricPackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
 			super(output, registries);
@@ -71,6 +71,7 @@ public class ModDataGenerator implements DataGeneratorEntrypoint {
 						.when(ExplosionCondition.survivesExplosion())
 						.add(LootItem.lootTableItem(block)
 								.when(MatchTool.toolMatches(ItemPredicate.Builder.item().of(items, ModTags.SLEEPER_HARVEST_TOOLS)))
+								.when(hasSilkTouch())
 								.apply(CopyBlockState.copyState(block).copy(SleeperBlock.POSE))
 								.otherwise(LootItem.lootTableItem(variant.remains())))));
 			}
@@ -84,7 +85,7 @@ public class ModDataGenerator implements DataGeneratorEntrypoint {
 
 		@Override
 		protected void addTags(HolderLookup.Provider registries) {
-			builder(ModTags.SLEEPER_HARVEST_TOOLS).forceAddTag(ItemTags.PICKAXES).forceAddTag(ItemTags.AXES).forceAddTag(ItemTags.SHOVELS).forceAddTag(ItemTags.HOES);
+			builder(ModTags.SLEEPER_HARVEST_TOOLS).forceAddTag(ItemTags.PICKAXES);
 			builder(ModTags.SLEEPER_WEAPONS).forceAddTag(ItemTags.SWORDS).forceAddTag(ItemTags.AXES).forceAddTag(ItemTags.SPEARS);
 		}
 	}

@@ -1,0 +1,67 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "condition": {
+        "type": "minecraft:survives_explosion"
+      },
+      "entries": [
+        {
+          "type": "minecraft:alternatives",
+          "children": [
+            {
+              "type": "minecraft:item",
+              "name": "minecraft:gold_ingot",
+              "condition": {
+                "type": "minecraft:location_check",
+                "predicate": {
+                  "block": {
+                    "blocks": "minecraft:barrel",
+                    "predicates": {
+                      "minecraft:custom_data": "{refpack_marker:1b}"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "type": "minecraft:item",
+              "name": "minecraft:diamond",
+              "condition": {
+                "type": "minecraft:match_block",
+                "blocks": "minecraft:barrel",
+                "components": {
+                  "minecraft:custom_name": "Marked Barrel"
+                }
+              }
+            },
+            {
+              "type": "minecraft:item",
+              "name": "minecraft:emerald",
+              "condition": {
+                "type": "minecraft:match_block",
+                "blocks": "minecraft:barrel",
+                "predicates": {
+                  "minecraft:custom_data": "{refpack_marker:1b}"
+                }
+              }
+            },
+            {
+              "type": "minecraft:item",
+              "modifier": {
+                "type": "minecraft:copy_components",
+                "include": [
+                  "minecraft:custom_name"
+                ],
+                "source": "block_entity"
+              },
+              "name": "minecraft:barrel"
+            }
+          ]
+        }
+      ],
+      "rolls": 1
+    }
+  ],
+  "random_sequence": "minecraft:blocks/barrel"
+}

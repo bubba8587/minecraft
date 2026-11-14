@@ -12,10 +12,16 @@
             {
               "type": "minecraft:item",
               "condition": {
-                "type": "minecraft:match_tool",
-                "predicate": {
-                  "items": "#bubbas_reworked_mobs:sleeper_harvest_tools"
-                }
+                "type": "minecraft:all_of",
+                "terms": [
+                  {
+                    "type": "minecraft:match_tool",
+                    "predicate": {
+                      "items": "#bubbas_reworked_mobs:sleeper_harvest_tools"
+                    }
+                  },
+                  "minecraft:tool/can_silk_touch"
+                ]
               },
               "modifier": {
                 "type": "minecraft:copy_state",

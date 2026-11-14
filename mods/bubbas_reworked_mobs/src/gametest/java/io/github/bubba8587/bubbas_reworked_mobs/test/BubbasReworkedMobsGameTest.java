@@ -161,6 +161,23 @@ public class BubbasReworkedMobsGameTest {
 		});
 	}
 
+	/** A pig walking right past never wakes a sleeper; a player walking the same path does (so this can't pass by accident). */
+	@GameTest(environment = "bubbas_reworked_mobs-test:hearing_animal", maxTicks = 100)
+	public void animalsDoNotWakeSleepers(GameTestHelper helper) {
+		floor(helper);
+		placeSleeper(helper, UndeadVariant.SKELETON, SLEEPER, SleeperPose.SITTING, ALWAYS);
+		net.minecraft.world.entity.animal.pig.Pig pig = helper.spawn(net.minecraft.world.entity.EntityTypes.PIG, new BlockPos(4, 1, 1));
+		for (int i = 0; i < 12; i++) {
+			pig.setOnGround(true);
+			pig.move(MoverType.SELF, new Vec3(0.0, 0.0, 0.25));
+		}
+		helper.runAfterDelay(30, () -> {
+			helper.assertBlockPresent(ModBlocks.sleeper(UndeadVariant.SKELETON), SLEEPER);
+			helper.assertFalse(helper.getBlockEntity(SLEEPER, SleeperBlockEntity.class).isWakePending(), "a pig woke the sleeper");
+			helper.succeed();
+		});
+	}
+
 	@GameTest(environment = "bubbas_reworked_mobs-test:hearing_sneak", maxTicks = 60)
 	public void sneakingNearbyDoesNotWakeSleeper(GameTestHelper helper) {
 		floor(helper);
@@ -343,11 +360,11 @@ public class BubbasReworkedMobsGameTest {
 	// --- mining -----------------------------------------------------------------------------------
 
 	@GameTest
-	public void miningWithAToolGivesSleeperItemAndDropsGear(GameTestHelper helper) {
+	public void miningWithSilkTouchPickaxeGivesSleeperItemAndDropsGear(GameTestHelper helper) {
 		SleeperBlockEntity sleeper = placeSleeper(helper, UndeadVariant.ZOMBIE, SLEEPER, SleeperPose.LYING, 0.0F);
 		giveGear(sleeper, fullGear());
 		ServerPlayer player = (ServerPlayer) helper.makeMockServerPlayer(GameType.SURVIVAL);
-		player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.IRON_PICKAXE));
+		player.setItemInHand(InteractionHand.MAIN_HAND, silkTouch(helper, Items.IRON_PICKAXE));
 		player.gameMode.destroyBlock(helper.absolutePos(SLEEPER));
 		helper.assertBlockPresent(Blocks.AIR, SLEEPER);
 		List<ItemEntity> drops = helper.getLevel().getEntitiesOfClass(ItemEntity.class, new AABB(helper.absolutePos(SLEEPER)).inflate(2.0));
@@ -360,6 +377,28 @@ public class BubbasReworkedMobsGameTest {
 			helper.assertTrue(drops.stream().anyMatch(e -> e.getItem().is(gear.getItem())), "gear not dropped: " + gear);
 		}
 		helper.succeed();
+	}
+
+	/** Without Silk Touch, or with Silk Touch on anything but a pickaxe, a sleeper leaves remains (and its gear). */
+	@GameTest
+	public void miningWithoutSilkTouchPickaxeLeavesRemains(GameTestHelper helper) {
+		for (ItemStack tool : List.of(new ItemStack(Items.IRON_PICKAXE), silkTouch(helper, Items.IRON_AXE), silkTouch(helper, Items.IRON_SHOVEL))) {
+			placeSleeper(helper, UndeadVariant.SKELETON, SLEEPER, SleeperPose.SITTING, 0.0F);
+			ServerPlayer player = (ServerPlayer) helper.makeMockServerPlayer(GameType.SURVIVAL);
+			player.setItemInHand(InteractionHand.MAIN_HAND, tool);
+			player.gameMode.destroyBlock(helper.absolutePos(SLEEPER));
+			helper.assertItemEntityNotPresent(ModItems.sleeper(UndeadVariant.SKELETON), SLEEPER, 2.0);
+			helper.assertItemEntityPresent(Items.BONE, SLEEPER, 2.0);
+			helper.killAllEntitiesOfClass(ItemEntity.class);
+		}
+		helper.succeed();
+	}
+
+	private static ItemStack silkTouch(GameTestHelper helper, net.minecraft.world.item.Item item) {
+		ItemStack stack = new ItemStack(item);
+		stack.enchant(helper.getLevel().registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT)
+				.getOrThrow(net.minecraft.world.item.enchantment.Enchantments.SILK_TOUCH), 1);
+		return stack;
 	}
 
 	@GameTest

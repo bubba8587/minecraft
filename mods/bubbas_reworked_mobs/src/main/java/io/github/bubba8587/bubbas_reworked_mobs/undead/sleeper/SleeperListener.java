@@ -78,6 +78,9 @@ public final class SleeperListener implements GameEventListener {
 			if (!awaken && entity.is(ModTags.DOES_NOT_WAKE_SLEEPERS)) {
 				return false;
 			}
+			if (!awaken && isAnimal(entity)) {
+				return false; // animals, bats and fish wandering through never wake sleepers (owner's call)
+			}
 		}
 		if (context.affectedState() != null && context.affectedState().is(BlockTags.DAMPENS_VIBRATIONS)) {
 			return false;
@@ -117,5 +120,11 @@ public final class SleeperListener implements GameEventListener {
 			}
 		}
 		return true;
+	}
+
+	/** Passive wildlife: every mob category except monsters and misc (players, villagers, golems, projectiles). */
+	static boolean isAnimal(Entity entity) {
+		net.minecraft.world.entity.MobCategory category = entity.getType().getCategory();
+		return category != net.minecraft.world.entity.MobCategory.MONSTER && category != net.minecraft.world.entity.MobCategory.MISC;
 	}
 }
