@@ -2,7 +2,10 @@
 package io.github.bubba8587.bubbas_reworked_mobs.undead.entity;
 
 import io.github.bubba8587.bubbas_reworked_mobs.loot.GrabLootGoal;
+import io.github.bubba8587.bubbas_reworked_mobs.undead.UndeadCombat;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.monster.skeleton.Skeleton;
@@ -23,6 +26,12 @@ public class WokenSkeleton extends Skeleton {
 	protected void registerGoals() {
 		super.registerGoals();
 		this.goalSelector.addGoal(5, new GrabLootGoal(this, 1.0));
+	}
+
+	/** Arrows mostly pass between the bones (UndeadCombat). */
+	@Override
+	public boolean hurtServer(ServerLevel level, DamageSource source, float damage) {
+		return super.hurtServer(level, source, UndeadCombat.skeletonDamage(source, damage));
 	}
 
 	@Override

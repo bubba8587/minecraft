@@ -8,10 +8,12 @@
 		"fabric-gametest": [
 			"io.github.bubba8587.bubbas_reworked_mobs.test.BubbasReworkedMobsGameTest",
 			"io.github.bubba8587.bubbas_reworked_mobs.test.LootDisplayGameTest",
-			"io.github.bubba8587.bubbas_reworked_mobs.test.GrabLootGameTest"
+			"io.github.bubba8587.bubbas_reworked_mobs.test.GrabLootGameTest",
+			"io.github.bubba8587.bubbas_reworked_mobs.test.UndeadCombatGameTest"
 		],
 		"fabric-client-gametest": [
-			"io.github.bubba8587.bubbas_reworked_mobs.test.BubbasReworkedMobsClientGameTest"
+			"io.github.bubba8587.bubbas_reworked_mobs.test.BubbasReworkedMobsClientGameTest",
+			"io.github.bubba8587.bubbas_reworked_mobs.test.UndeadGaitClientGameTest"
 		]
 	},
 	"mixins": [
