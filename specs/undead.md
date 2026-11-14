@@ -26,6 +26,18 @@ Dormant undead are real blocks, not entities or display-entity pseudo-blocks. Th
 - Each sleeper has a `sensitivity` (block entity NBT, default 1) that multiplies every wake chance: 0 never wakes (decor, warded), large always wakes (traps). It is the hook for the planned anti-waking magic, and tests use it instead of seeding randomness.
 - The woken mob is persistent (never despawns, outside the mob cap), keeps the sleeper's custom name, always drops its gear, targets the waker if it is a survival player, and a zombie that wakes empty-handed grabs a sword/axe/spear lying within 3 blocks.
 
+## Loot on display (shared block)
+
+Weapons near sleepers, and later other loot, are shown with a dedicated block rather than as dropped items or item frames (owner's choice: it looks better than grabbing swords off item frames, and later loot systems reuse it). It is a deliberate new block under B15 fewNewBlocks; the owner gave the reason.
+
+- One block holding exactly one real item (any weapon or tool; armor later if useful) in a block entity. Lives in Bubba's Reworked Mobs' shared code (not under undead); may move to a loot mod later.
+- Blockstate `placement`: `ground` (lying flat), `buried` (mostly underground, grip showing), `wall` (hung or leaning against the wall it's attached to), `stuck` (planted point-down). Plus `facing`, `waterlogged`. More placements can be added.
+- Rendering: the item's own model, posed per placement, so any item (vanilla or modded, any resource pack) looks right with no extra art.
+- Taking: use with an empty hand takes the item and removes the block. `buried` needs a shovel and makes more noise (sleepers hear it). Breaking the block drops the item.
+- A woken undead without a weapon grabs one from a display block within 3 blocks.
+- Worldgen and structures place it next to sleepers, half-buried in graves, hung on crypt walls.
+- Player placement (decor) not decided yet.
+
 ## Robbing
 
 Using a sleeper with an empty hand takes one item: held weapon first (main hand, then off hand), then armor from the top down. Weapon theft rolls a small wake chance (10 %); armor theft always rolls a larger one (30 %); both times the sleeper's sensitivity. A failed roll wakes it 2 ticks later, angry at the thief. Opening a nearby chest makes the normal container-open noise, which sleepers hear.
