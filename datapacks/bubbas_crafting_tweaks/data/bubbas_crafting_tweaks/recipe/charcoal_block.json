@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "group": "coal",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:charcoal",
+    "minecraft:charcoal",
+    "minecraft:charcoal",
+    "minecraft:charcoal",
+    "minecraft:charcoal",
+    "minecraft:charcoal",
+    "minecraft:charcoal",
+    "minecraft:charcoal",
+    "minecraft:charcoal"
+  ],
+  "result": {
+    "id": "minecraft:coal_block",
+    "components": {
+      "minecraft:item_name": "Charcoal Block"
+    }
+  }
+}

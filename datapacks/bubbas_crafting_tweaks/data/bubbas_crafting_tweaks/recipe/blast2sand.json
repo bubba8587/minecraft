@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:blasting",
+  "group": "blast",
+  "category": "blocks",
+  "ingredient": [
+    "minecraft:gravel",
+    "minecraft:glass"
+  ],
+  "result": {
+    "id": "minecraft:sand"
+  },
+  "experience": 0,
+  "cookingtime": 200
+}

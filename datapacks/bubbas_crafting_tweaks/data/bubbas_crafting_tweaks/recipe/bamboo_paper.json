@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "LLL"
+  ],
+  "key": {
+    "L": "minecraft:bamboo"
+  },
+  "result": {
+    "id": "minecraft:paper",
+    "components": {
+      "minecraft:item_name": "Bamboo Paper"
+    },
+    "count": 2
+  },
+  "show_notification": true
+}

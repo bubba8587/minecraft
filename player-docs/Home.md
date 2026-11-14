@@ -6,7 +6,9 @@ All projects target the latest full release of Minecraft. See [[Version Status]]
 
 ## Projects
 
-Nothing released yet. Each project gets a page in `Projects/` when it's ready for players.
+- [[Bubba's Crafting Tweaks]] (datapack)
+
+Each project gets a page in `Projects/` when it's ready for players.
 
 ## Getting started
 

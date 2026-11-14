@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:blasting",
+  "group": "blast",
+  "category": "blocks",
+  "ingredient": [
+    "minecraft:andesite",
+    "minecraft:diorite",
+    "minecraft:granite"
+  ],
+  "result": {
+    "id": "minecraft:quartz"
+  },
+  "experience": 0.1,
+  "cookingtime": 100
+}

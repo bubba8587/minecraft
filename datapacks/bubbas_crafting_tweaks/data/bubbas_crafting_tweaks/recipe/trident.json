@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "###",
+    "P/P",
+    "P/P"
+  ],
+  "key": {
+    "#": "minecraft:prismarine_shard",
+    "P": "minecraft:prismarine_crystals",
+    "/": "stick"
+  },
+  "result": {
+    "id": "minecraft:trident",
+    "count": 1
+  },
+  "show_notification": true
+}

@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:smoking",
+  "category": "misc",
+  "ingredient": "minecraft:rotten_flesh",
+  "result": {
+    "id": "minecraft:leather",
+    "components": {
+      "minecraft:lore": [
+        "Cured zombie flesh. Gross..."
+      ]
+    }
+  },
+  "experience": 1,
+  "cookingtime": 300
+}
