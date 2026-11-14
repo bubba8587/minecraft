@@ -121,7 +121,7 @@ public class SleeperRenderer implements BlockEntityRenderer<SleeperBlockEntity, 
 		poseStack.pushPose();
 		poseStack.translate(0.5F, 0.0F, 0.5F);
 		// Same turn as LivingEntityRenderer#setupRotations for a mob facing this way; the model's front is then -Z.
-		poseStack.mulPose(Axis.YP.rotationDegrees(180.0F - state.facing.toYRot()));
+		poseStack.rotateDegrees(Axis.YP, 180.0F - state.facing.toYRot());
 		SleeperPoses.placeInBlock(poseStack, state.pose);
 		poseStack.scale(-1.0F, -1.0F, 1.0F);
 		poseStack.translate(0.0F, -1.501F, 0.0F);

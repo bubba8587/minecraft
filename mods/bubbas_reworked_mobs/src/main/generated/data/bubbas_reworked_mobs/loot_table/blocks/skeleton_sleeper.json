@@ -1,0 +1,39 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "condition": {
+        "type": "minecraft:survives_explosion"
+      },
+      "entries": [
+        {
+          "type": "minecraft:alternatives",
+          "children": [
+            {
+              "type": "minecraft:item",
+              "condition": {
+                "type": "minecraft:match_tool",
+                "predicate": {
+                  "items": "#bubbas_reworked_mobs:sleeper_harvest_tools"
+                }
+              },
+              "modifier": {
+                "type": "minecraft:copy_state",
+                "block": "bubbas_reworked_mobs:skeleton_sleeper",
+                "properties": [
+                  "pose"
+                ]
+              },
+              "name": "bubbas_reworked_mobs:skeleton_sleeper"
+            },
+            {
+              "type": "minecraft:item",
+              "name": "minecraft:bone"
+            }
+          ]
+        }
+      ],
+      "rolls": 1
+    }
+  ]
+}

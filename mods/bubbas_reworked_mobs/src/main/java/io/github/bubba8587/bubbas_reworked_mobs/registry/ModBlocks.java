@@ -25,7 +25,7 @@ public final class ModBlocks {
 			BlockBehaviour.Properties props = BlockBehaviour.Properties.of().setId(key)
 					.mapColor(variant.mapColor()).sound(variant.sound()).strength(1.5F)
 					.noOcclusion().pushReaction(PushReaction.POPPED)
-					.isSuffocating((s, l, p) -> false).isViewBlocking((s, l, p) -> false);
+					.isSuffocating((s, l, p) -> false).isViewBlocking((s, l, p, box) -> false);
 			SLEEPERS.put(variant, Registry.register(BuiltInRegistries.BLOCK, key, new SleeperBlock(variant, props)));
 		}
 	}

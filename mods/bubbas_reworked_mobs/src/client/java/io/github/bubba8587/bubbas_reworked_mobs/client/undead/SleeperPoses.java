@@ -53,7 +53,7 @@ public final class SleeperPoses {
 			case LYING -> {
 				// Feet toward the front, head toward the back, lying on its back; the body overhangs half a block each way.
 				poseStack.translate(0.0F, 0.25F, -1.0F);
-				poseStack.mulPose(Axis.XP.rotationDegrees(90.0F));
+				poseStack.rotateDegrees(Axis.XP, 90.0F);
 			}
 		}
 	}
