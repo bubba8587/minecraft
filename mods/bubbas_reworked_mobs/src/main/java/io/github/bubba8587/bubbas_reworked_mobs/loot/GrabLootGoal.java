@@ -150,6 +150,15 @@ public class GrabLootGoal extends Goal {
 	@Override
 	public void stop() {
 		System.out.println("GLDBG stop " + this.mob.getType() + " " + this.mob.blockPosition() + " idle=" + this.idle() + " target=" + this.mob.getTarget() + " valid=" + this.targetValid() + " t=" + (this.mob.tickCount - this.startedAt) + " nav=" + this.mob.getNavigation().isDone());
+		try {
+			java.lang.reflect.Field f = Mob.class.getDeclaredField("goalSelector");
+			f.setAccessible(true);
+			net.minecraft.world.entity.ai.goal.GoalSelector sel = (net.minecraft.world.entity.ai.goal.GoalSelector) f.get(this.mob);
+			sel.getAvailableGoals().forEach(g -> { if (g.isRunning()) System.out.println("GLDBG   running " + g.getPriority() + " " + g.getGoal()); });
+			new Throwable("GLDBG trace").printStackTrace(System.out);
+		} catch (ReflectiveOperationException e) {
+			System.out.println("GLDBG " + e);
+		}
 		if (this.targetValid() && this.mob.tickCount - this.startedAt >= TIMEOUT) {
 			this.skipTarget();
 		}
