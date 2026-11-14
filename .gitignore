@@ -23,3 +23,4 @@ Thumbs.db
 decisions/.obsidian/workspace.json
 mods/*/src/main/generated/.cache/
 player-docs/.obsidian/workspace*.json
+.claude/worktrees/
