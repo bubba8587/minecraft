@@ -2,6 +2,8 @@
 <!-- covers: mods/*/src/main/resources/assets/*/textures/*, mods/*/src/main/resources/resourcepacks/*, resourcepacks/* -->
 # Textures: 16x and 32x
 
+We make our own textures for everything we add, in both resolutions. Faithful 32x is the style reference for the 32x set, not a dependency: whether Faithful's own pack covers our content is never a design consideration.
+
 Every custom texture exists twice: a 16x version in vanilla style and a 32x version in the style of Faithful 32x. Each 32x texture is exactly twice the width and height of its 16x twin and has the same path.
 
 **Mods.** The 16x set is the mod's normal assets, `src/main/resources/assets/<modid>/textures/...`. The 32x set is a built-in resource pack inside the same jar at `src/main/resources/resourcepacks/<modid>_32x/`, with its own `pack.mcmeta` and the same `assets/<modid>/textures/...` paths. The mod registers it on the client with `ResourceLoader.registerBuiltinPack(Identifier.fromNamespaceAndPath(MOD_ID, MOD_ID + "_32x"), container, PackActivationType.NORMAL)` and a display name ending in "32x (Faithful style)", so players switch it on in the Resource Packs screen, above Faithful 32x if they use it.
