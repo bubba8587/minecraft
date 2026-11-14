@@ -1,0 +1,15 @@
+{
+	"schemaVersion": 1,
+	"id": "bubbas_crafting_tweaks-test",
+	"version": "1.0.0",
+	"name": "Bubba's Crafting Tweaks Tests",
+	"environment": "*",
+	"entrypoints": {
+		"fabric-gametest": [
+			"io.github.bubba8587.bubbas_crafting_tweaks.test.BubbasCraftingTweaksGameTest"
+		],
+		"fabric-client-gametest": [
+			"io.github.bubba8587.bubbas_crafting_tweaks.test.BubbasCraftingTweaksClientGameTest"
+		]
+	}
+}
