@@ -22,6 +22,7 @@ Parked ideas and open items, newest first within each project. Agents add to it 
 - **Drawback sizes** (owner will playtest): currently 10% each, under 20% stacked.
 - **Tipped arrow vs gem arrow of the same effect** (owner: come back to it): now the higher level wins (a Poison II tipped arrow beats a longer, near-perfect Poison gem arrow); alternative is comparing total effect (level x time).
 - **Turtle Master gem's Slowness stacking** (owner: undecided, playtest): its Slowness part adds to other Slowness (a drunk Turtle Master potion, Slowness drawbacks) instead of following "stronger applies" like its Resistance part.
+- **Perfect Invisibility set detection range** (owner: fine for now, revisit): real invisibility and the gems' stealth multiply, so mobs notice the wearer at about 11% of normal range (armor still shows).
 - **Gem inversion** (owner idea, 2026-11-14): some way to turn a gem into its opposite (e.g. Mining Fatigue into Haste), so odd harmful gems have another use. Not designed yet.
 
 ## Repo
