@@ -123,6 +123,7 @@ As built (`undead/UndeadCombat`, `undead/entity/DriftToHordeGoal`, client `clien
 
 ## Grave Talisman (v0)
 
+- **How players get it (owner, 2026-11-14): found only, no recipe.** It will be loot in graves and crypts once worldgen builds them, and possibly a rare find on sleepers. Until then it is creative-only.
 Owner's idea, deliberately loose: "a talisman that faintly glows near undead." First version, everything here open to tuning. Working name Grave Talisman (item `bubbas_reworked_mobs:grave_talisman`); the owner may rename it.
 
 - **What it does:** glows when undead are near, brighter the closer; nothing else (no gameplay effect). Undead = our sleeper blocks and any entity in `#minecraft:undead` (vanilla undead included, not only ours).

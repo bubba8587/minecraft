@@ -4,6 +4,7 @@
 Parked ideas and open items, newest first within each project. Agents add to it when the owner parks something; details live in the linked spec.
 
 ## Bubba's Reworked Mobs
+- **Grave Talisman as loot:** found only (owner). Place it in grave/crypt loot when worldgen builds them; maybe a rare find on sleepers. Open tuning questions in `specs/undead.md`.
 - **Bury-break system:** how buried loot comes out (shovel-only vs breaking by hand, noise, tools). Today: shovel digs it out loudly; breaking by hand also works, slowly like packed dirt. `specs/undead.md`, Loot on display.
 - **Survival players placing items on display** (decor). Owner: "will need care and consideration." Ops-only command for now. `specs/undead.md`, Loot on display.
 - Anti-waking magic (on the player, applied to sleepers). `specs/undead.md`.
