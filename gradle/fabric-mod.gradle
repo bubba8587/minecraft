@@ -95,6 +95,10 @@ tasks.matching { it.name == 'runGameTest' }.configureEach { t ->
 		def m = gametestMarker.get().asFile
 		forceGametests || !m.exists() || m.text.trim() != fingerprintOf(gametestInputs)
 	}
+	// Disk: the server game tests place every run's test areas at a new random spot in the same world, which is never
+	// reset, so it grew by tens of MB a run (293 MB seen). Start each run from a fresh world.
+	def gametestWorld = file('build/run/gameTest/world')
+	t.doFirst { gametestWorld.deleteDir() }
 	t.doLast {
 		def m = gametestMarker.get().asFile
 		m.parentFile.mkdirs()
@@ -106,6 +110,9 @@ tasks.matching { it.name == 'runGameTest' }.configureEach { t ->
 // see the mod's ClientTests helper). Without the property every client test runs, as CI does.
 def clientTestsFilter = providers.gradleProperty('clientTests')
 tasks.matching { it.name == 'runClientGameTest' }.configureEach { t ->
+	// Disk: client tests create a new world per run in saves/; start from none.
+	def clientSaves = file('build/run/clientGameTest/saves')
+	t.doFirst { clientSaves.deleteDir() }
 	if (clientTestsFilter.isPresent()) {
 		t.jvmArgs("-Dbubba.clientTests=${clientTestsFilter.get()}")
 	}

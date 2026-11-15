@@ -94,6 +94,7 @@ Agents do all building and testing here; the owner never touches it. So keeping 
 - Configuration cache is on, and server game tests skip themselves when a mod's code and resources match the last passing run (`gradle/fabric-mod.gradle`). `-PrerunGametests` forces them. Don't undo either without measuring.
 - When a step feels slow, time it, find the cause, fix it, and update the timings table in `specs/quality.md`. Mention speedups (and slowdowns) to the owner in a line.
 - Slow things worth attacking next are listed in `specs/quality.md` under Speed.
+- **Don't fill the owner's disk (owner's instruction).** Every run starts clean: screenshot folders are wiped per run, and `gradle/fabric-mod.gradle` deletes the game test worlds (`build/run/gameTest/world`, client `saves/`) before each run, since they otherwise grow every run. Delete your own copies of screenshots once you've looked at them, and never leave per-run output (worlds, logs, copies) accumulating anywhere.
 
 ## Quality bar (`specs/quality.md`)
 
