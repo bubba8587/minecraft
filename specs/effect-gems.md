@@ -1,4 +1,5 @@
 <!-- dte:C4,B9,B15 -->
+<!-- covers: docs/research/effect-gems-*, tools/gem-balance.py -->
 # Bubba's Infused Gems (spec, early design)
 
 Builds the C4 effectGems direction as **Bubba's Infused Gems** (owner's name), mod id `bubbas_infused_gems`, Modrinth slug `bubbas-infused-gems` (free on 2026-11-14). Independent of the other mods.
@@ -40,3 +41,7 @@ Asked one at a time; answers land here.
 6. **Balance tables (owner):** with this many factors (potion type and level/duration, potion form, base gem, enchant tier and result, armor material, contiguous matching set, 3 slots x 4 pieces, stacking), run the numbers so every step is a visible upgrade and the very best is reached only by **lingering potion + diamond base + tier 3 enchant + full netherite set**, landing just under the strongest vanilla potion level. Present them as tables before building.
 7. **Gems as loot (owner):** gems of every type, and armor with gems already in it, are findable loot: chests, and **worn by mobs** (mob armor with gems socketed). Gems on mobs give the mobs those effects, including healing, harming, poison and regeneration. Instant effects (healing, harming) need a permanent form (e.g. a periodic pulse, or applied on hit): to settle in the balance work.
 5. How gems are lost (beyond popping out of broken armor): open.
+
+## Balance model
+
+The numbers for item 6 live in `tools/gem-balance.py`, which checks them and generates `docs/research/effect-gems-balance.md` (and `build/gem-balance.html` to view in a browser): `python tools/gem-balance.py`. It is a proposal for the owner; the decisions above stand, and its open questions are listed at the end of the generated page. In short: every effect is measured against its strongest vanilla potion level (1.0); a gem's strength is potion x base gem x enchant grade x armor material x matching run; gems of one effect stack strongest first with each next one counting 85% of the one before, scaled so 12 perfect gems in a full netherite set give 0.95. Change the numbers in the script, never in the generated page.
