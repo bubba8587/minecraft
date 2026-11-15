@@ -106,7 +106,8 @@
 	"form_max_tier": {
 		"normal": 1,
 		"splash": 2,
-		"lingering": 3
+		"lingering": 3,
+		"item": 3
 	},
 	"tiers": {
 		"1": [
@@ -2141,11 +2142,13 @@
 			"variants": {
 				"normal": {
 					"factor": 0.8,
-					"item": "minecraft:golden_apple"
+					"item": "minecraft:golden_apple",
+					"max_tier": 3
 				},
 				"strong": {
 					"factor": 1.0,
-					"item": "minecraft:enchanted_golden_apple"
+					"item": "minecraft:enchanted_golden_apple",
+					"max_tier": 3
 				}
 			},
 			"source": "item",
@@ -2293,7 +2296,8 @@
 			"variants": {
 				"normal": {
 					"factor": 1.0,
-					"item": "minecraft:nautilus_shell"
+					"item": "minecraft:nautilus_shell",
+					"max_tier": 3
 				}
 			},
 			"source": "item",
@@ -2358,7 +2362,8 @@
 			"variants": {
 				"normal": {
 					"factor": 1.0,
-					"item": "minecraft:suspicious_stew"
+					"item": "minecraft:suspicious_stew",
+					"max_tier": 3
 				}
 			},
 			"source": "item",
@@ -2424,7 +2429,8 @@
 			"variants": {
 				"normal": {
 					"factor": 1.0,
-					"item": "minecraft:heart_of_the_sea"
+					"item": "minecraft:heart_of_the_sea",
+					"max_tier": 3
 				}
 			},
 			"source": "item",
@@ -2555,7 +2561,8 @@
 			"variants": {
 				"normal": {
 					"factor": 1.0,
-					"item": "minecraft:wither_rose"
+					"item": "minecraft:wither_rose",
+					"max_tier": 3
 				}
 			},
 			"source": "item",
@@ -2743,7 +2750,8 @@
 			"variants": {
 				"normal": {
 					"factor": 1.0,
-					"item": "minecraft:rotten_flesh"
+					"item": "minecraft:rotten_flesh",
+					"max_tier": 3
 				}
 			},
 			"source": "item",
@@ -2830,7 +2838,8 @@
 			"variants": {
 				"normal": {
 					"factor": 1.0,
-					"item": "minecraft:glowstone_dust"
+					"item": "minecraft:glowstone_dust",
+					"max_tier": 3
 				}
 			},
 			"source": "item",
@@ -2916,7 +2925,8 @@
 			"variants": {
 				"normal": {
 					"factor": 1.0,
-					"item": "minecraft:shulker_shell"
+					"item": "minecraft:shulker_shell",
+					"max_tier": 3
 				}
 			},
 			"source": "item",
@@ -3003,7 +3013,8 @@
 			"variants": {
 				"normal": {
 					"factor": 1.0,
-					"item": "minecraft:suspicious_stew"
+					"item": "minecraft:suspicious_stew",
+					"max_tier": 3
 				}
 			},
 			"source": "item",
@@ -3089,7 +3100,8 @@
 			"variants": {
 				"normal": {
 					"factor": 1.0,
-					"item": "minecraft:pufferfish"
+					"item": "minecraft:pufferfish",
+					"max_tier": 3
 				}
 			},
 			"source": "item",
@@ -3175,7 +3187,8 @@
 			"variants": {
 				"normal": {
 					"factor": 1.0,
-					"item": "minecraft:echo_shard"
+					"item": "minecraft:echo_shard",
+					"max_tier": 3
 				}
 			},
 			"source": "item",

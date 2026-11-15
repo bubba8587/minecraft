@@ -43,7 +43,15 @@ public record InfusedGem(Holder<MobEffect> effect, String variant, GemForm form,
 
 	/** The highest enchant tier this gem can reach (owner: normal 1, splash 2, lingering 3). */
 	public int maxTier() {
-		return Balance.get().formMaxTier.getOrDefault(this.form.getSerializedName(), 1);
+		Balance b = Balance.get();
+		if (this.form == GemForm.ITEM) {
+			Balance.EffectData e = b.effect(this.key());
+			Balance.Variant v = e == null ? null : e.variants().get(this.variant);
+			if (v != null && v.maxTier() > 0) {
+				return v.maxTier(); // the model's per-source cap
+			}
+		}
+		return b.formMaxTier.getOrDefault(this.form.getSerializedName(), 1);
 	}
 
 	/** Potion factor x Infusion factor: the gem's quality before the enchant grade. */
@@ -61,7 +69,8 @@ public record InfusedGem(Holder<MobEffect> effect, String variant, GemForm form,
 	@Override
 	public void addToTooltip(Item.TooltipContext context, Consumer<Component> out, TooltipFlag flag, DataComponentGetter components) {
 		// One short line (owner): the name already has the effect, Infusion and form; no how-to lines.
-		out.accept(Component.translatable(GemText.KEY + "tooltip.potion", Component.translatable(GemText.KEY + "variant." + this.variant),
-				this.maxTier()).withStyle(ChatFormatting.GRAY));
+		out.accept((this.form == GemForm.ITEM ? Component.translatable(GemText.KEY + "tooltip.item", this.maxTier())
+				: Component.translatable(GemText.KEY + "tooltip.potion", Component.translatable(GemText.KEY + "variant." + this.variant),
+						this.maxTier())).withStyle(ChatFormatting.GRAY));
 	}
 }

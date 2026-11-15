@@ -20,18 +20,18 @@ The player places a potion in a bottle slot of a brewing stand and a **base gem*
 | Bottle slot | Ingredient | Result |
 |---|---|---|
 | Potion (normal, splash or lingering) | Base gem | Infused Gem of that effect and form |
-| Golden apple | Base gem | Infused Gem: Absorption (normal form) |
-| Enchanted golden apple | Base gem | Stronger Infused Gem: Absorption (normal form) |
-| Wither rose | Base gem | Infused Gem: Wither (normal form) |
-| Glowstone dust | Base gem | Infused Gem: Glowing (normal form) |
-| Shulker shell | Base gem | Infused Gem: Levitation (normal form) |
-| Echo shard | Base gem | Infused Gem: Darkness (normal form) |
-| Heart of the sea | Base gem | Infused Gem: Conduit Power (normal form) |
-| Nautilus shell | Base gem | Infused Gem: Dolphin's Grace (normal form) |
-| Rotten flesh | Base gem | Infused Gem: Hunger (normal form) |
-| Pufferfish | Base gem | Infused Gem: Nausea (normal form) |
-| Suspicious stew of dandelion, golden dandelion or blue orchid | Base gem | Infused Gem: Saturation (normal form) |
-| Suspicious stew of azure bluet or open eyeblossom | Base gem | Infused Gem: Blindness (normal form) |
+| Golden apple | Base gem | Infused Gem: Absorption |
+| Enchanted golden apple | Base gem | Stronger Infused Gem: Absorption |
+| Wither rose | Base gem | Infused Gem: Wither |
+| Glowstone dust | Base gem | Infused Gem: Glowing |
+| Shulker shell | Base gem | Infused Gem: Levitation |
+| Echo shard | Base gem | Infused Gem: Darkness |
+| Heart of the sea | Base gem | Infused Gem: Conduit Power |
+| Nautilus shell | Base gem | Infused Gem: Dolphin's Grace |
+| Rotten flesh | Base gem | Infused Gem: Hunger |
+| Pufferfish | Base gem | Infused Gem: Nausea |
+| Suspicious stew of dandelion, golden dandelion or blue orchid | Base gem | Infused Gem: Saturation |
+| Suspicious stew of azure bluet or open eyeblossom | Base gem | Infused Gem: Blindness |
 
 ### Base gems
 
@@ -50,7 +50,7 @@ The base gem sets the gem's **Infusion level**, which affects strength only.
 
 - **Effect**: from the potion or item used.
 - **Potion strength**: a strong (glowstone) potion makes a stronger gem, a long (redstone) potion a slightly stronger one.
-- **Form**: normal, splash or lingering. The form is the potion's form and can't be changed after brewing. It sets the highest enchanting tier: normal reaches tier 1, splash tier 2, lingering tier 3. Items in the bottle slot (golden apples, wither roses, stews and the rest) have no splash or lingering form, so their Infused Gems reach tier 1 only. *Main article: [[Enchanting Gems]]*
+- **Form**: normal, splash or lingering. The form is the potion's form and can't be changed after brewing. It sets the highest enchanting tier: normal reaches tier 1, splash tier 2, lingering tier 3. Items in the bottle slot (golden apples, wither roses, stews and the rest) have no form: their Infused Gems show no form in the name, for example *Infused Gem: Infusion IV, Absorption*, and reach tier 3 like a lingering potion's. Collecting the items is the cost. *Main article: [[Enchanting Gems]]*
 
 The item name shows these, for example *Infused Gem: Infusion III, Speed (Splash)*.
 

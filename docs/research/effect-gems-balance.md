@@ -51,7 +51,7 @@ Total for an effect, in symbols: `total = 0.9 x sum(gem_i x 0.85^(rank_i)) / sum
 | Splash | 2 | medium |
 | Lingering | 3 | strongest |
 
-The form is the potion's form, fixed at brewing; nothing raises it later (owner: potion -> gem, no other pathway). An item has no splash or lingering form, so an Infused Gem brewed from an item is normal form and reaches tier 1 at most; that gap is accepted.
+The form is the potion's form, fixed at brewing; nothing raises it later (owner: potion -> gem, no other pathway). An Infused Gem brewed from an item has no potion form: it reaches tier 3, like a lingering potion's gem (owner, 2026-11-15: every gem should be able to reach the cap unless it proves too strong; collecting twelve of the item is the cost). `ITEM_MAX_TIER_OVERRIDE` can cap one source later.
 
 ### Enchant tier outcomes
 
@@ -146,20 +146,20 @@ Every one of the 40 status effects in 26.3 (the script reads them from the sourc
 | Oozing | harmful | Craftable: oozing potion (normal, splash or lingering) + base gem (sets the Infusion level) |
 | Infested | harmful | Craftable: infested potion (normal, splash or lingering) + base gem (sets the Infusion level) |
 | Haste | beneficial | Found only: mineshaft chests (common), stronghold chests (rare), ancient city chests (hard); only beacons give Haste in vanilla; plus ominous vaults |
-| Absorption | beneficial | Craftable: golden apple (Absorption I: normal) or enchanted golden apple (Absorption IV: strong) in the bottle slot + base gem (sets the Infusion level); normal form only, so tier 1 at most |
+| Absorption | beneficial | Craftable: golden apple (Absorption I: normal) or enchanted golden apple (Absorption IV: strong) in the bottle slot + base gem (sets the Infusion level); reaches tier 3, like a lingering potion's gem (owner) |
 | Health Boost | beneficial | Found only: end city and ancient city chests (hard); no vanilla item or source gives Health Boost; plus ominous vaults |
-| Dolphin's Grace | beneficial | Craftable: nautilus shell (drowned, fishing treasure; dolphins give the effect) in the bottle slot + base gem (sets the Infusion level); normal form only, so tier 1 at most |
-| Saturation | beneficial | Craftable: suspicious stew of dandelion, golden dandelion or blue orchid (matched by its stew effect: Fabric API's components ingredient) in the bottle slot + base gem (sets the Infusion level); normal form only, so tier 1 at most |
-| Conduit Power | beneficial | Craftable: heart of the sea (buried treasure; the conduit's core) in the bottle slot + base gem (sets the Infusion level); normal form only, so tier 1 at most |
+| Dolphin's Grace | beneficial | Craftable: nautilus shell (drowned, fishing treasure; dolphins give the effect) in the bottle slot + base gem (sets the Infusion level); reaches tier 3, like a lingering potion's gem (owner) |
+| Saturation | beneficial | Craftable: suspicious stew of dandelion, golden dandelion or blue orchid (matched by its stew effect: Fabric API's components ingredient) in the bottle slot + base gem (sets the Infusion level); reaches tier 3, like a lingering potion's gem (owner) |
+| Conduit Power | beneficial | Craftable: heart of the sea (buried treasure; the conduit's core) in the bottle slot + base gem (sets the Infusion level); reaches tier 3, like a lingering potion's gem (owner) |
 | Hero of the Village | beneficial | Found only: hero-of-the-village gifts (common), pillager outpost chests (rare); only winning a raid gives it in vanilla; plus ominous vaults |
-| Wither | harmful | Craftable: wither rose (dropped where the Wither kills a mob) in the bottle slot + base gem (sets the Infusion level); normal form only, so tier 1 at most |
+| Wither | harmful | Craftable: wither rose (dropped where the Wither kills a mob) in the bottle slot + base gem (sets the Infusion level); reaches tier 3, like a lingering potion's gem (owner) |
 | Mining Fatigue | harmful | Found only: elder guardian drops (a rare extra drop, hard); vanilla's only source is the elder guardian; plus ominous vaults |
-| Hunger | harmful | Craftable: rotten flesh (Hunger I, 80% chance in vanilla) in the bottle slot + base gem (sets the Infusion level); normal form only, so tier 1 at most |
-| Glowing | harmful | Craftable: glowstone dust in the bottle slot + base gem (sets the Infusion level); normal form only, so tier 1 at most |
-| Levitation | harmful | Craftable: shulker shell in the bottle slot + base gem (sets the Infusion level); normal form only, so tier 1 at most |
-| Blindness | harmful | Craftable: suspicious stew of azure bluet or open eyeblossom (Fabric API's components ingredient) in the bottle slot + base gem (sets the Infusion level); normal form only, so tier 1 at most |
-| Nausea | harmful | Craftable: pufferfish in the bottle slot + base gem (sets the Infusion level); normal form only, so tier 1 at most |
-| Darkness | harmful | Craftable: echo shard (ancient cities) in the bottle slot + base gem (sets the Infusion level); normal form only, so tier 1 at most |
+| Hunger | harmful | Craftable: rotten flesh (Hunger I, 80% chance in vanilla) in the bottle slot + base gem (sets the Infusion level); reaches tier 3, like a lingering potion's gem (owner) |
+| Glowing | harmful | Craftable: glowstone dust in the bottle slot + base gem (sets the Infusion level); reaches tier 3, like a lingering potion's gem (owner) |
+| Levitation | harmful | Craftable: shulker shell in the bottle slot + base gem (sets the Infusion level); reaches tier 3, like a lingering potion's gem (owner) |
+| Blindness | harmful | Craftable: suspicious stew of azure bluet or open eyeblossom (Fabric API's components ingredient) in the bottle slot + base gem (sets the Infusion level); reaches tier 3, like a lingering potion's gem (owner) |
+| Nausea | harmful | Craftable: pufferfish in the bottle slot + base gem (sets the Infusion level); reaches tier 3, like a lingering potion's gem (owner) |
+| Darkness | harmful | Craftable: echo shard (ancient cities) in the bottle slot + base gem (sets the Infusion level); reaches tier 3, like a lingering potion's gem (owner) |
 | Bad Luck | harmful | Drawback only: Bad Luck only ever matters for loot and fishing, too little to be worth a gem slot, so it stays a drawback |
 | Bad Omen | - | Not a gem: a one-shot trigger, used up when a raid starts; worn permanently it would chain raids without end, and it has no partial form |
 | Raid Omen | - | Not a gem: the raid's own countdown, not something a player carries |
@@ -559,7 +559,7 @@ Worn (armor) effects are attribute modifiers, data components or small tick and 
 
 - vanilla facts: 132 facts matched against build/mcsrc/26.3
 - every ladder step (Infusion level, armor, weapon material, run, grade, potion variant) is at least +4% on the one below; Infusion VI (nether star) and netherite are the only bests; each tier's odds add up to 100%
-- a gem's own strength reaches 1.0 only from the strongest potion or source item + lingering form + tier 3 + Infusion VI (nether star), for every craftable gem; a found-only gem is perfect only from ominous loot at Infusion VI and tier 3
+- a gem's own strength reaches 1.0 only from the strongest potion (lingering) or source item + tier 3 + Infusion VI (nether star), for every craftable gem, so every one can reach the cap (owner); a found-only gem is perfect only from ominous loot at Infusion VI and tier 3
 - all 40 status effects in 26.3 are classified: 30 craftable gems, 6 found-only gems, 1 drawback-only, 4 not gems
 - 707,281 armor layouts x gem counts enumerated: only full contiguous netherite with 12 gems reaches 0.9; next best 0.874
 - 27,335 weapons x gem combinations enumerated: only a netherite weapon with 2 perfect gems reaches 0.9; next best weapon or gem count with perfect gems 0.837

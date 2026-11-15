@@ -149,6 +149,18 @@ public class EnchantingGameTest {
 		check(helper, menu.costs[0] == 0, "a finished gem can be enchanted again");
 		check(helper, player.experienceLevel == 28, "levels paid: " + player.experienceLevel);
 		menu.removed(player);
+		// An item-sourced Infused Gem (owner, 2026-11-15) reaches tier 3 like a lingering potion's, through the real table.
+		EnchantmentMenu menu2 = new EnchantmentMenu(2, player.getInventory(), ContainerLevelAccess.create(helper.getLevel(), helper.absolutePos(table)));
+		player.setExperienceLevels(30);
+		ItemStack apple = GemKit.infused("absorption", "strong", GemForm.ITEM, 6);
+		check(helper, apple.getHoverName().getString().equals("Infused Gem: Infusion VI, Absorption"), "item gem name " + apple.getHoverName().getString());
+		menu2.getSlot(0).set(apple);
+		menu2.getSlot(1).set(new ItemStack(Items.LAPIS_LAZULI, 10));
+		check(helper, menu2.costs[2] > 0, "item gem has no tier 3 row: " + java.util.Arrays.toString(menu2.costs));
+		Gem expected3 = GemEnchanting.roll(menu2.getEnchantmentSeed(), 3, apple.get(ModComponents.INFUSED_GEM));
+		check(helper, menu2.clickMenuButton(player, 2), "tier 3 refused on an item gem");
+		check(helper, expected3.equals(menu2.getSlot(0).getItem().get(ModComponents.GEM)) && expected3.tier() == 3, "item gem tier 3 roll");
+		menu2.removed(player);
 		GemKit.remove(helper, player);
 		helper.succeed();
 	}

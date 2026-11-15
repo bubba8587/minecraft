@@ -23,7 +23,7 @@
 			"bubbas_infused_gems:infused_gem": {
 				"effect": "minecraft:saturation",
 				"variant": "normal",
-				"form": "normal",
+				"form": "item",
 				"infusion": 4
 			}
 		}

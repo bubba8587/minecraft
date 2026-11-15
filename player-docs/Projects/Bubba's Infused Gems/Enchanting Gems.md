@@ -22,6 +22,7 @@ Rows above the gem's form are disabled:
 | Normal | 1 |
 | Splash | 1, 2 |
 | Lingering | 1, 2, 3 |
+| From an item (golden apple, wither rose, stew...) | 1, 2, 3 |
 
 Hovering over a row shows a hint of the result, like the enchantment clue for gear: the main effect and its strength, and if there is an extra roll, only its kind and size, not which effect. For example *Speed 100%*, *Speed 100% + minor bonus...?*, *Speed 100% + drawback...?* or *minor drawback only...?* ("minor" is a weak roll; a medium roll has no size word). The hint is exactly what the row will give. The offered results stay the same until the player enchants something, so enchanting a cheap item first gives new rolls, as in vanilla.
 
@@ -47,4 +48,4 @@ The plain result is the most common at every tier.
 - A **drawback** is a mild effect of the opposite kind, never the gem's direct opposite: a Speed gem can get Hunger, Weakness, Mining Fatigue, Bad Luck, or more rarely Poison or Wither, but never Slowness. A harmful gem's drawback can be almost any helpful effect (it lands on whatever the weapon hits, or on the wearer in armor).
 - A drawback-only gem is named like any other Gem; its tooltip shows only the drawback.
 
-The Gem's tooltip shows each effect with its strength as a percentage of a perfect gem. A perfect gem (100%) requires the strongest potion, lingering form, a nether star and tier 3.
+The Gem's tooltip shows each effect with its strength as a percentage of a perfect gem. A perfect gem (100%) requires the strongest potion in lingering form (or the strongest source item), a nether star and tier 3.

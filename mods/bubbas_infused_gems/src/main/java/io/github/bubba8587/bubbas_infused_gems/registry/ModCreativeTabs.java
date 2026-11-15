@@ -30,7 +30,8 @@ public final class ModCreativeTabs {
 					.displayItems((params, output) -> {
 						Balance b = Balance.get();
 						for (String key : b.gemEffects.stream().sorted().toList()) {
-							output.accept(infused(key, top(key), GemForm.LINGERING, 6));
+							boolean potion = b.effect(key).variants().values().stream().anyMatch(v -> v.potion() != null);
+							output.accept(infused(key, top(key), potion ? GemForm.LINGERING : GemForm.ITEM, 6));
 						}
 						for (String key : b.gemEffects.stream().sorted().toList()) {
 							output.accept(perfect(key));

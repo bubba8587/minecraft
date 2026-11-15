@@ -23,7 +23,7 @@
 			"bubbas_infused_gems:infused_gem": {
 				"effect": "minecraft:blindness",
 				"variant": "normal",
-				"form": "normal",
+				"form": "item",
 				"infusion": 2
 			}
 		}

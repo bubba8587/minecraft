@@ -98,7 +98,7 @@ public final class Balance {
 		}
 	}
 
-	public record Variant(String name, double factor, String potion, String item) {
+	public record Variant(String name, double factor, String potion, String item, int maxTier) {
 	}
 
 	private Balance(JsonObject o) {
@@ -150,7 +150,8 @@ public final class Balance {
 		if (e.has("variants")) {
 			e.getAsJsonObject("variants").entrySet().forEach(v -> {
 				JsonObject vo = v.getValue().getAsJsonObject();
-				variants.put(v.getKey(), new Variant(v.getKey(), vo.get("factor").getAsDouble(), str(vo, "potion"), str(vo, "item")));
+				variants.put(v.getKey(), new Variant(v.getKey(), vo.get("factor").getAsDouble(), str(vo, "potion"), str(vo, "item"),
+						vo.has("max_tier") ? vo.get("max_tier").getAsInt() : 0));
 			});
 		}
 		JsonObject worn = e.has("worn") ? e.getAsJsonObject("worn") : null;

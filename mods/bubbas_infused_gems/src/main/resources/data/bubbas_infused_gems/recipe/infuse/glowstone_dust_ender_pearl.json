@@ -12,7 +12,7 @@
 			"bubbas_infused_gems:infused_gem": {
 				"effect": "minecraft:glowing",
 				"variant": "normal",
-				"form": "normal",
+				"form": "item",
 				"infusion": 3
 			}
 		}

@@ -67,9 +67,9 @@ public class BrewingGameTest {
 		expect(helper, brew(helper, potion(Items.POTION, Potions.STRONG_HARMING), new ItemStack(Items.DIAMOND)), "instant_damage", "strong", GemForm.NORMAL, 4);
 		expect(helper, brew(helper, potion(Items.SPLASH_POTION, Potions.POISON), new ItemStack(Items.QUARTZ)), "poison", "normal", GemForm.SPLASH, 2);
 		// Items that carry an effect, in the bottle slot.
-		expect(helper, brew(helper, new ItemStack(Items.GOLDEN_APPLE), new ItemStack(Items.DIAMOND)), "absorption", "normal", GemForm.NORMAL, 4);
-		expect(helper, brew(helper, new ItemStack(Items.ENCHANTED_GOLDEN_APPLE), new ItemStack(Items.NETHER_STAR)), "absorption", "strong", GemForm.NORMAL, 6);
-		expect(helper, brew(helper, new ItemStack(Items.WITHER_ROSE), new ItemStack(Items.AMETHYST_SHARD)), "wither", "normal", GemForm.NORMAL, 1);
+		expect(helper, brew(helper, new ItemStack(Items.GOLDEN_APPLE), new ItemStack(Items.DIAMOND)), "absorption", "normal", GemForm.ITEM, 4);
+		expect(helper, brew(helper, new ItemStack(Items.ENCHANTED_GOLDEN_APPLE), new ItemStack(Items.NETHER_STAR)), "absorption", "strong", GemForm.ITEM, 6);
+		expect(helper, brew(helper, new ItemStack(Items.WITHER_ROSE), new ItemStack(Items.AMETHYST_SHARD)), "wither", "normal", GemForm.ITEM, 1);
 		// Not gems: an awkward potion, or a base that is no base gem.
 		check(helper, !brew(helper, potion(Items.POTION, Potions.AWKWARD), new ItemStack(Items.DIAMOND)).is(ModItems.INFUSED_GEM), "awkward potion made a gem");
 		check(helper, !brew(helper, potion(Items.POTION, Potions.SWIFTNESS), new ItemStack(Items.EMERALD)).is(ModItems.INFUSED_GEM), "emerald made a gem");
@@ -99,14 +99,14 @@ public class BrewingGameTest {
 					ItemStack reagent = new ItemStack(BuiltInRegistries.ITEM.getValue(Identifier.parse(inf.item())));
 					if (v.potion() != null) {
 						Holder<Potion> potion = BuiltInRegistries.POTION.get(Identifier.parse(v.potion())).orElseThrow();
-						for (GemForm form : GemForm.values()) {
+						for (GemForm form : new GemForm[] {GemForm.NORMAL, GemForm.SPLASH, GemForm.LINGERING}) {
 							net.minecraft.world.item.Item container = form == GemForm.NORMAL ? Items.POTION : form == GemForm.SPLASH ? Items.SPLASH_POTION : Items.LINGERING_POTION;
 							expect(helper, brew(helper, potion(container, potion), reagent), key, v.name(), form, inf.level());
 							n++;
 						}
 					} else {
 						ItemStack input = new ItemStack(BuiltInRegistries.ITEM.getValue(Identifier.parse(v.item())));
-						expect(helper, brew(helper, input, reagent), key, v.name(), GemForm.NORMAL, inf.level());
+						expect(helper, brew(helper, input, reagent), key, v.name(), GemForm.ITEM, inf.level());
 						n++;
 					}
 				}
@@ -119,7 +119,7 @@ public class BrewingGameTest {
 		}
 		expect(helper, brew(helper, potion(Items.LINGERING_POTION, Potions.LONG_INVISIBILITY), new ItemStack(Items.NETHER_STAR)), "invisibility", "long", GemForm.LINGERING, 6);
 		expect(helper, brew(helper, potion(Items.SPLASH_POTION, Potions.INFESTED), new ItemStack(Items.QUARTZ)), "infested", "normal", GemForm.SPLASH, 2);
-		expect(helper, brew(helper, new ItemStack(Items.HEART_OF_THE_SEA), new ItemStack(Items.PRISMARINE_SHARD)), "conduit_power", "normal", GemForm.NORMAL, 5);
+		expect(helper, brew(helper, new ItemStack(Items.HEART_OF_THE_SEA), new ItemStack(Items.PRISMARINE_SHARD)), "conduit_power", "normal", GemForm.ITEM, 5);
 		check(helper, n > 600, "only " + n + " recipes checked");
 		helper.succeed();
 	}
@@ -128,10 +128,10 @@ public class BrewingGameTest {
 	@GameTest
 	public void suspiciousStewsBrewByTheirEffect(GameTestHelper helper) {
 		for (ItemLike flower : new ItemLike[] {Items.DANDELION, Items.GOLDEN_DANDELION, Items.BLUE_ORCHID}) {
-			expect(helper, brew(helper, stew(flower), new ItemStack(Items.ENDER_PEARL)), "saturation", "normal", GemForm.NORMAL, 3);
+			expect(helper, brew(helper, stew(flower), new ItemStack(Items.ENDER_PEARL)), "saturation", "normal", GemForm.ITEM, 3);
 		}
 		for (ItemLike flower : new ItemLike[] {Items.AZURE_BLUET, Items.OPEN_EYEBLOSSOM}) {
-			expect(helper, brew(helper, stew(flower), new ItemStack(Items.AMETHYST_SHARD)), "blindness", "normal", GemForm.NORMAL, 1);
+			expect(helper, brew(helper, stew(flower), new ItemStack(Items.AMETHYST_SHARD)), "blindness", "normal", GemForm.ITEM, 1);
 		}
 		// Other stews, and a stew with no effect, make nothing.
 		check(helper, brew(helper, stew(Items.POPPY), new ItemStack(Items.DIAMOND)).isEmpty(), "a poppy stew made a gem");
@@ -143,7 +143,7 @@ public class BrewingGameTest {
 	@GameTest
 	public void nothingRaisesAnInfusedGemsForm(GameTestHelper helper) {
 		ItemStack normal = brew(helper, new ItemStack(Items.GOLDEN_APPLE), new ItemStack(Items.QUARTZ));
-		expect(helper, normal, "absorption", "normal", GemForm.NORMAL, 2);
+		expect(helper, normal, "absorption", "normal", GemForm.ITEM, 2);
 		check(helper, brew(helper, normal, new ItemStack(Items.GUNPOWDER)).isEmpty(), "gunpowder raised an Infused Gem");
 		check(helper, brew(helper, normal, new ItemStack(Items.DRAGON_BREATH)).isEmpty(), "dragon's breath raised an Infused Gem");
 		helper.succeed();
@@ -180,8 +180,8 @@ public class BrewingGameTest {
 				helper.fail("not brewed yet");
 			}
 			check(helper, a.key().equals("speed") && a.form() == GemForm.LINGERING && a.infusion() == 6, "stand brewed " + a);
-			check(helper, b.key().equals("darkness") && b.form() == GemForm.NORMAL && b.infusion() == 6, "stand brewed " + b);
-			check(helper, c.key().equals("saturation") && c.form() == GemForm.NORMAL && c.infusion() == 6, "stand brewed " + c);
+			check(helper, b.key().equals("darkness") && b.form() == GemForm.ITEM && b.infusion() == 6, "stand brewed " + b);
+			check(helper, c.key().equals("saturation") && c.form() == GemForm.ITEM && c.infusion() == 6, "stand brewed " + c);
 			check(helper, stand.getItem(3).isEmpty(), "nether star not used up");
 		});
 	}

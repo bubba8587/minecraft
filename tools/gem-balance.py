@@ -112,7 +112,13 @@ WEAPON_ALL = {**{m: f for m, (f, _) in WEAPON_MATERIALS.items()}, **{w: f for w,
 
 # Enchant tier outcome grades (owner's words: weak / medium / strongest).
 GRADES = {"weak": 0.50, "medium": 0.75, "strongest": 1.00}
-FORM_MAX_TIER = {"normal": 1, "splash": 2, "lingering": 3}   # owner
+FORM_MAX_TIER = {"normal": 1, "splash": 2, "lingering": 3,   # owner
+	"item": 3}  # owner (2026-11-15): an Infused Gem brewed from an item reaches tier 3; collecting 12 of the item is the cost
+# Per item source, a lower max tier for one that proves too strong: {(effect, variant): tier}. Empty: all reach tier 3.
+ITEM_MAX_TIER_OVERRIDE = {}
+
+def item_max_tier(k, v):
+	return ITEM_MAX_TIER_OVERRIDE.get((k, v), FORM_MAX_TIER["item"])
 # (label, intended-effect grade or None, [(other kind, grade)], odds). Owner (Q34): the plain result is the most common at
 # every tier, so randomness stays controllable for people who invest a lot.
 TIERS = {
@@ -734,7 +740,7 @@ def source_text(k):
 	if src[0] == "potion":
 		return f"Craftable: {E[k]['potion'].replace('_', ' ')} potion (normal, splash or lingering) + base gem (sets the Infusion level)"
 	if src[0] == "item":
-		return f"Craftable: {src[1]} in the bottle slot + base gem (sets the Infusion level); normal form only, so tier 1 at most"
+		return f"Craftable: {src[1]} in the bottle slot + base gem (sets the Infusion level); reaches tier 3, like a lingering potion's gem (owner)"
 	if E[k]["potion"]:
 		return f"Found: {src[2]}; plus ominous vaults. Also brewed from its potion (normal, splash or lingering), which has no survival recipe"
 	return f"Found only: {src[2]}; plus ominous vaults"
@@ -937,7 +943,8 @@ def run_checks():
 				errors.append(f"{k}: found-only gem perfect from {sorted(set(hits))}, expected only an ominous nether star tier 3")
 			continue
 		for var in E[k]["variants"]:
-			for form, maxtier in FORM_MAX_TIER.items():
+			forms = {f: t for f, t in FORM_MAX_TIER.items() if f != "item"} if E[k]["potion"] else {"item": item_max_tier(k, var)}
+			for form, maxtier in forms.items():
 				for tier in range(1, maxtier + 1):
 					for label, grade, _, _ in TIERS[tier]:
 						if grade is None:
@@ -948,10 +955,10 @@ def run_checks():
 								errors.append(f"{k}: gem quality above 1")
 							if q >= 1 - 1e-12:
 								hits.append((var, form, tier, b))
-		want = [(top_variant(k), "lingering", 3, BEST_BASE)]
+		want = [(top_variant(k), "lingering" if E[k]["potion"] else "item", 3, BEST_BASE)]
 		if sorted(set(hits)) != want:
 			errors.append(f"{k}: best gem reachable by {sorted(set(hits))}, expected only {want}")
-	notes.append("a gem's own strength reaches 1.0 only from the strongest potion or source item + lingering form + tier 3 + Infusion VI (nether star), for every craftable gem; a found-only gem is perfect only from ominous loot at Infusion VI and tier 3")
+	notes.append("a gem's own strength reaches 1.0 only from the strongest potion (lingering) or source item + tier 3 + Infusion VI (nether star), for every craftable gem, so every one can reach the cap (owner); a found-only gem is perfect only from ominous loot at Infusion VI and tier 3")
 
 	# 2b. Every 26.3 status effect is classified: a gem (craftable or found), drawback-only, or not a gem.
 	if SRC.exists():
@@ -1285,7 +1292,7 @@ def document(notes):
 	S.append(("h3", "Potion form -> highest enchant tier (owner)"))
 	S.append(("table", ["Form", "Highest tier", "Best grade reachable"], [
 		["Normal", "1", "weak"], ["Splash", "2", "medium"], ["Lingering", "3", "strongest"]]))
-	S.append(("p", "The form is the potion's form, fixed at brewing; nothing raises it later (owner: potion -> gem, no other pathway). An item has no splash or lingering form, so an Infused Gem brewed from an item is normal form and reaches tier 1 at most; that gap is accepted."))
+	S.append(("p", "The form is the potion's form, fixed at brewing; nothing raises it later (owner: potion -> gem, no other pathway). An Infused Gem brewed from an item has no potion form: it reaches tier 3, like a lingering potion's gem (owner, 2026-11-15: every gem should be able to reach the cap unless it proves too strong; collecting twelve of the item is the cost). `ITEM_MAX_TIER_OVERRIDE` can cap one source later."))
 	S.append(("h3", "Enchant tier outcomes"))
 	S.append(("table", ["Tier", "Outcome", "Main effect", "Extra effect", "Proposed odds"],
 		[[str(t), lab, (f"{g} ({GRADES[g]:.2f})" if g else "-"),
@@ -1633,6 +1640,7 @@ def export_data():
 					vd["potion"] = potion_id(e, v)
 				elif k in ITEM_SOURCES:
 					vd["item"] = source_item_id(ITEM_SOURCES[k][v][1])
+					vd["max_tier"] = item_max_tier(k, v)
 				d["variants"][v] = vd
 			d["source"] = src[0]
 			if src[0] == "found":
@@ -1716,7 +1724,7 @@ def brewing_recipes():
 						out.append((f"{form}_{v}_{e['potion']}_{b}", inp, k, v, form, lvl, b))
 				else:
 					name, ingredient = ITEM_SOURCES[k][v]
-					out.append((f"{name}_{b}", {"item": ingredient}, k, v, "normal", lvl, b))
+					out.append((f"{name}_{b}", {"item": ingredient}, k, v, "item", lvl, b))
 	recipes = []
 	for name, inp, k, v, form, lvl, b in out:
 		recipes.append((name + ".json", {"type": "minecraft:brewing", "input": inp, "reagent": {"item": BASE_ITEMS[b]},

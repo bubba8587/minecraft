@@ -12,7 +12,7 @@
 			"bubbas_infused_gems:infused_gem": {
 				"effect": "minecraft:absorption",
 				"variant": "strong",
-				"form": "normal",
+				"form": "item",
 				"infusion": 6
 			}
 		}

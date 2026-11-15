@@ -12,7 +12,7 @@
 			"bubbas_infused_gems:infused_gem": {
 				"effect": "minecraft:conduit_power",
 				"variant": "normal",
-				"form": "normal",
+				"form": "item",
 				"infusion": 3
 			}
 		}

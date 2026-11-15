@@ -21,7 +21,7 @@ public class InfusedGemItem extends Item {
 		if (gem == null) {
 			return super.getName(stack);
 		}
-		String key = gem.form() == GemForm.NORMAL ? "item.bubbas_infused_gems.infused_gem.named"
+		String key = gem.form() == GemForm.NORMAL || gem.form() == GemForm.ITEM ? "item.bubbas_infused_gems.infused_gem.named"
 				: "item.bubbas_infused_gems.infused_gem.named_form";
 		return Component.translatable(key, GemText.numeral(gem.infusion()), GemText.effectName(gem.effect()),
 				Component.translatable(GemText.KEY + "form." + gem.form().getSerializedName()));
