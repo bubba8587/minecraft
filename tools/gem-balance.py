@@ -3,7 +3,8 @@
 """Bubba's Infused Gems balance model and table generator (specs/effect-gems.md, "Balance model").
 
   python tools/gem-balance.py           # run the checks, then write the tables
-  python tools/gem-balance.py --check   # run the checks only, write nothing
+  python tools/gem-balance.py --check   # run the checks only, write nothing (fails if the mod export is stale)
+  python tools/gem-balance.py --export  # run the checks, then write only the mod export (balance.json, brewing recipes)
 
 Writes docs/research/effect-gems-balance.md and build/gem-balance.html (a page for the
 owner to open in a browser). Every check failure is printed and exits non-zero, and
@@ -14,7 +15,7 @@ decompiled source exists (build/mcsrc/26.3/common, made by tools/mcsrc.py) the s
 re-reads the potion list and the effect constants from it and fails if any differ, so a
 new Minecraft release can't silently change the anchors. Standard library only.
 """
-import html, itertools, math, random, re, sys
+import html, itertools, json, math, random, re, sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -1332,8 +1333,211 @@ th { background:var(--head); } tbody tr:nth-child(even) td { background:color-mi
 	return ("<!doctype html>\n<html lang=\"en\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">"
 		f"<title>Infused Gems Balance</title><style>{css}</style></head><body>\n" + "\n".join(body) + "\n</body></html>\n")
 
+# ---------------------------------------------------------------- export for the mod (one source of numbers)
+# The mod (mods/bubbas_infused_gems) reads BALANCE_JSON at startup; its brewing recipes are generated here too.
+# Run `python tools/gem-balance.py` (or `--export`) after any change; `--check` fails when the committed files are stale.
+MOD = ROOT / "mods" / "bubbas_infused_gems" / "src" / "main" / "resources"
+BALANCE_JSON = MOD / "bubbas_infused_gems" / "balance.json"
+RECIPE_DIR = MOD / "data" / "bubbas_infused_gems" / "recipe" / "infuse"
+MOD_ID = "bubbas_infused_gems"
+BASE_ITEMS = {"amethyst": "minecraft:amethyst_shard", "quartz": "minecraft:quartz", "ender_pearl": "minecraft:ender_pearl",
+	"diamond": "minecraft:diamond", "prismarine": "minecraft:prismarine_shard", "nether_star": "minecraft:nether_star"}
+# Items that brew an item-sourced Infused Gem (bottle slot), by effect and potion variant. The stews (saturation,
+# blindness) need a component-matching ingredient and wait for a later version.
+ITEM_SOURCES = {
+	"absorption": {"normal": "minecraft:golden_apple", "strong": "minecraft:enchanted_golden_apple"},
+	"dolphins_grace": {"normal": "minecraft:nautilus_shell"}, "conduit_power": {"normal": "minecraft:heart_of_the_sea"},
+	"wither": {"normal": "minecraft:wither_rose"}, "hunger": {"normal": "minecraft:rotten_flesh"},
+	"glowing": {"normal": "minecraft:glowstone_dust"}, "levitation": {"normal": "minecraft:shulker_shell"},
+	"nausea": {"normal": "minecraft:pufferfish"}, "darkness": {"normal": "minecraft:echo_shard"},
+}
+FORM_ITEMS = {"normal": "minecraft:potion", "splash": "minecraft:splash_potion", "lingering": "minecraft:lingering_potion"}
+
+# How the mod realises each effect worn (armor, on the wearer) at strength s. "attributes": vanilla attribute modifiers,
+# amount x s (curve "pow": base^s - 1; "odds": s / (1 - s)). The other keys are the numbers the mod's hooks use. These
+# are the same numbers as the effect table's descriptions above; check_export() holds them equal.
+WORN = {
+	"speed": {"attributes": [("minecraft:movement_speed", 0.4, "add_multiplied_total")]},
+	"strength": {"attributes": [("minecraft:attack_damage", 6.0, "add_value")]},
+	"jump_boost": {"attributes": [("minecraft:jump_strength", 0.2, "add_value"), ("minecraft:safe_fall_distance", 2.0, "add_value")]},
+	"haste": {"attributes": [("minecraft:block_break_speed", 0.4, "add_multiplied_total"), ("minecraft:attack_speed", 0.2, "add_multiplied_total")]},
+	"luck": {"attributes": [("minecraft:luck", 1.0, "add_value")]},
+	"unluck": {"attributes": [("minecraft:luck", -1.0, "add_value")]},
+	"slowness": {"attributes": [("minecraft:movement_speed", -0.6, "add_multiplied_total")]},
+	"weakness": {"attributes": [("minecraft:attack_damage", -4.0, "add_value")]},
+	"mining_fatigue": {"attributes": [("minecraft:block_break_speed", 0.027, "add_multiplied_total", "pow"), ("minecraft:attack_speed", -0.3, "add_multiplied_total")]},
+	"fire_resistance": {"attributes": [("minecraft:burning_time", -1.0, "add_multiplied_total")], "fire_damage_reduction": 1.0},
+	"water_breathing": {"attributes": [("minecraft:oxygen_bonus", 1.0, "add_value", "odds")]},
+	"slow_falling": {"attributes": [("minecraft:fall_damage_multiplier", -1.0, "add_multiplied_total")], "gravity_reduction": 0.07},
+	"absorption": {"attributes": [("minecraft:max_absorption", 16.0, "add_value")], "refill_ticks": 600},
+	"health_boost": {"attributes": [("minecraft:max_health", 8.0, "add_value")]},
+	"regeneration": {"heal_per_second": 0.8},
+	"resistance": {"damage_reduction": 0.8},
+	"night_vision": {"intensity": 1.0},
+	"instant_health": {"heal_curve": True},
+	"instant_damage": {"harm_curve": True},
+	"poison": {"damage_per_second": 25 / 12 * 0.8, "min_health": 1.0},
+	"wither": {"damage_per_second": 0.5},
+	"hunger": {"exhaustion_per_tick": 0.015},
+}
+# What one hit applies at potency 1.0, for effects whose hit isn't an attribute set from WORN: damage or healing per
+# second (a gem mob effect), a charged strike's damage or heal.
+HIT_UNIT = {"poison": 25 / 12 * 0.8, "wither": 0.5, "regeneration": 0.8, "resistance": 0.8, "hunger": 0.015,
+	"instant_damage": 12.0, "instant_health": 8.0}
+# What v0 of the mod implements (keep in step with the mod's GemEffects; its game test fails if they differ).
+V0_WORN = {"speed", "strength", "jump_boost", "haste", "regeneration", "resistance", "fire_resistance", "water_breathing",
+	"night_vision", "slow_falling", "instant_health", "absorption", "luck",
+	"slowness", "weakness", "mining_fatigue", "hunger", "unluck", "poison", "wither", "instant_damage"}
+V0_HIT = {"poison", "slowness", "weakness", "instant_damage", "wither", "mining_fatigue", "hunger", "unluck",
+	"speed", "strength", "jump_boost", "haste", "regeneration", "resistance", "instant_health", "luck"}
+
+def v0_ok(k):
+	"""Implemented where it matters: a beneficial effect worn, a harmful one on hit (and drawbacks both ways)."""
+	return k in (V0_WORN if E[k]["good"] else V0_HIT)
+
+def potion_id(e, variant):
+	return "minecraft:" + ("" if variant == "normal" else variant + "_") + e["potion"]
+
+def export_data():
+	effects = {}
+	for k, e in E.items():
+		src = e["source"]
+		d = {"name": e["name"], "good": e["good"], "role": e["role"], "hit_kind": e.get("kind", "scaled"),
+			"level_one": e.get("level_one", 1.0)}
+		if k in GEM_EFFECTS:
+			vf = variant_factors(e["variants"])
+			d["variants"] = {}
+			for v, f in vf.items():
+				vd = {"factor": f}
+				if src[0] == "potion":
+					vd["potion"] = potion_id(e, v)
+				elif src[0] == "item" and k in ITEM_SOURCES:
+					vd["item"] = ITEM_SOURCES[k][v]
+				d["variants"][v] = vd
+			d["source"] = src[0]
+			if src[0] == "found":
+				d["loot"] = src[1]
+			ticks, amp = arrow_anchor(k)
+			d["hit"] = {"ticks": ticks, "amplifier": amp}
+			d["other_pool"] = [] if k in OTHER_EXCLUDED else other_pool(k)
+			d["drawback_pool"] = drawback_pool(k)
+			d["v0_other_pool"] = [o for o in d["other_pool"] if v0_ok(o)]
+			d["v0_drawback_pool"] = [o for o in d["drawback_pool"] if o in V0_WORN and o in V0_HIT]
+		if k in WORN:
+			w = dict(WORN[k])
+			if "attributes" in w:
+				w["attributes"] = [{"attribute": a[0], "amount": a[1], "operation": a[2], "curve": a[3] if len(a) > 3 else "linear"}
+					for a in w["attributes"]]
+			d["worn"] = w
+		if k in HIT_UNIT:
+			d["hit_unit"] = HIT_UNIT[k]
+		d["opposites"] = sorted(OPPOSITE.get(k, ()))
+		d["never_drawback"] = k in NEVER_DRAWBACK
+		effects[k] = d
+	armor_builds = [{"name": b[0], "layout": b[2], "gems": b[3], "effect": "speed",
+		"variant": top_variant("speed") if b[4] == "top" else b[4], "base": b[5], "grade": b[6], "total": round(build_value("speed", b), 6)}
+		for b in BUILDS]
+	weapon_builds = [{"name": b[0], "weapon": b[2], "gems": b[3], "effect": "poison",
+		"variant": top_variant("poison") if b[4] == "top" else b[4], "base": b[5], "grade": b[6], "total": round(weapon_build_value("poison", b), 6)}
+		for b in WEAPON_BUILDS]
+	return {
+		"_comment": "Generated by tools/gem-balance.py from the balance model (specs/effect-gems.md). Do not edit by hand.",
+		"cap": CAP, "stack_r": STACK_R, "armor_slots": SLOTS, "weapon_slots": WEAPON_SLOTS, "pieces": PIECES,
+		"armor_norm": W, "weapon_norm": WW,
+		"heal": {"best": HEAL_BEST, "exp": HEAL_EXP},
+		"drawback": {"one": DRAWBACK_ONE, "cap": DRAWBACK_CAP, "hit_seconds": DRAWBACK_HIT_S},
+		"harm_charge_seconds": HARM_CHARGE_S, "weapon_split": WEAPON_SPLIT, "tipped_arrow_scale": TIPPED_ARROW_SCALE,
+		"infusion": [{"level": i + 1, "numeral": INFUSION[b], "base": b, "item": BASE_ITEMS[b], "factor": f}
+			for i, (b, _, f, _) in enumerate(BASE_GEMS)],
+		"armor_materials": {m: f for m, (f, _) in MATERIALS.items()}, "helmet_only": sorted(HELMET_ONLY),
+		"run": {str(k): v for k, v in RUN.items()},
+		"weapon_materials": WEAPON_ALL,
+		"grades": GRADES, "form_max_tier": FORM_MAX_TIER,
+		"tiers": {str(t): [{"label": o[0], "main": o[1],
+			"other": next((g for kind, g in o[2] if kind == "other"), None),
+			"drawback": any(kind == "drawback" for kind, _ in o[2]), "odds": o[3]} for o in outs] for t, outs in TIERS.items()},
+		"loot": {k: {"name": v[0], "bases": v[1], "tiers": v[2]} for k, v in LOOT.items()},
+		"effects": effects,
+		"inverse_pairs": [[a, b] for a, b, _ in INVERSE_PAIRS],
+		"v0": {"worn": sorted(V0_WORN), "hit": sorted(V0_HIT), "brewable": sorted(k for k in GEM_EFFECTS if brewable_v0(k))},
+		"checks": {"armor_builds": armor_builds, "weapon_builds": weapon_builds,
+			"drawback_totals": [round(drawback_total(n), 6) for n in range(0, 13)],
+			"heal_fraction": {f"{s:.3f}": round(heal_fraction(s), 6) for s in (0.034, 0.155, 0.495, 0.813, 0.95)}},
+	}
+
+def brewable_v0(k):
+	"""v0 brews an Infused Gem for an effect that has a potion or a source item and is implemented in v0."""
+	e = E[k]
+	if e["source"][0] == "potion":
+		return v0_ok(k)
+	return e["source"][0] == "item" and k in ITEM_SOURCES and v0_ok(k) and k in ("absorption", "wither")
+
+def brewing_recipes():
+	"""(file name, recipe) for every v0 Infused Gem: potion (3 forms) or source item + base gem -> Infused Gem."""
+	out = []
+	for k in GEM_EFFECTS:
+		if not brewable_v0(k):
+			continue
+		e = E[k]
+		for v in variant_factors(e["variants"]):
+			for lvl, (b, _, _, _) in enumerate(BASE_GEMS, 1):
+				if e["source"][0] == "potion":
+					for form, item in FORM_ITEMS.items():
+						inp = {"item": item, "potion_contents": {"potions": potion_id(e, v)}}
+						out.append((f"{form}_{v}_{e['potion']}_{b}", inp, k, v, form, lvl, b))
+				else:
+					out.append((f"{ITEM_SOURCES[k][v].split(':')[1]}_{b}", {"item": ITEM_SOURCES[k][v]}, k, v, "normal", lvl, b))
+	recipes = []
+	for name, inp, k, v, form, lvl, b in out:
+		recipes.append((name + ".json", {"type": "minecraft:brewing", "input": inp, "reagent": {"item": BASE_ITEMS[b]},
+			"output": {"id": f"{MOD_ID}:infused_gem", "components": {f"{MOD_ID}:infused_gem":
+				{"effect": f"minecraft:{k}", "variant": v, "form": form, "infusion": lvl}}}}))
+	return recipes
+
+def check_export(errors):
+	"""The WORN numbers match the effect table (the descriptions the owner reads)."""
+	for k, amount in [("speed", 0.4), ("strength", 6.0), ("luck", 1.0), ("health_boost", 8.0), ("absorption", 16.0)]:
+		if abs(E[k]["value"](0.5) - amount * 0.5) > 1e-9 or WORN[k]["attributes"][0][1] != amount:
+			errors.append(f"export: {k} worn attribute {WORN[k]['attributes'][0][1]} differs from the effect table")
+	if abs(E["regeneration"]["value"](0.5) - WORN["regeneration"]["heal_per_second"] * 0.5) > 1e-9:
+		errors.append("export: regeneration heal rate differs from the effect table")
+	if abs(E["resistance"]["value"](0.5) - WORN["resistance"]["damage_reduction"] * 0.5) > 1e-9:
+		errors.append("export: resistance reduction differs from the effect table")
+	if abs(E["poison"]["unit"] - HIT_UNIT["poison"]) > 1e-9 or E["weakness"]["unit"] != -WORN["weakness"]["attributes"][0][1] \
+			or E["slowness"]["unit"] != -WORN["slowness"]["attributes"][0][1] or E["wither"]["unit"] != HIT_UNIT["wither"]:
+		errors.append("export: a harmful unit differs from the effect table")
+	for k in V0_WORN | V0_HIT:
+		if k not in E:
+			errors.append(f"export: v0 names unknown effect {k}")
+	for k in V0_WORN:
+		if k not in WORN:
+			errors.append(f"export: {k} is implemented worn but has no WORN entry")
+
+def export_files():
+	"""{path: text} for every generated file in the mod."""
+	files = {BALANCE_JSON: json.dumps(export_data(), indent="\t", sort_keys=False) + "\n"}
+	for name, r in brewing_recipes():
+		files[RECIPE_DIR / name] = json.dumps(r, indent="\t") + "\n"
+	return files
+
+def stale_exports():
+	files = export_files()
+	stale = [p for p, t in files.items() if not p.exists() or p.read_text(encoding="utf-8") != t]
+	extra = [p for p in RECIPE_DIR.glob("*.json") if p not in files] if RECIPE_DIR.exists() else []
+	return files, stale, extra
+
+def write_exports():
+	files, stale, extra = stale_exports()
+	for p in extra:
+		p.unlink()
+	for p in stale:
+		p.parent.mkdir(parents=True, exist_ok=True)
+		p.write_text(files[p], encoding="utf-8", newline="\n")
+	print(f"export: {len(files)} files ({len(stale)} written, {len(extra)} removed) under {MOD.relative_to(ROOT)}")
+
 def main():
 	errors, notes = run_checks()
+	check_export(errors)
 	for n in notes:
 		print("ok   " + n)
 	if errors:
@@ -1342,6 +1546,14 @@ def main():
 		print(f"{len(errors)} check(s) failed; nothing written.", file=sys.stderr)
 		sys.exit(1)
 	if "--check" in sys.argv:
+		_, stale, extra = stale_exports()
+		if stale or extra:
+			print(f"FAIL mod export is stale ({len(stale)} changed, {len(extra)} extra); run python tools/gem-balance.py --export", file=sys.stderr)
+			sys.exit(1)
+		print("ok   mod export (balance.json, brewing recipes) is up to date")
+		return
+	write_exports()
+	if "--export" in sys.argv:
 		return
 	S = document(notes)
 	OUT_MD.parent.mkdir(parents=True, exist_ok=True)
