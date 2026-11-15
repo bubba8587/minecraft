@@ -22,6 +22,13 @@ public final class ModComponents {
 			b -> b.persistent(Gem.CODEC).networkSynchronized(Gem.STREAM_CODEC).cacheEncoding());
 	public static final DataComponentType<SocketedGems> SOCKETED_GEMS = register("socketed_gems",
 			b -> b.persistent(SocketedGems.CODEC).networkSynchronized(SocketedGems.STREAM_CODEC).cacheEncoding());
+	/**
+	 * Armor hidden by the perfect Invisibility set (owner, 2026-11-15): the piece's real equipment asset, while its
+	 * equippable points at the empty one. Restored (and removed) as soon as the set stops hiding it.
+	 */
+	public static final DataComponentType<net.minecraft.resources.ResourceKey<net.minecraft.world.item.equipment.EquipmentAsset>> HIDDEN_ASSET = register("hidden_asset",
+			b -> b.persistent(net.minecraft.resources.ResourceKey.codec(net.minecraft.world.item.equipment.EquipmentAssets.ROOT_ID))
+					.networkSynchronized(net.minecraft.resources.ResourceKey.streamCodec(net.minecraft.world.item.equipment.EquipmentAssets.ROOT_ID)));
 
 	private ModComponents() {
 	}

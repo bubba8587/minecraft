@@ -80,6 +80,9 @@ public final class WornEffects {
 		g.bubbas$setWornGems(GemTotals.ofArmor(entity));
 		updateAttributes(entity);
 		dropKeptEffects(entity);
+		if (!entity.level().isClientSide()) {
+			HiddenArmor.update(entity);
+		}
 		double absorptionNow = g.bubbas$wornGems().value("absorption");
 		if (absorptionNow > absorptionBefore + 1e-9) {
 			// Owner (playtest): a new or bigger shield fills at once on equip (and on joining or respawning), but only if

@@ -242,7 +242,7 @@ public final class GemActions {
 		}
 		double lo = num("ender", "diameter_min", 4.0);
 		double diameter = lo + (num("ender", "diameter_max", 16.0) - lo) * Math.min(r, 1.0);
-		for (int attempt = 0; attempt < 16; attempt++) {
+		for (int attempt = 0; attempt < 64; attempt++) {
 			double x = entity.getX() + (entity.getRandom().nextDouble() - 0.5) * diameter;
 			double y = Math.clamp(entity.getY() + (entity.getRandom().nextDouble() - 0.5) * diameter, level.getMinY(), level.getMinY() + level.getLogicalHeight() - 1);
 			double z = entity.getZ() + (entity.getRandom().nextDouble() - 0.5) * diameter;
@@ -254,7 +254,9 @@ public final class GemActions {
 				return true;
 			}
 		}
-		return false;
+		// No safe spot found (rare: walled in, over the void): the projectile still misses, so a perfect set is certain.
+		level.playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.CHORUS_FRUIT_TELEPORT, SoundSource.PLAYERS, 1.0F, 1.0F);
+		return true;
 	}
 
 	/** Breeze worn: with chance, an incoming projectile is deflected the way a breeze deflects it. */

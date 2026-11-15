@@ -44,7 +44,7 @@ Values are for the best build (90%); weaker builds give less.
 | Fire Resistance | Less fire and lava damage, and fire goes out sooner; the perfect set gives real Fire Resistance |
 | Water Breathing | Air lasts longer underwater; the perfect set gives real Water Breathing |
 | Night Vision | The world is partly lit in the dark (fully at the best build) |
-| Invisibility | Mobs notice the wearer from closer the stronger the gems (at the best, 7% of the usual range); from about half strength the wearer is hidden on the locator bar. Only the perfect complete set makes the wearer truly invisible; armor still shows, as with the potion. |
+| Invisibility | Mobs notice the wearer from closer the stronger the gems (at the best, 7% of the usual range); from about half strength the wearer is hidden on the locator bar. Only the perfect complete set makes the wearer truly invisible, and then the armor disappears too (held items still show). Taking off any piece, or removing a gem, brings the armor back at once, and armor that is dropped, stored or taken off always looks normal again. |
 | Slow Falling | Slower falling and less fall damage; the best build falls 1.8 times slower than the potion, with no fall damage |
 | Healing | Each survived hit or fall returns part of the lost health (up to about 27%) |
 | Absorption | A shield of extra health (up to 16, an enchanted golden apple's). It fills as soon as the gems are put on (or on joining the game), then refills 30 seconds after the wearer was last hurt. Swapping the armor off and on again does not refill it more than once every 30 seconds. |

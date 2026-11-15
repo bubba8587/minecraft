@@ -54,7 +54,7 @@ public class GemsClientGameTest implements FabricClientGameTest {
 
 	@Override
 	public void runTest(ClientGameTestContext context) {
-		if (!List.of("inventory", "colors", "enchanting", "smithing", "worn", "hits", "mobs", "screen", "levitation", "beyond", "jump", "weaving").stream().anyMatch(ClientTests::run)) {
+		if (!List.of("inventory", "colors", "enchanting", "smithing", "worn", "hits", "mobs", "screen", "levitation", "beyond", "jump", "weaving", "invisible").stream().anyMatch(ClientTests::run)) {
 			return;
 		}
 		try (TestSingleplayerContext sp = context.worldBuilder()
@@ -102,6 +102,9 @@ public class GemsClientGameTest implements FabricClientGameTest {
 			}
 			if (ClientTests.run("weaving")) {
 				weaving(context, server);
+			}
+			if (ClientTests.run("invisible")) {
+				invisible(context, server);
 			}
 		}
 	}
@@ -707,6 +710,71 @@ public class GemsClientGameTest implements FabricClientGameTest {
 		server.runOnServer(s -> {
 			for (EquipmentSlot slot : io.github.bubba8587.bubbas_infused_gems.effect.GemTotals.ARMOR) {
 				player(s).setItemSlot(slot, ItemStack.EMPTY);
+			}
+		});
+	}
+
+	private static net.minecraft.world.entity.monster.zombie.Zombie standingZombie(ServerPlayer p, BlockPos at, Gem g, boolean vanillaInvisibility) {
+		net.minecraft.world.entity.monster.zombie.Zombie z = net.minecraft.world.entity.EntityTypes.ZOMBIE.create(p.level(),
+				net.minecraft.world.entity.EntitySpawnReason.COMMAND);
+		z.setPos(at.getX() + 0.5, at.getY(), at.getZ() + 0.5);
+		z.setNoAi(true);
+		z.setPersistenceRequired();
+		z.setYRot(180.0F);
+		z.setYHeadRot(180.0F);
+		z.setYBodyRot(180.0F);
+		z.setItemSlot(EquipmentSlot.HEAD, GemKit.socketed(Items.NETHERITE_HELMET, g, g, g));
+		z.setItemSlot(EquipmentSlot.CHEST, GemKit.socketed(Items.NETHERITE_CHESTPLATE, g, g, g));
+		z.setItemSlot(EquipmentSlot.LEGS, GemKit.socketed(Items.NETHERITE_LEGGINGS, g, g, g));
+		z.setItemSlot(EquipmentSlot.FEET, GemKit.socketed(Items.NETHERITE_BOOTS, g, g, g));
+		z.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_SWORD));
+		if (vanillaInvisibility) {
+			z.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.INVISIBILITY, 20 * 600, 0));
+		}
+		p.level().addFreshEntity(z);
+		io.github.bubba8587.bubbas_infused_gems.effect.WornEffects.refresh(z);
+		return z;
+	}
+
+	/**
+	 * Owner (2026-11-15): the perfect Invisibility set hides the wearer's armor too (held items still show). Left: a zombie
+	 * in the perfect set (real invisibility from the gems). Right: a near-perfect set plus a vanilla Invisibility potion,
+	 * whose armor shows as in vanilla.
+	 */
+	private static void invisible(ClientGameTestContext context, TestServerContext server) {
+		server.runCommand("difficulty easy");
+		server.runCommand("time set noon");
+		BlockPos at = stationPos(server).offset(0, 0, 4);
+		server.runOnServer(s -> {
+			ServerPlayer p = player(s);
+			for (EquipmentSlot slot : io.github.bubba8587.bubbas_infused_gems.effect.GemTotals.ARMOR) {
+				p.setItemSlot(slot, ItemStack.EMPTY);
+			}
+			p.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
+			p.teleportTo(at.getX() + 0.5, at.getY(), at.getZ() - 3.5);
+			standingZombie(p, at.offset(1, 0, 0), GemKit.gem("invisibility", 1.0), false);
+			standingZombie(p, at.offset(-1, 0, 0), GemKit.gem("invisibility", 0.9), true);
+		});
+		context.waitTicks(60);
+		boolean[] seen = context.computeOnClient(mc -> {
+			boolean[] r = new boolean[2];
+			for (var e : mc.level.entitiesForRendering()) {
+				if (e instanceof net.minecraft.world.entity.monster.zombie.Zombie z && z.isInvisible()) {
+					boolean hidden = io.github.bubba8587.bubbas_infused_gems.effect.HiddenArmor.isHidden(z.getItemBySlot(EquipmentSlot.CHEST));
+					r[hidden ? 0 : 1] = true;
+				}
+			}
+			return r;
+		});
+		if (!seen[0] || !seen[1]) {
+			throw new AssertionError("expected one invisible zombie with hidden armor and one with armor showing: " + seen[0] + ", " + seen[1]);
+		}
+		context.getInput().lookAt(at.above());
+		context.waitTicks(5);
+		context.takeScreenshot("gems-invisible-perfect-set-hides-armor-left-near-perfect-right");
+		server.runOnServer(s -> {
+			for (var e : player(s).level().getEntitiesOfClass(net.minecraft.world.entity.monster.zombie.Zombie.class, new net.minecraft.world.phys.AABB(at).inflate(5))) {
+				e.discard();
 			}
 		});
 	}
