@@ -93,6 +93,19 @@ public abstract class LivingEntityMixin implements GemEntity {
 		return original.call(movement, WornEffects.waterDrag(self, x), y, WornEffects.waterDrag(self, z));
 	}
 
+	/**
+	 * Darkness and Nausea gems worn (owner): the wearer's own screen gets s of the effect's strongest look, steady, with
+	 * no vanilla instance (so nothing pulses or restarts a fade). Vanilla reads both through this blend factor.
+	 */
+	@ModifyReturnValue(method = "getEffectBlendFactor", at = @At("RETURN"))
+	private float bubbas$gemScreenEffect(float blend, Holder<MobEffect> effect, float partialTicks) {
+		if (!this.bubbas$worn.isEmpty() && ((LivingEntity) (Object) this).level().isClientSide()
+				&& (effect == net.minecraft.world.effect.MobEffects.DARKNESS || effect == net.minecraft.world.effect.MobEffects.NAUSEA)) {
+			return Math.max(blend, (float) GemValues.rawWorn((LivingEntity) (Object) this, io.github.bubba8587.bubbas_infused_gems.gem.GemText.key(effect)));
+		}
+		return blend;
+	}
+
 	@ModifyReturnValue(method = "getVisibilityPercent", at = @At("RETURN"))
 	private double bubbas$gemStealth(double percent) {
 		return WornEffects.visibility((LivingEntity) (Object) this, percent);

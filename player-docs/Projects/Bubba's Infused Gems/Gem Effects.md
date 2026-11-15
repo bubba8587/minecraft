@@ -62,7 +62,10 @@ Harmful gems in armor affect the wearer:
 | Wither | Steady damage that can kill |
 | Slowness, Weakness, Mining Fatigue, Hunger, Bad Luck | The harmful effect, partial |
 | Harming | More damage from each hit taken (up to 25% more) |
-| Glowing, Blindness, Nausea, Darkness | The effect, on all the time |
+| Glowing | Glowing, on all the time |
+| Darkness | The wearer's screen dims steadily, more the stronger the gems (a single weak gem only slightly; the best build almost as dark as the potion), with no pulsing |
+| Blindness | Dark fog closes in on the wearer's screen, more the stronger the gems |
+| Nausea | The wearer's screen wobbles, more the stronger the gems |
 | Levitation | A slow drift upward (at most about a third of a block per second) |
 | Wind Charged, Weaving, Oozing | A chance of the effect's burst, cobwebs or slimes when the wearer dies |
 | Infested | A chance of silverfish each time the wearer is hurt |

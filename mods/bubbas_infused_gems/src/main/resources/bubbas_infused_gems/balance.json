@@ -3066,7 +3066,7 @@
 				1.0
 			],
 			"worn": {
-				"always_on": true
+				"screen": true
 			},
 			"worn_amplifier": 0,
 			"id": "minecraft:blindness",
@@ -3154,7 +3154,7 @@
 				1.0
 			],
 			"worn": {
-				"always_on": true
+				"screen": true
 			},
 			"worn_amplifier": 0,
 			"id": "minecraft:nausea",
@@ -3238,7 +3238,7 @@
 				1.0
 			],
 			"worn": {
-				"always_on": true
+				"screen": true
 			},
 			"worn_amplifier": 0,
 			"id": "minecraft:darkness",

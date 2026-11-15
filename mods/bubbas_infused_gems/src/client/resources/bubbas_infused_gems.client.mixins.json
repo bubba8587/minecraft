@@ -5,6 +5,7 @@
 	"client": [
 		"EffectsInInventoryMixin",
 		"EnchantmentScreenMixin",
+		"FogRendererMixin",
 		"HudMixin",
 		"LightmapMixin"
 	],

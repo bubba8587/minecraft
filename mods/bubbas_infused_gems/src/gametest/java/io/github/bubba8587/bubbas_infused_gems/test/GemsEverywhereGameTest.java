@@ -153,10 +153,17 @@ public class GemsEverywhereGameTest {
 					WornEffects.tick(helper.getLevel(), pig, WornEffects.of(pig));
 					check(helper, pig.getHealth() < 50F, key + " worn did no damage");
 				}
-				case "glowing", "blindness", "nausea", "darkness" -> {
+				case "glowing" -> {
 					pig.tickCount = 2000;
 					WornEffects.tick(helper.getLevel(), pig, WornEffects.of(pig));
 					check(helper, pig.hasEffect(ModEffects.vanilla(key)), key + " is not on while worn");
+				}
+				case "blindness", "nausea", "darkness" -> {
+					// Drawn on the wearer's own screen, partial and steady: no vanilla instance (it would pulse and restart).
+					pig.tickCount = 2000;
+					WornEffects.tick(helper.getLevel(), pig, WornEffects.of(pig));
+					check(helper, !pig.hasEffect(ModEffects.vanilla(key)), key + " worn put the full vanilla effect on");
+					close(GemValues.rawWorn(pig, key), s, 1e-6, helper, key + " screen strength");
 				}
 				case "levitation" -> {
 					pig.setDeltaMovement(0, 0, 0);

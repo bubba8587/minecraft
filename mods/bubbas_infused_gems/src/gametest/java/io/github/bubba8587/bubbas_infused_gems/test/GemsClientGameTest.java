@@ -54,7 +54,7 @@ public class GemsClientGameTest implements FabricClientGameTest {
 
 	@Override
 	public void runTest(ClientGameTestContext context) {
-		if (!List.of("inventory", "colors", "enchanting", "smithing", "worn", "hits", "mobs").stream().anyMatch(ClientTests::run)) {
+		if (!List.of("inventory", "colors", "enchanting", "smithing", "worn", "hits", "mobs", "screen").stream().anyMatch(ClientTests::run)) {
 			return;
 		}
 		try (TestSingleplayerContext sp = context.worldBuilder()
@@ -87,6 +87,9 @@ public class GemsClientGameTest implements FabricClientGameTest {
 			}
 			if (ClientTests.run("mobs")) {
 				mobs(context, server);
+			}
+			if (ClientTests.run("screen")) {
+				screen(context, server);
 			}
 		}
 	}
@@ -426,5 +429,53 @@ public class GemsClientGameTest implements FabricClientGameTest {
 		context.takeScreenshot("gems-mobs-hard-loot-gear-tooltip");
 		context.runOnClient(mc -> mc.player.closeContainer());
 		server.runCommand("difficulty peaceful");
+	}
+
+	/** Darkness and Blindness gems worn: a steady, partial dim or fog by strength (weak, mid, best), same scene. */
+	private static void screen(ClientGameTestContext context, TestServerContext server) {
+		server.runCommand("time set noon");
+		context.runOnClient(mc -> mc.gui.hud.getChat().clearMessages(false));
+		BlockPos wall = stationPos(server).offset(4, 0, 0);
+		server.runCommand("fill %d %d %d %d %d %d minecraft:red_wool".formatted(wall.getX(), wall.getY(), wall.getZ() - 2, wall.getX(), wall.getY() + 2, wall.getZ() + 2));
+		context.getInput().lookAt(wall.above());
+		for (String key : List.of("darkness", "blindness")) {
+			for (String build : List.of("weak", "mid", "best")) {
+				if (key.equals("blindness") && build.equals("mid")) {
+					continue;
+				}
+				server.runOnServer(s -> {
+					ServerPlayer p = player(s);
+					p.getInventory().clearContent();
+					for (EquipmentSlot slot : io.github.bubba8587.bubbas_infused_gems.effect.GemTotals.ARMOR) {
+						p.setItemSlot(slot, ItemStack.EMPTY);
+					}
+					switch (build) {
+						case "weak" -> p.setItemSlot(EquipmentSlot.CHEST, GemKit.socketed(Items.NETHERITE_CHESTPLATE, GemKit.gem(key, 0.5)));
+						case "mid" -> {
+							Gem g = GemKit.gem(key, 0.75);
+							p.setItemSlot(EquipmentSlot.HEAD, GemKit.socketed(Items.DIAMOND_HELMET, g, g));
+							p.setItemSlot(EquipmentSlot.CHEST, GemKit.socketed(Items.DIAMOND_CHESTPLATE, g, g));
+							p.setItemSlot(EquipmentSlot.LEGS, GemKit.socketed(Items.DIAMOND_LEGGINGS, g, g));
+							p.setItemSlot(EquipmentSlot.FEET, GemKit.socketed(Items.DIAMOND_BOOTS, g, g));
+						}
+						default -> {
+							Gem g = GemKit.gem(key, 1.0);
+							p.setItemSlot(EquipmentSlot.HEAD, GemKit.socketed(Items.NETHERITE_HELMET, g, g, g));
+							p.setItemSlot(EquipmentSlot.CHEST, GemKit.socketed(Items.NETHERITE_CHESTPLATE, g, g, g));
+							p.setItemSlot(EquipmentSlot.LEGS, GemKit.socketed(Items.NETHERITE_LEGGINGS, g, g, g));
+							p.setItemSlot(EquipmentSlot.FEET, GemKit.socketed(Items.NETHERITE_BOOTS, g, g, g));
+						}
+					}
+				});
+				context.waitTicks(30);
+				double s = context.computeOnClient(mc -> ((io.github.bubba8587.bubbas_infused_gems.effect.GemEntity) mc.player).bubbas$wornGems().value(key));
+				context.takeScreenshot("gems-screen-" + key + "-" + build + "-" + Math.round(s * 100));
+			}
+		}
+		server.runOnServer(s -> {
+			for (EquipmentSlot slot : io.github.bubba8587.bubbas_infused_gems.effect.GemTotals.ARMOR) {
+				player(s).setItemSlot(slot, ItemStack.EMPTY);
+			}
+		});
 	}
 }

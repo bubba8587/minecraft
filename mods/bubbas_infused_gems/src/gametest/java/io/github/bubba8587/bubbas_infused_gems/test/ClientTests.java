@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 /**
  * Picks which client game tests (or parts of one) run: `./gradlew :bubbas_infused_gems:runClientGameTest
  * -PclientTests=inventory,enchanting` runs only those; without the property everything runs (CI). Names: inventory,
- * colors, enchanting, smithing, worn, hits, mobs. specs/quality.md, Speed.
+ * colors, enchanting, smithing, worn, hits, mobs, screen. specs/quality.md, Speed.
  */
 public final class ClientTests {
 	private static final Set<String> ONLY = Arrays.stream(System.getProperty("bubba.clientTests", "").split(","))

@@ -55,7 +55,10 @@ public final class GemDescribe {
 			case "hunger" -> f("extra hunger: 1 food point per %.0f s", 4 / (e.wornNumber("exhaustion_per_tick", 0.015) * 20 * s));
 			case "poison" -> f("poisons you %.2f HP/s (never below 1 HP)", e.wornNumber("damage_per_second", 1.667) * s);
 			case "wither" -> f("withers you %.2f HP/s", e.wornNumber("damage_per_second", 0.5) * s);
-			case "glowing", "blindness", "nausea", "darkness" -> f("%s on you all the time", e.name());
+			case "glowing" -> f("%s on you all the time", e.name());
+			case "darkness" -> f("your screen dims, %.0f%% of the way to Darkness", 100 * s);
+			case "blindness" -> f("fog closes in, %.0f%% of the way to Blindness", 100 * s);
+			case "nausea" -> f("your screen wobbles, %.0f%% of Nausea", 100 * s);
 			case "levitation" -> f("drifts you up at %.2f blocks/s", e.wornNumber("rise_per_tick", 0.02) * s * 20 * 0.98);
 			case "wind_charged" -> f("a wind burst where you die, %.0f%% chance", 100 * s);
 			case "weaving" -> f("cobwebs where you die, %.0f%% chance", 100 * s);

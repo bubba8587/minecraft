@@ -27,6 +27,12 @@ public abstract class LightmapMixin {
 				float intensity = (float) (s * Balance.get().effect("night_vision").wornNumber("intensity", 1.0));
 				state.nightVisionEffectIntensity = Math.max(state.nightVisionEffectIntensity, intensity);
 			}
+			// Darkness gem worn: a steady dim, s of vanilla Darkness's darkest point (vanilla's own pulses with a cosine).
+			double dark = GemValues.rawWorn(player, "darkness");
+			if (dark > 0.0 && !player.hasEffect(net.minecraft.world.effect.MobEffects.DARKNESS)) {
+				float option = Minecraft.getInstance().options.darknessEffectScale().get().floatValue();
+				state.darknessEffectScale = (float) (0.45 * dark * option);
+			}
 			double conduit = GemValues.value(player, "conduit_power");
 			float waterVision = player.getWaterVision();
 			if (conduit > 0.0 && waterVision > 0.0F) {

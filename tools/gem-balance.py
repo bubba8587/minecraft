@@ -506,9 +506,13 @@ def hit_anchor_text(key):
 
 # Harmful gems worn (pointless, but allowed: a poison gem in your armor poisons you, owner).
 DEATH_TRIGGER = {"wind_charged": "a wind burst", "weaving": "cobwebs", "oozing": "2 slimes"}
-ALWAYS_ON = {"glowing", "blindness", "nausea", "darkness"}  # worn: on all the time (owner, Q14); can't be partial
+ALWAYS_ON = {"glowing"}  # worn: on all the time (owner, Q14); can't be partial
+# Worn screen effects made partial and steady on the wearer's own screen (owner after playtest, 2026-11-15: one gem gave
+# total darkness that blinked): s of the way to vanilla's strongest look. Darkness: lightmap dim and fog; Blindness: fog;
+# Nausea: wobble. No vanilla effect instance on the wearer, so nothing pulses or restarts.
+SCREEN_EFFECTS = {"darkness": "a steady dimming", "blindness": "fog closing in", "nausea": "a screen wobble"}
 LEVITATION_RISE = 0.02  # worn Levitation: rise speed at strength 1.0, blocks per tick (vanilla Levitation I: 0.05), owner Q14: a slow drift
-PULSED = ALWAYS_ON | {"levitation"}
+PULSED = ALWAYS_ON | set(SCREEN_EFFECTS) | {"levitation"}
 
 def worn_show(key, s):
 	"""In armor: what the wearer gets, all the time, at worn strength s."""
@@ -523,6 +527,8 @@ def worn_show(key, s):
 		return f"{10 * s:.1f}% chance of silverfish each time the wearer is hurt"
 	if key == "levitation":
 		return f"drifts the wearer up at {LEVITATION_RISE * s * T * 0.98:.2f} blocks/s, all the time"
+	if key in SCREEN_EFFECTS:
+		return f"{SCREEN_EFFECTS[key]} on the wearer's screen, {s:.0%} of the way to {e['name']}'s strongest, steady"
 	if key in ALWAYS_ON:
 		return f"{e['name']} on the wearer all the time"
 	return potency_text(key, s) + (" (never below 1 HP)" if key == "poison" else "") + ", all the time"
@@ -537,6 +543,8 @@ def worn_anchor_text(key):
 		return f"{e['name']}: the vanilla trigger every time (on/off; the strength is its chance)"
 	if key == "levitation":
 		return f"Levitation, made a slow drift: rise speed {LEVITATION_RISE} blocks/tick at 1.0 (vanilla Levitation I: 0.05)"
+	if key in SCREEN_EFFECTS:
+		return f"{e['name']}'s strongest look on the wearer's screen, made partial and steady (owner)"
 	if key in ALWAYS_ON:
 		return f"{e['name']}: on all the time (on/off, can't be partial; owner)"
 	return f"The hit anchor's level ({potency_text(key, 1.0)}), on the wearer all the time"
@@ -1339,7 +1347,7 @@ def document(notes):
 
 	S.append(("h2", "In armor: what each gem does to the wearer"))
 	cols = [0.05, 0.10, 0.25, 0.50, 0.75, CAP]
-	S.append(("p", "Beneficial gems are what armor is for. Harmful gems in armor hit the wearer (pointless, but allowed): damage-over-time and attribute effects at the same level as their hit anchor, Glowing, Blindness, Nausea and Darkness on all the time, Levitation a slow drift up by strength (owner), death and hurt triggers as a chance. Harming in armor mirrors the Healing gem: each survivable hit taken deals a share more."))
+	S.append(("p", "Beneficial gems are what armor is for. Harmful gems in armor hit the wearer (pointless, but allowed): damage-over-time and attribute effects at the same level as their hit anchor, Glowing on all the time, Darkness, Blindness and Nausea as a steady, partial dimming, fog or wobble on the wearer's screen, Levitation a slow drift up by strength (owner), death and hurt triggers as a chance. Harming in armor mirrors the Healing gem: each survivable hit taken deals a share more."))
 	S.append(("table", ["Effect", "1.0 means (worn)"] + [f"s = {c:.2f}" for c in cols],
 		[[E[k]["name"], worn_anchor_text(k)] + [worn_show(k, c) for c in cols] for k in GEM_EFFECTS if k != "instant_health"]))
 
@@ -1547,6 +1555,7 @@ WORN = {
 		"wet_only": True, "underwater_sight": 1.0},
 	"hero_of_the_village": {"price_cut": HERO_CUT},
 	**{k: {"always_on": True} for k in sorted(ALWAYS_ON)},
+	**{k: {"screen": True} for k in sorted(SCREEN_EFFECTS)},
 	"levitation": {"rise_per_tick": LEVITATION_RISE},
 	**{k: {"death_chance": 1.0} for k in ("wind_charged", "weaving", "oozing")},
 	"infested": {"hurt_chance": 1.0},
