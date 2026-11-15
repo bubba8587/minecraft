@@ -16,6 +16,9 @@ Parked ideas and open items, newest first within each project. Agents add to it 
 - Person-made mod icon (none yet).
 - Real Glider art (16x and 32x, made by a person).
 
+## Effect gems
+- **Drawbacks** (shelved by the owner): ideas in `specs/effect-gems.md`.
+
 ## Repo
 - Owner to read and ratify (or rewrite) the goal drafts A1-A4 (`python3 tools/dte.py unratified`).
 - A future mod drastically reducing unenchanted mining speed.
