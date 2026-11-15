@@ -50,7 +50,7 @@ Values are for the best build (90%); weaker builds give less.
 | Absorption | A shield of extra health (up to 14.4). It fills as soon as the gems are put on (or on joining the game), then refills 30 seconds after the wearer was last hurt. Swapping the armor off and on again does not refill it more than once every 30 seconds. |
 | Health Boost | More maximum health (up to +7.2; found gems only) |
 | Dolphin's Grace | Faster swimming; the best build swims faster than the potion |
-| Saturation | Restores food and saturation over time, like the potion but slower: a single weak gem about half a drumstick every 22 seconds, the best build about half a drumstick every second |
+| Saturation | Restores food and saturation over time, like the potion but slower: a single weak gem about half a drumstick every 22 seconds, the best build about half a drumstick every second. It never fills the bar completely, so it doesn't speed up healing the way a full bar does |
 | Conduit Power | In water or rain: air lasts longer, faster mining underwater, clearer sight underwater |
 | Hero of the Village | Cheaper villager trades (up to 20% cheaper; found gems only) |
 | Luck | A little more luck (mostly found; a Luck potion also brews one) |

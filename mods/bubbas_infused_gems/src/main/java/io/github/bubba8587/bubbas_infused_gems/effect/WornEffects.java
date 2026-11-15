@@ -385,14 +385,23 @@ public final class WornEffects {
 	/** One tick of Saturation (worn or from a hit): food and saturation back like the vanilla effect, whole points as they build up. */
 	public static void restoreFood(Player player, double s) {
 		GemEntity g = (GemEntity) player;
+		int food = player.getFoodData().getFoodLevel();
+		if (food >= SATURATION_FOOD_MAX) {
+			// Owner: never to 20, so vanilla's fast saturation healing never comes from the gem (slow regen at 18+ is fine).
+			g.bubbas$setFoodCarry(Math.min(g.bubbas$foodCarry(), 1.0F));
+			return;
+		}
 		float carry = g.bubbas$foodCarry() + (float) (saturationRate(s) / 20.0);
 		if (carry >= 1.0F) {
-			int points = (int) carry;
-			player.getFoodData().eat(points, 1.0F);
-			carry -= points;
+			int points = Math.min((int) carry, SATURATION_FOOD_MAX - food);
+			player.getFoodData().eat(points, 1.0F); // saturation stays at most the food level, as vanilla clamps it
+			carry -= (int) carry;
 		}
 		g.bubbas$setFoodCarry(carry);
 	}
+
+	/** Saturation gems fill food up to this, never 20 (vanilla's fast regeneration needs a full bar). */
+	public static final int SATURATION_FOOD_MAX = 19;
 
 	/**
 	 * Invisibility gem: mobs notice the wearer at (1 - 0.93 x s) of the range (stealth). Read before any vanilla

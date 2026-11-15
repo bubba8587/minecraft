@@ -210,4 +210,24 @@ public class BalanceReviewGameTest {
 		GemKit.remove(helper, player);
 		helper.succeed();
 	}
+
+	/** Owner (review B): a perfect Saturation set never fills food to 20, so it never feeds vanilla's fast regeneration. */
+	@GameTest
+	public void saturationNeverFeedsFastRegeneration(GameTestHelper helper) {
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		player.setGameMode(GameType.SURVIVAL);
+		wear(player, "saturation");
+		player.setHealth(4.0F);
+		player.getFoodData().setFoodLevel(10);
+		player.getFoodData().setSaturation(0.0F);
+		for (int t = 0; t < 400; t++) {
+			WornEffects.tick(helper.getLevel(), player, WornEffects.of(player));
+			player.getFoodData().tick(player);
+			check(helper, player.getFoodData().getFoodLevel() <= 19, "a Saturation set filled food to " + player.getFoodData().getFoodLevel());
+		}
+		// Slow natural regeneration only (1 HP per 80 ticks at food 18+): at most 5 HP in 400 ticks; fast would be about 16.
+		check(helper, player.getHealth() - 4.0F <= 5.01F, "a Saturation set healed " + (player.getHealth() - 4.0F) + " HP in 20 s");
+		GemKit.remove(helper, player);
+		helper.succeed();
+	}
 }
