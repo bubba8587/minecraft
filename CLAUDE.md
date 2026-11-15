@@ -89,7 +89,7 @@ The repo always targets the latest non-snapshot release and moves promptly when 
 
 Agents do all building and testing here; the owner never touches it. So keeping the suite and harness fast is the agent's job, **without being asked**: always be looking for ways to speed up development (building, testing, tooling), measure, fix, and record what changed.
 
-- Build and test only what you touched: `./gradlew :<mod>:build`, not `./gradlew build`. Run client game tests only when something visible changed.
+- Build and test only what you touched: `./gradlew :<mod>:build`, not `./gradlew build`. Run client game tests only when something visible changed, and only the ones you need: `-PclientTests=talisman,gait` (names in each mod's `ClientTests` helper; Reworked Mobs: sleepers, displays, gait, talisman).
 - Configuration cache is on, and server game tests skip themselves when a mod's code and resources match the last passing run (`gradle/fabric-mod.gradle`). `-PrerunGametests` forces them. Don't undo either without measuring.
 - When a step feels slow, time it, find the cause, fix it, and update the timings table in `specs/quality.md`. Mention speedups (and slowdowns) to the owner in a line.
 - Slow things worth attacking next are listed in `specs/quality.md` under Speed.

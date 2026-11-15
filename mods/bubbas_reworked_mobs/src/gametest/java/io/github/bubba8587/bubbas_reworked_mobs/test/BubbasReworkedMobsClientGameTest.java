@@ -24,6 +24,9 @@ public class BubbasReworkedMobsClientGameTest implements FabricClientGameTest {
 
 	@Override
 	public void runTest(ClientGameTestContext context) {
+		if (!ClientTests.run("sleepers") && !ClientTests.run("displays")) {
+			return;
+		}
 		try (TestSingleplayerContext sp = context.worldBuilder()
 				.adjustSettings(s -> s.setGameMode(WorldCreationUiState.SelectedGameMode.CREATIVE))
 				.create()) {
@@ -36,6 +39,10 @@ public class BubbasReworkedMobsClientGameTest implements FabricClientGameTest {
 			server.runCommand("gamerule send_command_feedback false"); // keep chat out of the screenshots
 			server.runCommand("time set noon");
 			server.runCommand("gamerule spawn_mobs false");
+			if (!ClientTests.run("sleepers")) {
+				lootDisplays(context, server, base);
+				return;
+			}
 			// sensitivity 0: our own footsteps must not wake them while we look.
 			BlockPos skeleton = base.offset(0, 0, 4);
 			BlockPos zombie = base.offset(3, 0, 4);
@@ -95,7 +102,9 @@ public class BubbasReworkedMobsClientGameTest implements FabricClientGameTest {
 					new AABB(base.offset(-3, 0, 4)).inflate(1.0), e -> e.getType() == ModEntities.woken(UndeadVariant.ZOMBIE)).isEmpty());
 			view(context, server, x - 2.5, y, z + 1.5, 0.0F, 15.0F, "woken-zombie");
 
-			lootDisplays(context, server, base);
+			if (ClientTests.run("displays")) {
+				lootDisplays(context, server, base);
+			}
 		}
 	}
 

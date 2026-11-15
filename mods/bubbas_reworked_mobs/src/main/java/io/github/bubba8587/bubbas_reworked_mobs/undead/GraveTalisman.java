@@ -20,11 +20,11 @@ import net.minecraft.world.phys.Vec3;
 public final class GraveTalisman {
 	// Starting values, owner to tune.
 	/** How far the talisman senses undead (blocks, straight-line distance from the holder's eyes). */
-	public static final double RANGE = 16.0;
+	public static final double RANGE = 40.0;
 	/** Closest undead within this distance: brightest (3). */
-	public static final double BRIGHTEST_WITHIN = 4.0;
+	public static final double BRIGHTEST_WITHIN = 12.0;
 	/** ... within this: bright (2); anything else in RANGE: faint (1). */
-	public static final double BRIGHT_WITHIN = 8.0;
+	public static final double BRIGHT_WITHIN = 24.0;
 	/** The client searches this often (ticks). */
 	public static final int SEARCH_INTERVAL_TICKS = 5;
 

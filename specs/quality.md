@@ -16,6 +16,7 @@ The owner never runs builds or tests; agents keep this loop fast unprompted (CLA
 | `:<mod>:build` after a code change | 16-22 s | 16-22 s | game test server boot dominates (~10 s) |
 | `:packcheck:build` after a datapack edit | 23 s | 23 s | same |
 | Client game test (one mod) | 25-60 s | same | client boot on software Vulkan |
+| One targeted client test (`-PclientTests=talisman`) | 56 s (all of Reworked Mobs') | 25-27 s | named filter: a skipped test doesn't even create its world (owner's PC, 2026-11-14) |
 | `tools/packload.py` | 60-90 s | same | vanilla server start + world gen |
 
 Next candidates: run game tests of several mods in one server boot; a smaller/void test world for packload; reuse the packload world between runs; cache the client game test's world.

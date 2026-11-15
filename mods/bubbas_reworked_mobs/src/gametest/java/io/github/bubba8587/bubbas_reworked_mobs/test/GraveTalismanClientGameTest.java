@@ -18,8 +18,8 @@ import net.fabricmc.fabric.api.client.gametest.v1.context.TestServerContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext;
 
 /**
- * The Grave Talisman at night, held in the main hand and in the hotbar: off far from undead, faint with a sleeper 12
- * blocks off, bright with one 6 blocks off, brightest with a woken zombie 2 blocks off. Checks the client's glow level
+ * The Grave Talisman at night, held in the main hand and in the hotbar: off far from undead, faint with a sleeper 30
+ * blocks off, bright with one 18 blocks off, brightest with a woken zombie 2 blocks off. Checks the client's glow level
  * at each step and takes a screenshot (build/run/clientGameTest/screenshots/).
  */
 @SuppressWarnings("UnstableApiUsage")
@@ -28,6 +28,9 @@ public class GraveTalismanClientGameTest implements FabricClientGameTest {
 
 	@Override
 	public void runTest(ClientGameTestContext context) {
+		if (!ClientTests.run("talisman")) {
+			return;
+		}
 		try (TestSingleplayerContext sp = context.worldBuilder()
 				.adjustSettings(s -> s.setGameMode(WorldCreationUiState.SelectedGameMode.CREATIVE))
 				.create()) {
@@ -39,8 +42,8 @@ public class GraveTalismanClientGameTest implements FabricClientGameTest {
 			server.runCommand("gamerule advance_time false");
 			server.runCommand("time set midnight");
 			// Stand at the west end of a dark stone floor; undead appear to the east (+x), the way we look.
-			server.runCommand("fill %d %d %d %d %d %d minecraft:air".formatted(base.getX() - 2, base.getY(), base.getZ() - 4, base.getX() + 16, base.getY() + 4, base.getZ() + 4));
-			server.runCommand("fill %d %d %d %d %d %d minecraft:deepslate_tiles".formatted(base.getX() - 2, base.getY() - 1, base.getZ() - 4, base.getX() + 16, base.getY() - 1, base.getZ() + 4));
+			server.runCommand("fill %d %d %d %d %d %d minecraft:air".formatted(base.getX() - 2, base.getY(), base.getZ() - 4, base.getX() + 32, base.getY() + 4, base.getZ() + 4));
+			server.runCommand("fill %d %d %d %d %d %d minecraft:deepslate_tiles".formatted(base.getX() - 2, base.getY() - 1, base.getZ() - 4, base.getX() + 32, base.getY() - 1, base.getZ() + 4));
 			server.runCommand("item replace entity @p weapon.mainhand with " + ID + ":grave_talisman");
 			server.runCommand("item replace entity @p hotbar.1 with " + ID + ":grave_talisman");
 			context.runOnClient(mc -> {
@@ -54,11 +57,11 @@ public class GraveTalismanClientGameTest implements FabricClientGameTest {
 			expect(context, GraveTalisman.OFF);
 			context.takeScreenshot("talisman-off");
 
-			sleeper(server, context, base.offset(12, 0, 0));
+			sleeper(server, context, base.offset(30, 0, 0));
 			expect(context, GraveTalisman.FAINT);
 			context.takeScreenshot("talisman-faint");
 
-			sleeper(server, context, base.offset(6, 0, 1));
+			sleeper(server, context, base.offset(18, 0, 1));
 			expect(context, GraveTalisman.BRIGHT);
 			context.takeScreenshot("talisman-bright");
 
@@ -82,7 +85,7 @@ public class GraveTalismanClientGameTest implements FabricClientGameTest {
 
 			// Undead gone: it goes dark again.
 			server.runCommand("kill @e[type=%s:woken_zombie]".formatted(ID));
-			server.runCommand("fill %d %d %d %d %d %d minecraft:air".formatted(base.getX() + 1, base.getY(), base.getZ() - 4, base.getX() + 16, base.getY() + 1, base.getZ() + 4));
+			server.runCommand("fill %d %d %d %d %d %d minecraft:air".formatted(base.getX() + 1, base.getY(), base.getZ() - 4, base.getX() + 32, base.getY() + 1, base.getZ() + 4));
 			expect(context, GraveTalisman.OFF);
 		}
 	}

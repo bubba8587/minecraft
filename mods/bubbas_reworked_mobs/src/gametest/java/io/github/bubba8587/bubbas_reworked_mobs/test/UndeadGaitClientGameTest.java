@@ -37,6 +37,9 @@ public class UndeadGaitClientGameTest implements FabricClientGameTest {
 
 	@Override
 	public void runTest(ClientGameTestContext context) {
+		if (!ClientTests.run("gait")) {
+			return;
+		}
 		try (TestSingleplayerContext sp = context.worldBuilder()
 				.adjustSettings(s -> s.setGameMode(WorldCreationUiState.SelectedGameMode.CREATIVE))
 				.create()) {

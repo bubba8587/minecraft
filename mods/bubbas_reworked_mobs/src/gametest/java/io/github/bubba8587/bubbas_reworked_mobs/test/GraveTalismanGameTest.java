@@ -18,7 +18,7 @@ import net.fabricmc.fabric.api.gametest.v1.GameTest;
 
 /**
  * The Grave Talisman's proximity check (undead/GraveTalisman) on a real level: the glow-level table, then nothing near,
- * a sleeper at 12 blocks (faint), one at 6 (bright), a woken zombie at 2 (brightest). The client runs the same search
+ * a sleeper at 30 blocks (faint), one at 18 (bright), a woken zombie at 2 (brightest). The client runs the same search
  * on its own level; the client game test looks at the result.
  */
 public class GraveTalismanGameTest {
@@ -29,12 +29,12 @@ public class GraveTalismanGameTest {
 	@GameTest
 	public void glowLevelTable(GameTestHelper helper) {
 		check(helper, GraveTalisman.glowLevel(Double.MAX_VALUE), GraveTalisman.OFF, "no undead");
-		check(helper, GraveTalisman.glowLevel(16.1 * 16.1), GraveTalisman.OFF, "16.1 blocks");
-		check(helper, GraveTalisman.glowLevel(16.0 * 16.0), GraveTalisman.FAINT, "16 blocks");
-		check(helper, GraveTalisman.glowLevel(8.1 * 8.1), GraveTalisman.FAINT, "8.1 blocks");
-		check(helper, GraveTalisman.glowLevel(8.0 * 8.0), GraveTalisman.BRIGHT, "8 blocks");
-		check(helper, GraveTalisman.glowLevel(4.1 * 4.1), GraveTalisman.BRIGHT, "4.1 blocks");
-		check(helper, GraveTalisman.glowLevel(4.0 * 4.0), GraveTalisman.BRIGHTEST, "4 blocks");
+		check(helper, GraveTalisman.glowLevel(40.1 * 40.1), GraveTalisman.OFF, "40.1 blocks");
+		check(helper, GraveTalisman.glowLevel(40.0 * 40.0), GraveTalisman.FAINT, "40 blocks");
+		check(helper, GraveTalisman.glowLevel(24.1 * 24.1), GraveTalisman.FAINT, "24.1 blocks");
+		check(helper, GraveTalisman.glowLevel(24.0 * 24.0), GraveTalisman.BRIGHT, "24 blocks");
+		check(helper, GraveTalisman.glowLevel(12.1 * 12.1), GraveTalisman.BRIGHT, "12.1 blocks");
+		check(helper, GraveTalisman.glowLevel(12.0 * 12.0), GraveTalisman.BRIGHTEST, "12 blocks");
 		check(helper, GraveTalisman.glowLevel(0.0), GraveTalisman.BRIGHTEST, "0 blocks");
 		helper.succeed();
 	}
@@ -51,12 +51,12 @@ public class GraveTalismanGameTest {
 		Mob cow = spawn(helper, EntityTypes.COW, new BlockPos(4, UP + 1, 4));
 		check(helper, GraveTalisman.glowAt(helper.getLevel(), holder), GraveTalisman.OFF, "only a cow near");
 
-		BlockPos far = new BlockPos(13, UP + 1, 2);
-		BlockPos near = new BlockPos(7, UP + 1, 2);
+		BlockPos far = new BlockPos(31, UP + 1, 2);
+		BlockPos near = new BlockPos(19, UP + 1, 2);
 		sleeper(helper, far);
-		check(helper, GraveTalisman.glowAt(helper.getLevel(), holder), GraveTalisman.FAINT, "sleeper 12 blocks away");
+		check(helper, GraveTalisman.glowAt(helper.getLevel(), holder), GraveTalisman.FAINT, "sleeper 30 blocks away");
 		sleeper(helper, near);
-		check(helper, GraveTalisman.glowAt(helper.getLevel(), holder), GraveTalisman.BRIGHT, "sleeper 6 blocks away");
+		check(helper, GraveTalisman.glowAt(helper.getLevel(), holder), GraveTalisman.BRIGHT, "sleeper 18 blocks away");
 		BlockPos zombieAt = new BlockPos(3, UP + 1, 2);
 		Mob zombie = spawn(helper, ModEntities.woken(UndeadVariant.ZOMBIE), zombieAt);
 		check(helper, GraveTalisman.glowAt(helper.getLevel(), holder), GraveTalisman.BRIGHTEST, "woken zombie 2 blocks away");

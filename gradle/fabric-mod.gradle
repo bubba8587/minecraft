@@ -101,3 +101,12 @@ tasks.matching { it.name == 'runGameTest' }.configureEach { t ->
 		m.text = fingerprintOf(gametestInputs) + '\n'
 	}
 }
+
+// Speed: run only some client game tests with -PclientTests=name1,name2 (each test checks the names it answers to;
+// see the mod's ClientTests helper). Without the property every client test runs, as CI does.
+def clientTestsFilter = providers.gradleProperty('clientTests')
+tasks.matching { it.name == 'runClientGameTest' }.configureEach { t ->
+	if (clientTestsFilter.isPresent()) {
+		t.jvmArgs("-Dbubba.clientTests=${clientTestsFilter.get()}")
+	}
+}
