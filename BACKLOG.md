@@ -28,7 +28,7 @@ Parked ideas and open items, newest first within each project. Agents add to it 
   - **Weaving**: worn, walk through cobwebs at full speed; weapon, a chance to web the target in place for a moment.
   - **Oozing**: worn, bounce like on a slime block (no fall damage); weapon, a kill splits off small **neutral slimes** that belong to the wearer (vanilla's allied check, stored on the slime rather than scoreboard teams, so they never target their owner) and dissolve after a while. Fighting for the owner would need new AI: owner chose neutral.
   - **Silence** (sculk/echo): worn, footsteps make no vibrations; ties into Reworked Mobs' hearing and the warden.
-  - **Frost** (powder snow/strays): weapon hits slowly freeze the target; worn, walk on powder snow without freezing.
+  - **Frost** (powder snow/strays): weapon hits slowly freeze the target; worn, walk on powder snow without freezing. Owner (2026-11-15): the next Minecraft drop adds a real freezing effect, so build Frost on that effect (and its potion, if it gets one) once we move to that version, instead of a custom one.
   - **Ender**: worn, a chance to blink away like chorus fruit when a projectile would hit you; strength scales the chance and distance (orchestrator's recommendation over an aimed teleport, which would be an active ability).
   - **Breeze**: worn, a chance to deflect incoming projectiles.
   - Dropped: Glow (owner: nothing Glowing doesn't already do). Avoid overlap with enchantments (Fire Aspect, Knockback) and the no-debuff-on-attackers rule.
