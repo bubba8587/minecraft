@@ -155,9 +155,12 @@ def drawback_total(n):
 
 # Each effect: name, potion (Potions.java id), variants {variant: (ticks, amplifier)}, role,
 # anchor (what 1.0 is), value numeric (monotonic), show text, impl, src.
-# role: main = an armor gem's effect on the wearer; healing = the healing armor gem (own curve);
-#       weapon = a harmful gem on a weapon, applied to what it hits;
-#       negative = only as an armor drawback (Bad Luck).
+# Every gem goes into armor (its effects reach the wearer) or a weapon (they reach what it hits), owner.
+# role: main = a beneficial gem (anchor, value and show describe it worn); healing = the beneficial
+#       Healing gem (own worn curve); harmful = a harmful gem (anchor, unit and unit_fmt describe one hit);
+#       negative = drawback-only (Bad Luck).
+# kind (the hit-applied curve): scaled = potency and duration both scale; onoff = the vanilla effect,
+#       duration scales; instant = a charged strike. Beneficial effects are scaled unless said otherwise.
 # source: ("potion",) brewed from its potion; ("item", text) an item in the bottle slot; ("found", [loot], text) loot only.
 # level_one: where vanilla's weakest level sits on the effect's scale (drawbacks stay below it).
 E = {}
@@ -176,7 +179,7 @@ effect("strength", name="Strength", potion="strength", role="main",
 	value=lambda s: 6 * s, show=lambda s: f"+{6 * s:.2f} attack damage",
 	impl="Attribute modifier on attack_damage, +6 x s, add_value (exact).",
 	src="MobEffects.STRENGTH")
-effect("jump_boost", name="Jump Boost", potion="leaping", role="main",
+effect("jump_boost", name="Jump Boost", potion="leaping", role="main", level_one=0.5,
 	variants={"normal": (3600, 0), "long": (9600, 0), "strong": (1800, 1)},
 	anchor="Jump Boost II: jump velocity +0.2 (0.1 per level) and safe fall distance +2 (1 per level)",
 	value=lambda s: jump_apex(0.42 + 0.2 * s),
@@ -235,8 +238,10 @@ effect("luck", name="Luck", potion="luck", role="main",
 	value=lambda s: s, show=lambda s: f"+{s:.2f} luck",
 	impl="Attribute modifier on luck, +s (exact).",
 	src="MobEffects.LUCK")
-effect("instant_health", name="Healing", potion="healing", role="healing",
+effect("instant_health", name="Healing", potion="healing", role="healing", kind="instant",
 	variants={"normal": (1, 0), "strong": (1, 1)},
+	unit=8.0, unit_fmt=lambda x: f"heals the target {x:.1f} HP",
+	hit_anchor_text="Strongest tipped arrow (strong Healing): Healing II, 8 HP at once (4 << level)",
 	anchor="Its own scale: 1.0 on the gem scale returns 25% of each hit (the best build, 0.95, returns exactly 25%)",
 	value=heal_fraction,
 	show=lambda s: f"{heal_fraction(s) * 100:.1f}% of each non-lethal hit back (6 HP hit: +{6 * heal_fraction(s):.2f} HP)",
@@ -244,29 +249,28 @@ effect("instant_health", name="Healing", potion="healing", role="healing",
 		"damage instance's health loss x the gem's fraction, at once. A killing blow still kills (the heal runs "
 		"after the hit, only if the wearer is alive). Mixin after LivingEntity.actuallyHurt. Works the same on mobs."),
 	src="LivingEntity.actuallyHurt, DamageTypeTags.IS_FALL, HealOrHarmMobEffect")
-# Weapon gems (owner): harmful potions, applied by melee hits and fired arrows.
-# kind: scaled = potency and duration both scale; onoff = vanilla effect, duration scales; instant = charged strike.
-effect("poison", name="Poison", potion="poison", role="weapon", kind="scaled", level_one=0.48,
+# Harmful gems: their anchor is what the strongest tipped arrow applies (the hit-applied curve).
+effect("poison", name="Poison", potion="poison", role="harmful", kind="scaled", level_one=0.48,
 	variants={"normal": (900, 0), "long": (1800, 0), "strong": (432, 1)},
 	unit=25 / 12 * 0.8, unit_fmt=lambda x: f"{x:.2f} HP/s poison",
 	anchor="Strongest tipped arrow (strong Poison): Poison II for 2.7 s, 1 HP every 12 ticks (25 >> level) = 1.67 HP/s, never below 1 HP",
 	impl="Gem Poison mob effect (vanilla's icon and rules; potency in 1% steps): never below 1 HP, undead immune, milk clears it.",
 	src="PoisonMobEffect, Potions.STRONG_POISON")
-effect("slowness", name="Slowness", potion="slowness", role="weapon", kind="scaled", level_one=0.25,
+effect("slowness", name="Slowness", potion="slowness", role="harmful", kind="scaled", level_one=0.25,
 	variants={"normal": (1800, 0), "long": (4800, 0), "strong": (400, 3)},
 	unit=0.6, unit_fmt=lambda x: f"{pct(-x)} speed",
 	anchor="Strongest tipped arrow (strong Slowness): Slowness IV for 2.5 s, movement speed -60% (-0.15 per level)",
 	wearer=lambda s: f"{pct(-0.6 * s)} speed",
 	impl="Gem Slowness mob effect: movement_speed -0.6 x potency (add_multiplied_total). As a drawback: the same modifier, permanent while worn.",
 	src="MobEffects.SLOWNESS, Potions.STRONG_SLOWNESS")
-effect("weakness", name="Weakness", potion="weakness", role="weapon", kind="scaled", level_one=1.0,
+effect("weakness", name="Weakness", potion="weakness", role="harmful", kind="scaled", level_one=1.0,
 	variants={"normal": (1800, 0), "long": (4800, 0)},
 	unit=4.0, unit_fmt=lambda x: f"-{x:.2f} attack damage",
 	anchor="Strongest tipped arrow (long Weakness): Weakness I for 30 s, attack damage -4 (only level)",
 	wearer=lambda s: f"-{4 * s:.2f} attack damage",
 	impl="Gem Weakness mob effect: attack_damage -4 x potency. As a drawback: the same modifier, permanent while worn.",
 	src="MobEffects.WEAKNESS, Potions.LONG_WEAKNESS")
-effect("instant_damage", name="Harming", potion="harming", role="weapon", kind="instant",
+effect("instant_damage", name="Harming", potion="harming", role="harmful", kind="instant",
 	variants={"normal": (1, 0), "strong": (1, 1)},
 	unit=12.0, unit_fmt=lambda x: f"+{x:.1f} magic damage",
 	anchor="Strongest tipped arrow (strong Harming): Harming II, 12 magic damage at once (6 << level)",
@@ -277,7 +281,7 @@ for key, name, extra in [
 		("weaving", "Weaving", "cobwebs where the target dies"),
 		("oozing", "Oozing", "2 slimes when the target dies"),
 		("infested", "Infested", "1-2 silverfish when the target is hurt (vanilla 10% per hit)")]:
-	effect(key, name=name, potion=key, role="weapon", kind="onoff", variants={"normal": (3600, 0)},
+	effect(key, name=name, potion=key, role="harmful", kind="onoff", variants={"normal": (3600, 0)},
 		unit=None, unit_fmt=None,
 		anchor=f"Tipped arrow of {name}: {name} I for 22.5 s: {extra} (only level)",
 		impl="The vanilla effect itself (it has one level), for a duration scaled by s.",
@@ -331,20 +335,20 @@ effect("hero_of_the_village", name="Hero of the Village", potion=None, role="mai
 # area pulse, spell) is scaled like a tipped arrow (1/8), so the 1.0 is always "what one hit would apply".
 def hit_anchor(ticks, amp, is_hit):
 	return (ticks if is_hit else max(math.floor(ticks * TIPPED_ARROW_SCALE), 1), amp)
-effect("wither", name="Wither", potion=None, role="weapon", kind="scaled", level_one=1.0, variants={"normal": None},
+effect("wither", name="Wither", potion=None, role="harmful", kind="scaled", level_one=1.0, variants={"normal": None},
 	source=("item", "wither rose (dropped where the Wither kills a mob)"),
 	hit=hit_anchor(200, 0, True), unit=0.5, unit_fmt=lambda x: f"{x:.2f} HP/s wither",
 	anchor="Wither skeleton's hit: Wither I for 10 s, 1 HP every 40 ticks = 0.5 HP/s (can kill, unlike poison)",
 	impl="Gem Wither mob effect (vanilla's icon; potency in 1% steps); it can kill, as vanilla's does.",
 	src="WitherSkeleton.doHurtTarget, WitherMobEffect")
-effect("mining_fatigue", name="Mining Fatigue", potion=None, role="weapon", kind="scaled", level_one=1 / 3, variants={"normal": None},
+effect("mining_fatigue", name="Mining Fatigue", potion=None, role="harmful", kind="scaled", level_one=1 / 3, variants={"normal": None},
 	source=("found", ["ominous"], "elder guardian drops (a rare extra drop); vanilla's only source is the elder guardian"),
 	hit=hit_anchor(6000, 2, False), unit=1.0, unit_fmt=lambda p: f"mining x{0.027 ** p:.2f}, attack speed {pct(-0.3 * p)}",
 	anchor="Elder guardian: Mining Fatigue III (mining x0.027, attack speed -30%), at arrow scale 37.5 s",
 	wearer=lambda s: f"mining x{0.027 ** s:.2f}, attack speed {pct(-0.3 * s)}",
 	impl="Gem Mining Fatigue mob effect: block_break_speed x 0.027^potency and attack_speed -0.3 x potency. As a drawback: the same, permanent while worn.",
 	src="ElderGuardian, Player.getDestroySpeed")
-effect("hunger", name="Hunger", potion=None, role="weapon", kind="scaled", level_one=1 / 3, variants={"normal": None},
+effect("hunger", name="Hunger", potion=None, role="harmful", kind="scaled", level_one=1 / 3, variants={"normal": None},
 	source=("item", "rotten flesh (Hunger I, 80% chance in vanilla)"),
 	hit=hit_anchor(300, 2, False), unit=0.3, unit_fmt=lambda x: f"exhaustion +{x / 20:.4f}/tick",
 	anchor="Pufferfish: Hunger III (exhaustion +0.015 per tick), at arrow scale 1.8 s",
@@ -358,7 +362,7 @@ for key, name, src_item, ticks, is_hit, how, src in [
 			"Illusioner's spell: Blindness for 20 s, at arrow scale 2.5 s", "Illusioner, Blocks.AZURE_BLUET"),
 		("nausea", "Nausea", "pufferfish", 300, False, "Pufferfish: Nausea for 15 s, at arrow scale 1.8 s", "Consumables.PUFFERFISH"),
 		("darkness", "Darkness", "echo shard (ancient cities)", 260, False, "Warden's pulse: Darkness for 13 s, at arrow scale 1.6 s", "Warden")]:
-	effect(key, name=name, potion=None, role="weapon", kind="onoff", variants={"normal": None},
+	effect(key, name=name, potion=None, role="harmful", kind="onoff", variants={"normal": None},
 		source=("item", src_item), hit=hit_anchor(ticks, 0, is_hit), unit=None, unit_fmt=None,
 		anchor=how + " (on/off effect: the strength goes into duration)",
 		impl="The vanilla effect itself, for a duration scaled by s. Mostly felt by players (PvP, and gemmed mob gear hitting players).",
@@ -371,12 +375,25 @@ effect("unluck", name="Bad Luck", potion=None, role="negative", variants={}, lev
 
 for k, e in E.items():
 	e.setdefault("source", ("potion",) if e["potion"] else None)
+	e["good"] = e["role"] in ("main", "healing")
+	if e["role"] == "main":
+		e.setdefault("kind", "scaled")
+
+# Beneficial gems on a weapon (owner: the slot decides who its effects reach; a regeneration gem on a sword
+# heals the target). Their hit 1.0 is the strongest tipped arrow of the effect at its worn 1.0 level. With
+# no potion, the strongest vanilla source at tipped-arrow scale (Absorption: the enchanted golden apple),
+# or, with none, a standard 3:00 potion's tipped arrow (proposal: 22.5 s).
+DEFAULT_HIT_TICKS = math.floor(3600 * TIPPED_ARROW_SCALE)
+E["absorption"]["hit"] = (math.floor(2400 * TIPPED_ARROW_SCALE), 3)
 
 def arrow_anchor(key):
-	"""(ticks, amplifier) of the weapon 1.0: the strongest tipped arrow (highest level; ties: longest), or the hit anchor."""
-	if "hit" in E[key]:
-		return E[key]["hit"]
-	v = max(E[key]["variants"].values(), key=lambda tv: (tv[1], tv[0]))
+	"""(ticks, amplifier) of the hit 1.0: the strongest tipped arrow (highest level; ties: longest), or the hit anchor."""
+	e = E[key]
+	if "hit" in e:
+		return e["hit"]
+	if not e["potion"]:
+		return DEFAULT_HIT_TICKS, 0
+	v = max(e["variants"].values(), key=lambda tv: (tv[1], tv[0]))
 	ticks, amp = v
 	return max(math.floor(ticks * TIPPED_ARROW_SCALE), 1), amp
 
@@ -390,19 +407,75 @@ def weapon_hit(key, s):
 		return 1.0, s * ticks / T
 	return s, 0.0  # instant
 
-def weapon_show(key, s):
+def potency_text(key, x):
+	"""The effect at x of its 1.0 level, with no duration (what a drawback or a worn harmful gem does)."""
+	e = E[key]
+	if e["role"] in ("main", "negative"):
+		return e["show"](x)
+	if "wearer" in e:
+		return e["wearer"](x)
+	return e["unit_fmt"](x * e["unit"])
+
+def hit_show(key, s):
+	"""In a weapon: what one hit (or fired arrow) gives the target at weapon strength s."""
 	e = E[key]
 	p, d = weapon_hit(key, s)
 	if e["kind"] == "scaled":
-		return f"{e['unit_fmt'](p * e['unit'])} for {d:.1f} s"
+		return f"{potency_text(key, p)} for {d:.1f} s"
 	if e["kind"] == "onoff":
 		return f"{e['name']} for {d:.1f} s"
 	return f"{e['unit_fmt'](p * e['unit'])} every {HARM_CHARGE_S} s"
 
-for k, e in E.items():
-	if e["role"] == "weapon":
-		e["value"] = (lambda kk: lambda s: weapon_hit(kk, s)[0] * max(weapon_hit(kk, s)[1], 1e-9) if E[kk]["kind"] != "instant" else s)(k)
-		e["show"] = (lambda kk: lambda s: weapon_show(kk, s))(k)
+def hit_anchor_text(key):
+	e = E[key]
+	if "hit_anchor_text" in e:
+		return e["hit_anchor_text"]
+	if not e["good"]:
+		return e["anchor"]
+	ticks, _ = arrow_anchor(key)
+	level = e["anchor"].split(":")[0]
+	if key == "absorption":
+		return f"{level} for {ticks / T:.1f} s (the enchanted golden apple at tipped-arrow scale)"
+	if not e["potion"]:
+		return f"{level} for {ticks / T:.1f} s (no vanilla timed source: a 3:00 potion's tipped arrow, proposal)"
+	return f"Strongest tipped arrow: {level} for {ticks / T:.1f} s"
+
+# Harmful gems worn (pointless, but allowed: a poison gem in your armor poisons you, owner).
+DEATH_TRIGGER = {"wind_charged": "a wind burst", "weaving": "cobwebs", "oozing": "2 slimes"}
+PULSED = {"glowing", "levitation", "blindness", "nausea", "darkness"}
+
+def worn_show(key, s):
+	"""In armor: what the wearer gets, all the time, at worn strength s."""
+	e = E[key]
+	if e["good"]:
+		return e["show"](s)
+	if key == "instant_damage":  # the mirror of the Healing gem, on the same curve
+		return f"each non-lethal hit taken deals {heal_fraction(s) * 100:.1f}% more"
+	if key in DEATH_TRIGGER:
+		return f"{DEATH_TRIGGER[key]} where the wearer dies, {s:.0%} chance"
+	if key == "infested":
+		return f"{10 * s:.1f}% chance of silverfish each time the wearer is hurt"
+	if key in PULSED:
+		return f"{e['name']} on the wearer {10 * s:.1f} s of every 10 s"
+	return potency_text(key, s) + (" (never below 1 HP)" if key == "poison" else "") + ", all the time"
+
+def worn_anchor_text(key):
+	e = E[key]
+	if e["good"]:
+		return e["anchor"]
+	if key == "instant_damage":
+		return "Its own scale, the Healing gem's mirror: the best build adds 25% to each hit taken"
+	if key in DEATH_TRIGGER or key == "infested":
+		return f"{e['name']}: the vanilla trigger every time (on/off; the strength is its chance)"
+	if key in PULSED:
+		return f"{e['name']}: on all the time (on/off; the strength is the share of time it's on)"
+	return f"The hit anchor's level ({potency_text(key, 1.0)}), on the wearer all the time"
+
+def worn_value(key, s):
+	e = E[key]
+	if e["good"]:
+		return e["value"](s)
+	return heal_fraction(s) if key == "instant_damage" else s
 
 # Found-only gems: rolled like an enchant at the loot source's tiers, with a base gem from its list.
 # Their potion factor is 1.0 (no variants), so only ominous loot (nether star, tier 3) gives a perfect gem.
@@ -418,28 +491,81 @@ NOT_GEMS = {
 	"trial_omen": "a one-shot trigger that turns trial spawners ominous; permanent, every trial chamber would always be ominous",
 	"breath_of_the_nautilus": "the 26.x nautilus mount's water breathing for its rider; the Water Breathing gem already covers it",
 }
-DRAWBACK_ANCHOR = {  # a drawback is a constant level on the wearer, so its 1.0 is the strongest vanilla level itself
+DRAWBACK_ANCHOR = {  # a drawback is a constant level, so its 1.0 is the strongest vanilla level itself
 	"slowness": "Slowness IV (strong Slowness potion): movement speed -60%",
 	"weakness": "Weakness I: attack damage -4 (only level)",
 	"mining_fatigue": "Mining Fatigue III (elder guardian): mining x0.027, attack speed -30%",
 	"hunger": "Hunger III (pufferfish): exhaustion +0.015 per tick",
 	"unluck": "Bad Luck I: luck -1",
 }
-DRAWBACK_ONLY = {"unluck": "Bad Luck does nothing a hit target would notice, so it stays an armor drawback"}
+DRAWBACK_ONLY = {"unluck": "Bad Luck only ever matters for loot and fishing, too little to be worth a gem slot, so it stays a drawback"}
 
-ARMOR_DRAWBACKS = ["slowness", "weakness", "mining_fatigue", "hunger", "unluck"]
-WEAPON_DRAWBACKS = ["speed", "regeneration", "resistance"]   # given to the target (the inverse)
-ARMOR_OTHER = ["speed", "strength", "jump_boost", "regeneration", "resistance", "fire_resistance", "water_breathing",
-	"night_vision", "slow_falling", "luck", "haste", "absorption", "health_boost", "dolphins_grace", "saturation", "conduit_power"]
-WEAPON_OTHER = ["poison", "slowness", "weakness", "mining_fatigue", "hunger", "glowing"]  # a second harmful effect on hit
-ARMOR_GEMS = [k for k, v in E.items() if v["role"] in ("main", "healing")]
-WEAPON_GEMS = [k for k, v in E.items() if v["role"] == "weapon"]
-GEM_EFFECTS = ARMOR_GEMS + WEAPON_GEMS
-DRAWBACK_EXCLUDED = ("Never armor drawbacks: poison and wither (a permanent damage-over-time on the wearer cancels natural "
-	"healing and nags at every moment; poison can't kill but would pin the wearer near 1 HP), blindness, darkness and "
-	"nausea (they ruin the screen, not just the gem), levitation (dangerous, not mild), glowing (harmless alone, a beacon in PvP), harming (instant). "
-	"Never weapon drawbacks on the target: absorption, health boost, strength (these change the fight too much), "
-	"invisibility (the target vanishes), fire resistance (would cancel Fire Aspect).")
+GEM_EFFECTS = [k for k, v in E.items() if v["role"] in ("main", "healing", "harmful")]
+GOOD_GEMS = [k for k in GEM_EFFECTS if E[k]["good"]]
+BAD_GEMS = [k for k in GEM_EFFECTS if not E[k]["good"]]
+
+# ---------------------------------------------------------------- rolls (owner: one roll table per gem)
+# Direct opposites (owner's list first, then added): never a gem's drawback, since a direct inverse just
+# cancels out. (beneficial, harmful, why). The table is symmetric: each side excludes the other.
+INVERSE_PAIRS = [
+	("speed", "slowness", "movement speed up / down (owner)"),
+	("strength", "weakness", "attack damage up / down (owner)"),
+	("haste", "mining_fatigue", "mining and attack speed up / down (owner)"),
+	("regeneration", "poison", "health over time back / away (owner)"),
+	("regeneration", "wither", "health over time back / away (owner)"),
+	("luck", "unluck", "luck +1 / -1 (owner)"),
+	("instant_health", "instant_damage", "instant heal / instant damage (owner)"),
+	("saturation", "hunger", "food kept / food drained (owner)"),
+	("night_vision", "blindness", "sight in the dark / no sight (owner)"),
+	("night_vision", "darkness", "sight in the dark / pulsing dark (owner)"),
+	("invisibility", "glowing", "hidden / outlined through walls (owner)"),
+	("slow_falling", "levitation", "slower fall / forced rise (owner)"),
+	("conduit_power", "mining_fatigue", "added: Conduit Power's underwater mining is the conduit's Haste, and Mining Fatigue is the ocean monument's direct answer to it"),
+]
+OWNER_PAIRS = {(a, b) for a, b, why in INVERSE_PAIRS if why.endswith("(owner)")}
+NO_OPPOSITE = {  # checked and left out of the table, with the reason
+	"jump_boost": "no vanilla effect lowers jumps; Slow Falling / Levitation is a different axis (falling, not jumping)",
+	"resistance": "no vanilla effect raises damage taken; Weakness lowers damage dealt, which is Strength's opposite",
+	"health_boost": "no vanilla effect lowers max health; Wither drains health over time, which is Regeneration's opposite",
+	"absorption": "no vanilla effect takes absorption away; same reasoning as Health Boost",
+	"fire_resistance": "no vanilla effect makes fire hurt more",
+	"water_breathing": "no vanilla effect drains air faster",
+	"dolphins_grace": "no vanilla effect slows swimming alone; Slowness is Speed's opposite",
+	"hero_of_the_village": "its opposite is Bad Omen, which is not a gem or a drawback",
+}
+OPPOSITE = {}
+for a, b, _ in INVERSE_PAIRS:
+	OPPOSITE.setdefault(a, set()).add(b)
+	OPPOSITE.setdefault(b, set()).add(a)
+
+# Drawback candidates, by the main effect's kind. A beneficial gem's drawback is a mild harmful effect, a
+# harmful gem's a mild beneficial one; the gem's slot decides who gets it, like its main effect (armor:
+# the wearer, while worn; weapon: the target, for a few seconds refreshed by each hit).
+HARMFUL_DRAWBACKS = ["slowness", "weakness", "mining_fatigue", "hunger", "unluck"]
+BENEFICIAL_DRAWBACKS = ["speed", "regeneration", "resistance", "jump_boost"]
+NEVER_DRAWBACK = {
+	"poison": "a permanent damage-over-time on the wearer cancels natural healing and nags at every moment; it can't kill but pins the wearer near 1 HP",
+	"wither": "the same as poison, and it can kill",
+	"instant_damage": "instant, no mild form",
+	"blindness": "ruins the screen, not just the gem", "darkness": "ruins the screen, not just the gem",
+	"nausea": "ruins the screen, not just the gem", "levitation": "dangerous, not mild",
+	"glowing": "harmless alone, a beacon in PvP", "wind_charged": "only felt at death", "weaving": "only felt at death",
+	"oozing": "only felt at death", "infested": "spawns mobs, not mild",
+	"absorption": "changes the fight too much", "health_boost": "changes the fight too much",
+	"strength": "changes the fight too much", "invisibility": "the target vanishes",
+	"fire_resistance": "would cancel Fire Aspect",
+}
+# Main effect only, never an "other" roll.
+OTHER_EXCLUDED = {"instant_health": "its own per-hit curve: main effect only", "instant_damage": "a charged strike: main effect only",
+	"hero_of_the_village": "a permanent villager discount stays a rare found gem: main effect only"}
+
+def other_pool(k):
+	return [o for o in GEM_EFFECTS if E[o]["good"] == E[k]["good"] and o != k and o not in OTHER_EXCLUDED]
+
+def drawback_pool(k):
+	return [d for d in (HARMFUL_DRAWBACKS if E[k]["good"] else BENEFICIAL_DRAWBACKS) if d != k and d not in OPPOSITE.get(k, ())]
+
+EXAMPLES = [("speed", "strength", "hunger"), ("poison", "slowness", "resistance"), ("night_vision", "water_breathing", "mining_fatigue")]
 
 def source_text(k):
 	src = E[k]["source"]
