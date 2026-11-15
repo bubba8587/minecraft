@@ -55,7 +55,7 @@ BASE_GEMS = [
 	("quartz", "Nether quartz", 0.84, "First Nether trip"),
 	("ender_pearl", "Ender pearl", 0.88, "Endermen; farmable"),
 	("diamond", "Diamond", 0.92, "Deep mining; common in chest loot"),
-	("prismarine", "Prismarine (shard or crystals: open question)", 0.96, "Ocean monuments, a guarded structure; crystals also in buried treasure"),
+	("prismarine", "Prismarine shard (owner)", 0.96, "Ocean monuments, a guarded structure (minecraft:prismarine_shard)"),
 	("nether_star", "Nether star", 1.00, "The Wither: the best base (owner)"),
 ]
 BASE = {b: f for b, _, f, _ in BASE_GEMS}
@@ -157,7 +157,8 @@ def drawback_total(n):
 # anchor (what 1.0 is), value numeric (monotonic), show text, impl, src.
 # role: main = an armor gem's effect on the wearer; healing = the healing armor gem (own curve);
 #       weapon = a harmful gem on a weapon, applied to what it hits;
-#       secondary = only as an armor "other" roll; negative = only as an armor drawback.
+#       negative = only as an armor drawback (Bad Luck).
+# source: ("potion",) brewed from its potion; ("item", text) an item in the bottle slot; ("found", [loot], text) loot only.
 # level_one: where vanilla's weakest level sits on the effect's scale (drawbacks stay below it).
 E = {}
 def effect(key, **kw):
@@ -228,7 +229,8 @@ effect("slow_falling", name="Slow Falling", potion="slow_falling", role="main",
 	impl="On/off made partial: while falling, gravity 0.08 - 0.07 x s (mixin at LivingEntity.getEffectiveGravity, where vanilla checks slow falling) and fall_damage_multiplier -s.",
 	src="LivingEntity.getEffectiveGravity, Attributes.GRAVITY 0.08")
 effect("luck", name="Luck", potion="luck", role="main",
-	variants={"normal": (6000, 0)},
+	variants={"normal": (6000, 0)}, source=("found", ["common", "rare", "ominous"],
+		"fishing treasure and shipwrecks (common), buried treasure (rare); the Luck potion has no survival brewing recipe"),
 	anchor="Luck I: luck +1 (only level)",
 	value=lambda s: s, show=lambda s: f"+{s:.2f} luck",
 	impl="Attribute modifier on luck, +s (exact).",
@@ -280,45 +282,100 @@ for key, name, extra in [
 		anchor=f"Tipped arrow of {name}: {name} I for 22.5 s: {extra} (only level)",
 		impl="The vanilla effect itself (it has one level), for a duration scaled by s.",
 		src=f"{''.join(p.title() for p in key.split('_'))}MobEffect, Potions.{key.upper()}")
-# Secondary-only (no potion exists; anchors from the strongest natural source)
-effect("haste", name="Haste", potion=None, role="secondary", variants={},
+# Armor gems with no brewable potion: an item that carries the effect in vanilla goes in the bottle slot
+# (26.3's bottle slot takes any item a brewing recipe names as input), or the gem is found-only.
+effect("haste", name="Haste", potion=None, role="main", variants={"normal": None},
+	source=("found", ["common", "rare", "ominous"], "mineshaft chests (common), stronghold and ancient city chests (rare); only beacons give Haste in vanilla"),
 	anchor="Haste II (beacon): mining speed x1.4 (+0.2 per level), attack speed +20%",
 	value=lambda s: 0.4 * s, show=lambda s: f"mining {pct(0.4 * s)}, attack speed {pct(0.2 * s)}",
 	impl="Attribute modifiers: block_break_speed +0.4 x s and attack_speed +0.2 x s (add_multiplied_total).",
 	src="Player.getDestroySpeed, MobEffects.HASTE, BeaconBlockEntity")
-effect("absorption", name="Absorption", potion=None, role="secondary", variants={},
+effect("absorption", name="Absorption", potion=None, role="main", variants={"normal": None, "strong": None},
+	source=("item", "golden apple (Absorption I: normal) or enchanted golden apple (Absorption IV: strong)"),
 	anchor="Absorption IV (enchanted golden apple): 16 absorption HP (4 x (level + 1))",
 	value=lambda s: 16 * s, show=lambda s: f"{16 * s:.1f} HP shield, refills 30 s after it was last hit",
 	impl="max_absorption +16 x s, refilled to full 30 s after it was last hit.",
-	src="AbsorptionMobEffect, Consumables.ENCHANTED_GOLDEN_APPLE")
-effect("health_boost", name="Health Boost", potion=None, role="secondary", variants={},
+	src="AbsorptionMobEffect, Consumables.GOLDEN_APPLE / ENCHANTED_GOLDEN_APPLE")
+effect("health_boost", name="Health Boost", potion=None, role="main", variants={"normal": None},
+	source=("found", ["rare", "ominous"], "end city and ancient city chests (rare); no vanilla item or source gives Health Boost"),
 	anchor="Health Boost II: max health +8 (4 per level). No vanilla source gives it, so the anchor is a proposal.",
 	value=lambda s: 8 * s, show=lambda s: f"+{8 * s:.1f} max health",
 	impl="Attribute modifier on max_health, +8 x s (exact).",
 	src="MobEffects.HEALTH_BOOST")
-effect("dolphins_grace", name="Dolphin's Grace", potion=None, role="secondary", variants={},
+effect("dolphins_grace", name="Dolphin's Grace", potion=None, role="main", variants={"normal": None},
+	source=("item", "nautilus shell (drowned, fishing treasure; dolphins give the effect)"),
 	anchor="Dolphin's Grace: water drag 0.96 instead of 0.8 (0.9 sprinting) (on/off)",
 	value=lambda s: 0.8 + 0.16 * s, show=lambda s: f"water drag {0.8 + 0.16 * s:.3f} (vanilla 0.800)",
 	impl="On/off made partial: water slow-down 0.8 + 0.16 x s (mixin where travelInWater sets 0.96).",
-	src="LivingEntity.travelInWater, DOLPHINS_GRACE_WATER_DRAG")
-# Drawback-only (armor bad rolls, on the wearer). Slowness and weakness above double as drawbacks.
-effect("mining_fatigue", name="Mining Fatigue", potion=None, role="negative", variants={}, level_one=1 / 3,
-	anchor="Mining Fatigue III (elder guardian): mining speed x0.027 (0.3 per level, compounding), attack speed -30%",
-	value=lambda s: 1 - 0.027 ** s, show=lambda s: f"mining x{0.027 ** s:.2f}, attack speed {pct(-0.3 * s)}",
-	impl="Attribute modifiers: block_break_speed x 0.027^s (matches levels I-III exactly at s = 1/3, 2/3, 1) and attack_speed -0.3 x s.",
-	src="Player.getDestroySpeed, ElderGuardian")
-effect("hunger", name="Hunger", potion=None, role="negative", variants={}, level_one=1 / 3,
-	anchor="Hunger III (pufferfish): exhaustion +0.015 per tick (0.005 per level)",
-	value=lambda s: 0.3 * s, show=lambda s: f"extra hunger: 1 food point per {4 / (0.3 * s):.0f} s",
-	impl="Tick handler: causeFoodExhaustion(0.015 x s) per tick.",
-	src="HungerMobEffect, Consumables.PUFFERFISH")
+	src="LivingEntity.travelInWater, DOLPHINS_GRACE_WATER_DRAG, Dolphin")
+effect("saturation", name="Saturation", potion=None, role="main", variants={"normal": None},
+	source=("item", "suspicious stew of dandelion, golden dandelion or blue orchid (matched by its stew effect: Fabric API's components ingredient)"),
+	anchor="Saturation: hunger never drops (on/off; vanilla refills food and saturation every tick)",
+	value=lambda s: s, show=lambda s: f"hunger drains {pct(-s)} slower",
+	impl="On/off made partial: food exhaustion x (1 - s) (mixin at FoodData.addExhaustion). Food still drains, just slower, so eating stays part of the game.",
+	src="SaturationMobEffect, FoodData.addExhaustion, Blocks.DANDELION / BLUE_ORCHID")
+effect("conduit_power", name="Conduit Power", potion=None, role="main", variants={"normal": None},
+	source=("item", "heart of the sea (buried treasure; the conduit's core)"),
+	anchor="Conduit Power (only level): in water or rain, air never runs out, mining underwater at full speed, clear underwater sight",
+	value=lambda s: s, show=lambda s: f"in water: air lasts {15 / (1 - s):.0f} s, underwater mining {pct(s)} of the way to full speed, underwater sight {s * 100:.0f}%",
+	impl="On/off made partial, only while in water or rain: oxygen_bonus s / (1 - s), submerged_mining_speed raised by s of the way to 1.0, underwater fog s of the way to the conduit view.",
+	src="ConduitBlockEntity, MobEffectUtil.hasWaterBreathing, Attributes.SUBMERGED_MINING_SPEED")
+effect("hero_of_the_village", name="Hero of the Village", potion=None, role="main", variants={"normal": None},
+	source=("found", ["common", "rare", "ominous"], "hero-of-the-village gifts (common), pillager outpost chests (rare); only winning a raid gives it in vanilla"),
+	anchor="Hero of the Village V (a level-5 raid won): villager prices cut by 0.3 + 0.0625 x 4 = 55% of the base cost",
+	value=lambda s: 0.55 * s, show=lambda s: f"villager trades {0.55 * s * 100:.0f}% cheaper",
+	impl="Price hook beside vanilla's: the hero modifier 0.55 x s (mixin at Villager.updateSpecialPrices). Villagers' gifts stay vanilla-only (the effect itself).",
+	src="Villager.updateSpecialPrices, Raid")
+# More weapon gems (harmful effects with no potion): the anchor is the strongest vanilla source.
+# A source that is a hit (arrow, bullet, mob attack) applies its full duration; any other source (food,
+# area pulse, spell) is scaled like a tipped arrow (1/8), so the 1.0 is always "what one hit would apply".
+def hit_anchor(ticks, amp, is_hit):
+	return (ticks if is_hit else max(math.floor(ticks * TIPPED_ARROW_SCALE), 1), amp)
+effect("wither", name="Wither", potion=None, role="weapon", kind="scaled", level_one=1.0, variants={"normal": None},
+	source=("item", "wither rose (dropped where the Wither kills a mob)"),
+	hit=hit_anchor(200, 0, True), unit=0.5, unit_fmt=lambda x: f"{x:.2f} HP/s wither",
+	anchor="Wither skeleton's hit: Wither I for 10 s, 1 HP every 40 ticks = 0.5 HP/s (can kill, unlike poison)",
+	impl="Gem Wither mob effect (vanilla's icon; potency in 1% steps); it can kill, as vanilla's does.",
+	src="WitherSkeleton.doHurtTarget, WitherMobEffect")
+effect("mining_fatigue", name="Mining Fatigue", potion=None, role="weapon", kind="scaled", level_one=1 / 3, variants={"normal": None},
+	source=("found", ["ominous"], "elder guardian drops (a rare extra drop); vanilla's only source is the elder guardian"),
+	hit=hit_anchor(6000, 2, False), unit=1.0, unit_fmt=lambda p: f"mining x{0.027 ** p:.2f}, attack speed {pct(-0.3 * p)}",
+	anchor="Elder guardian: Mining Fatigue III (mining x0.027, attack speed -30%), at arrow scale 37.5 s",
+	wearer=lambda s: f"mining x{0.027 ** s:.2f}, attack speed {pct(-0.3 * s)}",
+	impl="Gem Mining Fatigue mob effect: block_break_speed x 0.027^potency and attack_speed -0.3 x potency. As a drawback: the same, permanent while worn.",
+	src="ElderGuardian, Player.getDestroySpeed")
+effect("hunger", name="Hunger", potion=None, role="weapon", kind="scaled", level_one=1 / 3, variants={"normal": None},
+	source=("item", "rotten flesh (Hunger I, 80% chance in vanilla)"),
+	hit=hit_anchor(300, 2, False), unit=0.3, unit_fmt=lambda x: f"exhaustion +{x / 20:.4f}/tick",
+	anchor="Pufferfish: Hunger III (exhaustion +0.015 per tick), at arrow scale 1.8 s",
+	wearer=lambda s: f"extra hunger: 1 food point per {4 / (0.3 * s):.0f} s",
+	impl="Gem Hunger mob effect: causeFoodExhaustion(0.015 x potency) per tick (players only; mobs have no food). As a drawback: the same, permanent while worn.",
+	src="HungerMobEffect, Consumables.PUFFERFISH / ROTTEN_FLESH")
+for key, name, src_item, ticks, is_hit, how, src in [
+		("glowing", "Glowing", "spectral arrow", 200, True, "Spectral arrow hit: Glowing for 10 s", "SpectralArrow"),
+		("levitation", "Levitation", "shulker shell", 200, True, "Shulker bullet hit: Levitation I for 10 s", "ShulkerBullet"),
+		("blindness", "Blindness", "suspicious stew of azure bluet or open eyeblossom (Fabric API's components ingredient)", 400, False,
+			"Illusioner's spell: Blindness for 20 s, at arrow scale 2.5 s", "Illusioner, Blocks.AZURE_BLUET"),
+		("nausea", "Nausea", "pufferfish", 300, False, "Pufferfish: Nausea for 15 s, at arrow scale 1.8 s", "Consumables.PUFFERFISH"),
+		("darkness", "Darkness", "echo shard (ancient cities)", 260, False, "Warden's pulse: Darkness for 13 s, at arrow scale 1.6 s", "Warden")]:
+	effect(key, name=name, potion=None, role="weapon", kind="onoff", variants={"normal": None},
+		source=("item", src_item), hit=hit_anchor(ticks, 0, is_hit), unit=None, unit_fmt=None,
+		anchor=how + " (on/off effect: the strength goes into duration)",
+		impl="The vanilla effect itself, for a duration scaled by s. Mostly felt by players (PvP, and gemmed mob gear hitting players).",
+		src=src)
+# Drawback-only (armor bad rolls, on the wearer). Slowness, weakness, mining fatigue and hunger above double as drawbacks.
 effect("unluck", name="Bad Luck", potion=None, role="negative", variants={}, level_one=1.0,
 	anchor="Bad Luck I: luck -1",
 	value=lambda s: s, show=lambda s: f"-{s:.2f} luck",
 	impl="Attribute modifier on luck, -s.", src="MobEffects.UNLUCK")
 
-# Weapon effects: anchor = the strongest tipped arrow (highest level; ties: longest), computed from Potions.java.
+for k, e in E.items():
+	e.setdefault("source", ("potion",) if e["potion"] else None)
+
 def arrow_anchor(key):
+	"""(ticks, amplifier) of the weapon 1.0: the strongest tipped arrow (highest level; ties: longest), or the hit anchor."""
+	if "hit" in E[key]:
+		return E[key]["hit"]
 	v = max(E[key]["variants"].values(), key=lambda tv: (tv[1], tv[0]))
 	ticks, amp = v
 	return max(math.floor(ticks * TIPPED_ARROW_SCALE), 1), amp
@@ -339,7 +396,7 @@ def weapon_show(key, s):
 	if e["kind"] == "scaled":
 		return f"{e['unit_fmt'](p * e['unit'])} for {d:.1f} s"
 	if e["kind"] == "onoff":
-		return f"{e['name']} I for {d:.1f} s"
+		return f"{e['name']} for {d:.1f} s"
 	return f"{e['unit_fmt'](p * e['unit'])} every {HARM_CHARGE_S} s"
 
 for k, e in E.items():
@@ -347,24 +404,50 @@ for k, e in E.items():
 		e["value"] = (lambda kk: lambda s: weapon_hit(kk, s)[0] * max(weapon_hit(kk, s)[1], 1e-9) if E[kk]["kind"] != "instant" else s)(k)
 		e["show"] = (lambda kk: lambda s: weapon_show(kk, s))(k)
 
+# Found-only gems: rolled like an enchant at the loot source's tiers, with a base gem from its list.
+# Their potion factor is 1.0 (no variants), so only ominous loot (nether star, tier 3) gives a perfect gem.
+LOOT = {
+	"common":  ("Common loot (mineshafts, dungeons, shipwrecks, fishing treasure, hero gifts)", ["amethyst", "quartz", "ender_pearl"], [1, 2]),
+	"rare":    ("Rare loot (strongholds, ancient cities, end cities, buried treasure, outposts)", ["diamond", "prismarine"], [2, 3]),
+	"ominous": ("Ominous vaults in trial chambers (and the elder guardian for Mining Fatigue)", ["prismarine", "nether_star"], [3]),
+}
+# Effects that are truly not gems (every 26.3 effect is either a gem, drawback-only, or here).
+NOT_GEMS = {
+	"bad_omen": "a one-shot trigger, used up when a raid starts; worn permanently it would chain raids without end, and it has no partial form",
+	"raid_omen": "the raid's own countdown, not something a player carries",
+	"trial_omen": "a one-shot trigger that turns trial spawners ominous; permanent, every trial chamber would always be ominous",
+	"breath_of_the_nautilus": "the 26.x nautilus mount's water breathing for its rider; the Water Breathing gem already covers it",
+}
+DRAWBACK_ANCHOR = {  # a drawback is a constant level on the wearer, so its 1.0 is the strongest vanilla level itself
+	"slowness": "Slowness IV (strong Slowness potion): movement speed -60%",
+	"weakness": "Weakness I: attack damage -4 (only level)",
+	"mining_fatigue": "Mining Fatigue III (elder guardian): mining x0.027, attack speed -30%",
+	"hunger": "Hunger III (pufferfish): exhaustion +0.015 per tick",
+	"unluck": "Bad Luck I: luck -1",
+}
+DRAWBACK_ONLY = {"unluck": "Bad Luck does nothing a hit target would notice, so it stays an armor drawback"}
+
 ARMOR_DRAWBACKS = ["slowness", "weakness", "mining_fatigue", "hunger", "unluck"]
 WEAPON_DRAWBACKS = ["speed", "regeneration", "resistance"]   # given to the target (the inverse)
-ARMOR_OTHER = ["speed", "strength", "jump_boost", "regeneration", "resistance", "fire_resistance",
-	"water_breathing", "night_vision", "slow_falling", "luck", "haste", "absorption", "health_boost", "dolphins_grace"]
-WEAPON_OTHER = ["poison", "slowness", "weakness", "mining_fatigue", "hunger"]  # a second harmful effect on hit
+ARMOR_OTHER = ["speed", "strength", "jump_boost", "regeneration", "resistance", "fire_resistance", "water_breathing",
+	"night_vision", "slow_falling", "luck", "haste", "absorption", "health_boost", "dolphins_grace", "saturation", "conduit_power"]
+WEAPON_OTHER = ["poison", "slowness", "weakness", "mining_fatigue", "hunger", "glowing"]  # a second harmful effect on hit
 ARMOR_GEMS = [k for k, v in E.items() if v["role"] in ("main", "healing")]
 WEAPON_GEMS = [k for k, v in E.items() if v["role"] == "weapon"]
 GEM_EFFECTS = ARMOR_GEMS + WEAPON_GEMS
-EXCLUDED = ("Not gems: nausea, blindness, darkness, glowing, levitation (no potion, or visual only); "
-	"bad omen, trial omen, raid omen, hero of the village (event triggers); saturation (permanent food is too strong); "
-	"conduit power (a bundle of water breathing, haste and underwater sight: use those gems); "
-	"wither (no wither potion exists in 26.3, so nothing to brew a gem from: open question); "
-	"breath of the nautilus (26.x mount effect, no potion).")
 DRAWBACK_EXCLUDED = ("Never armor drawbacks: poison and wither (a permanent damage-over-time on the wearer cancels natural "
 	"healing and nags at every moment; poison can't kill but would pin the wearer near 1 HP), blindness, darkness and "
-	"nausea (they ruin the screen, not just the gem), levitation (dangerous, not mild), harming (instant). "
+	"nausea (they ruin the screen, not just the gem), levitation (dangerous, not mild), glowing (harmless alone, a beacon in PvP), harming (instant). "
 	"Never weapon drawbacks on the target: absorption, health boost, strength (these change the fight too much), "
-	"invisibility (the target vanishes), fire resistance (would cancel Fire Aspect, an enchantment, not a gem).")
+	"invisibility (the target vanishes), fire resistance (would cancel Fire Aspect).")
+
+def source_text(k):
+	src = E[k]["source"]
+	if src[0] == "potion":
+		return f"Craftable: {E[k]['potion'].replace('_', ' ')} potion (normal, splash or lingering) + base gem"
+	if src[0] == "item":
+		return f"Craftable: {src[1]} in the bottle slot + base gem; gunpowder then dragon's breath raise its form"
+	return f"Found only: {src[2]}; plus ominous vaults"
 
 # ---------------------------------------------------------------- source verification
 SRC_EXPECT_EFFECTS = [
@@ -398,9 +481,21 @@ SRC_EXPECT_FILES = {
 	"world/item/component/Consumables.java": [r"HUNGER, 300, 2", r"ABSORPTION, 2400, 3"],
 	"world/item/equipment/ArmorMaterials.java": [r"ArmorMaterial COPPER", r"ArmorMaterial TURTLE_SCUTE", r"ArmorMaterial NETHERITE"],
 	"world/item/ToolMaterial.java": [rf"ToolMaterial {m.upper()} = " for m in WEAPON_MATERIALS],
-	"world/item/Items.java": [r"POTION_DURATION_SCALE, 0\.125F", r"Item NETHERITE_SPEAR", r"Item WOODEN_SPEAR", r"Item MACE",
+	"world/item/Items.java": [r"POTION_DURATION_SCALE, 0\.125F", r"Item PRISMARINE_SHARD", r"Item NAUTILUS_SHELL", r"Item HEART_OF_THE_SEA",
+		r"Item ECHO_SHARD", r"Item SHULKER_SHELL", r"Item SPECTRAL_ARROW", r"Item ENCHANTED_GOLDEN_APPLE", r"Item SUSPICIOUS_STEW", r"Item NETHERITE_SPEAR", r"Item WOODEN_SPEAR", r"Item MACE",
 		r"Item TRIDENT", r"Item CROSSBOW"],
 	"world/entity/monster/ElderGuardian.java": [r"MINING_FATIGUE, 6000, 2"],
+	"world/inventory/BrewingStandMenu.java": [r"PotionIngredient\.isPotionInput\(itemStack, this\.recipeAccess\)"],
+	"world/item/crafting/PotionIngredient.java": [r"RecipePropertySet\.BREWING_INPUTS"],
+	"world/entity/monster/skeleton/WitherSkeleton.java": [r"MobEffects\.WITHER, 200\)"],
+	"world/effect/WitherMobEffect.java": [r"40 >> amplification"],
+	"world/entity/projectile/arrow/SpectralArrow.java": [r"int duration = 200", r"MobEffects\.GLOWING"],
+	"world/entity/projectile/ShulkerBullet.java": [r"MobEffects\.LEVITATION, 200\)"],
+	"world/entity/monster/illager/Illusioner.java": [r"MobEffects\.BLINDNESS, 400\)"],
+	"world/entity/monster/warden/Warden.java": [r"MobEffects\.DARKNESS, 260"],
+	"world/entity/npc/villager/Villager.java": [r"0\.3F \+ 0\.0625F \* heroOfTheVillage\.getAmplifier\(\)"],
+	"world/level/block/Blocks.java": [r"FlowerBlock\(MobEffects\.SATURATION", r"FlowerBlock\(MobEffects\.BLINDNESS, 11\.0F", r"WitherRoseBlock\(MobEffects\.WITHER"],
+	"world/item/component/Consumables.java#2": [r"NAUSEA, 300, 0", r"ABSORPTION, 2400, 0", r"HUNGER, 600, 0\), 0\.8F"],
 }
 
 def verify_source(errors):
@@ -420,16 +515,22 @@ def verify_source(errors):
 			if not re.search(pat, potions):
 				errors.append(f"source: potion {e['potion']} {var} ({ticks} ticks, amplifier {amp}) not found in Potions.java")
 			n += 1
-	if re.search(r'new Potion\("wither"', potions):
-		errors.append("source: a wither potion now exists; revisit the wither gem question")
-	n += 1
+	for missing in ("wither", "haste", "absorption", "saturation", "glowing", "levitation"):
+		if re.search(rf'new Potion\("{missing}"', potions):
+			errors.append(f"source: a {missing} potion now exists; make that gem brewable from it")
+		n += 1
+	brew = ROOT / "build" / "mcsrc" / "26.3" / "vanilla" / "data" / "minecraft" / "recipe" / "brewing"
+	if brew.exists():
+		if any('"minecraft:luck"' in f.read_text(encoding="utf-8") for f in brew.glob("*.json")):
+			errors.append("source: a survival Luck brewing recipe now exists; Luck gems can become craftable")
+		n += 1
 	effects = re.sub(r"\s+", " ", (SRC / "world/effect/MobEffects.java").read_text(encoding="utf-8"))
 	for pat in SRC_EXPECT_EFFECTS:
 		if not re.search(r"register\( ?" + pat, effects):
 			errors.append(f"source: MobEffects.java no longer matches {pat}")
 		n += 1
 	for rel, pats in SRC_EXPECT_FILES.items():
-		p = SRC / rel
+		p = SRC / rel.split("#")[0]
 		text = p.read_text(encoding="utf-8") if p.exists() else ""
 		for pat in pats:
 			if not re.search(pat, text):
@@ -521,6 +622,19 @@ def run_checks():
 	# 2. Gem quality: 1.0 only for strongest potion + lingering + tier 3 + nether star, for every gem effect.
 	for k in GEM_EFFECTS:
 		hits = []
+		if E[k]["source"][0] == "found":
+			for src in E[k]["source"][1]:
+				_, bases, tiers = LOOT[src]
+				for tier in tiers:
+					for label, grade, _, _ in TIERS[tier]:
+						if grade is None:
+							continue
+						for b in bases:
+							if gem_quality(k, "normal", b, grade) >= 1 - 1e-12:
+								hits.append((src, tier, b))
+			if sorted(set(hits)) != [("ominous", 3, BEST_BASE)]:
+				errors.append(f"{k}: found-only gem perfect from {sorted(set(hits))}, expected only an ominous nether star tier 3")
+			continue
 		for var in E[k]["variants"]:
 			for form, maxtier in FORM_MAX_TIER.items():
 				for tier in range(1, maxtier + 1):
@@ -536,7 +650,27 @@ def run_checks():
 		want = [(top_variant(k), "lingering", 3, BEST_BASE)]
 		if sorted(set(hits)) != want:
 			errors.append(f"{k}: best gem reachable by {sorted(set(hits))}, expected only {want}")
-	notes.append("a gem's own strength reaches 1.0 only from the strongest potion + lingering + tier 3 + nether star, for every armor and weapon effect")
+	notes.append("a gem's own strength reaches 1.0 only from the strongest potion or source item + lingering form + tier 3 + nether star, for every craftable armor and weapon effect; a found-only gem is perfect only from ominous loot with a nether star base and tier 3")
+
+	# 2b. Every 26.3 status effect is classified: a gem (craftable or found), drawback-only, or not a gem.
+	if SRC.exists():
+		mob = re.sub(r"\s+", " ", (SRC / "world/effect/MobEffects.java").read_text(encoding="utf-8"))
+		ids = set(re.findall(r'Holder<MobEffect> [A-Z_]+ = register\( ?"([a-z_]+)"', mob))
+		known = set(GEM_EFFECTS) | set(NOT_GEMS) | set(DRAWBACK_ONLY)
+		if ids != known:
+			errors.append(f"status effects not classified: {sorted(ids - known)}; classified but not in 26.3: {sorted(known - ids)}")
+		n_ids = len(ids)
+	else:
+		n_ids = len(set(GEM_EFFECTS) | set(NOT_GEMS) | set(DRAWBACK_ONLY))
+	for k in GEM_EFFECTS:
+		src = E[k]["source"]
+		if src[0] == "found" and not set(src[1]) <= set(LOOT):
+			errors.append(f"{k}: unknown loot source {src[1]}")
+		if src[0] == "potion" and not E[k]["potion"]:
+			errors.append(f"{k}: potion source without a potion")
+	crafted = sum(1 for k in GEM_EFFECTS if E[k]["source"][0] != "found")
+	found = sum(1 for k in GEM_EFFECTS if E[k]["source"][0] == "found")
+	notes.append(f"all {n_ids} status effects in 26.3 are classified: {crafted} craftable gems, {found} found-only gems, {len(DRAWBACK_ONLY)} drawback-only, {len(NOT_GEMS)} not gems")
 
 	# 3. Every armor layout x gem count: the stack reaches CAP only with full netherite, 12 gems.
 	head_opts = [None] + list(MATERIALS)
@@ -802,11 +936,14 @@ def document(notes):
 		["normal + long + strong (Swiftness, Strength, Leaping, Regeneration, Poison, Slowness, Turtle Master)", "0.80", "0.85", "1.00"],
 		["normal + long (Fire Resistance, Night Vision, Invisibility, Water Breathing, Slow Falling, Weakness)", "0.90", "1.00", "-"],
 		["normal + strong (Healing, Harming)", "0.80", "-", "1.00"],
-		["one only (Luck, Wind Charged, Weaving, Oozing, Infested)", "1.00", "-", "-"],
+		["one only (Luck, Wind Charged, Weaving, Oozing, Infested), and every item-sourced or found-only gem but Absorption", "1.00", "-", "-"],
+		["Absorption: golden apple (normal) or enchanted golden apple (strong)", "0.80", "-", "1.00"],
 	]))
 	S.append(("h3", "Potion form -> highest enchant tier (owner)"))
-	S.append(("table", ["Form", "Highest tier", "Best grade reachable"], [
-		["Normal", "1", "weak"], ["Splash", "2", "medium"], ["Lingering", "3", "strongest"]]))
+	S.append(("table", ["Form", "Highest tier", "Best grade reachable", "Item-sourced gem (proposal)"], [
+		["Normal", "1", "weak", "as brewed from the item"], ["Splash", "2", "medium", "brewed again with gunpowder"],
+		["Lingering", "3", "strongest", "then again with dragon's breath"]]))
+	S.append(("p", "An item has no splash or lingering form, so an Infused Gem brewed from an item starts at the normal form and is raised the way potions are: put it back in the bottle slot with gunpowder (splash form), then dragon's breath (lingering form). So lingering-level effort is still what opens tier 3, for every craftable gem."))
 	S.append(("h3", "Enchant tier outcomes"))
 	S.append(("table", ["Tier", "Outcome", "Intended effect", "Extra effect", "Proposed odds"],
 		[[str(t), lab, (f"{g} ({GRADES[g]:.2f})" if g else "-"),
@@ -834,14 +971,25 @@ def document(notes):
 		 ["Armor: running total (perfect gems)"] + [f"{CAP * sum(STACK_R ** j for j in range(i + 1)) / W:.3f}" for i in range(12)],
 		 ["Weapon: running total (perfect gems)"] + [f"{CAP * sum(STACK_R ** j for j in range(i + 1)) / WW:.3f}" if i < WEAPON_SLOTS else "-" for i in range(12)]]))
 
+	S.append(("h2", "Every status effect: craftable, found-only, or not a gem"))
+	S.append(("p", "Every one of the 40 status effects in 26.3 (the script reads them from the source and fails if one is missing). Beneficial effects are armor gems; harmful ones are weapon gems. An effect with a potion is brewed from it. One without a potion is brewed from a vanilla item that already carries it: in 26.3 the brewing stand's bottle slot takes any item that a brewing recipe names as its input (BrewingStandMenu.PotionSlot asks the recipes, PotionIngredient.isPotionInput), so this is data, no menu change. Stews are told apart by their stew effect with Fabric API's components ingredient. An effect with no sensible item is a **found-only** gem: loot and mob gear, never brewed."))
+	S.append(("table", ["Effect", "Goes on", "How it's had"],
+		[[E[k]["name"], "armor" if E[k]["role"] in ("main", "healing") else "weapon", source_text(k)] for k in GEM_EFFECTS]
+		+ [[E[k]["name"], "-", "Drawback only: " + why] for k, why in DRAWBACK_ONLY.items()]
+		+ [[k.replace("_", " ").title(), "-", "Not a gem: " + why] for k, why in NOT_GEMS.items()]))
+	S.append(("h3", "Found-only gems: what they come with"))
+	S.append(("p", "A found gem is made as if brewed and enchanted: its potion factor is 1.0 (one form of the effect), its base gem is picked from the loot source's list and its tier rolled from the source's tiers with the normal tier odds. Same strength scale as crafted gems; only ominous loot can give a perfect one."))
+	S.append(("table", ["Loot source", "Base gems", "Tiers", "Strength range (gem quality)"],
+		[[name, ", ".join(bases), ", ".join(map(str, tiers)),
+			f"{min(BASE[b] for b in bases) * min(GRADES[g] for t in tiers for _, g, _, _ in TIERS[t] if g):.2f} - {max(BASE[b] for b in bases) * max(GRADES[g] for t in tiers for _, g, _, _ in TIERS[t] if g):.2f} (or a drawback-only roll at tier 1)" if 1 in tiers else
+			f"{min(BASE[b] for b in bases) * min(GRADES[g] for t in tiers for _, g, _, _ in TIERS[t] if g):.2f} - {max(BASE[b] for b in bases) * max(GRADES[g] for t in tiers for _, g, _, _ in TIERS[t] if g):.2f}"]
+			for name, bases, tiers in LOOT.values()]))
+
 	S.append(("h2", "Armor gems: what the scale means in game"))
 	cols = [0.05, 0.10, 0.25, 0.50, 0.75, CAP]
-	for role, title in [("main", "Armor gem effects (on the wearer)"), ("secondary", "Only as an \"other\" roll (no potion exists)")]:
-		keys = [k for k in E if E[k]["role"] == role]
-		S.append(("h3", title))
-		S.append(("table", ["Effect", "1.0 means (vanilla)"] + [f"s = {c:.2f}" for c in cols],
-			[[E[k]["name"], E[k]["anchor"]] + [E[k]["show"](c) for c in cols] for k in keys]))
-	S.append(("p", EXCLUDED))
+	keys = [k for k in E if E[k]["role"] == "main"]
+	S.append(("table", ["Effect", "1.0 means (vanilla)"] + [f"s = {c:.2f}" for c in cols],
+		[[E[k]["name"], E[k]["anchor"]] + [E[k]["show"](c) for c in cols] for k in keys]))
 
 	S.append(("h2", "Healing gem"))
 	S.append(("p", "When the wearer takes damage from an attack or a fall and survives it, they instantly get back a fraction of the health that hit took. A killing blow still kills. Its own curve: `heal = " + f"{HEAL_BEST} x (total / {CAP})^{HEAL_EXP}" + "`, so the best build returns exactly 25% and early gems are flattened upward to stay noticeable."))
@@ -855,16 +1003,16 @@ def document(notes):
 	dcols = [1, 2, 3, 12]
 	S.append(("h3", "Armor drawbacks (on the wearer, while worn)"))
 	S.append(("table", ["Effect", "1.0 means (vanilla)"] + [f"{n} drawback{'s' if n > 1 else ''} ({drawback_total(n):.3f})" for n in dcols],
-		[[E[k]["name"], E[k]["anchor"]] + [(E[k]["wearer"] if "wearer" in E[k] else E[k]["show"])(drawback_total(n)) for n in dcols] for k in ARMOR_DRAWBACKS]))
+		[[E[k]["name"], DRAWBACK_ANCHOR[k]] + [(E[k]["wearer"] if "wearer" in E[k] else E[k]["show"])(drawback_total(n)) for n in dcols] for k in ARMOR_DRAWBACKS]))
 	S.append(("h3", f"Weapon drawbacks (the inverse: a mild buff on the target, {DRAWBACK_HIT_S} s, refreshed by each hit)"))
 	S.append(("table", ["Effect on the target", "1.0 means (vanilla)"] + [f"{n} drawback{'s' if n > 1 else ''} ({drawback_total(n):.3f})" for n in (1, 2)],
 		[[E[k]["name"], E[k]["anchor"]] + [E[k]["show"](drawback_total(n)) for n in (1, 2)] for k in WEAPON_DRAWBACKS]))
 	S.append(("p", DRAWBACK_EXCLUDED))
 
 	S.append(("h2", "Weapon gems"))
-	S.append(("p", f"Harmful-potion gems go on weapons ({WEAPON_SLOTS} slots). Swords, axes, maces, tridents and spears apply the effect to what they hit; bows and crossbows turn each fired arrow into its tipped form carrying the gem's effect (picked up again, it's a plain arrow). Each hit **refreshes** the effect, it never stacks. A real tipped arrow fired from a gemmed bow: the stronger effect applies (higher strength wins, then longer duration), never both."))
-	S.append(("p", f"**Per hit:** the weapon's strength `s` is shared equally between how hard and how long: potency = s^{WEAPON_SPLIT} of the strongest arrow's level, duration = s^{1 - WEAPON_SPLIT} of its duration, so potency x duration = s. One-level effects (Wind Charged, Weaving, Oozing, Infested) put it all into duration. Harming is a charged strike: the first hit or arrow after a {HARM_CHARGE_S} s charge deals s x 12 magic damage, so a bow can't fire unlimited harming arrows."))
-	S.append(("table", ["Effect", "1.0 means (strongest vanilla tipped arrow)"] + [f"s = {c:.2f}" for c in cols],
+	S.append(("p", f"Harmful gems go on weapons ({WEAPON_SLOTS} slots). Swords, axes, maces, tridents and spears apply the effect to what they hit; bows and crossbows turn each fired arrow into its tipped form carrying the gem's effect (picked up again, it's a plain arrow). Each hit **refreshes** the effect, it never stacks. A real tipped arrow fired from a gemmed bow: the stronger effect applies (higher strength wins, then longer duration), never both."))
+	S.append(("p", f"**Per hit:** the weapon's strength `s` is shared equally between how hard and how long: potency = s^{WEAPON_SPLIT} of the strongest arrow's level, duration = s^{1 - WEAPON_SPLIT} of its duration, so potency x duration = s. On/off effects (Wind Charged, Weaving, Oozing, Infested, Glowing, Levitation, Blindness, Nausea, Darkness) put it all into duration. Effects with no tipped arrow are anchored on their strongest vanilla source: a hit source (wither skeleton, spectral arrow, shulker bullet) at its full duration, any other source (food, a mob's pulse or spell) at tipped-arrow scale, 1/8. Harming is a charged strike: the first hit or arrow after a {HARM_CHARGE_S} s charge deals s x 12 magic damage, so a bow can't fire unlimited harming arrows."))
+	S.append(("table", ["Effect", "1.0 means (strongest tipped arrow, or strongest vanilla hit)"] + [f"s = {c:.2f}" for c in cols],
 		[[E[k]["name"], E[k]["anchor"]] + [E[k]["show"](c) for c in cols] for k in WEAPON_GEMS]))
 
 	S.append(("h3", "How each effect is made partial"))
@@ -891,7 +1039,6 @@ def document(notes):
 	S.append(("h2", "Open questions for the owner"))
 	S.append(("ol", [
 		f"Cap at {CAP} (5% short of the strongest vanilla level)? yes / no (0.90 would make the gap easier to feel).",
-		"Prismarine base gem: (a) prismarine shard, (b) prismarine crystals.",
 		"Gold armor and gold weapons: (a) chainmail-level factor 0.83 (model), (b) a magic bonus up to diamond-level 0.93, echoing gold's high enchantability.",
 		"Turtle helmet counts as its own material (iron-level, always a run of 1)? yes / no.",
 		"Resistance's 1.0: (a) Resistance IV from strong Turtle Master, 80% less damage (the rule as written; gems up to 76%), (b) Resistance II, the beacon level, 40% (gems up to 38%).",
@@ -905,11 +1052,20 @@ def document(notes):
 		"Weapon strength per hit: (a) shared between potency and duration (model), (b) all into potency, always the strongest arrow's duration.",
 		f"Harming weapon gems strike once per {HARM_CHARGE_S} s charge (not every hit)? yes / no.",
 		"The weapon's 1.0 is the strongest vanilla tipped arrow (Poison II 2.7 s, Slowness IV 2.5 s), not the drunk potion (Poison II 21.6 s)? yes / no.",
-		"Wither gems: (a) none, since 26.3 has no wither potion (model), (b) a new brewing recipe makes a wither potion (wither rose), only for gems.",
+		"Wither's 1.0: (a) the wither skeleton's hit, Wither I for 10 s (model: a weapon matches a weapon), (b) the Wither boss's skull, Wither II for 10 s.",
+		"Item-sourced Infused Gems reach splash and lingering form by brewing them again with gunpowder, then dragon's breath? yes / no.",
+		"Wither gems from the wither rose? yes / no (the alternative is found-only, from Wither-fight loot).",
+		"Saturation gems: (a) from suspicious stew of dandelion, golden dandelion or blue orchid (model), (b) from a golden dandelion itself, (c) found-only.",
+		"Blindness gems from suspicious stew of azure bluet or open eyeblossom, and Nausea gems from pufferfish? yes / no.",
+		"Darkness gems from echo shards (ancient cities)? yes / no (the alternative is found-only, in ancient cities).",
+		"Conduit Power gems from a heart of the sea, and Dolphin's Grace gems from a nautilus shell? yes / no.",
+		"Haste, Health Boost, Luck and Hero of the Village are found-only, in the places listed? yes / no.",
+		"Hero of the Village gems: villager trades up to 52% cheaper at the best build, while worn? yes / no (a permanent discount is strong; the alternative is not a gem).",
+		"Mining Fatigue gems come only from elder guardians (a rare extra drop) and ominous vaults? yes / no.",
+		"Bad Omen, Trial Omen, Raid Omen and Breath of the Nautilus are not gems? yes / no.",
 		"A gem and a drunk potion of the same effect: the stronger applies, they don't add? yes / no.",
-		"Undead follow vanilla's inversion (a healing gem hurts a zombie wearer, harming heals an undead target; undead ignore poison)? yes / no.",
+		"Undead follow vanilla's inversion (a healing gem hurts a zombie wearer, harming heals an undead target; undead ignore poison and regeneration)? yes / no.",
 		"Invisibility gems give stealth only (mobs notice you later, hidden on the locator bar), never a see-through body? yes / no.",
-		"Effects with no potion (haste, absorption, health boost, dolphin's grace) can appear as an armor \"other\" roll? yes / no.",
 		"Enchant odds as proposed (tier 1: 50/50; tier 2: medium alone 50%, + weak other 50%; tier 3: alone 40%, + weak other 30%, + medium other 15%, + weak drawback 15%)? yes / no.",
 	]))
 	return S
