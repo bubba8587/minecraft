@@ -49,7 +49,8 @@ The numbers for item 6 live in `tools/gem-balance.py`, which checks them and gen
 ## Decisions on the balance model's questions (owner, 2026-11-14)
 
 - **Base gems affect strength only.** No special traits (nether star included): anything more is too complicated. Nether star stays on the strength ladder.
-- **Harmful-effect gems work like Thorns:** poison, slowness, weakness, harming (and similar) gems put that effect on whatever attacks the wearer, not on the wearer and not on what the wearer hits.
+- ~~Harmful-effect gems work like Thorns~~ **Rejected by the owner** (2026-11-14): no debuffs on attackers.
 - **Healing gem:** when the wearer takes damage from an attack or a fall that doesn't kill them, they instantly regain a portion of that damage instance (a killing blow still kills). Its own, much flatter curve so the best possible version stays modest (starting idea: at most ~25 % of each hit returned; to settle in the tables).
-- Open: with harmful gems turned outward, do the enchant outcomes still include **negative effects on the wearer** (tier 1 "weak negative", tier 3 "strongest + weak negative")?
+- **Negative enchant outcomes stay as drawbacks on the wearer** (owner: "I'd like to have some drawback gems; they'll just need tuning"): tier 1's weak negative and tier 3's "strongest + weak negative" put a mild harmful effect on the wearer. Tune them to sting without ruining the gem.
+- Open (proposed): deliberately made harmful gems (poison, slowness, weakness, harming, wither) go into **weapons** and apply a partial effect to what the wearer hits; beneficial gems stay armor-only.
 - **Base gem order by difficulty of getting it (owner), weakest to strongest:** amethyst, quartz, ender pearl (farmable), diamond (common in chest loot), prismarine (ocean monuments; crystals also in buried treasure), nether star (the Wither). The very best build is therefore **lingering potion + nether star + tier 3 + full netherite**. No loot tables are changed for this.
