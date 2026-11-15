@@ -841,28 +841,28 @@ def run_checks():
 		errors.append(f"second-best weapon {wsecond:.3f} is too close to the best {CAP}")
 	notes.append(f"{wcount:,} weapons x gem combinations enumerated: only a netherite weapon with 2 perfect gems reaches {CAP}; next best weapon or gem count with perfect gems {wsecond:.3f}")
 
-	# 4. One step down from the best build loses a visible amount, for every effect.
-	for k in ARMOR_GEMS:
+	# 4. One step down from the best build loses a visible amount, for every gem in either slot.
+	for k in GEM_EFFECTS:
 		for label, t in downgrade_rows(k):
 			if CAP - t < MIN_ABS_DROP:
 				errors.append(f"{k}: '{label}' only drops {CAP - t:.3f} from the best (need {MIN_ABS_DROP})")
-	for k in WEAPON_GEMS:
+	for k in GEM_EFFECTS:
 		for label, t in weapon_downgrade_rows(k):
 			if CAP - t < MIN_ABS_DROP:
 				errors.append(f"{k} weapon: '{label}' only drops {CAP - t:.3f} from the best (need {MIN_ABS_DROP})")
 	notes.append(f"from the best armor build and the best weapon build, every single step down (potion, base, tier, material, run, one gem fewer, a material-less weapon) loses at least {MIN_ABS_DROP}")
 
 	# 5. Early game is small but noticeable.
-	worst = min(stack([gem_quality(k, "normal", "amethyst", "weak") * MATERIALS["leather"][0] * RUN[1]]) for k in ARMOR_GEMS)
+	worst = min(stack([gem_quality(k, "normal", "amethyst", "weak") * MATERIALS["leather"][0] * RUN[1]]) for k in GEM_EFFECTS)
 	if worst < EARLY_SINGLE_FLOOR:
 		errors.append(f"weakest single armor gem {worst:.3f} is below the floor {EARLY_SINGLE_FLOOR}")
-	early = [build_total(["iron"] * 4, [1, 1, 1, 1], gem_quality(k, "normal", "quartz", "weak")) for k in ARMOR_GEMS]
+	early = [build_total(["iron"] * 4, [1, 1, 1, 1], gem_quality(k, "normal", "quartz", "weak")) for k in GEM_EFFECTS]
 	if not all(EARLY_BUILD_RANGE[0] <= x <= EARLY_BUILD_RANGE[1] for x in early):
 		errors.append(f"early armor kit range {min(early):.3f}-{max(early):.3f} outside {EARLY_BUILD_RANGE}")
-	wworst = min(weapon_total("wood", 1, gem_quality(k, "normal", "amethyst", "weak")) for k in WEAPON_GEMS)
+	wworst = min(weapon_total("wood", 1, gem_quality(k, "normal", "amethyst", "weak")) for k in GEM_EFFECTS)
 	if wworst < EARLY_SINGLE_FLOOR:
 		errors.append(f"weakest weapon gem {wworst:.3f} is below the floor")
-	wearly = [weapon_total("iron", 1, gem_quality(k, "normal", "quartz", "weak")) for k in WEAPON_GEMS]
+	wearly = [weapon_total("iron", 1, gem_quality(k, "normal", "quartz", "weak")) for k in GEM_EFFECTS]
 	if not all(EARLY_BUILD_RANGE[0] <= x <= EARLY_BUILD_RANGE[1] for x in wearly):
 		errors.append(f"early weapon range {min(wearly):.3f}-{max(wearly):.3f} outside {EARLY_BUILD_RANGE}")
 	notes.append(f"weakest single armor gem (normal potion, amethyst, tier 1, lone leather piece) = {worst:.3f}; early armor kit (iron set, 4 quartz tier-1 gems) = {min(early):.3f}-{max(early):.3f}; "
@@ -901,15 +901,16 @@ def run_checks():
 			errors.append(f"{m}: 2 tier-1 weapon gems ({weak2:.3f}) beat 1 tier-3 gem ({strong1:.3f})")
 	notes.append(f"stacking: 25,000 random armor and weapon stacks never pass {CAP} x their strongest gem; adding a gem never lowers a total; 12 tier-1 armor gems lose to 4 tier-3 in every set, and 2 tier-1 weapon gems lose to 1 tier-3 on every weapon")
 
-	# 7. In-game mappings move one way and never reach the vanilla anchor.
-	for k, e in E.items():
-		if e["role"] == "weapon":
-			continue
-		check_monotonic(k, e["value"], errors)
-		at_one = e["value"](0.99999) if k == "water_breathing" else e["value"](1.0)
-		if e["role"] != "healing" and not e["value"](CAP) < at_one:
-			errors.append(f"{k}: the cap reaches the vanilla anchor")
-	notes.append("every armor in-game mapping rises with strength and stays short of the vanilla level at the cap")
+	# 7. Worn (armor) mappings move one way and never reach the vanilla anchor, for every gem.
+	for k in GEM_EFFECTS:
+		f = lambda s, k=k: worn_value(k, s)
+		check_monotonic(k, f, errors)
+		at_one = f(0.99999) if k == "water_breathing" else f(1.0)
+		if k not in ("instant_health", "instant_damage") and not f(CAP) < at_one:
+			errors.append(f"{k}: the worn cap reaches the vanilla anchor")
+		for c in (0.05, CAP):
+			worn_show(k, c), hit_show(k, c)  # every gem renders in both slots
+	notes.append(f"every one of the {len(GEM_EFFECTS)} gems has a worn (armor) and a hit-applied (weapon) form; every worn mapping rises with strength and stays short of the vanilla level at the cap")
 
 	# 8. Healing curve: modest at best, visible early, a net loss always, flat but still a ladder.
 	h_best = heal_fraction(CAP)
@@ -931,19 +932,54 @@ def run_checks():
 	tots = [drawback_total(n) for n in range(1, SLOTS * len(PIECES) + 1)]
 	if abs(tots[0] - DRAWBACK_ONE) > 1e-12 or not all(b > a for a, b in zip(tots, tots[1:])) or not tots[-1] < DRAWBACK_CAP:
 		errors.append("drawback stacking must start at DRAWBACK_ONE, rise, and stay below DRAWBACK_CAP")
-	for k in ARMOR_DRAWBACKS + WEAPON_DRAWBACKS:
+	for k in HARMFUL_DRAWBACKS + BENEFICIAL_DRAWBACKS:
 		if not DRAWBACK_CAP < E[k]["level_one"]:
 			errors.append(f"{k}: drawbacks can reach vanilla level I ({E[k]['level_one']:.2f} on its scale)")
-	weakest_benefit = min(gem_quality(k, "normal", "amethyst", "strongest") * MATERIALS["leather"][0] * RUN[1] for k in ARMOR_GEMS)
+	weakest_benefit = min(gem_quality(k, "normal", "amethyst", "strongest") * MATERIALS["leather"][0] * RUN[1] for k in GEM_EFFECTS)
 	if not DRAWBACK_ONE < weakest_benefit:
 		errors.append(f"a drawback ({DRAWBACK_ONE}) outweighs the weakest tier-3 gem's own share ({weakest_benefit:.3f})")
-	for k in ("poison", "instant_damage"):
-		if k in ARMOR_DRAWBACKS:
-			errors.append(f"{k} must not be an armor drawback")
-	notes.append(f"drawbacks: one is {DRAWBACK_ONE:.0%} of the strongest vanilla level, any number of one effect stays under {DRAWBACK_CAP:.0%}, below vanilla's level I for every drawback effect (armor and weapon); poison, wither and harming never roll on armor")
+	for k in NEVER_DRAWBACK:
+		if k in HARMFUL_DRAWBACKS + BENEFICIAL_DRAWBACKS:
+			errors.append(f"{k} must never be a drawback ({NEVER_DRAWBACK[k]})")
+	notes.append(f"drawbacks: one is {DRAWBACK_ONE:.0%} of the strongest vanilla level, any number of one effect stays under {DRAWBACK_CAP:.0%}, below vanilla's level I for every drawback effect; poison, wither, harming and the rest of the never-drawback list never roll")
+
+	# 9b. Rolls (owner): one table per gem; other = same kind, never itself; drawback = the other kind, never its direct opposite.
+	for a, b, _ in INVERSE_PAIRS:
+		if a not in E or b not in E or not E[a]["good"] or E[b]["good"]:
+			errors.append(f"inverse pair {a}/{b} must be a beneficial and a harmful effect")
+	need = {("speed", "slowness"), ("strength", "weakness"), ("haste", "mining_fatigue"), ("regeneration", "poison"), ("regeneration", "wither"),
+		("luck", "unluck"), ("instant_health", "instant_damage"), ("saturation", "hunger"), ("night_vision", "blindness"),
+		("night_vision", "darkness"), ("invisibility", "glowing"), ("slow_falling", "levitation")}
+	if not need <= OWNER_PAIRS:
+		errors.append(f"owner's inverse pairs missing: {sorted(need - OWNER_PAIRS)}")
+	for k in set(NO_OPPOSITE) & set(OPPOSITE):
+		errors.append(f"{k} is both in the inverse table and listed as having no opposite")
+	sizes = {}
+	for k in GEM_EFFECTS:
+		op, dp = other_pool(k), drawback_pool(k)
+		if not op:
+			errors.append(f"{k}: empty 'other' roll table")
+		if not dp:
+			errors.append(f"{k}: empty drawback roll table")
+		for o in op:
+			if o == k or E[o]["good"] != E[k]["good"] or o not in GEM_EFFECTS:
+				errors.append(f"{k}: 'other' roll {o} is the main effect itself, not a gem, or of the wrong kind")
+		for d in dp:
+			if d in OPPOSITE.get(k, ()):
+				errors.append(f"{k}: drawback pool holds its direct opposite {d}")
+			if E[d]["good"] == E[k]["good"]:
+				errors.append(f"{k}: drawback {d} is the same kind as the main effect")
+			if d in NEVER_DRAWBACK:
+				errors.append(f"{k}: drawback {d} is on the never-drawback list")
+		sizes[k] = (len(op), len(dp))
+	for k, o, d in EXAMPLES:
+		if o not in other_pool(k) or d not in drawback_pool(k):
+			errors.append(f"example {k}: {o} / {d} not in its roll tables")
+	notes.append(f"rolls: each of the {len(GEM_EFFECTS)} gems has one roll table; 'other' pools {min(a for a, _ in sizes.values())}-{max(a for a, _ in sizes.values())} effects, all the main effect's kind and never itself; "
+		f"drawback pools {min(b for _, b in sizes.values())}-{max(b for _, b in sizes.values())} effects, all the opposite kind, none on the never-drawback list, and none a direct opposite ({len(INVERSE_PAIRS)} inverse pairs, the owner's 12 included)")
 
 	# 10. Weapons: per hit, potency and duration both rise; nothing reaches the strongest tipped arrow.
-	for k in WEAPON_GEMS:
+	for k in GEM_EFFECTS:
 		p_prev = d_prev = -1
 		for i in range(1, 101):
 			p, d = weapon_hit(k, i / 100 * CAP)
@@ -958,7 +994,7 @@ def run_checks():
 			errors.append(f"{k}: the best weapon gem matches the strongest tipped arrow")
 		if E[k]["kind"] == "scaled" and not p < 1.0:
 			errors.append(f"{k}: the best weapon gem's potency reaches the strongest arrow's level, so 'the stronger wins' can't favour the real arrow")
-	notes.append("weapons: per hit, potency and duration both rise with strength; at the best build every effect stays under the strongest vanilla tipped arrow, so a real strong tipped arrow always wins the 'stronger applies' comparison and a gem arrow beats the weaker ones")
+	notes.append("weapons: per hit, potency and duration both rise with strength, for every gem; at the best build every effect stays under the strongest vanilla tipped arrow, so a real strong tipped arrow always wins the 'stronger applies' comparison and a gem arrow beats the weaker ones")
 	return errors, notes
 
 # ---------------------------------------------------------------- builds for the tables
