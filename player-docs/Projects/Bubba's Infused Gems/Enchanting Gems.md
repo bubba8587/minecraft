@@ -56,7 +56,9 @@ A finished Gem with a drawback can be **inverted** at a brewing stand: the Gem g
 
 Each inversion costs strength: the new main effect is one step weaker than the old one (strongest to medium, medium to weak), and the Gem drops one Infusion level. A bonus effect stays as it is, so after inverting it works against the new main effect, and it is a bonus again if the Gem is inverted back. A Gem can be inverted back, with the same cost again.
 
-The brewing stand does not take a Gem that has no drawback, a Gem whose main effect is already weak, an Infusion I Gem, or a Gem whose drawback is Bad Luck.
+A Gem with only a drawback inverts too: the drawback becomes a weak main effect and the Gem drops an Infusion level, with no drawback afterwards.
+
+The brewing stand does not take a Gem that has no drawback, a Gem whose main effect is already weak, an Infusion I Gem, or a Gem whose drawback is Bad Luck. Gems cannot be combined or merged in any way.
 
 | Before | After inverting |
 |---|---|

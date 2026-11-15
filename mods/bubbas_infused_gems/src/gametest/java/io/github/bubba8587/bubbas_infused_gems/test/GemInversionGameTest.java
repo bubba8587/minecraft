@@ -77,6 +77,28 @@ public class GemInversionGameTest {
 		});
 	}
 
+	/** Owner: a drawback-only gem inverts too: its drawback becomes a weak main, Infusion one lower, no drawback after. */
+	@GameTest(maxTicks = 900)
+	public void drawbackOnlyGemInvertsToAWeakMain(GameTestHelper helper) {
+		Balance b = Balance.get();
+		BlockPos pos = new BlockPos(1, 1, 1);
+		helper.setBlock(pos, Blocks.BREWING_STAND);
+		BrewingStandBlockEntity stand = helper.getBlockEntity(pos, BrewingStandBlockEntity.class);
+		Gem flawed = new Gem(GemText.holder("speed"), 3, 1, 0.0F, Optional.empty(), Optional.of(new Gem.Roll(GemText.holder("hunger"), (float) b.drawbackOne)));
+		check(helper, PotionIngredient.isPotionInput(GemKit.item(flawed), helper.getLevel().recipeAccess()), "the bottle slot refuses a drawback-only gem");
+		Gem infusionOne = new Gem(GemText.holder("speed"), 1, 1, 0.0F, Optional.empty(), Optional.of(new Gem.Roll(GemText.holder("hunger"), (float) b.drawbackOne)));
+		check(helper, !GemInversion.canInvert(infusionOne), "an Infusion I drawback-only gem can invert");
+		stand.setItem(0, GemKit.item(flawed));
+		stand.setItem(3, new ItemStack(Items.FERMENTED_SPIDER_EYE));
+		stand.setItem(4, new ItemStack(Items.BLAZE_POWDER));
+		helper.succeedWhen(() -> {
+			Gem out = stand.getItem(0).get(ModComponents.GEM);
+			check(helper, out != null && out.hasMain(), "not inverted yet");
+			check(helper, GemText.key(out.effect()).equals("hunger") && out.drawback().isEmpty() && out.infusion() == 2, "inverted " + out);
+			close(out.main(), b.infusion(2).factor() * b.grades.get("weak"), 1e-5, helper, "a weak main");
+		});
+	}
+
 	/** Owner: rolls weighted by rarity, common 4, uncommon 2, rare (found-only) 1, both bonus and drawback pools. */
 	@GameTest
 	public void rollsFavourCommonEffects(GameTestHelper helper) {

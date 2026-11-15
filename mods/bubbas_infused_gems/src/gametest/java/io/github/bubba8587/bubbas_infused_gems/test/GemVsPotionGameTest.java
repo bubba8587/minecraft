@@ -62,6 +62,23 @@ public class GemVsPotionGameTest {
 		return m == null ? 0.0 : m.amount();
 	}
 
+	/** Health Boost gems (a combat effect at the shared cap) carry the stronger-applies tests: +8 x s max health. */
+	private static double gemBoost(LivingEntity e) {
+		AttributeModifier m = e.getAttribute(Attributes.MAX_HEALTH).getModifier(BubbasInfusedGems.id("worn/health_boost/0"));
+		return m == null ? 0.0 : m.amount();
+	}
+
+	/** Max health above the base: what actually applies. */
+	private static double boost(LivingEntity e) {
+		AttributeInstance a = e.getAttribute(Attributes.MAX_HEALTH);
+		return a.getValue() - a.getBaseValue();
+	}
+
+	private static double unusedSpeed(LivingEntity e) {
+		AttributeModifier m = e.getAttribute(Attributes.MOVEMENT_SPEED).getModifier(BubbasInfusedGems.id("worn/speed/0"));
+		return m == null ? 0.0 : m.amount();
+	}
+
 	/** Movement speed as a multiple of the base: what actually applies. */
 	private static double speedFactor(LivingEntity e) {
 		AttributeInstance a = e.getAttribute(Attributes.MOVEMENT_SPEED);
@@ -69,7 +86,7 @@ public class GemVsPotionGameTest {
 	}
 
 	private static void noGemModifiersLeft(GameTestHelper helper, LivingEntity e, String when) {
-		for (var attribute : new net.minecraft.core.Holder[] {Attributes.MOVEMENT_SPEED, Attributes.MAX_ABSORPTION, Attributes.BURNING_TIME}) {
+		for (var attribute : new net.minecraft.core.Holder[] {Attributes.MOVEMENT_SPEED, Attributes.MAX_HEALTH, Attributes.MAX_ABSORPTION, Attributes.BURNING_TIME}) {
 			@SuppressWarnings("unchecked")
 			AttributeInstance a = e.getAttribute(attribute);
 			if (a != null) {
@@ -89,52 +106,52 @@ public class GemVsPotionGameTest {
 	@GameTest(maxTicks = 100)
 	public void strongerPotionRunsOutAndTheGemTakesOverAtOnce(GameTestHelper helper) {
 		Mob pig = pig(helper);
-		wear(pig, "speed");
-		pig.addEffect(new MobEffectInstance(MobEffects.SPEED, 10, 1));
-		close(gemSpeed(pig), 0.0, 1e-9, helper, "Speed II on: gems off");
-		close(speedFactor(pig), 1.4, 1e-6, helper, "Speed II alone applies");
+		wear(pig, "health_boost");
+		pig.addEffect(new MobEffectInstance(MobEffects.HEALTH_BOOST, 10, 1));
+		close(gemBoost(pig), 0.0, 1e-9, helper, "Health Boost II on: gems off");
+		close(boost(pig), 8.0, 1e-6, helper, "Health Boost II alone applies");
 		helper.succeedWhen(() -> {
-			check(helper, !pig.hasEffect(MobEffects.SPEED), "potion still running");
-			close(speedFactor(pig), 1 + 0.4 * S, 1e-6, helper, "the gem took over the tick the potion ended");
+			check(helper, !pig.hasEffect(MobEffects.HEALTH_BOOST), "potion still running");
+			close(boost(pig), 8 * S, 1e-6, helper, "the gem took over the tick the potion ended");
 		});
 	}
 
 	@GameTest
 	public void weakerPotionKeepsItsTimerAndTheGemTopsUp(GameTestHelper helper) {
 		Mob pig = pig(helper);
-		wear(pig, "speed");
-		pig.addEffect(new MobEffectInstance(MobEffects.SPEED, 600, 0));
-		check(helper, pig.getEffect(MobEffects.SPEED).getDuration() == 600, "the potion's timer is gone");
-		close(speedFactor(pig), 1 + 0.4 * S, 1e-6, helper, "Speed I + gems: the gems' value, not the sum");
+		wear(pig, "health_boost");
+		pig.addEffect(new MobEffectInstance(MobEffects.HEALTH_BOOST, 600, 0));
+		check(helper, pig.getEffect(MobEffects.HEALTH_BOOST).getDuration() == 600, "the potion's timer is gone");
+		close(boost(pig), 8 * S, 1e-6, helper, "Health Boost I + gems: the gems' value, not the sum");
 		// Gear off mid-potion: the potion stays, the gem part goes, nothing left behind.
 		strip(pig);
-		close(speedFactor(pig), 1.2, 1e-6, helper, "gear off: Speed I alone");
+		close(boost(pig), 4.0, 1e-6, helper, "gear off: Health Boost I alone");
 		pig.removeAllEffects();
 		noGemModifiersLeft(helper, pig, "gear off and potion gone");
-		close(speedFactor(pig), 1.0, 1e-9, helper, "nothing left");
+		close(boost(pig), 0.0, 1e-9, helper, "nothing left");
 		helper.succeed();
 	}
 
 	@GameTest
 	public void milkClearsThePotionAndTheGemStays(GameTestHelper helper) {
 		Mob pig = pig(helper);
-		wear(pig, "speed");
-		pig.addEffect(new MobEffectInstance(MobEffects.SPEED, 600, 1));
-		close(gemSpeed(pig), 0.0, 1e-9, helper, "Speed II on: gems off");
+		wear(pig, "health_boost");
+		pig.addEffect(new MobEffectInstance(MobEffects.HEALTH_BOOST, 600, 1));
+		close(gemBoost(pig), 0.0, 1e-9, helper, "Health Boost II on: gems off");
 		pig.removeAllEffects(); // what milk does
-		close(speedFactor(pig), 1 + 0.4 * S, 1e-6, helper, "after milk: the gems");
+		close(boost(pig), 8 * S, 1e-6, helper, "after milk: the gems");
 		helper.succeed();
 	}
 
 	@GameTest
 	public void beaconsAndConduitsFollowTheSameRule(GameTestHelper helper) {
 		Mob pig = pig(helper);
-		wear(pig, "speed");
+		wear(pig, "health_boost");
 		// Beacons and conduits apply ambient effects, refreshed every few seconds.
-		pig.addEffect(new MobEffectInstance(MobEffects.SPEED, 260, 1, true, true));
-		close(speedFactor(pig), 1.4, 1e-6, helper, "beacon Speed II alone");
-		pig.addEffect(new MobEffectInstance(MobEffects.SPEED, 260, 1, true, true));
-		close(speedFactor(pig), 1.4, 1e-6, helper, "beacon refresh: still Speed II alone");
+		pig.addEffect(new MobEffectInstance(MobEffects.HEALTH_BOOST, 260, 1, true, true));
+		close(boost(pig), 8.0, 1e-6, helper, "Health Boost II alone");
+		pig.addEffect(new MobEffectInstance(MobEffects.HEALTH_BOOST, 260, 1, true, true));
+		close(boost(pig), 8.0, 1e-6, helper, "refreshed: still Health Boost II alone");
 		strip(pig);
 		pig.removeAllEffects();
 		wear(pig, "water_breathing");
@@ -177,26 +194,27 @@ public class GemVsPotionGameTest {
 				PotionContents.createItemStack(Items.TIPPED_ARROW, Potions.STRONG_SWIFTNESS), shooter, null);
 		((ArrowInvoker) arrow).bubbas$hit(pig);
 		check(helper, pig.hasEffect(MobEffects.SPEED), "tipped arrow gave no Speed");
-		close(gemSpeed(pig), 0.0, 1e-9, helper, "Speed II arrow: gems off while it lasts");
+		double sp = Balance.get().effect("speed").wornCap();
+		close(gemSpeed(pig), (1 + 0.4 * sp) / 1.4 - 1, 1e-6, helper, "Speed II arrow: the gems only add their part above it (raised Speed cap)");
 		pig.removeAllEffects();
-		close(gemSpeed(pig), 0.4 * S, 1e-6, helper, "arrow's effect gone: gems back");
+		close(gemSpeed(pig), 0.4 * sp, 1e-6, helper, "arrow's effect gone: gems back");
 		helper.succeed();
 	}
 
 	@GameTest
 	public void deathOrReloadLeavesNoModifierBehind(GameTestHelper helper) {
 		Mob pig = pig(helper);
-		wear(pig, "speed");
-		pig.addEffect(new MobEffectInstance(MobEffects.SPEED, 600, 0));
+		wear(pig, "health_boost");
+		pig.addEffect(new MobEffectInstance(MobEffects.HEALTH_BOOST, 600, 0));
 		// Saved and loaded again (a reload, or a respawned copy): gem modifiers are transient, so none come back by
 		// themselves, and the next refresh (on joining the level) restores exactly the right value.
 		TagValueOutput out = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, helper.getLevel().registryAccess());
 		pig.saveWithoutId(out);
 		Mob copy = helper.spawnWithNoFreeWill(EntityTypes.PIG, new BlockPos(2, 1, 2));
 		copy.load(TagValueInput.create(ProblemReporter.DISCARDING, helper.getLevel().registryAccess(), out.buildResult()));
-		close(gemSpeed(copy), 0.0, 1e-9, helper, "a gem modifier survived a save");
+		close(gemBoost(copy), 0.0, 1e-9, helper, "a gem modifier survived a save");
 		WornEffects.refresh(copy);
-		close(speedFactor(copy), 1 + 0.4 * S, 1e-6, helper, "after reload: gems over Speed I, not added");
+		close(boost(copy), 8 * S, 1e-6, helper, "after reload: gems over Health Boost I, not added");
 		// Death clears effects and drops the armor: nothing of ours stays.
 		strip(copy);
 		copy.removeAllEffects();

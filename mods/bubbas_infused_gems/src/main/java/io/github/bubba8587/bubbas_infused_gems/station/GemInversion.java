@@ -15,7 +15,8 @@ import org.jspecify.annotations.Nullable;
 /**
  * Gem inversion (owner, 2026-11-15): a finished gem with a drawback + a fermented spider eye at the brewing stand swaps
  * its main effect and its drawback. Nerfs every time: the new main is one grade below the old (strongest, medium, weak;
- * a weak one can't invert) and the gem loses an Infusion level (Infusion I can't invert). The old main becomes the
+ * a weak one can't invert) and the gem loses an Infusion level (Infusion I can't invert). A drawback-only gem inverts to a
+ * weak main of its drawback's effect and no drawback (owner). The old main becomes the
  * drawback at the old drawback's size; the bonus stays as it is (then acting as a second drawback until inverted back).
  */
 public final class GemInversion {
@@ -39,8 +40,11 @@ public final class GemInversion {
 	}
 
 	public static boolean canInvert(@Nullable Gem gem) {
-		if (gem == null || !gem.hasMain() || gem.drawback().isEmpty() || gem.infusion() <= 1) {
+		if (gem == null || gem.drawback().isEmpty() || gem.infusion() <= 1 || !Balance.get().gemEffects.contains(gem.drawback().get().key())) {
 			return false;
+		}
+		if (!gem.hasMain()) {
+			return true; // owner: a drawback-only gem inverts to a weak main
 		}
 		String grade = mainGrade(gem);
 		return grade != null && !grade.equals("weak") && Balance.get().gemEffects.contains(gem.drawback().get().key());
@@ -52,6 +56,12 @@ public final class GemInversion {
 
 	public static Gem invert(Gem gem) {
 		Balance b = Balance.get();
+		if (!gem.hasMain()) {
+			// Owner: the drawback becomes a weak-grade main; no drawback after (the bonus, if any, stays as it is).
+			int infusion = gem.infusion() - 1;
+			float main = (float) (b.infusion(infusion).factor() * b.grades.get("weak"));
+			return new Gem(gem.drawback().get().effect(), infusion, gem.tier(), main, gem.other(), Optional.empty());
+		}
 		String grade = mainGrade(gem);
 		String lower = ORDER.get(ORDER.indexOf(grade) - 1);
 		int infusion = gem.infusion() - 1;

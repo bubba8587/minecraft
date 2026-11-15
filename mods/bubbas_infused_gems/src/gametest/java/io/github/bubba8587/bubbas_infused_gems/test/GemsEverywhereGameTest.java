@@ -104,11 +104,12 @@ public class GemsEverywhereGameTest {
 	@GameTest(maxTicks = 100)
 	public void everyGemWorksInArmor(GameTestHelper helper) {
 		Balance b = Balance.get();
-		double s = b.cap;
+		double s;
 		Mob pig = pig(helper, 1, 1);
 		for (String key : b.gemEffects) {
 			wear(pig, key);
 			Balance.EffectData e = b.effect(key);
+			s = e.wornCap(); // owner: mobility effects have a raised worn cap
 			if (!e.wornAttributes().isEmpty() && !e.wornFlag("wet_only")) {
 				for (int i = 0; i < e.wornAttributes().size(); i++) {
 					if (BuiltInRegistries.ATTRIBUTE.get(Identifier.parse(e.wornAttributes().get(i).attribute())).map(pig::getAttribute).orElse(null) == null) {
@@ -137,9 +138,9 @@ public class GemsEverywhereGameTest {
 				case "invisibility" -> close(pig.getVisibilityPercent(helper.getLevel(), null), 1 - 0.93 * s, 1e-6, helper, "stealth");
 				case "slow_falling" -> {
 					pig.setDeltaMovement(0, -0.5, 0);
-					close(WornEffects.gravity(pig, 0.08), 0.08 * (1 - 0.875 * s), 1e-6, helper, "slow falling gravity");
+					close(WornEffects.gravity(pig, 0.08), s <= 1 ? 0.08 * (1 - 0.875 * s) : 0.01 / s, 1e-6, helper, "slow falling gravity (raised cap: slower than the potion)");
 				}
-				case "dolphins_grace" -> close(WornEffects.waterDrag(pig, 0.8), 0.8 + 0.16 * s, 1e-6, helper, "water drag");
+				case "dolphins_grace" -> close(WornEffects.waterDrag(pig, 0.8), 1 - 1 / (5 + 20 * s), 1e-6, helper, "water drag (swim-speed gain s of the potion's)");
 				case "conduit_power" -> close(GemValues.value(pig, key), s, 1e-6, helper, "conduit power (wet test below)");
 				case "instant_health" -> {
 					pig.setHealth(20F);
@@ -233,7 +234,7 @@ public class GemsEverywhereGameTest {
 			wear(player, key);
 			Balance.EffectData e = Balance.get().effect(key);
 			for (int i = 0; i < e.wornAttributes().size(); i++) {
-				close(modifier(player, e.wornAttributes().get(i).attribute(), "worn/" + key + "/" + i), e.wornAttributes().get(i).at(s), 1e-6, helper,
+				close(modifier(player, e.wornAttributes().get(i).attribute(), "worn/" + key + "/" + i), e.wornAttributes().get(i).at(e.wornCap()), 1e-6, helper,
 						key + " worn attribute " + i);
 			}
 			strip(player);
@@ -360,14 +361,15 @@ public class GemsEverywhereGameTest {
 	@GameTest
 	public void gemAndVanillaEffectStrongerApplies(GameTestHelper helper) {
 		Mob pig = pig(helper, 1, 1);
-		double s = Balance.get().cap;
+		double s = Balance.get().effect("speed").wornCap();
 		double gem = 0.4 * s;
 		wear(pig, "speed");
 		close(modifier(pig, "minecraft:movement_speed", "worn/speed/0"), gem, 1e-6, helper, "speed gems alone");
 		pig.addEffect(new MobEffectInstance(MobEffects.SPEED, 200, 0));
 		close(modifier(pig, "minecraft:movement_speed", "worn/speed/0"), (1 + gem) / 1.2 - 1, 1e-6, helper, "gems on top of Speed I: only the rest");
 		pig.addEffect(new MobEffectInstance(MobEffects.SPEED, 200, 1));
-		close(modifier(pig, "minecraft:movement_speed", "worn/speed/0"), 0.0, 1e-9, helper, "Speed II is stronger: gems off");
+		// Speed's raised worn cap (owner: 1.1) is above Speed II, so the gems still add their part above it.
+		close(modifier(pig, "minecraft:movement_speed", "worn/speed/0"), (1 + gem) / 1.4 - 1, 1e-6, helper, "Speed II: only the gems' part above it");
 		pig.removeEffect(MobEffects.SPEED);
 		close(modifier(pig, "minecraft:movement_speed", "worn/speed/0"), gem, 1e-6, helper, "potion gone: gems back");
 		strip(pig);
@@ -476,6 +478,34 @@ public class GemsEverywhereGameTest {
 			check(helper, weakRose > 0.25 && weakRose < rose, "a weak Levitation gem rose " + weakRose + " blocks in 4 s");
 			helper.succeed();
 		});
+	}
+
+	/** Owner (2026-11-15): mobility gems go past the potion at the perfect set: Jump Boost about 4 blocks, Haste past Haste II. */
+	@GameTest
+	public void perfectMobilitySetsBeatThePotion(GameTestHelper helper) {
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		player.setGameMode(GameType.SURVIVAL);
+		wear(player, "jump_boost");
+		double v = player.getAttributeValue(Attributes.JUMP_STRENGTH);
+		double y = 0, top = 0;
+		for (int t = 0; t < 400 && v > 0; t++) { // LivingEntity.travelInAir: move, then gravity, then drag
+			y += v;
+			top = Math.max(top, y);
+			v = (v - 0.08) * 0.98;
+		}
+		check(helper, top > 3.5 && top < 4.2, "perfect Jump Boost set jumps " + top + " blocks (Jump Boost II: about 2.5)");
+		check(helper, player.getAttributeValue(Attributes.SAFE_FALL_DISTANCE) > 6.0, "safe fall " + player.getAttributeValue(Attributes.SAFE_FALL_DISTANCE));
+		strip(player);
+		player.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.NETHERITE_PICKAXE));
+		var stone = net.minecraft.world.level.block.Blocks.STONE.defaultBlockState();
+		player.addEffect(new MobEffectInstance(MobEffects.HASTE, 600, 1));
+		float hasteTwo = player.getDestroySpeed(stone);
+		player.removeEffect(MobEffects.HASTE);
+		wear(player, "haste");
+		float gems = player.getDestroySpeed(stone);
+		check(helper, gems > hasteTwo * 1.2F, "perfect Haste set mines " + gems + ", Haste II " + hasteTwo);
+		GemKit.remove(helper, player);
+		helper.succeed();
 	}
 
 	/** Owner (Q33): stealth scales, the locator bar hides from a threshold, only the perfect full set is really invisible. */

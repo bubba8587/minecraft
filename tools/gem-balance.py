@@ -26,6 +26,14 @@ OUT_HTML = ROOT / "build" / "gem-balance.html"
 # ---------------------------------------------------------------- tunable model constants
 CAP = 0.90            # best possible total, as a fraction of the strongest vanilla level (armor and weapons; owner, question 1)
 STACK_R = 0.85        # each further gem of the same effect counts this much of the one before
+# Per-effect worn caps (owner, 2026-11-15): combat power stays at CAP; "fun mobility" goes past the strongest potion at the
+# perfect armor build. The armor total is scaled by WORN_CAP[k] / CAP, so every build keeps its share of its effect's cap.
+# Weapon hits keep CAP. Jump Boost's is set so the jump is 1.5x as high as Jump Boost II's (WORN_JUMP_HEIGHT, below).
+WORN_HASTE_CAP = 2.0          # twice Haste II's bonus: Haste IV mining (x1.8)
+WORN_JUMP_HEIGHT = 1.5        # the perfect set jumps this many times Jump Boost II's height (about 3.8 blocks)
+WORN_DOLPHIN_CAP = 1.5        # 1.5x the potion's swim-speed gain
+WORN_SLOW_FALL_CAP = 1.5      # falls 1.5x slower than the potion
+WORN_SPEED_CAP = 1.1          # +44% speed (Speed II: +40%)
 SLOTS = 3             # gem slots per armor piece (owner)
 WEAPON_SLOTS = 2      # gem slots per weapon (owner)
 PIECES = ["helmet", "chestplate", "leggings", "boots"]   # adjacency order (owner)
@@ -161,6 +169,12 @@ def variant_factors(variants):
 T = 20.0  # ticks per second
 TIPPED_ARROW_SCALE = 0.125  # Items.TIPPED_ARROW potion_duration_scale
 
+def dolphin_drag(s):
+	return 1 - 1 / (5 + 20 * max(s, 0.0))
+
+def slow_fall_gravity(s):
+	return 0.08 - 0.07 * s if s <= 1 else 0.01 / s
+
 def jump_apex(v0, g=0.08, drag=0.98):
 	"""Apex of a jump: LivingEntity.travelInAir moves, then subtracts gravity, then multiplies by 0.98."""
 	y = best = 0.0
@@ -272,9 +286,9 @@ effect("invisibility", name="Invisibility", potion="invisibility", role="main",
 effect("slow_falling", name="Slow Falling", potion="slow_falling", role="main",
 	variants={"normal": (1800, 0), "long": (4800, 0)},
 	anchor="Slow Falling: falling gravity capped at 0.01 (from 0.08), no fall damage",
-	value=lambda s: s,
-	show=lambda s: f"fall speed max {49 * (0.08 - 0.07 * s) * T:.1f} b/s (vanilla 78.4), fall damage {pct(-s)}",
-	impl="On/off made partial: while falling, gravity 0.08 - 0.07 x s (mixin at LivingEntity.getEffectiveGravity, where vanilla checks slow falling) and fall_damage_multiplier -s.",
+	value=lambda s: -slow_fall_gravity(s),
+	show=lambda s: f"fall speed max {49 * slow_fall_gravity(s) * T:.1f} b/s (vanilla 78.4, the potion 9.8), fall damage {pct(-min(s, 1.0))}",
+	impl="On/off made partial: while falling, gravity 0.08 - 0.07 x s up to the potion's 0.01 at s = 1, past it 0.01 / s (mixin at LivingEntity.getEffectiveGravity, where vanilla checks slow falling) and fall_damage_multiplier -s.",
 	src="LivingEntity.getEffectiveGravity, Attributes.GRAVITY 0.08")
 effect("luck", name="Luck", potion="luck", role="main",
 	variants={"normal": (6000, 0)}, source=("found", ["common", "rare", "ominous"],
@@ -405,8 +419,8 @@ effect("health_boost", name="Health Boost", potion=None, role="main", level_one=
 effect("dolphins_grace", name="Dolphin's Grace", potion=None, role="main", variants={"normal": None},
 	source=("item", "nautilus shell (drowned, fishing treasure; dolphins give the effect)"),
 	anchor="Dolphin's Grace: water drag 0.96 instead of 0.8 (0.9 sprinting) (on/off)",
-	value=lambda s: 0.8 + 0.16 * s, show=lambda s: f"water drag {0.8 + 0.16 * s:.3f} (vanilla 0.800)",
-	impl="On/off made partial: water slow-down 0.8 + 0.16 x s (mixin where travelInWater sets 0.96).",
+	value=lambda s: dolphin_drag(s), show=lambda s: f"water drag {dolphin_drag(s):.4f} (vanilla 0.800, the potion 0.960)",
+	impl="On/off made partial: water slow-down moved so the swim-speed gain (1 / (1 - drag)) is s of the potion's: drag = 1 - 1 / (5 + 20 s) from 0.8 (mixin where travelInWater sets 0.96); past 1.0 it swims faster than the potion, never at drag 1.",
 	src="LivingEntity.travelInWater, DOLPHINS_GRACE_WATER_DRAG, Dolphin")
 # Saturation (owner, 2026-11-15): like the vanilla effect, it restores food and saturation, at a rate by strength: food
 # points per second from SATURATION_MIN_RATE (a single weak gem: about one food point every 22 s) to SATURATION_BEST_RATE
@@ -1178,11 +1192,17 @@ def run_checks():
 		f = lambda s, k=k: worn_value(k, s)
 		check_monotonic(k, f, errors)
 		at_one = f(0.99999) if k == "water_breathing" else f(1.0)
-		if k not in ("instant_health", "instant_damage") and not f(CAP) < at_one:
+		if k in WORN_CAP and WORN_CAP[k] > 1.0:
+			if not f(worn_cap(k)) > at_one:
+				errors.append(f"{k}: its raised cap doesn't pass the strongest potion")
+		elif k not in ("instant_health", "instant_damage") and not f(worn_cap(k)) < at_one:
 			errors.append(f"{k}: the worn cap reaches the vanilla anchor")
+	for k, c in WORN_CAP.items():
+		if not E[k]["good"] or c <= CAP:
+			errors.append(f"{k}: a raised worn cap must be a beneficial mobility effect above {CAP}")
 		for c in (0.05, CAP):
 			worn_show(k, c), hit_show(k, c)  # every gem renders in both slots
-	notes.append(f"every one of the {len(GEM_EFFECTS)} gems has a worn (armor) and a hit-applied (weapon) form; every worn mapping rises with strength and stays short of the vanilla level at the cap")
+	notes.append(f"every one of the {len(GEM_EFFECTS)} gems has a worn (armor) and a hit-applied (weapon) form; every worn mapping rises with strength and stays short of the vanilla level at the cap, except the owner's raised mobility caps " + ", ".join(f"{E[k]['name']} {c:g}" for k, c in WORN_CAP.items()) + " (above the strongest potion)")
 
 	# 8. Healing curve: modest at best, visible early, a net loss always, flat but still a ladder.
 	h_best = heal_fraction(CAP)
@@ -1352,11 +1372,26 @@ WEAPON_BUILDS = [
 LADDER_EFFECTS = ["speed", "strength", "regeneration", "fire_resistance", "instant_health"]
 WEAPON_LADDER_EFFECTS = ["poison", "slowness", "weakness", "instant_damage"]
 
+def _jump_cap():
+	target = WORN_JUMP_HEIGHT * jump_apex(0.42 + 0.2)
+	lo, hi = 1.0, 4.0
+	for _ in range(60):
+		mid = (lo + hi) / 2
+		lo, hi = (mid, hi) if jump_apex(0.42 + 0.2 * mid) < target else (lo, mid)
+	return round(lo, 4)
+
+WORN_CAP = {"haste": WORN_HASTE_CAP, "jump_boost": _jump_cap(), "dolphins_grace": WORN_DOLPHIN_CAP,
+	"slow_falling": WORN_SLOW_FALL_CAP, "speed": WORN_SPEED_CAP}
+
+def worn_cap(k):
+	return WORN_CAP.get(k, CAP)
+
 def build_value(k, b):
+	"""A worn build's total for effect k: the stacked total scaled to the effect's own cap."""
 	_, _, layout, gems, var, base, grade = b
 	if var == "top":
 		var = top_variant(k)
-	return build_total(layout, gems, gem_quality(k, var, base, grade))
+	return build_total(layout, gems, gem_quality(k, var, base, grade)) * worn_cap(k) / CAP
 
 def weapon_build_value(k, b):
 	_, _, weapon, gems, var, base, grade = b
@@ -1779,6 +1814,7 @@ def export_data():
 		if k in HIT_UNIT:
 			d["hit_unit"] = HIT_UNIT[k]
 		d["worn_amplifier"] = worn_amplifier(k)
+		d["worn_cap"] = worn_cap(k) if k in E else CAP
 		d["id"] = effect_id(k)
 		if k in COMPOUND:
 			d["parts"] = COMPOUND[k]

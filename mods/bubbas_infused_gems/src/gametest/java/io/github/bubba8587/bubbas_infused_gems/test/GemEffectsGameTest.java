@@ -70,8 +70,8 @@ public class GemEffectsGameTest {
 		var zombie = wearer(helper, "netherite", perfect, perfect, perfect);
 		helper.succeedWhen(() -> {
 			double s = WornEffects.of(zombie).value("speed");
-			close(s, Balance.get().cap, 1e-6, helper, "best build speed total");
-			close(modifier(zombie, Attributes.MOVEMENT_SPEED, "speed", 0), 0.4 * Balance.get().cap, 1e-6, helper, "movement speed modifier");
+			close(s, Balance.get().effect("speed").wornCap(), 1e-6, helper, "best build speed total (Speed's raised cap)");
+			close(modifier(zombie, Attributes.MOVEMENT_SPEED, "speed", 0), 0.4 * Balance.get().effect("speed").wornCap(), 1e-6, helper, "movement speed modifier");
 			zombie.discard();
 		});
 	}
@@ -89,12 +89,12 @@ public class GemEffectsGameTest {
 			double sStrength = b.stack(List.of(0.9 * pf, 0.9 * pf, 0.9 * pf, 0.9 * pf), b.armorNorm);
 			close(t.value("strength"), sStrength, 1e-6, helper, "strength total");
 			close(modifier(zombie, Attributes.ATTACK_DAMAGE, "strength", 0), 6.0 * sStrength, 1e-6, helper, "attack damage");
-			double sJump = b.stack(List.of(0.5 * pf, 0.5 * pf, 0.5 * pf, 0.5 * pf), b.armorNorm);
+			double sJump = b.stack(List.of(0.5 * pf, 0.5 * pf, 0.5 * pf, 0.5 * pf), b.armorNorm) * b.effect("jump_boost").wornCap() / b.cap;
 			close(modifier(zombie, Attributes.JUMP_STRENGTH, "jump_boost", 0), 0.2 * sJump, 1e-6, helper, "jump strength");
 			close(modifier(zombie, Attributes.SAFE_FALL_DISTANCE, "jump_boost", 1), 2.0 * sJump, 1e-6, helper, "safe fall");
 			// Four Weakness drawbacks: the saturating drawback size.
 			close(modifier(zombie, Attributes.ATTACK_DAMAGE, "weakness", 0), -4.0 * b.drawbackTotal(4), 1e-6, helper, "weakness drawback");
-			double sWater = sJump;
+			double sWater = b.stack(List.of(0.5 * pf, 0.5 * pf, 0.5 * pf, 0.5 * pf), b.armorNorm);
 			close(modifier(zombie, Attributes.OXYGEN_BONUS, "water_breathing", 0), sWater / (1 - sWater), 1e-6, helper, "oxygen bonus");
 			// Resistance through the damage hook.
 			double sRes = b.stack(List.of(0.8 * pf, 0.8 * pf, 0.8 * pf, 0.8 * pf), b.armorNorm);

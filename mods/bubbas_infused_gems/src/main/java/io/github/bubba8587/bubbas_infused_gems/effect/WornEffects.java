@@ -327,7 +327,9 @@ public final class WornEffects {
 			return gravity;
 		}
 		double reduction = Balance.get().effect("slow_falling").wornNumber("gravity_reduction", 0.07) / 0.08;
-		return Math.min(gravity, entity.getGravity() * (1.0 - reduction * s));
+		// Up to the potion's (0.01 at vanilla gravity) at 1.0; past it (owner's raised cap) that divided by s.
+		double factor = s <= 1.0 ? 1.0 - reduction * s : (1.0 - reduction) / s;
+		return Math.min(gravity, entity.getGravity() * factor);
 	}
 
 	/** Worn Levitation's rise speed, blocks per tick: any gem a slow but visible rise, the best build about half of Levitation I. */
@@ -345,7 +347,13 @@ public final class WornEffects {
 		}
 		double s = GemValues.value(entity, "dolphins_grace");
 		double target = Balance.get().effect("dolphins_grace").wornNumber("drag_target", 0.96);
-		return s > 0.0 && slowDown < target ? slowDown + (target - slowDown) * s : slowDown;
+		if (s <= 0.0 || slowDown >= target) {
+			return slowDown;
+		}
+		// The swim-speed gain 1 / (1 - drag) moves s of the way to the potion's; past 1.0 (owner's raised cap) beyond it.
+		double base = 1.0 / (1.0 - slowDown);
+		double gain = base + (1.0 / (1.0 - target) - base) * s;
+		return 1.0 - 1.0 / gain;
 	}
 
 	/** Saturation gem's food points per second at strength s: rate_min to rate_best at the cap, geometric in between. */

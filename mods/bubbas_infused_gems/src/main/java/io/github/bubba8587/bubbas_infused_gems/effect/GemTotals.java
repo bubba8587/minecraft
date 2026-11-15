@@ -32,7 +32,8 @@ public record GemTotals(Map<String, Double> totals, Map<String, Integer> drawbac
 
 	/** Main/other total plus drawbacks of the same effect: what the effect does. */
 	public double value(String key) {
-		return Math.min(this.totals.getOrDefault(key, 0.0) + this.drawbacks.getOrDefault(key, 0.0), 1.0);
+		// No clamp at 1.0: mobility effects have raised worn caps (owner).
+		return this.totals.getOrDefault(key, 0.0) + this.drawbacks.getOrDefault(key, 0.0);
 	}
 
 	public boolean has(String key) {
@@ -144,7 +145,7 @@ public record GemTotals(Map<String, Double> totals, Map<String, Integer> drawbac
 				}
 			}
 		}
-		return any ? finish(contribs, drawbacks, Balance.get().armorNorm) : NONE;
+		return any ? finish(contribs, drawbacks, Balance.get().armorNorm, true) : NONE;
 	}
 
 	public static GemTotals ofWeapon(ItemStack weapon) {
@@ -158,7 +159,7 @@ public record GemTotals(Map<String, Double> totals, Map<String, Integer> drawbac
 		for (Gem gem : gems.gems()) {
 			add(gem, factor, contribs, drawbacks);
 		}
-		return finish(contribs, drawbacks, Balance.get().weaponNorm);
+		return finish(contribs, drawbacks, Balance.get().weaponNorm, false);
 	}
 
 	private static void add(Gem gem, double factor, Map<String, List<Double>> contribs, Map<String, List<Double>> drawbacks) {
@@ -169,10 +170,15 @@ public record GemTotals(Map<String, Double> totals, Map<String, Integer> drawbac
 		gem.drawback().ifPresent(r -> drawbacks.computeIfAbsent(r.key(), k -> new ArrayList<>()).add((double) r.strength()));
 	}
 
-	private static GemTotals finish(Map<String, List<Double>> contribs, Map<String, List<Double>> drawbackSizes, double norm) {
+	private static GemTotals finish(Map<String, List<Double>> contribs, Map<String, List<Double>> drawbackSizes, double norm, boolean worn) {
 		Balance b = Balance.get();
 		Map<String, Double> totals = new LinkedHashMap<>();
-		contribs.forEach((k, list) -> totals.put(k, b.stack(list, norm)));
+		contribs.forEach((k, list) -> {
+			// Worn: scaled to the effect's own cap (owner: mobility goes past the strongest potion; combat stays at the cap).
+			Balance.EffectData e = b.effect(k);
+			double scale = worn && e != null && e.wornCap() > 0.0 ? e.wornCap() / b.cap : 1.0;
+			totals.put(k, b.stack(list, norm) * scale);
+		});
 		Map<String, Double> drawbacks = new LinkedHashMap<>();
 		Map<String, Integer> drawbackCounts = new LinkedHashMap<>();
 		drawbackSizes.forEach((k, sizes) -> {

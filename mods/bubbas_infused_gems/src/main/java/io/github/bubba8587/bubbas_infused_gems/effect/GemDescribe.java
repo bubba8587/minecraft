@@ -40,7 +40,8 @@ public final class GemDescribe {
 			case "fire_resistance" -> f("%.1f%% less fire damage, burning %.0f%% shorter", 100 * s, 100 * s);
 			case "water_breathing" -> air(s);
 			case "night_vision" -> f("%.0f%% of night vision brightness", 100 * s);
-			case "slow_falling" -> f("%.0f%% less fall damage, falls slower", 100 * s);
+			case "slow_falling" -> s <= 1.0 ? f("%.0f%% less fall damage, falls slower", 100 * s)
+					: f("no fall damage, falls %.1fx slower than Slow Falling", s);
 			case "instant_health" -> f("%.1f%% of each survived hit healed back", 100 * b.healFraction(s));
 			case "instant_damage" -> f("%.1f%% more damage from each hit taken", 100 * b.healFraction(s));
 			case "absorption" -> f("%.1f HP shield, full when put on, refills 30 s after a hit", attr(key, 0, s));
@@ -48,7 +49,7 @@ public final class GemDescribe {
 			case "invisibility" -> f("mobs notice you at %.0f%% of the range%s%s", 100 * (1 - e.wornNumber("visibility_reduction", 0.93) * s),
 					attr(key, 0, s) < 0 ? ", hidden on the locator bar" : "",
 					s >= e.wornNumber("full_at", 1.0) - 1e-9 ? ", real invisibility" : "");
-			case "dolphins_grace" -> f("swims %.0f%% of the way to Dolphin's Grace", 100 * s);
+			case "dolphins_grace" -> f("swims %.0f%% of Dolphin's Grace's speed gain", 100 * s);
 			case "saturation" -> f("restores 1 food point every %.1f s", 1.0 / WornEffects.saturationRate(s));
 			case "conduit_power" -> f("in water or rain: %s, underwater mining %+.2f", air(s), attr(key, 1, s));
 			case "hero_of_the_village" -> f("villager trades %.0f%% cheaper", 100 * e.wornNumber("price_cut", 0.55) * s);

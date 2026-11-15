@@ -10,7 +10,7 @@ Any Gem fits armor or a weapon; **where it is set decides who gets its effects**
 
 ### Strength
 
-Gem effects are always weaker than a real potion. The best possible build reaches 90% of the strongest potion level, and only one build does: twelve perfect gems of one effect in a full set of netherite armor (or two in a netherite weapon).
+Most gem effects are weaker than a real potion: the best possible build reaches 90% of the strongest potion level, and only one build does: twelve perfect gems of one effect in a full set of netherite armor (or two in a netherite weapon). A few movement effects in armor go further than any potion at the best build, so a perfect set is worth chasing: Haste, Jump Boost, Dolphin's Grace, Slow Falling and Speed (see the table below). Weapon hits always stay under the potion.
 
 - **Stacking:** gems of the same effect add up, each extra one counting a little less than the one before.
 - **Material:** the same gem is stronger in better armor or weapons, from leather and wood up to netherite. Gold counts like diamond, for its strong enchanting. Bows, crossbows, tridents and maces count like diamond.
@@ -33,10 +33,10 @@ Values are for the best build (90%); weaker builds give less.
 
 | Gem | Effect on the wearer |
 |---|---|
-| Speed | Faster movement (up to +36%) |
+| Speed | Faster movement (up to +44%, more than Speed II's +40%) |
 | Strength | More attack damage (up to +5.4) |
-| Jump Boost | Higher jumps and a longer safe fall |
-| Haste | Faster mining and attacks (found gems only) |
+| Jump Boost | Higher jumps and a longer safe fall (the best build jumps about 3.8 blocks, half again as high as Jump Boost II) |
+| Haste | Faster mining and attacks: the best build mines like Haste IV (x1.8), well beyond the beacon's Haste II (found gems only) |
 | Regeneration | Slow healing when hurt |
 | Resistance | Less damage taken (up to 36% less; found gems only) |
 | Turtle Master | Much less damage taken (up to 72% less) and much slower movement (up to 81% slower), together |
@@ -44,11 +44,11 @@ Values are for the best build (90%); weaker builds give less.
 | Water Breathing | Air lasts longer underwater |
 | Night Vision | The world is partly lit in the dark |
 | Invisibility | Mobs notice the wearer from closer the stronger the gems (at the best, 16% of the usual range); from about half strength the wearer is hidden on the locator bar. Only the perfect complete set makes the wearer truly invisible; armor still shows, as with the potion. |
-| Slow Falling | Slower falling and less fall damage |
+| Slow Falling | Slower falling and less fall damage; the best build falls 1.5 times slower than the potion, with no fall damage |
 | Healing | Each survived hit or fall returns part of the lost health (up to 25%) |
 | Absorption | A shield of extra health (up to 14.4). It fills as soon as the gems are put on (or on joining the game), then refills 30 seconds after the wearer was last hurt. Swapping the armor off and on again does not refill it more than once every 30 seconds. |
 | Health Boost | More maximum health (up to +7.2; found gems only) |
-| Dolphin's Grace | Faster swimming |
+| Dolphin's Grace | Faster swimming; the best build swims faster than the potion |
 | Saturation | Restores food and saturation over time, like the potion but slower: a single weak gem about half a drumstick every 22 seconds, the best build about half a drumstick every second |
 | Conduit Power | In water or rain: air lasts longer, faster mining underwater, clearer sight underwater |
 | Hero of the Village | Cheaper villager trades (up to 20% cheaper; found gems only) |
