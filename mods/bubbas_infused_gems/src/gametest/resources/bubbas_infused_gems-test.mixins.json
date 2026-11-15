@@ -4,8 +4,11 @@
 	"compatibilityLevel": "JAVA_25",
 	"mixins": [
 		"ArrowInvoker",
+		"DispenserInvoker",
 		"FoodDataAccessor",
 		"MobEquipmentInvoker",
+		"ProjectileAccessor",
+		"ProjectileProbe",
 		"ThrownTridentInvoker",
 		"VillagerInvoker"
 	],
