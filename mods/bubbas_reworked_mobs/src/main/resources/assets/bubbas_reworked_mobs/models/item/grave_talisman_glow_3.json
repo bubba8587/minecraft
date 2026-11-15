@@ -1,0 +1,22 @@
+{
+	"parent": "bubbas_reworked_mobs:item/grave_talisman_held",
+	"textures": {
+		"gem": "bubbas_reworked_mobs:item/grave_talisman_glow_3",
+		"particle": "bubbas_reworked_mobs:item/grave_talisman_glow_3"
+	},
+	"elements": [
+		{
+			"from": [5, 2, 7.25],
+			"to": [11, 8, 8.75],
+			"light_emission": 15,
+			"faces": {
+				"south": { "uv": [5, 8, 11, 14], "texture": "#gem" },
+				"north": { "uv": [11, 8, 5, 14], "texture": "#gem" },
+				"east": { "uv": [10, 8, 11, 14], "texture": "#gem" },
+				"west": { "uv": [5, 8, 6, 14], "texture": "#gem" },
+				"up": { "uv": [5, 8, 11, 9], "texture": "#gem" },
+				"down": { "uv": [5, 13, 11, 14], "texture": "#gem" }
+			}
+		}
+	]
+}

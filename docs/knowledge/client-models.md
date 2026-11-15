@@ -109,6 +109,8 @@ Examples from vanilla (assets `items/bow.json`, `items/shield.json`, `items/leat
 { "model": { "type": "minecraft:special", "base": "minecraft:item/shield",
     "model": { "type": "minecraft:shield" } } }
 ```
+Glowing item parts: `light_emission` only exists on cuboid elements. `item/generated` layers are baked by `ItemModelGenerator` with emission 0, so a flat item can't glow; put the lit part on a small cuboid (child of `item/generated` for the hand transforms; a child's `elements` replace the parent's geometry) and draw it with the flat item through a `composite` node. Worked example: Bubba's Reworked Mobs' Grave Talisman (`specs/undead.md`), which also registers a custom numeric property in `RangeSelectItemModelProperties.ID_MAPPER` (datagen must register it too before writing a `range_dispatch` that uses it).
+
 Custom code-driven types (register in client init; all mappers are `public static final ExtraCodecs.LateBoundIdMapper`): `ItemModels.ID_MAPPER`, `SpecialModelRenderers.ID_MAPPER`, `ItemTintSources.ID_MAPPER`, `ConditionalItemModelProperties.ID_MAPPER`, `RangeSelectItemModelProperties.ID_MAPPER`, `SelectItemModelProperties.ID_MAPPER`. Special renderer walkthrough: `client-rendering.md` section 8.
 
 Datagen of these files (`FabricModelProvider`, `BlockModelGenerators`, `ItemModelGenerators`, `ItemModelUtils.plainModel/conditional/...`) is covered in toolchain.md section 7 "Datagen"; fabric-docs reference `ExampleModModelProvider.java`.

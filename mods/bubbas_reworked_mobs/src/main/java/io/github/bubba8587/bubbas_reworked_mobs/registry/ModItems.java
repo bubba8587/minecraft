@@ -17,6 +17,9 @@ public final class ModItems {
 	/** Sleeper items: place a dormant undead (gear only if the stack carries a minecraft:container component). */
 	public static final Map<UndeadVariant, BlockItem> SLEEPERS = new EnumMap<>(UndeadVariant.class);
 
+	/** Grave Talisman (undead/GraveTalisman): glows near undead; the glow is client-side only. */
+	public static final Item GRAVE_TALISMAN = register("grave_talisman", new Item.Properties().stacksTo(1));
+
 	static {
 		for (UndeadVariant variant : UndeadVariant.values()) {
 			ResourceKey<Item> key = ResourceKey.create(Registries.ITEM, BubbasReworkedMobs.id(variant.sleeperId()));
@@ -26,6 +29,11 @@ public final class ModItems {
 	}
 
 	private ModItems() {
+	}
+
+	private static Item register(String name, Item.Properties properties) {
+		ResourceKey<Item> key = ResourceKey.create(Registries.ITEM, BubbasReworkedMobs.id(name));
+		return Registry.register(BuiltInRegistries.ITEM, key, new Item(properties.setId(key)));
 	}
 
 	public static BlockItem sleeper(UndeadVariant variant) {
