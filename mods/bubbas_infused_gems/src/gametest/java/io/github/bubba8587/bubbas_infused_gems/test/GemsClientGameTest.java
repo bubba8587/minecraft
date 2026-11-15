@@ -54,7 +54,7 @@ public class GemsClientGameTest implements FabricClientGameTest {
 
 	@Override
 	public void runTest(ClientGameTestContext context) {
-		if (!List.of("inventory", "colors", "enchanting", "smithing", "worn", "hits", "mobs", "screen", "levitation", "beyond", "jump").stream().anyMatch(ClientTests::run)) {
+		if (!List.of("inventory", "colors", "enchanting", "smithing", "worn", "hits", "mobs", "screen", "levitation", "beyond", "jump", "weaving").stream().anyMatch(ClientTests::run)) {
 			return;
 		}
 		try (TestSingleplayerContext sp = context.worldBuilder()
@@ -99,6 +99,9 @@ public class GemsClientGameTest implements FabricClientGameTest {
 			}
 			if (ClientTests.run("jump")) {
 				jump(context, server);
+			}
+			if (ClientTests.run("weaving")) {
+				weaving(context, server);
 			}
 		}
 	}
@@ -610,6 +613,97 @@ public class GemsClientGameTest implements FabricClientGameTest {
 			throw new AssertionError("a perfect Jump Boost set did not land on a 4-block pillar: " + y0 + " -> " + y1);
 		}
 		context.takeScreenshot("gems-jump-perfect-set-on-4-block-pillar");
+		server.runOnServer(s -> {
+			for (EquipmentSlot slot : io.github.bubba8587.bubbas_infused_gems.effect.GemTotals.ARMOR) {
+				player(s).setItemSlot(slot, ItemStack.EMPTY);
+			}
+		});
+	}
+
+	/** Sprints a real client player along +x from start for 40 ticks; returns blocks per tick over the last 20. */
+	private static double sprint(ClientGameTestContext context, TestServerContext server, BlockPos start) {
+		server.runOnServer(s -> {
+			ServerPlayer p = player(s);
+			p.teleportTo(start.getX() + 0.5, start.getY(), start.getZ() + 0.5);
+			p.getFoodData().setFoodLevel(20);
+		});
+		context.waitTicks(10);
+		context.getInput().lookAt(-90.0F, 0.0F); // facing +x
+		context.waitFor(mc -> mc.player.onGround());
+		context.getInput().holdKey(o -> o.keyUp);
+		context.getInput().holdKey(o -> o.keySprint);
+		context.waitTicks(20);
+		double x0 = context.computeOnClient(mc -> mc.player.getX());
+		context.waitTicks(20);
+		double x1 = context.computeOnClient(mc -> mc.player.getX());
+		boolean sprinting = context.computeOnClient(mc -> mc.player.isSprinting());
+		context.getInput().releaseKey(o -> o.keySprint);
+		context.getInput().releaseKey(o -> o.keyUp);
+		if (!sprinting) {
+			throw new AssertionError("the player stopped sprinting in the lane from " + start);
+		}
+		return (x1 - x0) / 20.0;
+	}
+
+	/**
+	 * Owner playtest bug: a perfect Weaving set moves through cobwebs completely unimpeded, sprinting included. A real
+	 * client player sprints down an open lane and a cobweb lane (webs at feet and head height) and falls down a web shaft.
+	 */
+	private static void weaving(ClientGameTestContext context, TestServerContext server) {
+		server.runCommand("gamemode survival @a");
+		BlockPos base = server.computeOnServer(s -> player(s).blockPosition()).offset(0, 20, 0);
+		int x = base.getX(), y = base.getY(), z = base.getZ();
+		server.runCommand("fill %d %d %d %d %d %d minecraft:stone".formatted(x - 2, y - 1, z - 2, x + 40, y - 1, z + 4));
+		server.runCommand("fill %d %d %d %d %d %d minecraft:air".formatted(x - 2, y, z - 2, x + 40, y + 3, z + 4));
+		server.runCommand("fill %d %d %d %d %d %d minecraft:cobweb".formatted(x + 1, y, z + 3, x + 40, y + 1, z + 3));
+		// A web shaft: 12 blocks of webs to fall through, beside the lanes.
+		server.runCommand("fill %d %d %d %d %d %d minecraft:cobweb".formatted(x - 2, y, z - 2, x - 2, y + 11, z - 2));
+		server.runCommand("fill %d %d %d %d %d %d minecraft:air".formatted(x - 1, y, z - 1, x - 1, y + 11, z - 1));
+		server.runCommand("fill %d %d %d %d %d %d minecraft:air".formatted(x - 2, y + 4, z - 2, x + 40, y + 11, z + 4));
+		server.runCommand("fill %d %d %d %d %d %d minecraft:cobweb".formatted(x - 2, y, z - 2, x - 2, y + 11, z - 2));
+		double open = sprint(context, server, new BlockPos(x, y, z));
+		double plainWeb = sprint(context, server, new BlockPos(x, y, z + 3));
+		server.runOnServer(s -> {
+			ServerPlayer p = player(s);
+			Gem g = GemKit.gem("weaving", 1.0);
+			p.setItemSlot(EquipmentSlot.HEAD, GemKit.socketed(Items.NETHERITE_HELMET, g, g, g));
+			p.setItemSlot(EquipmentSlot.CHEST, GemKit.socketed(Items.NETHERITE_CHESTPLATE, g, g, g));
+			p.setItemSlot(EquipmentSlot.LEGS, GemKit.socketed(Items.NETHERITE_LEGGINGS, g, g, g));
+			p.setItemSlot(EquipmentSlot.FEET, GemKit.socketed(Items.NETHERITE_BOOTS, g, g, g));
+		});
+		context.waitTicks(10);
+		double openGems = sprint(context, server, new BlockPos(x, y, z));
+		double webGems = sprint(context, server, new BlockPos(x, y, z + 3));
+		org.slf4j.LoggerFactory.getLogger("bubbas_infused_gems-test").info("Weaving sprint, blocks/tick: open {}, cobwebs {}; perfect set: open {}, cobwebs {}",
+				open, plainWeb, openGems, webGems);
+		if (!(plainWeb < open * 0.5)) {
+			throw new AssertionError("the plain cobweb lane did not slow a sprint: " + plainWeb + " vs " + open);
+		}
+		if (Math.abs(webGems - openGems) > openGems * 0.03) {
+			throw new AssertionError("a perfect Weaving set sprinted through cobwebs at " + webGems + " blocks/tick, open ground " + openGems);
+		}
+		// Falling: from the top of the web shaft (perfect set) it takes as long as an open fall of the same height.
+		int[] ticks = new int[2];
+		for (int i = 0; i < 2; i++) {
+			int col = i == 0 ? -1 : -2;
+			server.runOnServer(s -> player(s).teleportTo(x + col + 0.5, y + 11.5, z + col + 0.5));
+			context.waitTicks(1);
+			int t = 0;
+			while (t < 200 && !context.computeOnClient(mc -> mc.player.onGround())) {
+				context.waitTicks(1);
+				t++;
+			}
+			ticks[i] = t;
+		}
+		org.slf4j.LoggerFactory.getLogger("bubbas_infused_gems-test").info("Weaving fall, ticks: open {}, web shaft {}", ticks[0], ticks[1]);
+		if (Math.abs(ticks[1] - ticks[0]) > 2) {
+			throw new AssertionError("a perfect Weaving set fell through webs in " + ticks[1] + " ticks, open air " + ticks[0]);
+		}
+		server.runOnServer(s -> player(s).teleportTo(x + 20.5, y, z + 3.5));
+		context.waitTicks(10);
+		context.getInput().lookAt(-90.0F, 10.0F);
+		context.waitTicks(5);
+		context.takeScreenshot("gems-weaving-perfect-set-in-cobweb-lane");
 		server.runOnServer(s -> {
 			for (EquipmentSlot slot : io.github.bubba8587.bubbas_infused_gems.effect.GemTotals.ARMOR) {
 				player(s).setItemSlot(slot, ItemStack.EMPTY);

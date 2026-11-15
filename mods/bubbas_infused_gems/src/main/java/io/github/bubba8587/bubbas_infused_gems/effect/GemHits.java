@@ -66,7 +66,8 @@ public final class GemHits {
 				if (e.drawback()) {
 					yield e.s();
 				}
-				double p = Math.pow(e.s(), Balance.get().weaponSplit);
+				// Owner (2026-11-15): the perfect weapon (strength = the cap) matches the strongest potion's level.
+				double p = Math.pow(Math.min(1.0, e.s() / Balance.get().cap), Balance.get().weaponSplit);
 				Balance.EffectData d = Balance.get().effect(e.key());
 				// A beneficial gem on a hit never gives more than that effect's worn cap (no stacking past it).
 				yield d.good() && d.wornCap() > 0.0 ? Math.min(p, d.wornCap()) : p;

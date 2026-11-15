@@ -144,15 +144,17 @@ public final class ModCommands {
 	private static void lines(List<Component> out, String key, double s, String value, String hitSuffix) {
 		Balance b = Balance.get();
 		Balance.EffectData e = b.effect(key);
+		// Worn lines are a share of the perfect set (the effect's own worn cap, owner 2026-11-15); hit lines of the cap.
+		double max = hitSuffix.isEmpty() && e.wornCap() > 0.0 ? e.wornCap() : b.cap;
 		if (e.parts().isEmpty()) {
-			out.add(line(key, value, s / b.cap, false));
+			out.add(line(key, value, s / max, false));
 			return;
 		}
 		double p = hitSuffix.isEmpty() ? s : GemHits.potency(new GemHits.Entry(key, s, false));
 		e.parts().forEach((part, amount) -> {
 			MutableComponent name = Component.translatable(GemText.KEY + "command.part", GemText.effectName(key), GemText.effectName(part));
 			MutableComponent l = Component.literal(" ").append(name).append(": " + GemDescribe.part(part, amount, p) + hitSuffix + " ");
-			l.append(Component.translatable(GemText.KEY + "command.of_max", GemText.percent(s / b.cap)).withStyle(ChatFormatting.GRAY));
+			l.append(Component.translatable(GemText.KEY + "command.of_max", GemText.percent(s / max)).withStyle(ChatFormatting.GRAY));
 			out.add(l.withColor(io.github.bubba8587.bubbas_infused_gems.gem.GemColors.text(GemText.holder(key).value().getColor())));
 		});
 	}

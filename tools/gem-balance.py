@@ -26,14 +26,21 @@ OUT_HTML = ROOT / "build" / "gem-balance.html"
 # ---------------------------------------------------------------- tunable model constants
 CAP = 0.90            # best possible total, as a fraction of the strongest vanilla level (armor and weapons; owner, question 1)
 STACK_R = 0.85        # each further gem of the same effect counts this much of the one before
-# Per-effect worn caps (owner, 2026-11-15): combat power stays at CAP; "fun mobility" goes past the strongest potion at the
-# perfect armor build. The armor total is scaled by WORN_CAP[k] / CAP, so every build keeps its share of its effect's cap.
-# Weapon hits keep CAP. Jump Boost's is set so the jump is 1.5x as high as Jump Boost II's (WORN_JUMP_HEIGHT, below).
-WORN_HASTE_CAP = 2.0          # twice Haste II's bonus: Haste IV mining (x1.8)
-WORN_JUMP_HEIGHT = 1.65       # the perfect set jumps this many times Jump Boost II's height: about 4.15 blocks, clearing a 4-block step (owner)
-WORN_DOLPHIN_CAP = 1.5        # 1.5x the potion's swim-speed gain
-WORN_SLOW_FALL_CAP = 1.5      # falls 1.5x slower than the potion
-WORN_SPEED_CAP = 1.5          # +60% speed, Speed III territory (owner: Speed II is +40%)
+# Per-effect worn caps: what the perfect armor set reaches, as a share of the strongest vanilla level. The armor total is
+# scaled by WORN_CAP[k] / CAP, so every build keeps its share of its effect's cap. Owner (2026-11-15, the new top end:
+# "the perfect set should feel much more impactful"): combat effects reach the full potion, permanently; effects that are
+# complete at 1.0 (Water Breathing, Fire Resistance, Night Vision, Invisibility's stealth, Conduit Power) reach exactly
+# full; other non-combat effects 1.20 where more than the potion means something (Luck); mobility one step past before.
+# Harmful effects in armor stay at CAP (they hurt the wearer). Gems measured as a share of their own best (Wind Burst,
+# Weaving, Oozing, Silence, Ender, Breeze, Saturation, Hero of the Village) keep CAP: their perfect set is already 100 %.
+WORN_COMBAT_CAP = 1.00        # Strength, Resistance, Turtle Master, Regeneration, Healing, Health Boost, Absorption
+WORN_FULL_CAP = 1.00          # complete at 1.0: Water Breathing, Fire Resistance, Night Vision, Invisibility, Conduit Power
+WORN_DEFAULT_CAP = 1.20       # other non-combat effects where past the potion means something (Luck)
+WORN_HASTE_CAP = 2.5          # 2.5x Haste II's bonus: mining x2.0, attack speed +50%
+WORN_JUMP_HEIGHT = 1.79       # the perfect set jumps this many times Jump Boost II's height: about 4.5 blocks (owner)
+WORN_DOLPHIN_CAP = 1.8        # 1.8x the potion's swim-speed gain
+WORN_SLOW_FALL_CAP = 1.8      # falls 1.8x slower than the potion
+WORN_SPEED_CAP = 1.875        # +75% speed (owner: Speed II is +40%)
 SLOTS = 3             # gem slots per armor piece (owner)
 WEAPON_SLOTS = 2      # gem slots per weapon (owner)
 PIECES = ["helmet", "chestplate", "leggings", "boots"]   # adjacency order (owner)
@@ -68,7 +75,7 @@ BASE_GEMS = [
 	("quartz", "Nether quartz", 0.50, "First Nether trip"),
 	("ender_pearl", "Ender pearl", 0.62, "Endermen; farmable"),
 	("diamond", "Diamond", 0.75, "Deep mining; common in chest loot"),
-	("prismarine", "Prismarine shard (owner)", 0.87, "Ocean monuments, a guarded structure (minecraft:prismarine_shard)"),
+	("prismarine", "Prismarine shard (owner; 0.93: a netherite set of tier 3 Infusion V lands near 90% of the perfect set)", 0.93, "Ocean monuments, a guarded structure (minecraft:prismarine_shard)"),
 	("nether_star", "Nether star", 1.00, "The Wither: the best base (owner)"),
 ]
 BASE = {b: f for b, _, f, _ in BASE_GEMS}
@@ -267,7 +274,7 @@ effect("water_breathing", name="Water Breathing", potion="water_breathing", role
 	variants={"normal": (3600, 0), "long": (9600, 0)},
 	anchor="Water Breathing: air never runs out (on/off); vanilla air is 300 ticks (15 s)",
 	value=lambda s: 15 / (1 - s) if s < 1 else math.inf,
-	show=lambda s: f"air lasts {15 / (1 - s):.0f} s (vanilla 15 s)",
+	show=lambda s: "air never runs out" if s >= 1 - 1e-9 else f"air lasts {15 / (1 - s):.0f} s (vanilla 15 s)",
 	impl="On/off made partial with the vanilla oxygen_bonus attribute (what Respiration uses): bonus = s / (1 - s), so each air tick is kept with chance s. Pure attribute, exact.",
 	src="LivingEntity.decreaseAirSupply, Entity.getMaxAirSupply 300")
 effect("night_vision", name="Night Vision", potion="night_vision", role="main",
@@ -277,7 +284,7 @@ effect("night_vision", name="Night Vision", potion="night_vision", role="main",
 	impl="On/off made partial on the client: set the lightmap's nightVisionEffectIntensity to s (mixin at LightmapRenderStateExtractor, where vanilla writes GameRenderer.nightVisionScale). Vanilla already renders fractional values during its end-fade.",
 	src="GameRenderer.nightVisionScale, LightmapRenderStateExtractor")
 INVISIBILITY_LOCATOR_HIDE_AT = 0.5   # owner (Q33): from this strength the wearer is hidden on the locator bar
-INVISIBILITY_FULL_AT = CAP            # owner (Q33): only the perfect complete set gives real vanilla invisibility
+INVISIBILITY_FULL_AT = WORN_FULL_CAP  # owner (Q33): only the perfect complete set (its worn cap) gives real vanilla invisibility
 effect("invisibility", name="Invisibility", potion="invisibility", role="main",
 	variants={"normal": (3600, 0), "long": (9600, 0)},
 	anchor="Invisibility with no armor: mobs see you at 7% range (0.7 x 10% minimum armor cover). In full armor vanilla gives only 70%.",
@@ -347,9 +354,9 @@ WEAVING_WEB_CHANCE_BEST = 0.35  # a Weaving hit at the cap: chance to web the ta
 OOZING_BOUNCE_BEST = 0.9      # worn: the share of a fall's impact speed bounced back at the cap, slime-block style; fall damage x (1 - s/cap)
 OOZING_SLIMES = (1, 2)        # a kill with an Oozing weapon: small neutral slimes split off (weakest gem, the cap)
 OOZING_SLIME_CAP = 8          # at most this many living Oozing slimes per owner; past it, kills split off none
-ENDER_CHANCE_BEST = 0.5       # worn Ender at the cap: chance a projectile that would hit blinks the wearer away instead
+ENDER_CHANCE_BEST = 1.0       # owner (2026-11-15: "projectile immunity isn't damage immunity"): worn Ender at the cap: chance a projectile that would hit blinks the wearer away instead
 ENDER_DIAMETER = (4.0, 16.0)  # ... how far, as chorus fruit's teleport diameter (weakest gem, the cap; chorus fruit 16)
-BREEZE_CHANCE_BEST = 0.5      # worn Breeze at the cap: chance to deflect an incoming projectile, as breezes do
+BREEZE_CHANCE_BEST = 1.0      # owner (2026-11-15): worn Breeze at the cap: chance to deflect an incoming projectile, as breezes do
 
 def rel(s):
 	return max(s, 0.0) / CAP
@@ -453,10 +460,10 @@ effect("saturation", name="Saturation", potion=None, role="main", variants={"nor
 effect("conduit_power", name="Conduit Power", potion=None, role="main", variants={"normal": None},
 	source=("item", "heart of the sea (buried treasure; the conduit's core)"),
 	anchor="Conduit Power (only level): in water or rain, air never runs out, mining underwater at full speed, clear underwater sight",
-	value=lambda s: s, show=lambda s: f"in water: air lasts {15 / (1 - s):.0f} s, underwater mining {pct(s)} of the way to full speed, underwater sight {s * 100:.0f}%",
+	value=lambda s: s, show=lambda s: ("in water: air never runs out," if s >= 1 - 1e-9 else f"in water: air lasts {15 / (1 - s):.0f} s,") + f" underwater mining {pct(s)} of the way to full speed, underwater sight {s * 100:.0f}%",
 	impl="On/off made partial, only while in water or rain: oxygen_bonus s / (1 - s), submerged_mining_speed raised by s of the way to 1.0, underwater fog s of the way to the conduit view.",
 	src="ConduitBlockEntity, MobEffectUtil.hasWaterBreathing, Attributes.SUBMERGED_MINING_SPEED")
-HERO_BEST_DISCOUNT = 0.20  # owner (Q28): the best build makes trades at most 20% cheaper; the gem scale is HERO_BEST_DISCOUNT / CAP at 1.0
+HERO_BEST_DISCOUNT = 0.30  # owner (Q28; raised to 30% 2026-11-15): the best build makes trades at most 30% cheaper; the gem scale is HERO_BEST_DISCOUNT / CAP at 1.0
 HERO_CUT = HERO_BEST_DISCOUNT / CAP
 effect("hero_of_the_village", name="Hero of the Village", potion=None, role="main", level_one=0.3 / 0.55, variants={"normal": None},
 	source=("found", ["common", "rare", "ominous"], "hero-of-the-village gifts (common), pillager outpost chests (rare); only winning a raid gives it in vanilla"),
@@ -559,7 +566,7 @@ def weapon_hit(key, s):
 	"""(potency fraction of the strongest potion level, duration in seconds) one hit applies at weapon strength s."""
 	e = E[key]
 	if e["kind"] == "scaled":
-		p = s ** WEAPON_SPLIT
+		p = (s / CAP) ** WEAPON_SPLIT  # owner (2026-11-15): the perfect weapon matches the strongest potion's level
 		return p, max(hit_floor(key, p), MAX_HIT_SECONDS * (s / CAP) ** (1 - WEAPON_SPLIT))
 	if e["kind"] == "onoff":
 		return 1.0, max(hit_floor(key, 1.0), MAX_HIT_SECONDS * s / CAP)
@@ -1216,17 +1223,26 @@ def run_checks():
 		f = lambda s, k=k: worn_value(k, s)
 		check_monotonic(k, f, errors)
 		at_one = f(0.99999) if k == "water_breathing" else f(1.0)
-		if k in WORN_CAP and WORN_CAP[k] > 1.0:
-			if not f(worn_cap(k)) > at_one:
+		c = worn_cap(k)
+		if k == "instant_health" or k == "water_breathing":
+			pass  # Healing has its own scale; Water Breathing's 1.0 is infinite air, which is the point of its full cap
+		elif c > 1.0 + 1e-9:
+			if not f(c) > at_one:
 				errors.append(f"{k}: its raised cap doesn't pass the strongest potion")
-		elif k not in ("instant_health", "instant_damage") and not f(worn_cap(k)) < at_one:
+		elif c >= 1.0 - 1e-9:
+			if abs(f(c) - at_one) > 1e-9:
+				errors.append(f"{k}: the perfect set doesn't reach the full potion")
+		elif k != "instant_damage" and not f(c) < at_one:
 			errors.append(f"{k}: the worn cap reaches the vanilla anchor")
 	for k, c in WORN_CAP.items():
 		if not E[k]["good"] or c <= CAP:
-			errors.append(f"{k}: a raised worn cap must be a beneficial mobility effect above {CAP}")
+			errors.append(f"{k}: a raised worn cap must be a beneficial effect above {CAP}")
+	for k in GEM_EFFECTS:
+		if not E[k]["good"] and worn_cap(k) != CAP:
+			errors.append(f"{k}: a harmful gem's worn cap must stay {CAP} (owner)")
 		for c in (0.05, CAP):
 			worn_show(k, c), hit_show(k, c)  # every gem renders in both slots
-	notes.append(f"every one of the {len(GEM_EFFECTS)} gems has a worn (armor) and a hit-applied (weapon) form; every worn mapping rises with strength and stays short of the vanilla level at the cap, except the owner's raised mobility caps " + ", ".join(f"{E[k]['name']} {c:g}" for k, c in WORN_CAP.items()) + " (above the strongest potion)")
+	notes.append(f"every one of the {len(GEM_EFFECTS)} gems has a worn (armor) and a hit-applied (weapon) form; every worn mapping rises with strength; harmful gems in armor stay short of the vanilla level at the cap; the perfect set reaches the full potion for " + ", ".join(E[k]['name'] for k, c in WORN_CAP.items() if abs(c - 1.0) < 1e-9) + ", and passes it for " + ", ".join(f"{E[k]['name']} {c:g}" for k, c in WORN_CAP.items() if c > 1.0 + 1e-9) + " (owner, 2026-11-15)")
 
 	# 8. Healing curve: modest at best, visible early, a net loss always, flat but still a ladder.
 	h_best = heal_fraction(CAP)
@@ -1331,9 +1347,9 @@ def run_checks():
 		p, d = weapon_hit(k, CAP)
 		if E[k]["kind"] not in ("instant", "action") and abs(d - MAX_HIT_SECONDS) > 1e-9 and d > MAX_HIT_SECONDS:
 			errors.append(f"{k}: the best weapon's hit lasts {d:.1f} s, past {MAX_HIT_SECONDS} s")
-		if E[k]["kind"] == "scaled" and not p < 1.0:
-			errors.append(f"{k}: the best weapon gem's potency reaches the strongest potion's level")
-	notes.append(f"weapons: per hit, potency rises with strength toward the strongest potion's level (never reaching it); a hit lasts at most {MAX_HIT_SECONDS:.0f} s (the best weapon), less below it, never under its floor (owner); a real tipped arrow and a gem of the same effect don't add, the stronger level applies")
+		if E[k]["kind"] == "scaled" and abs(p - 1.0) > 1e-9:
+			errors.append(f"{k}: the best weapon gem's potency is {p:.3f}, not the strongest potion's level (owner)")
+	notes.append(f"weapons: per hit, potency rises with strength to the strongest potion's level at the perfect weapon (owner, 2026-11-15); a hit lasts at most {MAX_HIT_SECONDS:.0f} s (the best weapon), less below it, never under its floor (owner); a real tipped arrow and a gem of the same effect don't add, the stronger level applies")
 	return errors, notes
 
 # ---------------------------------------------------------------- builds for the tables
@@ -1404,8 +1420,12 @@ def _jump_cap():
 		lo, hi = (mid, hi) if jump_apex(0.42 + 0.2 * mid) < target else (lo, mid)
 	return round(lo, 4)
 
-WORN_CAP = {"haste": WORN_HASTE_CAP, "jump_boost": _jump_cap(), "dolphins_grace": WORN_DOLPHIN_CAP,
+WORN_MOBILITY = {"haste": WORN_HASTE_CAP, "jump_boost": _jump_cap(), "dolphins_grace": WORN_DOLPHIN_CAP,
 	"slow_falling": WORN_SLOW_FALL_CAP, "speed": WORN_SPEED_CAP}
+WORN_CAP = {**WORN_MOBILITY,
+	**{k: WORN_COMBAT_CAP for k in ("strength", "resistance", "turtle_master", "regeneration", "instant_health", "health_boost", "absorption")},
+	**{k: WORN_FULL_CAP for k in ("water_breathing", "fire_resistance", "night_vision", "invisibility", "conduit_power")},
+	"luck": WORN_DEFAULT_CAP}
 
 def worn_cap(k):
 	return WORN_CAP.get(k, CAP)
@@ -1741,8 +1761,8 @@ WORN = {
 	"slowness": {"attributes": [("minecraft:movement_speed", -0.6, "add_multiplied_total")]},
 	"weakness": {"attributes": [("minecraft:attack_damage", -4.0, "add_value")]},
 	"mining_fatigue": {"attributes": [("minecraft:block_break_speed", 0.027, "add_multiplied_total", "pow"), ("minecraft:attack_speed", -0.3, "add_multiplied_total")]},
-	"fire_resistance": {"attributes": [("minecraft:burning_time", -1.0, "add_multiplied_total")], "fire_damage_reduction": 1.0},
-	"water_breathing": {"attributes": [("minecraft:oxygen_bonus", 1.0, "add_value", "odds")]},
+	"fire_resistance": {"full_at": WORN_FULL_CAP, "attributes": [("minecraft:burning_time", -1.0, "add_multiplied_total")], "fire_damage_reduction": 1.0},
+	"water_breathing": {"attributes": [("minecraft:oxygen_bonus", 1.0, "add_value", "odds")], "full_at": WORN_FULL_CAP},
 	"slow_falling": {"attributes": [("minecraft:fall_damage_multiplier", -1.0, "add_multiplied_total")], "gravity_reduction": 0.07},
 	"absorption": {"attributes": [("minecraft:max_absorption", 16.0, "add_value")], "refill_ticks": 600},
 	"health_boost": {"attributes": [("minecraft:max_health", 8.0, "add_value")]},

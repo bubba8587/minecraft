@@ -176,8 +176,8 @@ public class GemsEverywhereGameTest {
 					check(helper, io.github.bubba8587.bubbas_infused_gems.effect.GemActions.landing(pig, 6.0) < 1e-6, key + " at the cap did not cancel a 6-block fall");
 					check(helper, pig.getDeltaMovement().y > 0.2, key + " landing bounce " + pig.getDeltaMovement().y);
 				}
-				case "weaving" -> close(io.github.bubba8587.bubbas_infused_gems.effect.GemActions.webSlowdown(pig, new Vec3(0.25, 0.05, 0.25)).x, 1.0,
-						1e-6, helper, "Weaving at the cap: full speed in cobwebs");
+				case "weaving" -> check(helper, io.github.bubba8587.bubbas_infused_gems.effect.GemActions.webSlowdown(pig, new Vec3(0.25, 0.05, 0.25)).lengthSqr() < 1e-9,
+						"Weaving at the cap: still stuck in cobwebs");
 				case "silence" -> check(helper, io.github.bubba8587.bubbas_infused_gems.effect.GemActions.silenced(pig,
 						net.minecraft.world.level.gameevent.GameEvent.STEP), "Silence at the cap left a step vibration");
 				case "ender" -> {
@@ -240,7 +240,7 @@ public class GemsEverywhereGameTest {
 			strip(player);
 		}
 		wear(player, "hero_of_the_village");
-		close(WornEffects.heroModifier(player, 0.0), 0.20, 1e-6, helper, "hero price cut: 20% at the best build (owner)");
+		close(WornEffects.heroModifier(player, 0.0), 0.30, 1e-6, helper, "hero price cut: 30% at the best build (owner)");
 		close(WornEffects.heroModifier(player, 0.3), 0.3, 1e-6, helper, "a stronger vanilla hero wins");
 		helper.succeed();
 	}
@@ -436,7 +436,7 @@ public class GemsEverywhereGameTest {
 	@GameTest
 	public void absorptionDoesNotRefillOnReequip(GameTestHelper helper) {
 		Mob pig = pig(helper, 1, 1);
-		double full = 16 * Balance.get().cap;
+		double full = 16 * Balance.get().effect("absorption").wornCap();
 		pig.tickCount = 1000;
 		wear(pig, "absorption");
 		close(pig.getAbsorptionAmount(), full, 1e-3, helper, "equipping fills the shield at once (owner)");
@@ -494,7 +494,7 @@ public class GemsEverywhereGameTest {
 			top = Math.max(top, y);
 			v = (v - 0.08) * 0.98;
 		}
-		check(helper, top > 4.05 && top < 4.3, "perfect Jump Boost set jumps " + top + " blocks (owner: clears a 4-block step; Jump Boost II about 2.5)");
+		check(helper, top > 4.4 && top < 4.6, "perfect Jump Boost set jumps " + top + " blocks (owner: about 4.5; Jump Boost II about 2.5)");
 		check(helper, player.getAttributeValue(Attributes.SAFE_FALL_DISTANCE) > 6.0, "safe fall " + player.getAttributeValue(Attributes.SAFE_FALL_DISTANCE));
 		strip(player);
 		player.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.NETHERITE_PICKAXE));

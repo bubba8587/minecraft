@@ -113,7 +113,7 @@ public final class WornEffects {
 		if (e.wornFlag("always_on")) {
 			return s > 0.0;
 		}
-		return e.worn() != null && e.worn().has("full_at") && s >= e.wornNumber("full_at", 1.0) - 1e-9;
+		return e.worn() != null && e.worn().has("full_at") && s >= e.wornNumber("full_at", 1.0) - 1e-6;
 	}
 
 	/** An effect instance the gems keep on (ambient, no particles, short): told apart from a real potion's. */

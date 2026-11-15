@@ -110,13 +110,13 @@ public class BalanceReviewGameTest {
 		Balance b = Balance.get();
 		Mob pig = pig(helper, 1, 1);
 		wear(pig, "health_boost");
-		double worn = 8 * b.cap;
+		double worn = 8 * b.effect("health_boost").wornCap();
 		var hitEntry = new io.github.bubba8587.bubbas_infused_gems.effect.GemHits.Entry("health_boost", b.cap, false);
 		pig.addEffect(new MobEffectInstance(ModEffects.gem("health_boost"), 200, GemMobEffect.amplifier(io.github.bubba8587.bubbas_infused_gems.effect.GemHits.potency(hitEntry))));
 		double bonus = pig.getAttributeValue(Attributes.MAX_HEALTH) - pig.getAttribute(Attributes.MAX_HEALTH).getBaseValue();
 		check(helper, bonus <= worn + 1e-4, "worn and hit Health Boost added up: +" + bonus + " (cap +" + worn + ")");
 		var entry = new io.github.bubba8587.bubbas_infused_gems.effect.GemHits.Entry("health_boost", b.cap, false);
-		check(helper, io.github.bubba8587.bubbas_infused_gems.effect.GemHits.potency(entry) <= b.cap + 1e-9, "hit potency past the worn cap");
+		check(helper, io.github.bubba8587.bubbas_infused_gems.effect.GemHits.potency(entry) <= b.effect("health_boost").wornCap() + 1e-9, "hit potency past the worn cap");
 		Mob other = pig(helper, 3, 3);
 		other.addEffect(new MobEffectInstance(ModEffects.gem("absorption"), 200, 49));
 		check(helper, other.getAbsorptionAmount() > 0.0F, "a new Absorption hit gave no shield");
@@ -132,7 +132,7 @@ public class BalanceReviewGameTest {
 		Balance b = Balance.get();
 		Mob pig = pig(helper, 1, 1);
 		wear(pig, "absorption");
-		double share = 16 * b.cap;
+		double share = 16 * b.effect("absorption").wornCap();
 		pig.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 2400, 3)); // an enchanted golden apple: 16
 		pig.setAbsorptionAmount(0.0F);
 		((GemEntity) pig).bubbas$setLastHurtTick(pig.tickCount - 1000);

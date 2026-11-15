@@ -51,7 +51,7 @@ public class GemsCommandGameTest {
 			helper.fail("kit failed: " + e);
 		}
 		double s = io.github.bubba8587.bubbas_infused_gems.effect.WornEffects.of(player).value("invisibility");
-		check(helper, Math.abs(s - io.github.bubba8587.bubbas_infused_gems.balance.Balance.get().cap) < 1e-6, "kit total " + s);
+		check(helper, Math.abs(s - io.github.bubba8587.bubbas_infused_gems.balance.Balance.get().effect("invisibility").wornCap()) < 1e-6, "kit total " + s);
 		check(helper, player.getItemBySlot(EquipmentSlot.FEET).is(Items.NETHERITE_BOOTS), "no netherite boots");
 		check(helper, player.getInventory().contains(new ItemStack(Items.IRON_HELMET)), "the old helmet was lost");
 		check(helper, player.getInventory().contains(s2 -> s2.is(Items.NETHERITE_SWORD)), "no sword");

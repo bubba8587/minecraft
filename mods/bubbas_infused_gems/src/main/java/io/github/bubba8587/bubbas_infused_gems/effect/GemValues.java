@@ -38,6 +38,14 @@ public final class GemValues {
 		if (s <= 0.0) {
 			return 0.0;
 		}
+		if (!from.equals(key)) {
+			// Swapped on undead: read as the other gem, at that gem's own worn scale (harmful worn stays at the cap).
+			Balance.EffectData fe = b.effect(from);
+			Balance.EffectData ke = b.effect(key);
+			double fc = fe != null && fe.wornCap() > 0.0 ? fe.wornCap() : b.cap;
+			double kc = ke != null && ke.wornCap() > 0.0 ? ke.wornCap() : b.cap;
+			s = s * kc / fc;
+		}
 		Holder<MobEffect> vanilla = ModEffects.vanilla(key);
 		if (vanilla != null && !entity.canBeAffected(new MobEffectInstance(vanilla))) {
 			return 0.0;

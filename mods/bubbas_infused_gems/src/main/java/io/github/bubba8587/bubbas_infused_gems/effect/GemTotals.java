@@ -177,7 +177,11 @@ public record GemTotals(Map<String, Double> totals, Map<String, Integer> drawbac
 			// Worn: scaled to the effect's own cap (owner: mobility goes past the strongest potion; combat stays at the cap).
 			Balance.EffectData e = b.effect(k);
 			double scale = worn && e != null && e.wornCap() > 0.0 ? e.wornCap() / b.cap : 1.0;
-			totals.put(k, b.stack(list, norm) * scale);
+			double v = b.stack(list, norm) * scale;
+			// The perfect set lands on its cap exactly, so "full" effects (infinite air, fire immunity, real invisibility,
+			// a 100 % chance) never miss it by rounding.
+			double top = worn && e != null && e.wornCap() > 0.0 ? e.wornCap() : b.cap;
+			totals.put(k, Math.abs(v - top) < 1e-6 ? top : v);
 		});
 		Map<String, Double> drawbacks = new LinkedHashMap<>();
 		Map<String, Integer> drawbackCounts = new LinkedHashMap<>();

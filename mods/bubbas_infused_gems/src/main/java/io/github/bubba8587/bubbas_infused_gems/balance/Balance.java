@@ -79,7 +79,7 @@ public final class Balance {
 			}
 			return switch (this.curve) {
 				case "pow" -> Math.pow(this.amount, s) - 1.0;
-				case "odds" -> s >= 1.0 ? 1024.0 : this.amount * s / (1.0 - s);
+				case "odds" -> s >= 1.0 - 1e-6 ? 1024.0 : this.amount * s / (1.0 - s);
 				default -> this.amount * s;
 			};
 		}

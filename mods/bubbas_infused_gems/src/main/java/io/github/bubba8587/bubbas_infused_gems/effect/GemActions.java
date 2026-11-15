@@ -210,6 +210,11 @@ public final class GemActions {
 		if (r <= 0.0) {
 			return multiplier;
 		}
+		if (r >= 1.0 - 1e-6) {
+			// At Weaving's cap: not stuck at all. Any non-zero multiplier, even (1, 1, 1), makes Entity.move zero the
+			// velocity every tick, so walking, sprinting and falling never build up speed (owner playtest bug).
+			return Vec3.ZERO;
+		}
 		return new Vec3(multiplier.x + (1.0 - multiplier.x) * r, multiplier.y + (1.0 - multiplier.y) * r, multiplier.z + (1.0 - multiplier.z) * r);
 	}
 

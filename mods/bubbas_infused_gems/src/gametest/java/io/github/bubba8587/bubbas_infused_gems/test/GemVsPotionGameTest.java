@@ -101,7 +101,7 @@ public class GemVsPotionGameTest {
 		return helper.spawnWithNoFreeWill(EntityTypes.PIG, new BlockPos(1, 1, 1));
 	}
 
-	private static final double S = 0.90; // twelve perfect gems in netherite: the cap
+	private static final double S = 1.00; // twelve perfect gems in netherite: Health Boost's and Absorption's worn cap (the full potion, owner)
 
 	@GameTest(maxTicks = 100)
 	public void strongerPotionRunsOutAndTheGemTakesOverAtOnce(GameTestHelper helper) {
@@ -219,7 +219,7 @@ public class GemVsPotionGameTest {
 		strip(copy);
 		copy.removeAllEffects();
 		noGemModifiersLeft(helper, copy, "after death");
-		close(Balance.get().cap, S, 1e-9, helper, "cap");
+		close(Balance.get().effect("health_boost").wornCap(), S, 1e-9, helper, "Health Boost worn cap");
 		helper.succeed();
 	}
 }

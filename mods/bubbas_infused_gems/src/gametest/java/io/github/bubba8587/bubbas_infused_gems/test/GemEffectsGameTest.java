@@ -86,7 +86,7 @@ public class GemEffectsGameTest {
 		helper.succeedWhen(() -> {
 			GemTotals t = WornEffects.of(zombie);
 			double pf = b.armorMaterials.get("iron") * b.run.get(4);
-			double sStrength = b.stack(List.of(0.9 * pf, 0.9 * pf, 0.9 * pf, 0.9 * pf), b.armorNorm);
+			double sStrength = b.stack(List.of(0.9 * pf, 0.9 * pf, 0.9 * pf, 0.9 * pf), b.armorNorm) * b.effect("strength").wornCap() / b.cap;
 			close(t.value("strength"), sStrength, 1e-6, helper, "strength total");
 			close(modifier(zombie, Attributes.ATTACK_DAMAGE, "strength", 0), 6.0 * sStrength, 1e-6, helper, "attack damage");
 			double sJump = b.stack(List.of(0.5 * pf, 0.5 * pf, 0.5 * pf, 0.5 * pf), b.armorNorm) * b.effect("jump_boost").wornCap() / b.cap;
@@ -94,14 +94,14 @@ public class GemEffectsGameTest {
 			close(modifier(zombie, Attributes.SAFE_FALL_DISTANCE, "jump_boost", 1), 2.0 * sJump, 1e-6, helper, "safe fall");
 			// Four Weakness drawbacks: the saturating drawback size.
 			close(modifier(zombie, Attributes.ATTACK_DAMAGE, "weakness", 0), -4.0 * b.drawbackTotal(4), 1e-6, helper, "weakness drawback");
-			double sWater = b.stack(List.of(0.5 * pf, 0.5 * pf, 0.5 * pf, 0.5 * pf), b.armorNorm);
+			double sWater = b.stack(List.of(0.5 * pf, 0.5 * pf, 0.5 * pf, 0.5 * pf), b.armorNorm) * b.effect("water_breathing").wornCap() / b.cap;
 			close(modifier(zombie, Attributes.OXYGEN_BONUS, "water_breathing", 0), sWater / (1 - sWater), 1e-6, helper, "oxygen bonus");
 			// Resistance through the damage hook.
-			double sRes = b.stack(List.of(0.8 * pf, 0.8 * pf, 0.8 * pf, 0.8 * pf), b.armorNorm);
+			double sRes = b.stack(List.of(0.8 * pf, 0.8 * pf, 0.8 * pf, 0.8 * pf), b.armorNorm) * b.effect("resistance").wornCap() / b.cap;
 			float hurt = WornEffects.modifyDamage(zombie, zombie.damageSources().generic(), 10.0F);
 			close(hurt, 10.0 * (1 - 0.4 * sRes), 1e-4, helper, "resistance damage");
 			// Healing gem: a survived attack gives back its share.
-			double sHeal = b.stack(List.of(pf, pf, pf, pf), b.armorNorm);
+			double sHeal = b.stack(List.of(pf, pf, pf, pf), b.armorNorm) * b.effect("instant_health").wornCap() / b.cap;
 			zombie.setHealth(10.0F);
 			WornEffects.afterDamage(zombie, zombie.damageSources().mobAttack(zombie), 4.0F);
 			close(zombie.getHealth(), 10.0 + 4.0 * b.healFraction(sHeal), 1e-4, helper, "healing gem");
@@ -121,7 +121,7 @@ public class GemEffectsGameTest {
 		double s = b.stack(List.of(1.0), b.weaponNorm); // one perfect gem of each in a netherite weapon
 		MobEffectInstance effect = target.getEffect(ModEffects.gem("poison"));
 		check(helper, effect != null, "no gem poison on the target");
-		check(helper, effect.getAmplifier() == GemMobEffect.amplifier(Math.sqrt(s)), "poison amplifier " + effect.getAmplifier());
+		check(helper, effect.getAmplifier() == GemMobEffect.amplifier(Math.sqrt(s / b.cap)), "poison amplifier " + effect.getAmplifier());
 		check(helper, Math.abs(effect.getDuration() - GemHits.duration(new GemHits.Entry("poison", s, false))) <= 1, "poison duration " + effect.getDuration());
 		MobEffectInstance drawback = target.getEffect(ModEffects.gem("speed"));
 		check(helper, drawback != null && drawback.getAmplifier() == 9 && drawback.getDuration() == 60, "speed drawback on the target: " + drawback);

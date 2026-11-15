@@ -19,7 +19,7 @@ public final class GemDescribe {
 	}
 
 	private static String air(double s) {
-		return s >= 1 ? "air never runs out" : f("air lasts %.0f s (normally 15 s)", 15 / (1 - s));
+		return s >= 1 - 1e-6 ? "air never runs out" : f("air lasts %.0f s (normally 15 s)", 15 / (1 - s));
 	}
 
 	/** Worn (armor) at total s, or what a gem effect at potency s does to whoever has it. */
@@ -48,7 +48,7 @@ public final class GemDescribe {
 			case "health_boost" -> f("%+.1f max health", attr(key, 0, s));
 			case "invisibility" -> f("mobs notice you at %.0f%% of the range%s%s", 100 * (1 - e.wornNumber("visibility_reduction", 0.93) * s),
 					attr(key, 0, s) < 0 ? ", hidden on the locator bar" : "",
-					s >= e.wornNumber("full_at", 1.0) - 1e-9 ? ", real invisibility" : "");
+					s >= e.wornNumber("full_at", 1.0) - 1e-6 ? ", real invisibility" : "");
 			case "dolphins_grace" -> f("swims %.0f%% of Dolphin's Grace's speed gain", 100 * s);
 			case "saturation" -> f("restores 1 food point every %.1f s", 1.0 / WornEffects.saturationRate(s));
 			case "conduit_power" -> f("in water or rain: %s, underwater mining %+.2f", air(s), attr(key, 1, s));

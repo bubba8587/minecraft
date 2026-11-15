@@ -31,8 +31,8 @@ import net.minecraft.world.phys.Vec3;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 
 /**
- * Owner playtest: a perfect Breeze set (as /gems kit breeze gives) should deflect about half of the arrows that reach the
- * wearer. Real arrows from a dispenser and a skeleton, ticked through vanilla's own arrow movement and hit code.
+ * Owner playtest: a perfect Breeze set (as /gems kit breeze gives) deflected about half of the arrows that reached the
+ * wearer (measured 47-51 %); the owner then raised it (2026-11-15): the perfect set deflects every one. Real arrows from a dispenser and a skeleton, ticked through vanilla's own arrow movement and hit code.
  */
 public class BreezeMeasureGameTest {
 	private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger("bubbas_infused_gems-test");
@@ -125,7 +125,7 @@ public class BreezeMeasureGameTest {
 		});
 		LOG.info("Breeze vs dispenser: {} (set strength {} of cap {})", tally, io.github.bubba8587.bubbas_infused_gems.effect.GemValues.value(player, "breeze"), io.github.bubba8587.bubbas_infused_gems.balance.Balance.get().cap);
 		check(helper, tally.reached() > 200, "dispenser arrows reaching the wearer: " + tally);
-		check(helper, tally.rate() > 0.40 && tally.rate() < 0.60, "perfect Breeze set vs dispenser arrows: " + tally);
+		check(helper, tally.deflected() == tally.reached(), "perfect Breeze set (owner: always deflects) vs dispenser arrows: " + tally);
 		GemKit.remove(helper, player);
 		helper.succeed();
 	}
@@ -147,7 +147,7 @@ public class BreezeMeasureGameTest {
 		});
 		LOG.info("Breeze vs skeleton: {}", tally);
 		check(helper, tally.reached() > 50, "skeleton arrows reaching the wearer: " + tally);
-		check(helper, tally.rate() > 0.30 && tally.rate() < 0.70, "perfect Breeze set vs skeleton arrows: " + tally);
+		check(helper, tally.deflected() == tally.reached(), "perfect Breeze set (owner: always deflects) vs skeleton arrows: " + tally);
 		skeleton.discard();
 		GemKit.remove(helper, player);
 		helper.succeed();
