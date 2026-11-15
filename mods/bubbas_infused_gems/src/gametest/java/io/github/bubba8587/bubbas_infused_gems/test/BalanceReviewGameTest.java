@@ -11,6 +11,7 @@ import io.github.bubba8587.bubbas_infused_gems.effect.GemActions;
 import io.github.bubba8587.bubbas_infused_gems.effect.GemEntity;
 import io.github.bubba8587.bubbas_infused_gems.effect.GemMobEffect;
 import io.github.bubba8587.bubbas_infused_gems.effect.GemTotals;
+import io.github.bubba8587.bubbas_infused_gems.effect.GemValues;
 import io.github.bubba8587.bubbas_infused_gems.effect.WornEffects;
 import io.github.bubba8587.bubbas_infused_gems.gem.Gem;
 import io.github.bubba8587.bubbas_infused_gems.registry.ModAttachments;
@@ -211,22 +212,72 @@ public class BalanceReviewGameTest {
 		helper.succeed();
 	}
 
-	/** Owner (review B): a perfect Saturation set never fills food to 20, so it never feeds vanilla's fast regeneration. */
+	/** Owner: a weak Saturation gem fills food only to about 7, and adds a small share of saturation. */
+	@GameTest(maxTicks = 100)
+	public void weakSaturationStopsLow(GameTestHelper helper) {
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		player.setGameMode(GameType.SURVIVAL);
+		weak(player, "saturation");
+		double s = GemValues.worn(player, "saturation");
+		int target = WornEffects.saturationFoodTarget(s);
+		check(helper, target >= 6 && target <= 8, "weak gem (" + s + ") fills to " + target);
+		int top = run(helper, player, 2, 6000);
+		check(helper, top == target, "weak gem reached food " + top + ", target " + target);
+		check(helper, player.getFoodData().getSaturationLevel() < top * 0.5F,
+				"weak gem saturation " + player.getFoodData().getSaturationLevel() + " at food " + top);
+		GemKit.remove(helper, player);
+		helper.succeed();
+	}
+
+	/** Owner: a mid build (two gemmed pieces) stops between the weak gem and a full bar. */
+	@GameTest(maxTicks = 100)
+	public void midSaturationStopsBetween(GameTestHelper helper) {
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		player.setGameMode(GameType.SURVIVAL);
+		Gem g = GemKit.gem("saturation", 1.0);
+		player.setItemSlot(GemTotals.ARMOR[0], GemKit.socketed(BalanceGameTest.armor("netherite", PIECES[0]), g, g, g));
+		player.setItemSlot(GemTotals.ARMOR[1], GemKit.socketed(BalanceGameTest.armor("netherite", PIECES[1]), g, g, g));
+		WornEffects.refresh(player);
+		double s = GemValues.worn(player, "saturation");
+		int target = WornEffects.saturationFoodTarget(s);
+		int top = run(helper, player, 2, 3000);
+		check(helper, target > 8 && target < 20 && top == target, "mid build (" + s + ") reached food " + top + ", target " + target);
+		GemKit.remove(helper, player);
+		helper.succeed();
+	}
+
+	/** Ticks a Saturation build from the given food (no saturation) and returns the highest food level seen. */
+	private static int run(GameTestHelper helper, ServerPlayer player, int food, int ticks) {
+		player.getFoodData().setFoodLevel(food);
+		player.getFoodData().setSaturation(0.0F);
+		int top = food;
+		for (int t = 0; t < ticks; t++) {
+			WornEffects.tick(helper.getLevel(), player, WornEffects.of(player));
+			top = Math.max(top, player.getFoodData().getFoodLevel());
+		}
+		return top;
+	}
+
+	/** Owner: only the perfect Saturation set fills food to 20, so vanilla's fast regeneration heals. */
 	@GameTest
-	public void saturationNeverFeedsFastRegeneration(GameTestHelper helper) {
+	public void perfectSaturationFeedsFastRegeneration(GameTestHelper helper) {
 		ServerPlayer player = helper.makeMockServerPlayerInLevel();
 		player.setGameMode(GameType.SURVIVAL);
 		wear(player, "saturation");
+		int target = WornEffects.saturationFoodTarget(GemValues.worn(player, "saturation"));
+		check(helper, target == 20, "perfect set target " + target);
 		player.setHealth(4.0F);
 		player.getFoodData().setFoodLevel(10);
 		player.getFoodData().setSaturation(0.0F);
+		int top = 0;
 		for (int t = 0; t < 400; t++) {
 			WornEffects.tick(helper.getLevel(), player, WornEffects.of(player));
 			player.getFoodData().tick(player);
-			check(helper, player.getFoodData().getFoodLevel() <= 19, "a Saturation set filled food to " + player.getFoodData().getFoodLevel());
+			top = Math.max(top, player.getFoodData().getFoodLevel());
 		}
-		// Slow natural regeneration only (1 HP per 80 ticks at food 18+): at most 5 HP in 400 ticks; fast would be about 16.
-		check(helper, player.getHealth() - 4.0F <= 5.01F, "a Saturation set healed " + (player.getHealth() - 4.0F) + " HP in 20 s");
+		check(helper, top == 20, "a perfect Saturation set reached food " + top);
+		// Fast regeneration (1 HP per 10 ticks at food 20 with saturation) heals far more than slow's 5 HP in 400 ticks.
+		check(helper, player.getHealth() - 4.0F > 6.0F, "a perfect Saturation set healed only " + (player.getHealth() - 4.0F) + " HP in 20 s");
 		GemKit.remove(helper, player);
 		helper.succeed();
 	}

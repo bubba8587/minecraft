@@ -386,22 +386,35 @@ public final class WornEffects {
 	public static void restoreFood(Player player, double s) {
 		GemEntity g = (GemEntity) player;
 		int food = player.getFoodData().getFoodLevel();
-		if (food >= SATURATION_FOOD_MAX) {
-			// Owner: never to 20, so vanilla's fast saturation healing never comes from the gem (slow regen at 18+ is fine).
+		int target = saturationFoodTarget(s);
+		if (food >= target) {
+			// Owner: food fills only up to the gem's target; 20 (vanilla's fast regeneration) only at the perfect set.
 			g.bubbas$setFoodCarry(Math.min(g.bubbas$foodCarry(), 1.0F));
 			return;
 		}
 		float carry = g.bubbas$foodCarry() + (float) (saturationRate(s) / 20.0);
 		if (carry >= 1.0F) {
-			int points = Math.min((int) carry, SATURATION_FOOD_MAX - food);
-			player.getFoodData().eat(points, 1.0F); // saturation stays at most the food level, as vanilla clamps it
+			int points = Math.min((int) carry, target - food);
+			// Saturation added scales with strength too, and stays at most the food level, as vanilla clamps it.
+			player.getFoodData().eat(points, (float) saturationShare(s));
 			carry -= (int) carry;
 		}
 		g.bubbas$setFoodCarry(carry);
 	}
 
-	/** Saturation gems fill food up to this, never 20 (vanilla's fast regeneration needs a full bar). */
-	public static final int SATURATION_FOOD_MAX = 19;
+	/** Saturation gem's share of its cap, r = s / cap (at most 1): scales the food target and the saturation added. */
+	public static double saturationShare(double s) {
+		return Math.min(1.0, Math.max(0.0, s / Balance.get().effect("saturation").wornCap()));
+	}
+
+	/**
+	 * Owner: the food level a Saturation gem fills up to, round(food_base + food_span x r): a weak gem about 7, a mid build
+	 * 13-14, only the perfect set 20 (where vanilla's fast regeneration works).
+	 */
+	public static int saturationFoodTarget(double s) {
+		Balance.EffectData e = Balance.get().effect("saturation");
+		return (int) Math.round(e.wornNumber("food_base", 6.0) + e.wornNumber("food_span", 14.0) * saturationShare(s));
+	}
 
 	/**
 	 * Invisibility gem: mobs notice the wearer at (1 - 0.93 x s) of the range (stealth). Read before any vanilla

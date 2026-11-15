@@ -430,6 +430,16 @@ effect("dolphins_grace", name="Dolphin's Grace", potion=None, role="main", varia
 # at the cap (one food point a second: in practice never hungry; vanilla's is 20 a second), geometric in between.
 SATURATION_MIN_RATE = 0.035
 SATURATION_BEST_RATE = 1.0
+# Owner (2026-11-15, replaces review B's stop at 19): with r = s / Saturation's cap, food fills only up to
+# round(SATURATION_FOOD_BASE + SATURATION_FOOD_SPAN x r) and each point adds r of vanilla's saturation (clamped to the food
+# level, as vanilla does). Weak gems keep you around 7, a mid build 13-14; only the perfect set reaches 20, where vanilla's
+# fast regeneration (and the vanilla effect's free food) kicks in.
+SATURATION_FOOD_BASE = 6
+SATURATION_FOOD_SPAN = 14
+
+def saturation_food_target(s):
+	r = min(1.0, max(0.0, s / CAP))
+	return int(SATURATION_FOOD_BASE + SATURATION_FOOD_SPAN * r + 0.5)
 
 def saturation_rate(s):
 	return 0.0 if s <= 0 else SATURATION_MIN_RATE * (SATURATION_BEST_RATE / SATURATION_MIN_RATE) ** (s / CAP)
@@ -437,8 +447,8 @@ def saturation_rate(s):
 effect("saturation", name="Saturation", potion=None, role="main", variants={"normal": None},
 	source=("item", "suspicious stew of dandelion, golden dandelion or blue orchid (matched by its stew effect: Fabric API's components ingredient)"),
 	anchor="Saturation: hunger never drops (on/off; vanilla refills food and saturation every tick)",
-	value=saturation_rate, show=lambda s: f"restores 1 food point (and its saturation) every {1 / saturation_rate(s):.1f} s",
-	impl="Restores food and saturation like the vanilla effect (FoodData.eat(n, 1.0)), at saturation_rate(s) food points per second, whole points as they build up.",
+	value=saturation_rate, show=lambda s: f"restores 1 food point every {1 / saturation_rate(s):.1f} s, up to {saturation_food_target(s)} food, saturation x{min(1.0, s / CAP):.2f}",
+	impl="Restores food and saturation like the vanilla effect (FoodData.eat(n, r) with r = s / cap), at saturation_rate(s) food points per second, whole points as they build up, food only up to saturation_food_target(s).",
 	src="SaturationMobEffect, FoodData.addExhaustion, Blocks.DANDELION / BLUE_ORCHID")
 effect("conduit_power", name="Conduit Power", potion=None, role="main", variants={"normal": None},
 	source=("item", "heart of the sea (buried treasure; the conduit's core)"),
@@ -1748,7 +1758,7 @@ WORN = {
 	"invisibility": {"attributes": [("minecraft:waypoint_transmit_range", -1.0, "add_multiplied_total", f"step:{INVISIBILITY_LOCATOR_HIDE_AT}")],
 		"visibility_reduction": 0.93, "full_at": INVISIBILITY_FULL_AT},
 	"dolphins_grace": {"drag_target": 0.96},
-	"saturation": {"rate_min": SATURATION_MIN_RATE, "rate_best": SATURATION_BEST_RATE},
+	"saturation": {"rate_min": SATURATION_MIN_RATE, "rate_best": SATURATION_BEST_RATE, "food_base": SATURATION_FOOD_BASE, "food_span": SATURATION_FOOD_SPAN},
 	"conduit_power": {"attributes": [("minecraft:oxygen_bonus", 1.0, "add_value", "odds"), ("minecraft:submerged_mining_speed", 0.8, "add_value")],
 		"wet_only": True, "underwater_sight": 1.0},
 	"hero_of_the_village": {"price_cut": HERO_CUT},

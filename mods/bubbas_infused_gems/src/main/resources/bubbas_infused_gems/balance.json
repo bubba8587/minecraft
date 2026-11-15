@@ -3405,7 +3405,9 @@
 			"rarity": "common",
 			"worn": {
 				"rate_min": 0.035,
-				"rate_best": 1.0
+				"rate_best": 1.0,
+				"food_base": 6,
+				"food_span": 14
 			},
 			"worn_amplifier": 0,
 			"worn_cap": 0.9,
