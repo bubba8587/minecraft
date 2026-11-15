@@ -59,22 +59,42 @@ public class EnchantingGameTest {
 		check(helper, GemEnchanting.roll(1234, 3, gem).equals(GemEnchanting.roll(1234, 3, gem)), "same seed, different gem");
 		for (int tier = 1; tier <= 3; tier++) {
 			Map<String, Integer> seen = new HashMap<>();
-			int n = 4000;
+			int n = 8000;
 			for (int seed = 0; seed < n; seed++) {
+				Balance.Outcome o = GemEnchanting.outcome(seed, tier, gem);
 				Gem g = GemEnchanting.roll(seed, tier, gem);
 				check(helper, g.tier() == tier, "tier");
-				String outcome = (g.hasMain() ? "main" : "none") + (g.other().isPresent() ? "+other" : "") + (g.drawback().isPresent() ? "+drawback" : "");
-				seen.merge(outcome + (g.hasMain() ? "@" + Math.round(g.main() / gem.baseQuality() * 100) : ""), 1, Integer::sum);
+				// The roll is exactly what the preview's outcome says.
+				check(helper, g.hasMain() == (o.main() != null) && g.other().isPresent() == (o.other() != null)
+						&& g.drawback().isPresent() == (o.drawback() != null), "roll and preview disagree at seed " + seed + ": " + o.label());
+				if (o.main() != null) {
+					close(g.main(), gem.baseQuality() * b.grades.get(o.main()), 1e-5, helper, "main grade " + o.label());
+				}
+				g.drawback().ifPresent(r -> close(r.strength(), b.drawbackSize(o.drawback()), 1e-6, helper, "drawback size " + o.label()));
+				seen.merge(o.label(), 1, Integer::sum);
 			}
 			for (Balance.Outcome o : b.tiers.get(tier)) {
-				String key = (o.main() == null ? "none" : "main") + (o.other() != null ? "+other" : "") + (o.drawback() ? "+drawback" : "")
-						+ (o.main() == null ? "" : "@" + Math.round(b.grades.get(o.main()) * 100));
-				int count = seen.getOrDefault(key, 0);
-				// Several outcomes can share a key (tier 3: weak or medium other); sum the model's odds for this key.
-				double odds = b.tiers.get(tier).stream().filter(x -> ((x.main() == null ? "none" : "main") + (x.other() != null ? "+other" : "")
-						+ (x.drawback() ? "+drawback" : "") + (x.main() == null ? "" : "@" + Math.round(b.grades.get(x.main()) * 100))).equals(key))
-						.mapToDouble(Balance.Outcome::odds).sum();
-				close(count / (double) n, odds, 0.04, helper, "tier " + tier + " " + key);
+				close(seen.getOrDefault(o.label(), 0) / (double) n, o.odds(), 0.02, helper, "tier " + tier + " " + o.label());
+			}
+			// Owner (Q34): the plain result is the most common at every tier.
+			Balance.Outcome first = b.tiers.get(tier).getFirst();
+			check(helper, first.other() == null && first.drawback() == null && first.main() != null, "tier " + tier + " does not start plain");
+		}
+		// The preview (owner): main effect and strength, then only the extra roll's kind and size.
+		for (int seed = 0; seed < 400; seed++) {
+			for (int tier = 1; tier <= 3; tier++) {
+				Balance.Outcome o = GemEnchanting.outcome(seed, tier, gem);
+				String clue = GemEnchanting.clue(GemEnchanting.roll(seed, tier, gem), o).getString();
+				String size = o.other() != null ? o.other() : o.drawback();
+				String word = size == null ? "" : switch (size) {
+					case "weak" -> "minor ";
+					case "strongest" -> "major ";
+					default -> "";
+				};
+				String expected = o.main() == null ? word + "drawback only...?"
+						: "Speed " + Math.round(gem.baseQuality() * b.grades.get(o.main()) * 100) + "%"
+								+ (o.other() != null ? " + " + word + "bonus...?" : o.drawback() != null ? " + " + word + "drawback...?" : "");
+				check(helper, clue.equals(expected), "preview '" + clue + "', expected '" + expected + "'");
 			}
 		}
 		// Strength: lingering strong swiftness + nether star + tier 3 main = a perfect gem.

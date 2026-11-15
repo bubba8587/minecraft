@@ -213,6 +213,27 @@ public class GemsClientGameTest implements FabricClientGameTest {
 		context.waitTicks(10);
 		hoverAt(context, 60 + 54, 14 + 19 * 2 + 8);
 		context.takeScreenshot("gems-enchanting-lingering-gem-tier3-hint");
+		// The preview names an extra roll's kind and size only (owner): find gems whose tier 3 roll at this seed has one.
+		for (String want : List.of("bonus", "drawback")) {
+			ItemStack pickGem = server.computeOnServer(s -> {
+				int seed = player(s).getEnchantmentSeed();
+				for (String key : io.github.bubba8587.bubbas_infused_gems.balance.Balance.get().gemEffects) {
+					for (int inf = 1; inf <= 6; inf++) {
+						ItemStack st = GemKit.infused(key, io.github.bubba8587.bubbas_infused_gems.registry.ModCreativeTabs.top(key), GemForm.LINGERING, inf);
+						var o = io.github.bubba8587.bubbas_infused_gems.station.GemEnchanting.outcome(seed, 3,
+								st.get(io.github.bubba8587.bubbas_infused_gems.registry.ModComponents.INFUSED_GEM));
+						if (want.equals("bonus") ? o.other() != null : o.drawback() != null) {
+							return st;
+						}
+					}
+				}
+				return GemKit.infused("speed", "strong", GemForm.LINGERING, 6);
+			});
+			server.runOnServer(s -> player(s).containerMenu.getSlot(0).set(pickGem));
+			context.waitTicks(5);
+			hoverAt(context, 60 + 54, 14 + 19 * 2 + 8);
+			context.takeScreenshot("gems-enchanting-tier3-hint-with-" + want);
+		}
 		server.runOnServer(s -> player(s).containerMenu.getSlot(0).set(GemKit.infused("poison", "normal", GemForm.NORMAL, 2)));
 		context.waitTicks(5);
 		hoverAt(context, 60 + 54, 14 + 8);

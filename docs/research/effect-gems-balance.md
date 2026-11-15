@@ -57,14 +57,17 @@ The form is the potion's form, fixed at brewing; nothing raises it later (owner:
 
 | Tier | Outcome | Main effect | Extra effect | Proposed odds |
 |---|---|---|---|---|
-| 1 | Weak drawback alone | - | drawback weak (0.10, fixed) | 50% |
-| 1 | Weak intended effect | weak (0.50) | - | 50% |
-| 2 | Medium intended alone | medium (0.75) | - | 50% |
-| 2 | Medium intended + weak other | medium (0.75) | other weak (0.50) | 50% |
-| 3 | Strongest alone | strongest (1.00) | - | 40% |
-| 3 | Strongest + weak other | strongest (1.00) | other weak (0.50) | 30% |
-| 3 | Strongest + medium other | strongest (1.00) | other medium (0.75) | 15% |
-| 3 | Strongest + weak drawback | strongest (1.00) | drawback weak (0.10, fixed) | 15% |
+| 1 | Weak intended effect | weak (0.50) | - | 75% |
+| 1 | Weak intended + weak drawback | weak (0.50) | drawback weak (0.10, fixed) | 20% |
+| 1 | Weak drawback alone | - | drawback weak (0.10, fixed) | 5% |
+| 2 | Medium intended alone | medium (0.75) | - | 55% |
+| 2 | Medium intended + weak other | medium (0.75) | other weak (0.50) | 30% |
+| 2 | Medium intended + weak drawback | medium (0.75) | drawback weak (0.10, fixed) | 15% |
+| 3 | Strongest alone | strongest (1.00) | - | 50% |
+| 3 | Strongest + weak other | strongest (1.00) | other weak (0.50) | 25% |
+| 3 | Strongest + medium other | strongest (1.00) | other medium (0.75) | 10% |
+| 3 | Strongest + weak drawback | strongest (1.00) | drawback weak (0.10, fixed) | 10% |
+| 3 | Strongest + medium drawback | strongest (1.00) | drawback medium (0.10, fixed) | 5% |
 
 ### Armor material
 
@@ -334,7 +337,7 @@ When the wearer takes damage from an attack or a fall and survives it, they inst
 
 A weapon holds 2 gems. Swords, axes, maces, tridents and spears apply the gem's effects to what they hit; bows and crossbows turn each fired arrow into its tipped form carrying them (picked up again, it's a plain arrow). Each hit **refreshes** the effect, it never stacks. A real tipped arrow fired from a gemmed bow: the stronger effect applies (higher strength wins, then longer duration), never both. Harmful gems are what weapons are for; a beneficial gem on a weapon buffs the target (pointless, but allowed).
 
-**Per hit (owner):** potency is measured against the strongest potion level: potency = s^0.5 of the 1.0 level (it approaches Poison II, Slowness IV... at the cap, never reaching it). Duration is short: at most 8 s from the best weapon build, x (s / cap)^0.5 below it, and never under the effect's floor, so every hit does something a player notices: Poison 2.5 s, Wither 2.5 s, Darkness 3 s, Nausea 5 s, Regeneration long enough to heal 2 HP, everything else 2 s. Each hit refreshes, it never adds. On/off harmful effects (Wind Charged, Weaving, Oozing, Infested, Glowing, Levitation, Blindness, Nausea, Darkness) are the vanilla effect, their strength all in duration. Harming and Healing strike on every hit (owner): s x 2.5 magic damage or s x 2 HP healed on the target, at least 1, a modest bonus below Sharpness V's +3.
+**Per hit (owner):** potency is measured against the strongest potion level: potency = s^0.5 of the 1.0 level (it approaches Poison II, Slowness IV... at the cap, never reaching it). Duration is short: at most 8 s from the best weapon build, x (s / cap)^0.5 below it, and never under the effect's floor, so every hit does something a player notices: Poison 2.5 s, Wither 2.5 s, Darkness 3 s, Nausea 5 s, Hunger 4 s, Regeneration long enough to heal 2 HP, everything else 2 s. Each hit refreshes, it never adds. On/off harmful effects (Wind Charged, Weaving, Oozing, Infested, Glowing, Levitation, Blindness, Nausea, Darkness) are the vanilla effect, their strength all in duration. Harming and Healing strike on every hit (owner): s x 2.5 magic damage or s x 2 HP healed on the target, at least 1, a modest bonus below Sharpness V's +3.
 
 | Effect | 1.0 means (one hit) | s = 0.05 | s = 0.10 | s = 0.25 | s = 0.50 | s = 0.75 | s = 0.90 |
 |---|---|---|---|---|---|---|---|
@@ -348,7 +351,7 @@ A weapon holds 2 gems. Swords, axes, maces, tridents and spears apply the gem's 
 | Infested | Potion of Infested, as drunk: Infested I for 3:00: 1-2 silverfish when the target is hurt (vanilla 10% per hit) (only level) | Infested for 2.0 s | Infested for 2.0 s | Infested for 2.2 s | Infested for 4.4 s | Infested for 6.7 s | Infested for 8.0 s |
 | Wither | The Wither boss's skull (owner, Q21): Wither II, 1 HP every 20 ticks = 1.0 HP/s (can kill, unlike poison) | 0.22 HP/s wither for 2.5 s | 0.32 HP/s wither for 2.7 s | 0.50 HP/s wither for 4.2 s | 0.71 HP/s wither for 6.0 s | 0.87 HP/s wither for 7.3 s | 0.95 HP/s wither for 8.0 s |
 | Mining Fatigue | Elder guardian: Mining Fatigue III (mining x0.027, attack speed -30%) for 5:00 | mining x0.45, attack speed -6.7% for 2.0 s | mining x0.32, attack speed -9.5% for 2.7 s | mining x0.16, attack speed -15.0% for 4.2 s | mining x0.08, attack speed -21.2% for 6.0 s | mining x0.04, attack speed -26.0% for 7.3 s | mining x0.03, attack speed -28.5% for 8.0 s |
-| Hunger | Pufferfish: Hunger III (exhaustion +0.015 per tick) for 15 s | extra hunger: 1 food point per 60 s for 2.0 s | extra hunger: 1 food point per 42 s for 2.7 s | extra hunger: 1 food point per 27 s for 4.2 s | extra hunger: 1 food point per 19 s for 6.0 s | extra hunger: 1 food point per 15 s for 7.3 s | extra hunger: 1 food point per 14 s for 8.0 s |
+| Hunger | Pufferfish: Hunger III (exhaustion +0.015 per tick) for 15 s | extra hunger: 1 food point per 60 s for 4.0 s | extra hunger: 1 food point per 42 s for 4.0 s | extra hunger: 1 food point per 27 s for 4.2 s | extra hunger: 1 food point per 19 s for 6.0 s | extra hunger: 1 food point per 15 s for 7.3 s | extra hunger: 1 food point per 14 s for 8.0 s |
 | Glowing | Spectral arrow hit: Glowing for 10 s (on/off effect: the strength goes into duration) | Glowing for 2.0 s | Glowing for 2.0 s | Glowing for 2.2 s | Glowing for 4.4 s | Glowing for 6.7 s | Glowing for 8.0 s |
 | Levitation | Shulker bullet hit: Levitation I for 10 s (on/off effect: the strength goes into duration) | Levitation for 2.0 s | Levitation for 2.0 s | Levitation for 2.2 s | Levitation for 4.4 s | Levitation for 6.7 s | Levitation for 8.0 s |
 | Blindness | Illusioner's spell: Blindness for 20 s (on/off effect: the strength goes into duration) | Blindness for 2.0 s | Blindness for 2.0 s | Blindness for 2.2 s | Blindness for 4.4 s | Blindness for 6.7 s | Blindness for 8.0 s |
@@ -377,7 +380,7 @@ A weapon holds 2 gems. Swords, axes, maces, tridents and spears apply the gem's 
 
 ## Drawbacks
 
-A drawback roll (tier 1's weak drawback alone, or tier 3's strongest + weak drawback) is a fixed size: **10% of the strongest vanilla level** of that effect, whatever the potion, Infusion level or gear (a better gem shouldn't hurt more). More drawbacks of the same effect add less and less and never pass 20%, which is below vanilla's weakest level of every drawback effect. So they sting, but never as much as a real potion of it. It goes where the gem's main effect goes: in armor, on the wearer while worn; in a weapon, on the target for 3 s, refreshed by each hit (a beneficial gem's harmful drawback on a weapon therefore lands on the target too).
+A drawback roll is a fixed size: **10% of the strongest vanilla level** of that effect for a weak one, 15% for tier 3's medium one, whatever the potion, Infusion level or gear (a better gem shouldn't hurt more). More drawbacks of the same effect add less and less and never pass 20%, which is below vanilla's weakest level of every drawback effect. So they sting, but never as much as a real potion of it. It goes where the gem's main effect goes: in armor, on the wearer while worn; in a weapon, on the target for 3 s, refreshed by each hit (a beneficial gem's harmful drawback on a weapon therefore lands on the target too).
 
 | Drawback | Rolls on | 1.0 means (vanilla) | 1 drawback (0.100) | 2 drawbacks (0.150) | 3 drawbacks (0.175) | 12 drawbacks (0.200) |
 |---|---|---|---|---|---|---|
@@ -551,4 +554,4 @@ Worn (armor) effects are attribute modifiers, data components or small tick and 
 31. Answered (owner, 2026-11-14): a gem and a potion of the same effect don't add, the stronger applies, implemented with care for the edge cases (spec).
 32. Answered (owner, 2026-11-14): undead follow vanilla's inversion: worn Healing makes a survivable hit hurt an undead wearer up to 25% more and worn Harming gives it up to 25% back; on weapons Harming heals undead and Healing hurts them; Poison and Regeneration do nothing to undead.
 33. Answered (owner, 2026-11-14): Invisibility gems give stealth that scales with strength, hidden on the locator bar from 0.5; only the perfect complete set gives real invisibility (armor still renders, as in vanilla).
-34. Enchant odds as proposed (tier 1: 50/50; tier 2: medium alone 50%, + weak other 50%; tier 3: alone 40%, + weak other 30%, + medium other 15%, + weak drawback 15%)? yes / no.
+34. Answered (owner, 2026-11-14): the plain result is the most common at every tier (tier 1: weak 75%, + weak drawback 20%, drawback only 5%; tier 2: medium 55%, + weak other 30%, + weak drawback 15%; tier 3: strongest 50%, + weak other 25%, + medium other 10%, + weak drawback 10%, + medium drawback 5%); the table's hover preview shows the main effect and the kind and size of any extra roll.

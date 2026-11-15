@@ -133,7 +133,7 @@ public record GemTotals(Map<String, Double> totals, Map<String, Integer> drawbac
 		}
 		double[] factors = pieceFactors(layout);
 		Map<String, List<Double>> contribs = new HashMap<>();
-		Map<String, Integer> drawbacks = new HashMap<>();
+		Map<String, List<Double>> drawbacks = new HashMap<>();
 		boolean any = false;
 		for (int i = 0; i < pieces.length; i++) {
 			SocketedGems gems = pieces[i].get(ModComponents.SOCKETED_GEMS);
@@ -154,27 +154,31 @@ public record GemTotals(Map<String, Double> totals, Map<String, Integer> drawbac
 		}
 		double factor = weaponFactor(weapon);
 		Map<String, List<Double>> contribs = new HashMap<>();
-		Map<String, Integer> drawbacks = new HashMap<>();
+		Map<String, List<Double>> drawbacks = new HashMap<>();
 		for (Gem gem : gems.gems()) {
 			add(gem, factor, contribs, drawbacks);
 		}
 		return finish(contribs, drawbacks, Balance.get().weaponNorm);
 	}
 
-	private static void add(Gem gem, double factor, Map<String, List<Double>> contribs, Map<String, Integer> drawbacks) {
+	private static void add(Gem gem, double factor, Map<String, List<Double>> contribs, Map<String, List<Double>> drawbacks) {
 		if (gem.hasMain()) {
 			contribs.computeIfAbsent(gem.key(), k -> new ArrayList<>()).add(gem.main() * factor);
 		}
 		gem.other().ifPresent(r -> contribs.computeIfAbsent(r.key(), k -> new ArrayList<>()).add(r.strength() * factor));
-		gem.drawback().ifPresent(r -> drawbacks.merge(r.key(), 1, Integer::sum));
+		gem.drawback().ifPresent(r -> drawbacks.computeIfAbsent(r.key(), k -> new ArrayList<>()).add((double) r.strength()));
 	}
 
-	private static GemTotals finish(Map<String, List<Double>> contribs, Map<String, Integer> drawbackCounts, double norm) {
+	private static GemTotals finish(Map<String, List<Double>> contribs, Map<String, List<Double>> drawbackSizes, double norm) {
 		Balance b = Balance.get();
 		Map<String, Double> totals = new LinkedHashMap<>();
 		contribs.forEach((k, list) -> totals.put(k, b.stack(list, norm)));
 		Map<String, Double> drawbacks = new LinkedHashMap<>();
-		drawbackCounts.forEach((k, n) -> drawbacks.put(k, b.drawbackTotal(n)));
+		Map<String, Integer> drawbackCounts = new LinkedHashMap<>();
+		drawbackSizes.forEach((k, sizes) -> {
+			drawbacks.put(k, b.drawbackSum(sizes));
+			drawbackCounts.put(k, sizes.size());
+		});
 		return new GemTotals(Map.copyOf(totals), Map.copyOf(drawbackCounts), Map.copyOf(drawbacks));
 	}
 }

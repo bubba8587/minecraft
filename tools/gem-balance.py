@@ -113,17 +113,29 @@ WEAPON_ALL = {**{m: f for m, (f, _) in WEAPON_MATERIALS.items()}, **{w: f for w,
 # Enchant tier outcome grades (owner's words: weak / medium / strongest).
 GRADES = {"weak": 0.50, "medium": 0.75, "strongest": 1.00}
 FORM_MAX_TIER = {"normal": 1, "splash": 2, "lingering": 3}   # owner
-# (label, intended-effect grade or None, [(other kind, grade)], proposed odds)
+# (label, intended-effect grade or None, [(other kind, grade)], odds). Owner (Q34): the plain result is the most common at
+# every tier, so randomness stays controllable for people who invest a lot.
 TIERS = {
-	1: [("Weak drawback alone", None, [("drawback", "weak")], 0.50),
-		("Weak intended effect", "weak", [], 0.50)],
-	2: [("Medium intended alone", "medium", [], 0.50),
-		("Medium intended + weak other", "medium", [("other", "weak")], 0.50)],
-	3: [("Strongest alone", "strongest", [], 0.40),
-		("Strongest + weak other", "strongest", [("other", "weak")], 0.30),
-		("Strongest + medium other", "strongest", [("other", "medium")], 0.15),
-		("Strongest + weak drawback", "strongest", [("drawback", "weak")], 0.15)],
+	1: [("Weak intended effect", "weak", [], 0.75),
+		("Weak intended + weak drawback", "weak", [("drawback", "weak")], 0.20),
+		("Weak drawback alone", None, [("drawback", "weak")], 0.05)],
+	2: [("Medium intended alone", "medium", [], 0.55),
+		("Medium intended + weak other", "medium", [("other", "weak")], 0.30),
+		("Medium intended + weak drawback", "medium", [("drawback", "weak")], 0.15)],
+	3: [("Strongest alone", "strongest", [], 0.50),
+		("Strongest + weak other", "strongest", [("other", "weak")], 0.25),
+		("Strongest + medium other", "strongest", [("other", "medium")], 0.10),
+		("Strongest + weak drawback", "strongest", [("drawback", "weak")], 0.10),
+		("Strongest + medium drawback", "strongest", [("drawback", "medium")], 0.05)],
 }
+
+def drawback_size(grade):
+	"""A drawback roll's fixed size: DRAWBACK_ONE for a weak one, scaled by the grade ratio for a medium one."""
+	return DRAWBACK_ONE * GRADES[grade] / GRADES["weak"]
+
+def drawback_sum(sizes):
+	"""Several drawbacks of one effect saturate toward DRAWBACK_CAP (n weak ones: drawback_total(n))."""
+	return DRAWBACK_CAP * (1 - math.prod(1 - x / DRAWBACK_CAP for x in sizes))
 
 def variant_factors(variants):
 	"""Potion variant factor by rank among the variants the effect really has.
@@ -437,8 +449,12 @@ MAX_HIT_SECONDS = 8.0
 #   enough for the spin to be well under way
 #   everything else: 2 s
 HIT_FLOOR_SECONDS_DEFAULT = 2.0
-HIT_FLOOR_SECONDS = {"poison": 2.5, "wither": 2.5, "darkness": 3.0, "nausea": 5.0}
+HIT_FLOOR_SECONDS = {"poison": 2.5, "wither": 2.5, "darkness": 3.0, "nausea": 5.0, "hunger": 4.0}  # hunger: owner
 HIT_FLOOR_HEAL_HP = {"regeneration": 2.0}
+# Hunger on hit (owner, "bit of both"): twice Hunger III's drain while it lasts, at least 4 s, and every hit costs a player
+# target at least one food point's worth of exhaustion (4.0); whatever the effect won't drain in time is added at the hit.
+HIT_HUNGER_RATE = 2 * 0.015
+HIT_FLOOR_EXHAUSTION = {"hunger": 4.0}
 
 def hit_floor(key, potency):
 	if key in HIT_FLOOR_HEAL_HP:
@@ -798,8 +814,14 @@ def run_checks():
 	for t, outs in TIERS.items():
 		if abs(sum(o[3] for o in outs) - 1) > 1e-9:
 			errors.append(f"tier {t} outcome odds don't add up to 100%")
-	if [o[1] for o in TIERS[2]] != ["medium", "medium"] or TIERS[2][0][2]:
-		errors.append("tier 2 must be: medium alone, or medium + weak other (owner)")
+	for t, outs in TIERS.items():
+		if outs[0][2] or outs[0][3] != max(o[3] for o in outs):
+			errors.append(f"tier {t}: the plain result must come first and be the most common (owner, Q34)")
+	if [o[1] for o in TIERS[2]] != ["medium"] * 3:
+		errors.append("tier 2 outcomes are all medium (owner)")
+	for g in {g for outs in TIERS.values() for _, _, extra, _ in outs for kind, g in extra if kind == "drawback"}:
+		if not drawback_size(g) < DRAWBACK_CAP or drawback_sum([drawback_size(g)] * 12) >= DRAWBACK_CAP:
+			errors.append(f"a {g} drawback reaches the drawback cap")
 	notes.append("every ladder step (Infusion level, armor, weapon material, run, grade, potion variant) is at least +4% on the one below; Infusion VI (nether star) and netherite are the only bests; each tier's odds add up to 100%")
 
 	# 2. Gem quality: 1.0 only for strongest potion + lingering + tier 3 + nether star, for every gem effect.
@@ -1259,7 +1281,7 @@ def document(notes):
 		[[E[k]["name"], hit_anchor_text(k)] + [hit_show(k, c) for c in cols] for k in BAD_GEMS + GOOD_GEMS]))
 
 	S.append(("h2", "Drawbacks"))
-	S.append(("p", f"A drawback roll (tier 1's weak drawback alone, or tier 3's strongest + weak drawback) is a fixed size: **{DRAWBACK_ONE:.0%} of the strongest vanilla level** of that effect, whatever the potion, Infusion level or gear (a better gem shouldn't hurt more). More drawbacks of the same effect add less and less and never pass {DRAWBACK_CAP:.0%}, which is below vanilla's weakest level of every drawback effect. So they sting, but never as much as a real potion of it. It goes where the gem's main effect goes: in armor, on the wearer while worn; in a weapon, on the target for {DRAWBACK_HIT_S} s, refreshed by each hit (a beneficial gem's harmful drawback on a weapon therefore lands on the target too)."))
+	S.append(("p", f"A drawback roll is a fixed size: **{DRAWBACK_ONE:.0%} of the strongest vanilla level** of that effect for a weak one, {drawback_size('medium'):.0%} for tier 3's medium one, whatever the potion, Infusion level or gear (a better gem shouldn't hurt more). More drawbacks of the same effect add less and less and never pass {DRAWBACK_CAP:.0%}, which is below vanilla's weakest level of every drawback effect. So they sting, but never as much as a real potion of it. It goes where the gem's main effect goes: in armor, on the wearer while worn; in a weapon, on the target for {DRAWBACK_HIT_S} s, refreshed by each hit (a beneficial gem's harmful drawback on a weapon therefore lands on the target too)."))
 	dcols = [1, 2, 3, 12]
 	S.append(("table", ["Drawback", "Rolls on", "1.0 means (vanilla)"] + [f"{n} drawback{'s' if n > 1 else ''} ({drawback_total(n):.3f})" for n in dcols],
 		[[E[k]["name"], "beneficial gems" if not E[k]["good"] else "harmful gems", DRAWBACK_ANCHOR.get(k, E[k]["anchor"])]
@@ -1321,7 +1343,7 @@ def document(notes):
 		"Answered (owner, 2026-11-14): a gem and a potion of the same effect don't add, the stronger applies, implemented with care for the edge cases (spec).",
 		"Answered (owner, 2026-11-14): undead follow vanilla's inversion: worn Healing makes a survivable hit hurt an undead wearer up to 25% more and worn Harming gives it up to 25% back; on weapons Harming heals undead and Healing hurts them; Poison and Regeneration do nothing to undead.",
 		f"Answered (owner, 2026-11-14): Invisibility gems give stealth that scales with strength, hidden on the locator bar from {INVISIBILITY_LOCATOR_HIDE_AT}; only the perfect complete set gives real invisibility (armor still renders, as in vanilla).",
-		"Enchant odds as proposed (tier 1: 50/50; tier 2: medium alone 50%, + weak other 50%; tier 3: alone 40%, + weak other 30%, + medium other 15%, + weak drawback 15%)? yes / no.",
+		"Answered (owner, 2026-11-14): the plain result is the most common at every tier (tier 1: weak 75%, + weak drawback 20%, drawback only 5%; tier 2: medium 55%, + weak other 30%, + weak drawback 15%; tier 3: strongest 50%, + weak other 25%, + medium other 10%, + weak drawback 10%, + medium drawback 5%); the table's hover preview shows the main effect and the kind and size of any extra roll.",
 	]))
 	return S
 
@@ -1458,7 +1480,7 @@ BREWING_LATER = {"invisibility", "wind_charged", "weaving", "oozing", "infested"
 	"dolphins_grace", "conduit_power", "hunger", "glowing", "levitation", "nausea", "darkness"}
 # What one hit applies at potency 1.0, for effects whose hit isn't an attribute set from WORN: damage or healing per
 # second (a gem mob effect), a per-hit strike's damage or heal.
-HIT_UNIT = {"poison": 25 / 12 * 0.8, "wither": 1.0, "regeneration": 0.8, "resistance": 0.4, "turtle_master": 0.8, "hunger": 0.015,
+HIT_UNIT = {"poison": 25 / 12 * 0.8, "wither": 1.0, "regeneration": 0.8, "resistance": 0.4, "turtle_master": 0.8, "hunger": HIT_HUNGER_RATE,
 	"instant_damage": HIT_STRIKE_HARM, "instant_health": HIT_STRIKE_HEAL}
 def effect_id(k):
 	"""The status effect id a gem names: vanilla's, or the mod's own for a combined gem."""
@@ -1494,7 +1516,8 @@ def export_data():
 				d["loot"] = src[1]
 			ticks, amp = arrow_anchor(k)
 			d["hit"] = {"ticks": round(MAX_HIT_SECONDS * T), "amplifier": amp,
-				"floor_ticks": round(HIT_FLOOR_SECONDS.get(k, HIT_FLOOR_SECONDS_DEFAULT) * T), "floor_heal_hp": HIT_FLOOR_HEAL_HP.get(k, 0.0)}
+				"floor_ticks": round(HIT_FLOOR_SECONDS.get(k, HIT_FLOOR_SECONDS_DEFAULT) * T), "floor_heal_hp": HIT_FLOOR_HEAL_HP.get(k, 0.0),
+				"floor_exhaustion": HIT_FLOOR_EXHAUSTION.get(k, 0.0)}
 			d["other_pool"] = [] if k in OTHER_EXCLUDED else other_pool(k)
 			d["drawback_pool"] = drawback_pool(k)
 			d["drawback_weights"] = [DRAWBACK_WEIGHTS.get(x, 1.0) for x in drawback_pool(k)]
@@ -1534,7 +1557,7 @@ def export_data():
 		"grades": GRADES, "form_max_tier": FORM_MAX_TIER,
 		"tiers": {str(t): [{"label": o[0], "main": o[1],
 			"other": next((g for kind, g in o[2] if kind == "other"), None),
-			"drawback": any(kind == "drawback" for kind, _ in o[2]), "odds": o[3]} for o in outs] for t, outs in TIERS.items()},
+			"drawback": next((g for kind, g in o[2] if kind == "drawback"), None), "odds": o[3]} for o in outs] for t, outs in TIERS.items()},
 		"loot": {k: {"name": v[0], "bases": v[1], "tiers": v[2]} for k, v in LOOT.items()},
 		"effects": effects,
 		"inverse_pairs": [[a, b] for a, b, _ in INVERSE_PAIRS],

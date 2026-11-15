@@ -111,18 +111,25 @@
 	"tiers": {
 		"1": [
 			{
-				"label": "Weak drawback alone",
-				"main": null,
-				"other": null,
-				"drawback": true,
-				"odds": 0.5
-			},
-			{
 				"label": "Weak intended effect",
 				"main": "weak",
 				"other": null,
-				"drawback": false,
-				"odds": 0.5
+				"drawback": null,
+				"odds": 0.75
+			},
+			{
+				"label": "Weak intended + weak drawback",
+				"main": "weak",
+				"other": null,
+				"drawback": "weak",
+				"odds": 0.2
+			},
+			{
+				"label": "Weak drawback alone",
+				"main": null,
+				"other": null,
+				"drawback": "weak",
+				"odds": 0.05
 			}
 		],
 		"2": [
@@ -130,15 +137,22 @@
 				"label": "Medium intended alone",
 				"main": "medium",
 				"other": null,
-				"drawback": false,
-				"odds": 0.5
+				"drawback": null,
+				"odds": 0.55
 			},
 			{
 				"label": "Medium intended + weak other",
 				"main": "medium",
 				"other": "weak",
-				"drawback": false,
-				"odds": 0.5
+				"drawback": null,
+				"odds": 0.3
+			},
+			{
+				"label": "Medium intended + weak drawback",
+				"main": "medium",
+				"other": null,
+				"drawback": "weak",
+				"odds": 0.15
 			}
 		],
 		"3": [
@@ -146,29 +160,36 @@
 				"label": "Strongest alone",
 				"main": "strongest",
 				"other": null,
-				"drawback": false,
-				"odds": 0.4
+				"drawback": null,
+				"odds": 0.5
 			},
 			{
 				"label": "Strongest + weak other",
 				"main": "strongest",
 				"other": "weak",
-				"drawback": false,
-				"odds": 0.3
+				"drawback": null,
+				"odds": 0.25
 			},
 			{
 				"label": "Strongest + medium other",
 				"main": "strongest",
 				"other": "medium",
-				"drawback": false,
-				"odds": 0.15
+				"drawback": null,
+				"odds": 0.1
 			},
 			{
 				"label": "Strongest + weak drawback",
 				"main": "strongest",
 				"other": null,
-				"drawback": true,
-				"odds": 0.15
+				"drawback": "weak",
+				"odds": 0.1
+			},
+			{
+				"label": "Strongest + medium drawback",
+				"main": "strongest",
+				"other": null,
+				"drawback": "medium",
+				"odds": 0.05
 			}
 		]
 	},
@@ -233,7 +254,8 @@
 				"ticks": 160,
 				"amplifier": 1,
 				"floor_ticks": 40,
-				"floor_heal_hp": 0.0
+				"floor_heal_hp": 0.0,
+				"floor_exhaustion": 0.0
 			},
 			"other_pool": [
 				"strength",
@@ -312,7 +334,8 @@
 				"ticks": 160,
 				"amplifier": 1,
 				"floor_ticks": 40,
-				"floor_heal_hp": 0.0
+				"floor_heal_hp": 0.0,
+				"floor_exhaustion": 0.0
 			},
 			"other_pool": [
 				"speed",
@@ -391,7 +414,8 @@
 				"ticks": 160,
 				"amplifier": 1,
 				"floor_ticks": 40,
-				"floor_heal_hp": 0.0
+				"floor_heal_hp": 0.0,
+				"floor_exhaustion": 0.0
 			},
 			"other_pool": [
 				"speed",
@@ -476,7 +500,8 @@
 				"ticks": 160,
 				"amplifier": 1,
 				"floor_ticks": 40,
-				"floor_heal_hp": 2.0
+				"floor_heal_hp": 2.0,
+				"floor_exhaustion": 0.0
 			},
 			"other_pool": [
 				"speed",
@@ -543,7 +568,8 @@
 				"ticks": 160,
 				"amplifier": 0,
 				"floor_ticks": 40,
-				"floor_heal_hp": 0.0
+				"floor_heal_hp": 0.0,
+				"floor_exhaustion": 0.0
 			},
 			"other_pool": [
 				"speed",
@@ -616,7 +642,8 @@
 				"ticks": 160,
 				"amplifier": 3,
 				"floor_ticks": 40,
-				"floor_heal_hp": 0.0
+				"floor_heal_hp": 0.0,
+				"floor_exhaustion": 0.0
 			},
 			"other_pool": [
 				"speed",
@@ -695,7 +722,8 @@
 				"ticks": 160,
 				"amplifier": 0,
 				"floor_ticks": 40,
-				"floor_heal_hp": 0.0
+				"floor_heal_hp": 0.0,
+				"floor_exhaustion": 0.0
 			},
 			"other_pool": [
 				"speed",
@@ -771,7 +799,8 @@
 				"ticks": 160,
 				"amplifier": 0,
 				"floor_ticks": 40,
-				"floor_heal_hp": 0.0
+				"floor_heal_hp": 0.0,
+				"floor_exhaustion": 0.0
 			},
 			"other_pool": [
 				"speed",
@@ -846,7 +875,8 @@
 				"ticks": 160,
 				"amplifier": 0,
 				"floor_ticks": 40,
-				"floor_heal_hp": 0.0
+				"floor_heal_hp": 0.0,
+				"floor_exhaustion": 0.0
 			},
 			"other_pool": [
 				"speed",
@@ -917,7 +947,8 @@
 				"ticks": 160,
 				"amplifier": 0,
 				"floor_ticks": 40,
-				"floor_heal_hp": 0.0
+				"floor_heal_hp": 0.0,
+				"floor_exhaustion": 0.0
 			},
 			"other_pool": [
 				"speed",
@@ -996,7 +1027,8 @@
 				"ticks": 160,
 				"amplifier": 0,
 				"floor_ticks": 40,
-				"floor_heal_hp": 0.0
+				"floor_heal_hp": 0.0,
+				"floor_exhaustion": 0.0
 			},
 			"other_pool": [
 				"speed",
@@ -1074,7 +1106,8 @@
 				"ticks": 160,
 				"amplifier": 0,
 				"floor_ticks": 40,
-				"floor_heal_hp": 0.0
+				"floor_heal_hp": 0.0,
+				"floor_exhaustion": 0.0
 			},
 			"other_pool": [
 				"speed",
@@ -1149,7 +1182,8 @@
 				"ticks": 160,
 				"amplifier": 1,
 				"floor_ticks": 40,
-				"floor_heal_hp": 0.0
+				"floor_heal_hp": 0.0,
+				"floor_exhaustion": 0.0
 			},
 			"other_pool": [],
 			"drawback_pool": [
@@ -1206,7 +1240,8 @@
 				"ticks": 160,
 				"amplifier": 1,
 				"floor_ticks": 50,
-				"floor_heal_hp": 0.0
+				"floor_heal_hp": 0.0,
+				"floor_exhaustion": 0.0
 			},
 			"other_pool": [
 				"slowness",
@@ -1301,7 +1336,8 @@
 				"ticks": 160,
 				"amplifier": 3,
 				"floor_ticks": 40,
-				"floor_heal_hp": 0.0
+				"floor_heal_hp": 0.0,
+				"floor_exhaustion": 0.0
 			},
 			"other_pool": [
 				"poison",
@@ -1397,7 +1433,8 @@
 				"ticks": 160,
 				"amplifier": 0,
 				"floor_ticks": 40,
-				"floor_heal_hp": 0.0
+				"floor_heal_hp": 0.0,
+				"floor_exhaustion": 0.0
 			},
 			"other_pool": [
 				"poison",
@@ -1493,7 +1530,8 @@
 				"ticks": 160,
 				"amplifier": 1,
 				"floor_ticks": 40,
-				"floor_heal_hp": 0.0
+				"floor_heal_hp": 0.0,
+				"floor_exhaustion": 0.0
 			},
 			"other_pool": [],
 			"drawback_pool": [
@@ -1566,7 +1604,8 @@
 				"ticks": 160,
 				"amplifier": 0,
 				"floor_ticks": 40,
-				"floor_heal_hp": 0.0
+				"floor_heal_hp": 0.0,
+				"floor_exhaustion": 0.0
 			},
 			"other_pool": [
 				"poison",
@@ -1651,7 +1690,8 @@
 				"ticks": 160,
 				"amplifier": 0,
 				"floor_ticks": 40,
-				"floor_heal_hp": 0.0
+				"floor_heal_hp": 0.0,
+				"floor_exhaustion": 0.0
 			},
 			"other_pool": [
 				"poison",
@@ -1736,7 +1776,8 @@
 				"ticks": 160,
 				"amplifier": 0,
 				"floor_ticks": 40,
-				"floor_heal_hp": 0.0
+				"floor_heal_hp": 0.0,
+				"floor_exhaustion": 0.0
 			},
 			"other_pool": [
 				"poison",
@@ -1821,7 +1862,8 @@
 				"ticks": 160,
 				"amplifier": 0,
 				"floor_ticks": 40,
-				"floor_heal_hp": 0.0
+				"floor_heal_hp": 0.0,
+				"floor_exhaustion": 0.0
 			},
 			"other_pool": [
 				"poison",
@@ -1910,7 +1952,8 @@
 				"ticks": 160,
 				"amplifier": 0,
 				"floor_ticks": 40,
-				"floor_heal_hp": 0.0
+				"floor_heal_hp": 0.0,
+				"floor_exhaustion": 0.0
 			},
 			"other_pool": [
 				"speed",
@@ -1991,7 +2034,8 @@
 				"ticks": 160,
 				"amplifier": 3,
 				"floor_ticks": 40,
-				"floor_heal_hp": 0.0
+				"floor_heal_hp": 0.0,
+				"floor_exhaustion": 0.0
 			},
 			"other_pool": [
 				"speed",
@@ -2066,7 +2110,8 @@
 				"ticks": 160,
 				"amplifier": 0,
 				"floor_ticks": 40,
-				"floor_heal_hp": 0.0
+				"floor_heal_hp": 0.0,
+				"floor_exhaustion": 0.0
 			},
 			"other_pool": [
 				"speed",
@@ -2137,7 +2182,8 @@
 				"ticks": 160,
 				"amplifier": 0,
 				"floor_ticks": 40,
-				"floor_heal_hp": 0.0
+				"floor_heal_hp": 0.0,
+				"floor_exhaustion": 0.0
 			},
 			"other_pool": [
 				"speed",
@@ -2200,7 +2246,8 @@
 				"ticks": 160,
 				"amplifier": 0,
 				"floor_ticks": 40,
-				"floor_heal_hp": 0.0
+				"floor_heal_hp": 0.0,
+				"floor_exhaustion": 0.0
 			},
 			"other_pool": [
 				"speed",
@@ -2264,7 +2311,8 @@
 				"ticks": 160,
 				"amplifier": 0,
 				"floor_ticks": 40,
-				"floor_heal_hp": 0.0
+				"floor_heal_hp": 0.0,
+				"floor_exhaustion": 0.0
 			},
 			"other_pool": [
 				"speed",
@@ -2347,7 +2395,8 @@
 				"ticks": 160,
 				"amplifier": 0,
 				"floor_ticks": 40,
-				"floor_heal_hp": 0.0
+				"floor_heal_hp": 0.0,
+				"floor_exhaustion": 0.0
 			},
 			"other_pool": [],
 			"drawback_pool": [
@@ -2393,7 +2442,8 @@
 				"ticks": 160,
 				"amplifier": 1,
 				"floor_ticks": 50,
-				"floor_heal_hp": 0.0
+				"floor_heal_hp": 0.0,
+				"floor_exhaustion": 0.0
 			},
 			"other_pool": [
 				"poison",
@@ -2481,7 +2531,8 @@
 				"ticks": 160,
 				"amplifier": 2,
 				"floor_ticks": 40,
-				"floor_heal_hp": 0.0
+				"floor_heal_hp": 0.0,
+				"floor_exhaustion": 0.0
 			},
 			"other_pool": [
 				"poison",
@@ -2577,8 +2628,9 @@
 			"hit": {
 				"ticks": 160,
 				"amplifier": 2,
-				"floor_ticks": 40,
-				"floor_heal_hp": 0.0
+				"floor_ticks": 80,
+				"floor_heal_hp": 0.0,
+				"floor_exhaustion": 4.0
 			},
 			"other_pool": [
 				"poison",
@@ -2639,7 +2691,7 @@
 			"worn": {
 				"exhaustion_per_tick": 0.015
 			},
-			"hit_unit": 0.015,
+			"hit_unit": 0.03,
 			"worn_amplifier": 2,
 			"id": "minecraft:hunger",
 			"opposites": [
@@ -2664,7 +2716,8 @@
 				"ticks": 160,
 				"amplifier": 0,
 				"floor_ticks": 40,
-				"floor_heal_hp": 0.0
+				"floor_heal_hp": 0.0,
+				"floor_exhaustion": 0.0
 			},
 			"other_pool": [
 				"poison",
@@ -2749,7 +2802,8 @@
 				"ticks": 160,
 				"amplifier": 0,
 				"floor_ticks": 40,
-				"floor_heal_hp": 0.0
+				"floor_heal_hp": 0.0,
+				"floor_exhaustion": 0.0
 			},
 			"other_pool": [
 				"poison",
@@ -2833,7 +2887,8 @@
 				"ticks": 160,
 				"amplifier": 0,
 				"floor_ticks": 40,
-				"floor_heal_hp": 0.0
+				"floor_heal_hp": 0.0,
+				"floor_exhaustion": 0.0
 			},
 			"other_pool": [
 				"poison",
@@ -2918,7 +2973,8 @@
 				"ticks": 160,
 				"amplifier": 0,
 				"floor_ticks": 100,
-				"floor_heal_hp": 0.0
+				"floor_heal_hp": 0.0,
+				"floor_exhaustion": 0.0
 			},
 			"other_pool": [
 				"poison",
@@ -3003,7 +3059,8 @@
 				"ticks": 160,
 				"amplifier": 0,
 				"floor_ticks": 60,
-				"floor_heal_hp": 0.0
+				"floor_heal_hp": 0.0,
+				"floor_exhaustion": 0.0
 			},
 			"other_pool": [
 				"poison",

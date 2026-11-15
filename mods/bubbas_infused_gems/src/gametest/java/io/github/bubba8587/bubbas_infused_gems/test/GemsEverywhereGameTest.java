@@ -527,6 +527,25 @@ public class GemsEverywhereGameTest {
 		helper.succeed();
 	}
 
+	/** Owner: every Hunger hit costs a player target at least a food point's worth (4.0 exhaustion), even the weakest. */
+	@GameTest
+	public void weakestHungerHitCostsAFoodPoint(GameTestHelper helper) {
+		ServerPlayer target = helper.makeMockServerPlayerInLevel();
+		target.setGameMode(GameType.SURVIVAL);
+		Balance.EffectData e = Balance.get().effect("hunger");
+		double s = Balance.get().stack(List.of((double) weakest("hunger").main() * 0.75), Balance.get().weaponNorm); // wooden sword
+		GemHits.Entry entry = new GemHits.Entry("hunger", s, false);
+		GemHits.apply(helper.getLevel(), target, null, null, List.of(entry));
+		MobEffectInstance inst = target.getEffect(ModEffects.gem("hunger"));
+		check(helper, inst != null && inst.getDuration() >= 80, "weakest hunger hit lasts under 4 s: " + inst);
+		double overTime = e.hitUnit() * GemMobEffect.potency(inst.getAmplifier()) * inst.getDuration();
+		float now = ((FoodDataAccessor) target.getFoodData()).bubbas$exhaustion();
+		close(now + overTime, 4.0, 1e-3, helper, "weakest hunger hit: exhaustion now " + now + " + over time " + overTime);
+		close(e.hitUnit(), 0.03, 1e-9, helper, "hunger hit rate: twice Hunger III");
+		GemKit.remove(helper, target);
+		helper.succeed();
+	}
+
 	/** The weakest Poison and Wither hits really tick after the hit's damage cooldown; the weakest Regeneration heals a heart. */
 	@GameTest(maxTicks = 400)
 	public void weakestDamageAndHealOverTimeHitsTakeEffect(GameTestHelper helper) {

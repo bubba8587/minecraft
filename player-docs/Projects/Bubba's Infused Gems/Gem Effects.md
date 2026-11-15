@@ -69,11 +69,12 @@ Harmful gems in armor affect the wearer:
 
 ## In weapons
 
-Each hit gives the target a partial effect for a few seconds, refreshed (never added up) by every hit. Its strength is measured against the strongest potion of the effect: the best weapon comes close to a Poison II or Slowness IV potion, but only for 8 seconds; weaker weapons give a weaker effect for a shorter time. Every hit lasts long enough to be noticed: Poison and Wither at least 2.5 seconds (enough for several damage ticks), Darkness 3 seconds, Nausea 5 seconds, Regeneration long enough to heal a heart, everything else 2 seconds. The effect appears in the target's effects as a percentage, for example *Poison 46%*.
+Each hit gives the target a partial effect for a few seconds, refreshed (never added up) by every hit. Its strength is measured against the strongest potion of the effect: the best weapon comes close to a Poison II or Slowness IV potion, but only for 8 seconds; weaker weapons give a weaker effect for a shorter time. Every hit lasts long enough to be noticed: Poison and Wither at least 2.5 seconds (enough for several damage ticks), Darkness 3 seconds, Hunger 4 seconds, Nausea 5 seconds, Regeneration long enough to heal a heart, everything else 2 seconds. The effect appears in the target's effects as a percentage, for example *Poison 46%*.
 
 | Gem | Effect on the target |
 |---|---|
-| Poison, Wither, Slowness, Weakness, Mining Fatigue, Hunger | The harmful effect, partial |
+| Poison, Wither, Slowness, Weakness, Mining Fatigue | The harmful effect, partial |
+| Hunger | Drains food twice as fast as Hunger III; every hit costs a player at least half a drumstick |
 | Glowing, Levitation, Blindness, Nausea, Darkness, Wind Charged, Weaving, Oozing, Infested | The effect itself, for longer the stronger the gem |
 | Harming | A little extra magic damage on every hit (up to 2.25) |
 | Healing | Heals the target a little on every hit (up to 1.8) |

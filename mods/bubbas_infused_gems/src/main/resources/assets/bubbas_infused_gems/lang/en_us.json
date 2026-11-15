@@ -48,5 +48,12 @@
 	"effect.bubbas_infused_gems.gem_conduit_power": "Conduit Power",
 	"effect.bubbas_infused_gems.gem_hero_of_the_village": "Hero of the Village",
 	"effect.bubbas_infused_gems.turtle_master": "Turtle Master",
-	"bubbas_infused_gems.command.part": "%s (%s)"
+	"bubbas_infused_gems.command.part": "%s (%s)",
+	"bubbas_infused_gems.clue.extra": "%s + %s...?",
+	"bubbas_infused_gems.clue.only": "%s only...?",
+	"bubbas_infused_gems.clue.bonus": "%sbonus",
+	"bubbas_infused_gems.clue.drawback": "%sdrawback",
+	"bubbas_infused_gems.clue.size.weak": "minor ",
+	"bubbas_infused_gems.clue.size.medium": "",
+	"bubbas_infused_gems.clue.size.strongest": "major "
 }

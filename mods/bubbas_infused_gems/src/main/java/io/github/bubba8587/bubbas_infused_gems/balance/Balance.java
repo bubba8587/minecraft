@@ -63,7 +63,7 @@ public final class Balance {
 	}
 
 	/** One enchant outcome: main grade (null = drawback alone), other grade (null = none), a drawback or not. */
-	public record Outcome(String label, String main, String other, boolean drawback, double odds) {
+	public record Outcome(String label, String main, String other, String drawback, double odds) {
 	}
 
 	public record Attr(String attribute, double amount, String operation, String curve) {
@@ -82,7 +82,7 @@ public final class Balance {
 
 	public record EffectData(String key, String name, boolean good, String role, String hitKind, double levelOne,
 			Map<String, Variant> variants, String source, int hitTicks, int hitAmplifier, List<String> otherPool,
-			int hitFloorTicks, double hitFloorHealHp, List<String> drawbackPool, List<Double> drawbackWeights, List<Attr> wornAttributes, JsonObject worn, double hitUnit, List<String> opposites,
+			int hitFloorTicks, double hitFloorHealHp, double hitFloorExhaustion, List<String> drawbackPool, List<Double> drawbackWeights, List<Attr> wornAttributes, JsonObject worn, double hitUnit, List<String> opposites,
 			int wornAmplifier, String id, Map<String, Double> parts) {
 		public boolean wornFlag(String name) {
 			return this.worn != null && this.worn.has(name) && this.worn.get(name).getAsBoolean();
@@ -131,7 +131,7 @@ public final class Balance {
 			List<Outcome> list = new ArrayList<>();
 			for (JsonElement x : e.getValue().getAsJsonArray()) {
 				JsonObject t = x.getAsJsonObject();
-				list.add(new Outcome(t.get("label").getAsString(), str(t, "main"), str(t, "other"), t.get("drawback").getAsBoolean(),
+				list.add(new Outcome(t.get("label").getAsString(), str(t, "main"), str(t, "other"), str(t, "drawback"),
 						t.get("odds").getAsDouble()));
 			}
 			this.tiers.put(Integer.parseInt(e.getKey()), List.copyOf(list));
@@ -171,7 +171,8 @@ public final class Balance {
 				e.get("hit_kind").getAsString(), e.get("level_one").getAsDouble(), Map.copyOf(variants), str(e, "source"),
 				hit == null ? 0 : hit.get("ticks").getAsInt(), hit == null ? 0 : hit.get("amplifier").getAsInt(),
 				list(e, "other_pool"), hit == null ? 0 : hit.get("floor_ticks").getAsInt(),
-				hit == null ? 0.0 : hit.get("floor_heal_hp").getAsDouble(), list(e, "drawback_pool"), doubles(e, "drawback_weights"), List.copyOf(attrs), worn,
+				hit == null ? 0.0 : hit.get("floor_heal_hp").getAsDouble(), hit == null ? 0.0 : hit.get("floor_exhaustion").getAsDouble(),
+				list(e, "drawback_pool"), doubles(e, "drawback_weights"), List.copyOf(attrs), worn,
 				e.has("hit_unit") ? e.get("hit_unit").getAsDouble() : 1.0, list(e, "opposites"),
 				e.has("worn_amplifier") ? e.get("worn_amplifier").getAsInt() : 0,
 				e.has("id") ? e.get("id").getAsString() : "minecraft:" + key, Map.copyOf(parts));
@@ -235,6 +236,20 @@ public final class Balance {
 	}
 
 	/** n drawbacks of one effect: the first is drawback.one, the rest saturate toward drawback.cap. */
+	/** Drawbacks of one effect of these sizes: they saturate toward drawback.cap (n weak ones: drawbackTotal(n)). */
+	public double drawbackSum(List<Double> sizes) {
+		double keep = 1.0;
+		for (double x : sizes) {
+			keep *= 1.0 - x / this.drawbackCap;
+		}
+		return this.drawbackCap * (1.0 - keep);
+	}
+
+	/** The fixed size of a drawback roll of this grade: drawback.one for a weak one, scaled by the grade ratio. */
+	public double drawbackSize(String grade) {
+		return this.drawbackOne * this.grades.get(grade) / this.grades.get("weak");
+	}
+
 	public double drawbackTotal(int n) {
 		return n <= 0 ? 0.0 : this.drawbackCap * (1.0 - Math.pow(1.0 - this.drawbackOne / this.drawbackCap, n));
 	}

@@ -121,6 +121,14 @@ public final class GemHits {
 			Holder<MobEffect> effect = ModEffects.gem(e.key());
 			if (effect != null) {
 				target.addEffect(new MobEffectInstance(effect, duration(e), GemMobEffect.amplifier(potency(e))), attacker);
+				Balance.EffectData d = b.effect(e.key());
+				if (!e.drawback() && d.hitFloorExhaustion() > 0.0 && target instanceof net.minecraft.world.entity.player.Player player) {
+					// Hunger (owner): every hit costs at least a food point's worth; what the effect won't drain comes now.
+					double drained = d.hitUnit() * GemMobEffect.potency(GemMobEffect.amplifier(potency(e))) * duration(e);
+					if (drained < d.hitFloorExhaustion()) {
+						player.causeFoodExhaustion((float) (d.hitFloorExhaustion() - drained));
+					}
+				}
 			}
 		}
 	}

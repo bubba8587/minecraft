@@ -46,17 +46,8 @@ public final class GemEnchanting {
 	/** The outcome of enchanting this gem at this tier (1-3) with this seed: always the same for the same inputs. */
 	public static Gem roll(int seed, int tier, InfusedGem infused) {
 		Balance b = Balance.get();
-		RandomSource random = RandomSource.create(seed * 31L + tier * 7919L + (infused.key() + "|" + infused.variant() + "|" + infused.infusion()).hashCode());
-		List<Balance.Outcome> outcomes = b.tiers.get(tier);
-		double r = random.nextDouble();
-		Balance.Outcome outcome = outcomes.getLast();
-		for (Balance.Outcome o : outcomes) {
-			if (r < o.odds()) {
-				outcome = o;
-				break;
-			}
-			r -= o.odds();
-		}
+		RandomSource random = random(seed, tier, infused);
+		Balance.Outcome outcome = pick(random, tier);
 		Balance.EffectData e = b.effect(infused.key());
 		double infusion = b.infusion(infused.infusion()).factor();
 		float main = outcome.main() == null ? 0.0F : (float) (infused.baseQuality() * b.grades.get(outcome.main()));
@@ -66,11 +57,32 @@ public final class GemEnchanting {
 			other = Optional.of(new Gem.Roll(GemText.holder(key), (float) (infusion * b.grades.get(outcome.other()))));
 		}
 		Optional<Gem.Roll> drawback = Optional.empty();
-		if (outcome.drawback() && e != null && !e.drawbackPool().isEmpty()) {
+		if (outcome.drawback() != null && e != null && !e.drawbackPool().isEmpty()) {
 			String key = weighted(random, e.drawbackPool(), e.drawbackWeights());
-			drawback = Optional.of(new Gem.Roll(GemText.holder(key), (float) b.drawbackOne));
+			drawback = Optional.of(new Gem.Roll(GemText.holder(key), (float) b.drawbackSize(outcome.drawback())));
 		}
 		return new Gem(infused.effect(), infused.infusion(), tier, main, other, drawback);
+	}
+
+	private static RandomSource random(int seed, int tier, InfusedGem infused) {
+		return RandomSource.create(seed * 31L + tier * 7919L + (infused.key() + "|" + infused.variant() + "|" + infused.infusion()).hashCode());
+	}
+
+	private static Balance.Outcome pick(RandomSource random, int tier) {
+		List<Balance.Outcome> outcomes = Balance.get().tiers.get(tier);
+		double r = random.nextDouble();
+		for (Balance.Outcome o : outcomes) {
+			if (r < o.odds()) {
+				return o;
+			}
+			r -= o.odds();
+		}
+		return outcomes.getLast();
+	}
+
+	/** Which outcome this seed gives this tier: the same draw {@link #roll} makes (the preview's kind and size). */
+	public static Balance.Outcome outcome(int seed, int tier, InfusedGem infused) {
+		return pick(random(seed, tier, infused), tier);
 	}
 
 	/** One of the pool, by weight (owner: Poison and Wither drawbacks roll half as often; weights from the model). */
@@ -96,10 +108,26 @@ public final class GemEnchanting {
 	}
 
 	/** The preview, like vanilla's clue: the outcome's main line, then "...?" (the rest stays a surprise). */
-	public static MutableComponent clue(Gem gem) {
-		MutableComponent text = gem.hasMain()
-				? GemText.effectName(gem.effect()).append(" " + GemText.percent(gem.main()))
-				: Component.translatable(GemText.KEY + "tooltip.drawback", Component.literal("?"));
-		return Component.translatable("container.enchant.clue", text).withStyle(ChatFormatting.WHITE);
+	/**
+	 * The hover preview, "slightly anonymized" (owner): the main effect and its strength, then for an extra roll only its
+	 * kind and size ("Speed 100% + minor bonus...?", "minor drawback only...?"). Exact, so the vanilla reroll trick works.
+	 */
+	public static MutableComponent clue(Gem gem, Balance.Outcome outcome) {
+		MutableComponent extra = null;
+		if (outcome.other() != null) {
+			extra = Component.translatable(GemText.KEY + "clue.bonus", size(outcome.other()));
+		} else if (outcome.drawback() != null) {
+			extra = Component.translatable(GemText.KEY + "clue.drawback", size(outcome.drawback()));
+		}
+		if (!gem.hasMain()) {
+			return Component.translatable(GemText.KEY + "clue.only", extra == null ? Component.empty() : extra).withStyle(ChatFormatting.WHITE);
+		}
+		MutableComponent main = GemText.effectName(gem.effect()).append(" " + GemText.percent(gem.main()));
+		return (extra == null ? main : Component.translatable(GemText.KEY + "clue.extra", main, extra)).withStyle(ChatFormatting.WHITE);
+	}
+
+	/** Size words: weak = "minor", medium = none, strongest = "major". */
+	private static Component size(String grade) {
+		return Component.translatable(GemText.KEY + "clue.size." + grade);
 	}
 }

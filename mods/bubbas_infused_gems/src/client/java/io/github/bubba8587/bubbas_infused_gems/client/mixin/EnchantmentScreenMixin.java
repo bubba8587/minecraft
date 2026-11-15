@@ -24,7 +24,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
  * The preview hint for an Infused Gem, like vanilla's clue: hovering a row shows that tier's outcome (its main effect
- * and grade, then "...?"), worked out on the client from the synced enchantment seed exactly as the server will roll it.
+ * and strength, then the kind and size of any extra roll, not which effect), worked out on the client from the synced enchantment seed exactly as the server will roll it.
  */
 @Mixin(EnchantmentScreen.class)
 public abstract class EnchantmentScreenMixin extends AbstractContainerScreen<EnchantmentMenu> {
@@ -42,7 +42,8 @@ public abstract class EnchantmentScreenMixin extends AbstractContainerScreen<Enc
 		for (int i = 0; i < 3; i++) {
 			if (this.menu.costs[i] > 0 && this.isHovering(60, 14 + 19 * i, 108, 17, mouseX, mouseY)) {
 				List<Component> lines = new ArrayList<>();
-				lines.add(GemEnchanting.clue(GemEnchanting.roll(this.menu.getEnchantmentSeed(), i + 1, gem)));
+				int seed = this.menu.getEnchantmentSeed();
+				lines.add(GemEnchanting.clue(GemEnchanting.roll(seed, i + 1, gem), GemEnchanting.outcome(seed, i + 1, gem)));
 				if (!this.minecraft.player.hasInfiniteMaterials()) {
 					lines.add(CommonComponents.EMPTY);
 					int cost = i + 1;
