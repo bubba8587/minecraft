@@ -1522,7 +1522,8 @@ def export_files():
 
 def stale_exports():
 	files = export_files()
-	stale = [p for p, t in files.items() if not p.exists() or p.read_text(encoding="utf-8") != t]
+	# git may check text files out with CRLF on Windows; compare the text, not the line endings
+	stale = [p for p, t in files.items() if not p.exists() or p.read_bytes().decode("utf-8").replace(chr(13), "") != t]
 	extra = [p for p in RECIPE_DIR.glob("*.json") if p not in files] if RECIPE_DIR.exists() else []
 	return files, stale, extra
 

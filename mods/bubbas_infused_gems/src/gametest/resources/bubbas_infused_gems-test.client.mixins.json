@@ -1,0 +1,11 @@
+{
+	"required": true,
+	"package": "io.github.bubba8587.bubbas_infused_gems.test.mixin",
+	"compatibilityLevel": "JAVA_25",
+	"client": [
+		"ContainerScreenAccessor"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

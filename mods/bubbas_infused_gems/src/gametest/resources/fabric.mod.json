@@ -18,6 +18,10 @@
 		]
 	},
 	"mixins": [
-		"bubbas_infused_gems-test.mixins.json"
+		"bubbas_infused_gems-test.mixins.json",
+		{
+			"config": "bubbas_infused_gems-test.client.mixins.json",
+			"environment": "client"
+		}
 	]
 }

@@ -78,8 +78,9 @@ public final class ModCommands {
 	}
 
 	private static int show(CommandSourceStack source, ServerPlayer player) throws CommandSyntaxException {
+		// Straight to the asker, so it shows even with the send_command_feedback game rule off.
 		for (Component line : lines(player)) {
-			source.sendSuccess(() -> line, false);
+			source.sendSystemMessage(line);
 		}
 		return 1;
 	}
