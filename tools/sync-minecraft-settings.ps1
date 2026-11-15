@@ -8,8 +8,8 @@
 # Source: the most recently saved options.txt among .minecraft and the other Modrinth profiles (or -From).
 # Everything is copied except the resource pack lists, which stay the test profile's own (so its bundled packs,
 # e.g. Bubba's Crafting Tweaks', stay on). The source's "version:" line is kept so the game upgrades older settings.
-# Copies on first run, then again only when the source file changes (tracked in .bubba-settings-source), so
-# settings changed inside the test profile are kept until the owner's main settings change.
+# Re-copied on every run (the owner's main settings win over anything the game wrote in the test profile); refuses
+# to run while Minecraft is running on the profile, because the game saves its settings back on exit.
 param(
 	[string]$Profile = "mod testing",
 	[string]$From = "",
@@ -34,15 +34,26 @@ if ($From) {
 if (-not $source) { Write-Output "No settings found to copy."; return }
 
 $stamp = "$($source.FullName)|$($source.LastWriteTimeUtc.Ticks)"
-if (-not $Force -and (Test-Path $target) -and (Test-Path $marker) -and ((Get-Content $marker -Raw).Trim() -eq $stamp)) {
-	Write-Output "Settings already in sync with $($source.FullName)."
+
+# Minecraft writes its settings back when it exits, so syncing while the profile is running gets undone.
+$running = Get-CimInstance Win32_Process -Filter "Name='javaw.exe' OR Name='java.exe'" -ErrorAction SilentlyContinue |
+	Where-Object { $_.CommandLine -and $_.CommandLine.Contains($targetDir) }
+if ($running) {
+	Write-Output "Minecraft is running on '$Profile': close it, then run this again (it would overwrite the settings on exit)."
 	return
 }
+
+# The owner's own settings are the source of truth: re-copied on every run (the game's own writes in the test
+# profile, e.g. on exit, otherwise win). Skip only when the file is already exactly what a sync produces.
 
 $keepFromTarget = '^(resourcePacks|incompatibleResourcePacks):'
 $targetKeep = if (Test-Path $target) { @(Get-Content $target | Where-Object { $_ -match $keepFromTarget }) } else { @() }
 $merged = @(Get-Content $source.FullName | Where-Object { $_ -notmatch $keepFromTarget }) + $targetKeep
 
+if (-not $Force -and (Test-Path $target) -and ((Compare-Object (Get-Content $target) $merged -SyncWindow 0) -eq $null)) {
+	Write-Output "Settings already match $($source.FullName)."
+	return
+}
 if (Test-Path $target) { Copy-Item $target "$target.before-sync" -Force }
 Set-Content -Path $target -Value $merged -Encoding utf8NoBOM
 Set-Content -Path $marker -Value $stamp -Encoding utf8NoBOM
