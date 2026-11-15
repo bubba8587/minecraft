@@ -5,7 +5,7 @@
   python tools/pack.py check [NAME ...]   check packs (all if none named)
   python tools/pack.py build [NAME ...]   check, then zip into build/packs/<datapacks|resourcepacks>/<name>-<version>.zip
 
-A pack is a folder under datapacks/ or resourcepacks/ with a pack.mcmeta.
+A pack is a folder under datapacks/, resourcepacks/ or testworlds/ (world builder packs) with a pack.mcmeta.
 Its version comes from an optional file `VERSION` (one line); default 0.1.0.
 A pack with a `DISABLED` file (one line: why) is skipped by every pack tool.
 Standard library only.
@@ -14,7 +14,7 @@ import json, re, sys, zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-KINDS = {"datapacks": "data", "resourcepacks": "assets"}
+KINDS = {"datapacks": "data", "resourcepacks": "assets", "testworlds": "data"}  # testworlds/: world builder packs
 NAMESPACE = re.compile(r"^[a-z0-9_.-]+$")
 PATH_PART = re.compile(r"^[a-z0-9_./-]+$")
 # Files that never ship in a pack zip.

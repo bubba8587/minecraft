@@ -70,6 +70,7 @@ python3 tools/texcheck.py [project]              # every 16x texture has a 32x t
 python3 tools/packload.py [name]                 # load datapacks on the vanilla server (no mods)
 python3 tools/packtest.py [name]                 # run PackTest tests on a Fabric server (owner approved)
 pwsh tools/install-to-modrinth.ps1               # owner's Windows PC: build + install into Modrinth profile "mod testing"
+python tools/build-testworld.py                  # rebuild the pristine test world
 ```
 
 ## New Minecraft release (B10 alwaysLatest)

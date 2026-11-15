@@ -18,3 +18,4 @@ Parked ideas and open items, newest first within each project. Agents add to it 
 ## Repo
 - Owner to read and ratify (or rewrite) the goal drafts A1-A4 (`python3 tools/dte.py unratified`).
 - A future mod drastically reducing unenchanted mining speed.
+- Test world screenshots: a client game test run with both mods loaded that opens a copy of `testworlds/bubba-test-world` and screenshots the hub and each station (the per-mod client test harness loads one mod at a time). `specs/testworld.md`.

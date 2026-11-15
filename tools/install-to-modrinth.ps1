@@ -3,12 +3,17 @@
 #
 #   pwsh tools/install-to-modrinth.ps1                      # profile "mod testing"
 #   pwsh tools/install-to-modrinth.ps1 -Profile "other"     # another profile (must be Fabric on the repo's Minecraft version)
+#   pwsh tools/install-to-modrinth.ps1 -ResetWorld          # also replace the test world (the old copy is renamed, not deleted)
+#
+# Also copies the test world (testworlds/bubba-test-world) into the profile's saves as "Bubba Test World" when missing,
+# and the owner's own game settings (tools/sync-minecraft-settings.ps1).
 #
 # Uses a JDK from JAVA_HOME if set, otherwise the Java 25 runtime the Modrinth App downloaded (Gradle fetches a full
 # JDK 25 for compiling by itself). Replaces older copies of our jars in the profile; leaves every other mod alone.
 param(
 	[string]$Profile = "mod testing",
-	[string[]]$Mods = @("bubbas_reworked_mobs", "bubbas_crafting_tweaks")
+	[string[]]$Mods = @("bubbas_reworked_mobs", "bubbas_crafting_tweaks"),
+	[switch]$ResetWorld
 )
 $ErrorActionPreference = "Stop"
 $root = Split-Path -Parent $PSScriptRoot
@@ -53,3 +58,31 @@ if (-not (Get-ChildItem $target -Filter "fabric-api-*.jar")) {
 
 Write-Output "Installed into '$Profile':"
 Get-ChildItem $target -Filter "*.jar" | ForEach-Object { "  $($_.Name)" }
+
+# The test world (specs/testworld.md): copy the pristine world into saves/ if the profile has none. The owner's copy
+# is never deleted: -ResetWorld renames it with a timestamp before copying a fresh one.
+$pristine = Join-Path $root "testworlds\bubba-test-world"
+$saves = Join-Path $modrinth "profiles\$Profile\saves"
+$copy = Join-Path $saves "Bubba Test World"
+if (Test-Path (Join-Path $pristine "level.dat")) {
+	New-Item -ItemType Directory -Force $saves | Out-Null
+	if ((Test-Path $copy) -and $ResetWorld) {
+		$old = "Bubba Test World (old $(Get-Date -Format 'yyyy-MM-dd HHmmss'))"
+		Rename-Item $copy $old
+		Write-Output "Kept your old test world as saves\$old"
+	}
+	if (-not (Test-Path $copy)) {
+		Copy-Item $pristine $copy -Recurse
+		Write-Output "Test world copied to saves\Bubba Test World"
+	} else {
+		$new = Join-Path $pristine "BUILD_INFO.txt"; $have = Join-Path $copy "BUILD_INFO.txt"
+		if ((Test-Path $new) -and (-not (Test-Path $have) -or (Get-Item $new).LastWriteTime -gt (Get-Item $have).LastWriteTime)) {
+			Write-Output "Note: a newer test world has been built. Your copy was kept; run with -ResetWorld to get the new one (your copy is renamed, not deleted)."
+		}
+	}
+} else {
+	Write-Output "No test world built yet (python tools/build-testworld.py); skipped."
+}
+
+# The owner's own game settings (keybinds, video, sound) into the profile.
+& (Join-Path $PSScriptRoot "sync-minecraft-settings.ps1") -Profile $Profile
