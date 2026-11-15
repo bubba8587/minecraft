@@ -170,3 +170,25 @@ With a vanilla effect of the same kind, the stronger-applies top-up still holds 
 ## Gems as a difficulty tool (owner, 2026-11-15)
 
 - Gems on mobs are also how designated harder areas get a much wider difficulty curve: mobs there wear more and better gems. Ominous trial spawner mobs wear gems even though they never drop their gear (owner: yes).
+
+## Milestone test objectives
+
+Test-lite policy (`specs/quality.md`, Test suites): `InfusedGemsCoreGameTest` runs on every build and push; the rest is the milestone suite (release tags, manual CI dispatch, `-PmilestoneTests`). What each class proves:
+
+- Core (`InfusedGemsCoreGameTest`, 8): balance.json loads with known values; a potion and a base gem brew an Infused Gem; the enchanting table finishes a gem; the smithing table sockets up to the limit; worn effects match the JSON; melee weapon gems hit the target; `/gems` lists combined effects; every listed loot table sometimes holds gems.
+- `BalanceGameTest` (milestone part): the model's example builds come out the same from real items; every gem has a worn and a hit form.
+- `BrewingGameTest` (milestone part): every brewable source and variant brews, suspicious stews brew by their effect, nothing raises an Infused Gem's form, a real brewing stand accepts and brews.
+- `EnchantingGameTest` (milestone part): form caps the tiers, fixed seeds follow the model, rolls keep their kind and never the direct opposite, tiers need their bookshelves.
+- `SocketingGameTest` (milestone part): the grindstone returns all gems; broken armor drops its gems.
+- `GemEffectsGameTest` (milestone part): the best armor build reaches the cap, bows tip arrows while pickup stays plain, gem Poison never kills but Wither can.
+- `GemsCommandGameTest` (milestone part): `/gems kit` gives a perfect set.
+- `GemsEverywhereGameTest`: every gem does something worn and on hit through real paths (player swings, mob hits, thrown tridents, arrows across a save), undead inversion, Absorption doesn't refill on re-equip, Levitation lifts, mobility sets beat the potion, Invisibility's threshold and full set, Turtle Master's parts and the turtle helmet, the weakest gems still act, Saturation and Hunger, Conduit Power only in water.
+- `GemVsPotionGameTest`: a gem and a vanilla effect of the same kind: the stronger applies in every edge case (potion running out, weaker potion, milk, beacons and conduits, golden apples and totems, splash, clouds and tipped arrows, death and reload), no modifier left behind.
+- `BeyondPotionsGameTest`: Wind Burst goes past the mace cap, Weaving webs only into air, Oozing kills split off owned neutral slimes, Silence keeps a sculk sensor quiet.
+- `GemInversionGameTest`: a brewing stand inverts and reverts gems, a drawback-only gem inverts to a weak main, rolls favour common effects.
+- `BalanceReviewGameTest`: each of the 2026-11-15 balance review's bugs stays fixed (falls, Harming cooldown, hit stacking, Absorption throttle, Hero floor, Ender and harmless projectiles, Oozing cap, Saturation stops and fast regeneration).
+- `LootGameTest` (milestone part): level tables make weak rare gems, found-only gems have sources, spawn gear and raid rates, mobs in gemmed armor get its effects, dropped mob armor keeps its gems.
+- `BreezeMeasureGameTest`: the perfect Breeze set deflects every dispenser and skeleton arrow.
+- `TopEndGameTest`: perfect sets reach the new caps, the netherite Infusion V reference build, perfect Ender always blinks, perfect Invisibility hides armor and every exit restores it, hidden armor drops visible.
+- Client (`GemsClientGameTest` parts via `ClientTests`; screenshots): the gems in the inventory, colors, enchanting, smithing, worn and hit views, gemmed mobs, invisible perfect sets.
+

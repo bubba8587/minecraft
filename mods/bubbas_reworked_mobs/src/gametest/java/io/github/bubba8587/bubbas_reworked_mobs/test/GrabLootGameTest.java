@@ -70,7 +70,7 @@ public class GrabLootGameTest {
 	// --- waking -----------------------------------------------------------------------------------
 
 	/** Weapons first: a loose sword 2.5 blocks off beats a golden carrot on display right next to the sleeper. */
-	@GameTest(environment = ENV, maxTicks = 40)
+	// Core test: registered by ReworkedMobsCoreGameTest (test-lite, specs/quality.md).
 	public void wakePrefersAWeaponOverACloserOtherItem(GameTestHelper helper) {
 		floor(helper);
 		BlockPos at = new BlockPos(4, 1, 4);

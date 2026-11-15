@@ -136,7 +136,7 @@ public class SyntheticOreGameTest {
 		helper.succeed();
 	}
 
-	@GameTest
+	// Core test: registered by CraftingTweaksCoreGameTest (test-lite, specs/quality.md).
 	public void syntheticOreUsesItsOwnTableAndGivesNoXp(GameTestHelper helper) {
 		ItemStack synthetic = syntheticFromRecipe(helper);
 		helper.assertValueEqual(synthetic.getHoverName().getString(), "Synthetic Diamond Ore", "recipe result name");

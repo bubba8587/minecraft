@@ -58,7 +58,7 @@ public class BrewingGameTest {
 				"wrong Infused Gem " + gem + ", expected " + effect + " " + variant + " " + form + " " + infusion);
 	}
 
-	@GameTest
+	// Core test: registered by InfusedGemsCoreGameTest (test-lite, specs/quality.md).
 	public void potionsAndBaseGemsBrewInfusedGems(GameTestHelper helper) {
 		expect(helper, brew(helper, potion(Items.POTION, Potions.SWIFTNESS), new ItemStack(Items.AMETHYST_SHARD)), "speed", "normal", GemForm.NORMAL, 1);
 		expect(helper, brew(helper, potion(Items.SPLASH_POTION, Potions.STRONG_STRENGTH), new ItemStack(Items.ENDER_PEARL)), "strength", "strong", GemForm.SPLASH, 3);

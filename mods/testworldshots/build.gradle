@@ -1,7 +1,7 @@
 // dte:A3
 // Internal harness (never published): opens a copy of testworlds/bubba-test-world in a real client with every
 // repo mod loaded and screenshots the hub and each station. specs/testworld.md, "Screenshots".
-//   ./gradlew :testworldshots:runClientGameTest   -> build/run/clientGameTest/screenshots/
+//   ./gradlew :testworldshots:runClientGameTest -PmilestoneTests   -> build/run/clientGameTest/screenshots/
 plugins {
 	id 'net.fabricmc.fabric-loom'
 }

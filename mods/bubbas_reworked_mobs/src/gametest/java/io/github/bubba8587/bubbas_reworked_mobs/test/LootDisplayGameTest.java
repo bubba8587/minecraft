@@ -143,7 +143,7 @@ public class LootDisplayGameTest {
 	// --- taking ---------------------------------------------------------------------------------
 
 	/** Ground, wall and stuck: an empty hand takes the item and the block goes (water stays if it was waterlogged). */
-	@GameTest
+	// Core test: registered by ReworkedMobsCoreGameTest (test-lite, specs/quality.md).
 	public void emptyHandTakesGroundWallAndStuck(GameTestHelper helper) {
 		floor(helper);
 		helper.setBlock(DISPLAY.north(), Blocks.STONE); // the wall for the wall placement (facing south, away from it)

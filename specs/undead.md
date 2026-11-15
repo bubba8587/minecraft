@@ -152,3 +152,17 @@ Sleeper on the server: 0 per tick. Hearing: under 0.05 ms per tick with 200 slee
 ## Open questions for the owner
 
 - None open. (Name: Bubba's Reworked Mobs, mod id `bubbas_reworked_mobs`.)
+
+## Milestone test objectives
+
+Test-lite policy (`specs/quality.md`, Test suites): `ReworkedMobsCoreGameTest` runs on every build and push; everything below is the milestone suite, run on release tags, manual CI dispatch and `-PmilestoneTests`. Each line says what the class proves.
+
+- Core (`ReworkedMobsCoreGameTest`, 8): a placed sleeper item keeps its gear and pose; walking near a sleeper wakes it; a wake spawns a tuned mob with its gear facing the noise; silk-touch mining gives the sleeper item; an empty hand takes loot off a display; a waking mob grabs a weapon first; zombie headshots hurt more; the Grave Talisman senses sleepers and undead at the right glow levels.
+- `BubbasReworkedMobsGameTest`: sleepers end to end through the real interaction paths: hearing (animals, sneaking and wool don't wake; the awaken event caps how many wake), woken mobs are tuned undead and pick up a nearby weapon, a refused spawn keeps the sleeper, robbing order and its wake chance, mining with and without silk touch or bare-handed, and the monster-cap rule.
+- `SleeperNoiseGameTest`: the disturbance meter meets each owner target deterministically: sprinting circles and passes wake, two blocks broken or placed wake, jumps, fights and explosions are loud, walking at 3 wakes within two seconds, walking at 7 or sprinting at 11 doesn't, sneaking at 2 is silent, small noises settle, solid walls muffle, awaken wakes near neighbours, chain-woken undead don't infight, only a survival waker is targeted, retaliation against undead stays vanilla.
+- `LootDisplayGameTest`: loot on display keeps its item through save/load and templates, taking per placement (ground, wall, stuck), buried loot needs a shovel, taking is quiet and digging is loud (and wakes a sleeper), breaking drops the item, the display command places it, woken zombies and skeletons take a displayed weapon or bow over a loose one.
+- `GrabLootGameTest`: the waking grab takes any item when no weapon is in reach; the idle grab goal walks to displays and loose items (zombies and skeletons), prefers a display over a closer loose item, ignores displays when the hand is full or the mob isn't in the tag, ignores displays while chasing and goes back for them when idle; contact pickup while chasing stays vanilla's.
+- `UndeadCombatGameTest`: fist streaks shred armor and a pause resets them, Smite kills only our undead outright, skeletons shrug off arrows, idle zombies drift together and a zombie with a target doesn't.
+- `ZombieGaitGameTest`: the shamble's drag-and-lurch covers the same ground as a steady walker of the same speed.
+- `GraveTalismanGameTest` (milestone part): the glow-level table.
+- Client (`ClientTests` names `sleepers`, `displays`, `gait`, `talisman`; screenshots): sleepers from several angles, sleeper items, a placed sleeper, a woken armored zombie, loot on display; the gait cycle from the side and front and the client's motion lag; the talisman's glow at each distance in hand and hotbar.

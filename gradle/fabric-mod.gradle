@@ -61,7 +61,8 @@ jar {
 }
 
 // Game tests (specs/quality.md): src/gametest/ is its own source set with its own fabric.mod.json.
-// Server game tests run as part of `build`; client game tests run with `runClientGameTest`.
+// Server game tests run as part of `build` (core suite; -PmilestoneTests adds the rest); client game tests run with
+// `runClientGameTest -PclientTests=<names>` or `-PmilestoneTests`.
 fabricApi {
 	configureTests {
 		createSourceSet = true
@@ -76,12 +77,36 @@ test {
 	useJUnitPlatform()
 }
 
-// Speed: skip server game tests when nothing they run on has changed since the last passing run. Loom declares
-// the run folder (which the game writes logs into) as an input, so Gradle never treats the task as up to date on its
-// own; instead we fingerprint the mod's compiled code and resources (main, client, gametest, which also hold bundled
-// packs) and skip when it matches the fingerprint a passing run recorded. Force a run with -PrerunGametests.
-def gametestInputs = files(sourceSets.main.output, sourceSets.client.output,
-		sourceSets.findByName('gametest')?.output ?: files())
+// Test-lite (specs/quality.md, "Test suites"): two server game test suites. Core (the classes under "fabric-gametest" in
+// src/gametest/resources/fabric.mod.json, a small smoke set) runs on every build. Milestone (the classes under
+// "bubba-milestone-gametest", everything else) is added to "fabric-gametest" only with -PmilestoneTests: release tags,
+// manual CI dispatch, or an agent asking for it. Client game tests are milestone too (see runClientGameTest below).
+def milestoneTests = providers.gradleProperty('milestoneTests').isPresent()
+def suite = milestoneTests ? 'full' : 'core'
+tasks.matching { it.name == 'processGametestResources' }.configureEach { t ->
+	t.inputs.property('milestoneTests', milestoneTests)
+	def outDir = t.destinationDir
+	t.doLast {
+		def f = new File(outDir, 'fabric.mod.json')
+		if (!milestoneTests || !f.exists()) return
+		def json = new groovy.json.JsonSlurper().parse(f)
+		def milestone = json.entrypoints?.get('bubba-milestone-gametest') ?: []
+		json.entrypoints['fabric-gametest'] = (json.entrypoints['fabric-gametest'] ?: []) + milestone
+		f.text = groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson(json)) + '\n'
+	}
+}
+
+// Speed: skip server game tests when nothing they run on has changed since the last passing run of that suite. Loom
+// declares the run folder (which the game writes logs into) as an input, so Gradle never treats the task as up to date
+// on its own; instead we fingerprint the mod's compiled code and resources (main, client, gametest, which also hold
+// bundled packs) and skip when it matches the fingerprint a passing run recorded. The marker also records the suite:
+// a full pass covers core, a core pass never counts for the full suite. The generated gametest fabric.mod.json differs
+// between suites, so the fingerprint uses its source instead. Force a run with -PrerunGametests.
+def gametestSet = sourceSets.findByName('gametest')
+def gametestInputs = files(sourceSets.main.output, sourceSets.client.output, gametestSet?.output ?: files())
+def gametestFingerprintFiles = files(sourceSets.main.output, sourceSets.client.output,
+		gametestSet ? gametestSet.output.asFileTree.matching { exclude 'fabric.mod.json' } : files(),
+		file('src/gametest/resources/fabric.mod.json'))
 def gametestMarker = layout.buildDirectory.file('gametest/passed.fingerprint')
 def forceGametests = providers.gradleProperty('rerunGametests').isPresent()
 def fingerprintOf = { FileCollection fc ->
@@ -91,9 +116,13 @@ def fingerprintOf = { FileCollection fc ->
 }
 tasks.matching { it.name == 'runGameTest' }.configureEach { t ->
 	t.inputs.files(gametestInputs).withPropertyName('gametestFingerprintInputs')
-	t.onlyIf('code or resources changed since the last passing game test run') {
+	t.inputs.property('gametestSuite', suite)
+	t.onlyIf("code or resources changed since the last passing ${suite} game test run") {
 		def m = gametestMarker.get().asFile
-		forceGametests || !m.exists() || m.text.trim() != fingerprintOf(gametestInputs)
+		if (forceGametests || !m.exists()) return true
+		def parts = m.text.trim().tokenize(' ')
+		if (parts[0] != fingerprintOf(gametestFingerprintFiles)) return true
+		return suite == 'full' && (parts.size() < 2 || parts[1] != 'full')
 	}
 	// Disk: the server game tests place every run's test areas at a new random spot in the same world, which is never
 	// reset, so it grew by tens of MB a run (293 MB seen). Start each run from a fresh world.
@@ -102,14 +131,20 @@ tasks.matching { it.name == 'runGameTest' }.configureEach { t ->
 	t.doLast {
 		def m = gametestMarker.get().asFile
 		m.parentFile.mkdirs()
-		m.text = fingerprintOf(gametestInputs) + '\n'
+		m.text = fingerprintOf(gametestFingerprintFiles) + ' ' + suite + '\n'
 	}
 }
 
 // Speed: run only some client game tests with -PclientTests=name1,name2 (each test checks the names it answers to;
-// see the mod's ClientTests helper). Without the property every client test runs, as CI does.
+// see the mod's ClientTests helper). Client game tests are milestone tests (test-lite): without -PclientTests or
+// -PmilestoneTests the task is skipped; with -PmilestoneTests and no filter every client test runs, as CI does on tags.
 def clientTestsFilter = providers.gradleProperty('clientTests')
+def clientTestsAllowed = clientTestsFilter.isPresent() || milestoneTests
 tasks.matching { it.name == 'runClientGameTest' }.configureEach { t ->
+	t.onlyIf('client game tests are milestone tests: pass -PclientTests=<names> for the parts you changed, or -PmilestoneTests') {
+		if (!clientTestsAllowed) println "${t.path} skipped: client game tests are milestone tests (pass -PclientTests=<names> or -PmilestoneTests)"
+		clientTestsAllowed
+	}
 	// Disk: client tests create a new world per run in saves/; start from none.
 	def clientSaves = file('build/run/clientGameTest/saves')
 	t.doFirst { clientSaves.deleteDir() }

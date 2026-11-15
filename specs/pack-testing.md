@@ -7,7 +7,7 @@ PackTest functions and `tools/packload.py` show that a datapack loads and that i
 ```
 export JAVA_HOME=/opt/jdk25
 ./gradlew :packcheck:build                # server game tests (recipes, pack enabled)
-timeout 540 xvfb-run -a -s "-screen 0 1280x720x24 +extension GLX +render -noreset" ./gradlew :packcheck:runClientGameTest
+timeout 540 xvfb-run -a -s "-screen 0 1280x720x24 +extension GLX +render -noreset" ./gradlew :packcheck:runClientGameTest -PmilestoneTests   # client tests are milestone (specs/quality.md)
                                           # screenshots in mods/packcheck/build/run/clientGameTest/screenshots/
 ```
 

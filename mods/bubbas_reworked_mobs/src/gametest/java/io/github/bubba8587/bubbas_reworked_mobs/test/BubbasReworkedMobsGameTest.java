@@ -122,7 +122,7 @@ public class BubbasReworkedMobsGameTest {
 
 	// --- placing ----------------------------------------------------------------------------------
 
-	@GameTest
+	// Core test: registered by ReworkedMobsCoreGameTest (test-lite, specs/quality.md).
 	public void placedSleeperItemKeepsGearPoseAndFacesPlacer(GameTestHelper helper) {
 		helper.setBlock(SLEEPER.below(), Blocks.STONE);
 		ServerPlayer player = helper.makeMockServerPlayerInLevel();
@@ -147,7 +147,7 @@ public class BubbasReworkedMobsGameTest {
 
 	// --- hearing ----------------------------------------------------------------------------------
 
-	@GameTest(environment = "bubbas_reworked_mobs-test:hearing_walk", maxTicks = 100)
+	// Core test: registered by ReworkedMobsCoreGameTest (test-lite, specs/quality.md).
 	public void walkingNearbyWakesSleeper(GameTestHelper helper) {
 		floor(helper);
 		ServerPlayer player = standingPlayer(helper, new BlockPos(4, 1, 1), false);
@@ -249,7 +249,7 @@ public class BubbasReworkedMobsGameTest {
 
 	// --- waking -----------------------------------------------------------------------------------
 
-	@GameTest(maxTicks = 40)
+	// Core test: registered by ReworkedMobsCoreGameTest (test-lite, specs/quality.md).
 	public void wakeSpawnsTunedMobWithGearFacingTheSource(GameTestHelper helper) {
 		SleeperBlockEntity sleeper = placeSleeper(helper, UndeadVariant.SKELETON, SLEEPER, SleeperPose.SITTING, 0.0F);
 		giveGear(sleeper, fullGear());
@@ -359,7 +359,7 @@ public class BubbasReworkedMobsGameTest {
 
 	// --- mining -----------------------------------------------------------------------------------
 
-	@GameTest
+	// Core test: registered by ReworkedMobsCoreGameTest (test-lite, specs/quality.md).
 	public void miningWithSilkTouchPickaxeGivesSleeperItemAndDropsGear(GameTestHelper helper) {
 		SleeperBlockEntity sleeper = placeSleeper(helper, UndeadVariant.ZOMBIE, SLEEPER, SleeperPose.LYING, 0.0F);
 		giveGear(sleeper, fullGear());

@@ -19,7 +19,7 @@ import net.fabricmc.loader.api.FabricLoader;
  * installed (no datapack in the world), every recipe file of the pack is loaded.
  */
 public class BundledPacksGameTest {
-	@GameTest
+	// Core test: registered by CraftingTweaksCoreGameTest (test-lite, specs/quality.md).
 	public void bundledDatapackIsEnabledAndItsRecipesExist(GameTestHelper helper) throws IOException {
 		var selected = helper.getLevel().getServer().getPackRepository().getSelectedIds();
 		helper.assertTrue(selected.contains(BubbasCraftingTweaks.DATAPACK_ID.toString()), "bundled datapack not enabled; selected: " + selected);

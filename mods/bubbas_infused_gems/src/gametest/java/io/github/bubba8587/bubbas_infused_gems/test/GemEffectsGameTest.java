@@ -76,7 +76,7 @@ public class GemEffectsGameTest {
 		});
 	}
 
-	@GameTest
+	// Core test: registered by InfusedGemsCoreGameTest (test-lite, specs/quality.md).
 	public void wornEffectsMatchTheJson(GameTestHelper helper) {
 		Balance b = Balance.get();
 		// One mixed gem per piece of full iron: 4 gems of each effect, so every total is the same known number.
@@ -109,7 +109,7 @@ public class GemEffectsGameTest {
 		});
 	}
 
-	@GameTest
+	// Core test: registered by InfusedGemsCoreGameTest (test-lite, specs/quality.md).
 	public void meleeWeaponGemsHitTheTarget(GameTestHelper helper) {
 		Balance b = Balance.get();
 		Zombie attacker = helper.spawnWithNoFreeWill(EntityTypes.ZOMBIE, new BlockPos(1, 1, 1));

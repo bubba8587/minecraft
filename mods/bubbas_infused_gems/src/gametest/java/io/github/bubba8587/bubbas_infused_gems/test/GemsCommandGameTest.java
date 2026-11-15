@@ -20,7 +20,7 @@ import net.fabricmc.fabric.api.gametest.v1.GameTest;
  * and says what each hit of the held weapon applies; the command is registered for everyone.
  */
 public class GemsCommandGameTest {
-	@GameTest
+	// Core test: registered by InfusedGemsCoreGameTest (test-lite, specs/quality.md).
 	public void gemsCommandListsCombinedEffects(GameTestHelper helper) {
 		ServerPlayer player = helper.makeMockServerPlayerInLevel();
 		player.setItemSlot(EquipmentSlot.HEAD, GemKit.socketed(Items.NETHERITE_HELMET, GemKit.gem("speed", 1.0), GemKit.gem("speed", 1.0, null, 0, "hunger")));

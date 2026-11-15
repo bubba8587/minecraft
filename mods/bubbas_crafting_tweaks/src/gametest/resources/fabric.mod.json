@@ -6,6 +6,9 @@
 	"environment": "*",
 	"entrypoints": {
 		"fabric-gametest": [
+			"io.github.bubba8587.bubbas_crafting_tweaks.test.CraftingTweaksCoreGameTest"
+		],
+		"bubba-milestone-gametest": [
 			"io.github.bubba8587.bubbas_crafting_tweaks.test.BundledPacksGameTest",
 			"io.github.bubba8587.bubbas_crafting_tweaks.test.GliderGameTest",
 			"io.github.bubba8587.bubbas_crafting_tweaks.test.SyntheticOreGameTest"

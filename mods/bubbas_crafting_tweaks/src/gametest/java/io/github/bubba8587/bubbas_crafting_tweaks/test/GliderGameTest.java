@@ -60,7 +60,7 @@ public class GliderGameTest {
 		helper.succeed();
 	}
 
-	@GameTest
+	// Core test: registered by CraftingTweaksCoreGameTest (test-lite, specs/quality.md).
 	public void gliderRecipeCraftsOneGlider(GameTestHelper helper) {
 		var key = ResourceKey.create(Registries.RECIPE, BubbasCraftingTweaks.id("glider"));
 		RecipeHolder<?> holder = helper.getLevel().recipeAccess().byKey(key).orElse(null);
@@ -106,7 +106,7 @@ public class GliderGameTest {
 		return Math.abs(Math.toDegrees(Math.atan2(Math.sin(a), Math.cos(a))));
 	}
 
-	@GameTest
+	// Core test: registered by CraftingTweaksCoreGameTest (test-lite, specs/quality.md).
 	public void gliderTurnsSlowerThanElytra(GameTestHelper helper) throws ReflectiveOperationException {
 		// Flying east at 1 block/tick, looking north (yaw 180) and level: both turn toward north over 20 ticks.
 		Vec3 start = new Vec3(1.0, 0.0, 0.0);

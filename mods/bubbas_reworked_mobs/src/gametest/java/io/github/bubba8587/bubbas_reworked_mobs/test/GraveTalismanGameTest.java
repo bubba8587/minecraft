@@ -43,7 +43,7 @@ public class GraveTalismanGameTest {
 	 * Runs UP blocks above the test, where no other test's undead can be in range (tests sit a few blocks apart, and
 	 * blocks from finished tests stay in the world; at ground level this failed now and then). Cleans up after itself.
 	 */
-	@GameTest(environment = "bubbas_reworked_mobs-test:talisman", structure = LANE, maxTicks = 40)
+	// Core test: registered by ReworkedMobsCoreGameTest (test-lite, specs/quality.md).
 	public void sensesSleepersAndUndead(GameTestHelper helper) {
 		Vec3 holder = helper.absoluteVec(new Vec3(1.5, UP + 2.6, 2.5)); // eye height over (1, UP + 1, 2)
 		check(helper, GraveTalisman.glowAt(helper.getLevel(), holder), GraveTalisman.OFF, "nothing near");

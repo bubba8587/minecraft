@@ -61,9 +61,11 @@ Minecraft renames things every release and memory from older versions is wrong m
 
 ```
 export JAVA_HOME=/opt/jdk25                      # Java 25 is required for 26.x
-./gradlew :<mod>:build                           # compile + server game tests
-./gradlew :<mod>:runClientGameTest               # client game tests (see container notes)
-./gradlew build                                  # every mod
+./gradlew :<mod>:build                           # compile + core server game tests (the default loop)
+./gradlew :<mod>:build -PmilestoneTests          # + every milestone server game test (full server suite)
+./gradlew :<mod>:runClientGameTest -PclientTests=<names>  # only the client test parts you changed (see container notes)
+./gradlew :<mod>:build :<mod>:runClientGameTest -PmilestoneTests  # full: release milestone (all server + client tests)
+./gradlew build                                  # every mod, core suites
 ./gradlew :packcheck:build                       # datapack recipe/content game tests
 python3 tools/pack.py check|build [name]         # static checks / zip packs into build/packs/
 python3 tools/texcheck.py [project]              # every 16x texture has a 32x twin (B16)
@@ -71,7 +73,7 @@ python3 tools/packload.py [name]                 # load datapacks on the vanilla
 python3 tools/packtest.py [name]                 # run PackTest tests on a Fabric server (owner approved)
 pwsh tools/install-to-modrinth.ps1               # owner's Windows PC: build + install into Modrinth profile "mod testing"
 python tools/build-testworld.py                  # rebuild the pristine test world
-./gradlew :testworldshots:runClientGameTest     # screenshot every test world station, all mods loaded (~50 s)
+./gradlew :testworldshots:runClientGameTest -PmilestoneTests  # screenshot every test world station, all mods (~70 s)
 pwsh tools/add-modrinth-mod.ps1 <slug>           # owner's PC: add an outside Modrinth mod (+ required deps) to "mod testing" only
 ```
 
@@ -90,17 +92,20 @@ The repo always targets the latest non-snapshot release and moves promptly when 
 
 Agents do all building and testing here; the owner never touches it. So keeping the suite and harness fast is the agent's job, **without being asked**: always be looking for ways to speed up development (building, testing, tooling), measure, fix, and record what changed.
 
-- Build and test only what you touched: `./gradlew :<mod>:build`, not `./gradlew build`. Run client game tests only when something visible changed, and only the ones you need: `-PclientTests=talisman,gait` (names in each mod's `ClientTests` helper; Reworked Mobs: sleepers, displays, gait, talisman).
-- Configuration cache is on, and server game tests skip themselves when a mod's code and resources match the last passing run (`gradle/fabric-mod.gradle`). `-PrerunGametests` forces them. Don't undo either without measuring.
+- **Test-lite (owner's standing instruction, `specs/quality.md` "Test suites").** Each mod has a small **core** server game test suite (`<Mod>CoreGameTest`, a smoke test per main mechanic) that runs on every build and push; every other test is **milestone**: run only with `-PmilestoneTests`, on release tags and manual CI runs. Client game tests and the test world tour are milestone too (`runClientGameTest` skips itself without `-PclientTests` or `-PmilestoneTests`). For work you're confident in, write the test objective in the spec's "Milestone test objectives" section instead of a test; milestone test code is optional until a release.
+- Build and test only what you touched: `./gradlew :<mod>:build`, not `./gradlew build`. Run client game tests only when something visible changed, and only the parts you need: `-PclientTests=talisman,gait` (names in each mod's `ClientTests` helper; Reworked Mobs: sleepers, displays, gait, talisman).
+- Configuration cache is on, and server game tests skip themselves when a mod's code and resources match the last passing run of that suite (a full pass covers core; a core pass never counts as a full one) (`gradle/fabric-mod.gradle`). `-PrerunGametests` forces them. Don't undo either without measuring.
 - When a step feels slow, time it, find the cause, fix it, and update the timings table in `specs/quality.md`. Mention speedups (and slowdowns) to the owner in a line.
 - Slow things worth attacking next are listed in `specs/quality.md` under Speed.
 - **Don't fill the owner's disk (owner's instruction).** Every run starts clean: screenshot folders are wiped per run, and `gradle/fabric-mod.gradle` deletes the game test worlds (`build/run/gameTest/world`, client `saves/`) before each run, since they otherwise grow every run. Delete your own copies of screenshots once you've looked at them, and never leave per-run output (worlds, logs, copies) accumulating anywhere.
 
 ## Quality bar (`specs/quality.md`)
 
-Every mod has server game tests for its main behavior.
+Every mod has server game tests for its main behavior: a core suite that runs on every build, and a milestone suite plus client tests run at release milestones (test-lite, `specs/quality.md` "Test suites"). Each mod's spec lists its milestone test objectives, one line per milestone class.
 
-**Check yourself visually as you go (owner's instruction).** Every time something visible is added or changed (blocks, models, poses, mobs, items and icons, GUI, HUD, particles, textures at both 16x and 32x), add or update a client game test screenshot of it and look at the PNG (Read tool) before moving on, not just at the end. Use more than one angle when it matters, get close enough to see details, and fix what looks wrong (floating, clipping, wrong facing, missing or purple-black textures, offsets) before continuing. Subagents get the same instruction and list their screenshots in their report; the orchestrator looks at them too before telling the owner something works. Every datapack has PackTest test functions (misode's PackTest, see `docs/knowledge/datapacks.md`) covering its behavior, loads clean with `tools/packload.py`, and passes `tools/packtest.py` in CI. A bug fix ships with the test that would have caught it.
+**Release milestone:** before tagging `<project>/v<version>`, run everything for that project (`./gradlew :<mod>:build :<mod>:runClientGameTest -PmilestoneTests`, the test world tour if the release changes what it shows, and the pack checks), write tests for objectives the release depends on that have none yet, and fix whatever fails before tagging. CI runs the full suite again on the tag.
+
+**Check yourself visually as you go (owner's instruction).** Every time something visible is added or changed (blocks, models, poses, mobs, items and icons, GUI, HUD, particles, textures at both 16x and 32x), add or update a client game test screenshot of it and look at the PNG (Read tool) before moving on, not just at the end. Use more than one angle when it matters, get close enough to see details, and fix what looks wrong (floating, clipping, wrong facing, missing or purple-black textures, offsets) before continuing. Subagents get the same instruction and list their screenshots in their report; the orchestrator looks at them too before telling the owner something works. Every datapack has PackTest test functions (misode's PackTest, see `docs/knowledge/datapacks.md`) covering its behavior, loads clean with `tools/packload.py`, and passes `tools/packtest.py` in CI. A bug fix ships with a milestone test that would have caught it, or at least a written objective for one in the spec. The visual check above stays on every visible change, scoped to the client test parts that changed (`-PclientTests=<names>`).
 
 ## Releasing (B14 modrinthAiCompliant; how: `specs/releasing.md`)
 

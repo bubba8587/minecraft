@@ -125,7 +125,7 @@ public class LootGameTest {
 	}
 
 	/** Every listed vanilla table still rolls its own loot and now sometimes adds a gem, at about the model's chance. */
-	@GameTest(maxTicks = 400)
+	// Core test: registered by InfusedGemsCoreGameTest (test-lite, specs/quality.md).
 	public void everyListedTableSometimesHoldsGems(GameTestHelper helper) {
 		ServerPlayer player = helper.makeMockServerPlayerInLevel();
 		Map<String, Double> chance = new HashMap<>();

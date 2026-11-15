@@ -52,7 +52,7 @@ public class SocketingGameTest {
 		return menu.getSlot(3).getItem().copy();
 	}
 
-	@GameTest
+	// Core test: registered by InfusedGemsCoreGameTest (test-lite, specs/quality.md).
 	public void smithingTableSocketsUpToTheLimit(GameTestHelper helper) {
 		ServerPlayer player = helper.makeMockServerPlayerInLevel();
 		SmithingMenu menu = smithing(helper, player);

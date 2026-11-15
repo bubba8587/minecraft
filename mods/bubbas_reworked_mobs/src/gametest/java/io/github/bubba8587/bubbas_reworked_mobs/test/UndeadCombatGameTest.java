@@ -174,7 +174,7 @@ public class UndeadCombatGameTest {
 		});
 	}
 
-	@GameTest(maxTicks = 40)
+	// Core test: registered by ReworkedMobsCoreGameTest (test-lite, specs/quality.md).
 	public void zombieHeadshotsHurtMore(GameTestHelper helper) {
 		Mob head = target(helper, ModEntities.woken(UndeadVariant.ZOMBIE), new BlockPos(4, 1, 2));
 		Mob body = target(helper, ModEntities.woken(UndeadVariant.ZOMBIE), new BlockPos(4, 1, 5));

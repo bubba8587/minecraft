@@ -141,7 +141,7 @@ public class EnchantingGameTest {
 		helper.succeed();
 	}
 
-	@GameTest
+	// Core test: registered by InfusedGemsCoreGameTest (test-lite, specs/quality.md).
 	public void enchantingTableMakesAFinishedGem(GameTestHelper helper) {
 		// A table with a full ring of bookshelves (owner: tier 2 needs 8, tier 3 all 15).
 		BlockPos table = new BlockPos(4, 1, 4);

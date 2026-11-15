@@ -30,7 +30,7 @@ import net.fabricmc.fabric.api.gametest.v1.GameTest;
 public class BalanceGameTest {
 	private static final String[] PIECES = {"helmet", "chestplate", "leggings", "boots"};
 
-	@GameTest
+	// Core test: registered by InfusedGemsCoreGameTest (test-lite, specs/quality.md).
 	public void balanceJsonLoadsWithKnownValues(GameTestHelper helper) {
 		Balance b = Balance.get();
 		close(b.cap, 0.90, 1e-9, helper, "cap (owner, question 1)");

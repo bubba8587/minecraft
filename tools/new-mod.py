@@ -105,18 +105,23 @@ public class {cls}Client implements ClientModInitializer {{
     tpkg = f"{pkg}.test"
     tfmj = {"schemaVersion": 1, "id": f"{modid}-test", "version": "1.0.0", "name": f"{name} Tests",
             "environment": "*", "entrypoints": {
-                "fabric-gametest": [f"{tpkg}.{cls}GameTest"],
+                # Test-lite (specs/quality.md, "Test suites"): core smoke tests run every build; milestone test
+                # classes go in "bubba-milestone-gametest", run only with -PmilestoneTests.
+                "fabric-gametest": [f"{tpkg}.{cls}CoreGameTest"],
+                "bubba-milestone-gametest": [],
                 "fabric-client-gametest": [f"{tpkg}.{cls}ClientGameTest"]}}
     write(d / "src/gametest/resources/fabric.mod.json", json.dumps(tfmj, indent="\t") + "\n")
-    write(d / f"src/gametest/java/{pdir}/test/{cls}GameTest.java", f"""package {tpkg};
+    write(d / f"src/gametest/java/{pdir}/test/{cls}CoreGameTest.java", f"""package {tpkg};
 
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.level.block.Blocks;
 
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 
-// Server game tests: run by ./gradlew :{modid}:build. Replace this with tests of the mod's behavior.
-public class {cls}GameTest {{
+// Core server game tests (test-lite, specs/quality.md "Test suites"): run by ./gradlew :{modid}:build. Keep this
+// to a small smoke set, one test per main mechanic; everything else goes in milestone classes listed under
+// "bubba-milestone-gametest" in fabric.mod.json, with one-line objectives in the mod's spec.
+public class {cls}CoreGameTest {{
 	@GameTest
 	public void worldWorks(GameTestHelper helper) {{
 		helper.setBlock(1, 1, 1, Blocks.STONE);
