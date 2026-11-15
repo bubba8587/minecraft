@@ -56,3 +56,7 @@ execute if data block 45 -60 6 Items[{id:"minecraft:netherite_chestplate"}]
 execute if entity @e[type=minecraft:pig,x=35.5,y=-60,z=11.5,distance=..1]
 execute if data block 37 -60 6 Items[{id:"minecraft:netherite_chestplate",components:{"bubbas_infused_gems:socketed_gems":[{effect:"minecraft:speed"}]}}]
 execute if data block 38 -60 6 Items[{id:"bubbas_infused_gems:gem"}]
+execute if block 40 -58 8 minecraft:bookshelf
+execute if block 40 -59 8 minecraft:air
+execute if data block 45 -60 9 Items[{id:"minecraft:diamond_chestplate"}]
+execute if data block 45 -60 13 Items[{id:"minecraft:mace"}]
