@@ -69,22 +69,22 @@ public record Gem(Holder<MobEffect> effect, int infusion, int tier, float main, 
 	public void lines(Consumer<Component> out, String indent) {
 		if (this.hasMain()) {
 			out.accept(Component.literal(indent).append(GemText.effectName(this.effect)).append(" " + GemText.percent(this.main))
-					.withColor(this.effect.value().getColor()));
+					.withColor(GemColors.text(this.effect.value().getColor())));
 		}
 		this.other.ifPresent(r -> out.accept(Component.literal(indent + "+ ").append(GemText.effectName(r.effect()))
-				.append(" " + GemText.percent(r.strength())).withColor(r.effect().value().getColor())));
+				.append(" " + GemText.percent(r.strength())).withColor(GemColors.text(r.effect().value().getColor()))));
 		this.drawback.ifPresent(r -> out.accept(Component.literal(indent).append(
 				Component.translatable(GemText.KEY + "tooltip.drawback", GemText.effectName(r.effect()))).withStyle(ChatFormatting.RED)));
 	}
 
 	/** A one-line summary for the socketed item's tooltip. */
 	public MutableComponent summary() {
-		MutableComponent line = Component.literal("◆ ").withColor(this.effect.value().getColor());
+		MutableComponent line = Component.literal("◆ ").withColor(GemColors.text(this.effect.value().getColor()));
 		if (this.hasMain()) {
 			line.append(GemText.effectName(this.effect).append(" " + GemText.percent(this.main)));
 		}
 		this.other.ifPresent(r -> line.append(Component.literal(", + ").append(GemText.effectName(r.effect()))
-				.append(" " + GemText.percent(r.strength())).withColor(r.effect().value().getColor())));
+				.append(" " + GemText.percent(r.strength())).withColor(GemColors.text(r.effect().value().getColor()))));
 		// A drawback-only gem (owner: no special name) shows just its drawback.
 		this.drawback.ifPresent(r -> line.append(Component.literal(this.hasMain() || this.other.isPresent() ? ", " : "").append(
 				Component.translatable(GemText.KEY + "tooltip.drawback", GemText.effectName(r.effect()))).withStyle(ChatFormatting.RED)));

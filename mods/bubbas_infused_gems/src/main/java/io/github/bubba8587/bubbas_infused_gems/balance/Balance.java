@@ -54,6 +54,9 @@ public final class Balance {
 	public final List<String> gemEffects;
 	/** Open-question defaults the owner may change (balance.json "rules"). */
 	public final boolean strongerApplies;
+	/** Gem inversion (owner): the reagent, and the weakest potion variant factor (to read a gem's grade back). */
+	public final String inversionReagent;
+	public final double variantMin;
 	public final boolean undeadInversion;
 
 	/** The raw file, for tests that compare against the model's own example builds. */
@@ -82,7 +85,7 @@ public final class Balance {
 
 	public record EffectData(String key, String name, boolean good, String role, String hitKind, double levelOne,
 			Map<String, Variant> variants, String source, int hitTicks, int hitAmplifier, List<String> otherPool,
-			int hitFloorTicks, double hitFloorHealHp, double hitFloorExhaustion, List<String> drawbackPool, List<Double> drawbackWeights, List<Attr> wornAttributes, JsonObject worn, double hitUnit, List<String> opposites,
+			int hitFloorTicks, double hitFloorHealHp, double hitFloorExhaustion, List<String> drawbackPool, List<Double> drawbackWeights, List<Double> otherWeights, List<Attr> wornAttributes, JsonObject worn, double hitUnit, List<String> opposites,
 			int wornAmplifier, String id, Map<String, Double> parts, int color) {
 		public boolean wornFlag(String name) {
 			return this.worn != null && this.worn.has(name) && this.worn.get(name).getAsBoolean();
@@ -141,6 +144,8 @@ public final class Balance {
 		this.gemEffects = this.effects.values().stream().filter(e -> !e.role().equals("negative")).map(EffectData::key).toList();
 		JsonObject rules = o.getAsJsonObject("rules");
 		this.strongerApplies = rules.get("gem_vs_potion").getAsString().equals("stronger");
+		this.inversionReagent = o.getAsJsonObject("inversion").get("reagent").getAsString();
+		this.variantMin = o.getAsJsonObject("inversion").get("variant_min").getAsDouble();
 		this.undeadInversion = rules.get("undead_inversion").getAsBoolean();
 
 	}
@@ -173,7 +178,7 @@ public final class Balance {
 				hit == null ? 0 : hit.get("ticks").getAsInt(), hit == null ? 0 : hit.get("amplifier").getAsInt(),
 				list(e, "other_pool"), hit == null ? 0 : hit.get("floor_ticks").getAsInt(),
 				hit == null ? 0.0 : hit.get("floor_heal_hp").getAsDouble(), hit == null ? 0.0 : hit.get("floor_exhaustion").getAsDouble(),
-				list(e, "drawback_pool"), doubles(e, "drawback_weights"), List.copyOf(attrs), worn,
+				list(e, "drawback_pool"), doubles(e, "drawback_weights"), doubles(e, "other_weights"), List.copyOf(attrs), worn,
 				e.has("hit_unit") ? e.get("hit_unit").getAsDouble() : 1.0, list(e, "opposites"),
 				e.has("worn_amplifier") ? e.get("worn_amplifier").getAsInt() : 0,
 				e.has("id") ? e.get("id").getAsString() : "minecraft:" + key, Map.copyOf(parts), e.has("color") ? e.get("color").getAsInt() : 0);

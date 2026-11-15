@@ -150,7 +150,18 @@ public class EnchantingGameTest {
 		check(helper, player.experienceLevel == 28, "levels paid: " + player.experienceLevel);
 		menu.removed(player);
 		// An item-sourced Infused Gem (owner, 2026-11-15) reaches tier 3 like a lingering potion's, through the real table.
-		EnchantmentMenu menu2 = new EnchantmentMenu(2, player.getInventory(), ContainerLevelAccess.create(helper.getLevel(), helper.absolutePos(table)));
+		// A second table with a full ring of bookshelves, so tier 3 has a cost whatever the seed.
+		BlockPos table2 = new BlockPos(4, 1, 4);
+		helper.setBlock(table2, Blocks.ENCHANTING_TABLE);
+		for (int dx = -2; dx <= 2; dx++) {
+			for (int dz = -2; dz <= 2; dz++) {
+				if (Math.max(Math.abs(dx), Math.abs(dz)) == 2) {
+					helper.setBlock(table2.offset(dx, 0, dz), Blocks.BOOKSHELF);
+					helper.setBlock(table2.offset(dx, 1, dz), Blocks.BOOKSHELF);
+				}
+			}
+		}
+		EnchantmentMenu menu2 = new EnchantmentMenu(2, player.getInventory(), ContainerLevelAccess.create(helper.getLevel(), helper.absolutePos(table2)));
 		player.setExperienceLevels(30);
 		ItemStack apple = GemKit.infused("absorption", "strong", GemForm.ITEM, 6);
 		check(helper, apple.getHoverName().getString().equals("Infused Gem: Infusion VI, Absorption"), "item gem name " + apple.getHoverName().getString());

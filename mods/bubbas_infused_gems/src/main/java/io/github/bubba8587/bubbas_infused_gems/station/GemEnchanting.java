@@ -53,7 +53,7 @@ public final class GemEnchanting {
 		float main = outcome.main() == null ? 0.0F : (float) (infused.baseQuality() * b.grades.get(outcome.main()));
 		Optional<Gem.Roll> other = Optional.empty();
 		if (outcome.other() != null && e != null && !e.otherPool().isEmpty()) {
-			String key = e.otherPool().get(random.nextInt(e.otherPool().size()));
+			String key = weighted(random, e.otherPool(), e.otherWeights());
 			other = Optional.of(new Gem.Roll(GemText.holder(key), (float) (infusion * b.grades.get(outcome.other()))));
 		}
 		Optional<Gem.Roll> drawback = Optional.empty();

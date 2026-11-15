@@ -21,10 +21,6 @@ import org.jspecify.annotations.Nullable;
 public record GemColorSource() implements ItemTintSource {
 	public static final MapCodec<GemColorSource> MAP_CODEC = MapCodec.unit(GemColorSource::new);
 	private static final int DEFAULT = 0xFFB0A0D0;
-	/** How far saturation and brightness move toward 1 (0 = the plain potion color). */
-	static final float SATURATE = 0.55F;
-	static final float BRIGHTEN = 0.35F;
-
 	@Override
 	public int calculate(ItemStack stack, @Nullable ClientLevel level, @Nullable LivingEntity owner) {
 		Gem gem = stack.get(ModComponents.GEM);
@@ -35,12 +31,8 @@ public record GemColorSource() implements ItemTintSource {
 		return infused != null ? jewel(infused.effect().value().getColor()) : DEFAULT;
 	}
 
-	/** The potion color with more saturation and brightness, same hue. Grays (no hue) only get brighter. */
 	static int jewel(int rgb) {
-		float[] hsb = java.awt.Color.RGBtoHSB(ARGB.red(rgb), ARGB.green(rgb), ARGB.blue(rgb), null);
-		float s = hsb[1] < 0.08F ? hsb[1] : hsb[1] + (1 - hsb[1]) * SATURATE;
-		float b = hsb[2] + (1 - hsb[2]) * BRIGHTEN;
-		return ARGB.opaque(java.awt.Color.HSBtoRGB(hsb[0], s, b));
+		return io.github.bubba8587.bubbas_infused_gems.gem.GemColors.jewel(rgb);
 	}
 
 	@Override

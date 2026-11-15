@@ -773,7 +773,37 @@ HARMFUL_DRAWBACKS = ["slowness", "weakness", "mining_fatigue", "hunger", "unluck
 # combinations happen. Only Healing is left out: it is instant and has no mild timed form to land for a few seconds.
 BENEFICIAL_DRAWBACKS = [k for k in GOOD_GEMS if E[k].get("kind") not in ("instant", "action")]
 # Drawback roll weights (default 1): poison and wither roll, but half as often as the others (owner, Q8).
-DRAWBACK_WEIGHTS = {"poison": 0.5, "wither": 0.5}
+# Roll weights by how hard an effect is to get (owner, 2026-11-15): both the bonus ("other") and the drawback pool. Easy
+# to brew: common; harder (a rare ingredient, the End, the deep ocean, trial chambers): uncommon; found only: rare. Poison
+# and Wither stay less common as drawbacks (uncommon).
+RARITY_WEIGHT = {"common": 4, "uncommon": 2, "rare": 1}
+RARITY_UNCOMMON = {"regeneration", "turtle_master", "slow_falling", "poison", "wither", "conduit_power", "dolphins_grace",
+	"silence", "breeze", "ender", "levitation", "darkness", "wind_charged", "weaving", "oozing", "infested"}
+
+def rarity(k):
+	if k in DRAWBACK_ONLY:
+		return "common"
+	if E[k]["source"][0] == "found":
+		return "rare"
+	return "uncommon" if k in RARITY_UNCOMMON else "common"
+
+def roll_weight(k):
+	return RARITY_WEIGHT[rarity(k)]
+
+# Gem inversion (owner, 2026-11-15): a finished gem with a drawback + a fermented spider eye at the brewing stand swaps
+# main and drawback. Nerfs every time: the new main is one grade lower than the old (a weak one can't invert) and the gem
+# loses an Infusion level (Infusion I can't invert). The bonus stays as it is. Inverting back is allowed.
+INVERSION_REAGENT = "minecraft:fermented_spider_eye"
+
+def invert_quality(main, grade, base):
+	"""The new main's strength after inverting a gem whose main is `main` at `grade` on `base`: one grade and one Infusion lower."""
+	order = ["weak", "medium", "strongest"]
+	names = [b for b, _, _, _ in BASE_GEMS]
+	if grade == "weak" or base == names[0]:
+		return None
+	g_new = order[order.index(grade) - 1]
+	b_new = names[names.index(base) - 1]
+	return main * GRADES[g_new] / GRADES[grade] * BASE[b_new] / BASE[base]
 NEVER_DRAWBACK = {
 	"instant_damage": "instant, no mild form", "instant_health": "instant, no mild form",
 	"blindness": "ruins the screen, not just the gem", "darkness": "ruins the screen, not just the gem",
@@ -1183,7 +1213,7 @@ def run_checks():
 	for k in NEVER_DRAWBACK:
 		if k in HARMFUL_DRAWBACKS + BENEFICIAL_DRAWBACKS:
 			errors.append(f"{k} must never be a drawback ({NEVER_DRAWBACK[k]})")
-	notes.append(f"drawbacks: one is {DRAWBACK_ONE:.0%} of the strongest vanilla level, any number of one effect stays under {DRAWBACK_CAP:.0%}, below vanilla's level I for every drawback effect; Poison and Wither roll at half weight (owner); Healing, Harming and the rest of the never-drawback list never roll")
+	notes.append(f"drawbacks: one is {DRAWBACK_ONE:.0%} of the strongest vanilla level, any number of one effect stays under {DRAWBACK_CAP:.0%}, below vanilla's level I for every drawback effect; Poison and Wither roll less often (uncommon weight, owner); Healing, Harming and the rest of the never-drawback list never roll")
 
 	# 9b. Rolls (owner): one table per gem; other = same kind, never itself; drawback = the other kind, never its direct opposite.
 	for a, b, _ in INVERSE_PAIRS:
@@ -1217,6 +1247,25 @@ def run_checks():
 	for k, o, d in EXAMPLES:
 		if o not in other_pool(k) or d not in drawback_pool(k):
 			errors.append(f"example {k}: {o} / {d} not in its roll tables")
+	# 9c. Inversion (owner): never a perfect gem; the grade can be read back from a gem's strength and Infusion level.
+	best_inverted = 0.0
+	for k in GEM_EFFECTS:
+		for v, vf in variant_factors(E[k]["variants"]).items():
+			for b in BASE:
+				for g in GRADES:
+					q = gem_quality(k, v, b, g)
+					read = [gg for gg in GRADES if min(variant_factors(E[k]["variants"]).values()) - 1e-9 <= q / BASE[b] / GRADES[gg] <= 1 + 1e-9]
+					if read and max(read, key=GRADES.get) != g:
+						errors.append(f"{k}: a {g} gem's grade reads back as {max(read, key=GRADES.get)}")
+					n = invert_quality(q, g, b)
+					if n is not None:
+						best_inverted = max(best_inverted, n)
+	if not best_inverted < 1.0:
+		errors.append("an inverted gem can be perfect")
+	for k in GEM_EFFECTS:
+		if roll_weight(k) <= 0:
+			errors.append(f"{k}: no roll weight")
+	notes.append(f"inversion: the strongest inverted gem is {best_inverted:.2f} (never perfect); each gem's grade reads back from its strength; roll weights by rarity {RARITY_WEIGHT}")
 	notes.append(f"rolls: each of the {len(GEM_EFFECTS)} gems has one roll table; 'other' pools {min(a for a, _ in sizes.values())}-{max(a for a, _ in sizes.values())} effects, all the main effect's kind and never itself; "
 		f"drawback pools {min(b for _, b in sizes.values())}-{max(b for _, b in sizes.values())} effects, all the opposite kind, none on the never-drawback list, and none a direct opposite ({len(INVERSE_PAIRS)} inverse pairs, the owner's 12 included)")
 
@@ -1499,7 +1548,7 @@ def document(notes):
 		"Answered (owner, 2026-11-14): a combined Turtle Master gem, brewed from Turtle Master potions, gives its Resistance and its full Slowness together, measured against the strong potion (Resistance IV + Slowness VI).",
 		f"Healing gem in armor returns at most {HEAL_BEST:.0%} of each survivable hit (early iron kit about {heal_fraction(build_value('instant_health', BUILDS[1])) * 100:.0f}%)? yes / no.",
 		f"Answered (owner, 2026-11-14): drawbacks stay {DRAWBACK_ONE:.0%} for one, under {DRAWBACK_CAP:.0%} for many, for now; tuned by playtesting.",
-		"Answered (owner, 2026-11-14): Poison and Wither do roll as a beneficial gem's drawback, at half the weight of the others (gem Poison still never kills).",
+		"Answered (owner, 2026-11-14): Poison and Wither do roll as a beneficial gem's drawback, less often than the common ones (rarity weights, 2026-11-15; gem Poison still never kills).",
 		"Answered (owner, 2026-11-14): a harmful gem's drawback rolls from every beneficial effect that works as a short effect on a target (all but Healing), minus the direct opposite: random, real combinations.",
 		"Answered (owner, 2026-11-14): Conduit Power and Mining Fatigue are direct opposites.",
 		"Answered (owner, 2026-11-14): Jump Boost, Resistance, Health Boost, Absorption, Fire Resistance, Water Breathing and Dolphin's Grace have no direct opposite.",
@@ -1718,7 +1767,9 @@ def export_data():
 				"floor_exhaustion": HIT_FLOOR_EXHAUSTION.get(k, 0.0)}
 			d["other_pool"] = [] if k in OTHER_EXCLUDED else other_pool(k)
 			d["drawback_pool"] = drawback_pool(k)
-			d["drawback_weights"] = [DRAWBACK_WEIGHTS.get(x, 1.0) for x in drawback_pool(k)]
+			d["drawback_weights"] = [roll_weight(x) for x in drawback_pool(k)]
+			d["other_weights"] = [roll_weight(x) for x in d["other_pool"]]
+			d["rarity"] = rarity(k)
 		if k in WORN:
 			w = dict(WORN[k])
 			if "attributes" in w:
@@ -1766,6 +1817,8 @@ def export_data():
 		"loot_perfect_clean_chance": PERFECT_CLEAN_CHANCE, "loot_weapon_harmful_share": WEAPON_HARMFUL_SHARE,
 		"effects": effects,
 		"inverse_pairs": [[a, b] for a, b, _ in INVERSE_PAIRS],
+		"inversion": {"reagent": INVERSION_REAGENT, "variant_min": min(min(variant_factors(E[k]["variants"]).values()) for k in GEM_EFFECTS)},
+		"rarity_weight": RARITY_WEIGHT,
 		"rules": RULES,
 		"brewable": sorted(k for k in GEM_EFFECTS if brewable(k)),
 		"checks": {"armor_builds": armor_builds, "weapon_builds": weapon_builds,

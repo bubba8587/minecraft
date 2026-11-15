@@ -153,7 +153,7 @@ public final class ModCommands {
 			MutableComponent name = Component.translatable(GemText.KEY + "command.part", GemText.effectName(key), GemText.effectName(part));
 			MutableComponent l = Component.literal(" ").append(name).append(": " + GemDescribe.part(part, amount, p) + hitSuffix + " ");
 			l.append(Component.translatable(GemText.KEY + "command.of_max", GemText.percent(s / b.cap)).withStyle(ChatFormatting.GRAY));
-			out.add(l.withColor(GemText.holder(key).value().getColor()));
+			out.add(l.withColor(io.github.bubba8587.bubbas_infused_gems.gem.GemColors.text(GemText.holder(key).value().getColor())));
 		});
 	}
 
@@ -161,7 +161,7 @@ public final class ModCommands {
 		MutableComponent line = Component.literal(" ").append(GemText.effectName(key)).append(": " + value + " ");
 		line.append(Component.translatable(GemText.KEY + (drawback ? "command.of_max_drawback" : "command.of_max"), GemText.percent(ofMax))
 				.withStyle(ChatFormatting.GRAY));
-		return drawback ? line.withStyle(ChatFormatting.RED) : line.withColor(GemText.holder(key).value().getColor());
+		return drawback ? line.withStyle(ChatFormatting.RED) : line.withColor(io.github.bubba8587.bubbas_infused_gems.gem.GemColors.text(GemText.holder(key).value().getColor()));
 	}
 
 	private static int show(CommandSourceStack source, ServerPlayer player) throws CommandSyntaxException {

@@ -49,3 +49,19 @@ The plain result is the most common at every tier.
 - A drawback-only gem is named like any other Gem; its tooltip shows only the drawback.
 
 The Gem's tooltip shows each effect with its strength as a percentage of a perfect gem. A perfect gem (100%) requires the strongest potion in lingering form (or the strongest source item), a nether star and tier 3.
+
+## Inverting gems
+
+A finished Gem with a drawback can be **inverted** at a brewing stand: the Gem goes in a bottle slot and a fermented spider eye in the ingredient slot. The drawback becomes the Gem's main effect, and the old main effect becomes its drawback.
+
+Each inversion costs strength: the new main effect is one step weaker than the old one (strongest to medium, medium to weak), and the Gem drops one Infusion level. A bonus effect stays as it is, so after inverting it works against the new main effect, and it is a bonus again if the Gem is inverted back. A Gem can be inverted back, with the same cost again.
+
+The brewing stand does not take a Gem that has no drawback, a Gem whose main effect is already weak, an Infusion I Gem, or a Gem whose drawback is Bad Luck.
+
+| Before | After inverting |
+|---|---|
+| Speed 100%, + Strength 50%, Drawback: Hunger, Infusion VI | Hunger 72%, + Strength 50%, Drawback: Speed, Infusion V |
+
+## Which effects come up
+
+Bonus effects and drawbacks are not all equally likely: effects that are easy to brew come up most often, harder ones (from rare ingredients, the End, the deep ocean or trial chambers, and Poison and Wither as drawbacks) about half as often, and effects that are only found in the world a quarter as often.

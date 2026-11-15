@@ -14,6 +14,7 @@
 		"LivingEntityMixin",
 		"MobMixin",
 		"OwnedSlimeMixin",
+		"PotionIngredientMixin",
 		"ServerLevelMixin",
 		"VillagerMixin"
 	],

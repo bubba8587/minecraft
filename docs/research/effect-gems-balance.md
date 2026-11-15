@@ -586,7 +586,8 @@ Worn (armor) effects are attribute modifiers, data components or small tick and 
 - stacking: 25,000 random armor and weapon stacks never pass 0.9 x their strongest gem; adding a gem never lowers a total; 12 tier-1 armor gems lose to 4 tier-3 in every set, and 2 tier-1 weapon gems lose to 1 tier-3 on every weapon
 - every one of the 39 gems has a worn (armor) and a hit-applied (weapon) form; every worn mapping rises with strength and stays short of the vanilla level at the cap
 - healing: best build returns 25% of each non-lethal hit (never a whole hit, so taking damage is always a net loss); early kit 7.0%; every step down from the best loses at least 0.5 points; the curve is flatter than linear
-- drawbacks: one is 10% of the strongest vanilla level, any number of one effect stays under 20%, below vanilla's level I for every drawback effect; Poison and Wither roll at half weight (owner); Healing, Harming and the rest of the never-drawback list never roll
+- drawbacks: one is 10% of the strongest vanilla level, any number of one effect stays under 20%, below vanilla's level I for every drawback effect; Poison and Wither roll less often (uncommon weight, owner); Healing, Harming and the rest of the never-drawback list never roll
+- inversion: the strongest inverted gem is 0.72 (never perfect); each gem's grade reads back from its strength; roll weights by rarity {'common': 4, 'uncommon': 2, 'rare': 1}
 - rolls: each of the 39 gems has one roll table; 'other' pools 11-24 effects, all the main effect's kind and never itself; drawback pools 5-22 effects, all the opposite kind, none on the never-drawback list, and none a direct opposite (13 inverse pairs, the owner's 12 included)
 - weapons: per hit, potency rises with strength toward the strongest potion's level (never reaching it); a hit lasts at most 8 s (the best weapon), less below it, never under its floor (owner); a real tipped arrow and a gem of the same effect don't add, the stronger level applies
 - loot: 40 vanilla tables get one extra roll (chance 4%-20%); each level's best gem beats the level below; only ominous vaults give perfect gems (any effect, Infusion VI, tier 3), with a drawback except 5% of the time; nowhere else gives a craftable gem Infusion VI; every found-only gem is listed at exactly the levels its source names; every table and item exists in 26.3
@@ -600,7 +601,7 @@ Worn (armor) effects are attribute modifiers, data components or small tick and 
 5. Answered (owner, 2026-11-14): a combined Turtle Master gem, brewed from Turtle Master potions, gives its Resistance and its full Slowness together, measured against the strong potion (Resistance IV + Slowness VI).
 6. Healing gem in armor returns at most 25% of each survivable hit (early iron kit about 7%)? yes / no.
 7. Answered (owner, 2026-11-14): drawbacks stay 10% for one, under 20% for many, for now; tuned by playtesting.
-8. Answered (owner, 2026-11-14): Poison and Wither do roll as a beneficial gem's drawback, at half the weight of the others (gem Poison still never kills).
+8. Answered (owner, 2026-11-14): Poison and Wither do roll as a beneficial gem's drawback, less often than the common ones (rarity weights, 2026-11-15; gem Poison still never kills).
 9. Answered (owner, 2026-11-14): a harmful gem's drawback rolls from every beneficial effect that works as a short effect on a target (all but Healing), minus the direct opposite: random, real combinations.
 10. Answered (owner, 2026-11-14): Conduit Power and Mining Fatigue are direct opposites.
 11. Answered (owner, 2026-11-14): Jump Boost, Resistance, Health Boost, Absorption, Fire Resistance, Water Breathing and Dolphin's Grace have no direct opposite.
