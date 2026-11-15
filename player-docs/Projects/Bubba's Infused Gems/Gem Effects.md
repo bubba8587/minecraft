@@ -52,7 +52,7 @@ Values are for the best build (90%); weaker builds give less.
 | Saturation | Hunger drains more slowly (up to 90% slower) |
 | Conduit Power | In water or rain: air lasts longer, faster mining underwater, clearer sight underwater |
 | Hero of the Village | Cheaper villager trades (up to 20% cheaper; found gems only) |
-| Luck | A little more luck (found gems only) |
+| Luck | A little more luck (mostly found; a Luck potion also brews one) |
 
 Harmful gems in armor affect the wearer:
 
@@ -93,6 +93,6 @@ Swords, axes, spears, maces and tridents apply their gems on every hit, includin
 
 Bows and crossbows with gems turn every arrow they fire into a tipped arrow with the gems' effects. The arrow flies and trails like a tipped arrow, but picked up again it is a plain arrow; an arrow in flight keeps its gems when the world is saved. When a real tipped arrow of the same effect is fired, the stronger effect applies; they do not add up.
 
-## Planned
+## Found gems
 
-Gems found in chests and worn by mobs in the world, and brewing for the effects that are only in the creative inventory so far.
+Found-only gems (Haste, Resistance, Health Boost, Hero of the Village, Mining Fatigue) and most Luck gems come from loot. Mobs that spawn in gemmed armor get its effects. *Main article: [[Finding Gems]]*

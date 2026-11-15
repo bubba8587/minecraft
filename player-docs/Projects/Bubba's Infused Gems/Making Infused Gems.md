@@ -23,6 +23,15 @@ The player places a potion in a bottle slot of a brewing stand and a **base gem*
 | Golden apple | Base gem | Infused Gem: Absorption (normal form) |
 | Enchanted golden apple | Base gem | Stronger Infused Gem: Absorption (normal form) |
 | Wither rose | Base gem | Infused Gem: Wither (normal form) |
+| Glowstone dust | Base gem | Infused Gem: Glowing (normal form) |
+| Shulker shell | Base gem | Infused Gem: Levitation (normal form) |
+| Echo shard | Base gem | Infused Gem: Darkness (normal form) |
+| Heart of the sea | Base gem | Infused Gem: Conduit Power (normal form) |
+| Nautilus shell | Base gem | Infused Gem: Dolphin's Grace (normal form) |
+| Rotten flesh | Base gem | Infused Gem: Hunger (normal form) |
+| Pufferfish | Base gem | Infused Gem: Nausea (normal form) |
+| Suspicious stew of dandelion, golden dandelion or blue orchid | Base gem | Infused Gem: Saturation (normal form) |
+| Suspicious stew of azure bluet or open eyeblossom | Base gem | Infused Gem: Blindness (normal form) |
 
 ### Base gems
 
@@ -41,14 +50,16 @@ The base gem sets the gem's **Infusion level**, which affects strength only.
 
 - **Effect**: from the potion or item used.
 - **Potion strength**: a strong (glowstone) potion makes a stronger gem, a long (redstone) potion a slightly stronger one.
-- **Form**: normal, splash or lingering. The form is the potion's form and can't be changed after brewing. It sets the highest enchanting tier: normal reaches tier 1, splash tier 2, lingering tier 3. Golden apples and wither roses have no splash or lingering form, so their Infused Gems reach tier 1 only. *Main article: [[Enchanting Gems]]*
+- **Form**: normal, splash or lingering. The form is the potion's form and can't be changed after brewing. It sets the highest enchanting tier: normal reaches tier 1, splash tier 2, lingering tier 3. Items in the bottle slot (golden apples, wither roses, stews and the rest) have no splash or lingering form, so their Infused Gems reach tier 1 only. *Main article: [[Enchanting Gems]]*
 
 The item name shows these, for example *Infused Gem: Infusion III, Speed (Splash)*.
 
 ## Supported potions
 
-Swiftness, Strength, Leaping, Regeneration, Turtle Master, Fire Resistance, Water Breathing, Night Vision, Slow Falling, Healing, Poison, Slowness, Weakness and Harming, plus the golden apples and the wither rose. A Turtle Master potion makes a **Turtle Master** gem, which gives its Resistance and its Slowness together. Invisibility, Wind Charged, Weaving, Oozing and Infested potions and the item sources for other effects are planned for a later version; the gems themselves already work and are in the creative inventory, as are the gems that will only be found in the world (Haste, Luck, Resistance, Health Boost, Hero of the Village, Mining Fatigue).
+Every potion: Swiftness, Strength, Leaping, Regeneration, Turtle Master, Fire Resistance, Water Breathing, Night Vision, Invisibility, Slow Falling, Luck, Healing, Poison, Slowness, Weakness, Harming, Wind Charged, Weaving, Oozing and Infested, plus the items in the table above. A Turtle Master potion makes a **Turtle Master** gem, which gives its Resistance and its Slowness together. The Luck potion has no survival recipe, so Luck gems are mostly found. Haste, Health Boost, Hero of the Village, Mining Fatigue and Resistance gems have no brewing source and are only found in the world. *Main article: [[Finding Gems]]*
+
+A suspicious stew counts by its effect, so any stew with the Saturation or Blindness effect of those flowers works; other stews do not.
 
 ## Notes
 
-- A hopper on the side of a brewing stand also pushes golden apples and wither roses into the bottle slots.
+- A hopper on the side of a brewing stand also pushes these items (golden apples, wither roses, glowstone dust, rotten flesh and the rest) into the bottle slots.

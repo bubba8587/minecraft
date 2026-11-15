@@ -150,6 +150,7 @@ public static final Holder<Potion> TATER = Registry.registerForHolder(BuiltInReg
   "output":  { "id": "minecraft:lingering_potion", "components": { "minecraft:potion_contents": { "potion": "minecraft:strength" } } } }
 ```
 - Datagen: `FabricBrewingProvider` (extends vanilla `BrewingProvider`; already registers vanilla containers potion/splash/lingering) with `buildMix(Holder<Potion> in, Item reagent, Holder<Potion> out)` / `buildStartMix(...)`, invoked inside a `FabricRecipeProvider` (src: fapi fabric-data-generation-api-v1 testmod `DataGeneratorTestEntrypoint` line ~238).
+- The recipe's `input` is a `PotionIngredient` whose `item` is a plain `Ingredient`, so Fabric custom ingredients work there: `{"item": {"fabric:type": "fabric:components", "base": "minecraft:suspicious_stew", "components": {"minecraft:suspicious_stew_effects": [{"id": "minecraft:saturation", "duration": 7}]}}}` brews only that stew. The bottle slot takes any item a brewing recipe names (`PotionIngredient.isPotionInput` reads `RecipePropertySet.BREWING_INPUTS`). (Verified in bubbas_infused_gems game tests, real stand.)
 - Brewing stand fuel is `DataComponents.BREWING_FUEL` (`Item.Properties#brewingFuel(ResourceKey<ContextIntProvider> uses)`), see items doc.
 
 ## 6. Enchantments
@@ -270,6 +271,7 @@ LootTableEvents.ALL_LOADED.register((resourceManager, lootRegistry) -> {});
 LootTableEvents.MODIFY_DROPS.register((Holder<LootTable> table, LootContext ctx, List<ItemStack> drops) -> {});
 ```
   `LootTableSource`: `VANILLA`, `MOD`, `DATA_PACK`, `REPLACED` (check `isBuiltin()`; only modify builtin tables to respect datapack overrides). Entity loot keys: `EntityTypes.X.getDefaultLootTable()`.
+  **Gotcha (verified 2026-11-15, bubbas_infused_gems):** tables from vanilla's own feature packs (e.g. the trade rebalance's `chests/abandoned_mineshaft`, `ancient_city`, `desert_pyramid`, `jungle_temple`, `pillager_outpost`, enabled in the game-test world) arrive as `DATA_PACK` (`LootUtil.determineSource` maps only `PackSource.BUILT_IN` to `VANILLA`), so an `isBuiltin()` check silently skips them. Skip only `REPLACED` and let datapacks opt out through your own referenced table. `registries.getOrThrow(key)` in `MODIFY` resolves loot tables *and* item modifiers (`Registries.ITEM_MODIFIER`); `tableBuilder.apply(Holder<LootItemFunction>)` adds a table-level modifier (applied to nested-table output too, `getRandomItemsRaw`).
 - Datagen: `FabricBlockLootSubProvider` / `FabricEntityLootSubProvider` / `SimpleFabricLootTableSubProvider` (renamed from `*LootTableProvider`/`*Generator` in 26.1). Vanilla 26.3 loot providers take a `LootTableSubProvider.Context` instead of a `HolderLookup.Provider`.
 
 ## 9. Tags

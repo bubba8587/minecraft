@@ -22,7 +22,11 @@ side: client and server
 
 Armor gems affect the wearer all the time; weapon gems affect whatever the weapon hits. Gems are never as strong as a real potion, gems of the same effect stack, and some gems carry a drawback.
 
-In this test version the gem textures are simple placeholders. Every gem effect works in armor and in weapons; some can only be brewed or found in a later version and are in the creative inventory meanwhile (see [[Gem Effects]]).
+In this test version the gem textures are simple placeholders. Every gem effect works in armor and in weapons.
+
+## Obtaining
+
+Gems are brewed, enchanted and socketed by the player (below), or found: finished Gems and gemmed armor turn up rarely in chests, vaults, fishing treasure and hero gifts, and on mobs that spawn in armor. Six effects (Haste, Luck, Health Boost, Hero of the Village, Mining Fatigue, Resistance) come only from loot. *Main article: [[Finding Gems]]*
 
 ## Items
 
@@ -33,11 +37,11 @@ In this test version the gem textures are simple placeholders. Every gem effect 
 
 | Step | Station | Input | Result |
 |---|---|---|---|
-| 1 | Brewing stand | Potion (or golden apple, wither rose) + base gem | Infused Gem |
+| 1 | Brewing stand | Potion (or an item that carries an effect, such as a golden apple) + base gem | Infused Gem |
 | 2 | Enchanting table | Infused Gem + lapis lazuli + experience | Gem |
 | 3 | Smithing table | Armor or weapon + Gem (no template) | Gear with the gem socketed |
 
-*Main articles: [[Making Infused Gems]], [[Enchanting Gems]], [[Socketing Gems]], [[Gem Effects]]*
+*Main articles: [[Making Infused Gems]], [[Enchanting Gems]], [[Socketing Gems]], [[Gem Effects]], [[Finding Gems]]*
 
 ## Commands
 
@@ -63,5 +67,6 @@ Requires Fabric API. Mods that also give armor effects (such as trim-effect mods
 
 ## See also
 
+- [[Finding Gems]]
 - [[Installing Fabric Mods]]
 - [[Bubba Test World]]
