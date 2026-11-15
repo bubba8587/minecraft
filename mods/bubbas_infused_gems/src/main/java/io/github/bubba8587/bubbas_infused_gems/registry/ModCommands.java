@@ -4,7 +4,19 @@ package io.github.bubba8587.bubbas_infused_gems.registry;
 import java.util.ArrayList;
 import java.util.List;
 
+import java.util.Optional;
+
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
+import io.github.bubba8587.bubbas_infused_gems.effect.WornEffects;
+import io.github.bubba8587.bubbas_infused_gems.gem.Gem;
+import io.github.bubba8587.bubbas_infused_gems.gem.SocketedGems;
+import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.Item;
 import io.github.bubba8587.bubbas_infused_gems.balance.Balance;
 import io.github.bubba8587.bubbas_infused_gems.effect.GemDescribe;
 import io.github.bubba8587.bubbas_infused_gems.effect.GemHits;
@@ -37,7 +49,61 @@ public final class ModCommands {
 						.executes(c -> show(c.getSource(), c.getSource().getPlayerOrException()))
 						.then(Commands.argument("player", EntityArgument.player())
 								.requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
-								.executes(c -> show(c.getSource(), EntityArgument.getPlayer(c, "player"))))));
+								.executes(c -> show(c.getSource(), EntityArgument.getPlayer(c, "player"))))
+						// /gems kit <effect> [material] (owner, for testing): a full perfect set and sword of one effect.
+						.then(Commands.literal("kit")
+								.requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+								.then(Commands.argument("effect", StringArgumentType.word())
+										.suggests((c, b) -> SharedSuggestionProvider.suggest(Balance.get().gemEffects, b))
+										.executes(c -> kit(c.getSource(), StringArgumentType.getString(c, "effect"), "netherite"))
+										.then(Commands.argument("material", StringArgumentType.word())
+												.suggests((c, b) -> SharedSuggestionProvider.suggest(KIT_MATERIALS, b))
+												.executes(c -> kit(c.getSource(), StringArgumentType.getString(c, "effect"),
+														StringArgumentType.getString(c, "material"))))))));
+	}
+
+	/** Armor materials the kit can use (vanilla's item name prefixes follow). */
+	public static final List<String> KIT_MATERIALS = List.of("leather", "chainmail", "copper", "iron", "gold", "diamond", "netherite");
+	private static final SimpleCommandExceptionType UNKNOWN = new SimpleCommandExceptionType(Component.translatable(GemText.KEY + "command.kit.unknown"));
+	private static final String[] PIECES = {"helmet", "chestplate", "leggings", "boots"};
+
+	private static Item item(String path) {
+		return BuiltInRegistries.ITEM.getValue(Identifier.withDefaultNamespace(path));
+	}
+
+	/**
+	 * Puts a full armor set of this material on the player, 3 perfect gems of the effect in every piece (Infusion VI, tier
+	 * 3, full strength, nothing else), and gives a matching sword with 2. Worn armor goes back to the inventory (or drops).
+	 */
+	public static int kit(CommandSourceStack source, String effect, String material) throws CommandSyntaxException {
+		ServerPlayer player = source.getPlayerOrException();
+		if (!Balance.get().gemEffects.contains(effect) || !KIT_MATERIALS.contains(material)) {
+			throw UNKNOWN.create();
+		}
+		Gem perfect = new Gem(GemText.holder(effect), 6, 3, 1.0F, Optional.empty(), Optional.empty());
+		String prefix = material.equals("gold") ? "golden" : material;
+		for (int i = 0; i < 4; i++) {
+			EquipmentSlot slot = io.github.bubba8587.bubbas_infused_gems.effect.GemTotals.ARMOR[i];
+			ItemStack old = player.getItemBySlot(slot);
+			ItemStack piece = new ItemStack(item(prefix + "_" + PIECES[i]));
+			piece.set(ModComponents.SOCKETED_GEMS, SocketedGems.EMPTY.with(perfect).with(perfect).with(perfect));
+			player.setItemSlot(slot, piece);
+			if (!old.isEmpty()) {
+				player.getInventory().placeItemBackInInventory(old, net.minecraft.util.Prediction.SERVER_ONLY);
+			}
+		}
+		String sword = switch (material) {
+			case "leather" -> "wooden_sword";
+			case "chainmail" -> "stone_sword";
+			case "gold" -> "golden_sword";
+			default -> material + "_sword";
+		};
+		ItemStack weapon = new ItemStack(item(sword));
+		weapon.set(ModComponents.SOCKETED_GEMS, SocketedGems.EMPTY.with(perfect).with(perfect));
+		player.getInventory().placeItemBackInInventory(weapon, net.minecraft.util.Prediction.SERVER_ONLY);
+		WornEffects.refresh(player);
+		source.sendSystemMessage(Component.translatable(GemText.KEY + "command.kit", GemText.effectName(effect), material).withStyle(ChatFormatting.GOLD));
+		return 1;
 	}
 
 	/** The command's lines for this player (also used by the game test). */

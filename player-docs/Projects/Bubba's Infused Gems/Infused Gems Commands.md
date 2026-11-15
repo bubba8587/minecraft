@@ -14,6 +14,7 @@
 
 - `/gems`: shows the player's own gem effects.
 - `/gems <player>`: shows another player's (operators only).
+- `/gems kit <effect> [material]`: for testing (operators, or a world with cheats on). Puts a full armor set on the player, netherite unless a material is named (leather, chainmail, copper, iron, gold, diamond, netherite), with 3 perfect gems of the effect in every piece, and gives a matching sword with 2. Armor already worn goes back to the inventory, or drops if it is full. The effect name completes with Tab, for example `/gems kit invisibility` or `/gems kit turtle_master diamond`.
 
 ## Output
 

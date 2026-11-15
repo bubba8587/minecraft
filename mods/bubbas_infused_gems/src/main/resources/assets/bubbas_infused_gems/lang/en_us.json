@@ -55,5 +55,7 @@
 	"bubbas_infused_gems.clue.drawback": "%sdrawback",
 	"bubbas_infused_gems.clue.size.weak": "minor ",
 	"bubbas_infused_gems.clue.size.medium": "",
-	"bubbas_infused_gems.clue.size.strongest": "major "
+	"bubbas_infused_gems.clue.size.strongest": "major ",
+	"bubbas_infused_gems.command.kit": "Perfect %s set (%s)",
+	"bubbas_infused_gems.command.kit.unknown": "Unknown gem effect or armor material"
 }
