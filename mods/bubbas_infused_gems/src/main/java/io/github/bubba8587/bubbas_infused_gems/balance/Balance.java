@@ -36,7 +36,8 @@ public final class Balance {
 	public final double drawbackOne;
 	public final double drawbackCap;
 	public final int drawbackHitSeconds;
-	public final int harmChargeSeconds;
+	/** Healing/Harming on a weapon: the least a strike does per hit. */
+	public final double hitStrikeFloor;
 	public final double weaponSplit;
 	public final List<Infusion> infusions = new ArrayList<>();
 	public final Map<String, Double> armorMaterials = new LinkedHashMap<>();
@@ -47,9 +48,14 @@ public final class Balance {
 	public final Map<String, Integer> formMaxTier = new LinkedHashMap<>();
 	public final Map<Integer, List<Outcome>> tiers = new LinkedHashMap<>();
 	public final Map<String, EffectData> effects = new LinkedHashMap<>();
-	public final Set<String> v0Worn;
-	public final Set<String> v0Hit;
-	public final Set<String> v0Brewable;
+	/** Effects an Infused Gem can be brewed for now (the rest come from loot or later work; all of them work). */
+	public final Set<String> brewable;
+	/** Every gem effect (beneficial, Healing, harmful; not drawback-only), in the model's order. */
+	public final List<String> gemEffects;
+	/** Open-question defaults the owner may change (balance.json "rules"). */
+	public final boolean strongerApplies;
+	public final boolean undeadInversion;
+
 	/** The raw file, for tests that compare against the model's own example builds. */
 	public final JsonObject raw;
 
@@ -73,8 +79,12 @@ public final class Balance {
 
 	public record EffectData(String key, String name, boolean good, String role, String hitKind, double levelOne,
 			Map<String, Variant> variants, String source, int hitTicks, int hitAmplifier, List<String> otherPool,
-			List<String> drawbackPool, List<String> v0OtherPool, List<String> v0DrawbackPool, List<Attr> wornAttributes,
-			JsonObject worn, double hitUnit, List<String> opposites) {
+			int hitFloorTicks, double hitFloorHealHp, List<String> drawbackPool, List<Double> drawbackWeights, List<Attr> wornAttributes, JsonObject worn, double hitUnit, List<String> opposites,
+			int wornAmplifier, String id, Map<String, Double> parts) {
+		public boolean wornFlag(String name) {
+			return this.worn != null && this.worn.has(name) && this.worn.get(name).getAsBoolean();
+		}
+
 		public double wornNumber(String name, double fallback) {
 			return this.worn != null && this.worn.has(name) ? this.worn.get(name).getAsDouble() : fallback;
 		}
@@ -101,7 +111,7 @@ public final class Balance {
 		this.drawbackOne = o.getAsJsonObject("drawback").get("one").getAsDouble();
 		this.drawbackCap = o.getAsJsonObject("drawback").get("cap").getAsDouble();
 		this.drawbackHitSeconds = o.getAsJsonObject("drawback").get("hit_seconds").getAsInt();
-		this.harmChargeSeconds = o.get("harm_charge_seconds").getAsInt();
+		this.hitStrikeFloor = o.get("hit_strike_floor").getAsDouble();
 		this.weaponSplit = o.get("weapon_split").getAsDouble();
 		for (JsonElement e : o.getAsJsonArray("infusion")) {
 			JsonObject i = e.getAsJsonObject();
@@ -124,10 +134,12 @@ public final class Balance {
 			this.tiers.put(Integer.parseInt(e.getKey()), List.copyOf(list));
 		});
 		o.getAsJsonObject("effects").entrySet().forEach(e -> this.effects.put(e.getKey(), effect(e.getKey(), e.getValue().getAsJsonObject())));
-		JsonObject v0 = o.getAsJsonObject("v0");
-		this.v0Worn = Set.copyOf(strings(v0.getAsJsonArray("worn")));
-		this.v0Hit = Set.copyOf(strings(v0.getAsJsonArray("hit")));
-		this.v0Brewable = Set.copyOf(strings(v0.getAsJsonArray("brewable")));
+		this.brewable = Set.copyOf(strings(o.getAsJsonArray("brewable")));
+		this.gemEffects = this.effects.values().stream().filter(e -> !e.role().equals("negative")).map(EffectData::key).toList();
+		JsonObject rules = o.getAsJsonObject("rules");
+		this.strongerApplies = rules.get("gem_vs_potion").getAsString().equals("stronger");
+		this.undeadInversion = rules.get("undead_inversion").getAsBoolean();
+
 	}
 
 	private static EffectData effect(String key, JsonObject e) {
@@ -148,15 +160,30 @@ public final class Balance {
 			}
 		}
 		JsonObject hit = e.has("hit") ? e.getAsJsonObject("hit") : null;
+		Map<String, Double> parts = new LinkedHashMap<>();
+		if (e.has("parts")) {
+			e.getAsJsonObject("parts").entrySet().forEach(x -> parts.put(x.getKey(), x.getValue().getAsDouble()));
+		}
 		return new EffectData(key, e.get("name").getAsString(), e.get("good").getAsBoolean(), e.get("role").getAsString(),
 				e.get("hit_kind").getAsString(), e.get("level_one").getAsDouble(), Map.copyOf(variants), str(e, "source"),
 				hit == null ? 0 : hit.get("ticks").getAsInt(), hit == null ? 0 : hit.get("amplifier").getAsInt(),
-				list(e, "other_pool"), list(e, "drawback_pool"), list(e, "v0_other_pool"), list(e, "v0_drawback_pool"),
-				List.copyOf(attrs), worn, e.has("hit_unit") ? e.get("hit_unit").getAsDouble() : 1.0, list(e, "opposites"));
+				list(e, "other_pool"), hit == null ? 0 : hit.get("floor_ticks").getAsInt(),
+				hit == null ? 0.0 : hit.get("floor_heal_hp").getAsDouble(), list(e, "drawback_pool"), doubles(e, "drawback_weights"), List.copyOf(attrs), worn,
+				e.has("hit_unit") ? e.get("hit_unit").getAsDouble() : 1.0, list(e, "opposites"),
+				e.has("worn_amplifier") ? e.get("worn_amplifier").getAsInt() : 0,
+				e.has("id") ? e.get("id").getAsString() : "minecraft:" + key, Map.copyOf(parts));
 	}
 
 	private static String str(JsonObject o, String name) {
 		return o.has(name) && !o.get(name).isJsonNull() ? o.get(name).getAsString() : null;
+	}
+
+	private static List<Double> doubles(JsonObject o, String name) {
+		List<Double> out = new ArrayList<>();
+		if (o.has(name)) {
+			o.getAsJsonArray(name).forEach(x -> out.add(x.getAsDouble()));
+		}
+		return List.copyOf(out);
 	}
 
 	private static List<String> list(JsonObject o, String name) {

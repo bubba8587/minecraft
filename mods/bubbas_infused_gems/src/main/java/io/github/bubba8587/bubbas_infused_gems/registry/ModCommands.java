@@ -52,7 +52,7 @@ public final class ModCommands {
 		for (String key : worn.keys()) {
 			double total = worn.totals().getOrDefault(key, 0.0);
 			if (total > 0.0) {
-				out.add(line(key, GemDescribe.worn(key, total), total / b.cap, false));
+				lines(out, key, total, GemDescribe.worn(key, total), "");
 			}
 			double drawback = worn.drawbacks().getOrDefault(key, 0.0);
 			if (drawback > 0.0) {
@@ -64,10 +64,31 @@ public final class ModCommands {
 		if (!hit.isEmpty()) {
 			out.add(Component.translatable(GemText.KEY + "command.weapon", weapon.getHoverName()).withStyle(ChatFormatting.GOLD));
 			for (GemHits.Entry e : hit) {
-				out.add(line(e.key(), GemDescribe.hit(e), e.s() / (e.drawback() ? b.drawbackCap : b.cap), e.drawback()));
+				if (e.drawback()) {
+					out.add(line(e.key(), GemDescribe.hit(e), e.s() / b.drawbackCap, true));
+				} else {
+					lines(out, e.key(), e.s(), GemDescribe.hit(e), String.format(java.util.Locale.ROOT, " for %.1f s", GemHits.duration(e) / 20.0));
+				}
 			}
 		}
 		return out;
+	}
+
+	/** A combined gem (Turtle Master) shows one line per part, each a share of the cap; any other gem one line. */
+	private static void lines(List<Component> out, String key, double s, String value, String hitSuffix) {
+		Balance b = Balance.get();
+		Balance.EffectData e = b.effect(key);
+		if (e.parts().isEmpty()) {
+			out.add(line(key, value, s / b.cap, false));
+			return;
+		}
+		double p = hitSuffix.isEmpty() ? s : GemHits.potency(new GemHits.Entry(key, s, false));
+		e.parts().forEach((part, amount) -> {
+			MutableComponent name = Component.translatable(GemText.KEY + "command.part", GemText.effectName(key), GemText.effectName(part));
+			MutableComponent l = Component.literal(" ").append(name).append(": " + GemDescribe.part(part, amount, p) + hitSuffix + " ");
+			l.append(Component.translatable(GemText.KEY + "command.of_max", GemText.percent(s / b.cap)).withStyle(ChatFormatting.GRAY));
+			out.add(l.withColor(GemText.holder(key).value().getColor()));
+		});
 	}
 
 	private static MutableComponent line(String key, String value, double ofMax, boolean drawback) {

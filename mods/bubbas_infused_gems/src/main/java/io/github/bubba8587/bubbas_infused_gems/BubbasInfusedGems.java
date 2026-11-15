@@ -43,5 +43,6 @@ public class BubbasInfusedGems implements ModInitializer {
 			}
 		});
 		ServerLivingEntityEvents.AFTER_DAMAGE.register((entity, source, base, taken, blocked) -> WornEffects.afterDamage(entity, source, taken));
+		ServerLivingEntityEvents.AFTER_DEATH.register((entity, source) -> WornEffects.onDeath(entity));
 	}
 }

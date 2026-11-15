@@ -13,7 +13,7 @@
 		"id": "bubbas_infused_gems:infused_gem",
 		"components": {
 			"bubbas_infused_gems:infused_gem": {
-				"effect": "minecraft:resistance",
+				"effect": "bubbas_infused_gems:turtle_master",
 				"variant": "long",
 				"form": "lingering",
 				"infusion": 1

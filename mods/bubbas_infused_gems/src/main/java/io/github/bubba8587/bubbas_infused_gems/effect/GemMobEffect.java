@@ -24,18 +24,21 @@ import net.minecraft.world.entity.player.Player;
  * A gem's hit-applied effect (weapon gems, and weapon drawbacks on the target): the vanilla effect made partial, its
  * potency counted in 1% steps by the amplifier (amplifier 45 = 46% of the strongest vanilla level), with vanilla's icon
  * (client) and timer. Attribute effects use the balance model's worn attributes at that potency; damage, healing and
- * hunger tick at the model's rates.
+ * hunger tick at the model's rates; the hook effects (fire, falling, water drag, hunger, stealth, prices, night vision,
+ * resistance) read the potency through {@link GemValues}. Turtle Master's own effect is one of these too.
  */
 public class GemMobEffect extends MobEffect {
 	private static final int DAMAGE_INTERVAL = 10;
 	private final String key;
 	private final List<Balance.Attr> attrs;
+	private final boolean wet;
 
 	public GemMobEffect(String key, MobEffectCategory category, int color) {
 		super(category, color);
 		this.key = key;
 		Balance.EffectData e = Balance.get().effect(key);
-		this.attrs = e == null ? List.of() : e.wornAttributes();
+		this.wet = e != null && e.wornFlag("wet_only");
+		this.attrs = e == null || this.wet ? List.of() : e.wornAttributes();
 	}
 
 	public String key() {
@@ -76,6 +79,18 @@ public class GemMobEffect extends MobEffect {
 				}
 			});
 		}
+		if (this.wet) {
+			List<Balance.Attr> wetAttrs = Balance.get().effect(this.key).wornAttributes();
+			for (int i = 0; i < wetAttrs.size(); i++) {
+				Identifier id = WornEffects.wetId(this.key, i);
+				BuiltInRegistries.ATTRIBUTE.get(Identifier.parse(wetAttrs.get(i).attribute())).ifPresent(h -> {
+					AttributeInstance inst = attributes.getInstance(h);
+					if (inst != null) {
+						inst.removeModifier(id);
+					}
+				});
+			}
+		}
 	}
 
 	@Override
@@ -90,9 +105,18 @@ public class GemMobEffect extends MobEffect {
 	}
 
 	@Override
+	public void onEffectStarted(LivingEntity mob, int amplifier) {
+		if (this.key.equals("absorption")) {
+			// Like vanilla's Absorption: the shield fills when the effect starts.
+			float shield = (float) Balance.get().effect("absorption").wornAttributes().getFirst().at(potency(amplifier));
+			mob.setAbsorptionAmount(Math.max(mob.getAbsorptionAmount(), shield));
+		}
+	}
+
+	@Override
 	public boolean shouldApplyEffectTickThisTick(int tickCount, int amplification) {
 		return switch (this.key) {
-			case "regeneration", "hunger" -> true;
+			case "regeneration", "hunger", "conduit_power" -> true;
 			case "poison", "wither" -> tickCount % DAMAGE_INTERVAL == 0;
 			default -> false;
 		};
@@ -120,15 +144,11 @@ public class GemMobEffect extends MobEffect {
 				}
 			}
 			case "wither" -> mob.hurtServer(level, mob.damageSources().wither(), (float) (e.hitUnit() * p * DAMAGE_INTERVAL / 20.0));
+			case "conduit_power" -> WornEffects.wetTick(mob);
 			default -> {
 			}
 		}
 		return true;
-	}
-
-	/** Resistance: damage taken x (1 - 0.8 x potency), beside vanilla's. */
-	public double damageFactor(int amplifier) {
-		return this.key.equals("resistance") ? 1.0 - Balance.get().effect("resistance").hitUnit() * potency(amplifier) : 1.0;
 	}
 
 	public static MobEffectCategory category(boolean good) {

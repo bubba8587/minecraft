@@ -29,7 +29,7 @@ public abstract class ArrowItemMixin {
 		if (weapon != null && !level.isClientSide() && cir.getReturnValue() instanceof Arrow arrow) {
 			List<GemHits.Entry> plan = GemHits.plan(weapon);
 			if (!plan.isEmpty()) {
-				((GemArrow) arrow).bubbas$setGemHit(plan, GemHits.useCharge(owner, plan));
+				((GemArrow) arrow).bubbas$setGemHit(plan);
 			}
 		}
 	}

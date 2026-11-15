@@ -10,7 +10,9 @@
 		"GrindstoneMenuAccessor",
 		"GrindstoneMenuMixin",
 		"GrindstoneResultSlotMixin",
-		"LivingEntityMixin"
+		"LivingEntityMixin",
+		"PlayerMixin",
+		"VillagerMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

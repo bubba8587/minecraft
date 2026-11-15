@@ -33,7 +33,7 @@ public class BalanceGameTest {
 	@GameTest
 	public void balanceJsonLoadsWithKnownValues(GameTestHelper helper) {
 		Balance b = Balance.get();
-		close(b.cap, 0.95, 1e-9, helper, "cap");
+		close(b.cap, 0.90, 1e-9, helper, "cap (owner, question 1)");
 		close(b.stackR, 0.85, 1e-9, helper, "stack_r");
 		check(helper, b.armorSlots == 3 && b.weaponSlots == 2, "slots 3/2");
 		close(b.infusion(1).factor(), 0.80, 1e-9, helper, "Infusion I");
@@ -41,6 +41,11 @@ public class BalanceGameTest {
 		check(helper, b.infusion(6).item().equals("minecraft:nether_star") && b.infusion(5).item().equals("minecraft:prismarine_shard"), "base gems");
 		close(b.armorMaterials.get("netherite"), 1.0, 1e-9, helper, "netherite");
 		close(b.armorMaterials.get("leather"), 0.75, 1e-9, helper, "leather");
+		close(b.armorMaterials.get("gold"), 0.93, 1e-9, helper, "gold armor: diamond-level magic bonus (owner, question 2)");
+		close(b.weaponMaterials.get("gold"), 0.93, 1e-9, helper, "gold weapons: diamond-level magic bonus (owner, question 2)");
+		check(helper, !b.armorMaterials.containsKey("turtle"), "the turtle helmet takes no gems (owner, question 3)");
+		close(b.effect("resistance").wornNumber("damage_reduction", 0), 0.4, 1e-9, helper, "Resistance 1.0 = Resistance II (owner, question 4)");
+		check(helper, b.effect("turtle_master").parts().size() == 2, "Turtle Master gem has two parts (owner, question 5)");
 		close(b.run.get(2), 0.90, 1e-9, helper, "run of 2");
 		close(b.weaponMaterials.get("bow"), 0.93, 1e-9, helper, "bow");
 		check(helper, b.formMaxTier.get("normal") == 1 && b.formMaxTier.get("splash") == 2 && b.formMaxTier.get("lingering") == 3, "form caps");
@@ -94,19 +99,21 @@ public class BalanceGameTest {
 		helper.succeed();
 	}
 
-	/** What the mod implements matches the model's v0 lists (tools/gem-balance.py V0_WORN / V0_HIT). */
+	/** Every gem has a worn form and a hit form in the mod, with no "later version" gaps (GemsEverywhereGameTest runs them). */
 	@GameTest
-	public void implementedEffectsMatchTheModel(GameTestHelper helper) {
+	public void everyGemHasAWornAndAHitForm(GameTestHelper helper) {
 		Balance b = Balance.get();
-		for (String key : b.v0Worn) {
-			check(helper, !GemDescribe.worn(key, 0.5).startsWith("not working"), key + " is v0 worn but has no description");
-		}
-		for (String key : b.v0Hit) {
-			boolean instant = b.effect(key).hitKind().equals("instant");
-			check(helper, instant || ModEffects.gem(key) != null, key + " is v0 hit but has no gem mob effect");
-		}
-		for (String key : b.v0Brewable) {
-			check(helper, b.v0Worn.contains(key) || b.v0Hit.contains(key), key + " brews but does nothing");
+		check(helper, b.gemEffects.size() == 36, "gem effects: " + b.gemEffects.size());
+		for (String key : b.gemEffects) {
+			Balance.EffectData e = b.effect(key);
+			check(helper, e.worn() != null, key + " has no worn form in balance.json");
+			check(helper, !GemDescribe.worn(key, 0.5).matches("[0-9]+%"), key + " has no worn description");
+			boolean hitForm = switch (e.hitKind()) {
+				case "instant" -> true;
+				case "onoff" -> ModEffects.vanilla(key) != null;
+				default -> ModEffects.gem(key) != null;
+			};
+			check(helper, hitForm, key + " has no hit form");
 		}
 		helper.succeed();
 	}

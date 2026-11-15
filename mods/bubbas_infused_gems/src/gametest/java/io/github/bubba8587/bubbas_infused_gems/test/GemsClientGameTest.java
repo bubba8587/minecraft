@@ -36,7 +36,7 @@ import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContex
  * Looks at the gems (screenshots in build/run/clientGameTest/screenshots/): several colors in the inventory with their
  * tooltips (inventory), a big view of finished and Infused Gems in many colors (colors), the enchanting table with an Infused
  * Gem and its hint (enchanting), socketing at the smithing table (smithing), and a player in gemmed armor with /gems
- * (worn). Run a part with -PclientTests=inventory,... (ClientTests).
+ * (worn), a pig hit by a Glowing + Poison sword and /gems for Turtle Master gear (hits). Run a part with -PclientTests=inventory,... (ClientTests).
  */
 @SuppressWarnings("UnstableApiUsage")
 public class GemsClientGameTest implements FabricClientGameTest {
@@ -53,7 +53,7 @@ public class GemsClientGameTest implements FabricClientGameTest {
 
 	@Override
 	public void runTest(ClientGameTestContext context) {
-		if (!List.of("inventory", "colors", "enchanting", "smithing", "worn").stream().anyMatch(ClientTests::run)) {
+		if (!List.of("inventory", "colors", "enchanting", "smithing", "worn", "hits").stream().anyMatch(ClientTests::run)) {
 			return;
 		}
 		try (TestSingleplayerContext sp = context.worldBuilder()
@@ -80,6 +80,9 @@ public class GemsClientGameTest implements FabricClientGameTest {
 			}
 			if (ClientTests.run("worn")) {
 				worn(context, server);
+			}
+			if (ClientTests.run("hits")) {
+				hits(context, server);
 			}
 		}
 	}
@@ -285,10 +288,54 @@ public class GemsClientGameTest implements FabricClientGameTest {
 			p.setItemSlot(EquipmentSlot.LEGS, GemKit.socketed(Items.NETHERITE_LEGGINGS, nv, nv, nv));
 			p.setItemSlot(EquipmentSlot.FEET, GemKit.socketed(Items.NETHERITE_BOOTS, nv, nv, nv));
 		});
-		// The client's own copy of the totals (it drives the lightmap): 12 perfect gems in full netherite = 0.95.
+		// The client's own copy of the totals (it drives the lightmap): 12 perfect gems in full netherite = the cap (0.90).
 		context.waitFor(mc -> Math.abs(((io.github.bubba8587.bubbas_infused_gems.effect.GemEntity) mc.player).bubbas$wornGems()
-				.value("night_vision") - 0.95) < 1e-4);
+				.value("night_vision") - 0.90) < 1e-4);
 		context.waitTicks(5);
 		context.takeScreenshot("gems-worn-midnight-12-night-vision-gems");
+	}
+
+	/** One real sword swing: the target pig glows (outline) and is poisoned; then /gems lists Turtle Master's two parts. */
+	private static void hits(ClientGameTestContext context, TestServerContext server) {
+		server.runCommand("time set noon");
+		context.runOnClient(mc -> mc.gui.hud.getChat().clearMessages(false));
+		BlockPos at = stationPos(server).offset(1, 0, 0);
+		server.runOnServer(s -> {
+			ServerPlayer p = player(s);
+			for (EquipmentSlot slot : io.github.bubba8587.bubbas_infused_gems.effect.GemTotals.ARMOR) {
+				p.setItemSlot(slot, ItemStack.EMPTY);
+			}
+			p.setItemSlot(EquipmentSlot.MAINHAND, GemKit.socketed(Items.NETHERITE_SWORD, GemKit.gem("glowing", 1.0), GemKit.gem("poison", 1.0)));
+			net.minecraft.world.entity.animal.pig.Pig z = net.minecraft.world.entity.EntityTypes.PIG.create(p.level(),
+					net.minecraft.world.entity.EntitySpawnReason.COMMAND);
+			z.setPos(at.getX() + 0.5, at.getY(), at.getZ() + 0.5);
+			z.setNoAi(true);
+			z.setPersistenceRequired();
+			z.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH).setBaseValue(200.0);
+			z.setHealth(200.0F);
+			p.level().addFreshEntity(z);
+		});
+		context.waitTicks(5);
+		context.getInput().lookAt(at.above());
+		server.runOnServer(s -> {
+			ServerPlayer p = player(s);
+			p.level().getEntitiesOfClass(net.minecraft.world.entity.animal.pig.Pig.class, p.getBoundingBox().inflate(8)).forEach(p::attack);
+		});
+		context.waitTicks(25);
+		context.takeScreenshot("gems-hit-pig-glowing-and-poisoned");
+		Gem tm = GemKit.gem("turtle_master", 1.0);
+		server.runOnServer(s -> {
+			ServerPlayer p = player(s);
+			p.setItemSlot(EquipmentSlot.HEAD, GemKit.socketed(Items.NETHERITE_HELMET, tm, tm, tm));
+			p.setItemSlot(EquipmentSlot.CHEST, GemKit.socketed(Items.NETHERITE_CHESTPLATE, tm, tm, tm));
+			p.setItemSlot(EquipmentSlot.LEGS, GemKit.socketed(Items.NETHERITE_LEGGINGS, tm, tm, tm));
+			p.setItemSlot(EquipmentSlot.FEET, GemKit.socketed(Items.NETHERITE_BOOTS, tm, tm, tm));
+			p.setItemSlot(EquipmentSlot.MAINHAND, GemKit.socketed(Items.NETHERITE_SWORD, GemKit.gem("weakness", 1.0), GemKit.gem("instant_damage", 1.0)));
+		});
+		context.waitTicks(10);
+		context.runOnClient(mc -> mc.gui.hud.getChat().clearMessages(false));
+		context.runOnClient(mc -> mc.player.connection.sendCommand("gems"));
+		context.waitTicks(10);
+		context.takeScreenshot("gems-command-turtle-master-and-weapon");
 	}
 }

@@ -7,5 +7,5 @@ import java.util.List;
 public interface GemArrow {
 	List<GemHits.Entry> bubbas$gemHit();
 
-	void bubbas$setGemHit(List<GemHits.Entry> entries, boolean charged);
+	void bubbas$setGemHit(List<GemHits.Entry> entries);
 }

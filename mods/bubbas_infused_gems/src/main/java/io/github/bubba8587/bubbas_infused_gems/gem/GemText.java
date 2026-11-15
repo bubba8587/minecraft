@@ -35,7 +35,9 @@ public final class GemText {
 	}
 
 	public static Holder<MobEffect> holder(String key) {
-		return net.minecraft.core.registries.BuiltInRegistries.MOB_EFFECT.get(Identifier.withDefaultNamespace(key))
+		Balance.EffectData e = Balance.get().effect(key);
+		Identifier id = e == null ? Identifier.withDefaultNamespace(key) : Identifier.parse(e.id());
+		return net.minecraft.core.registries.BuiltInRegistries.MOB_EFFECT.get(id)
 				.map(h -> (Holder<MobEffect>) h).orElseThrow(() -> new IllegalArgumentException("no effect " + key));
 	}
 

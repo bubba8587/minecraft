@@ -11,7 +11,9 @@
 			"io.github.bubba8587.bubbas_infused_gems.test.EnchantingGameTest",
 			"io.github.bubba8587.bubbas_infused_gems.test.SocketingGameTest",
 			"io.github.bubba8587.bubbas_infused_gems.test.GemEffectsGameTest",
-			"io.github.bubba8587.bubbas_infused_gems.test.GemsCommandGameTest"
+			"io.github.bubba8587.bubbas_infused_gems.test.GemsCommandGameTest",
+			"io.github.bubba8587.bubbas_infused_gems.test.GemsEverywhereGameTest",
+			"io.github.bubba8587.bubbas_infused_gems.test.GemVsPotionGameTest"
 		],
 		"fabric-client-gametest": [
 			"io.github.bubba8587.bubbas_infused_gems.test.GemsClientGameTest"

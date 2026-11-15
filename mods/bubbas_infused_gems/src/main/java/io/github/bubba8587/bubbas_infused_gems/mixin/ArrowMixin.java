@@ -19,6 +19,8 @@ import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
 import net.minecraft.world.entity.projectile.arrow.Arrow;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -30,7 +32,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 /**
  * A gem arrow carries its bow's gem hit beside its pickup item, so it flies, trails and hits like a tipped arrow but is
  * a plain arrow again when picked up (owner). A real tipped arrow's effect and the gem's of the same effect don't add:
- * the stronger applies.
+ * the stronger applies. The gem hit is saved with the arrow, so an arrow in flight (or stuck) across a save keeps it.
  */
 @Mixin(Arrow.class)
 public abstract class ArrowMixin extends AbstractArrow implements GemArrow {
@@ -39,8 +41,6 @@ public abstract class ArrowMixin extends AbstractArrow implements GemArrow {
 	private static EntityDataAccessor<Integer> ID_EFFECT_COLOR;
 	@Unique
 	private List<GemHits.Entry> bubbas$gemHit = List.of();
-	@Unique
-	private boolean bubbas$charged;
 
 	protected ArrowMixin(EntityType<? extends AbstractArrow> type, Level level) {
 		super(type, level);
@@ -52,9 +52,8 @@ public abstract class ArrowMixin extends AbstractArrow implements GemArrow {
 	}
 
 	@Override
-	public void bubbas$setGemHit(List<GemHits.Entry> entries, boolean charged) {
+	public void bubbas$setGemHit(List<GemHits.Entry> entries) {
 		this.bubbas$gemHit = List.copyOf(entries);
-		this.bubbas$charged = charged;
 		int color = -1;
 		for (GemHits.Entry e : entries) {
 			if (!e.drawback() && ModEffects.gem(e.key()) != null) {
@@ -65,6 +64,23 @@ public abstract class ArrowMixin extends AbstractArrow implements GemArrow {
 		if (color != -1 && this.entityData.get(ID_EFFECT_COLOR) == -1) {
 			this.entityData.set(ID_EFFECT_COLOR, color);
 		}
+	}
+
+	@Unique
+	private static final com.mojang.serialization.Codec<List<GemHits.Entry>> BUBBAS$HIT_CODEC = GemHits.Entry.CODEC.listOf();
+
+	@Override
+	protected void addAdditionalSaveData(ValueOutput output) {
+		super.addAdditionalSaveData(output);
+		if (!this.bubbas$gemHit.isEmpty()) {
+			output.store("bubbas_infused_gems:gem_hit", BUBBAS$HIT_CODEC, this.bubbas$gemHit);
+		}
+	}
+
+	@Override
+	protected void readAdditionalSaveData(ValueInput input) {
+		super.readAdditionalSaveData(input);
+		this.bubbas$gemHit = input.read("bubbas_infused_gems:gem_hit", BUBBAS$HIT_CODEC).map(List::copyOf).orElse(List.of());
 	}
 
 	@WrapOperation(method = "doPostHurtEffects", at = @At(value = "INVOKE",
@@ -92,7 +108,7 @@ public abstract class ArrowMixin extends AbstractArrow implements GemArrow {
 	@Inject(method = "doPostHurtEffects", at = @At("TAIL"))
 	private void bubbas$applyGemHit(LivingEntity mob, CallbackInfo ci) {
 		if (!this.bubbas$gemHit.isEmpty() && this.level() instanceof ServerLevel level) {
-			GemHits.apply(level, mob, this.getOwner(), this, this.bubbas$gemHit, this.bubbas$charged);
+			GemHits.apply(level, mob, this.getOwner(), this, this.bubbas$gemHit);
 		}
 	}
 }

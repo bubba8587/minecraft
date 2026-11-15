@@ -80,11 +80,13 @@ public record Gem(Holder<MobEffect> effect, int infusion, int tier, float main, 
 	/** A one-line summary for the socketed item's tooltip. */
 	public MutableComponent summary() {
 		MutableComponent line = Component.literal("◆ ").withColor(this.effect.value().getColor());
-		line.append(this.hasMain() ? GemText.effectName(this.effect).append(" " + GemText.percent(this.main))
-				: Component.translatable(GemText.KEY + "tooltip.flawed", GemText.effectName(this.effect)));
+		if (this.hasMain()) {
+			line.append(GemText.effectName(this.effect).append(" " + GemText.percent(this.main)));
+		}
 		this.other.ifPresent(r -> line.append(Component.literal(", + ").append(GemText.effectName(r.effect()))
 				.append(" " + GemText.percent(r.strength())).withColor(r.effect().value().getColor())));
-		this.drawback.ifPresent(r -> line.append(Component.literal(", ").append(
+		// A drawback-only gem (owner: no special name) shows just its drawback.
+		this.drawback.ifPresent(r -> line.append(Component.literal(this.hasMain() || this.other.isPresent() ? ", " : "").append(
 				Component.translatable(GemText.KEY + "tooltip.drawback", GemText.effectName(r.effect()))).withStyle(ChatFormatting.RED)));
 		return line;
 	}

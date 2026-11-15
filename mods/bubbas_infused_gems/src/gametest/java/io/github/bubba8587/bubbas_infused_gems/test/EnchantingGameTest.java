@@ -86,7 +86,7 @@ public class EnchantingGameTest {
 	@GameTest
 	public void rollsKeepTheirKindAndNeverTheDirectOpposite(GameTestHelper helper) {
 		Balance b = Balance.get();
-		for (String key : b.v0Brewable) {
+		for (String key : b.gemEffects) {
 			Balance.EffectData e = b.effect(key);
 			InfusedGem gem = GemKit.infused(key, e.variants().keySet().iterator().next(), GemForm.LINGERING, 4).get(ModComponents.INFUSED_GEM);
 			for (int seed = 0; seed < 300; seed++) {

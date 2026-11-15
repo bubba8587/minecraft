@@ -55,7 +55,7 @@ public class BrewingGameTest {
 		expect(helper, brew(helper, potion(Items.POTION, Potions.SWIFTNESS), new ItemStack(Items.AMETHYST_SHARD)), "speed", "normal", GemForm.NORMAL, 1);
 		expect(helper, brew(helper, potion(Items.SPLASH_POTION, Potions.STRONG_STRENGTH), new ItemStack(Items.ENDER_PEARL)), "strength", "strong", GemForm.SPLASH, 3);
 		expect(helper, brew(helper, potion(Items.LINGERING_POTION, Potions.LONG_FIRE_RESISTANCE), new ItemStack(Items.NETHER_STAR)), "fire_resistance", "long", GemForm.LINGERING, 6);
-		expect(helper, brew(helper, potion(Items.LINGERING_POTION, Potions.STRONG_TURTLE_MASTER), new ItemStack(Items.PRISMARINE_SHARD)), "resistance", "strong", GemForm.LINGERING, 5);
+		expect(helper, brew(helper, potion(Items.LINGERING_POTION, Potions.STRONG_TURTLE_MASTER), new ItemStack(Items.PRISMARINE_SHARD)), "turtle_master", "strong", GemForm.LINGERING, 5);
 		expect(helper, brew(helper, potion(Items.POTION, Potions.STRONG_HARMING), new ItemStack(Items.DIAMOND)), "instant_damage", "strong", GemForm.NORMAL, 4);
 		expect(helper, brew(helper, potion(Items.SPLASH_POTION, Potions.POISON), new ItemStack(Items.QUARTZ)), "poison", "normal", GemForm.SPLASH, 2);
 		// Items that carry an effect, in the bottle slot.

@@ -50,8 +50,9 @@ public class GemEffectsGameTest {
 	private static final EquipmentSlot[] ARMOR = GemTotals.ARMOR;
 	private static final String[] PIECES = {"helmet", "chestplate", "leggings", "boots"};
 
-	private static Zombie wearer(GameTestHelper helper, String material, Gem... perPiece) {
-		Zombie zombie = helper.spawnWithNoFreeWill(EntityTypes.ZOMBIE, new BlockPos(1, 1, 1));
+	/** A wearer that isn't undead (undead swap Healing and Harming gems). */
+	private static net.minecraft.world.entity.Mob wearer(GameTestHelper helper, String material, Gem... perPiece) {
+		net.minecraft.world.entity.Mob zombie = helper.spawnWithNoFreeWill(EntityTypes.VINDICATOR, new BlockPos(1, 1, 1));
 		for (int i = 0; i < 4; i++) {
 			zombie.setItemSlot(ARMOR[i], GemKit.socketed(BalanceGameTest.armor(material, PIECES[i]), perPiece));
 		}
@@ -66,11 +67,11 @@ public class GemEffectsGameTest {
 	@GameTest
 	public void bestArmorBuildReachesTheCap(GameTestHelper helper) {
 		Gem perfect = GemKit.gem("speed", 1.0);
-		Zombie zombie = wearer(helper, "netherite", perfect, perfect, perfect);
+		var zombie = wearer(helper, "netherite", perfect, perfect, perfect);
 		helper.succeedWhen(() -> {
 			double s = WornEffects.of(zombie).value("speed");
-			close(s, 0.95, 1e-6, helper, "best build speed total");
-			close(modifier(zombie, Attributes.MOVEMENT_SPEED, "speed", 0), 0.4 * 0.95, 1e-6, helper, "movement speed modifier");
+			close(s, Balance.get().cap, 1e-6, helper, "best build speed total");
+			close(modifier(zombie, Attributes.MOVEMENT_SPEED, "speed", 0), 0.4 * Balance.get().cap, 1e-6, helper, "movement speed modifier");
 			zombie.discard();
 		});
 	}
@@ -80,7 +81,7 @@ public class GemEffectsGameTest {
 		Balance b = Balance.get();
 		// One mixed gem per piece of full iron: 4 gems of each effect, so every total is the same known number.
 		Gem strength = GemKit.gem("strength", 0.9, "jump_boost", 0.5, "weakness");
-		Zombie zombie = wearer(helper, "iron", strength, GemKit.gem("resistance", 0.8, "water_breathing", 0.5, null),
+		var zombie = wearer(helper, "iron", strength, GemKit.gem("resistance", 0.8, "water_breathing", 0.5, null),
 				GemKit.gem("instant_health", 1.0, null, 0, null));
 		helper.succeedWhen(() -> {
 			GemTotals t = WornEffects.of(zombie);
@@ -98,7 +99,7 @@ public class GemEffectsGameTest {
 			// Resistance through the damage hook.
 			double sRes = b.stack(List.of(0.8 * pf, 0.8 * pf, 0.8 * pf, 0.8 * pf), b.armorNorm);
 			float hurt = WornEffects.modifyDamage(zombie, zombie.damageSources().generic(), 10.0F);
-			close(hurt, 10.0 * (1 - 0.8 * sRes), 1e-4, helper, "resistance damage");
+			close(hurt, 10.0 * (1 - 0.4 * sRes), 1e-4, helper, "resistance damage");
 			// Healing gem: a survived attack gives back its share.
 			double sHeal = b.stack(List.of(pf, pf, pf, pf), b.armorNorm);
 			zombie.setHealth(10.0F);
@@ -121,15 +122,15 @@ public class GemEffectsGameTest {
 		MobEffectInstance effect = target.getEffect(ModEffects.gem("poison"));
 		check(helper, effect != null, "no gem poison on the target");
 		check(helper, effect.getAmplifier() == GemMobEffect.amplifier(Math.sqrt(s)), "poison amplifier " + effect.getAmplifier());
-		check(helper, Math.abs(effect.getDuration() - Math.round(Math.sqrt(s) * b.effect("poison").hitTicks())) <= 1, "poison duration " + effect.getDuration());
+		check(helper, Math.abs(effect.getDuration() - GemHits.duration(new GemHits.Entry("poison", s, false))) <= 1, "poison duration " + effect.getDuration());
 		MobEffectInstance drawback = target.getEffect(ModEffects.gem("speed"));
 		check(helper, drawback != null && drawback.getAmplifier() == 9 && drawback.getDuration() == 60, "speed drawback on the target: " + drawback);
-		// Harming is a charged strike: the first hit, then not again for 10 s.
-		check(helper, ((GemEntity) attacker).bubbas$strikeReadyAt() == helper.getLevel().getGameTime() + 200, "charge not started");
-		float before = target.getHealth();
-		target.setInvulnerableTime(0);
+		// Harming strikes on every hit (owner): a second hit strikes again.
+		target.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH).setBaseValue(100.0);
+		target.setHealth(60.0F);
+		target.damageCooldownTime = 0;
 		attacker.doHurtTarget(helper.getLevel(), target);
-		check(helper, before - target.getHealth() < 12.0 * s, "Harming struck again before its charge");
+		check(helper, 60.0F - target.getHealth() >= GemHits.strike("instant_damage", s), "Harming didn't strike on the second hit");
 		attacker.discard();
 		target.discard();
 		helper.succeed();
@@ -175,7 +176,7 @@ public class GemEffectsGameTest {
 		pig.setHealth(1.5F);
 		poison.value().applyEffectTick(helper.getLevel(), pig, 99);
 		check(helper, pig.getHealth() >= 1.0F, "gem poison took the pig below 1 HP: " + pig.getHealth());
-		pig.setInvulnerableTime(0);
+		pig.damageCooldownTime = 0;
 		ModEffects.gem("wither").value().applyEffectTick(helper.getLevel(), pig, 99);
 		check(helper, pig.getHealth() < 1.5F, "gem wither did nothing");
 		pig.discard();

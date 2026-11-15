@@ -3,7 +3,9 @@
 	"package": "io.github.bubba8587.bubbas_infused_gems.test.mixin",
 	"compatibilityLevel": "JAVA_25",
 	"mixins": [
-		"ArrowInvoker"
+		"ArrowInvoker",
+		"FoodDataAccessor",
+		"ThrownTridentInvoker"
 	],
 	"injectors": {
 		"defaultRequire": 1

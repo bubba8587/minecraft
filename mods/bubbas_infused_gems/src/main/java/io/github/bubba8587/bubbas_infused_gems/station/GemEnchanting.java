@@ -61,16 +61,32 @@ public final class GemEnchanting {
 		double infusion = b.infusion(infused.infusion()).factor();
 		float main = outcome.main() == null ? 0.0F : (float) (infused.baseQuality() * b.grades.get(outcome.main()));
 		Optional<Gem.Roll> other = Optional.empty();
-		if (outcome.other() != null && e != null && !e.v0OtherPool().isEmpty()) {
-			String key = e.v0OtherPool().get(random.nextInt(e.v0OtherPool().size()));
+		if (outcome.other() != null && e != null && !e.otherPool().isEmpty()) {
+			String key = e.otherPool().get(random.nextInt(e.otherPool().size()));
 			other = Optional.of(new Gem.Roll(GemText.holder(key), (float) (infusion * b.grades.get(outcome.other()))));
 		}
 		Optional<Gem.Roll> drawback = Optional.empty();
-		if (outcome.drawback() && e != null && !e.v0DrawbackPool().isEmpty()) {
-			String key = e.v0DrawbackPool().get(random.nextInt(e.v0DrawbackPool().size()));
+		if (outcome.drawback() && e != null && !e.drawbackPool().isEmpty()) {
+			String key = weighted(random, e.drawbackPool(), e.drawbackWeights());
 			drawback = Optional.of(new Gem.Roll(GemText.holder(key), (float) b.drawbackOne));
 		}
 		return new Gem(infused.effect(), infused.infusion(), tier, main, other, drawback);
+	}
+
+	/** One of the pool, by weight (owner: Poison and Wither drawbacks roll half as often; weights from the model). */
+	static String weighted(RandomSource random, List<String> pool, List<Double> weights) {
+		double total = 0.0;
+		for (int i = 0; i < pool.size(); i++) {
+			total += i < weights.size() ? weights.get(i) : 1.0;
+		}
+		double r = random.nextDouble() * total;
+		for (int i = 0; i < pool.size(); i++) {
+			r -= i < weights.size() ? weights.get(i) : 1.0;
+			if (r < 0.0) {
+				return pool.get(i);
+			}
+		}
+		return pool.getLast();
 	}
 
 	public static ItemStack finished(Gem gem) {

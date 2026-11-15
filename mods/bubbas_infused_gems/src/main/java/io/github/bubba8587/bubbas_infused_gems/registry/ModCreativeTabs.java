@@ -20,7 +20,7 @@ import net.minecraft.world.item.ItemStack;
 
 import net.fabricmc.fabric.api.creativetab.v1.FabricCreativeModeTab;
 
-/** Creative tab: a lingering Infusion VI Infused Gem and a perfect finished gem of every effect v0 implements. */
+/** Creative tab: a lingering Infusion VI Infused Gem and a perfect finished gem of every gem effect (all of them work). */
 public final class ModCreativeTabs {
 	public static final ResourceKey<CreativeModeTab> MAIN_KEY = ResourceKey.create(Registries.CREATIVE_MODE_TAB, BubbasInfusedGems.id("main"));
 	public static final CreativeModeTab MAIN = Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, MAIN_KEY,
@@ -29,14 +29,12 @@ public final class ModCreativeTabs {
 					.title(Component.translatable("itemGroup." + BubbasInfusedGems.MOD_ID))
 					.displayItems((params, output) -> {
 						Balance b = Balance.get();
-						for (String key : b.v0Brewable.stream().sorted().toList()) {
+						for (String key : b.gemEffects.stream().sorted().toList()) {
 							output.accept(infused(key, top(key), GemForm.LINGERING, 6));
 						}
-						for (String key : b.v0Brewable.stream().sorted().toList()) {
+						for (String key : b.gemEffects.stream().sorted().toList()) {
 							output.accept(perfect(key));
 						}
-						output.accept(perfect("haste"));
-						output.accept(perfect("luck"));
 					})
 					.build());
 

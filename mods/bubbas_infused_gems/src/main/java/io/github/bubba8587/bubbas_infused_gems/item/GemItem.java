@@ -20,7 +20,7 @@ public class GemItem extends Item {
 		if (gem == null) {
 			return super.getName(stack);
 		}
-		return Component.translatable(gem.hasMain() ? "item.bubbas_infused_gems.gem.named" : "item.bubbas_infused_gems.gem.named_flawed",
+		return Component.translatable("item.bubbas_infused_gems.gem.named",
 				GemText.numeral(gem.infusion()), GemText.effectName(gem.effect()));
 	}
 }

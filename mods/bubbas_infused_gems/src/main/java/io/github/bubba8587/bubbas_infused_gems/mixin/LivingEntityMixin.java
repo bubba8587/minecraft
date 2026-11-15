@@ -1,7 +1,23 @@
 // dte:C4
 package io.github.bubba8587.bubbas_infused_gems.mixin;
 
+import java.util.Collection;
+
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import io.github.bubba8587.bubbas_infused_gems.balance.Balance;
+import io.github.bubba8587.bubbas_infused_gems.effect.GemMobEffect;
+import io.github.bubba8587.bubbas_infused_gems.effect.GemValues;
+import io.github.bubba8587.bubbas_infused_gems.registry.ModEffects;
+import net.minecraft.core.Holder;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.phys.Vec3;
+import org.jspecify.annotations.Nullable;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import io.github.bubba8587.bubbas_infused_gems.effect.GemEntity;
 import io.github.bubba8587.bubbas_infused_gems.effect.GemTotals;
 import io.github.bubba8587.bubbas_infused_gems.effect.WornEffects;
@@ -17,13 +33,20 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-/** Armor gems on the wearer: the cached totals, the tick and damage hooks, gravity, and broken gear popping its gems. */
+/**
+ * Armor gems on the wearer: the cached totals, the tick and damage hooks, gravity, water drag, stealth, effect changes
+ * (a gem and a vanilla effect of the same kind don't add: the stronger applies), and broken gear popping its gems.
+ */
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin implements GemEntity {
+	@Shadow
+	public abstract @Nullable MobEffectInstance getEffect(Holder<MobEffect> effect);
+
+	@Shadow
+	public abstract boolean removeEffect(Holder<MobEffect> effect);
+
 	@Unique
 	private GemTotals bubbas$worn = GemTotals.NONE;
-	@Unique
-	private long bubbas$strikeReadyAt;
 	@Unique
 	private int bubbas$lastHurtTick = -100000;
 
@@ -35,16 +58,6 @@ public abstract class LivingEntityMixin implements GemEntity {
 	@Override
 	public void bubbas$setWornGems(GemTotals totals) {
 		this.bubbas$worn = totals;
-	}
-
-	@Override
-	public long bubbas$strikeReadyAt() {
-		return this.bubbas$strikeReadyAt;
-	}
-
-	@Override
-	public void bubbas$setStrikeReadyAt(long time) {
-		this.bubbas$strikeReadyAt = time;
 	}
 
 	@Override
@@ -71,7 +84,77 @@ public abstract class LivingEntityMixin implements GemEntity {
 
 	@ModifyReturnValue(method = "getEffectiveGravity", at = @At("RETURN"))
 	private double bubbas$gemGravity(double gravity) {
-		return this.bubbas$worn.isEmpty() ? gravity : WornEffects.gravity((LivingEntity) (Object) this, gravity);
+		return WornEffects.gravity((LivingEntity) (Object) this, gravity);
+	}
+
+	@WrapOperation(method = "travelInWater", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/phys/Vec3;multiply(DDD)Lnet/minecraft/world/phys/Vec3;"))
+	private Vec3 bubbas$gemWaterDrag(Vec3 movement, double x, double y, double z, Operation<Vec3> original) {
+		LivingEntity self = (LivingEntity) (Object) this;
+		return original.call(movement, WornEffects.waterDrag(self, x), y, WornEffects.waterDrag(self, z));
+	}
+
+	@ModifyReturnValue(method = "getVisibilityPercent", at = @At("RETURN"))
+	private double bubbas$gemStealth(double percent) {
+		return WornEffects.visibility((LivingEntity) (Object) this, percent);
+	}
+
+	/** A gem effect and a vanilla effect of the same kind don't add (owner's rule, open question 31): the stronger applies. */
+	@Inject(method = "addEffect(Lnet/minecraft/world/effect/MobEffectInstance;Lnet/minecraft/world/entity/Entity;)Z", at = @At("HEAD"), cancellable = true)
+	private void bubbas$strongerApplies(MobEffectInstance incoming, @Nullable Entity source, CallbackInfoReturnable<Boolean> cir) {
+		if (!Balance.get().strongerApplies) {
+			return;
+		}
+		Holder<MobEffect> effect = incoming.getEffect();
+		Holder<MobEffect> other;
+		double in;
+		double have;
+		if (effect.value() instanceof GemMobEffect gem) {
+			other = ModEffects.vanilla(gem.key());
+			MobEffectInstance inst = other == null ? null : this.getEffect(other);
+			if (inst == null) {
+				return;
+			}
+			in = GemMobEffect.potency(incoming.getAmplifier());
+			have = GemValues.levelFraction(gem.key(), inst.getAmplifier());
+		} else {
+			String key = io.github.bubba8587.bubbas_infused_gems.gem.GemText.key(effect);
+			other = ModEffects.gem(key);
+			MobEffectInstance inst = other == null || ModEffects.vanilla(key) != effect ? null : this.getEffect(other);
+			if (inst == null) {
+				return;
+			}
+			in = GemValues.levelFraction(key, incoming.getAmplifier());
+			have = GemMobEffect.potency(inst.getAmplifier());
+		}
+		if (have >= in) {
+			cir.setReturnValue(false);
+		} else {
+			this.removeEffect(other);
+		}
+	}
+
+	@Inject(method = "onEffectAdded", at = @At("TAIL"))
+	private void bubbas$effectAdded(MobEffectInstance effect, @Nullable Entity source, CallbackInfo ci) {
+		this.bubbas$effectsChanged();
+	}
+
+	@Inject(method = "onEffectUpdated", at = @At("TAIL"))
+	private void bubbas$effectUpdated(MobEffectInstance effect, boolean doRefreshAttributes, @Nullable Entity source, CallbackInfo ci) {
+		this.bubbas$effectsChanged();
+	}
+
+	@Inject(method = "onEffectsRemoved", at = @At("TAIL"))
+	private void bubbas$effectsRemoved(Collection<MobEffectInstance> effects, CallbackInfo ci) {
+		this.bubbas$effectsChanged();
+	}
+
+	/** Worn attribute gems only top up above a vanilla effect of the same kind, so they follow the wearer's effects. */
+	@Unique
+	private void bubbas$effectsChanged() {
+		LivingEntity self = (LivingEntity) (Object) this;
+		if (!this.bubbas$worn.isEmpty() && !self.level().isClientSide()) {
+			WornEffects.updateAttributes(self);
+		}
 	}
 
 	@Inject(method = "onEquippedItemBroken", at = @At("TAIL"))

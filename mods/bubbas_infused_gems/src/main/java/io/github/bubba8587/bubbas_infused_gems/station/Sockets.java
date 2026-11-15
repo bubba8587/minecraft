@@ -24,10 +24,16 @@ public final class Sockets {
 	/** Weapons that take gems: swords, axes, spears, maces, tridents, bows, crossbows (data tag). */
 	public static final TagKey<Item> WEAPONS = TagKey.create(Registries.ITEM, BubbasInfusedGems.id("socketable_weapons"));
 
+	/** Gear that never takes gems although its tag says armor (owner: the turtle helmet, for now). */
+	public static final TagKey<Item> EXCLUDED = TagKey.create(Registries.ITEM, BubbasInfusedGems.id("not_socketable"));
+
 	private Sockets() {
 	}
 
 	public static int slots(ItemStack stack) {
+		if (stack.is(EXCLUDED)) {
+			return 0;
+		}
 		if (stack.is(ARMOR)) {
 			return Balance.get().armorSlots;
 		}

@@ -15,6 +15,8 @@ import org.spongepowered.asm.mixin.injection.At;
 public abstract class HudMixin {
 	@ModifyReturnValue(method = "getMobEffectSprite", at = @At("RETURN"))
 	private static Identifier bubbas$vanillaIcon(Identifier sprite, Holder<MobEffect> effect) {
-		return effect.value() instanceof GemMobEffect gem ? Identifier.withDefaultNamespace("mob_effect/" + gem.key()) : sprite;
+		// Turtle Master has no vanilla effect icon: it shows Resistance's, its main part.
+		return effect.value() instanceof GemMobEffect gem
+				? Identifier.withDefaultNamespace("mob_effect/" + (gem.key().equals("turtle_master") ? "resistance" : gem.key())) : sprite;
 	}
 }
