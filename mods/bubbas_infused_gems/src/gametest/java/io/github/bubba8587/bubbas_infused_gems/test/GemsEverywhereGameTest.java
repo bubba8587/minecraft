@@ -173,7 +173,7 @@ public class GemsEverywhereGameTest {
 				case "wind_charged", "oozing" -> {
 					// A landing bounces instead of hurting (Wind Burst: a small burst; Oozing: a slime block's bounce).
 					pig.setDeltaMovement(0, -0.8, 0);
-					check(helper, io.github.bubba8587.bubbas_infused_gems.effect.GemActions.landing(pig, 6.0), key + " did not cancel a 6-block fall");
+					check(helper, io.github.bubba8587.bubbas_infused_gems.effect.GemActions.landing(pig, 6.0) < 1e-6, key + " at the cap did not cancel a 6-block fall");
 					check(helper, pig.getDeltaMovement().y > 0.2, key + " landing bounce " + pig.getDeltaMovement().y);
 				}
 				case "weaving" -> close(io.github.bubba8587.bubbas_infused_gems.effect.GemActions.webSlowdown(pig, new Vec3(0.25, 0.05, 0.25)).x, 1.0,
@@ -301,7 +301,7 @@ public class GemsEverywhereGameTest {
 				default -> {
 					MobEffectInstance inst = target.getEffect(ModEffects.gem(key));
 					check(helper, inst != null, key + " on hit: no gem effect");
-					check(helper, inst.getAmplifier() == GemMobEffect.amplifier(Math.sqrt(s)), key + " hit potency " + inst.getAmplifier());
+					check(helper, inst.getAmplifier() == GemMobEffect.amplifier(GemHits.potency(entry)), key + " hit potency " + inst.getAmplifier());
 					check(helper, Math.abs(inst.getDuration() - GemHits.duration(entry)) <= 1 && GemHits.duration(entry) <= 160,
 							key + " hit duration " + inst.getDuration());
 				}
@@ -451,7 +451,8 @@ public class GemsEverywhereGameTest {
 		pig.tickCount += 600;
 		WornEffects.tick(helper.getLevel(), pig, WornEffects.of(pig));
 		close(pig.getAbsorptionAmount(), full, 1e-3, helper, "refilled 30 s after the last damage");
-		// A re-equip 30 s after the last equip-fill fills at once again.
+		// A re-equip 30 s after the last equip-fill fills at once again (the throttle is game time, saved on the wearer).
+		pig.setAttached(io.github.bubba8587.bubbas_infused_gems.registry.ModAttachments.LAST_EQUIP_FILL, helper.getLevel().getGameTime() - 600);
 		pig.setAbsorptionAmount(0.0F);
 		strip(pig);
 		wear(pig, "absorption");

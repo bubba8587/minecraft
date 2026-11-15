@@ -105,9 +105,10 @@ public class GemMobEffect extends MobEffect {
 	}
 
 	@Override
-	public void onEffectStarted(LivingEntity mob, int amplifier) {
+	public void onEffectAdded(LivingEntity mob, int amplifier) {
+		super.onEffectAdded(mob, amplifier);
 		if (this.key.equals("absorption")) {
-			// Like vanilla's Absorption: the shield fills when the effect starts.
+			// The shield fills when the effect is new, not on every refreshing hit.
 			float shield = (float) Balance.get().effect("absorption").wornAttributes().getFirst().at(potency(amplifier));
 			mob.setAbsorptionAmount(Math.max(mob.getAbsorptionAmount(), shield));
 		}

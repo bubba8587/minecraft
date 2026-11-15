@@ -62,7 +62,15 @@ public final class GemHits {
 		return switch (kind(e)) {
 			case "onoff" -> 1.0;
 			case "instant" -> e.s();
-			default -> e.drawback() ? e.s() : Math.pow(e.s(), Balance.get().weaponSplit);
+			default -> {
+				if (e.drawback()) {
+					yield e.s();
+				}
+				double p = Math.pow(e.s(), Balance.get().weaponSplit);
+				Balance.EffectData d = Balance.get().effect(e.key());
+				// A beneficial gem on a hit never gives more than that effect's worn cap (no stacking past it).
+				yield d.good() && d.wornCap() > 0.0 ? Math.min(p, d.wornCap()) : p;
+			}
 		};
 	}
 
@@ -109,10 +117,15 @@ public final class GemHits {
 			if (kind.equals("instant")) {
 				boolean harm = e.key().equals("instant_damage") != (b.undeadInversion && target.isInvertedHealAndHarm());
 				if (harm) {
-					// The strike is its own damage, not part of the hit: without this the hit's invulnerability frames would
-					// swallow all but the part above the weapon's damage.
-					target.damageCooldownTime = 0;
-					target.hurtServer(level, target.damageSources().indirectMagic(direct, attacker), strike("instant_damage", e.s()));
+					// The strike is its own damage (gem_strike, which bypasses the hit cooldown) and leaves the hit's cooldown and
+					// lastHurt as they were, so clicking again during the cooldown lands nothing more.
+					int cooldown = target.damageCooldownTime;
+					float lastHurt = ((io.github.bubba8587.bubbas_infused_gems.mixin.LivingEntityAccessor) target).bubbas$lastHurt();
+					var strikeType = net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.DAMAGE_TYPE,
+							io.github.bubba8587.bubbas_infused_gems.BubbasInfusedGems.id("gem_strike"));
+					target.hurtServer(level, target.damageSources().source(strikeType, direct, attacker), strike("instant_damage", e.s()));
+					target.damageCooldownTime = cooldown;
+					((io.github.bubba8587.bubbas_infused_gems.mixin.LivingEntityAccessor) target).bubbas$setLastHurt(lastHurt);
 				} else {
 					target.heal(strike("instant_health", e.s()));
 				}

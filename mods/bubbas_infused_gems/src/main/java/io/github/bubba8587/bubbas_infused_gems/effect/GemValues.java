@@ -77,7 +77,7 @@ public final class GemValues {
 		if (s <= 0.0) {
 			return 0.0;
 		}
-		return Math.max(0.0, s - vanillaFraction(entity, key));
+		return Math.max(0.0, s - Math.max(vanillaFraction(entity, key), hit(entity, key)));
 	}
 
 	/** The potency of a gem effect a weapon put on this entity (0 when none). */

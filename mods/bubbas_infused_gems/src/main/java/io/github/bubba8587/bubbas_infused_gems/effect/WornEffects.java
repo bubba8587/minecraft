@@ -86,12 +86,24 @@ public final class WornEffects {
 			// the last equip-fill was at least the refill time ago; otherwise it waits like a refill after damage, so
 			// swapping gear can't refill it.
 			int refill = (int) Balance.get().effect("absorption").wornNumber("refill_ticks", 600);
-			if (entity.tickCount - g.bubbas$lastEquipFillTick() >= refill) {
-				entity.setAbsorptionAmount(entity.getMaxAbsorption());
-				g.bubbas$setLastEquipFillTick(entity.tickCount);
+			long now = entity.level().getGameTime();
+			Long last = entity.getAttached(io.github.bubba8587.bubbas_infused_gems.registry.ModAttachments.LAST_EQUIP_FILL);
+			if (last == null || now - last >= refill || now < last) {
+				fillShield(entity);
+				entity.setAttached(io.github.bubba8587.bubbas_infused_gems.registry.ModAttachments.LAST_EQUIP_FILL, now);
 			} else {
 				g.bubbas$setLastHurtTick(entity.tickCount);
 			}
+		}
+	}
+
+	/** Absorption gems fill the shield up to their own share only (not a golden apple's part on top). */
+	public static void fillShield(LivingEntity entity) {
+		Balance.EffectData e = Balance.get().effect("absorption");
+		double share = e.wornAttributes().getFirst().at(GemValues.rawWorn(entity, "absorption"));
+		float target = (float) Math.min(share, entity.getMaxAbsorption());
+		if (entity.getAbsorptionAmount() < target) {
+			entity.setAbsorptionAmount(target);
 		}
 	}
 
@@ -132,7 +144,8 @@ public final class WornEffects {
 			}
 			boolean wet = e.wornFlag("wet_only");
 			double s = GemValues.rawWorn(entity, e.key());
-			double f = GemValues.vanillaFraction(entity, e.key());
+			// A vanilla effect or a gem effect from a hit (they never coexist): the worn part only tops up above it.
+			double f = Math.max(GemValues.vanillaFraction(entity, e.key()), GemValues.hit(entity, e.key()));
 			for (int i = 0; i < e.wornAttributes().size(); i++) {
 				Balance.Attr a = e.wornAttributes().get(i);
 				Identifier id = wet ? wetId(e.key(), i) : id(e.key(), i);
@@ -210,8 +223,8 @@ public final class WornEffects {
 		if (t.value("absorption") > 0.0) {
 			int refill = (int) b.effect("absorption").wornNumber("refill_ticks", 600);
 			GemEntity g = (GemEntity) entity;
-			if (entity.tickCount - g.bubbas$lastHurtTick() >= refill && entity.getAbsorptionAmount() < entity.getMaxAbsorption()) {
-				entity.setAbsorptionAmount(entity.getMaxAbsorption());
+			if (entity.tickCount - g.bubbas$lastHurtTick() >= refill) {
+				fillShield(entity);
 			}
 		}
 		if (t.has("conduit_power")) {
@@ -314,6 +327,11 @@ public final class WornEffects {
 		if (lev > 0.0 && !entity.hasEffect(MobEffects.LEVITATION) && !entity.isNoGravity() && !entity.isInLiquid() && !entity.isFallFlying()) {
 			double rise = levitationRise(lev);
 			double y = entity.getDeltaMovement().y;
+			if (y < -0.05 && !entity.onGround()) {
+				// Falling (a cliff, a jump's way down): fall as normal, the downward pull only reduced by r (owner: a weak gem
+				// doesn't negate falls). Once the fall has slowed, the rise below takes over again.
+				return gravity * (1.0 - Math.min(1.0, lev / Balance.get().cap));
+			}
 			// travelInAir subtracts this. Below the rise speed, go straight to it (vanilla eases by 0.2 a tick, but at these
 			// slow speeds the first steps would fall under the 0.003 blocks/tick that aiStep rounds to 0, and nothing would
 			// move); above it (a jump), ease down as vanilla does.

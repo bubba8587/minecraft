@@ -27,6 +27,11 @@ public abstract class EntityMixin {
 		return (Object) this instanceof LivingEntity entity ? GemActions.deflection(entity, projectile, vanilla) : vanilla;
 	}
 
+	@org.spongepowered.asm.mixin.injection.Inject(method = "setRemoved", at = @At("HEAD"))
+	private void bubbas$slimeGone(Entity.RemovalReason reason, org.spongepowered.asm.mixin.injection.callback.CallbackInfo ci) {
+		GemActions.removed((Entity) (Object) this, reason);
+	}
+
 	@ModifyReturnValue(method = "considersEntityAsAlly", at = @At("RETURN"))
 	private boolean bubbas$slimeOwner(boolean ally, Entity other) {
 		return ally || GemActions.ownedBy((Entity) (Object) this, other);

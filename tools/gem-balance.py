@@ -338,10 +338,10 @@ effect("instant_damage", name="Harming", potion="harming", role="harmful", kind=
 # Gems beyond potions (owner, 2026-11-15): these do what the thing does, not just apply its potion. Their numbers:
 WIND_HIT_UP_BEST = 0.9        # a Wind Burst hit at the cap: the target's upward speed, blocks/tick (a wind charge's own is about 1)
 WIND_HIT_PUSH_BEST = 0.6      # ... and its push away from the attacker, blocks/tick
-WIND_LAND_BOUNCE_BEST = 0.6   # worn: the bounce off a fall's landing at the cap, blocks/tick up (any fall's damage is cancelled)
+WIND_LAND_BOUNCE_BEST = 0.6   # worn: the bounce off a fall's landing at the cap, blocks/tick up (a fall's damage x (1 - s/cap): none only at the cap)
 WIND_MACE_BONUS = 1.6         # owner: on a mace with the Wind Burst enchantment, gem strength x this, past the 90% cap
 WEAVING_WEB_CHANCE_BEST = 0.35  # a Weaving hit at the cap: chance to web the target in place (a real cobweb, only into air)
-OOZING_BOUNCE_BEST = 0.9      # worn: the share of a fall's impact speed bounced back at the cap, slime-block style; no fall damage
+OOZING_BOUNCE_BEST = 0.9      # worn: the share of a fall's impact speed bounced back at the cap, slime-block style; fall damage x (1 - s/cap)
 OOZING_SLIMES = (1, 2)        # a kill with an Oozing weapon: small neutral slimes split off (weakest gem, the cap)
 OOZING_SLIME_CAP = 8          # at most this many living Oozing slimes per owner; past it, kills split off none
 ENDER_CHANCE_BEST = 0.5       # worn Ender at the cap: chance a projectile that would hit blinks the wearer away instead
@@ -354,8 +354,8 @@ def rel(s):
 effect("wind_charged", name="Wind Burst", potion="wind_charged", role="main", kind="action", variants={"normal": (3600, 0)},
 	anchor="Wind charge: a burst that throws what it hits up and away (from Wind Charged potions)",
 	value=lambda s: WIND_LAND_BOUNCE_BEST * rel(s),
-	show=lambda s: f"a fall's landing bounces the wearer {WIND_LAND_BOUNCE_BEST * rel(s):.2f} blocks/tick up with a small burst, no fall damage",
-	impl="Worn: when the wearer would take fall damage, the damage is cancelled and a small wind burst (sound and particles) bounces them up at WIND_LAND_BOUNCE_BEST x s/cap. Hit: the target is thrown up (WIND_HIT_UP_BEST x s/cap) and away from the attacker (WIND_HIT_PUSH_BEST x s/cap); on a mace with the Wind Burst enchantment, x WIND_MACE_BONUS past the cap (owner).",
+	show=lambda s: f"a fall's landing bounces the wearer {WIND_LAND_BOUNCE_BEST * rel(s):.2f} blocks/tick up with a small burst, fall damage {1 - rel(s):.0%} of normal",
+	impl="Worn: when the wearer would take fall damage, it is x (1 - s/cap) and a small wind burst (sound and particles) bounces them up at WIND_LAND_BOUNCE_BEST x s/cap. Hit: the target is thrown up (WIND_HIT_UP_BEST x s/cap) and away from the attacker (WIND_HIT_PUSH_BEST x s/cap); on a mace with the Wind Burst enchantment, x WIND_MACE_BONUS past the cap (owner).",
 	src="WindChargedMobEffect, AbstractWindCharge, MaceItem")
 effect("weaving", name="Weaving", potion="weaving", role="main", kind="action", variants={"normal": (3600, 0)},
 	anchor="Weaving: cobwebs slow you less, and webs spread where you die",
@@ -366,8 +366,8 @@ effect("weaving", name="Weaving", potion="weaving", role="main", kind="action", 
 effect("oozing", name="Oozing", potion="oozing", role="main", kind="action", variants={"normal": (3600, 0)},
 	anchor="Oozing: slimes split off where you die; a slime block's bounce",
 	value=lambda s: OOZING_BOUNCE_BEST * rel(s),
-	show=lambda s: f"bounces off landings like a slime block ({OOZING_BOUNCE_BEST * rel(s):.0%} of the fall speed), no fall damage",
-	impl=f"Worn: fall damage cancelled and the wearer bounced back up with OOZING_BOUNCE_BEST x s/cap of the impact speed. Hit: a kill splits off {OOZING_SLIMES[0]}-{OOZING_SLIMES[1]} small slimes, neutral (no attack goals), owned by the attacker (isAlliedTo, stored on the slime), persistent (never despawn); at most OOZING_SLIME_CAP living per owner; no loot.",
+	show=lambda s: f"bounces off landings like a slime block ({OOZING_BOUNCE_BEST * rel(s):.0%} of the fall speed), fall damage {1 - rel(s):.0%} of normal",
+	impl=f"Worn: fall damage x (1 - s/cap) and the wearer bounced back up with OOZING_BOUNCE_BEST x s/cap of the impact speed. Hit: a kill splits off {OOZING_SLIMES[0]}-{OOZING_SLIMES[1]} small slimes, neutral (no attack goals), owned by the attacker (isAlliedTo, stored on the slime), persistent (never despawn); at most OOZING_SLIME_CAP living per owner anywhere (a counter, not a search); no loot.",
 	src="OozingMobEffect, SlimeBlock")
 effect("silence", name="Silence", potion=None, role="main", variants={"normal": None},
 	source=("item", "echo shard (ancient cities; owner)"),
@@ -380,7 +380,7 @@ effect("ender", name="Ender", potion=None, role="main", variants={"normal": None
 	anchor="Chorus fruit: a random teleport up to 8 blocks away (diameter 16)",
 	value=lambda s: ENDER_CHANCE_BEST * rel(s),
 	show=lambda s: f"{ENDER_CHANCE_BEST * rel(s):.0%} chance a projectile that would hit blinks you away (up to {ENDER_DIAMETER[0] + (ENDER_DIAMETER[1] - ENDER_DIAMETER[0]) * rel(s):.0f}-block diameter)",
-	impl="When a projectile would hurt the wearer: with chance ENDER_CHANCE_BEST x s/cap, chorus fruit's random teleport instead (diameter from ENDER_DIAMETER by strength) and no damage.",
+	impl="When a projectile would actually hurt the wearer (damage above 0, not an explosion): with chance ENDER_CHANCE_BEST x s/cap, chorus fruit's random teleport instead (diameter from ENDER_DIAMETER by strength) and no damage.",
 	src="TeleportRandomlyConsumeEffect, EnderMan.hurtServer")
 effect("breeze", name="Breeze", potion=None, role="main", variants={"normal": None},
 	source=("item", "breeze rod"),

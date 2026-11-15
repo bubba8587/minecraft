@@ -105,11 +105,30 @@ public final class GemActions {
 		}
 	}
 
-	/** Owned Oozing slimes alive near the owner (the cap counts these). */
+	/** Living Oozing slimes of this owner, anywhere (kept on the overworld; owner: at most slime_cap each). */
 	public static int ownedSlimes(ServerLevel level, LivingEntity owner) {
-		UUID id = owner.getUUID();
-		return level.getEntitiesOfClass(Slime.class, new AABB(owner.blockPosition()).inflate(128.0),
-				slime -> id.equals(slime.getAttached(ModAttachments.SLIME_OWNER))).size();
+		java.util.Map<UUID, Integer> counts = level.getServer().overworld().getAttached(ModAttachments.SLIME_COUNTS);
+		return counts == null ? 0 : counts.getOrDefault(owner.getUUID(), 0);
+	}
+
+	private static void countSlime(ServerLevel level, UUID owner, int delta) {
+		ServerLevel overworld = level.getServer().overworld();
+		java.util.Map<UUID, Integer> counts = new java.util.HashMap<>(overworld.getAttachedOrElse(ModAttachments.SLIME_COUNTS, java.util.Map.of()));
+		int n = Math.max(0, counts.getOrDefault(owner, 0) + delta);
+		if (n == 0) {
+			counts.remove(owner);
+		} else {
+			counts.put(owner, n);
+		}
+		overworld.setAttached(ModAttachments.SLIME_COUNTS, java.util.Map.copyOf(counts));
+	}
+
+	/** An entity leaves the world for good (killed or discarded): an Oozing slime frees its owner's count. */
+	public static void removed(Entity entity, Entity.RemovalReason reason) {
+		UUID owner = entity.getAttached(ModAttachments.SLIME_OWNER);
+		if (owner != null && reason.shouldDestroy() && entity.level() instanceof ServerLevel level) {
+			countSlime(level, owner, -1);
+		}
 	}
 
 	private static void splitSlimes(ServerLevel level, double s, LivingEntity target, LivingEntity owner) {
@@ -126,7 +145,9 @@ public final class GemActions {
 			slime.setPersistenceRequired(); // owner: they stay (no despawn timer, no distance despawn)
 			slime.snapTo(target.getX() + (target.getRandom().nextDouble() - 0.5), target.getY() + 0.5,
 					target.getZ() + (target.getRandom().nextDouble() - 0.5), target.getRandom().nextFloat() * 360.0F, 0.0F);
-			level.addFreshEntity(slime);
+			if (level.addFreshEntity(slime)) {
+				countSlime(level, owner.getUUID(), 1);
+			}
 		}
 	}
 
@@ -143,12 +164,12 @@ public final class GemActions {
 	// ------------------------------------------------------------------ worn
 
 	/**
-	 * A wearer would take fall damage: Wind Burst and Oozing cancel it and bounce the wearer (a small burst; a slime
-	 * block's bounce). Returns true when the fall's damage is cancelled.
+	 * A wearer lands from a fall: Wind Burst and Oozing bounce them (a small burst; a slime block's bounce) and take
+	 * r = strength / cap of the fall damage away, so only the perfect set is fully immune. Returns the damage factor (1 - r).
 	 */
-	public static boolean landing(LivingEntity entity, double fallDistance) {
+	public static float landing(LivingEntity entity, double fallDistance) {
 		if (!(entity.level() instanceof ServerLevel level) || WornEffects.of(entity).isEmpty() || fallDistance <= 1.0) {
-			return false;
+			return 1.0F;
 		}
 		double wind = GemValues.value(entity, "wind_charged");
 		double ooze = GemValues.value(entity, "oozing");
@@ -162,14 +183,13 @@ public final class GemActions {
 			double impact = Math.sqrt(2.0 * 0.08 * fallDistance);
 			bounce = Math.max(bounce, impact * num("oozing", "bounce", 0.9) * rel(ooze));
 		}
-		if (bounce <= 0.0 && !(ooze > 0.0)) {
-			return false;
+		double r = Math.min(1.0, Math.max(rel(wind), rel(ooze)));
+		if (bounce > 0.0) {
+			Vec3 v = entity.getDeltaMovement();
+			entity.setDeltaMovement(v.x, bounce, v.z);
+			entity.syncVelocity = true;
 		}
-		Vec3 v = entity.getDeltaMovement();
-		entity.setDeltaMovement(v.x, bounce, v.z);
-		entity.syncVelocity = true;
-		entity.resetFallDistance();
-		return true;
+		return (float) (1.0 - r);
 	}
 
 	/** Weaving worn: the cobweb slowdown moves s/cap of the way to none. */

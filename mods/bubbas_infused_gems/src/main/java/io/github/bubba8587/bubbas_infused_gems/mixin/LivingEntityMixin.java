@@ -50,8 +50,6 @@ public abstract class LivingEntityMixin implements GemEntity {
 	@Unique
 	private int bubbas$lastHurtTick = -100000;
 	@Unique
-	private int bubbas$lastEquipFillTick = -100000;
-	@Unique
 	private float bubbas$foodCarry;
 
 	@Override
@@ -64,15 +62,6 @@ public abstract class LivingEntityMixin implements GemEntity {
 		this.bubbas$foodCarry = carry;
 	}
 
-	@Override
-	public int bubbas$lastEquipFillTick() {
-		return this.bubbas$lastEquipFillTick;
-	}
-
-	@Override
-	public void bubbas$setLastEquipFillTick(int tick) {
-		this.bubbas$lastEquipFillTick = tick;
-	}
 
 	@Override
 	public GemTotals bubbas$wornGems() {
@@ -194,19 +183,16 @@ public abstract class LivingEntityMixin implements GemEntity {
 		}
 	}
 
-	/** Wind Burst and Oozing gems: a landing bounces instead of hurting. */
-	@Inject(method = "causeFallDamage", at = @At("HEAD"), cancellable = true)
-	private void bubbas$gemLanding(double fallDistance, float damageModifier, net.minecraft.world.damagesource.DamageSource source,
-			CallbackInfoReturnable<Boolean> cir) {
-		if (io.github.bubba8587.bubbas_infused_gems.effect.GemActions.landing((LivingEntity) (Object) this, fallDistance)) {
-			cir.setReturnValue(false);
-		}
+	/** Wind Burst and Oozing gems: a landing bounces, and the fall hurts less (not at all only at the perfect set). */
+	@org.spongepowered.asm.mixin.injection.ModifyVariable(method = "causeFallDamage", at = @At("HEAD"), argsOnly = true, ordinal = 0)
+	private float bubbas$gemLanding(float damageModifier, double fallDistance) {
+		return damageModifier * io.github.bubba8587.bubbas_infused_gems.effect.GemActions.landing((LivingEntity) (Object) this, fallDistance);
 	}
 
 	/** Ender gems: a projectile that would hit may blink the wearer away instead. */
 	@Inject(method = "hurtServer", at = @At("HEAD"), cancellable = true)
 	private void bubbas$gemEnder(ServerLevel level, DamageSource source, float damage, CallbackInfoReturnable<Boolean> cir) {
-		if (!this.bubbas$worn.isEmpty() && source.getDirectEntity() != null
+		if (!this.bubbas$worn.isEmpty() && damage > 0.0F && source.getDirectEntity() != null && !source.is(net.minecraft.tags.DamageTypeTags.IS_EXPLOSION)
 				&& io.github.bubba8587.bubbas_infused_gems.effect.GemActions.blink(level, (LivingEntity) (Object) this, source.getDirectEntity())) {
 			cir.setReturnValue(false);
 		}

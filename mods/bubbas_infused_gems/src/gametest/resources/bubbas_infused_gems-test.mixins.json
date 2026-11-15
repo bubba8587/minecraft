@@ -6,7 +6,8 @@
 		"ArrowInvoker",
 		"FoodDataAccessor",
 		"MobEquipmentInvoker",
-		"ThrownTridentInvoker"
+		"ThrownTridentInvoker",
+		"VillagerInvoker"
 	],
 	"injectors": {
 		"defaultRequire": 1

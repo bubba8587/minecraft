@@ -11,6 +11,7 @@
 		"GrindstoneMenuAccessor",
 		"GrindstoneMenuMixin",
 		"GrindstoneResultSlotMixin",
+		"LivingEntityAccessor",
 		"LivingEntityMixin",
 		"MobMixin",
 		"OwnedSlimeMixin",

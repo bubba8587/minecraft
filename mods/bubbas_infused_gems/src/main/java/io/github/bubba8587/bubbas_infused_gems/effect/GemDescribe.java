@@ -61,9 +61,10 @@ public final class GemDescribe {
 			case "blindness" -> f("fog closes in, %.0f%% of the way to Blindness", 100 * s);
 			case "nausea" -> f("your screen wobbles, %.0f%% of Nausea", 100 * s);
 			case "levitation" -> f("lifts you at %.2f blocks/s", WornEffects.levitationRise(s) * 20 * 0.98);
-			case "wind_charged" -> f("landings bounce you %.2f up with a small burst, no fall damage", e.wornNumber("land_bounce", 0.6) * s / b.cap);
+			case "wind_charged" -> f("landings bounce you %.2f up with a small burst, fall damage %.0f%% of normal", e.wornNumber("land_bounce", 0.6) * s / b.cap,
+					100 * Math.max(0.0, 1 - s / b.cap));
 			case "weaving" -> f("walks through cobwebs %.0f%% of the way to full speed", 100 * Math.min(1.0, s / b.cap));
-			case "oozing" -> f("bounces off landings like a slime block (%.0f%%), no fall damage", 100 * e.wornNumber("bounce", 0.9) * s / b.cap);
+			case "oozing" -> f("bounces off landings like a slime block (%.0f%%), fall damage %.0f%% of normal", 100 * e.wornNumber("bounce", 0.9) * s / b.cap, 100 * Math.max(0.0, 1 - s / b.cap));
 			case "silence" -> f("%.0f%% of your movement vibrations silenced", 100 * Math.min(1.0, s / b.cap));
 			case "ender" -> f("%.0f%% chance a projectile blinks you away", 100 * e.wornNumber("chance", 0.5) * s / b.cap);
 			case "breeze" -> f("%.0f%% chance to deflect a projectile", 100 * e.wornNumber("chance", 0.5) * s / b.cap);
