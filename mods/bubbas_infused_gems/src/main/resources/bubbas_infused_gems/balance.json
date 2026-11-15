@@ -1093,7 +1093,8 @@
 			"level_one": 1.0,
 			"variants": {
 				"normal": {
-					"factor": 1.0
+					"factor": 1.0,
+					"potion": "minecraft:luck"
 				}
 			},
 			"source": "found",
@@ -2238,7 +2239,8 @@
 			"level_one": 1.0,
 			"variants": {
 				"normal": {
-					"factor": 1.0
+					"factor": 1.0,
+					"item": "minecraft:suspicious_stew"
 				}
 			},
 			"source": "item",
@@ -2879,7 +2881,8 @@
 			"level_one": 1.0,
 			"variants": {
 				"normal": {
-					"factor": 1.0
+					"factor": 1.0,
+					"item": "minecraft:suspicious_stew"
 				}
 			},
 			"source": "item",
@@ -3213,13 +3216,26 @@
 	},
 	"brewable": [
 		"absorption",
+		"blindness",
+		"conduit_power",
+		"darkness",
+		"dolphins_grace",
 		"fire_resistance",
+		"glowing",
+		"hunger",
+		"infested",
 		"instant_damage",
 		"instant_health",
+		"invisibility",
 		"jump_boost",
+		"levitation",
+		"luck",
+		"nausea",
 		"night_vision",
+		"oozing",
 		"poison",
 		"regeneration",
+		"saturation",
 		"slow_falling",
 		"slowness",
 		"speed",
@@ -3227,6 +3243,8 @@
 		"turtle_master",
 		"water_breathing",
 		"weakness",
+		"weaving",
+		"wind_charged",
 		"wither"
 	],
 	"checks": {

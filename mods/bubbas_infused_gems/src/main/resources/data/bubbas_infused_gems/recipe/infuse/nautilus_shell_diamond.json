@@ -1,0 +1,20 @@
+{
+	"type": "minecraft:brewing",
+	"input": {
+		"item": "minecraft:nautilus_shell"
+	},
+	"reagent": {
+		"item": "minecraft:diamond"
+	},
+	"output": {
+		"id": "bubbas_infused_gems:infused_gem",
+		"components": {
+			"bubbas_infused_gems:infused_gem": {
+				"effect": "minecraft:dolphins_grace",
+				"variant": "normal",
+				"form": "normal",
+				"infusion": 4
+			}
+		}
+	}
+}

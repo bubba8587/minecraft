@@ -135,7 +135,7 @@ Every one of the 40 status effects in 26.3 (the script reads them from the sourc
 | Night Vision | beneficial | Craftable: night vision potion (normal, splash or lingering) + base gem (sets the Infusion level) |
 | Invisibility | beneficial | Craftable: invisibility potion (normal, splash or lingering) + base gem (sets the Infusion level) |
 | Slow Falling | beneficial | Craftable: slow falling potion (normal, splash or lingering) + base gem (sets the Infusion level) |
-| Luck | beneficial | Found only: fishing treasure and shipwrecks (common), buried treasure (rare); the Luck potion has no survival brewing recipe; plus ominous vaults |
+| Luck | beneficial | Found: fishing treasure and shipwrecks (common), buried treasure (rare); plus ominous vaults. Also brewed from its potion (normal, splash or lingering), which has no survival recipe |
 | Healing | beneficial | Craftable: healing potion (normal, splash or lingering) + base gem (sets the Infusion level) |
 | Poison | harmful | Craftable: poison potion (normal, splash or lingering) + base gem (sets the Infusion level) |
 | Slowness | harmful | Craftable: slowness potion (normal, splash or lingering) + base gem (sets the Infusion level) |
@@ -504,7 +504,7 @@ Worn (armor) effects are attribute modifiers, data components or small tick and 
 
 ## Checks (all passed)
 
-- vanilla facts: 129 facts matched against build/mcsrc/26.3
+- vanilla facts: 132 facts matched against build/mcsrc/26.3
 - every ladder step (Infusion level, armor, weapon material, run, grade, potion variant) is at least +4% on the one below; Infusion VI (nether star) and netherite are the only bests; each tier's odds add up to 100%
 - a gem's own strength reaches 1.0 only from the strongest potion or source item + lingering form + tier 3 + Infusion VI (nether star), for every craftable gem; a found-only gem is perfect only from ominous loot at Infusion VI and tier 3
 - all 40 status effects in 26.3 are classified: 30 craftable gems, 6 found-only gems, 1 drawback-only, 4 not gems

@@ -1,0 +1,31 @@
+{
+	"type": "minecraft:brewing",
+	"input": {
+		"item": {
+			"fabric:type": "fabric:components",
+			"base": "minecraft:suspicious_stew",
+			"components": {
+				"minecraft:suspicious_stew_effects": [
+					{
+						"id": "minecraft:saturation",
+						"duration": 7
+					}
+				]
+			}
+		}
+	},
+	"reagent": {
+		"item": "minecraft:amethyst_shard"
+	},
+	"output": {
+		"id": "bubbas_infused_gems:infused_gem",
+		"components": {
+			"bubbas_infused_gems:infused_gem": {
+				"effect": "minecraft:saturation",
+				"variant": "normal",
+				"form": "normal",
+				"infusion": 1
+			}
+		}
+	}
+}

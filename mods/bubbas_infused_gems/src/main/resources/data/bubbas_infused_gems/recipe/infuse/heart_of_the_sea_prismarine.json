@@ -1,0 +1,20 @@
+{
+	"type": "minecraft:brewing",
+	"input": {
+		"item": "minecraft:heart_of_the_sea"
+	},
+	"reagent": {
+		"item": "minecraft:prismarine_shard"
+	},
+	"output": {
+		"id": "bubbas_infused_gems:infused_gem",
+		"components": {
+			"bubbas_infused_gems:infused_gem": {
+				"effect": "minecraft:conduit_power",
+				"variant": "normal",
+				"form": "normal",
+				"infusion": 5
+			}
+		}
+	}
+}

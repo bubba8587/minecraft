@@ -271,7 +271,7 @@ effect("slow_falling", name="Slow Falling", potion="slow_falling", role="main",
 	src="LivingEntity.getEffectiveGravity, Attributes.GRAVITY 0.08")
 effect("luck", name="Luck", potion="luck", role="main",
 	variants={"normal": (6000, 0)}, source=("found", ["common", "rare", "ominous"],
-		"fishing treasure and shipwrecks (common), buried treasure (rare); the Luck potion has no survival brewing recipe"),
+		"fishing treasure and shipwrecks (common), buried treasure (rare)"),
 	anchor="Luck I: luck +1 (only level)",
 	value=lambda s: s, show=lambda s: f"+{s:.2f} luck",
 	impl="Attribute modifier on luck, +s (exact).",
@@ -644,6 +644,8 @@ def source_text(k):
 		return f"Craftable: {E[k]['potion'].replace('_', ' ')} potion (normal, splash or lingering) + base gem (sets the Infusion level)"
 	if src[0] == "item":
 		return f"Craftable: {src[1]} in the bottle slot + base gem (sets the Infusion level); normal form only, so tier 1 at most"
+	if E[k]["potion"]:
+		return f"Found: {src[2]}; plus ominous vaults. Also brewed from its potion (normal, splash or lingering), which has no survival recipe"
 	return f"Found only: {src[2]}; plus ominous vaults"
 
 # ---------------------------------------------------------------- source verification
@@ -692,7 +694,10 @@ SRC_EXPECT_FILES = {
 	"world/entity/monster/illager/Illusioner.java": [r"MobEffects\.BLINDNESS, 400\)"],
 	"world/entity/monster/warden/Warden.java": [r"MobEffects\.DARKNESS, 260"],
 	"world/entity/npc/villager/Villager.java": [r"0\.3F \+ 0\.0625F \* heroOfTheVillage\.getAmplifier\(\)"],
-	"world/level/block/Blocks.java": [r"FlowerBlock\(MobEffects\.SATURATION", r"FlowerBlock\(MobEffects\.BLINDNESS, 11\.0F", r"WitherRoseBlock\(MobEffects\.WITHER"],
+	"world/level/block/Blocks.java": [r"FlowerBlock\(MobEffects\.SATURATION, 0\.35F", r"FlowerBlock\(MobEffects\.BLINDNESS, 11\.0F", r"WitherRoseBlock\(MobEffects\.WITHER",
+		r"GOLDEN_DANDELION = register"],
+	"world/level/block/EyeblossomBlock.java": [r"OPEN\(true, MobEffects\.BLINDNESS, 11\.0F"],
+	"world/level/block/FlowerBlock.java": [r"Mth\.floor\(effectSeconds \* 20\.0F\)"],
 	"world/item/component/Consumables.java#2": [r"NAUSEA, 300, 0", r"ABSORPTION, 2400, 0", r"HUNGER, 600, 0\), 0\.8F"],
 }
 
@@ -1415,15 +1420,25 @@ RECIPE_DIR = MOD / "data" / "bubbas_infused_gems" / "recipe" / "infuse"
 MOD_ID = "bubbas_infused_gems"
 BASE_ITEMS = {"amethyst": "minecraft:amethyst_shard", "quartz": "minecraft:quartz", "ender_pearl": "minecraft:ender_pearl",
 	"diamond": "minecraft:diamond", "prismarine": "minecraft:prismarine_shard", "nether_star": "minecraft:nether_star"}
-# Items that brew an item-sourced Infused Gem (bottle slot), by effect and potion variant. The stews (saturation,
-# blindness) need a component-matching ingredient and wait for a later version.
+# Items that brew an item-sourced Infused Gem (bottle slot), by effect and potion variant: (file name, ingredient). The
+# stews are matched by their stew effect with Fabric API's components ingredient; every vanilla flower of one effect
+# gives the same component (dandelion, golden dandelion and blue orchid: Saturation 7 ticks; azure bluet and open
+# eyeblossom: Blindness 220 ticks; FlowerBlock / EyeblossomBlock, effect seconds x 20), so one recipe covers them all.
+def stew(effect, ticks):
+	return {"fabric:type": "fabric:components", "base": "minecraft:suspicious_stew",
+		"components": {"minecraft:suspicious_stew_effects": [{"id": f"minecraft:{effect}", "duration": ticks}]}}
+STEW_TICKS = {"saturation": 7, "blindness": 220}  # verified against Blocks.java in verify_source
 ITEM_SOURCES = {
-	"absorption": {"normal": "minecraft:golden_apple", "strong": "minecraft:enchanted_golden_apple"},
-	"dolphins_grace": {"normal": "minecraft:nautilus_shell"}, "conduit_power": {"normal": "minecraft:heart_of_the_sea"},
-	"wither": {"normal": "minecraft:wither_rose"}, "hunger": {"normal": "minecraft:rotten_flesh"},
-	"glowing": {"normal": "minecraft:glowstone_dust"}, "levitation": {"normal": "minecraft:shulker_shell"},
-	"nausea": {"normal": "minecraft:pufferfish"}, "darkness": {"normal": "minecraft:echo_shard"},
+	"absorption": {"normal": ("golden_apple", "minecraft:golden_apple"), "strong": ("enchanted_golden_apple", "minecraft:enchanted_golden_apple")},
+	"dolphins_grace": {"normal": ("nautilus_shell", "minecraft:nautilus_shell")}, "conduit_power": {"normal": ("heart_of_the_sea", "minecraft:heart_of_the_sea")},
+	"wither": {"normal": ("wither_rose", "minecraft:wither_rose")}, "hunger": {"normal": ("rotten_flesh", "minecraft:rotten_flesh")},
+	"glowing": {"normal": ("glowstone_dust", "minecraft:glowstone_dust")}, "levitation": {"normal": ("shulker_shell", "minecraft:shulker_shell")},
+	"nausea": {"normal": ("pufferfish", "minecraft:pufferfish")}, "darkness": {"normal": ("echo_shard", "minecraft:echo_shard")},
+	"saturation": {"normal": ("saturation_stew", stew("saturation", STEW_TICKS["saturation"]))},
+	"blindness": {"normal": ("blindness_stew", stew("blindness", STEW_TICKS["blindness"]))},
 }
+def source_item_id(ingredient):
+	return ingredient if isinstance(ingredient, str) else ingredient["base"]
 FORM_ITEMS = {"normal": "minecraft:potion", "splash": "minecraft:splash_potion", "lingering": "minecraft:lingering_potion"}
 
 # How the mod realises each effect worn (armor, on the wearer) at strength s. "attributes": vanilla attribute modifiers,
@@ -1475,9 +1490,6 @@ RULES = {
 	"undead_inversion": True,      # Q32: Healing/Harming gems swap on undead; undead ignore poison and regeneration gems
 	"invisibility_stealth": True,  # Q33: Invisibility gems are stealth only, never a see-through body
 }
-# Brewing for these waits for later work (potions and items not wired up yet); the gems themselves all work.
-BREWING_LATER = {"invisibility", "wind_charged", "weaving", "oozing", "infested",
-	"dolphins_grace", "conduit_power", "hunger", "glowing", "levitation", "nausea", "darkness"}
 # What one hit applies at potency 1.0, for effects whose hit isn't an attribute set from WORN: damage or healing per
 # second (a gem mob effect), a per-hit strike's damage or heal.
 HIT_UNIT = {"poison": 25 / 12 * 0.8, "wither": 1.0, "regeneration": 0.8, "resistance": 0.4, "turtle_master": 0.8, "hunger": HIT_HUNGER_RATE,
@@ -1506,10 +1518,10 @@ def export_data():
 			d["variants"] = {}
 			for v, f in vf.items():
 				vd = {"factor": f}
-				if src[0] == "potion":
+				if e["potion"]:
 					vd["potion"] = potion_id(e, v)
-				elif src[0] == "item" and k in ITEM_SOURCES:
-					vd["item"] = ITEM_SOURCES[k][v]
+				elif k in ITEM_SOURCES:
+					vd["item"] = source_item_id(ITEM_SOURCES[k][v][1])
 				d["variants"][v] = vd
 			d["source"] = src[0]
 			if src[0] == "found":
@@ -1569,11 +1581,9 @@ def export_data():
 	}
 
 def brewable(k):
-	"""An Infused Gem brews for an effect with a potion or a source item, except the ones whose brewing comes later."""
-	e = E[k]
-	if k in BREWING_LATER:
-		return False
-	return e["source"][0] == "potion" or (e["source"][0] == "item" and k in ITEM_SOURCES)
+	"""An Infused Gem brews for every effect with a potion (Luck too: its potion has no survival recipe, but potions
+	from commands, other mods or loot brew) or a source item."""
+	return bool(E[k]["potion"]) or k in ITEM_SOURCES
 
 def brewing_recipes():
 	"""(file name, recipe) for every brewable Infused Gem: potion (3 forms) or source item + base gem -> Infused Gem."""
@@ -1584,12 +1594,13 @@ def brewing_recipes():
 		e = E[k]
 		for v in variant_factors(e["variants"]):
 			for lvl, (b, _, _, _) in enumerate(BASE_GEMS, 1):
-				if e["source"][0] == "potion":
+				if e["potion"]:
 					for form, item in FORM_ITEMS.items():
 						inp = {"item": item, "potion_contents": {"potions": potion_id(e, v)}}
 						out.append((f"{form}_{v}_{e['potion']}_{b}", inp, k, v, form, lvl, b))
 				else:
-					out.append((f"{ITEM_SOURCES[k][v].split(':')[1]}_{b}", {"item": ITEM_SOURCES[k][v]}, k, v, "normal", lvl, b))
+					name, ingredient = ITEM_SOURCES[k][v]
+					out.append((f"{name}_{b}", {"item": ingredient}, k, v, "normal", lvl, b))
 	recipes = []
 	for name, inp, k, v, form, lvl, b in out:
 		recipes.append((name + ".json", {"type": "minecraft:brewing", "input": inp, "reagent": {"item": BASE_ITEMS[b]},
@@ -1612,9 +1623,14 @@ def check_export(errors):
 	for k in GEM_EFFECTS + list(DRAWBACK_ONLY):
 		if k not in WORN:
 			errors.append(f"export: {k} has no WORN entry (every gem works in armor)")
-	for k in BREWING_LATER:
-		if k not in GEM_EFFECTS:
-			errors.append(f"export: BREWING_LATER names unknown gem {k}")
+	for k in GEM_EFFECTS:
+		if E[k]["source"][0] == "item" and k not in ITEM_SOURCES:
+			errors.append(f"export: {k} is item-sourced but has no ITEM_SOURCES entry")
+		if E[k]["source"][0] == "found" and brewable(k) and not E[k]["potion"]:
+			errors.append(f"export: found-only {k} brews from an item")
+	for k in ITEM_SOURCES:
+		if set(ITEM_SOURCES[k]) != set(E[k]["variants"]):
+			errors.append(f"export: {k} source items don't cover its variants")
 
 def export_files():
 	"""{path: text} for every generated file in the mod."""

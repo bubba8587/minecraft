@@ -1,0 +1,20 @@
+{
+	"type": "minecraft:brewing",
+	"input": {
+		"item": "minecraft:echo_shard"
+	},
+	"reagent": {
+		"item": "minecraft:quartz"
+	},
+	"output": {
+		"id": "bubbas_infused_gems:infused_gem",
+		"components": {
+			"bubbas_infused_gems:infused_gem": {
+				"effect": "minecraft:darkness",
+				"variant": "normal",
+				"form": "normal",
+				"infusion": 2
+			}
+		}
+	}
+}
