@@ -4,8 +4,7 @@
 		"model": "bubbas_infused_gems:item/infused_gem",
 		"tints": [
 			{
-				"type": "bubbas_infused_gems:gem_color",
-				"layer": "main"
+				"type": "bubbas_infused_gems:gem_color"
 			},
 			{
 				"type": "minecraft:constant",

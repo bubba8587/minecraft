@@ -4,10 +4,13 @@
 
   python tools/gem-textures.py
 
-Each gem is three layers: a grayscale body (tinted in game by the main effect's potion color), an untinted outline
-and sparkle, and a small highlight facet (tinted by a second effect: the owner's experiment). The 32x set is drawn at
-32 pixels with finer shading, not scaled up. Placeholders until a person draws the real art; never AI-generated.
-Needs Pillow.
+Each gem is two layers:
+- a grayscale body, tinted in game by the effect's potion color (pushed toward full saturation in GemColorSource).
+  It holds all the shading, including a dark rim, so the edge is a deep shade of the gem's own color like vanilla
+  gems, not a black line;
+- an untinted shine layer: white glints and a bright rim on the lit (top-left) side, so gems read as polished jewels.
+A second-effect highlight facet was tried and dropped (owner). The 32x set is drawn at 32 pixels with finer shading,
+not scaled up. Placeholders until a person draws the real art; never AI-generated. Needs Pillow.
 """
 import math
 from pathlib import Path
@@ -18,9 +21,7 @@ ROOT = Path(__file__).resolve().parent.parent
 RES = ROOT / "mods" / "bubbas_infused_gems" / "src" / "main" / "resources"
 OUT = {16: RES / "assets" / "bubbas_infused_gems" / "textures" / "item",
 	32: RES / "resourcepacks" / "bubbas_infused_gems_32x" / "assets" / "bubbas_infused_gems" / "textures" / "item"}
-
-CUT = [(0.06, 0.38), (0.28, 0.10), (0.72, 0.10), (0.94, 0.38), (0.50, 0.94)]  # finished gem: crown + pavilion
-CROWN_V = 0.38
+LIGHT = (-0.7071, -0.7071)  # light from the top left
 
 
 def inside(poly, x, y):
@@ -42,8 +43,8 @@ def edge(m, x, y):
 
 
 def quant(v, n):
-	steps = 5 if n == 16 else 9  # 32x: more shading levels (Faithful style)
-	return int(round(v * steps) / steps * 255)
+	steps = 6 if n == 16 else 10  # 32x: more shading levels (Faithful style)
+	return int(round(max(0.0, min(1.0, v)) * steps) / steps * 255)
 
 
 def octagon(hw, hh, c):
@@ -52,80 +53,107 @@ def octagon(hw, hh, c):
 		(0.5 + hw - c, 0.5 + hh), (0.5 - hw + c, 0.5 + hh), (0.5 - hw, 0.5 + hh - c), (0.5 - hw, 0.5 - hh + c)]
 
 
-OUTER = octagon(0.43, 0.43, 0.43 * 2 / (2 + 2 ** 0.5))  # finished gem: a regular octagon seen from above, emerald-like, not an emerald copy (owner)
-TABLE = octagon(0.22, 0.22, 0.22 * 2 / (2 + 2 ** 0.5))  # the flat top facet
+REG = 2 / (2 + 2 ** 0.5)  # corner cut of a regular octagon, as a fraction of the half width
+OUTER = octagon(0.43, 0.43, 0.43 * REG)  # finished gem: a regular octagon seen from above, emerald-like, not an emerald copy (owner)
+TABLE = octagon(0.22, 0.22, 0.22 * REG)  # the flat top facet
+
+
+def put(img, x, y, rgba):
+	n = img.size[0]
+	if 0 <= x < n and 0 <= y < n:
+		img.putpixel((x, y), rgba)
 
 
 def cut_gem(n):
 	m = mask(n, lambda u, v: inside(OUTER, u, v))
-	body, line, high = (Image.new("RGBA", (n, n), (0, 0, 0, 0)) for _ in range(3))
+	body, shine = (Image.new("RGBA", (n, n), (0, 0, 0, 0)) for _ in range(2))
 	edges = []  # (outward normal, offset) for each side of the outer octagon
 	for i in range(8):
 		(x1, y1), (x2, y2) = OUTER[i], OUTER[(i + 1) % 8]
 		nx, ny = y2 - y1, x1 - x2
 		ln = math.hypot(nx, ny)
-		nx, ny = nx / ln, ny / ln
-		edges.append((nx, ny, nx * x1 + ny * y1))
+		edges.append((nx / ln, ny / ln, (nx * x1 + ny * y1) / ln))
 	for y in range(n):
 		for x in range(n):
 			if not m[y][x]:
 				continue
 			u, v = (x + 0.5) / n, (y + 0.5) / n
+			nx, ny, _ = min(edges, key=lambda e: e[2] - (e[0] * u + e[1] * v))
+			lit = LIGHT[0] * nx + LIGHT[1] * ny  # -1 facing away from the light, 1 facing it
 			if edge(m, x, y):
-				line.putpixel((x, y), (34, 30, 44, 255))
+				body.putpixel((x, y), (g := quant(0.30 + 0.12 * lit, n), g, g, 255))  # rim: a deep shade of the gem color
+				if lit > 0.5:
+					shine.putpixel((x, y), (255, 255, 255, 110))
 				continue
-			if inside(TABLE, u, v):  # table: bright and flat, a little darker toward the bottom right
-				shade = 0.88 - 0.25 * ((u - 0.5) + (v - 0.5))
-			else:  # bevel: the facet is the side the pixel is closest to, lit from the top left
-				nx, ny, _ = min(edges, key=lambda e: e[2] - (e[0] * u + e[1] * v))
-				shade = 0.66 + 0.30 * (-0.7071 * nx - 0.7071 * ny)
-				if nx < -0.5 and ny < -0.5:  # the upper-left corner facet carries the second effect's color
-					high.putpixel((x, y), (235, 235, 235, 255))
-			g = quant(max(0.3, min(1.0, shade)), n)
+			if inside(TABLE, u, v):  # table: the gem's full color, darkening toward the bottom right
+				shade = 0.92 - 0.45 * ((u - 0.5) + (v - 0.5))
+			else:  # bevels: strong light and dark, like a cut stone
+				shade = 0.62 + 0.38 * lit
+			g = quant(shade, n)
 			body.putpixel((x, y), (g, g, g, 255))
-	sparkle(line, n, 0.40, 0.30)
-	return body, line, high
+	glint(shine, n, 0.36, 0.34)
+	return body, shine
 
 
 def raw_gem(n):
 	def test(u, v):
 		return ((u - 0.5) / 0.36) ** 2 + ((v - 0.55) / 0.38) ** 2 <= 1.0 and v > 0.14
 	m = mask(n, test)
-	body, line, high = (Image.new("RGBA", (n, n), (0, 0, 0, 0)) for _ in range(3))
+	body, shine = (Image.new("RGBA", (n, n), (0, 0, 0, 0)) for _ in range(2))
 	for y in range(n):
 		for x in range(n):
 			if not m[y][x]:
 				continue
 			u, v = (x + 0.5) / n, (y + 0.5) / n
+			lit = -((u - 0.5) + (v - 0.55)) / 0.5  # rounded: lighter toward the top left
 			if edge(m, x, y):
-				line.putpixel((x, y), (34, 30, 44, 255))
+				g = quant(0.30 + 0.12 * lit, n)
+				body.putpixel((x, y), (g, g, g, 255))
 				continue
-			d = math.hypot(u - 0.38, v - 0.38)
+			d = math.hypot(u - 0.38, v - 0.40)
 			swirl = 0.08 * math.sin(10 * math.atan2(v - 0.55, u - 0.5) + 14 * math.hypot(u - 0.5, v - 0.55))
-			g = quant(max(0.4, min(1.0, 1.0 - 0.9 * d + swirl)), n)
+			g = quant(1.05 - 1.1 * d + swirl, n)
 			body.putpixel((x, y), (g, g, g, 255))
-	sparkle(line, n, 0.34, 0.32)
-	return body, line, high
+	glint(shine, n, 0.36, 0.36)
+	return body, shine
 
 
-def sparkle(img, n, u, v):
+def glint(img, n, u, v):
+	"""A white specular spot with a short diagonal streak, plus a small twinkle lower right."""
 	x, y = int(u * n), int(v * n)
-	pts = [(0, 0)] + ([(1, 0), (0, 1)] if n == 16 else [(1, 0), (0, 1), (-1, 0), (0, -1), (2, 0), (0, 2)])
-	for dx, dy in pts:
-		img.putpixel((x + dx, y + dy), (255, 255, 255, 255 if (dx, dy) == (0, 0) else 200))
+	if n == 16:
+		pts = [((0, 0), 255), ((1, 0), 220), ((0, 1), 220), ((-1, -1), 160)]
+		twinkle = [((0, 0), 190)]
+	else:
+		pts = [((0, 0), 255), ((1, 0), 255), ((0, 1), 255), ((1, 1), 230), ((2, 0), 170), ((0, 2), 170),
+			((-1, -1), 200), ((-2, -2), 140), ((-1, 0), 150), ((0, -1), 150)]
+		twinkle = [((0, 0), 230), ((1, 0), 140), ((-1, 0), 140), ((0, 1), 140), ((0, -1), 140)]
+	for (dx, dy), a in pts:
+		put(img, x + dx, y + dy, (255, 255, 255, a))
+	tx, ty = int(0.66 * n), int(0.64 * n)
+	for (dx, dy), a in twinkle:
+		put(img, tx + dx, ty + dy, (255, 255, 255, a))
 
 
 def main():
 	for n, out in OUT.items():
 		out.mkdir(parents=True, exist_ok=True)
 		for name, fn in (("gem", cut_gem), ("infused_gem", raw_gem)):
-			body, line, high = fn(n)
+			body, shine = fn(n)
 			body.save(out / f"{name}.png")
-			line.save(out / f"{name}_outline.png")
-			if name == "gem":
-				high.save(out / f"{name}_highlight.png")
+			shine.save(out / f"{name}_outline.png")  # file name kept: the models point at it
+		(out / "gem_highlight.png").unlink(missing_ok=True)
 		print(f"wrote {n}x textures to {out.relative_to(ROOT)}")
 	icon()
+
+
+def jewel(rgb, sat=0.55, bright=0.35):
+	"""Same as GemColorSource.jewel: more saturation and brightness, same hue."""
+	import colorsys
+	h, s, v = colorsys.rgb_to_hsv(*(c / 255 for c in rgb))
+	s = s if s < 0.08 else s + (1 - s) * sat
+	v = v + (1 - v) * bright
+	return tuple(round(c * 255) for c in colorsys.hsv_to_rgb(h, s, v))
 
 
 def tint(img, rgb):
@@ -139,9 +167,9 @@ def tint(img, rgb):
 
 
 def icon():
-	"""The mod icon: the 32x gem in Speed blue with a Strength highlight, scaled to 128 (a placeholder too)."""
-	body, line, high = cut_gem(32)
-	img = Image.alpha_composite(Image.alpha_composite(tint(body, (51, 172, 220)), tint(high, (255, 199, 0))), line)
+	"""The mod icon: the 32x gem in Speed's jewel color, scaled to 128 (a placeholder too)."""
+	body, shine = cut_gem(32)
+	img = Image.alpha_composite(tint(body, jewel((51, 172, 220))), shine)
 	img.resize((128, 128), Image.Resampling.NEAREST).save(RES / "assets" / "bubbas_infused_gems" / "icon.png")
 
 

@@ -1,39 +1,15 @@
 {
 	"model": {
-		"type": "minecraft:condition",
-		"property": "minecraft:custom_model_data",
-		"index": 0,
-		"on_true": {
-			"type": "minecraft:model",
-			"model": "bubbas_infused_gems:item/gem_plain",
-			"tints": [
-				{
-					"type": "bubbas_infused_gems:gem_color",
-					"layer": "main"
-				},
-				{
-					"type": "minecraft:constant",
-					"value": -1
-				}
-			]
-		},
-		"on_false": {
-			"type": "minecraft:model",
-			"model": "bubbas_infused_gems:item/gem",
-			"tints": [
-				{
-					"type": "bubbas_infused_gems:gem_color",
-					"layer": "main"
-				},
-				{
-					"type": "bubbas_infused_gems:gem_color",
-					"layer": "second"
-				},
-				{
-					"type": "minecraft:constant",
-					"value": -1
-				}
-			]
-		}
+		"type": "minecraft:model",
+		"model": "bubbas_infused_gems:item/gem",
+		"tints": [
+			{
+				"type": "bubbas_infused_gems:gem_color"
+			},
+			{
+				"type": "minecraft:constant",
+				"value": -1
+			}
+		]
 	}
 }

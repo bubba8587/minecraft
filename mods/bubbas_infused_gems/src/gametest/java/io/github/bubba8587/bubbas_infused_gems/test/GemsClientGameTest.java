@@ -6,6 +6,7 @@ import java.util.function.Function;
 
 import io.github.bubba8587.bubbas_infused_gems.gem.Gem;
 import io.github.bubba8587.bubbas_infused_gems.gem.GemForm;
+import io.github.bubba8587.bubbas_infused_gems.gem.GemText;
 import io.github.bubba8587.bubbas_infused_gems.test.mixin.ContainerScreenAccessor;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
@@ -13,7 +14,6 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.gui.screens.worldselection.WorldCreationUiState;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -26,7 +26,6 @@ import net.minecraft.world.inventory.SmithingMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.component.CustomModelData;
 
 import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
@@ -35,7 +34,7 @@ import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContex
 
 /**
  * Looks at the gems (screenshots in build/run/clientGameTest/screenshots/): several colors in the inventory with their
- * tooltips (inventory), the highlight experiment beside plain gems (highlight), the enchanting table with an Infused
+ * tooltips (inventory), a big view of finished and Infused Gems in many colors (colors), the enchanting table with an Infused
  * Gem and its hint (enchanting), socketing at the smithing table (smithing), and a player in gemmed armor with /gems
  * (worn). Run a part with -PclientTests=inventory,... (ClientTests).
  */
@@ -54,7 +53,7 @@ public class GemsClientGameTest implements FabricClientGameTest {
 
 	@Override
 	public void runTest(ClientGameTestContext context) {
-		if (!List.of("inventory", "highlight", "enchanting", "smithing", "worn").stream().anyMatch(ClientTests::run)) {
+		if (!List.of("inventory", "colors", "enchanting", "smithing", "worn").stream().anyMatch(ClientTests::run)) {
 			return;
 		}
 		try (TestSingleplayerContext sp = context.worldBuilder()
@@ -70,8 +69,8 @@ public class GemsClientGameTest implements FabricClientGameTest {
 			if (ClientTests.run("inventory")) {
 				inventory(context, server);
 			}
-			if (ClientTests.run("highlight")) {
-				highlight(context, server);
+			if (ClientTests.run("colors")) {
+				colors(context, server);
 			}
 			if (ClientTests.run("enchanting")) {
 				enchanting(context, server);
@@ -157,19 +156,16 @@ public class GemsClientGameTest implements FabricClientGameTest {
 		context.runOnClient(mc -> mc.player.closeContainer());
 	}
 
-	/** Top: the highlight experiment (second effect's color on the top-left facet). Below: the same gems, plain. */
-	private static void highlight(ClientGameTestContext context, TestServerContext server) {
+	/** A big look at the colors: finished gems in the hotbar, the matching Infused Gems in the first inventory row. */
+	private static void colors(ClientGameTestContext context, TestServerContext server) {
 		items(server, i -> {
 			int col = i % 9;
-			if (col >= COLORS.size()) {
+			if (col >= COLORS.size() || i >= 18) {
 				return ItemStack.EMPTY;
 			}
-			ItemStack gem = GemKit.item(COLORS.get(col));
-			if (i >= 9 && i < 18) {
-				gem.set(DataComponents.CUSTOM_MODEL_DATA, new CustomModelData(List.of(), List.of(true), List.of(), List.of()));
-				return gem;
-			}
-			return i < 9 ? gem : ItemStack.EMPTY;
+			Gem gem = COLORS.get(col);
+			return i < 9 ? GemKit.item(gem)
+					: GemKit.infused(GemText.key(gem.effect()),"normal", GemForm.LINGERING, 6);
 		});
 		context.getInput().resizeWindow(1280, 1024);
 		context.waitTicks(5);
@@ -177,7 +173,7 @@ public class GemsClientGameTest implements FabricClientGameTest {
 		context.waitTicks(5);
 		context.getInput().setCursorPos(0, 0);
 		context.waitTicks(2);
-		context.takeScreenshot("gems-highlight-experiment-top-row-vs-plain-bottom-row");
+		context.takeScreenshot("gems-colors-finished-hotbar-infused-above");
 		context.runOnClient(mc -> mc.player.closeContainer());
 		context.getInput().resizeWindow(854, 480);
 		context.waitTicks(5);
