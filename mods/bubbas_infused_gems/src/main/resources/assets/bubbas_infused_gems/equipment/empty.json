@@ -1,3 +1,9 @@
 {
-	"layers": {}
+	"layers": {
+		"pig_saddle": [
+			{
+				"texture": "minecraft:saddle"
+			}
+		]
+	}
 }

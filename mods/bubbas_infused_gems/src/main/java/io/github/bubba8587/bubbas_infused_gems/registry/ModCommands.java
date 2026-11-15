@@ -50,7 +50,7 @@ public final class ModCommands {
 						.then(Commands.argument("player", EntityArgument.player())
 								.requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
 								.executes(c -> show(c.getSource(), EntityArgument.getPlayer(c, "player"))))
-						// /gems kit <effect> [material] (owner, for testing): a full perfect set and sword of one effect.
+						// /gems kit <effect> [material] [infusion] (owner, for testing): a full set and sword of one effect.
 						.then(Commands.literal("kit")
 								.requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
 								.then(Commands.argument("effect", StringArgumentType.word())
@@ -59,7 +59,12 @@ public final class ModCommands {
 										.then(Commands.argument("material", StringArgumentType.word())
 												.suggests((c, b) -> SharedSuggestionProvider.suggest(KIT_MATERIALS, b))
 												.executes(c -> kit(c.getSource(), StringArgumentType.getString(c, "effect"),
-														StringArgumentType.getString(c, "material"))))))));
+														StringArgumentType.getString(c, "material")))
+												// [infusion] 1-6 (owner): tier 3 full-strength gems at that Infusion level; 6 is perfect.
+												.then(Commands.argument("infusion", com.mojang.brigadier.arguments.IntegerArgumentType.integer(1, 6))
+														.executes(c -> kit(c.getSource(), StringArgumentType.getString(c, "effect"),
+																StringArgumentType.getString(c, "material"),
+																com.mojang.brigadier.arguments.IntegerArgumentType.getInteger(c, "infusion")))))))));
 	}
 
 	/** Armor materials the kit can use (vanilla's item name prefixes follow). */
@@ -76,11 +81,17 @@ public final class ModCommands {
 	 * 3, full strength, nothing else), and gives a matching sword with 2. Worn armor goes back to the inventory (or drops).
 	 */
 	public static int kit(CommandSourceStack source, String effect, String material) throws CommandSyntaxException {
+		return kit(source, effect, material, 6);
+	}
+
+	/** The kit at an Infusion level (1-6): tier 3, full grade, strongest potion, no extras; Infusion VI is perfect. */
+	public static int kit(CommandSourceStack source, String effect, String material, int infusion) throws CommandSyntaxException {
 		ServerPlayer player = source.getPlayerOrException();
 		if (!Balance.get().gemEffects.contains(effect) || !KIT_MATERIALS.contains(material)) {
 			throw UNKNOWN.create();
 		}
-		Gem perfect = new Gem(GemText.holder(effect), 6, 3, 1.0F, Optional.empty(), Optional.empty());
+		Balance.Infusion level = Balance.get().infusion(infusion);
+		Gem perfect = new Gem(GemText.holder(effect), infusion, 3, (float) level.factor(), Optional.empty(), Optional.empty());
 		String prefix = material.equals("gold") ? "golden" : material;
 		for (int i = 0; i < 4; i++) {
 			EquipmentSlot slot = io.github.bubba8587.bubbas_infused_gems.effect.GemTotals.ARMOR[i];
@@ -102,7 +113,7 @@ public final class ModCommands {
 		weapon.set(ModComponents.SOCKETED_GEMS, SocketedGems.EMPTY.with(perfect).with(perfect));
 		player.getInventory().placeItemBackInInventory(weapon, net.minecraft.util.Prediction.SERVER_ONLY);
 		WornEffects.refresh(player);
-		source.sendSystemMessage(Component.translatable(GemText.KEY + "command.kit", GemText.effectName(effect), material).withStyle(ChatFormatting.GOLD));
+		source.sendSystemMessage(Component.translatable(GemText.KEY + "command.kit", level.numeral(), GemText.effectName(effect), material).withStyle(ChatFormatting.GOLD));
 		return 1;
 	}
 
@@ -128,7 +139,7 @@ public final class ModCommands {
 		ItemStack weapon = player.getMainHandItem();
 		List<GemHits.Entry> hit = GemHits.plan(weapon);
 		if (!hit.isEmpty()) {
-			out.add(Component.translatable(GemText.KEY + "command.weapon", weapon.getHoverName()).withStyle(ChatFormatting.GOLD));
+			out.add(Component.translatable(GemText.KEY + "command.weapon").withStyle(ChatFormatting.GOLD));
 			for (GemHits.Entry e : hit) {
 				if (e.drawback()) {
 					out.add(line(e.key(), GemDescribe.hit(e), e.s() / b.drawbackCap, true));
@@ -140,29 +151,18 @@ public final class ModCommands {
 		return out;
 	}
 
-	/** A combined gem (Turtle Master) shows one line per part, each a share of the cap; any other gem one line. */
+	/** One line (owner): the effect, its values, and its strength in brackets (a share of its best; drawbacks of theirs). */
 	private static void lines(List<Component> out, String key, double s, String value, String hitSuffix) {
 		Balance b = Balance.get();
 		Balance.EffectData e = b.effect(key);
 		// Worn lines are a share of the perfect set (the effect's own worn cap, owner 2026-11-15); hit lines of the cap.
 		double max = hitSuffix.isEmpty() && e.wornCap() > 0.0 ? e.wornCap() : b.cap;
-		if (e.parts().isEmpty()) {
-			out.add(line(key, value, s / max, false));
-			return;
-		}
-		double p = hitSuffix.isEmpty() ? s : GemHits.potency(new GemHits.Entry(key, s, false));
-		e.parts().forEach((part, amount) -> {
-			MutableComponent name = Component.translatable(GemText.KEY + "command.part", GemText.effectName(key), GemText.effectName(part));
-			MutableComponent l = Component.literal(" ").append(name).append(": " + GemDescribe.part(part, amount, p) + hitSuffix + " ");
-			l.append(Component.translatable(GemText.KEY + "command.of_max", GemText.percent(s / max)).withStyle(ChatFormatting.GRAY));
-			out.add(l.withColor(io.github.bubba8587.bubbas_infused_gems.gem.GemColors.text(GemText.holder(key).value().getColor())));
-		});
+		out.add(line(key, value, s / max, false));
 	}
 
-	private static MutableComponent line(String key, String value, double ofMax, boolean drawback) {
-		MutableComponent line = Component.literal(" ").append(GemText.effectName(key)).append(": " + value + " ");
-		line.append(Component.translatable(GemText.KEY + (drawback ? "command.of_max_drawback" : "command.of_max"), GemText.percent(ofMax))
-				.withStyle(ChatFormatting.GRAY));
+	private static MutableComponent line(String key, String value, double share, boolean drawback) {
+		MutableComponent line = Component.literal(" ").append(GemText.effectName(key)).append(" " + value + " ");
+		line.append(Component.literal("(").append(GemText.percent(share)).append(")").withStyle(drawback ? ChatFormatting.RED : ChatFormatting.GRAY));
 		return drawback ? line.withStyle(ChatFormatting.RED) : line.withColor(io.github.bubba8587.bubbas_infused_gems.gem.GemColors.text(GemText.holder(key).value().getColor()));
 	}
 

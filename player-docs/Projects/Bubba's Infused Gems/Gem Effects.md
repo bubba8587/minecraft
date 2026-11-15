@@ -80,8 +80,10 @@ Some gems do what their source does, rather than apply its potion.
 | Weaving | Weaving potion | Walks through cobwebs faster; at the best build cobwebs don't hold the wearer at all: walking, sprinting, jumping and falling are as in open air | A chance to web the target in place with a real cobweb (only placed into empty space, never replacing a block) |
 | Oozing | Oozing potion | Bounces off landings like a slime block, and falls hurt less (not at all with the best build) | A kill splits off small slimes that belong to the wielder: they never attack anyone and drop nothing; at most 8 near the player at a time; they stay while the player is around, and slimes left behind dissolve when their area unloads |
 | Silence | Echo shard | The wearer's footsteps, swimming, landing and other movement make no vibrations (sculk sensors, wardens), some of the time with weak gems and always at the best build | Silences the target (pointless) |
-| Ender | Chorus fruit | A chance that a projectile about to hurt the wearer teleports them away instead (not harmless ones like snowballs, and never explosions), like chorus fruit; stronger gems teleport further, and the perfect set always does. Other damage still hurts | Gives it to the target (pointless) |
+| Ender | Chorus fruit | A chance that a projectile about to hurt the wearer teleports them away instead (not harmless ones like snowballs, and never explosions), like chorus fruit; stronger gems teleport further, and the perfect set always tries, but a wearer boxed in with nowhere safe to go is hit. Other damage still hurts | Gives it to the target (pointless) |
 | Breeze | Breeze rod | A chance to deflect incoming projectiles, like a breeze: about half the time at 90% of the best, every time with the perfect set | Gives it to the target (pointless) |
+
+Gem effects look the same as the real effect: poisoned or withered hearts, the green food bar of Hunger, the healing heart wave of Regeneration, the effect's icon and particles.
 
 ## In weapons
 

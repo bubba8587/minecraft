@@ -6,6 +6,8 @@
 		"EffectsInInventoryMixin",
 		"EnchantmentScreenMixin",
 		"FogRendererMixin",
+		"GemLooksHeartMixin",
+		"GemLooksHudMixin",
 		"HudMixin",
 		"LightmapMixin"
 	],

@@ -117,7 +117,7 @@ public class TopEndGameTest {
 				blinked++;
 			}
 		}
-		check(helper, blinked == 200, "a perfect Ender set blinked away from " + blinked + " of 200 arrows");
+		check(helper, blinked >= 190, "a perfect Ender set blinked away from " + blinked + " of 200 arrows (only a spot-less try lets one hit)");
 		pig.teleportTo(home.x, home.y, home.z);
 		pig.damageCooldownTime = 0;
 		check(helper, pig.hurtServer(helper.getLevel(), pig.damageSources().generic(), 2.0F), "a perfect Ender set dodged non-projectile damage");

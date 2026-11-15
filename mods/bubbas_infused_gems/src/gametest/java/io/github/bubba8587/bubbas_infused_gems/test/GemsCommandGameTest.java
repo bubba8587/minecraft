@@ -28,9 +28,12 @@ public class GemsCommandGameTest {
 		player.setItemSlot(EquipmentSlot.MAINHAND, GemKit.socketed(Items.IRON_SWORD, GemKit.gem("poison", 0.8)));
 		List<String> lines = ModCommands.lines(player).stream().map(Component::getString).toList();
 		String all = String.join("\n", lines);
-		check(helper, lines.stream().anyMatch(l -> l.contains("Speed: +") && l.contains("% speed") && l.contains("of max")), "no speed line:\n" + all);
-		check(helper, lines.stream().anyMatch(l -> l.contains("Hunger") && l.contains("drawback")), "drawback not marked:\n" + all);
-		check(helper, lines.stream().anyMatch(l -> l.contains("Poison") && l.contains("HP/s poison for")), "no weapon hit line:\n" + all);
+		check(helper, lines.stream().anyMatch(l -> l.contains("Speed +") && l.contains("%)") && !l.contains("of max")), "no speed line:\n" + all);
+		// Drawbacks (owner): just the effect and its values, in red.
+		check(helper, ModCommands.lines(player).stream().anyMatch(c -> c.getString().contains("Hunger") && !c.getString().contains("rawback")
+				&& net.minecraft.network.chat.TextColor.fromLegacyFormat(net.minecraft.ChatFormatting.RED).equals(c.getStyle().getColor())), "drawback not red:\n" + all);
+		check(helper, lines.stream().anyMatch(l -> l.contains("Poison") && l.contains("HP/s for")), "no weapon hit line:\n" + all);
+		check(helper, lines.stream().anyMatch(l -> l.contains("Target, on hit:")), "no weapon header:\n" + all);
 		var dispatcher = helper.getLevel().getServer().getCommands().getDispatcher();
 		check(helper, dispatcher.getRoot().getChild("gems") != null, "/gems not registered");
 		check(helper, dispatcher.getRoot().getChild("gems").getRequirement().test(player.createCommandSourceStack()), "/gems needs permission");
@@ -56,7 +59,7 @@ public class GemsCommandGameTest {
 		check(helper, player.getInventory().contains(new ItemStack(Items.IRON_HELMET)), "the old helmet was lost");
 		check(helper, player.getInventory().contains(s2 -> s2.is(Items.NETHERITE_SWORD)), "no sword");
 		List<String> lines = ModCommands.lines(player).stream().map(Component::getString).toList();
-		check(helper, lines.stream().anyMatch(l -> l.contains("Invisibility") && l.contains("100% of max")), "/gems after the kit:\n" + String.join("\n", lines));
+		check(helper, lines.stream().anyMatch(l -> l.contains("Invisibility") && l.contains("(100%)")), "/gems after the kit:\n" + String.join("\n", lines));
 		try {
 			ModCommands.kit(player.createCommandSourceStack(), "speed", "gold");
 		} catch (Exception e) {

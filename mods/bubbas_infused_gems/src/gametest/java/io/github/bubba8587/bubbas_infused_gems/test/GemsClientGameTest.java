@@ -54,7 +54,7 @@ public class GemsClientGameTest implements FabricClientGameTest {
 
 	@Override
 	public void runTest(ClientGameTestContext context) {
-		if (!List.of("inventory", "colors", "enchanting", "smithing", "worn", "hits", "mobs", "screen", "levitation", "beyond", "jump", "weaving", "invisible").stream().anyMatch(ClientTests::run)) {
+		if (!List.of("inventory", "colors", "enchanting", "smithing", "worn", "hits", "mobs", "screen", "levitation", "beyond", "jump", "weaving", "invisible", "looks").stream().anyMatch(ClientTests::run)) {
 			return;
 		}
 		try (TestSingleplayerContext sp = context.worldBuilder()
@@ -105,6 +105,9 @@ public class GemsClientGameTest implements FabricClientGameTest {
 			}
 			if (ClientTests.run("invisible")) {
 				invisible(context, server);
+			}
+			if (ClientTests.run("looks")) {
+				looks(context, server);
 			}
 		}
 	}
@@ -331,9 +334,11 @@ public class GemsClientGameTest implements FabricClientGameTest {
 			p.setItemSlot(EquipmentSlot.LEGS, GemKit.socketed(Items.NETHERITE_LEGGINGS, nv, nv, nv));
 			p.setItemSlot(EquipmentSlot.FEET, GemKit.socketed(Items.NETHERITE_BOOTS, nv, nv, nv));
 		});
-		// The client's own copy of the totals (it drives the lightmap): 12 perfect gems in full netherite = the cap (0.90).
+		// The client's own copy of the totals (it drives the lightmap): 12 perfect gems in full netherite = Night Vision's
+		// worn cap (1.00 since the top-end pass: full brightness).
+		double nvCap = io.github.bubba8587.bubbas_infused_gems.balance.Balance.get().effect("night_vision").wornCap();
 		context.waitFor(mc -> Math.abs(((io.github.bubba8587.bubbas_infused_gems.effect.GemEntity) mc.player).bubbas$wornGems()
-				.value("night_vision") - 0.90) < 1e-4);
+				.value("night_vision") - nvCap) < 1e-4);
 		context.waitTicks(5);
 		context.takeScreenshot("gems-worn-midnight-12-night-vision-gems");
 	}
@@ -776,6 +781,47 @@ public class GemsClientGameTest implements FabricClientGameTest {
 			for (var e : player(s).level().getEntitiesOfClass(net.minecraft.world.entity.monster.zombie.Zombie.class, new net.minecraft.world.phys.AABB(at).inflate(5))) {
 				e.discard();
 			}
+		});
+		// The wearer's own inventory in the perfect set (owner's question: slot icons, and the player preview).
+		server.runOnServer(s -> {
+			try {
+				io.github.bubba8587.bubbas_infused_gems.registry.ModCommands.kit(player(s).createCommandSourceStack(), "invisibility", "netherite");
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		});
+		context.waitTicks(40);
+		context.setScreen(() -> new InventoryScreen(Minecraft.getInstance().player));
+		context.waitTicks(5);
+		context.takeScreenshot("gems-invisible-own-inventory-perfect-set");
+		context.setScreen(() -> null);
+		server.runOnServer(s -> {
+			for (EquipmentSlot slot : io.github.bubba8587.bubbas_infused_gems.effect.GemTotals.ARMOR) {
+				player(s).setItemSlot(slot, ItemStack.EMPTY);
+			}
+			player(s).removeAllEffects();
+			player(s).getInventory().clearContent();
+		});
+	}
+
+	/** Owner: gem effects look like vanilla's on the HUD: a gem Poison hit gives poisoned hearts, worn Hunger a green food bar. */
+	private static void looks(ClientGameTestContext context, TestServerContext server) {
+		server.runCommand("gamemode survival @a");
+		server.runOnServer(s -> {
+			ServerPlayer p = player(s);
+			p.removeAllEffects();
+			p.addEffect(new net.minecraft.world.effect.MobEffectInstance(io.github.bubba8587.bubbas_infused_gems.registry.ModEffects.gem("poison"), 20 * 60,
+					io.github.bubba8587.bubbas_infused_gems.effect.GemMobEffect.amplifier(0.5)));
+			p.setItemSlot(EquipmentSlot.CHEST, GemKit.socketed(Items.NETHERITE_CHESTPLATE, GemKit.gem("hunger", 1.0)));
+			p.setHealth(14.0F);
+		});
+		context.waitTicks(30);
+		context.takeScreenshot("gems-looks-poisoned-hearts-green-food-bar");
+		server.runOnServer(s -> {
+			ServerPlayer p = player(s);
+			p.removeAllEffects();
+			p.setItemSlot(EquipmentSlot.CHEST, ItemStack.EMPTY);
+			p.setHealth(p.getMaxHealth());
 		});
 	}
 }

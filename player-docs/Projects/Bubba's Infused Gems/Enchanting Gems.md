@@ -48,7 +48,7 @@ The plain result is the most common at every tier.
 - A **drawback** is a mild effect of the opposite kind, never the gem's direct opposite: a Speed gem can get Hunger, Weakness, Mining Fatigue, Bad Luck, or more rarely Poison or Wither, but never Slowness. A harmful gem's drawback can be almost any helpful effect (it lands on whatever the weapon hits, or on the wearer in armor).
 - A drawback-only gem is named like any other Gem; its tooltip shows only the drawback.
 
-The Gem's tooltip shows each effect with its strength as a percentage of a perfect gem. A perfect gem (100%) requires the strongest potion in lingering form (or the strongest source item), a nether star and tier 3.
+The Gem's tooltip shows each effect with its strength in brackets, as a percentage of a perfect gem, for example *Speed (69%)*; a drawback is just its name in red. A perfect gem (100%) requires the strongest potion in lingering form (or the strongest source item), a nether star and tier 3.
 
 ## Inverting gems
 
@@ -62,7 +62,7 @@ The brewing stand does not take a Gem that has no drawback, a Gem whose main eff
 
 | Before | After inverting |
 |---|---|
-| Speed 100%, + Strength 50%, Drawback: Hunger, Infusion VI | Hunger 72%, + Strength 50%, Drawback: Speed, Infusion V |
+| Speed (100%), + Strength (50%), Hunger (in red), Infusion VI | Hunger (72%), + Strength (50%), Speed (in red), Infusion V |
 
 ## Which effects come up
 
