@@ -54,5 +54,6 @@ The numbers for item 6 live in `tools/gem-balance.py`, which checks them and gen
 - **Negative enchant outcomes stay as drawbacks on the wearer** (owner: "I'd like to have some drawback gems; they'll just need tuning"): tier 1's weak negative and tier 3's "strongest + weak negative" put a mild harmful effect on the wearer. Tune them to sting without ruining the gem.
 - **Weapon gems (owner):** Infused Gems made from harmful potions (poison, slowness, weakness, harming, wither, ...) go into **weapons** and apply a partial version of the effect to what the weapon hits. Beneficial gems stay armor-only.
 - **Full inverse for drawbacks (owner):** a weapon gem's bad enchant rolls give the **target** a mild, weak beneficial effect (the mirror of an armor gem's bad roll giving the wearer a mild harmful effect). Same brewing, enchanting tiers, smithing table and grindstone.
-- Open: gem slots per weapon; which weapons (swords, axes, maces, tridents; bows/crossbows passing the effect to arrows?); the weapon strength curve.
+- **2 gem slots per weapon** (owner).
+- Open: which weapons (swords, axes, maces, tridents; bows/crossbows passing the effect to arrows?); the weapon strength curve.
 - **Base gem order by difficulty of getting it (owner), weakest to strongest:** amethyst, quartz, ender pearl (farmable), diamond (common in chest loot), prismarine (ocean monuments; crystals also in buried treasure), nether star (the Wither). The very best build is therefore **lingering potion + nether star + tier 3 + full netherite**. No loot tables are changed for this.
