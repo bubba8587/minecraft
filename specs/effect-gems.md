@@ -23,6 +23,10 @@ Asked one at a time; answers land here.
    - Its strength comes from **the potion used to make it** and **the base gem it's crafted from**. Base gems: diamond, quartz, ender pearl, nether star, prismarine, amethyst. **Diamond is the best.**
    - **More than one gem** can go on armor, and the same effect **stacks**: the best possible stack (diamond gems from the strongest potions) reaches **just under the strongest vanilla potion level** of that effect, never equal to it.
    - **Broken armor pops its gems out** (dropped, not lost). If that's tricky, gems fall out at very low durability instead.
-   - Still open: how many gems per armor piece; the strength ladder of the six base gems (and what's special about nether star, which outranks diamond in vanilla); prismarine shard or crystals.
+   - **3 gem slots on every armor piece**, any material (owner).
+   - **Armor material is a strength factor**: the same gem is stronger in better armor (e.g. netherite above leather).
+   - **Contiguous set factor**: neighbouring pieces of the same material along helmet -> chestplate -> leggings -> boots add strength. A connected run (helmet + chestplate) beats the same number of separated pieces (helmet + boots); a full matching set is best.
+   - So a gem's contribution = f(potion) x f(base gem) x f(armor material) x f(matching contiguous run), and the total per effect stays just under that effect's strongest vanilla potion level.
+   - Still open: the strength ladder of the six base gems (and what's special about nether star, which outranks diamond in vanilla); prismarine shard or crystals.
 3. Drawbacks.
 4. How gems are obtained (and lost).
