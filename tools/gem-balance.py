@@ -240,12 +240,15 @@ effect("night_vision", name="Night Vision", potion="night_vision", role="main",
 	value=lambda s: s, show=lambda s: f"brightness {s * 100:.0f}% of night vision",
 	impl="On/off made partial on the client: set the lightmap's nightVisionEffectIntensity to s (mixin at LightmapRenderStateExtractor, where vanilla writes GameRenderer.nightVisionScale). Vanilla already renders fractional values during its end-fade.",
 	src="GameRenderer.nightVisionScale, LightmapRenderStateExtractor")
+INVISIBILITY_LOCATOR_HIDE_AT = 0.5   # owner (Q33): from this strength the wearer is hidden on the locator bar
+INVISIBILITY_FULL_AT = CAP            # owner (Q33): only the perfect complete set gives real vanilla invisibility
 effect("invisibility", name="Invisibility", potion="invisibility", role="main",
 	variants={"normal": (3600, 0), "long": (9600, 0)},
 	anchor="Invisibility with no armor: mobs see you at 7% range (0.7 x 10% minimum armor cover). In full armor vanilla gives only 70%.",
 	value=lambda s: 0.93 * s,
-	show=lambda s: f"mobs notice you at {100 * (1 - 0.93 * s):.0f}% range, locator bar range {pct(-s)}",
-	impl="Stealth, not a see-through body: mobs' visibility check x (1 - 0.93 x s) (hook at LivingEntity.getVisibilityPercent, where vanilla applies invisibility and mob_visibility), plus waypoint_transmit_range -s.",
+	show=lambda s: (f"mobs notice you at {100 * (1 - 0.93 * s):.0f}% range" + (", hidden on the locator bar" if s >= INVISIBILITY_LOCATOR_HIDE_AT else "")
+		+ (", and real invisibility (the perfect complete set)" if s >= INVISIBILITY_FULL_AT - 1e-9 else "")),
+	impl=f"Stealth that scales (owner, Q33): mobs' visibility check x (1 - 0.93 x s) (hook at LivingEntity.getVisibilityPercent), hidden on the locator bar from s {INVISIBILITY_LOCATOR_HIDE_AT} (waypoint_transmit_range -100%), and only the perfect complete set (s = the cap) gives the real vanilla effect, see-through body and all; armor renders as in vanilla.",
 	src="LivingEntity.getVisibilityPercent, item/component/MobVisibility, MobEffects.INVISIBILITY")
 effect("slow_falling", name="Slow Falling", potion="slow_falling", role="main",
 	variants={"normal": (1800, 0), "long": (4800, 0)},
@@ -1264,7 +1267,7 @@ def document(notes):
 
 	S.append(("h3", "How each effect is made partial"))
 	S.append(("table", ["Effect", "Implementation", "Source (26.3)"], [[E[k]["name"], E[k]["impl"], E[k]["src"]] for k in E]))
-	S.append(("p", "Worn (armor) effects are attribute modifiers, data components or small tick and damage hooks, not potion effect instances: vanilla levels are whole numbers and their icons and timers would claim a full level. Hit-applied (weapon) effects, and weapon drawbacks on the target, are gem mob effects whose amplifier counts strength in 1% steps, with vanilla's icon and timer; a gem arrow carries one as its potion contents with a duration scale of 1. A gem and a drunk potion of the same effect don't add up: the stronger applies (open question)."))
+	S.append(("p", "Worn (armor) effects are attribute modifiers, data components or small tick and damage hooks, not potion effect instances: vanilla levels are whole numbers and their icons and timers would claim a full level. Hit-applied (weapon) effects, and weapon drawbacks on the target, are gem mob effects whose amplifier counts strength in 1% steps, with vanilla's icon and timer; a gem arrow carries one as its potion contents with a duration scale of 1. A gem and a potion of the same effect don't add up: the stronger applies (owner)."))
 
 	S.append(("h2", "Progression ladders"))
 	S.append(("h3", "Armor"))
@@ -1313,11 +1316,11 @@ def document(notes):
 		"Answered (owner, 2026-11-14): as modeled (item-sources table): Conduit Power gems from a heart of the sea, Dolphin's Grace gems from a nautilus shell.",
 		"Answered (owner, 2026-11-14): as modeled (item-sources table): Haste, Health Boost, Luck, Hero of the Village (and now Resistance) are found-only.",
 		f"Answered (owner, 2026-11-14): Hero of the Village gems stay, toned down: at most {HERO_BEST_DISCOUNT:.0%} cheaper trades at the best build.",
-		"Mining Fatigue gems come only from elder guardians (a rare extra drop) and ominous vaults? yes / no.",
-		"Bad Omen, Trial Omen, Raid Omen and Breath of the Nautilus are not gems? yes / no.",
-		"A gem and a drunk potion of the same effect: the stronger applies, they don't add? yes / no.",
-		"Undead follow vanilla's inversion (a healing gem hurts a zombie wearer, harming heals an undead target; undead ignore poison and regeneration)? yes / no.",
-		"Invisibility gems give stealth only (mobs notice you later, hidden on the locator bar), never a see-through body? yes / no.",
+		"Answered (owner, 2026-11-14): Mining Fatigue gems from elder guardians (a rare extra drop) and ominous vaults, as modeled (loot is later work).",
+		"Answered (owner, 2026-11-14): Bad Omen, Trial Omen, Raid Omen and Breath of the Nautilus are not gems.",
+		"Answered (owner, 2026-11-14): a gem and a potion of the same effect don't add, the stronger applies, implemented with care for the edge cases (spec).",
+		"Answered (owner, 2026-11-14): undead follow vanilla's inversion: worn Healing makes a survivable hit hurt an undead wearer up to 25% more and worn Harming gives it up to 25% back; on weapons Harming heals undead and Healing hurts them; Poison and Regeneration do nothing to undead.",
+		f"Answered (owner, 2026-11-14): Invisibility gems give stealth that scales with strength, hidden on the locator bar from {INVISIBILITY_LOCATOR_HIDE_AT}; only the perfect complete set gives real invisibility (armor still renders, as in vanilla).",
 		"Enchant odds as proposed (tier 1: 50/50; tier 2: medium alone 50%, + weak other 50%; tier 3: alone 40%, + weak other 30%, + medium other 15%, + weak drawback 15%)? yes / no.",
 	]))
 	return S
@@ -1428,7 +1431,8 @@ WORN = {
 	"poison": {"damage_per_second": 25 / 12 * 0.8, "min_health": 1.0},
 	"wither": {"damage_per_second": 1.0},
 	"hunger": {"exhaustion_per_tick": 0.015},
-	"invisibility": {"attributes": [("minecraft:waypoint_transmit_range", -1.0, "add_multiplied_total")], "visibility_reduction": 0.93},
+	"invisibility": {"attributes": [("minecraft:waypoint_transmit_range", -1.0, "add_multiplied_total", f"step:{INVISIBILITY_LOCATOR_HIDE_AT}")],
+		"visibility_reduction": 0.93, "full_at": INVISIBILITY_FULL_AT},
 	"dolphins_grace": {"drag_target": 0.96},
 	"saturation": {"exhaustion_reduction": 1.0},
 	"conduit_power": {"attributes": [("minecraft:oxygen_bonus", 1.0, "add_value", "odds"), ("minecraft:submerged_mining_speed", 0.8, "add_value")],

@@ -47,7 +47,7 @@ The item name shows these, for example *Infused Gem: Infusion III, Speed (Splash
 
 ## Supported potions
 
-Swiftness, Strength, Leaping, Regeneration, Turtle Master (gives Resistance), Fire Resistance, Water Breathing, Night Vision, Slow Falling, Healing, Poison, Slowness, Weakness and Harming, plus the golden apples and the wither rose. Invisibility, Luck, Wind Charged, Weaving, Oozing and Infested, and the item sources for other effects, are planned for a later version.
+Swiftness, Strength, Leaping, Regeneration, Turtle Master, Fire Resistance, Water Breathing, Night Vision, Slow Falling, Healing, Poison, Slowness, Weakness and Harming, plus the golden apples and the wither rose. A Turtle Master potion makes a **Turtle Master** gem, which gives its Resistance and its Slowness together. Invisibility, Wind Charged, Weaving, Oozing and Infested potions and the item sources for other effects are planned for a later version; the gems themselves already work and are in the creative inventory, as are the gems that will only be found in the world (Haste, Luck, Resistance, Health Boost, Hero of the Village, Mining Fatigue).
 
 ## Notes
 

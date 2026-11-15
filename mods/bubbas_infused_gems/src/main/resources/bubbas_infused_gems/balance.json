@@ -962,10 +962,11 @@
 						"attribute": "minecraft:waypoint_transmit_range",
 						"amount": -1.0,
 						"operation": "add_multiplied_total",
-						"curve": "linear"
+						"curve": "step:0.5"
 					}
 				],
-				"visibility_reduction": 0.93
+				"visibility_reduction": 0.93,
+				"full_at": 0.9
 			},
 			"worn_amplifier": 0,
 			"id": "minecraft:invisibility",

@@ -22,7 +22,7 @@ side: client and server
 
 Armor gems affect the wearer all the time; weapon gems affect whatever the weapon hits. Gems are never as strong as a real potion, gems of the same effect stack, and some gems carry a drawback.
 
-In this test version the gem textures are simple placeholders, and only some effects work (see [[Gem Effects]]).
+In this test version the gem textures are simple placeholders. Every gem effect works in armor and in weapons; some can only be brewed or found in a later version and are in the creative inventory meanwhile (see [[Gem Effects]]).
 
 ## Items
 

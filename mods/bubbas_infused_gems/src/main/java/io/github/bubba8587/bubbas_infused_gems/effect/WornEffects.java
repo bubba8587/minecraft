@@ -79,10 +79,39 @@ public final class WornEffects {
 		double absorptionBefore = g.bubbas$wornGems().value("absorption");
 		g.bubbas$setWornGems(GemTotals.ofArmor(entity));
 		updateAttributes(entity);
+		dropKeptEffects(entity);
 		double absorptionNow = g.bubbas$wornGems().value("absorption");
 		if (absorptionNow > absorptionBefore + 1e-9) {
 			// A new or bigger shield starts empty and fills after the usual wait (no instant refill on re-equip).
 			g.bubbas$setLastHurtTick(entity.tickCount);
+		}
+	}
+
+	/** Whether the gems keep this vanilla effect on the wearer now (always-on harmful gems; real invisibility at the full set). */
+	private static boolean keptOn(LivingEntity entity, Balance.EffectData e) {
+		double s = GemValues.rawWorn(entity, e.key());
+		if (e.wornFlag("always_on")) {
+			return s > 0.0;
+		}
+		return e.worn() != null && e.worn().has("full_at") && s >= e.wornNumber("full_at", 1.0) - 1e-9;
+	}
+
+	/** An effect instance the gems keep on (ambient, no particles, short): told apart from a real potion's. */
+	private static boolean isKept(MobEffectInstance inst) {
+		return inst.isAmbient() && !inst.isVisible() && !inst.isInfiniteDuration() && inst.getDuration() <= ALWAYS_ON_TICKS;
+	}
+
+	/** Gear changed: a kept-on effect the gems no longer give goes at once (taking a piece off ends real invisibility). */
+	private static void dropKeptEffects(LivingEntity entity) {
+		for (Balance.EffectData e : Balance.get().effects.values()) {
+			if (e.worn() == null || !(e.wornFlag("always_on") || e.worn().has("full_at")) || keptOn(entity, e)) {
+				continue;
+			}
+			Holder<MobEffect> vanilla = ModEffects.vanilla(e.key());
+			MobEffectInstance inst = vanilla == null ? null : entity.getEffect(vanilla);
+			if (inst != null && isKept(inst)) {
+				entity.removeEffect(vanilla);
+			}
 		}
 	}
 
@@ -177,10 +206,11 @@ public final class WornEffects {
 			wetTick(entity);
 		}
 		// Harmful on/off gems that can't be partial (Glowing, Blindness, Nausea, Darkness): always on (owner), the vanilla
-		// effect kept topped up. Levitation is a slow drift instead (gravity hook).
+		// effect kept topped up; Invisibility likewise, but only at the perfect complete set (owner, Q33). Levitation is a
+		// slow drift instead (gravity hook).
 		if (entity.tickCount % ALWAYS_ON_REFRESH == 0) {
 			for (Balance.EffectData e : b.effects.values()) {
-				if (e.wornFlag("always_on") && t.has(e.key()) && GemValues.rawWorn(entity, e.key()) > 0.0) {
+				if (t.has(e.key()) && keptOn(entity, e)) {
 					Holder<MobEffect> vanilla = ModEffects.vanilla(e.key());
 					MobEffectInstance now = vanilla == null ? null : entity.getEffect(vanilla);
 					if (vanilla != null && (now == null || (!now.isInfiniteDuration() && now.getDuration() < ALWAYS_ON_TICKS - ALWAYS_ON_REFRESH))) {
@@ -300,9 +330,12 @@ public final class WornEffects {
 		return s > 0.0 ? (float) (amount * (1.0 - Balance.get().effect("saturation").wornNumber("exhaustion_reduction", 1.0) * s)) : amount;
 	}
 
-	/** Invisibility gem: mobs notice the wearer at (1 - 0.93 x s) of the range (stealth, the body stays visible). */
+	/**
+	 * Invisibility gem: mobs notice the wearer at (1 - 0.93 x s) of the range (stealth). Read before any vanilla
+	 * Invisibility, since the full set adds the real effect on top (its body turns see-through; armor still shows).
+	 */
 	public static double visibility(LivingEntity entity, double percent) {
-		double s = GemValues.value(entity, "invisibility");
+		double s = Math.max(GemValues.rawWorn(entity, "invisibility"), GemValues.hit(entity, "invisibility"));
 		return s > 0.0 ? percent * (1.0 - Balance.get().effect("invisibility").wornNumber("visibility_reduction", 0.93) * s) : percent;
 	}
 

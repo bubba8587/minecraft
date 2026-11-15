@@ -19,7 +19,7 @@ The template slot is left empty. The gear's tooltip lists its gems.
 | Helmets, chestplates, leggings, boots (any material) | 3 |
 | Swords, axes, spears, maces, tridents, bows, crossbows | 2 |
 
-Tools, elytras and shields cannot take gems.
+Tools, elytras, shields and the turtle shell cannot take gems.
 
 ### Grindstone
 

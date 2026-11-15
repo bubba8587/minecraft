@@ -422,6 +422,41 @@ public class GemsEverywhereGameTest {
 		helper.succeed();
 	}
 
+	/** Owner (Q33): stealth scales, the locator bar hides from a threshold, only the perfect full set is really invisible. */
+	@GameTest
+	public void invisibilityStealthThresholdAndFullSet(GameTestHelper helper) {
+		Mob pig = pig(helper, 1, 1);
+		Balance.EffectData e = Balance.get().effect("invisibility");
+		double hideAt = Double.parseDouble(e.wornAttributes().getFirst().curve().substring(5));
+		for (double q : new double[] {hideAt / Balance.get().cap - 0.05, hideAt / Balance.get().cap + 0.05}) {
+			Gem g = GemKit.gem("invisibility", q);
+			for (int i = 0; i < 4; i++) {
+				pig.setItemSlot(ARMOR[i], GemKit.socketed(BalanceGameTest.armor("netherite", PIECES[i]), g, g, g));
+			}
+			WornEffects.refresh(pig);
+			double s = WornEffects.of(pig).value("invisibility");
+			boolean hidden = modifier(pig, "minecraft:waypoint_transmit_range", "worn/invisibility/0") == -1.0;
+			check(helper, hidden == (s >= hideAt), "locator bar at " + s + ": hidden " + hidden);
+			close(pig.getVisibilityPercent(helper.getLevel(), null), 1 - 0.93 * s, 1e-6, helper, "stealth scales at " + s);
+			WornEffects.tick(helper.getLevel(), pig, WornEffects.of(pig));
+			check(helper, !pig.hasEffect(MobEffects.INVISIBILITY), "real invisibility below the full set at " + s);
+		}
+		wear(pig, "invisibility");
+		pig.tickCount = 400;
+		WornEffects.tick(helper.getLevel(), pig, WornEffects.of(pig));
+		check(helper, pig.hasEffect(MobEffects.INVISIBILITY), "the perfect full set is not really invisible");
+		pig.setItemSlot(EquipmentSlot.FEET, ItemStack.EMPTY);
+		WornEffects.refresh(pig);
+		check(helper, !pig.hasEffect(MobEffects.INVISIBILITY), "a piece off: still really invisible");
+		check(helper, pig.getVisibilityPercent(helper.getLevel(), null) < 0.5, "a piece off: stealth gone too");
+		pig.removeEffect(MobEffects.INVISIBILITY);
+		pig.addEffect(new MobEffectInstance(MobEffects.INVISIBILITY, 1200, 0));
+		WornEffects.refresh(pig);
+		check(helper, pig.hasEffect(MobEffects.INVISIBILITY), "a real potion's invisibility was taken away");
+		pig.discard();
+		helper.succeed();
+	}
+
 	@GameTest
 	public void turtleMasterGivesBothPartsAndTurtleHelmetsTakeNoGems(GameTestHelper helper) {
 		check(helper, Sockets.slots(new ItemStack(Items.TURTLE_HELMET)) == 0, "the turtle helmet has gem slots");

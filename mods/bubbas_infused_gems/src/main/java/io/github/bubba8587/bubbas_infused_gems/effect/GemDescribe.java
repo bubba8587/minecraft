@@ -45,8 +45,9 @@ public final class GemDescribe {
 			case "instant_damage" -> f("%.1f%% more damage from each hit taken", 100 * b.healFraction(s));
 			case "absorption" -> f("%.1f HP shield, refills 30 s after a hit", attr(key, 0, s));
 			case "health_boost" -> f("%+.1f max health", attr(key, 0, s));
-			case "invisibility" -> f("mobs notice you at %.0f%% of the range, locator bar range %+.0f%%",
-					100 * (1 - e.wornNumber("visibility_reduction", 0.93) * s), 100 * attr(key, 0, s));
+			case "invisibility" -> f("mobs notice you at %.0f%% of the range%s%s", 100 * (1 - e.wornNumber("visibility_reduction", 0.93) * s),
+					attr(key, 0, s) < 0 ? ", hidden on the locator bar" : "",
+					s >= e.wornNumber("full_at", 1.0) - 1e-9 ? ", real invisibility" : "");
 			case "dolphins_grace" -> f("swims %.0f%% of the way to Dolphin's Grace", 100 * s);
 			case "saturation" -> f("hunger drains %.0f%% slower", 100 * s * e.wornNumber("exhaustion_reduction", 1.0));
 			case "conduit_power" -> f("in water or rain: %s, underwater mining %+.2f", air(s), attr(key, 1, s));

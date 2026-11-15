@@ -30,7 +30,7 @@ Hovering over a row shows a hint of the result, like the enchantment clue for ge
 | Tier | Result | Chance |
 |---|---|---|
 | 1 | Weak version of the effect | 50% |
-| 1 | Weak drawback only (a *Flawed Gem*) | 50% |
+| 1 | Weak drawback only | 50% |
 | 2 | Medium version of the effect | 50% |
 | 2 | Medium, plus a weak bonus effect | 50% |
 | 3 | Strongest version | 40% |
@@ -38,7 +38,8 @@ Hovering over a row shows a hint of the result, like the enchantment clue for ge
 | 3 | Strongest, plus a medium bonus effect | 15% |
 | 3 | Strongest, plus a weak drawback | 15% |
 
-- A **bonus effect** is a different effect of the same kind: a helpful gem gets another helpful effect, a harmful gem another harmful one.
-- A **drawback** is a mild effect of the opposite kind, never the gem's direct opposite: a Speed gem can get Hunger or Weakness, but never Slowness.
+- A **bonus effect** is a different effect of the same kind: a helpful gem gets another helpful effect, a harmful gem another harmful one. Any effect of that kind can come up, apart from Healing, Harming and Hero of the Village, which are only ever a gem's main effect.
+- A **drawback** is a mild effect of the opposite kind, never the gem's direct opposite: a Speed gem can get Hunger, Weakness, Mining Fatigue, Bad Luck, or more rarely Poison or Wither, but never Slowness. A harmful gem's drawback can be almost any helpful effect (it lands on whatever the weapon hits, or on the wearer in armor).
+- A drawback-only gem is named like any other Gem; its tooltip shows only the drawback.
 
 The Gem's tooltip shows each effect with its strength as a percentage of a perfect gem. A perfect gem (100%) requires the strongest potion, lingering form, a nether star and tier 3.

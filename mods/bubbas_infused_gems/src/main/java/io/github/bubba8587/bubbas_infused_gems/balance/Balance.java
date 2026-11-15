@@ -69,6 +69,9 @@ public final class Balance {
 	public record Attr(String attribute, double amount, String operation, String curve) {
 		/** The modifier amount at strength s. */
 		public double at(double s) {
+			if (this.curve.startsWith("step:")) {
+				return s >= Double.parseDouble(this.curve.substring(5)) - 1e-9 ? this.amount : 0.0;
+			}
 			return switch (this.curve) {
 				case "pow" -> Math.pow(this.amount, s) - 1.0;
 				case "odds" -> s >= 1.0 ? 1024.0 : this.amount * s / (1.0 - s);

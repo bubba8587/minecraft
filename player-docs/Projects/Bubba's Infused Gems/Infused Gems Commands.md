@@ -21,7 +21,7 @@ For every effect from all gems in the armor being worn, after stacking and the m
 
 > Speed: +21.4% speed (56% of max)
 
-Drawbacks are shown in red and marked, for example *Hunger: extra hunger: 1 food point per 133 s (drawback, 50% of max)*. A second part lists what each hit of the weapon in the main hand applies, for example *Poison: 1.12 HP/s poison for 1.8 s*.
+Drawbacks are shown in red and marked, for example *Hunger: extra hunger: 1 food point per 133 s (drawback, 50% of max)*. A Turtle Master gem shows one line for each of its two parts, *Turtle Master (Resistance)* and *Turtle Master (Slowness)*. A second part lists what each hit of the weapon in the main hand applies, for example *Poison: 1.24 HP/s poison for 6.3 s*.
 
 The output appears even when the `send_command_feedback` game rule is off.
 
