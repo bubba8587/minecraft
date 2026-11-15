@@ -105,3 +105,12 @@ execute if block -8 -56 57 minecraft:polished_blackstone_bricks
 execute if entity @e[type=minecraft:zombie,tag=tw_dark]
 execute if data block 4 -60 55 Items[{id:"minecraft:cooked_beef"}]
 execute if block 20 -59 56 minecraft:obsidian
+# tools for the gems that need them (owner: Haste needs mining tools)
+execute if data block -3 -59 25 front_text.messages[2].click_event{command:'loot give @s loot {pools:[{rolls:1,entries:[{type:"minecraft:item",name:"minecraft:netherite_pickaxe"}]},{rolls:1,entries:[{type:"minecraft:item",name:"minecraft:netherite_shovel"}]},{rolls:1,entries:[{type:"minecraft:item",name:"minecraft:netherite_axe"}]}]}'}
+loot spawn 0.5 -59 44.5 loot {pools:[{rolls:1,entries:[{type:"minecraft:item",name:"minecraft:netherite_pickaxe"}]},{rolls:1,entries:[{type:"minecraft:item",name:"minecraft:netherite_shovel"}]}]}
+execute if entity @e[type=minecraft:item,x=0.5,y=-59,z=44.5,distance=..3,nbt={Item:{id:"minecraft:netherite_shovel"}}]
+kill @e[type=minecraft:item,x=0.5,y=-59,z=44.5,distance=..3]
+execute if data block 16 -60 53 Items[{id:"minecraft:netherite_pickaxe",components:{"minecraft:enchantments":{"minecraft:efficiency":5}}}]
+execute if data block 16 -60 53 Items[{Slot:20b,id:"minecraft:iron_axe"}]
+execute if block 10 -59 56 minecraft:dirt
+execute if block 24 -58 56 minecraft:oak_log

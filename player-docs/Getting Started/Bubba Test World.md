@@ -32,7 +32,7 @@ The **gem testing grounds** are a set of stations for trying [[Gem Effects|gem e
 ### Wearing a gem set
 
 1. Walk south from the spawn plaza into the wardrobe, the hall lined with signs.
-2. Right-click the sign of a gem. The worn armor is taken off (and deleted), and a full netherite set with three perfect gems in every piece is put on; a sword with two of the same gems goes into the inventory.
+2. Right-click the sign of a gem. The worn armor is taken off (and deleted), and a full netherite set with three perfect gems in every piece is put on; a sword with two of the same gems goes into the inventory. Gems that need a tool to test also give one: Haste a netherite pickaxe, shovel and axe, Mining Fatigue and Conduit Power a netherite pickaxe, Luck a fishing rod.
 3. Signs on the right are helpful gems, signs on the left harmful ones. The lower row on the left gives Speed in every armor material, for comparing materials, and holds the Take off, Empty bag, No effects, Survival and Creative signs.
 
 Each station below also has signs for the gems it tests. The armor stands past the wardrobe wear showcase sets; clicking a piece takes it.
@@ -44,8 +44,8 @@ Each station below also has signs for the gems it tests. The armor stands past t
 | Arrow gallery | Stand on the red block and flip the lever: three dispensers take turns firing an arrow a second. For Ender (blinking away from arrows) and Breeze (deflecting them). Flip the lever again to stop. |
 | Live range | Real skeletons and a pillager in boats, who shoot only survival players. Enter by the door on the west side. Signs switch the archers off and on. |
 | Drop pads | Ladders up to platforms 4, 8, 12, 16 and 24 blocks high; stepping off the south end hurts as much as the sign says (24 blocks kills at full health). For Wind Burst, Oozing, Slow Falling, Jump Boost and Healing. Jump steps 1 to 4 blocks high stand nearby. |
-| Cobweb field | A lane of cobwebs beside an open lane of the same length, for Weaving. A sign puts the webs back. |
-| Deep pool | Water 7 blocks deep, with stairs up the west side and deepslate on the floor to mine. For Water Breathing, Dolphin's Grace and Conduit Power. |
+| Cobweb field | A lane of cobwebs beside an open lane of the same length, for Weaving. A sign puts the webs back; another gives shears. |
+| Deep pool | Water 7 blocks deep, with stairs up the west side and deepslate on the floor to mine (a sign gives a pickaxe). For Water Breathing, Dolphin's Grace and Conduit Power. |
 | Sky column | A water pit next to a pole marked every 5 blocks up to 40. Wear Levitation in the water, rise, and take the armor off to drop back into the water. |
 | Mob pen | A glass pen; signs outside spawn one mob each (pig, cow, zombie, skeleton, spider, wither skeleton, slime, husk) or clear the pen. Oozing and Weaving swords and a Wind Burst mace are there for trying weapon gems. |
 | Target dummies | Five mobs that stand still; their health shows at the bottom of the screen while the player is near. Signs give a sword with two gems of each weapon effect and a Poison bow, heal the dummies, or bring back killed ones. Healing hurts the undead ones and Harming heals them. |
@@ -54,7 +54,7 @@ Each station below also has signs for the gems it tests. The armor stands past t
 | Lava moat | A lava pit 2 deep with stairs out at the far end, for Fire Resistance. A sign gets the player out with a few seconds of fire protection. |
 | Dark room | A sealed room with no light and a zombie inside; the sign outside teleports in, the glowing sign inside teleports out. For Night Vision, Darkness and Blindness. |
 | Food bench | Signs that make the player hungry or fill the food bar, and a chest of food, for Hunger and Saturation. Hunger only counts in survival. |
-| Mining wall | Stone, deepslate and obsidian to mine in survival, for Haste and Mining Fatigue; a sign rebuilds the wall. |
+| Mining wall | Dirt, stone, deepslate, obsidian and logs to mine in survival, for Haste and Mining Fatigue. A chest holds netherite, diamond and iron pickaxes, shovels and axes, plain and with Efficiency V, to compare Haste with and without Efficiency; signs give a pickaxe and rebuild the wall. |
 
 Survival and Creative signs at the stations switch the game mode, since damage, hunger and archers only matter in survival.
 

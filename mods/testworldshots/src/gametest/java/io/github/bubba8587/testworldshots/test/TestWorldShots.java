@@ -22,6 +22,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
 import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
@@ -217,7 +218,8 @@ public class TestWorldShots implements FabricClientGameTest {
 		shot("dark_inside_exit_sign", -7.5, -58.4, 56.5, -7.8, -58.6, 54);
 		shot("dark_inside_zombie", -7.5, -58.4, 55.5, -7.5, -59, 59.5);
 		shot("food_bench", 4.5, -58, 49.5, 4.5, -59.5, 54);
-		shot("mining_wall", 17, -57.4, 49, 17, -59, 55);
+		shot("mining_wall", 17, -56.4, 47, 17, -59, 55);
+		chest("mining_tools_chest", 16, -60, 53);
 	}
 
 	/**
@@ -244,6 +246,15 @@ public class TestWorldShots implements FabricClientGameTest {
 		context.waitTicks(5);
 		context.takeScreenshot("wardrobe_speed_set_worn");
 		context.runOnClient(mc -> mc.options.setCameraType(CameraType.FIRST_PERSON));
+		clickSign(-3, -59, 25);
+		world.getServer().runOnServer(server -> {
+			ServerPlayer player = server.getPlayerList().getPlayers().getFirst();
+			for (Item tool : new Item[] {Items.NETHERITE_PICKAXE, Items.NETHERITE_SHOVEL, Items.NETHERITE_AXE}) {
+				if (!player.getInventory().hasAnyMatching(stack -> stack.is(tool))) {
+					throw new AssertionError("wardrobe Haste sign did not give " + tool);
+				}
+			}
+		});
 		clickSign(3, -59, 27);
 		world.getServer().runOnServer(server -> {
 			ServerPlayer player = server.getPlayerList().getPlayers().getFirst();
