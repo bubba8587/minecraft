@@ -1,0 +1,42 @@
+{
+	"type": "minecraft:chest",
+	"pools": [
+		{
+			"rolls": 1,
+			"condition": {
+				"type": "minecraft:random_chance",
+				"chance": 0.1
+			},
+			"entries": [
+				{
+					"type": "minecraft:loot_table",
+					"value": "bubbas_infused_gems:gems/rare",
+					"weight": 2
+				},
+				{
+					"type": "minecraft:item",
+					"name": "bubbas_infused_gems:gem",
+					"weight": 1,
+					"modifier": {
+						"type": "bubbas_infused_gems:random_gem",
+						"effects": [
+							"minecraft:resistance"
+						],
+						"infusion": [
+							1,
+							2,
+							2,
+							3
+						],
+						"tier": [
+							1,
+							1,
+							2
+						],
+						"variant": "normal"
+					}
+				}
+			]
+		}
+	]
+}

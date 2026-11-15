@@ -195,39 +195,152 @@
 	},
 	"loot": {
 		"common": {
-			"name": "Common loot (mineshafts, dungeons, shipwrecks, fishing treasure, hero gifts)",
+			"name": "Common loot (dungeons, mineshafts, temples, shipwrecks, ruins, fishing treasure, hero gifts, most mobs)",
 			"bases": [
 				"amethyst",
+				"amethyst",
+				"quartz"
+			],
+			"tiers": [
+				1
+			],
+			"variant": "normal"
+		},
+		"rare": {
+			"name": "Rare loot (strongholds, buried treasure, outposts, mansions, nether fortresses, piglins)",
+			"bases": [
+				"amethyst",
+				"quartz",
 				"quartz",
 				"ender_pearl"
 			],
 			"tiers": [
 				1,
+				1,
 				2
-			]
+			],
+			"variant": "normal"
 		},
-		"rare": {
-			"name": "Rare loot (strongholds, ancient cities, end cities, buried treasure, outposts)",
+		"hard": {
+			"name": "Hard places (ancient cities, bastions, end cities, trial vaults, elder guardians, trial chamber mobs)",
 			"bases": [
-				"diamond",
-				"prismarine"
+				"quartz",
+				"ender_pearl",
+				"ender_pearl",
+				"diamond"
 			],
 			"tiers": [
+				1,
 				2,
-				3
-			]
+				2
+			],
+			"variant": "any"
 		},
 		"ominous": {
-			"name": "Ominous vaults in trial chambers (and the elder guardian for Mining Fatigue)",
+			"name": "Ominous vaults in trial chambers",
 			"bases": [
+				"ender_pearl",
+				"diamond",
+				"diamond",
 				"prismarine",
 				"nether_star"
 			],
 			"tiers": [
+				2,
+				2,
 				3
-			]
+			],
+			"variant": "any"
 		}
 	},
+	"loot_inject": {
+		"minecraft:chests/simple_dungeon": "bubbas_infused_gems:inject/chests/simple_dungeon",
+		"minecraft:chests/abandoned_mineshaft": "bubbas_infused_gems:inject/chests/abandoned_mineshaft",
+		"minecraft:chests/desert_pyramid": "bubbas_infused_gems:inject/chests/desert_pyramid",
+		"minecraft:chests/jungle_temple": "bubbas_infused_gems:inject/chests/jungle_temple",
+		"minecraft:chests/igloo_chest": "bubbas_infused_gems:inject/chests/igloo_chest",
+		"minecraft:chests/shipwreck_treasure": "bubbas_infused_gems:inject/chests/shipwreck_treasure",
+		"minecraft:chests/underwater_ruin_big": "bubbas_infused_gems:inject/chests/underwater_ruin_big",
+		"minecraft:chests/ruined_portal": "bubbas_infused_gems:inject/chests/ruined_portal",
+		"minecraft:gameplay/fishing/treasure": "bubbas_infused_gems:inject/gameplay/fishing/treasure",
+		"minecraft:gameplay/hero_of_the_village/armorer_gift": "bubbas_infused_gems:inject/gameplay/hero_of_the_village/armorer_gift",
+		"minecraft:gameplay/hero_of_the_village/baby_gift": "bubbas_infused_gems:inject/gameplay/hero_of_the_village/baby_gift",
+		"minecraft:gameplay/hero_of_the_village/butcher_gift": "bubbas_infused_gems:inject/gameplay/hero_of_the_village/butcher_gift",
+		"minecraft:gameplay/hero_of_the_village/cartographer_gift": "bubbas_infused_gems:inject/gameplay/hero_of_the_village/cartographer_gift",
+		"minecraft:gameplay/hero_of_the_village/cleric_gift": "bubbas_infused_gems:inject/gameplay/hero_of_the_village/cleric_gift",
+		"minecraft:gameplay/hero_of_the_village/farmer_gift": "bubbas_infused_gems:inject/gameplay/hero_of_the_village/farmer_gift",
+		"minecraft:gameplay/hero_of_the_village/fisherman_gift": "bubbas_infused_gems:inject/gameplay/hero_of_the_village/fisherman_gift",
+		"minecraft:gameplay/hero_of_the_village/fletcher_gift": "bubbas_infused_gems:inject/gameplay/hero_of_the_village/fletcher_gift",
+		"minecraft:gameplay/hero_of_the_village/leatherworker_gift": "bubbas_infused_gems:inject/gameplay/hero_of_the_village/leatherworker_gift",
+		"minecraft:gameplay/hero_of_the_village/librarian_gift": "bubbas_infused_gems:inject/gameplay/hero_of_the_village/librarian_gift",
+		"minecraft:gameplay/hero_of_the_village/mason_gift": "bubbas_infused_gems:inject/gameplay/hero_of_the_village/mason_gift",
+		"minecraft:gameplay/hero_of_the_village/shepherd_gift": "bubbas_infused_gems:inject/gameplay/hero_of_the_village/shepherd_gift",
+		"minecraft:gameplay/hero_of_the_village/toolsmith_gift": "bubbas_infused_gems:inject/gameplay/hero_of_the_village/toolsmith_gift",
+		"minecraft:gameplay/hero_of_the_village/unemployed_gift": "bubbas_infused_gems:inject/gameplay/hero_of_the_village/unemployed_gift",
+		"minecraft:gameplay/hero_of_the_village/weaponsmith_gift": "bubbas_infused_gems:inject/gameplay/hero_of_the_village/weaponsmith_gift",
+		"minecraft:chests/stronghold_corridor": "bubbas_infused_gems:inject/chests/stronghold_corridor",
+		"minecraft:chests/stronghold_crossing": "bubbas_infused_gems:inject/chests/stronghold_crossing",
+		"minecraft:chests/stronghold_library": "bubbas_infused_gems:inject/chests/stronghold_library",
+		"minecraft:chests/buried_treasure": "bubbas_infused_gems:inject/chests/buried_treasure",
+		"minecraft:chests/pillager_outpost": "bubbas_infused_gems:inject/chests/pillager_outpost",
+		"minecraft:chests/woodland_mansion": "bubbas_infused_gems:inject/chests/woodland_mansion",
+		"minecraft:chests/nether_bridge": "bubbas_infused_gems:inject/chests/nether_bridge",
+		"minecraft:chests/ancient_city": "bubbas_infused_gems:inject/chests/ancient_city",
+		"minecraft:chests/bastion_treasure": "bubbas_infused_gems:inject/chests/bastion_treasure",
+		"minecraft:chests/bastion_other": "bubbas_infused_gems:inject/chests/bastion_other",
+		"minecraft:chests/bastion_bridge": "bubbas_infused_gems:inject/chests/bastion_bridge",
+		"minecraft:chests/bastion_hoglin_stable": "bubbas_infused_gems:inject/chests/bastion_hoglin_stable",
+		"minecraft:chests/end_city_treasure": "bubbas_infused_gems:inject/chests/end_city_treasure",
+		"minecraft:chests/trial_chambers/reward": "bubbas_infused_gems:inject/chests/trial_chambers/reward",
+		"minecraft:entities/elder_guardian": "bubbas_infused_gems:inject/entities/elder_guardian",
+		"minecraft:chests/trial_chambers/reward_ominous": "bubbas_infused_gems:inject/chests/trial_chambers/reward_ominous"
+	},
+	"loot_chance": {
+		"minecraft:chests/simple_dungeon": 0.06,
+		"minecraft:chests/abandoned_mineshaft": 0.05,
+		"minecraft:chests/desert_pyramid": 0.05,
+		"minecraft:chests/jungle_temple": 0.05,
+		"minecraft:chests/igloo_chest": 0.05,
+		"minecraft:chests/shipwreck_treasure": 0.05,
+		"minecraft:chests/underwater_ruin_big": 0.05,
+		"minecraft:chests/ruined_portal": 0.04,
+		"minecraft:gameplay/fishing/treasure": 0.05,
+		"minecraft:gameplay/hero_of_the_village/armorer_gift": 0.05,
+		"minecraft:gameplay/hero_of_the_village/baby_gift": 0.05,
+		"minecraft:gameplay/hero_of_the_village/butcher_gift": 0.05,
+		"minecraft:gameplay/hero_of_the_village/cartographer_gift": 0.05,
+		"minecraft:gameplay/hero_of_the_village/cleric_gift": 0.05,
+		"minecraft:gameplay/hero_of_the_village/farmer_gift": 0.05,
+		"minecraft:gameplay/hero_of_the_village/fisherman_gift": 0.05,
+		"minecraft:gameplay/hero_of_the_village/fletcher_gift": 0.05,
+		"minecraft:gameplay/hero_of_the_village/leatherworker_gift": 0.05,
+		"minecraft:gameplay/hero_of_the_village/librarian_gift": 0.05,
+		"minecraft:gameplay/hero_of_the_village/mason_gift": 0.05,
+		"minecraft:gameplay/hero_of_the_village/shepherd_gift": 0.05,
+		"minecraft:gameplay/hero_of_the_village/toolsmith_gift": 0.05,
+		"minecraft:gameplay/hero_of_the_village/unemployed_gift": 0.05,
+		"minecraft:gameplay/hero_of_the_village/weaponsmith_gift": 0.05,
+		"minecraft:chests/stronghold_corridor": 0.06,
+		"minecraft:chests/stronghold_crossing": 0.06,
+		"minecraft:chests/stronghold_library": 0.08,
+		"minecraft:chests/buried_treasure": 0.1,
+		"minecraft:chests/pillager_outpost": 0.08,
+		"minecraft:chests/woodland_mansion": 0.1,
+		"minecraft:chests/nether_bridge": 0.06,
+		"minecraft:chests/ancient_city": 0.12,
+		"minecraft:chests/bastion_treasure": 0.15,
+		"minecraft:chests/bastion_other": 0.06,
+		"minecraft:chests/bastion_bridge": 0.06,
+		"minecraft:chests/bastion_hoglin_stable": 0.06,
+		"minecraft:chests/end_city_treasure": 0.12,
+		"minecraft:chests/trial_chambers/reward": 0.08,
+		"minecraft:entities/elder_guardian": 0.2,
+		"minecraft:chests/trial_chambers/reward_ominous": 0.1
+	},
+	"loot_equipment": {
+		"minecraft:equipment/trial_chamber": "bubbas_infused_gems:trial_chamber_equipment"
+	},
+	"mob_armor_modifier": "bubbas_infused_gems:mob_armor",
 	"effects": {
 		"speed": {
 			"name": "Speed",
@@ -562,6 +675,7 @@
 			"source": "found",
 			"loot": [
 				"rare",
+				"hard",
 				"ominous"
 			],
 			"hit": {
@@ -1947,6 +2061,7 @@
 			"loot": [
 				"common",
 				"rare",
+				"hard",
 				"ominous"
 			],
 			"hit": {
@@ -2104,7 +2219,7 @@
 			},
 			"source": "found",
 			"loot": [
-				"rare",
+				"hard",
 				"ominous"
 			],
 			"hit": {
@@ -2527,6 +2642,7 @@
 			},
 			"source": "found",
 			"loot": [
+				"hard",
 				"ominous"
 			],
 			"hit": {

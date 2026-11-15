@@ -128,7 +128,7 @@ Every one of the 40 status effects in 26.3 (the script reads them from the sourc
 | Strength | beneficial | Craftable: strength potion (normal, splash or lingering) + base gem (sets the Infusion level) |
 | Jump Boost | beneficial | Craftable: leaping potion (normal, splash or lingering) + base gem (sets the Infusion level) |
 | Regeneration | beneficial | Craftable: regeneration potion (normal, splash or lingering) + base gem (sets the Infusion level) |
-| Resistance | beneficial | Found only: loot comes later (owner): for now an 'other' roll on beneficial gems, and the creative tab; no potion gives Resistance alone; plus ominous vaults |
+| Resistance | beneficial | Found only: woodland mansion chests (rare), bastion treasure (hard); also an 'other' roll on beneficial gems; no potion gives Resistance alone; plus ominous vaults |
 | Turtle Master | beneficial | Craftable: turtle master potion (normal, splash or lingering) + base gem (sets the Infusion level) |
 | Fire Resistance | beneficial | Craftable: fire resistance potion (normal, splash or lingering) + base gem (sets the Infusion level) |
 | Water Breathing | beneficial | Craftable: water breathing potion (normal, splash or lingering) + base gem (sets the Infusion level) |
@@ -145,15 +145,15 @@ Every one of the 40 status effects in 26.3 (the script reads them from the sourc
 | Weaving | harmful | Craftable: weaving potion (normal, splash or lingering) + base gem (sets the Infusion level) |
 | Oozing | harmful | Craftable: oozing potion (normal, splash or lingering) + base gem (sets the Infusion level) |
 | Infested | harmful | Craftable: infested potion (normal, splash or lingering) + base gem (sets the Infusion level) |
-| Haste | beneficial | Found only: mineshaft chests (common), stronghold and ancient city chests (rare); only beacons give Haste in vanilla; plus ominous vaults |
+| Haste | beneficial | Found only: mineshaft chests (common), stronghold chests (rare), ancient city chests (hard); only beacons give Haste in vanilla; plus ominous vaults |
 | Absorption | beneficial | Craftable: golden apple (Absorption I: normal) or enchanted golden apple (Absorption IV: strong) in the bottle slot + base gem (sets the Infusion level); normal form only, so tier 1 at most |
-| Health Boost | beneficial | Found only: end city and ancient city chests (rare); no vanilla item or source gives Health Boost; plus ominous vaults |
+| Health Boost | beneficial | Found only: end city and ancient city chests (hard); no vanilla item or source gives Health Boost; plus ominous vaults |
 | Dolphin's Grace | beneficial | Craftable: nautilus shell (drowned, fishing treasure; dolphins give the effect) in the bottle slot + base gem (sets the Infusion level); normal form only, so tier 1 at most |
 | Saturation | beneficial | Craftable: suspicious stew of dandelion, golden dandelion or blue orchid (matched by its stew effect: Fabric API's components ingredient) in the bottle slot + base gem (sets the Infusion level); normal form only, so tier 1 at most |
 | Conduit Power | beneficial | Craftable: heart of the sea (buried treasure; the conduit's core) in the bottle slot + base gem (sets the Infusion level); normal form only, so tier 1 at most |
 | Hero of the Village | beneficial | Found only: hero-of-the-village gifts (common), pillager outpost chests (rare); only winning a raid gives it in vanilla; plus ominous vaults |
 | Wither | harmful | Craftable: wither rose (dropped where the Wither kills a mob) in the bottle slot + base gem (sets the Infusion level); normal form only, so tier 1 at most |
-| Mining Fatigue | harmful | Found only: elder guardian drops (a rare extra drop); vanilla's only source is the elder guardian; plus ominous vaults |
+| Mining Fatigue | harmful | Found only: elder guardian drops (a rare extra drop, hard); vanilla's only source is the elder guardian; plus ominous vaults |
 | Hunger | harmful | Craftable: rotten flesh (Hunger I, 80% chance in vanilla) in the bottle slot + base gem (sets the Infusion level); normal form only, so tier 1 at most |
 | Glowing | harmful | Craftable: glowstone dust in the bottle slot + base gem (sets the Infusion level); normal form only, so tier 1 at most |
 | Levitation | harmful | Craftable: shulker shell in the bottle slot + base gem (sets the Infusion level); normal form only, so tier 1 at most |
@@ -172,9 +172,60 @@ A found gem is made as if brewed and enchanted: its potion factor is 1.0 (one fo
 
 | Loot source | Infusion levels | Tiers | Strength range (gem quality) |
 |---|---|---|---|
-| Common loot (mineshafts, dungeons, shipwrecks, fishing treasure, hero gifts) | Infusion I (amethyst), Infusion II (quartz), Infusion III (ender pearl) | 1, 2 | 0.40 - 0.66 (or a drawback-only roll at tier 1) |
-| Rare loot (strongholds, ancient cities, end cities, buried treasure, outposts) | Infusion IV (diamond), Infusion V (prismarine shard) | 2, 3 | 0.69 - 0.96 |
-| Ominous vaults in trial chambers (and the elder guardian for Mining Fatigue) | Infusion V (prismarine shard), Infusion VI (nether star) | 3 | 0.96 - 1.00 |
+| Common loot (dungeons, mineshafts, temples, shipwrecks, ruins, fishing treasure, hero gifts, most mobs) | Infusion I (amethyst), Infusion I (amethyst), Infusion II (quartz) | 1 | 0.40 - 0.42 (or a drawback-only roll at tier 1) |
+| Rare loot (strongholds, buried treasure, outposts, mansions, nether fortresses, piglins) | Infusion I (amethyst), Infusion II (quartz), Infusion II (quartz), Infusion III (ender pearl) | 1, 1, 2 | 0.40 - 0.66 (or a drawback-only roll at tier 1) |
+| Hard places (ancient cities, bastions, end cities, trial vaults, elder guardians, trial chamber mobs) | Infusion II (quartz), Infusion III (ender pearl), Infusion III (ender pearl), Infusion IV (diamond) | 1, 2, 2 | 0.42 - 0.69 (or a drawback-only roll at tier 1) |
+| Ominous vaults in trial chambers | Infusion III (ender pearl), Infusion IV (diamond), Infusion IV (diamond), Infusion V (prismarine shard), Infusion VI (nether star) | 2, 2, 3 | 0.66 - 1.00 |
+
+## Loot: where gems are found (one table, `LOOT_PLACES`)
+
+Every place below gets **one extra roll** with the given chance per chest (fishing: per treasure catch; hero gift: per gift; elder guardian: per kill by a player). The roll adds a finished gem of any craftable effect, or (a quarter of the time) a gemmed armor piece of the level's materials, or, where found-only gems are listed, one of them (a third of the time). Vanilla's tables are never replaced; the extra roll is a data file of the mod (`loot_table/inject/...`), so a datapack can change or empty any of it. Rare and mostly weak, better in harder places (owner). Craftable gems from loot never reach Infusion VI, so a perfect craftable gem is always crafted; found-only gems can be perfect only from ominous vaults.
+
+| Level | Infusion (weighted) | Tiers (weighted) | Potion variant | Gemmed gear | Gems per piece | Gem quality (craftable) |
+|---|---|---|---|---|---|---|
+| common | I, I, II | 1 | weakest | leather, copper, golden, chainmail | 1 | 0.32 - 0.42 |
+| rare | I, II, II, III | 1, 1, 2 | weakest | chainmail, golden, iron | 1 | 0.32 - 0.66 |
+| hard | II, III, III, IV | 1, 2, 2 | any | iron, diamond | 1-2 | 0.34 - 0.69 |
+| ominous | III, IV, IV, V, VI | 2, 2, 3 | any | diamond | 1-3 | 0.53 - 0.96 |
+
+| Where | Level | Chance | Found-only gems there |
+|---|---|---|---|
+| chests/simple_dungeon | common | 6% | - |
+| chests/abandoned_mineshaft | common | 5% | Haste |
+| chests/desert_pyramid | common | 5% | - |
+| chests/jungle_temple | common | 5% | - |
+| chests/igloo_chest | common | 5% | - |
+| chests/shipwreck_treasure | common | 5% | Luck |
+| chests/underwater_ruin_big | common | 5% | - |
+| chests/ruined_portal | common | 4% | - |
+| gameplay/fishing/treasure | common | 5% | Luck |
+| Hero of the Village gifts (every profession) | common | 5% | Hero of the Village |
+| chests/stronghold_corridor | rare | 6% | Haste |
+| chests/stronghold_crossing | rare | 6% | Haste |
+| chests/stronghold_library | rare | 8% | Haste |
+| chests/buried_treasure | rare | 10% | Luck |
+| chests/pillager_outpost | rare | 8% | Hero of the Village |
+| chests/woodland_mansion | rare | 10% | Resistance |
+| chests/nether_bridge | rare | 6% | - |
+| chests/ancient_city | hard | 12% | Haste, Health Boost |
+| chests/bastion_treasure | hard | 15% | Resistance |
+| chests/bastion_other | hard | 6% | - |
+| chests/bastion_bridge | hard | 6% | - |
+| chests/bastion_hoglin_stable | hard | 6% | - |
+| chests/end_city_treasure | hard | 12% | Health Boost |
+| chests/trial_chambers/reward | hard | 8% | - |
+| entities/elder_guardian | hard | 20% | Mining Fatigue (only) |
+| chests/trial_chambers/reward_ominous | ominous | 10% | Haste, Luck, Health Boost, Hero of the Village, Mining Fatigue, Resistance |
+
+### Gems on mobs
+
+Each armor piece a mob spawns with gets gems with the chance below; the mob gets the gems' effects like a player (undead follow the undead rules). The piece drops with vanilla's equipment drop chance and keeps its gems. Mobs from ominous trial spawners wear vanilla's trial equipment table, which gets gems too; they never drop their gear (vanilla).
+
+| Who | Level | Chance per armor piece | Gems |
+|---|---|---|---|
+| Piglins | rare | 6% | 1 |
+| Every other mob that spawns in armor (zombies, husks, drowned, skeletons, strays, bogged...) | common | 4% | 1 |
+| Ominous trial spawner mobs | hard | 10% | 1-2 |
 
 ## Roll tables
 
@@ -518,6 +569,7 @@ Worn (armor) effects are attribute modifiers, data components or small tick and 
 - drawbacks: one is 10% of the strongest vanilla level, any number of one effect stays under 20%, below vanilla's level I for every drawback effect; Poison and Wither roll at half weight (owner); Healing, Harming and the rest of the never-drawback list never roll
 - rolls: each of the 36 gems has one roll table; 'other' pools 14-18 effects, all the main effect's kind and never itself; drawback pools 5-19 effects, all the opposite kind, none on the never-drawback list, and none a direct opposite (13 inverse pairs, the owner's 12 included)
 - weapons: per hit, potency rises with strength toward the strongest potion's level (never reaching it); a hit lasts at most 8 s (the best weapon), less below it, never under its floor (owner); a real tipped arrow and a gem of the same effect don't add, the stronger level applies
+- loot: 40 vanilla tables get one extra roll (chance 4%-20%); each level's best gem beats the level below; no craftable gem from loot is perfect (Infusion VI is never used for them); every found-only gem is listed at exactly the levels its source names; every table and item exists in 26.3
 
 ## Open questions for the owner
 

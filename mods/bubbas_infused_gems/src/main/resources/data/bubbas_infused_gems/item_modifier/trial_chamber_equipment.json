@@ -1,0 +1,24 @@
+{
+	"type": "bubbas_infused_gems:socket_random_gems",
+	"condition": {
+		"type": "minecraft:random_chance",
+		"chance": 0.1
+	},
+	"count": {
+		"type": "minecraft:uniform",
+		"min": 1,
+		"max": 2
+	},
+	"infusion": [
+		2,
+		3,
+		3,
+		4
+	],
+	"tier": [
+		1,
+		2,
+		2
+	],
+	"variant": "any"
+}

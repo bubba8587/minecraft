@@ -1,0 +1,19 @@
+{
+	"type": "minecraft:chest",
+	"pools": [
+		{
+			"rolls": 1,
+			"condition": {
+				"type": "minecraft:random_chance",
+				"chance": 0.04
+			},
+			"entries": [
+				{
+					"type": "minecraft:loot_table",
+					"value": "bubbas_infused_gems:gems/common",
+					"weight": 1
+				}
+			]
+		}
+	]
+}

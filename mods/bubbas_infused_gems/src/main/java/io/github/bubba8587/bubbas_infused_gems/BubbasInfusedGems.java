@@ -2,6 +2,7 @@
 package io.github.bubba8587.bubbas_infused_gems;
 
 import io.github.bubba8587.bubbas_infused_gems.balance.Balance;
+import io.github.bubba8587.bubbas_infused_gems.loot.GemLoot;
 import io.github.bubba8587.bubbas_infused_gems.effect.WornEffects;
 import io.github.bubba8587.bubbas_infused_gems.registry.ModCommands;
 import io.github.bubba8587.bubbas_infused_gems.registry.ModComponents;
@@ -36,6 +37,7 @@ public class BubbasInfusedGems implements ModInitializer {
 		ModRecipes.initialize();
 		ModCreativeTabs.initialize();
 		ModCommands.initialize();
+		GemLoot.initialize();
 		// Armor gems: recompute the wearer's totals and attributes only when armor changes (also on joining the level).
 		ServerEntityEvents.EQUIPMENT_CHANGE.register((entity, slot, previous, current) -> {
 			if (slot.getType() == EquipmentSlot.Type.HUMANOID_ARMOR) {

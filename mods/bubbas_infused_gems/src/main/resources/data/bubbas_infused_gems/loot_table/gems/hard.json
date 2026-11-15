@@ -1,0 +1,230 @@
+{
+	"type": "minecraft:empty",
+	"pools": [
+		{
+			"rolls": 1,
+			"entries": [
+				{
+					"type": "minecraft:item",
+					"name": "bubbas_infused_gems:gem",
+					"weight": 24,
+					"modifier": {
+						"type": "bubbas_infused_gems:random_gem",
+						"infusion": [
+							2,
+							3,
+							3,
+							4
+						],
+						"tier": [
+							1,
+							2,
+							2
+						],
+						"variant": "any"
+					}
+				},
+				{
+					"type": "minecraft:item",
+					"name": "minecraft:iron_helmet",
+					"weight": 1,
+					"modifier": {
+						"type": "bubbas_infused_gems:socket_random_gems",
+						"count": {
+							"type": "minecraft:uniform",
+							"min": 1,
+							"max": 2
+						},
+						"infusion": [
+							2,
+							3,
+							3,
+							4
+						],
+						"tier": [
+							1,
+							2,
+							2
+						],
+						"variant": "any"
+					}
+				},
+				{
+					"type": "minecraft:item",
+					"name": "minecraft:iron_chestplate",
+					"weight": 1,
+					"modifier": {
+						"type": "bubbas_infused_gems:socket_random_gems",
+						"count": {
+							"type": "minecraft:uniform",
+							"min": 1,
+							"max": 2
+						},
+						"infusion": [
+							2,
+							3,
+							3,
+							4
+						],
+						"tier": [
+							1,
+							2,
+							2
+						],
+						"variant": "any"
+					}
+				},
+				{
+					"type": "minecraft:item",
+					"name": "minecraft:iron_leggings",
+					"weight": 1,
+					"modifier": {
+						"type": "bubbas_infused_gems:socket_random_gems",
+						"count": {
+							"type": "minecraft:uniform",
+							"min": 1,
+							"max": 2
+						},
+						"infusion": [
+							2,
+							3,
+							3,
+							4
+						],
+						"tier": [
+							1,
+							2,
+							2
+						],
+						"variant": "any"
+					}
+				},
+				{
+					"type": "minecraft:item",
+					"name": "minecraft:iron_boots",
+					"weight": 1,
+					"modifier": {
+						"type": "bubbas_infused_gems:socket_random_gems",
+						"count": {
+							"type": "minecraft:uniform",
+							"min": 1,
+							"max": 2
+						},
+						"infusion": [
+							2,
+							3,
+							3,
+							4
+						],
+						"tier": [
+							1,
+							2,
+							2
+						],
+						"variant": "any"
+					}
+				},
+				{
+					"type": "minecraft:item",
+					"name": "minecraft:diamond_helmet",
+					"weight": 1,
+					"modifier": {
+						"type": "bubbas_infused_gems:socket_random_gems",
+						"count": {
+							"type": "minecraft:uniform",
+							"min": 1,
+							"max": 2
+						},
+						"infusion": [
+							2,
+							3,
+							3,
+							4
+						],
+						"tier": [
+							1,
+							2,
+							2
+						],
+						"variant": "any"
+					}
+				},
+				{
+					"type": "minecraft:item",
+					"name": "minecraft:diamond_chestplate",
+					"weight": 1,
+					"modifier": {
+						"type": "bubbas_infused_gems:socket_random_gems",
+						"count": {
+							"type": "minecraft:uniform",
+							"min": 1,
+							"max": 2
+						},
+						"infusion": [
+							2,
+							3,
+							3,
+							4
+						],
+						"tier": [
+							1,
+							2,
+							2
+						],
+						"variant": "any"
+					}
+				},
+				{
+					"type": "minecraft:item",
+					"name": "minecraft:diamond_leggings",
+					"weight": 1,
+					"modifier": {
+						"type": "bubbas_infused_gems:socket_random_gems",
+						"count": {
+							"type": "minecraft:uniform",
+							"min": 1,
+							"max": 2
+						},
+						"infusion": [
+							2,
+							3,
+							3,
+							4
+						],
+						"tier": [
+							1,
+							2,
+							2
+						],
+						"variant": "any"
+					}
+				},
+				{
+					"type": "minecraft:item",
+					"name": "minecraft:diamond_boots",
+					"weight": 1,
+					"modifier": {
+						"type": "bubbas_infused_gems:socket_random_gems",
+						"count": {
+							"type": "minecraft:uniform",
+							"min": 1,
+							"max": 2
+						},
+						"infusion": [
+							2,
+							3,
+							3,
+							4
+						],
+						"tier": [
+							1,
+							2,
+							2
+						],
+						"variant": "any"
+					}
+				}
+			]
+		}
+	]
+}

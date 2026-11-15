@@ -5,6 +5,7 @@
 	"mixins": [
 		"ArrowInvoker",
 		"FoodDataAccessor",
+		"MobEquipmentInvoker",
 		"ThrownTridentInvoker"
 	],
 	"injectors": {

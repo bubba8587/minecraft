@@ -11,6 +11,8 @@
 		"GrindstoneMenuMixin",
 		"GrindstoneResultSlotMixin",
 		"LivingEntityMixin",
+		"MobMixin",
+		"PiglinMixin",
 		"PlayerMixin",
 		"VillagerMixin"
 	],

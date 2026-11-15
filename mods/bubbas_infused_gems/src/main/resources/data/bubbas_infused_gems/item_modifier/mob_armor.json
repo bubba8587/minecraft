@@ -1,0 +1,74 @@
+{
+	"type": "minecraft:sequence",
+	"functions": [
+		{
+			"type": "bubbas_infused_gems:socket_random_gems",
+			"condition": {
+				"type": "minecraft:all_of",
+				"terms": [
+					{
+						"type": "minecraft:entity_properties",
+						"entity": "this",
+						"predicate": {
+							"minecraft:entity_type": "minecraft:piglin"
+						}
+					},
+					{
+						"type": "minecraft:random_chance",
+						"chance": 0.06
+					}
+				]
+			},
+			"count": 1,
+			"infusion": [
+				1,
+				2,
+				2,
+				3
+			],
+			"tier": [
+				1,
+				1,
+				2
+			],
+			"variant": "normal"
+		},
+		{
+			"type": "bubbas_infused_gems:socket_random_gems",
+			"condition": {
+				"type": "minecraft:all_of",
+				"terms": [
+					{
+						"type": "minecraft:inverted",
+						"term": {
+							"type": "minecraft:any_of",
+							"terms": [
+								{
+									"type": "minecraft:entity_properties",
+									"entity": "this",
+									"predicate": {
+										"minecraft:entity_type": "minecraft:piglin"
+									}
+								}
+							]
+						}
+					},
+					{
+						"type": "minecraft:random_chance",
+						"chance": 0.04
+					}
+				]
+			},
+			"count": 1,
+			"infusion": [
+				1,
+				1,
+				2
+			],
+			"tier": [
+				1
+			],
+			"variant": "normal"
+		}
+	]
+}
