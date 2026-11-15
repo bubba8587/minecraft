@@ -2,9 +2,11 @@
 
 *Part of [[Bubba's Infused Gems]].*
 
-> [!info] /gems
-> **Permission:** none (any player)
-> **Operators:** may name another player
+> [!infobox] /gems
+> | | |
+> |---|---|
+> | **Permission** | None (any player) |
+> | **Operators** | May name another player |
 
 **/gems** lists a player's combined gem effects.
 

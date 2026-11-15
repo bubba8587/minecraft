@@ -6,19 +6,49 @@ modrinth:
 ---
 # Bubba's Crafting Tweaks
 
-A handful of extra recipes that make awkward or grindy items reachable: renewable sand, quartz and glowstone, a way to make tridents, uses for rotten flesh and spare charcoal.
+> [!infobox] Bubba's Crafting Tweaks
+> | | |
+> |---|---|
+> | **Type** | Datapack; optional Fabric mod |
+> | **Minecraft** | 26.3 |
+> | **Version** | Datapack 1.0.0; mod 0.1.0 |
+> | **Requires** | Nothing (datapack); Fabric API (mod) |
+> | **Side** | Server only (datapack); client and server (mod) |
+> | **Status** | Active |
 
-## Pages
+**Bubba's Crafting Tweaks** is a datapack that adds a handful of recipes for awkward or grindy items: renewable sand, quartz and glowstone dust, a way to make tridents, and uses for rotten flesh and spare charcoal. It also comes as an optional Fabric mod that adds the Glider and Synthetic Diamond Ore.
 
-- [[Crafting Tweaks Recipes]]: every recipe.
-- [[Crafting Tweaks Companion Mod]]: the optional Fabric mod version, which adds:
-  - [[The Glider]]: a craftable, weaker cousin of the elytra.
-  - [[Synthetic Diamond Ore]]: blast-furnace diamond ore that's stingy with diamonds.
+## Recipes
 
-## Installing
+*Main article: [[Crafting Tweaks Recipes]]*
 
-Add it to a world like any datapack (see [[Installing Datapacks]]). New recipes show up in the recipe book once you've picked up an ingredient. Works on servers too: only the server needs it. Or install the [[Crafting Tweaks Companion Mod]] instead, which includes everything.
+The pack adds recipes for the crafting table, blast furnace and smoker. No vanilla recipe is replaced. New recipes appear in the recipe book once the player has picked up one of their ingredients.
 
-## Works with
+## Companion mod
 
-Plain vanilla, and any other recipe mods or datapacks. It doesn't replace any vanilla recipe.
+*Main article: [[Crafting Tweaks Companion Mod]]*
+
+The companion mod contains the datapack and its resource pack in a single file, and adds two features of its own:
+
+- **[[The Glider]]**: a craftable, weaker relative of the elytra that never breaks.
+- **[[Synthetic Diamond Ore]]**: diamond ore made in a blast furnace, which rarely drops a diamond when mined.
+
+## Installation
+
+The datapack is added to a world like any datapack (see [[Installing Datapacks]]). On a server, only the server needs it. Alternatively, the [[Crafting Tweaks Companion Mod]] can be installed instead; it includes everything in the datapack.
+
+## Compatibility
+
+The pack works in plain vanilla and alongside other recipe mods and datapacks, since it does not replace any vanilla recipe.
+
+## History
+
+| Version | Changes |
+|---|---|
+| Datapack 1.0.0 | Made for Minecraft 26.3 from the original recipe set for 26.1. The pack no longer has its own saddle recipe (vanilla's is used), and its former elytra recipe now makes the Glider in the companion mod. |
+| Mod 0.1.0 | Added the companion mod, with [[The Glider]] and [[Synthetic Diamond Ore]]. |
+
+## See also
+
+- [[Installing Datapacks]]
+- [[Bubba Test World]]

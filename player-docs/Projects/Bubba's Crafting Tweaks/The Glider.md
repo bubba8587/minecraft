@@ -1,11 +1,55 @@
 # The Glider
 
-Part of the [[Crafting Tweaks Companion Mod]].
+*Part of [[Bubba's Crafting Tweaks]] (in the [[Crafting Tweaks Companion Mod]] only).*
 
-A craftable, weaker cousin of the elytra.
+> [!infobox] Glider
+> | | |
+> |---|---|
+> | **Type** | Wearable item (chest slot) |
+> | **Rarity** | Uncommon |
+> | **Stackable** | No |
+> | **Durability** | None (never breaks) |
+> | **Creative tab** | Tools & Utilities, after the elytra |
+> | **Obtained** | Crafting |
 
-- **Recipe (crafting table):** diamond, bamboo, diamond on top; phantom membrane on both sides of the middle row; feather on both sides of the bottom row. Makes one Glider.
-- **Flying:** wear it in the chest slot and jump while falling to glide, just like an elytra.
-- **Never breaks:** no durability, no repairs.
-- **Handling:** it turns much more slowly toward where you look than an elytra (under a third as fast), and firework rockets give it a weaker boost (it tops out at a little over half an elytra's rocket speed). Gliding down and lift work the same as an elytra.
-- **Looks:** the item and wings are placeholders for now.
+The **Glider** is a craftable, weaker relative of the elytra. Worn in the chest slot, it lets the player glide like an elytra, but it turns more slowly and gets less speed from firework rockets. It never breaks.
+
+## Obtaining
+
+### Crafting
+
+| | | |
+|---|---|---|
+| Diamond | Bamboo | Diamond |
+| Phantom Membrane | | Phantom Membrane |
+| Feather | | Feather |
+
+The recipe makes one Glider.
+
+## Usage
+
+The Glider is worn in the chest slot. Jumping while falling starts gliding, exactly as with an elytra.
+
+### Flight
+
+| | Glider | Elytra |
+|---|---|---|
+| Gliding down and lift | Same as the elytra | Normal |
+| Turning toward where the player looks | Under a third as fast | Normal |
+| Top speed with firework rockets | A little over half the elytra's | Normal |
+| Durability | None; never breaks or needs repair | Wears out; repaired with phantom membrane |
+
+## Appearance
+
+The item and its wings use placeholder textures in this version.
+
+## History
+
+| Version | Changes |
+|---|---|
+| Mod 0.1.0 | Added. |
+
+## See also
+
+- [[Crafting Tweaks Recipes]]
+- [[Bubba Test World]], which has a tower for comparing the Glider with the elytra.

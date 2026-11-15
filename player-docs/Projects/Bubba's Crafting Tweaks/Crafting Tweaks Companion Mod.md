@@ -1,12 +1,31 @@
 # Crafting Tweaks Companion Mod
 
-Part of [[Bubba's Crafting Tweaks]].
+*Part of [[Bubba's Crafting Tweaks]].*
 
-*Bubba's Crafting Tweaks* also comes as a Fabric mod. The mod already contains the [[Crafting Tweaks Recipes|recipes]] and the resource pack, so you install just the one file (and Fabric API). See [[Installing Fabric Mods]].
+> [!infobox] Crafting Tweaks Companion Mod
+> | | |
+> |---|---|
+> | **Type** | Fabric mod |
+> | **Version** | 0.1.0 |
+> | **Requires** | Fabric API |
+> | **Side** | Client and server |
+> | **Includes** | The datapack's recipes and resource pack |
 
-It must be installed on **both the server and every player's game**: a player without it is told to install it when they join.
+The **Crafting Tweaks Companion Mod** is the Fabric mod version of [[Bubba's Crafting Tweaks]]. It already contains the [[Crafting Tweaks Recipes|recipes]] and the resource pack, so only one file (plus Fabric API) is installed.
 
-It adds:
+## Installation
 
-- [[The Glider]]
-- [[Synthetic Diamond Ore]] that feels synthetic
+*Main article: [[Installing Fabric Mods]]*
+
+The mod must be installed on **both the server and every player's game**. A player who joins a server without it is told to install it.
+
+## Features
+
+- **[[The Glider]]**: a craftable glider that never breaks but handles worse than an elytra.
+- **[[Synthetic Diamond Ore]]**: placed ore from the blast-furnace recipe rarely drops a diamond when mined.
+
+## History
+
+| Version | Changes |
+|---|---|
+| 0.1.0 | Added. |

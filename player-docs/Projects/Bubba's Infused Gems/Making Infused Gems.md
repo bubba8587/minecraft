@@ -2,10 +2,12 @@
 
 *Part of [[Bubba's Infused Gems]].*
 
-> [!info] Infused Gem
-> **Obtained by:** brewing
-> **Stackable:** yes (16)
-> **Used for:** [[Enchanting Gems|enchanting]] into a Gem
+> [!infobox] Infused Gem
+> | | |
+> |---|---|
+> | **Obtained by** | Brewing |
+> | **Stackable** | Yes (16) |
+> | **Used for** | [[Enchanting Gems\|enchanting]] into a Gem |
 
 An **Infused Gem** is a gem brewed with a potion in a brewing stand, carrying that potion's effect.
 

@@ -8,14 +8,17 @@ side: client and server
 ---
 # Bubba's Infused Gems
 
-> [!info] Bubba's Infused Gems
-> **Type:** Fabric mod
-> **Minecraft:** 26.3
-> **Requires:** Fabric API
-> **Side:** client and server
-> **Status:** early test version
+> [!infobox] Bubba's Infused Gems
+> | | |
+> |---|---|
+> | **Type** | Fabric mod |
+> | **Minecraft** | 26.3 |
+> | **Version** | 0.1.0 (early test) |
+> | **Requires** | Fabric API |
+> | **Side** | Client and server |
+> | **Status** | Active |
 
-**Bubba's Infused Gems** is a mod that lets the player brew a potion into a gem, enchant the gem, and set it into armor or a weapon, giving a permanent but partial version of the potion's effect.
+**Bubba's Infused Gems** is a Fabric mod that lets the player brew a potion into a gem, enchant the gem, and set it into armor or a weapon, giving a permanent but partial version of the potion's effect.
 
 Armor gems affect the wearer all the time; weapon gems affect whatever the weapon hits. Gems are never as strong as a real potion, gems of the same effect stack, and some gems carry a drawback.
 
@@ -51,3 +54,14 @@ The mod comes with vanilla-style 16x textures. A higher resolution set is availa
 ## Compatibility
 
 Requires Fabric API. Mods that also give armor effects (such as trim-effect mods) work alongside it; their effects and gem effects do not interact.
+
+## History
+
+| Version | Changes |
+|---|---|
+| 0.1.0 | Added. Early test version. |
+
+## See also
+
+- [[Installing Fabric Mods]]
+- [[Bubba Test World]]

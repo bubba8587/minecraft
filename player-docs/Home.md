@@ -1,19 +1,22 @@
 # Home
 
-Player guides for the mods, datapacks and resource packs made in this repo. Everything here is written for players: what a project does, how to install and use it, and what it works with.
+Welcome to the player guide for **Bubba's** Minecraft mods, datapacks and resource packs. The guide describes what each project adds, how to install it and what it works with. It is written for players; it says nothing about how the projects are built.
 
-All projects target the latest full release of Minecraft. See [[Version Status]] for what's on the current version and anything that's paused while it catches up.
+All projects target the latest full release of Minecraft. *See also: [[Version Status]]*, which names the current version and any project paused while it catches up.
 
 ## Projects
 
-- [[Bubba's Crafting Tweaks]] (datapack)
-- [[Bubba's Reworked Mobs]] (mod)
+| Project | Type | Summary |
+|---|---|---|
+| [[Bubba's Crafting Tweaks]] | Datapack (optional Fabric mod) | Extra recipes for awkward or grindy items, plus the Glider and Synthetic Diamond Ore in the mod. |
+| [[Bubba's Reworked Mobs]] | Fabric mod | Undead that lie dormant until noise wakes them, and far fewer natural monster spawns. |
+| [[Bubba's Infused Gems]] | Fabric mod | Potions brewed into gems, enchanted and socketed into armor and weapons for permanent, partial effects. |
 
 Each project has a folder in `Projects/`: an overview page named after the project, plus a page per topic.
 
-## Getting started
+## Tutorials
 
 - [[Installing Fabric Mods]]
 - [[Installing Datapacks]]
 - [[Installing Resource Packs]]
-- [[Bubba Test World]]: try every feature in one ready-made world
+- [[Bubba Test World]]: a ready-made world with a station for every feature.

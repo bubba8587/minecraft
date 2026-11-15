@@ -8,28 +8,48 @@ side: client and server
 ---
 # {{title}}
 
-One or two sentences: what this mod adds or changes, in player terms.
+> [!infobox] {{title}}
+> | | |
+> |---|---|
+> | **Type** | Fabric mod |
+> | **Minecraft** | {{current version}} |
+> | **Version** | 0.1.0 |
+> | **Requires** | Fabric API |
+> | **Side** | Client and server |
+> | **Status** | Active |
 
-## Features
+**{{title}}** is a Fabric mod that... (one or two sentences in the third person: what it adds or changes, in player terms. See "Style" in the player-docs spec.)
 
-- What you can do with it, one line each. Screenshots go in `Attachments/` (made by a person, not AI).
+## Feature name
 
-## How to use
+*Main article: (link the topic page)*
 
-Step by step: crafting, controls, where things appear in the world.
+One short summary per topic page, each under its own heading with a "Main article" hatnote. Screenshots go in `Attachments/` (made by a person, not AI).
+
+## Commands
+
+*Main article: (link the commands page)*
+
+Commands, keybinds (and their defaults) and config options in plain words. Leave out if none.
+
+## Installation
+
+The mod installs like any Fabric mod (see [[Installing Fabric Mods]]). Say whether it is needed on the client, the server or both.
 
 ## Textures
 
-Comes with vanilla-style 16x textures. For higher resolution, turn on **{{title}} 32x (Faithful style)** in Options, Resource Packs (place it above Faithful 32x if you use it). Credit any Faithful-based textures here, with a link to https://faithfulpack.net.
+The mod comes with vanilla-style 16x textures. A higher-resolution set, **{{title}} 32x (Faithful style)**, can be turned on in Options, Resource Packs; it goes above Faithful 32x if that pack is also used. Credit any Faithful-based textures here, with a link to https://faithfulpack.net.
 
-## Commands and settings
+## Compatibility
 
-Commands, keybinds (and their defaults), and config options in plain words. Leave out if none.
+Required mods, optional mods it adds features for, and anything it is known not to work with.
 
-## Works with
+## History
 
-Required mods, optional mods it adds features for, and anything it's known not to work with.
+| Version | Changes |
+|---|---|
+| 0.1.0 | Added. |
 
-## FAQ
+## See also
 
-Common questions and their answers.
+- [[Installing Fabric Mods]]

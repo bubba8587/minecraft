@@ -1,28 +1,43 @@
 # Noise and Waking
 
-Part of [[Bubba's Reworked Mobs]].
+*Part of [[Bubba's Reworked Mobs]].*
 
-## It adds up
+**Noise and waking** is the mechanic by which [[Sleeping Undead|sleeping undead]] hear nearby activity and wake up. Each noise disturbs a sleeper a little more, the disturbance fades when things go quiet, and a sleeper wakes once enough noise has added up.
 
-Every noise near a [[Sleeping Undead|sleeping undead]] disturbs it a little more, and it slowly settles again when things go quiet (about 5 to 10 seconds). Enough noise and it wakes.
+## Disturbance
 
-- **Reckless play close by wakes them fast:** sprinting within about 6 blocks wakes one in about a second; breaking or placing two blocks, landing two or three jumps, or a fight nearby does too.
-- **Walking right past** (about 3 blocks away) usually wakes one within a couple of seconds; walking by 6 to 8 blocks away usually doesn't.
-- **An explosion** wakes everything near it at once.
-- **Distance and walls:** noise fades quickly with distance, and solid walls muffle it, so sleepers down another hallway don't hear you.
+Every noise near a sleeping undead disturbs it a little more, and it slowly settles again when things go quiet, in about 5 to 10 seconds. Enough noise in a short time wakes it. The same noise always has the same effect; there is no random chance.
 
-## A groan is your warning
+| Activity | Typical result |
+|---|---|
+| Sprinting within about 6 blocks | Wakes it in about a second |
+| Breaking or placing two blocks, landing two or three jumps, or a fight nearby | Wakes it |
+| Walking right past, about 3 blocks away | Usually wakes it within a couple of seconds |
+| Walking past 6 to 8 blocks away | Usually does not wake it |
+| An explosion | Wakes everything near it at once |
+| Sneaking | Silent footsteps and landings |
 
-A sleeping undead that's been disturbed but not yet woken lets out a quiet, low groan. Back off or go quiet and it settles.
+### Distance and walls
 
-## Sneak past them
+Noise fades quickly with distance, and solid walls muffle it, so sleepers down another hallway do not hear the player.
 
-Sneaking makes your footsteps and landings silent, and wool walls block sound completely, just like with sculk sensors. Walking in creative mode makes noise too; flying in creative makes none.
+## Warning groan
 
-## One wakes, others follow
+A sleeping undead that has been disturbed but not yet woken lets out a quiet, low groan. Backing off or going quiet lets it settle.
 
-A waking undead wakes up to four more within about 6 blocks of it, and those can wake more. Undead woken by their neighbours (or by anything other than you) don't fight each other when they get up; they come looking for players.
+## Staying quiet
 
-## Animals don't wake them
+Sneaking makes footsteps and landings silent, and wool walls block sound completely, as with sculk sensors. Walking in Creative mode makes noise; flying in Creative makes none.
 
-Cows and pigs wandering through a graveyard are safe; you, other monsters and arrows landing nearby are not. Hurting an animal is a fight, though, and fights are loud.
+## Chain waking
+
+A waking undead wakes up to four more sleepers within about 6 blocks of it, and those can wake more in turn. Undead woken by their neighbors, or by anything other than a player, do not fight each other when they get up; they go looking for players.
+
+## Animals
+
+Animals do not wake sleeping undead: cows and pigs can wander through a graveyard safely. Players, other monsters and arrows landing nearby do make noise. Hurting an animal counts as a fight, and fights are loud.
+
+## See also
+
+- [[Woken Undead]]
+- [[Grave Talisman]]

@@ -1,12 +1,28 @@
 # Reworked Mobs Commands
 
-Part of [[Bubba's Reworked Mobs]].
+*Part of [[Bubba's Reworked Mobs]].*
+
+**Reworked Mobs commands** are the game rules and commands added by [[Bubba's Reworked Mobs]].
 
 ## Game rules
 
-- `/gamerule bubbas_reworked_mobs:monster_cap_percent <0-100>`: how many monsters spawn naturally, as a percentage of normal (default 15). See [[Monster Spawning]].
-- `/gamerule bubbas_reworked_mobs:cut_monster_spawns false`: turn the spawn cut off completely, for example if you use another mod that controls spawning.
+| Game rule | Values | Default | Effect |
+|---|---|---|---|
+| `bubbas_reworked_mobs:monster_cap_percent` | 0 to 100 | 15 | How many monsters spawn naturally, as a percentage of normal. See [[Monster Spawning]]. |
+| `bubbas_reworked_mobs:cut_monster_spawns` | `true` or `false` | `true` | Set to `false` to turn the spawn cut off completely, for example when another mod controls spawning. |
+
+Game rules are set with `/gamerule`, for example `/gamerule bubbas_reworked_mobs:monster_cap_percent 30`.
 
 ## Commands
 
-- `/bubbas_reworked_mobs display <ground|buried|wall|stuck> <item>` (operators, for building and testing): puts an item on display where you're looking, turned toward you; `wall` hangs it on the side of the block you look at. Add a position (and optionally `north`, `south`, `east` or `west`) to place it somewhere exact. See [[Loot on Display]].
+### display
+
+*Main article: [[Loot on Display]]*
+
+Puts an item on display. Requires operator permission; intended for building and testing.
+
+**Syntax:** `/bubbas_reworked_mobs display <ground|buried|wall|stuck> <item> [<position> [north|south|east|west]]`
+
+- Without a position, the item goes where the player is looking (within 20 blocks), turned toward the player. `wall` hangs it on the side of the block the player is looking at.
+- With a position, and optionally a direction, it is placed exactly there.
+- The command fails if the spot is taken or has nothing to hold the item up.

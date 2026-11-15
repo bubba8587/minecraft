@@ -1,17 +1,61 @@
 # Sleeping Undead
 
-Part of [[Bubba's Reworked Mobs]].
+*Part of [[Bubba's Reworked Mobs]].*
 
-Skeletons sit slumped, zombies sit or lie on their backs, often holding a weapon and wearing armor. They don't move or attack while asleep. Noise wakes them: see [[Noise and Waking]].
+> [!infobox] Sleeping undead
+> | | |
+> |---|---|
+> | **Variants** | Sleeping Skeleton, Sleeping Zombie |
+> | **Poses** | Skeleton: sitting slumped. Zombie: sitting or lying on its back |
+> | **Behavior** | Motionless until woken |
+> | **Gear** | Often a weapon and armor |
+> | **Mined with** | Silk Touch pickaxe (drops the body) |
+> | **Wakes into** | [[Woken Undead\|Woken undead]] |
 
-## Rob them
+A **sleeping undead** is a dormant skeleton or zombie that lies motionless in the world until noise wakes it. Skeletons sit slumped; zombies sit or lie on their backs. They often hold a weapon and wear armor, and they neither move nor attack while asleep.
 
-Use a sleeping undead with an empty hand to take its weapon first, then its armor from the head down, one piece per click. Every theft risks waking it, and armor is riskier than the weapon. If it wakes, it comes for you.
+## Behavior
 
-## Dig them up
+*Main article: [[Noise and Waking]]*
 
-Mining a sleeping undead with a **Silk Touch pickaxe** gives you its body as an item you can place again; its weapon and armor drop separately. Anything else only leaves a bone or rotten flesh (and the gear).
+Noise near a sleeping undead disturbs it, and enough noise wakes it. Once awake it becomes a [[Woken Undead|woken undead]] with the same gear.
 
-## Place them
+## Robbing
 
-A sleeping-undead item can be placed again (it turns to face you). Placed ones can still wake up, so they make good traps, or just decoration if you're careful.
+Using a sleeping undead with an empty hand takes one item from it: the weapon first, then the armor from the head down, one piece per use.
+
+| Item taken | Chance of waking it |
+|---|---|
+| Weapon | 10 % |
+| Armor piece | 30 % |
+
+A sleeping undead woken by a theft attacks the thief.
+
+## Mining
+
+| Tool | Drops |
+|---|---|
+| Silk Touch pickaxe | The body, as a sleeping-undead item that can be placed again |
+| Anything else | A bone (skeleton) or rotten flesh (zombie) |
+
+In either case, the weapon and armor drop as separate items.
+
+## Placing
+
+A sleeping-undead item can be placed again; it turns to face the player who places it. Placed sleeping undead can still wake up, which makes them usable as traps, or as decoration if the player is careful.
+
+## Obtaining
+
+In this test version sleeping undead do not generate in the world yet. Sleeping Skeleton and Sleeping Zombie (sitting and lying) are in the creative inventory under the **Bubba's Reworked Mobs** tab.
+
+## History
+
+| Version | Changes |
+|---|---|
+| 0.1.0 | Added. |
+
+## See also
+
+- [[Woken Undead]]
+- [[Fighting the Undead]]
+- [[Grave Talisman]], which glows near sleeping undead.

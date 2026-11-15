@@ -2,10 +2,12 @@
 
 *Part of [[Bubba's Infused Gems]].*
 
-> [!info] Gem
-> **Obtained by:** enchanting an Infused Gem
-> **Stackable:** yes (16)
-> **Used for:** [[Socketing Gems|socketing]] into armor and weapons
+> [!infobox] Gem
+> | | |
+> |---|---|
+> | **Obtained by** | Enchanting an Infused Gem |
+> | **Stackable** | Yes (16) |
+> | **Used for** | [[Socketing Gems\|socketing]] into armor and weapons |
 
 **Enchanting** an Infused Gem at an enchanting table turns it into a finished **Gem**, rolling its final effects by tier.
 

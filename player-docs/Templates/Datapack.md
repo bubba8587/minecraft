@@ -6,20 +6,41 @@ modrinth:
 ---
 # {{title}}
 
-One or two sentences: what this datapack adds or changes, in player terms.
+> [!infobox] {{title}}
+> | | |
+> |---|---|
+> | **Type** | Datapack |
+> | **Minecraft** | {{current version}} |
+> | **Version** | 1.0.0 |
+> | **Side** | Server only |
+> | **Status** | Active |
 
-## Features
+**{{title}}** is a datapack that... (one or two sentences in the third person: what it adds or changes, in player terms. See "Style" in the player-docs spec.)
 
-- One line each.
+## Feature name
 
-## How to use
+*Main article: (link the topic page)*
 
-What players do to use it. Mention if it needs a new world or just `/reload` (see [[Installing Datapacks]]).
+One short summary per topic page, each under its own heading with a "Main article" hatnote. Recipes go in tables (Name, Ingredients, Result, Time, Experience).
 
 ## Commands
 
-Any `/function` or `/trigger` commands players or admins use. Leave out if none.
+Any `/function` or `/trigger` commands players or operators use. Leave out if none.
 
-## Works with
+## Installation
+
+The datapack is added to a world like any datapack (see [[Installing Datapacks]]). Say whether it needs a new world or just `/reload`.
+
+## Compatibility
 
 Other packs or mods it works with or conflicts with.
+
+## History
+
+| Version | Changes |
+|---|---|
+| 1.0.0 | Added. |
+
+## See also
+
+- [[Installing Datapacks]]
