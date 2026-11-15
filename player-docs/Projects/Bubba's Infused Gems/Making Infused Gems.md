@@ -25,7 +25,10 @@ The player places a potion in a bottle slot of a brewing stand and a **base gem*
 | Wither rose | Base gem | Infused Gem: Wither |
 | Glowstone dust | Base gem | Infused Gem: Glowing |
 | Shulker shell | Base gem | Infused Gem: Levitation |
-| Echo shard | Base gem | Infused Gem: Darkness |
+| Sculk shrieker | Base gem | Infused Gem: Darkness |
+| Echo shard | Base gem | Infused Gem: Silence |
+| Chorus fruit | Base gem | Infused Gem: Ender |
+| Breeze rod | Base gem | Infused Gem: Breeze |
 | Heart of the sea | Base gem | Infused Gem: Conduit Power |
 | Nautilus shell | Base gem | Infused Gem: Dolphin's Grace |
 | Rotten flesh | Base gem | Infused Gem: Hunger |
@@ -56,7 +59,7 @@ The item name shows these, for example *Infused Gem: Infusion III, Speed (Splash
 
 ## Supported potions
 
-Every potion: Swiftness, Strength, Leaping, Regeneration, Turtle Master, Fire Resistance, Water Breathing, Night Vision, Invisibility, Slow Falling, Luck, Healing, Poison, Slowness, Weakness, Harming, Wind Charged, Weaving, Oozing and Infested, plus the items in the table above. A Turtle Master potion makes a **Turtle Master** gem, which gives its Resistance and its Slowness together. The Luck potion has no survival recipe, so Luck gems are mostly found. Haste, Health Boost, Hero of the Village, Mining Fatigue and Resistance gems have no brewing source and are only found in the world. *Main article: [[Finding Gems]]*
+Every potion: Swiftness, Strength, Leaping, Regeneration, Turtle Master, Fire Resistance, Water Breathing, Night Vision, Invisibility, Slow Falling, Luck, Healing, Poison, Slowness, Weakness, Harming, Wind Charged (it makes a **Wind Burst** gem), Weaving, Oozing and Infested, plus the items in the table above. A Turtle Master potion makes a **Turtle Master** gem, which gives its Resistance and its Slowness together. The Luck potion has no survival recipe, so Luck gems are mostly found. Haste, Health Boost, Hero of the Village, Mining Fatigue and Resistance gems have no brewing source and are only found in the world. *Main article: [[Finding Gems]]*
 
 A suspicious stew counts by its effect, so any stew with the Saturation or Blindness effect of those flowers works; other stews do not.
 

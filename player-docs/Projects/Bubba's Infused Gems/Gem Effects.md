@@ -67,8 +67,20 @@ Harmful gems in armor affect the wearer:
 | Blindness | Dark fog closes in on the wearer's screen, more the stronger the gems |
 | Nausea | The wearer's screen wobbles, more the stronger the gems |
 | Levitation | The wearer keeps rising, slower than the potion: from about 0.15 blocks per second for one gem to about 0.45 at the best build (the potion is about 0.9). Sneaking doesn't stop it; taking the armor off drops the wearer, with fall damage as usual. |
-| Wind Charged, Weaving, Oozing | A chance of the effect's burst, cobwebs or slimes when the wearer dies |
 | Infested | A chance of silverfish each time the wearer is hurt |
+
+## Gems beyond potions
+
+Some gems do what their source does, rather than apply its potion.
+
+| Gem | Source | In armor | In a weapon |
+|---|---|---|---|
+| Wind Burst | Wind Charged potion | A fall's landing bounces the wearer with a small burst of wind instead of hurting | Throws the target up and away, like a wind charge; on a mace with the Wind Burst enchantment, much further than any other weapon can |
+| Weaving | Weaving potion | Walks through cobwebs faster, at full speed at the best build | A chance to web the target in place with a real cobweb (only placed into empty space, never replacing a block) |
+| Oozing | Oozing potion | Bounces off landings like a slime block, with no fall damage | A kill splits off small slimes that belong to the wielder: they never attack anyone, stay for good and drop nothing; at most 8 per player |
+| Silence | Echo shard | The wearer's footsteps, swimming, landing and other movement make no vibrations (sculk sensors, wardens), some of the time with weak gems and always at the best build | Silences the target (pointless) |
+| Ender | Chorus fruit | A chance that a projectile about to hit the wearer teleports them away instead, like chorus fruit; stronger gems teleport further | Gives it to the target (pointless) |
+| Breeze | Breeze rod | A chance to deflect incoming projectiles, like a breeze | Gives it to the target (pointless) |
 
 ## In weapons
 
@@ -78,7 +90,7 @@ Each hit gives the target a partial effect for a few seconds, refreshed (never a
 |---|---|
 | Poison, Wither, Slowness, Weakness, Mining Fatigue | The harmful effect, partial |
 | Hunger | Drains food twice as fast as Hunger III; every hit costs a player at least half a drumstick |
-| Glowing, Levitation, Blindness, Nausea, Darkness, Wind Charged, Weaving, Oozing, Infested | The effect itself, for longer the stronger the gem |
+| Glowing, Levitation, Blindness, Nausea, Darkness, Infested | The effect itself, for longer the stronger the gem |
 | Harming | A little extra magic damage on every hit (up to 2.25) |
 | Healing | Heals the target a little on every hit (up to 1.8) |
 | Turtle Master | Its Resistance and Slowness together |
