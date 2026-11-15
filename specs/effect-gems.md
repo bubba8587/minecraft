@@ -120,3 +120,7 @@ Mod `mods/bubbas_infused_gems` (package `io.github.bubba8587.bubbas_infused_gems
 
 **Not done yet:**
 - Real textures made by a person.
+
+## Gems as a difficulty tool (owner, 2026-11-15)
+
+- Gems on mobs are also how designated harder areas get a much wider difficulty curve: mobs there wear more and better gems. Ominous trial spawner mobs wear gems even though they never drop their gear (owner: yes).
