@@ -1,0 +1,26 @@
+// dte:A3
+// Internal harness (never published): opens a copy of testworlds/bubba-test-world in a real client with every
+// repo mod loaded and screenshots the hub and each station. specs/testworld.md, "Screenshots".
+//   ./gradlew :testworldshots:runClientGameTest   -> build/run/clientGameTest/screenshots/
+plugins {
+	id 'net.fabricmc.fabric-loom'
+}
+apply from: rootProject.file('gradle/fabric-mod.gradle')
+
+// The mods under test, as their built jars on the game's classpath (Fabric Loader finds a fabric.mod.json in
+// each jar and loads it as a mod, the same as in a Modrinth profile). Gradle builds the jars first.
+def modsUnderTest = ['bubbas_reworked_mobs', 'bubbas_crafting_tweaks', 'bubbas_infused_gems']
+// Configure those projects first so their jar tasks exist whichever project Gradle configures first.
+modsUnderTest.each { evaluationDependsOn(":${it}") }
+def modJars = files(modsUnderTest.collect { m -> rootProject.project(":${m}").tasks.named('jar').flatMap { it.archiveFile } })
+dependencies {
+	runtimeOnly modJars
+}
+
+def testWorld = rootProject.file('testworlds/bubba-test-world')
+tasks.matching { it.name == 'runClientGameTest' }.configureEach { t ->
+	t.jvmArgs("-Dbubba.testworld=${testWorld.absolutePath}")
+	t.inputs.dir(testWorld).withPropertyName('testWorld')
+}
+// No server game tests here; don't boot a server for nothing during `build`.
+tasks.matching { it.name == 'runGameTest' }.configureEach { enabled = false }

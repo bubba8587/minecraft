@@ -1,0 +1,21 @@
+{
+	"schemaVersion": 1,
+	"id": "${mod_id}",
+	"version": "${version}",
+	"name": "Test World Shots",
+	"description": "Internal harness: screenshots every station of the Bubba Test World with all the repo's mods loaded.",
+	"authors": [
+		"bubba8587"
+	],
+	"license": "MIT",
+	"environment": "*",
+	"depends": {
+		"fabricloader": ">=${loader_version}",
+		"minecraft": "~${minecraft_version}",
+		"java": ">=${java_version}",
+		"fabric-api": "*",
+		"bubbas_reworked_mobs": "*",
+		"bubbas_crafting_tweaks": "*",
+		"bubbas_infused_gems": "*"
+	}
+}

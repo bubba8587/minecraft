@@ -20,6 +20,7 @@ The owner never runs builds or tests; agents keep this loop fast unprompted (CLA
 | `tools/packload.py` | 60-90 s | same | vanilla server start + world gen |
 | Infused Gems: `:bubbas_infused_gems:build` after a change (20 server tests) | - | 10-14 s | the tests take 1.5 s; server boot dominates (owner PC, 2026-11-14) |
 | Infused Gems: all client tests (5 parts, 13 screenshots, one world) | - | 25-37 s | one part (`-PclientTests=worn`) 22-29 s |
+| Test world screenshot tour (`:testworldshots:runClientGameTest`, 73 shots, all mods) | - | ~50 s | spectator + `tp` per shot, waits only for chunk render + 5 ticks (owner PC, 2026-11-15) |
 
 Next candidates: run game tests of several mods in one server boot; a smaller/void test world for packload; reuse the packload world between runs; cache the client game test's world.
 

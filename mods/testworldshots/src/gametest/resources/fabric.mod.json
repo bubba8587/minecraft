@@ -1,0 +1,12 @@
+{
+	"schemaVersion": 1,
+	"id": "testworldshots-test",
+	"version": "1.0.0",
+	"name": "Test World Shots (client test)",
+	"environment": "*",
+	"entrypoints": {
+		"fabric-client-gametest": [
+			"io.github.bubba8587.testworldshots.test.TestWorldShots"
+		]
+	}
+}

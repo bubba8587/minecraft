@@ -71,6 +71,7 @@ python3 tools/packload.py [name]                 # load datapacks on the vanilla
 python3 tools/packtest.py [name]                 # run PackTest tests on a Fabric server (owner approved)
 pwsh tools/install-to-modrinth.ps1               # owner's Windows PC: build + install into Modrinth profile "mod testing"
 python tools/build-testworld.py                  # rebuild the pristine test world
+./gradlew :testworldshots:runClientGameTest     # screenshot every test world station, all mods loaded (~50 s)
 pwsh tools/add-modrinth-mod.ps1 <slug>           # owner's PC: add an outside Modrinth mod (+ required deps) to "mod testing" only
 ```
 
