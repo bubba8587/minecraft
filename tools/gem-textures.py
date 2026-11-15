@@ -6,9 +6,9 @@
 
 Each gem is two layers:
 - a grayscale body, tinted in game by the effect's potion color (pushed toward full saturation in GemColorSource).
-  It holds all the shading, including a dark rim, so the edge is a deep shade of the gem's own color like vanilla
+  It holds all the shading, including a solid dark rim, so the edge is a deep shade of the gem's own color like vanilla
   gems, not a black line;
-- an untinted shine layer: white glints and a bright rim on the lit (top-left) side, so gems read as polished jewels.
+- an untinted shine layer: white glints (never on the rim, which stays solid), so gems read as polished jewels.
 A second-effect highlight facet was tried and dropped (owner). The 32x set is drawn at 32 pixels with finer shading,
 not scaled up. Placeholders until a person draws the real art; never AI-generated. Needs Pillow.
 """
@@ -54,8 +54,8 @@ def octagon(hw, hh, c):
 
 
 REG = 2 / (2 + 2 ** 0.5)  # corner cut of a regular octagon, as a fraction of the half width
-OUTER = octagon(0.43, 0.43, 0.43 * REG)  # finished gem: a regular octagon seen from above, emerald-like, not an emerald copy (owner)
-TABLE = octagon(0.22, 0.22, 0.22 * REG)  # the flat top facet
+OUTER = octagon(0.36, 0.36, 0.36 * REG)  # finished gem: a regular octagon seen from above, emerald-like, not an emerald copy (owner)
+TABLE = octagon(0.17, 0.17, 0.17 * REG)  # the flat top facet
 
 
 def put(img, x, y, rgba):
@@ -81,9 +81,8 @@ def cut_gem(n):
 			nx, ny, _ = min(edges, key=lambda e: e[2] - (e[0] * u + e[1] * v))
 			lit = LIGHT[0] * nx + LIGHT[1] * ny  # -1 facing away from the light, 1 facing it
 			if edge(m, x, y):
-				body.putpixel((x, y), (g := quant(0.30 + 0.12 * lit, n), g, g, 255))  # rim: a deep shade of the gem color
-				if lit > 0.5:
-					shine.putpixel((x, y), (255, 255, 255, 110))
+				g = quant(0.24, n)  # rim: one solid, opaque deep shade of the gem color all the way round
+				body.putpixel((x, y), (g, g, g, 255))
 				continue
 			if inside(TABLE, u, v):  # table: the gem's full color, darkening toward the bottom right
 				shade = 0.92 - 0.45 * ((u - 0.5) + (v - 0.5))
@@ -91,13 +90,13 @@ def cut_gem(n):
 				shade = 0.62 + 0.38 * lit
 			g = quant(shade, n)
 			body.putpixel((x, y), (g, g, g, 255))
-	glint(shine, n, 0.36, 0.34)
+	glint(shine, n, 0.40, 0.38)
 	return body, shine
 
 
 def raw_gem(n):
 	def test(u, v):
-		return ((u - 0.5) / 0.36) ** 2 + ((v - 0.55) / 0.38) ** 2 <= 1.0 and v > 0.14
+		return (u - 0.5) ** 2 + (v - 0.5) ** 2 <= 0.33 ** 2  # round and centred in the slot
 	m = mask(n, test)
 	body, shine = (Image.new("RGBA", (n, n), (0, 0, 0, 0)) for _ in range(2))
 	for y in range(n):
@@ -105,16 +104,15 @@ def raw_gem(n):
 			if not m[y][x]:
 				continue
 			u, v = (x + 0.5) / n, (y + 0.5) / n
-			lit = -((u - 0.5) + (v - 0.55)) / 0.5  # rounded: lighter toward the top left
 			if edge(m, x, y):
-				g = quant(0.30 + 0.12 * lit, n)
+				g = quant(0.24, n)
 				body.putpixel((x, y), (g, g, g, 255))
 				continue
-			d = math.hypot(u - 0.38, v - 0.40)
-			swirl = 0.08 * math.sin(10 * math.atan2(v - 0.55, u - 0.5) + 14 * math.hypot(u - 0.5, v - 0.55))
+			d = math.hypot(u - 0.40, v - 0.40)
+			swirl = 0.08 * math.sin(10 * math.atan2(v - 0.5, u - 0.5) + 14 * math.hypot(u - 0.5, v - 0.5))
 			g = quant(1.05 - 1.1 * d + swirl, n)
 			body.putpixel((x, y), (g, g, g, 255))
-	glint(shine, n, 0.36, 0.36)
+	glint(shine, n, 0.40, 0.38)
 	return body, shine
 
 
@@ -130,7 +128,7 @@ def glint(img, n, u, v):
 		twinkle = [((0, 0), 230), ((1, 0), 140), ((-1, 0), 140), ((0, 1), 140), ((0, -1), 140)]
 	for (dx, dy), a in pts:
 		put(img, x + dx, y + dy, (255, 255, 255, a))
-	tx, ty = int(0.66 * n), int(0.64 * n)
+	tx, ty = int(0.62 * n), int(0.62 * n)
 	for (dx, dy), a in twinkle:
 		put(img, tx + dx, ty + dy, (255, 255, 255, a))
 
