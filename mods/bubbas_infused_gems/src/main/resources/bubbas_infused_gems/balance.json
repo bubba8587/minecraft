@@ -452,7 +452,7 @@
 				]
 			},
 			"worn_amplifier": 1,
-			"worn_cap": 1.1,
+			"worn_cap": 1.5,
 			"id": "minecraft:speed",
 			"opposites": [
 				"slowness"
@@ -686,7 +686,7 @@
 				]
 			},
 			"worn_amplifier": 1,
-			"worn_cap": 1.7915,
+			"worn_cap": 1.9994,
 			"id": "minecraft:jump_boost",
 			"opposites": [],
 			"never_drawback": false
@@ -4584,7 +4584,7 @@
 				"variant": "normal",
 				"base": "amethyst",
 				"grade": "weak",
-				"total": 0.039242
+				"total": 0.053512
 			},
 			{
 				"name": "Early",
@@ -4604,7 +4604,7 @@
 				"variant": "normal",
 				"base": "quartz",
 				"grade": "weak",
-				"total": 0.179188
+				"total": 0.244347
 			},
 			{
 				"name": "Mid",
@@ -4624,7 +4624,7 @@
 				"variant": "strong",
 				"base": "ender_pearl",
 				"grade": "medium",
-				"total": 0.572655
+				"total": 0.780894
 			},
 			{
 				"name": "Late",
@@ -4644,7 +4644,7 @@
 				"variant": "strong",
 				"base": "diamond",
 				"grade": "strongest",
-				"total": 0.94116
+				"total": 1.2834
 			},
 			{
 				"name": "Best",
@@ -4664,7 +4664,7 @@
 				"variant": "strong",
 				"base": "nether_star",
 				"grade": "strongest",
-				"total": 1.1
+				"total": 1.5
 			}
 		],
 		"weapon_builds": [

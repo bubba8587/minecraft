@@ -54,7 +54,7 @@ public class GemsClientGameTest implements FabricClientGameTest {
 
 	@Override
 	public void runTest(ClientGameTestContext context) {
-		if (!List.of("inventory", "colors", "enchanting", "smithing", "worn", "hits", "mobs", "screen", "levitation", "beyond").stream().anyMatch(ClientTests::run)) {
+		if (!List.of("inventory", "colors", "enchanting", "smithing", "worn", "hits", "mobs", "screen", "levitation", "beyond", "jump").stream().anyMatch(ClientTests::run)) {
 			return;
 		}
 		try (TestSingleplayerContext sp = context.worldBuilder()
@@ -96,6 +96,9 @@ public class GemsClientGameTest implements FabricClientGameTest {
 			}
 			if (ClientTests.run("beyond")) {
 				beyond(context, server);
+			}
+			if (ClientTests.run("jump")) {
+				jump(context, server);
 			}
 		}
 	}
@@ -570,5 +573,47 @@ public class GemsClientGameTest implements FabricClientGameTest {
 		});
 		context.waitTicks(60);
 		context.takeScreenshot("gems-beyond-weaving-web-and-oozing-slimes");
+	}
+
+	/** Owner: a perfect Jump Boost set lands a real player on top of a 4-high pillar from a standing jump. */
+	private static void jump(ClientGameTestContext context, TestServerContext server) {
+		server.runCommand("gamemode survival @a");
+		BlockPos feet = server.computeOnServer(s -> player(s).blockPosition());
+		BlockPos pillar = feet.offset(1, 0, 0);
+		// A 4-high step, deep enough that walking on after landing stays on top.
+		server.runCommand("fill %d %d %d %d %d %d minecraft:stone".formatted(pillar.getX(), pillar.getY(), pillar.getZ() - 1, pillar.getX() + 15, pillar.getY() + 3, pillar.getZ() + 1));
+		server.runOnServer(s -> {
+			ServerPlayer p = player(s);
+			p.teleportTo(feet.getX() + 0.5, feet.getY(), feet.getZ() + 0.5);
+			Gem g = GemKit.gem("jump_boost", 1.0);
+			p.setItemSlot(EquipmentSlot.HEAD, GemKit.socketed(Items.NETHERITE_HELMET, g, g, g));
+			p.setItemSlot(EquipmentSlot.CHEST, GemKit.socketed(Items.NETHERITE_CHESTPLATE, g, g, g));
+			p.setItemSlot(EquipmentSlot.LEGS, GemKit.socketed(Items.NETHERITE_LEGGINGS, g, g, g));
+			p.setItemSlot(EquipmentSlot.FEET, GemKit.socketed(Items.NETHERITE_BOOTS, g, g, g));
+		});
+		context.waitTicks(20);
+		context.getInput().lookAt(-90.0F, 0.0F); // facing +x, the pillar
+		context.waitFor(mc -> mc.player.onGround());
+		context.waitTicks(3);
+		double y0 = context.computeOnClient(mc -> mc.player.getY());
+		context.getInput().holdKey(o -> o.keyUp);
+		context.getInput().holdKeyFor(o -> o.keyJump, 2);
+		double top = y0;
+		for (int t = 0; t < 40; t++) {
+			context.waitTicks(1);
+			top = Math.max(top, context.computeOnClient(mc -> mc.player.getY()));
+		}
+		context.getInput().releaseKey(o -> o.keyUp);
+		context.waitTicks(10);
+		double y1 = context.computeOnClient(mc -> mc.player.getY());
+		if (y1 < y0 + 3.99) {
+			throw new AssertionError("a perfect Jump Boost set did not land on a 4-block pillar: " + y0 + " -> " + y1);
+		}
+		context.takeScreenshot("gems-jump-perfect-set-on-4-block-pillar");
+		server.runOnServer(s -> {
+			for (EquipmentSlot slot : io.github.bubba8587.bubbas_infused_gems.effect.GemTotals.ARMOR) {
+				player(s).setItemSlot(slot, ItemStack.EMPTY);
+			}
+		});
 	}
 }

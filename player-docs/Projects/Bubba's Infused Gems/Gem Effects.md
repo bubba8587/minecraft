@@ -33,9 +33,9 @@ Values are for the best build (90%); weaker builds give less.
 
 | Gem | Effect on the wearer |
 |---|---|
-| Speed | Faster movement (up to +44%, more than Speed II's +40%) |
+| Speed | Faster movement (up to +60% with the best build, like Speed III; Speed II is +40%) |
 | Strength | More attack damage (up to +5.4) |
-| Jump Boost | Higher jumps and a longer safe fall (the best build jumps about 3.8 blocks, half again as high as Jump Boost II) |
+| Jump Boost | Higher jumps and a longer safe fall (the best build jumps about 4.15 blocks, enough to jump straight onto a 4-block step; Jump Boost II reaches about 2.5) |
 | Haste | Faster mining and attacks: the best build mines like Haste IV (x1.8), well beyond the beacon's Haste II (found gems only) |
 | Regeneration | Slow healing when hurt |
 | Resistance | Less damage taken (up to 36% less; found gems only) |

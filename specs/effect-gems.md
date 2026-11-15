@@ -107,10 +107,10 @@ Mod `mods/bubbas_infused_gems` (package `io.github.bubba8587.bubbas_infused_gems
 | Effect | Worn cap | Perfect set |
 |---|---|---|
 | Haste | 2.0 | mining x1.8 (Haste IV; the beacon's Haste II is x1.4), attack speed +40% |
-| Jump Boost | 1.79 (`WORN_JUMP_HEIGHT` 1.5) | jump about 3.8 blocks (Jump Boost II about 2.5), safe fall +3.6 (vanilla's matching reduction) |
+| Jump Boost | 2.0 (`WORN_JUMP_HEIGHT` 1.65) | jump about 4.15 blocks, clearing a 4-block step (owner; Jump Boost II about 2.5), safe fall +4 (vanilla's matching reduction) |
 | Dolphin's Grace | 1.5 | swim-speed gain 1.5x the potion's: water drag 0.971 (potion 0.96); drag = 1 - 1/(5 + 20 s) |
 | Slow Falling | 1.5 | gravity while falling 0.0067 (potion 0.01): 1.5x slower; no fall damage |
-| Speed | 1.1 | +44% (Speed II +40%) |
+| Speed | 1.5 | +60%, Speed III territory (owner, 2026-11-15; Speed II +40%) |
 
 With a vanilla effect of the same kind, the stronger-applies top-up still holds (a perfect Speed set adds only its part above Speed II).
 

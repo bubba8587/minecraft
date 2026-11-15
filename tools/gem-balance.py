@@ -30,10 +30,10 @@ STACK_R = 0.85        # each further gem of the same effect counts this much of 
 # perfect armor build. The armor total is scaled by WORN_CAP[k] / CAP, so every build keeps its share of its effect's cap.
 # Weapon hits keep CAP. Jump Boost's is set so the jump is 1.5x as high as Jump Boost II's (WORN_JUMP_HEIGHT, below).
 WORN_HASTE_CAP = 2.0          # twice Haste II's bonus: Haste IV mining (x1.8)
-WORN_JUMP_HEIGHT = 1.5        # the perfect set jumps this many times Jump Boost II's height (about 3.8 blocks)
+WORN_JUMP_HEIGHT = 1.65       # the perfect set jumps this many times Jump Boost II's height: about 4.15 blocks, clearing a 4-block step (owner)
 WORN_DOLPHIN_CAP = 1.5        # 1.5x the potion's swim-speed gain
 WORN_SLOW_FALL_CAP = 1.5      # falls 1.5x slower than the potion
-WORN_SPEED_CAP = 1.1          # +44% speed (Speed II: +40%)
+WORN_SPEED_CAP = 1.5          # +60% speed, Speed III territory (owner: Speed II is +40%)
 SLOTS = 3             # gem slots per armor piece (owner)
 WEAPON_SLOTS = 2      # gem slots per weapon (owner)
 PIECES = ["helmet", "chestplate", "leggings", "boots"]   # adjacency order (owner)

@@ -494,7 +494,7 @@ public class GemsEverywhereGameTest {
 			top = Math.max(top, y);
 			v = (v - 0.08) * 0.98;
 		}
-		check(helper, top > 3.5 && top < 4.2, "perfect Jump Boost set jumps " + top + " blocks (Jump Boost II: about 2.5)");
+		check(helper, top > 4.05 && top < 4.3, "perfect Jump Boost set jumps " + top + " blocks (owner: clears a 4-block step; Jump Boost II about 2.5)");
 		check(helper, player.getAttributeValue(Attributes.SAFE_FALL_DISTANCE) > 6.0, "safe fall " + player.getAttributeValue(Attributes.SAFE_FALL_DISTANCE));
 		strip(player);
 		player.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.NETHERITE_PICKAXE));
