@@ -8,7 +8,7 @@
 # Source: the most recently saved options.txt among .minecraft and the other Modrinth profiles (or -From).
 # Everything is copied except the resource pack lists, which stay the test profile's own (so its bundled packs,
 # e.g. Bubba's Crafting Tweaks', stay on). The source's "version:" line is kept so the game upgrades older settings.
-# Re-copied on every run (the owner's main settings win over anything the game wrote in the test profile); refuses
+# A few owner overrides ($overrides below, e.g. GUI scale 3) are applied on top. Re-copied on every run (the owner's main settings win over anything the game wrote in the test profile); refuses
 # to run while Minecraft is running on the profile, because the game saves its settings back on exit.
 param(
 	[string]$Profile = "mod testing",
@@ -49,6 +49,13 @@ if ($running) {
 $keepFromTarget = '^(resourcePacks|incompatibleResourcePacks):'
 $targetKeep = if (Test-Path $target) { @(Get-Content $target | Where-Object { $_ -match $keepFromTarget }) } else { @() }
 $merged = @(Get-Content $source.FullName | Where-Object { $_ -notmatch $keepFromTarget }) + $targetKeep
+
+# The owner's overrides for the test profile, applied on top of whatever the source says (owner: GUI scale 3).
+$overrides = [ordered]@{ guiScale = '3' }
+foreach ($key in $overrides.Keys) {
+	$line = "${key}:$($overrides[$key])"
+	$merged = @($merged | Where-Object { $_ -notmatch "^${key}:" }) + $line
+}
 
 if (-not $Force -and (Test-Path $target) -and ((Compare-Object (Get-Content $target) $merged -SyncWindow 0) -eq $null)) {
 	Write-Output "Settings already match $($source.FullName)."
