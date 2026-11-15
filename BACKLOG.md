@@ -18,6 +18,8 @@ Parked ideas and open items, newest first within each project. Agents add to it 
 
 ## Effect gems
 - **Drawbacks** (shelved by the owner): ideas in `specs/effect-gems.md`.
+- **Per-weapon tuning for gems in bows, crossbows, tridents and maces** (owner, 2026-11-14): they have no material, so they count as diamond level for now; each probably needs its own factor.
+- **Drawback sizes** (owner will playtest): currently 10% each, under 20% stacked.
 
 ## Repo
 - Owner to read and ratify (or rewrite) the goal drafts A1-A4 (`python3 tools/dte.py unratified`).
