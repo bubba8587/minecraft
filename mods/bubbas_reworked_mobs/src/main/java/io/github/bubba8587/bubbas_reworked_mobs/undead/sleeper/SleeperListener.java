@@ -9,6 +9,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.core.particles.VibrationParticleOption;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.GameEventTags;
 import net.minecraft.util.Mth;
@@ -25,7 +26,8 @@ import net.minecraft.world.phys.Vec3;
 /**
  * Hears game events for one sleeper, with vanilla's vibration rules (copied from VibrationSystem: spectators,
  * sneaking on #ignore_vibrations_sneaking, #dampens_vibrations on the affected block, wool occlusion). Cheap checks
- * first, the 6 occlusion raycasts last. A successful roll schedules the wake as a block tick (travel delay).
+ * first, the raycasts last. Each heard noise fills the sleeper's disturbance meter; crossing the wake threshold
+ * schedules the wake as a block tick (travel delay), crossing the stir threshold makes it groan.
  */
 public final class SleeperListener implements GameEventListener {
 	/**
@@ -60,7 +62,7 @@ public final class SleeperListener implements GameEventListener {
 
 	@Override
 	public boolean handleGameEvent(ServerLevel level, Holder<GameEvent> event, GameEvent.Context context, Vec3 from) {
-		if (sleeper.isRemoved() || !event.is(ModTags.SLEEPERS_HEAR) || !sleeper.isHearing(level.getGameTime())) {
+		if (sleeper.isRemoved() || !event.is(ModTags.SLEEPERS_HEAR) || !sleeper.isHearing()) {
 			return false;
 		}
 		boolean awaken = event.is(ModGameEvents.AWAKEN);
@@ -78,8 +80,10 @@ public final class SleeperListener implements GameEventListener {
 			if (!awaken && entity.is(ModTags.DOES_NOT_WAKE_SLEEPERS)) {
 				return false;
 			}
-			if (!awaken && isAnimal(entity)) {
-				return false; // animals, bats and fish wandering through never wake sleepers (owner's call)
+			// Animals, bats and fish wandering through never wake sleepers (owner's call), but one being hurt or
+			// killed is a fight going on, and fighting is loud.
+			if (!awaken && isAnimal(entity) && !event.is(GameEvent.ENTITY_DAMAGE) && !event.is(GameEvent.ENTITY_DIE)) {
+				return false;
 			}
 		}
 		if (context.affectedState() != null && context.affectedState().is(BlockTags.DAMPENS_VIBRATIONS)) {
@@ -91,13 +95,19 @@ public final class SleeperListener implements GameEventListener {
 		}
 		Vec3 here = Vec3.atCenterOf(pos);
 		double distance = from.distanceTo(here);
-		float chance = SleeperHearing.wakeChance(event, distance) * sleeper.getSensitivity();
-		if (chance <= 0.0F || isOccluded(level, from, here)) {
+		float points = SleeperHearing.loudness(event, distance, entity != null && entity.isSprinting()) * sleeper.getSensitivity();
+		if (points <= 0.0F || isOccluded(level, from, here)) {
 			return false;
 		}
-		sleeper.startCooldown(level.getGameTime(), UndeadTuning.HEARING_COOLDOWN_TICKS);
-		if (level.getRandom().nextFloat() >= chance) {
-			return false;
+		points *= SleeperHearing.wallFactor(level, from, here);
+		long now = level.getGameTime();
+		float before = sleeper.getDisturbance(now);
+		float after = sleeper.disturb(now, points);
+		if (after < UndeadTuning.WAKE_THRESHOLD) {
+			if (before < UndeadTuning.STIR_THRESHOLD && after >= UndeadTuning.STIR_THRESHOLD) {
+				stir(level, pos);
+			}
+			return true;
 		}
 		if (awaken) {
 			awakenBudget--;
@@ -106,6 +116,13 @@ public final class SleeperListener implements GameEventListener {
 		level.sendParticles(new VibrationParticleOption(source, Math.max(1, delay)), from.x, from.y, from.z, 1, 0.0, 0.0, 0.0, 0.0);
 		sleeper.scheduleWake(level, from, entity != null ? entity.getUUID() : null, delay);
 		return true;
+	}
+
+	/** The warning: a quiet, low groan from the sleeper (its mob's ambient sound). */
+	private void stir(ServerLevel level, BlockPos pos) {
+		if (sleeper.getBlockState().getBlock() instanceof SleeperBlock block) {
+			level.playSound(null, pos, block.variant().stirSound(), SoundSource.HOSTILE, 0.35F, 0.6F + level.getRandom().nextFloat() * 0.1F);
+		}
 	}
 
 	/** Vanilla's VibrationSystem.Listener#isOccluded (private there): blocked only if all 6 nudged rays hit #occludes_vibration_signals. */

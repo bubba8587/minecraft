@@ -234,8 +234,8 @@ public class LootDisplayGameTest {
 			player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.IRON_SHOVEL));
 			use(helper, player, DISPLAY);
 			helper.assertTrue(heard.contains(GameEvent.BLOCK_DESTROY), "digging: " + heard);
-			helper.assertTrue(SleeperHearing.baseChance(GameEvent.BLOCK_DESTROY) >= 2.0F * SleeperHearing.baseChance(GameEvent.ITEM_INTERACT_FINISH),
-					"digging should be much louder to sleepers than taking");
+			helper.assertTrue(SleeperHearing.points(GameEvent.BLOCK_DESTROY, false) > SleeperHearing.points(GameEvent.ITEM_INTERACT_FINISH, false),
+					"digging should be louder to sleepers than taking");
 			remove(helper, player);
 		} finally {
 			registry.unregister(recorder);

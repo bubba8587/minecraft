@@ -66,6 +66,14 @@ public enum UndeadVariant {
 		return poses;
 	}
 
+	/** The groan a sleeper of this kind gives when it stirs (its mob's ambient sound, played quiet and low). */
+	public net.minecraft.sounds.SoundEvent stirSound() {
+		return switch (this) {
+			case SKELETON -> net.minecraft.sounds.SoundEvents.SKELETON_AMBIENT;
+			case ZOMBIE -> net.minecraft.sounds.SoundEvents.ZOMBIE_AMBIENT;
+		};
+	}
+
 	public SoundType sound() {
 		return sound;
 	}

@@ -16,7 +16,6 @@ import net.minecraft.util.Prediction;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -71,9 +70,12 @@ public final class SleeperWaking {
 		unused.clear();
 		level.setBlock(pos, state.getValue(SleeperBlock.WATERLOGGED) ? Blocks.WATER.defaultBlockState() : Blocks.AIR.defaultBlockState(),
 				Block.UPDATE_ALL);
-		if (sleeper.getWaker() != null && level.getEntity(sleeper.getWaker()) instanceof LivingEntity target
-				&& !(target instanceof Player player && (player.isCreative() || player.isSpectator())) && mob.canAttack(target)) {
-			mob.setTarget(target);
+		// Only a survival or adventure player who woke it becomes its target. A sleeper woken by another mob (the
+		// awaken chain, a villager's or creeper's footsteps) wakes without a target: before this, chain-woken undead
+		// went for the undead that woke them and the horde fought itself.
+		if (sleeper.getWaker() != null && level.getEntity(sleeper.getWaker()) instanceof Player player
+				&& !player.isCreative() && !player.isSpectator() && mob.canAttack(player)) {
+			mob.setTarget(player);
 		}
 		mob.playAmbientSound();
 		emitAwaken(level, mob);

@@ -237,7 +237,7 @@ public class BubbasReworkedMobsGameTest {
 		helper.assertBlockPresent(ModBlocks.sleeper(UndeadVariant.ZOMBIE), SLEEPER);
 		helper.getBlockEntity(SLEEPER, SleeperBlockEntity.class).setSensitivity(ALWAYS);
 		player.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
-		// Walk at once: its own placement must not count as a noise (that would start the hearing cooldown and miss these steps).
+		// Walk at once: its own placement must not count as a noise to it.
 		walk(player, 12);
 		helper.assertTrue(helper.getBlockEntity(SLEEPER, SleeperBlockEntity.class).isWakePending(), "placed sleeper did not hear the steps");
 		helper.succeedWhen(() -> {

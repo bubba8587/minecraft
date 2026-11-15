@@ -49,10 +49,33 @@ public final class UndeadTuning {
 	public static final float ROB_WEAPON_WAKE_CHANCE = 0.1F;
 	public static final float ROB_ARMOR_WAKE_CHANCE = 0.3F;
 
-	// Hearing.
+	// Hearing: a disturbance meter per sleeper, on the warden's anger model (specs/undead.md "Hearing and waking").
+	// Starting values, owner to tune. Every heard noise adds points x distance falloff x sensitivity; the meter
+	// decays steadily; crossing WAKE wakes the sleeper, crossing STIR makes it groan.
 	public static final int LISTENER_RADIUS = 16;
-	/** After hearing something (woken or not) a sleeper ignores sounds for this long. */
-	public static final int HEARING_COOLDOWN_TICKS = 20;
+	/** The meter value that wakes a sleeper. */
+	public static final float WAKE_THRESHOLD = 100.0F;
+	/** Crossing this (upward) makes a sleeper groan quietly: the player's warning. */
+	public static final float STIR_THRESHOLD = 50.0F;
+	/** Points lost per tick (10 a second: a half-disturbed sleeper settles in 5 s, a nearly woken one in 10 s). */
+	public static final float DISTURBANCE_DECAY_PER_TICK = 0.5F;
+	/** Noise counts in full this close ... */
+	public static final double NOISE_FULL_RANGE = 2.0;
+	/** ... and falls off as the square of the distance left, to nothing here (a different hallway is silent). */
+	public static final double NOISE_SILENT_RANGE = 12.0;
+	/** Each solid block (opaque full cube) on the straight line between noise and sleeper multiplies the noise by this. */
+	public static final float SOLID_BLOCK_FACTOR = 0.3F;
+	/** One footstep (vanilla frequency 1: step, swim, flap). A player steps about every 1.7 blocks. */
+	public static final float STEP_POINTS = 40.0F;
+	/** Sprinting footsteps count this many times. */
+	public static final float SPRINT_STEP_FACTOR = 2.0F;
+	/** Every other vibration: BASE + PER_FREQUENCY x its vanilla vibration frequency (2 to 15: landing 60 ... block break 85, place 87.5, death 92.5). */
+	public static final float EVENT_BASE_POINTS = 55.0F;
+	public static final float EVENT_POINTS_PER_FREQUENCY = 2.5F;
+	/** Explosions and lightning: wakes everything in earshot not shielded by walls. */
+	public static final float DEAFENING_POINTS = 1000.0F;
+	/** A neighbour waking (the awaken event): wakes sleepers within about 6 blocks at once, stirs those a little farther. */
+	public static final float AWAKEN_POINTS = 300.0F;
 	/** One awaken game event wakes at most this many sleepers (Lorespawn capped cascades at 4). */
 	public static final int AWAKEN_CAP = 4;
 

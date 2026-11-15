@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.UUID;
 
 import io.github.bubba8587.bubbas_reworked_mobs.registry.ModBlockEntities;
+import io.github.bubba8587.bubbas_reworked_mobs.undead.UndeadTuning;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
@@ -33,7 +34,7 @@ import org.jspecify.annotations.Nullable;
 
 /**
  * Sleeper state: gear (saved as items and carried on the item as the vanilla minecraft:container component),
- * the hearing cooldown, a pending wake and who/what woke it. Implementing {@link GameEventListener.Provider}
+ * the disturbance meter, a pending wake and who/what woke it. Implementing {@link GameEventListener.Provider}
  * is enough for the chunk to register the listener; nothing ticks.
  */
 public class SleeperBlockEntity extends BlockEntity implements GameEventListener.Provider<SleeperListener> {
@@ -43,11 +44,13 @@ public class SleeperBlockEntity extends BlockEntity implements GameEventListener
 
 	private final NonNullList<ItemStack> gear = NonNullList.withSize(SLOTS.size(), ItemStack.EMPTY);
 	private final SleeperListener listener;
-	private long cooldownUntil;
+	/** The disturbance meter (specs/undead.md "Hearing and waking"), as of {@link #disturbanceTime}; it decays lazily, so no ticker. */
+	private float disturbance;
+	private long disturbanceTime;
 	private boolean wakePending;
 	private @Nullable Vec3 wakeSource;
 	private @Nullable UUID waker;
-	/** Multiplies every wake chance. 0 = never wakes from noise (warded, decor); large = always (traps, tests). */
+	/** Multiplies every noise (and the robbing wake chance). 0 = never wakes from noise (warded, decor); large = always (traps, tests). */
 	private float sensitivity = 1.0F;
 
 	public SleeperBlockEntity(BlockPos pos, BlockState state) {
@@ -106,13 +109,21 @@ public class SleeperBlockEntity extends BlockEntity implements GameEventListener
 
 	// --- hearing and waking state ---------------------------------------------------------------
 
-	public boolean isHearing(long gameTime) {
-		return !wakePending && gameTime >= cooldownUntil;
+	public boolean isHearing() {
+		return !wakePending;
 	}
 
-	public void startCooldown(long gameTime, int ticks) {
-		cooldownUntil = gameTime + ticks;
+	/** The disturbance meter now: what was stored, less the decay since. */
+	public float getDisturbance(long gameTime) {
+		return Math.max(0.0F, disturbance - UndeadTuning.DISTURBANCE_DECAY_PER_TICK * Math.max(0L, gameTime - disturbanceTime));
+	}
+
+	/** Adds noise to the meter (after decaying it to now) and returns the new value. */
+	public float disturb(long gameTime, float points) {
+		disturbance = getDisturbance(gameTime) + points;
+		disturbanceTime = gameTime;
 		setChanged();
+		return disturbance;
 	}
 
 	public boolean isWakePending() {
@@ -151,7 +162,10 @@ public class SleeperBlockEntity extends BlockEntity implements GameEventListener
 	protected void saveAdditional(ValueOutput output) {
 		super.saveAdditional(output);
 		ContainerHelper.saveAllItems(output, gear);
-		output.putLong("cooldown_until", cooldownUntil);
+		if (disturbance > 0.0F) {
+			output.putFloat("disturbance", disturbance);
+			output.putLong("disturbance_time", disturbanceTime);
+		}
 		output.putBoolean("wake_pending", wakePending);
 		output.storeNullable("wake_source", Vec3.CODEC, wakeSource);
 		output.storeNullable("waker", UUIDUtil.CODEC, waker);
@@ -165,7 +179,8 @@ public class SleeperBlockEntity extends BlockEntity implements GameEventListener
 		super.loadAdditional(input);
 		gear.replaceAll(s -> ItemStack.EMPTY);
 		ContainerHelper.loadAllItems(input, gear);
-		cooldownUntil = input.getLongOr("cooldown_until", 0L);
+		disturbance = input.getFloatOr("disturbance", 0.0F);
+		disturbanceTime = input.getLongOr("disturbance_time", 0L);
 		wakePending = input.getBooleanOr("wake_pending", false);
 		wakeSource = input.read("wake_source", Vec3.CODEC).orElse(null);
 		waker = input.read("waker", UUIDUtil.CODEC).orElse(null);
