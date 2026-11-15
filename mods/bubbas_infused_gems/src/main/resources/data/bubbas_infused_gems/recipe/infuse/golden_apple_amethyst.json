@@ -1,0 +1,20 @@
+{
+	"type": "minecraft:brewing",
+	"input": {
+		"item": "minecraft:golden_apple"
+	},
+	"reagent": {
+		"item": "minecraft:amethyst_shard"
+	},
+	"output": {
+		"id": "bubbas_infused_gems:infused_gem",
+		"components": {
+			"bubbas_infused_gems:infused_gem": {
+				"effect": "minecraft:absorption",
+				"variant": "normal",
+				"form": "normal",
+				"infusion": 1
+			}
+		}
+	}
+}

@@ -1,0 +1,5 @@
+{
+	"type": "bubbas_infused_gems:raise_form",
+	"reagent": { "item": "minecraft:gunpowder" },
+	"from": "normal"
+}

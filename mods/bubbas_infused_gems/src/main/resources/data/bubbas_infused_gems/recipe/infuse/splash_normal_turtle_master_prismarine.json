@@ -1,0 +1,23 @@
+{
+	"type": "minecraft:brewing",
+	"input": {
+		"item": "minecraft:splash_potion",
+		"potion_contents": {
+			"potions": "minecraft:turtle_master"
+		}
+	},
+	"reagent": {
+		"item": "minecraft:prismarine_shard"
+	},
+	"output": {
+		"id": "bubbas_infused_gems:infused_gem",
+		"components": {
+			"bubbas_infused_gems:infused_gem": {
+				"effect": "minecraft:resistance",
+				"variant": "normal",
+				"form": "splash",
+				"infusion": 5
+			}
+		}
+	}
+}

@@ -1,0 +1,7 @@
+{
+	"parent": "minecraft:item/generated",
+	"textures": {
+		"layer0": "bubbas_infused_gems:item/gem",
+		"layer1": "bubbas_infused_gems:item/gem_outline"
+	}
+}

@@ -1,0 +1,23 @@
+{
+	"type": "minecraft:brewing",
+	"input": {
+		"item": "minecraft:lingering_potion",
+		"potion_contents": {
+			"potions": "minecraft:strong_swiftness"
+		}
+	},
+	"reagent": {
+		"item": "minecraft:diamond"
+	},
+	"output": {
+		"id": "bubbas_infused_gems:infused_gem",
+		"components": {
+			"bubbas_infused_gems:infused_gem": {
+				"effect": "minecraft:speed",
+				"variant": "strong",
+				"form": "lingering",
+				"infusion": 4
+			}
+		}
+	}
+}

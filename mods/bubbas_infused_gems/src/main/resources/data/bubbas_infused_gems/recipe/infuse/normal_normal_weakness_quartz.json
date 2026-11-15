@@ -1,0 +1,23 @@
+{
+	"type": "minecraft:brewing",
+	"input": {
+		"item": "minecraft:potion",
+		"potion_contents": {
+			"potions": "minecraft:weakness"
+		}
+	},
+	"reagent": {
+		"item": "minecraft:quartz"
+	},
+	"output": {
+		"id": "bubbas_infused_gems:infused_gem",
+		"components": {
+			"bubbas_infused_gems:infused_gem": {
+				"effect": "minecraft:weakness",
+				"variant": "normal",
+				"form": "normal",
+				"infusion": 2
+			}
+		}
+	}
+}

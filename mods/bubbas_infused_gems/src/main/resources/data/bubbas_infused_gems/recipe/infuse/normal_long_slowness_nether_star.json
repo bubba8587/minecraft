@@ -1,0 +1,23 @@
+{
+	"type": "minecraft:brewing",
+	"input": {
+		"item": "minecraft:potion",
+		"potion_contents": {
+			"potions": "minecraft:long_slowness"
+		}
+	},
+	"reagent": {
+		"item": "minecraft:nether_star"
+	},
+	"output": {
+		"id": "bubbas_infused_gems:infused_gem",
+		"components": {
+			"bubbas_infused_gems:infused_gem": {
+				"effect": "minecraft:slowness",
+				"variant": "long",
+				"form": "normal",
+				"infusion": 6
+			}
+		}
+	}
+}

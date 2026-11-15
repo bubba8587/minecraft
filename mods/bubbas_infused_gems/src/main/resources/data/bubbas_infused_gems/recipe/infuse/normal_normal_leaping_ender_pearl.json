@@ -1,0 +1,23 @@
+{
+	"type": "minecraft:brewing",
+	"input": {
+		"item": "minecraft:potion",
+		"potion_contents": {
+			"potions": "minecraft:leaping"
+		}
+	},
+	"reagent": {
+		"item": "minecraft:ender_pearl"
+	},
+	"output": {
+		"id": "bubbas_infused_gems:infused_gem",
+		"components": {
+			"bubbas_infused_gems:infused_gem": {
+				"effect": "minecraft:jump_boost",
+				"variant": "normal",
+				"form": "normal",
+				"infusion": 3
+			}
+		}
+	}
+}

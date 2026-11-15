@@ -1,0 +1,14 @@
+{
+	"required": true,
+	"package": "io.github.bubba8587.bubbas_infused_gems.client.mixin",
+	"compatibilityLevel": "JAVA_25",
+	"client": [
+		"EffectsInInventoryMixin",
+		"EnchantmentScreenMixin",
+		"HudMixin",
+		"LightmapMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

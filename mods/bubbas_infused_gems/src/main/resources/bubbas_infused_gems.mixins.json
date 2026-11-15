@@ -1,0 +1,18 @@
+{
+	"required": true,
+	"package": "io.github.bubba8587.bubbas_infused_gems.mixin",
+	"compatibilityLevel": "JAVA_25",
+	"mixins": [
+		"ArrowItemMixin",
+		"ArrowMixin",
+		"EnchantmentHelperMixin",
+		"EnchantmentMenuMixin",
+		"GrindstoneMenuAccessor",
+		"GrindstoneMenuMixin",
+		"GrindstoneResultSlotMixin",
+		"LivingEntityMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

@@ -1,0 +1,23 @@
+{
+	"type": "minecraft:brewing",
+	"input": {
+		"item": "minecraft:splash_potion",
+		"potion_contents": {
+			"potions": "minecraft:long_slow_falling"
+		}
+	},
+	"reagent": {
+		"item": "minecraft:amethyst_shard"
+	},
+	"output": {
+		"id": "bubbas_infused_gems:infused_gem",
+		"components": {
+			"bubbas_infused_gems:infused_gem": {
+				"effect": "minecraft:slow_falling",
+				"variant": "long",
+				"form": "splash",
+				"infusion": 1
+			}
+		}
+	}
+}

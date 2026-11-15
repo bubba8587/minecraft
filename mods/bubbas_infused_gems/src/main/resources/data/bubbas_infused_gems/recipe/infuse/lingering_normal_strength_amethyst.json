@@ -1,0 +1,23 @@
+{
+	"type": "minecraft:brewing",
+	"input": {
+		"item": "minecraft:lingering_potion",
+		"potion_contents": {
+			"potions": "minecraft:strength"
+		}
+	},
+	"reagent": {
+		"item": "minecraft:amethyst_shard"
+	},
+	"output": {
+		"id": "bubbas_infused_gems:infused_gem",
+		"components": {
+			"bubbas_infused_gems:infused_gem": {
+				"effect": "minecraft:strength",
+				"variant": "normal",
+				"form": "lingering",
+				"infusion": 1
+			}
+		}
+	}
+}

@@ -1,0 +1,23 @@
+{
+	"type": "minecraft:brewing",
+	"input": {
+		"item": "minecraft:lingering_potion",
+		"potion_contents": {
+			"potions": "minecraft:long_fire_resistance"
+		}
+	},
+	"reagent": {
+		"item": "minecraft:prismarine_shard"
+	},
+	"output": {
+		"id": "bubbas_infused_gems:infused_gem",
+		"components": {
+			"bubbas_infused_gems:infused_gem": {
+				"effect": "minecraft:fire_resistance",
+				"variant": "long",
+				"form": "lingering",
+				"infusion": 5
+			}
+		}
+	}
+}

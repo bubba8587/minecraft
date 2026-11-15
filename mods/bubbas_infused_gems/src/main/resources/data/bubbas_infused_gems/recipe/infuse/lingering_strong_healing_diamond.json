@@ -1,0 +1,23 @@
+{
+	"type": "minecraft:brewing",
+	"input": {
+		"item": "minecraft:lingering_potion",
+		"potion_contents": {
+			"potions": "minecraft:strong_healing"
+		}
+	},
+	"reagent": {
+		"item": "minecraft:diamond"
+	},
+	"output": {
+		"id": "bubbas_infused_gems:infused_gem",
+		"components": {
+			"bubbas_infused_gems:infused_gem": {
+				"effect": "minecraft:instant_health",
+				"variant": "strong",
+				"form": "lingering",
+				"infusion": 4
+			}
+		}
+	}
+}

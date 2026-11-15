@@ -1,0 +1,23 @@
+{
+	"type": "minecraft:brewing",
+	"input": {
+		"item": "minecraft:lingering_potion",
+		"potion_contents": {
+			"potions": "minecraft:water_breathing"
+		}
+	},
+	"reagent": {
+		"item": "minecraft:prismarine_shard"
+	},
+	"output": {
+		"id": "bubbas_infused_gems:infused_gem",
+		"components": {
+			"bubbas_infused_gems:infused_gem": {
+				"effect": "minecraft:water_breathing",
+				"variant": "normal",
+				"form": "lingering",
+				"infusion": 5
+			}
+		}
+	}
+}

@@ -1,0 +1,23 @@
+{
+	"type": "minecraft:brewing",
+	"input": {
+		"item": "minecraft:lingering_potion",
+		"potion_contents": {
+			"potions": "minecraft:harming"
+		}
+	},
+	"reagent": {
+		"item": "minecraft:quartz"
+	},
+	"output": {
+		"id": "bubbas_infused_gems:infused_gem",
+		"components": {
+			"bubbas_infused_gems:infused_gem": {
+				"effect": "minecraft:instant_damage",
+				"variant": "normal",
+				"form": "lingering",
+				"infusion": 2
+			}
+		}
+	}
+}

@@ -1,0 +1,5 @@
+{
+	"type": "bubbas_infused_gems:socket",
+	"base": "#bubbas_infused_gems:socketable",
+	"addition": "bubbas_infused_gems:gem"
+}

@@ -1,0 +1,23 @@
+{
+	"schemaVersion": 1,
+	"id": "bubbas_infused_gems-test",
+	"version": "1.0.0",
+	"name": "Bubba's Infused Gems Tests",
+	"environment": "*",
+	"entrypoints": {
+		"fabric-gametest": [
+			"io.github.bubba8587.bubbas_infused_gems.test.BalanceGameTest",
+			"io.github.bubba8587.bubbas_infused_gems.test.BrewingGameTest",
+			"io.github.bubba8587.bubbas_infused_gems.test.EnchantingGameTest",
+			"io.github.bubba8587.bubbas_infused_gems.test.SocketingGameTest",
+			"io.github.bubba8587.bubbas_infused_gems.test.GemEffectsGameTest",
+			"io.github.bubba8587.bubbas_infused_gems.test.GemsCommandGameTest"
+		],
+		"fabric-client-gametest": [
+			"io.github.bubba8587.bubbas_infused_gems.test.GemsClientGameTest"
+		]
+	},
+	"mixins": [
+		"bubbas_infused_gems-test.mixins.json"
+	]
+}

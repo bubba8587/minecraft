@@ -1,0 +1,23 @@
+{
+	"type": "minecraft:brewing",
+	"input": {
+		"item": "minecraft:splash_potion",
+		"potion_contents": {
+			"potions": "minecraft:long_night_vision"
+		}
+	},
+	"reagent": {
+		"item": "minecraft:amethyst_shard"
+	},
+	"output": {
+		"id": "bubbas_infused_gems:infused_gem",
+		"components": {
+			"bubbas_infused_gems:infused_gem": {
+				"effect": "minecraft:night_vision",
+				"variant": "long",
+				"form": "splash",
+				"infusion": 1
+			}
+		}
+	}
+}
