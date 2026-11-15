@@ -91,8 +91,8 @@ public record Gem(Holder<MobEffect> effect, int infusion, int tier, float main, 
 
 	@Override
 	public void addToTooltip(Item.TooltipContext context, Consumer<Component> out, TooltipFlag flag, DataComponentGetter components) {
-		out.accept(Component.translatable(GemText.KEY + "tooltip.tier", this.tier, GemText.numeral(this.infusion)).withStyle(ChatFormatting.GRAY));
-		this.lines(out, " ");
-		out.accept(Component.translatable(GemText.KEY + "tooltip.socket_hint").withStyle(ChatFormatting.DARK_GRAY));
+		// Short (owner): the effects, then the tier. The name already says the Infusion level; no how-to lines.
+		this.lines(out, "");
+		out.accept(Component.translatable(GemText.KEY + "tooltip.tier", this.tier).withStyle(ChatFormatting.GRAY));
 	}
 }

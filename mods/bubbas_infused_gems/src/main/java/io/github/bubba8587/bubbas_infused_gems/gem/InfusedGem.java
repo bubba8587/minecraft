@@ -60,9 +60,8 @@ public record InfusedGem(Holder<MobEffect> effect, String variant, GemForm form,
 
 	@Override
 	public void addToTooltip(Item.TooltipContext context, Consumer<Component> out, TooltipFlag flag, DataComponentGetter components) {
+		// One short line (owner): the name already has the effect, Infusion and form; no how-to lines.
 		out.accept(Component.translatable(GemText.KEY + "tooltip.potion", Component.translatable(GemText.KEY + "variant." + this.variant),
-				Component.translatable(GemText.KEY + "form." + this.form.getSerializedName())).withStyle(ChatFormatting.GRAY));
-		out.accept(Component.translatable(GemText.KEY + "tooltip.max_tier", this.maxTier()).withStyle(ChatFormatting.GRAY));
-		out.accept(Component.translatable(GemText.KEY + "tooltip.enchant_hint").withStyle(ChatFormatting.DARK_GRAY));
+				this.maxTier()).withStyle(ChatFormatting.GRAY));
 	}
 }
