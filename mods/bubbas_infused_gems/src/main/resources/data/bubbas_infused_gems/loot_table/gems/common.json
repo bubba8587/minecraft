@@ -7,7 +7,7 @@
 				{
 					"type": "minecraft:item",
 					"name": "bubbas_infused_gems:gem",
-					"weight": 48,
+					"weight": 832,
 					"modifier": {
 						"type": "bubbas_infused_gems:random_gem",
 						"infusion": [
@@ -24,7 +24,7 @@
 				{
 					"type": "minecraft:item",
 					"name": "minecraft:leather_helmet",
-					"weight": 1,
+					"weight": 16,
 					"modifier": {
 						"type": "bubbas_infused_gems:socket_random_gems",
 						"count": 1,
@@ -42,7 +42,7 @@
 				{
 					"type": "minecraft:item",
 					"name": "minecraft:leather_chestplate",
-					"weight": 1,
+					"weight": 16,
 					"modifier": {
 						"type": "bubbas_infused_gems:socket_random_gems",
 						"count": 1,
@@ -60,7 +60,7 @@
 				{
 					"type": "minecraft:item",
 					"name": "minecraft:leather_leggings",
-					"weight": 1,
+					"weight": 16,
 					"modifier": {
 						"type": "bubbas_infused_gems:socket_random_gems",
 						"count": 1,
@@ -78,7 +78,7 @@
 				{
 					"type": "minecraft:item",
 					"name": "minecraft:leather_boots",
-					"weight": 1,
+					"weight": 16,
 					"modifier": {
 						"type": "bubbas_infused_gems:socket_random_gems",
 						"count": 1,
@@ -96,7 +96,7 @@
 				{
 					"type": "minecraft:item",
 					"name": "minecraft:copper_helmet",
-					"weight": 1,
+					"weight": 16,
 					"modifier": {
 						"type": "bubbas_infused_gems:socket_random_gems",
 						"count": 1,
@@ -114,7 +114,7 @@
 				{
 					"type": "minecraft:item",
 					"name": "minecraft:copper_chestplate",
-					"weight": 1,
+					"weight": 16,
 					"modifier": {
 						"type": "bubbas_infused_gems:socket_random_gems",
 						"count": 1,
@@ -132,7 +132,7 @@
 				{
 					"type": "minecraft:item",
 					"name": "minecraft:copper_leggings",
-					"weight": 1,
+					"weight": 16,
 					"modifier": {
 						"type": "bubbas_infused_gems:socket_random_gems",
 						"count": 1,
@@ -150,7 +150,7 @@
 				{
 					"type": "minecraft:item",
 					"name": "minecraft:copper_boots",
-					"weight": 1,
+					"weight": 16,
 					"modifier": {
 						"type": "bubbas_infused_gems:socket_random_gems",
 						"count": 1,
@@ -168,7 +168,7 @@
 				{
 					"type": "minecraft:item",
 					"name": "minecraft:golden_helmet",
-					"weight": 1,
+					"weight": 16,
 					"modifier": {
 						"type": "bubbas_infused_gems:socket_random_gems",
 						"count": 1,
@@ -186,7 +186,7 @@
 				{
 					"type": "minecraft:item",
 					"name": "minecraft:golden_chestplate",
-					"weight": 1,
+					"weight": 16,
 					"modifier": {
 						"type": "bubbas_infused_gems:socket_random_gems",
 						"count": 1,
@@ -204,7 +204,7 @@
 				{
 					"type": "minecraft:item",
 					"name": "minecraft:golden_leggings",
-					"weight": 1,
+					"weight": 16,
 					"modifier": {
 						"type": "bubbas_infused_gems:socket_random_gems",
 						"count": 1,
@@ -222,7 +222,7 @@
 				{
 					"type": "minecraft:item",
 					"name": "minecraft:golden_boots",
-					"weight": 1,
+					"weight": 16,
 					"modifier": {
 						"type": "bubbas_infused_gems:socket_random_gems",
 						"count": 1,
@@ -240,7 +240,7 @@
 				{
 					"type": "minecraft:item",
 					"name": "minecraft:chainmail_helmet",
-					"weight": 1,
+					"weight": 16,
 					"modifier": {
 						"type": "bubbas_infused_gems:socket_random_gems",
 						"count": 1,
@@ -258,7 +258,7 @@
 				{
 					"type": "minecraft:item",
 					"name": "minecraft:chainmail_chestplate",
-					"weight": 1,
+					"weight": 16,
 					"modifier": {
 						"type": "bubbas_infused_gems:socket_random_gems",
 						"count": 1,
@@ -276,7 +276,7 @@
 				{
 					"type": "minecraft:item",
 					"name": "minecraft:chainmail_leggings",
-					"weight": 1,
+					"weight": 16,
 					"modifier": {
 						"type": "bubbas_infused_gems:socket_random_gems",
 						"count": 1,
@@ -294,7 +294,7 @@
 				{
 					"type": "minecraft:item",
 					"name": "minecraft:chainmail_boots",
-					"weight": 1,
+					"weight": 16,
 					"modifier": {
 						"type": "bubbas_infused_gems:socket_random_gems",
 						"count": 1,
@@ -307,6 +307,82 @@
 							1
 						],
 						"variant": "normal"
+					}
+				},
+				{
+					"type": "minecraft:item",
+					"name": "minecraft:stone_sword",
+					"weight": 48,
+					"modifier": {
+						"type": "bubbas_infused_gems:socket_random_gems",
+						"count": 1,
+						"infusion": [
+							1,
+							1,
+							2
+						],
+						"tier": [
+							1
+						],
+						"variant": "normal",
+						"prefer_harmful": 0.75
+					}
+				},
+				{
+					"type": "minecraft:item",
+					"name": "minecraft:copper_sword",
+					"weight": 48,
+					"modifier": {
+						"type": "bubbas_infused_gems:socket_random_gems",
+						"count": 1,
+						"infusion": [
+							1,
+							1,
+							2
+						],
+						"tier": [
+							1
+						],
+						"variant": "normal",
+						"prefer_harmful": 0.75
+					}
+				},
+				{
+					"type": "minecraft:item",
+					"name": "minecraft:stone_axe",
+					"weight": 48,
+					"modifier": {
+						"type": "bubbas_infused_gems:socket_random_gems",
+						"count": 1,
+						"infusion": [
+							1,
+							1,
+							2
+						],
+						"tier": [
+							1
+						],
+						"variant": "normal",
+						"prefer_harmful": 0.75
+					}
+				},
+				{
+					"type": "minecraft:item",
+					"name": "minecraft:bow",
+					"weight": 48,
+					"modifier": {
+						"type": "bubbas_infused_gems:socket_random_gems",
+						"count": 1,
+						"infusion": [
+							1,
+							1,
+							2
+						],
+						"tier": [
+							1
+						],
+						"variant": "normal",
+						"prefer_harmful": 0.75
 					}
 				}
 			]

@@ -168,7 +168,11 @@ public class LootGameTest {
 		return out;
 	}
 
-	/** Each level's gems: within its Infusion and tier lists, craftable gems only and never Infusion VI, gear with 1+ gems. */
+	/**
+	 * Each level's gems: within its Infusion and tier lists, craftable gems only, gemmed armor and weapons with 1+ gems.
+	 * Infusion VI only in ominous vaults, and there always perfect (tier 3, full strength), with a drawback except about
+	 * 1 in 20; weapon gems mostly harmful.
+	 */
 	@GameTest(maxTicks = 200)
 	public void levelTablesMakeWeakRareGems(GameTestHelper helper) {
 		Balance b = Balance.get();
@@ -178,31 +182,56 @@ public class LootGameTest {
 			List<ItemStack> items = roll(helper, "bubbas_infused_gems:gems/" + level, 600, null, null);
 			List<Gem> gems = gems(items);
 			check(helper, items.size() == 600, level + ": " + items.size() + " items from 600 rolls");
-			int gear = 0;
+			int armor = 0;
+			int weapons = 0;
+			int weaponGems = 0;
+			int harmfulWeaponGems = 0;
 			for (ItemStack s : items) {
 				if (s.has(ModComponents.SOCKETED_GEMS)) {
-					gear++;
 					check(helper, Sockets.list(s).size() >= 1 && Sockets.list(s).size() <= Sockets.slots(s), level + ": gear with " + Sockets.list(s).size() + " gems");
+					if (s.is(Sockets.WEAPONS)) {
+						weapons++;
+						for (Gem g : Sockets.list(s)) {
+							weaponGems++;
+							harmfulWeaponGems += b.effect(g.key()).good() ? 0 : 1;
+						}
+					} else {
+						armor++;
+					}
 				}
 			}
-			check(helper, gear > 80 && gear < 230, level + ": " + gear + " gemmed pieces of 600 (model: a quarter)");
+			check(helper, armor > 80 && armor < 170, level + ": " + armor + " gemmed armor pieces of 600 (model 20 %)");
+			check(helper, weapons > 55 && weapons < 130, level + ": " + weapons + " gemmed weapons of 600 (model 15 %)");
+			check(helper, harmfulWeaponGems > weaponGems * 0.6, level + ": weapon gems mostly harmful, " + harmfulWeaponGems + " of " + weaponGems);
 			Set<Integer> infusions = new HashSet<>();
 			loot.getAsJsonObject(level).getAsJsonArray("bases").forEach(x -> b.infusions.stream()
 					.filter(i -> i.base().equals(x.getAsString())).forEach(i -> infusions.add(i.level())));
 			Set<Integer> tiers = new HashSet<>();
 			loot.getAsJsonObject(level).getAsJsonArray("tiers").forEach(x -> tiers.add(x.getAsInt()));
 			int best = 0;
+			boolean perfectLevel = level.equals("ominous");
 			for (Gem g : gems) {
 				check(helper, !"found".equals(b.effect(g.key()).source()), level + ": found-only " + g.key() + " in the general pool");
-				check(helper, infusions.contains(g.infusion()) && g.infusion() < 6, level + ": Infusion " + g.infusion());
-				check(helper, tiers.contains(g.tier()), level + ": tier " + g.tier());
-				check(helper, g.main() < 1.0F, level + ": a perfect craftable gem from loot");
+				check(helper, infusions.contains(g.infusion()) && (g.infusion() < 6 || perfectLevel), level + ": Infusion " + g.infusion());
+				if (g.infusion() == 6) {
+					check(helper, g.tier() == 3 && g.main() >= 0.999F, level + ": an Infusion VI gem that isn't perfect: " + g);
+				} else {
+					check(helper, tiers.contains(g.tier()), level + ": tier " + g.tier());
+					check(helper, g.main() < 1.0F, level + ": a perfect gem below Infusion VI");
+				}
 				best = Math.max(best, Math.round(g.main() * 100));
 			}
 			check(helper, keys(gems).size() >= 20, level + ": only " + keys(gems).size() + " gem effects");
 			check(helper, best > previousBest, level + ": best gem " + best + "% not above the level below (" + previousBest + "%)");
 			previousBest = best;
 		}
+		// Ominous perfect gems: normally with a drawback, about 1 in 20 clean (owner).
+		List<Gem> perfect = gems(roll(helper, "bubbas_infused_gems:gems/ominous", 4000, null, null)).stream().filter(g -> g.infusion() == 6).toList();
+		long clean = perfect.stream().filter(g -> g.drawback().isEmpty()).count();
+		double share = Balance.get().raw.get("loot_perfect_clean_chance").getAsDouble();
+		check(helper, perfect.size() > 300 && clean > perfect.size() * share * 0.4 && clean < perfect.size() * share * 1.8,
+				"perfect ominous gems: " + clean + " clean of " + perfect.size() + ", model " + share);
+		check(helper, perfect.stream().anyMatch(g -> !"found".equals(b.effect(g.key()).source()) && g.drawback().isPresent()), "no perfect craftable gem with a drawback");
 		// Fixed seed, same loot.
 		LootTable t = table(helper, "bubbas_infused_gems:gems/common");
 		LootParams p = params(helper, t, null, null);
@@ -237,10 +266,16 @@ public class LootGameTest {
 		helper.succeed();
 	}
 
+	private static String gearKind = "armor";
+
+	private static boolean gearSlot(EquipmentSlot slot, Mob mob) {
+		return gearKind.equals("armor") ? slot.getType() == EquipmentSlot.Type.HUMANOID_ARMOR : slot.getType() == EquipmentSlot.Type.HAND;
+	}
+
 	private static int gemmedPieces(Mob mob) {
 		int n = 0;
 		for (EquipmentSlot slot : EquipmentSlot.values()) {
-			if (slot.getType() == EquipmentSlot.Type.HUMANOID_ARMOR && Sockets.hasGems(mob.getItemBySlot(slot))) {
+			if (gearSlot(slot, mob) && Sockets.hasGems(mob.getItemBySlot(slot))) {
 				n++;
 			}
 		}
@@ -250,26 +285,46 @@ public class LootGameTest {
 	private static int pieces(Mob mob) {
 		int n = 0;
 		for (EquipmentSlot slot : EquipmentSlot.values()) {
-			if (slot.getType() == EquipmentSlot.Type.HUMANOID_ARMOR && !mob.getItemBySlot(slot).isEmpty()) {
+			if (gearSlot(slot, mob) && Sockets.slots(mob.getItemBySlot(slot)) > 0) {
 				n++;
 			}
 		}
 		return n;
 	}
 
-	/** Spawn armor (vanilla's choice) gets gems at the model's chance per piece: most mobs 4 %, piglins 6 %. */
-	@GameTest(maxTicks = 200)
-	public void spawnArmorSometimesHasGems(GameTestHelper helper) {
+	/**
+	 * Spawn gear (vanilla's choice) gets gems at the model's chance per piece: most mobs 4 %, piglins 6 %; armor, and
+	 * weapons (skeleton bows, drowned tridents, piglin crossbows and swords, vindicator axes).
+	 */
+	@GameTest(maxTicks = 300)
+	public void spawnGearSometimesHasGems(GameTestHelper helper) {
 		DifficultyInstance hard = new DifficultyInstance(Difficulty.HARD, 3_600_000L, 3_600_000L, 1.0F);
-		Map<String, Double> rates = Map.of("zombie", 0.04, "piglin", 0.06);
-		for (String who : rates.keySet()) {
-			Mob mob = who.equals("zombie") ? helper.spawnWithNoFreeWill(EntityTypes.ZOMBIE, new BlockPos(1, 1, 1))
-					: helper.spawnWithNoFreeWill(EntityTypes.PIGLIN, new BlockPos(2, 1, 1));
+		Map<String, Double> rates = new java.util.LinkedHashMap<>();
+		rates.put("zombie/armor", 0.04);
+		rates.put("piglin/armor", 0.06);
+		rates.put("skeleton/weapon", 0.04);
+		rates.put("drowned/weapon", 0.04);
+		rates.put("piglin/weapon", 0.06);
+		rates.put("vindicator/weapon", 0.04);
+		for (String key : rates.keySet()) {
+			String who = key.split("/")[0];
+			gearKind = key.split("/")[1];
+			Mob mob = switch (who) {
+				case "zombie" -> helper.spawnWithNoFreeWill(EntityTypes.ZOMBIE, new BlockPos(1, 1, 1));
+				case "skeleton" -> helper.spawnWithNoFreeWill(EntityTypes.SKELETON, new BlockPos(1, 1, 1));
+				case "drowned" -> helper.spawnWithNoFreeWill(EntityTypes.DROWNED, new BlockPos(1, 1, 1));
+				case "vindicator" -> helper.spawnWithNoFreeWill(EntityTypes.VINDICATOR, new BlockPos(1, 1, 1));
+				default -> helper.spawnWithNoFreeWill(EntityTypes.PIGLIN, new BlockPos(2, 1, 1));
+			};
 			int total = 0;
 			int gemmed = 0;
-			for (int i = 0; i < 6000 && total < 3000; i++) {
+			for (int i = 0; i < 40000 && total < 3000; i++) {
 				for (EquipmentSlot slot : EquipmentSlot.values()) {
 					mob.setItemSlot(slot, ItemStack.EMPTY);
+				}
+				if (who.equals("piglin")) {
+					// Piglins get their crossbow or sword in finalizeSpawn, just before their spawn armor (vanilla order).
+					mob.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(i % 2 == 0 ? Items.GOLDEN_SWORD : Items.CROSSBOW));
 				}
 				((MobEquipmentInvoker) mob).bubbas$populate(RandomSource.create(i), hard);
 				total += pieces(mob);
@@ -283,16 +338,21 @@ public class LootGameTest {
 				}
 			}
 			double rate = gemmed / (double) Math.max(total, 1);
-			check(helper, total > 500 && rate > rates.get(who) * 0.5 && rate < rates.get(who) * 1.6,
-					who + ": " + gemmed + " gemmed of " + total + " pieces (" + rate + "), model " + rates.get(who));
+			check(helper, total > 300 && rate > rates.get(key) * 0.5 && rate < rates.get(key) * 1.6,
+					key + ": " + gemmed + " gemmed of " + total + " pieces (" + rate + "), model " + rates.get(key));
 			mob.discard();
 		}
-		// Ominous trial spawner mobs: vanilla's trial chamber equipment table gets gems too (model 10 % per piece).
+		gearKind = "armor";
+		// Ominous trial spawner mobs: vanilla's trial chamber equipment tables get gems too, armor and weapons (model 10 % per piece).
 		Zombie wearer = helper.spawnWithNoFreeWill(EntityTypes.ZOMBIE, new BlockPos(3, 1, 1));
-		List<ItemStack> trial = roll(helper, "minecraft:equipment/trial_chamber", 800, wearer, null);
-		long gemmedTrial = trial.stream().filter(Sockets::hasGems).count();
-		check(helper, !trial.isEmpty() && gemmedTrial > trial.size() * 0.05 && gemmedTrial < trial.size() * 0.16,
-				"trial chamber equipment: " + gemmedTrial + " gemmed of " + trial.size());
+		List<ItemStack> trial = new ArrayList<>(roll(helper, "minecraft:equipment/trial_chamber_melee", 500, wearer, null));
+		trial.addAll(roll(helper, "minecraft:equipment/trial_chamber_ranged", 500, wearer, null));
+		for (boolean weapon : new boolean[] {false, true}) {
+			List<ItemStack> part = trial.stream().filter(s -> s.is(Sockets.WEAPONS) == weapon && Sockets.slots(s) > 0).toList();
+			long gemmedTrial = part.stream().filter(Sockets::hasGems).count();
+			check(helper, part.size() > 200 && gemmedTrial > part.size() * 0.05 && gemmedTrial < part.size() * 0.16,
+					"trial chamber " + (weapon ? "weapons" : "armor") + ": " + gemmedTrial + " gemmed of " + part.size());
+		}
 		check(helper, trial.stream().filter(s -> !s.has(ModComponents.SOCKETED_GEMS)).anyMatch(s -> s.has(net.minecraft.core.component.DataComponents.TRIM)),
 				"trial chamber armor lost its vanilla trims");
 		helper.succeed();

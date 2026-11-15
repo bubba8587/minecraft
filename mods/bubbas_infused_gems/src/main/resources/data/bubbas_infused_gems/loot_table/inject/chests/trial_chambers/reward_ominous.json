@@ -39,7 +39,11 @@
 							2,
 							3
 						],
-						"variant": "any"
+						"variant": "any",
+						"perfect": {
+							"infusion": 6,
+							"clean_chance": 0.05
+						}
 					}
 				}
 			]

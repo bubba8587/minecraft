@@ -179,14 +179,14 @@ A found gem is made as if brewed and enchanted: its potion factor is 1.0 (one fo
 
 ## Loot: where gems are found (one table, `LOOT_PLACES`)
 
-Every place below gets **one extra roll** with the given chance per chest (fishing: per treasure catch; hero gift: per gift; elder guardian: per kill by a player). The roll adds a finished gem of any craftable effect, or (a quarter of the time) a gemmed armor piece of the level's materials, or, where found-only gems are listed, one of them (a third of the time). Vanilla's tables are never replaced; the extra roll is a data file of the mod (`loot_table/inject/...`), so a datapack can change or empty any of it. Rare and mostly weak, better in harder places (owner). Craftable gems from loot never reach Infusion VI, so a perfect craftable gem is always crafted; found-only gems can be perfect only from ominous vaults.
+Every place below gets **one extra roll** with the given chance per chest (fishing: per treasure catch; hero gift: per gift; elder guardian: per kill by a player). The roll adds a finished gem of any craftable effect, or a gemmed armor piece of the level's materials (20%), or a gemmed weapon (15%), or, where found-only gems are listed, one of them (a third of the time). Vanilla's tables are never replaced; the extra roll is a data file of the mod (`loot_table/inject/...`), so a datapack can change or empty any of it. Rare and mostly weak, better in harder places (owner). Only ominous vaults use Infusion VI, and there it is always a perfect gem (tier 3, full strength) of any effect, which comes with a drawback except 5% of the time (owner); elsewhere loot never gives a craftable gem Infusion VI.
 
-| Level | Infusion (weighted) | Tiers (weighted) | Potion variant | Gemmed gear | Gems per piece | Gem quality (craftable) |
-|---|---|---|---|---|---|---|
-| common | I, I, II | 1 | weakest | leather, copper, golden, chainmail | 1 | 0.32 - 0.42 |
-| rare | I, II, II, III | 1, 1, 2 | weakest | chainmail, golden, iron | 1 | 0.32 - 0.66 |
-| hard | II, III, III, IV | 1, 2, 2 | any | iron, diamond | 1-2 | 0.34 - 0.69 |
-| ominous | III, IV, IV, V, VI | 2, 2, 3 | any | diamond | 1-3 | 0.53 - 0.96 |
+| Level | Infusion (weighted) | Tiers (weighted) | Potion variant | Gemmed armor | Gemmed weapons | Gems per piece | Gem quality |
+|---|---|---|---|---|---|---|---|
+| common | I, I, II | 1 | weakest | leather, copper, golden, chainmail | stone sword, copper sword, stone axe, bow | 1 | 0.32 - 0.42 |
+| rare | I, II, II, III | 1, 1, 2 | weakest | chainmail, golden, iron | iron sword, iron axe, golden sword, bow, crossbow | 1 | 0.32 - 0.66 |
+| hard | II, III, III, IV | 1, 2, 2 | any | iron, diamond | iron sword, diamond sword, diamond axe, bow, crossbow, trident | 1-2 | 0.34 - 0.69 |
+| ominous | III, IV, IV, V, VI | 2, 2, 3 | any | diamond | diamond sword, diamond axe, bow, crossbow, trident, mace | 1-3 | 0.53 - 1.00 (VI: perfect, with a drawback 19 in 20) |
 
 | Where | Level | Chance | Found-only gems there |
 |---|---|---|---|
@@ -219,13 +219,15 @@ Every place below gets **one extra roll** with the given chance per chest (fishi
 
 ### Gems on mobs
 
-Each armor piece a mob spawns with gets gems with the chance below; the mob gets the gems' effects like a player (undead follow the undead rules). The piece drops with vanilla's equipment drop chance and keeps its gems. Mobs from ominous trial spawners wear vanilla's trial equipment table, which gets gems too; they never drop their gear (vanilla).
+Each armor piece and weapon a mob spawns with gets gems with the chance below; the mob gets the gems' effects like a player (undead follow the undead rules). The piece drops with vanilla's equipment drop chance and keeps its gems. Mobs from ominous trial spawners wear vanilla's trial equipment table, which gets gems too; they never drop their gear (vanilla).
 
-| Who | Level | Chance per armor piece | Gems |
+| Who | Level | Chance per armor piece or weapon | Gems |
 |---|---|---|---|
 | Piglins | rare | 6% | 1 |
-| Every other mob that spawns in armor (zombies, husks, drowned, skeletons, strays, bogged...) | common | 4% | 1 |
+| Every other mob that spawns with armor or a weapon (zombies, husks, drowned with tridents, skeletons and strays with bows, pillagers, vindicators...) | common | 4% | 1 |
 | Ominous trial spawner mobs | hard | 10% | 1-2 |
+
+Weapons (and gemmed weapons in chests) roll their gems from the harmful effects 75% of the time and from any gem otherwise (owner: they hit the player).
 
 ## Roll tables
 
@@ -569,7 +571,7 @@ Worn (armor) effects are attribute modifiers, data components or small tick and 
 - drawbacks: one is 10% of the strongest vanilla level, any number of one effect stays under 20%, below vanilla's level I for every drawback effect; Poison and Wither roll at half weight (owner); Healing, Harming and the rest of the never-drawback list never roll
 - rolls: each of the 36 gems has one roll table; 'other' pools 14-18 effects, all the main effect's kind and never itself; drawback pools 5-19 effects, all the opposite kind, none on the never-drawback list, and none a direct opposite (13 inverse pairs, the owner's 12 included)
 - weapons: per hit, potency rises with strength toward the strongest potion's level (never reaching it); a hit lasts at most 8 s (the best weapon), less below it, never under its floor (owner); a real tipped arrow and a gem of the same effect don't add, the stronger level applies
-- loot: 40 vanilla tables get one extra roll (chance 4%-20%); each level's best gem beats the level below; no craftable gem from loot is perfect (Infusion VI is never used for them); every found-only gem is listed at exactly the levels its source names; every table and item exists in 26.3
+- loot: 40 vanilla tables get one extra roll (chance 4%-20%); each level's best gem beats the level below; only ominous vaults give perfect gems (any effect, Infusion VI, tier 3), with a drawback except 5% of the time; nowhere else gives a craftable gem Infusion VI; every found-only gem is listed at exactly the levels its source names; every table and item exists in 26.3
 
 ## Open questions for the owner
 

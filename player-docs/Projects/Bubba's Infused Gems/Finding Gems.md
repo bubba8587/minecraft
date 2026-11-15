@@ -5,18 +5,18 @@
 > [!infobox] Found Gems
 > | | |
 > |---|---|
-> | **Found in** | Chests, vaults, fishing treasure, hero gifts, elder guardians, mob armor |
+> | **Found in** | Chests, vaults, fishing treasure, hero gifts, elder guardians, mob armor and weapons |
 > | **Chance** | 4% to 20% per chest or catch |
 > | **Strength** | Mostly weak; better in harder places |
 > | **Found-only gems** | Haste, Luck, Health Boost, Hero of the Village, Mining Fatigue, Resistance |
 
-**Found gems** are finished Gems, and armor with Gems already set in it, that turn up as loot in structures and on mobs. Found loot is rare and mostly weak; harder places give better gems. Six gem effects have no brewing source of their own and are found only (Luck can also be brewed from a Luck potion, which has no survival recipe).
+**Found gems** are finished Gems, and armor and weapons with Gems already set in them, that turn up as loot in structures and on mobs. Found loot is rare and mostly weak; harder places give better gems, and gemmed mobs make harder places more dangerous. Six gem effects have no brewing source of their own and are found only (Luck can also be brewed from a Luck potion, which has no survival recipe).
 
 ## Obtaining
 
 ### Chests, vaults and other loot
 
-Each place below has a small chance per chest (fishing: per treasure catch; hero gift: per gift; elder guardian: per kill by a player) of one extra item on top of the usual loot: a Gem of any brewable effect, or (about a quarter of the time) a piece of armor with gems set in it. Where the table names found-only gems, about a third of these extras are one of them instead.
+Each place below has a small chance per chest (fishing: per treasure catch; hero gift: per gift; elder guardian: per kill by a player) of one extra item on top of the usual loot: a Gem of any brewable effect, or a piece of armor (about a fifth of the time) or a weapon (about a seventh of the time) with gems set in it. Gems in weapons are mostly harmful effects such as Poison or Slowness. Where the table names found-only gems, about a third of these extras are one of them instead.
 
 | Where | Level | Chance | Found-only gems there |
 |---|---|---|---|
@@ -44,26 +44,26 @@ Each place below has a small chance per chest (fishing: per treasure catch; hero
 
 ### Mobs
 
-Mobs that spawn wearing armor sometimes have gems set in it, and they get those gems' effects like a player would (a zombie with a Glowing gem glows; undead follow the usual undead rules). A piece drops with the usual chance for mob equipment and keeps its gems.
+Mobs that spawn with armor or a weapon sometimes have gems set in them, and they get those gems' effects like a player would (a zombie with a Glowing gem glows; undead follow the usual undead rules). A gemmed weapon puts its gems' effects on whatever the mob hits: a skeleton's gemmed bow fires tipped arrows, a drowned's gemmed trident poisons. A piece drops with the usual chance for mob equipment and keeps its gems.
 
-| Mob | Chance per armor piece | Level |
+| Mob | Chance per armor piece or weapon | Level |
 |---|---|---|
-| Zombies, husks, drowned, skeletons, strays, bogged and other mobs that spawn in armor | 4% | Common |
-| Piglins | 6% | Rare |
+| Zombies, husks, drowned (tridents), skeletons and strays (bows), pillagers, vindicators and other mobs that spawn with armor or a weapon | 4% | Common |
+| Piglins (armor, swords and crossbows) | 6% | Rare |
 | Mobs from ominous trial spawners | 10% | Hard (1 or 2 gems; these mobs never drop their gear) |
 
 ## Strength
 
 A found Gem is made as if it had been brewed and enchanted: its Infusion level and enchanting tier depend on where it was found.
 
-| Level | Infusion | Tier | Potion strength | Gemmed armor | Gems per piece |
-|---|---|---|---|---|---|
-| Common | I or II | 1 | Plain potion | Leather, copper, gold or chainmail | 1 |
-| Rare | I to III | 1 or 2 | Plain potion | Chainmail, gold or iron | 1 |
-| Hard | II to IV | 1 or 2 | Any | Iron or diamond | 1 or 2 |
-| Ominous | III to VI | 2 or 3 | Any | Diamond | 1 to 3 |
+| Level | Infusion | Tier | Potion strength | Gemmed armor | Gemmed weapons | Gems per piece |
+|---|---|---|---|---|---|---|
+| Common | I or II | 1 | Plain potion | Leather, copper, gold or chainmail | Stone sword, copper sword, stone axe, bow | 1 |
+| Rare | I to III | 1 or 2 | Plain potion | Chainmail, gold or iron | Iron sword, iron axe, golden sword, bow, crossbow | 1 |
+| Hard | II to IV | 1 or 2 | Any | Iron or diamond | Iron or diamond sword, diamond axe, bow, crossbow, trident | 1 or 2 |
+| Ominous | III to VI | 2 or 3 | Any | Diamond | Diamond sword, diamond axe, bow, crossbow, trident, mace | 1 to 3 (weapons hold 2) |
 
-Brewable gems from loot never reach Infusion VI, so a perfect brewable gem is always made by hand. Found-only gems can be perfect only from ominous vaults.
+Only ominous vaults give Infusion VI gems, and those are always **perfect** (tier 3, full strength) of any effect. A perfect gem from a vault nearly always comes with a drawback; about 1 in 20 is clean. Everywhere else, found brewable gems stay below Infusion VI.
 
 ## Compatibility
 

@@ -86,7 +86,7 @@ public final class GemEnchanting {
 	}
 
 	/** One of the pool, by weight (owner: Poison and Wither drawbacks roll half as often; weights from the model). */
-	static String weighted(RandomSource random, List<String> pool, List<Double> weights) {
+	public static String weighted(RandomSource random, List<String> pool, List<Double> weights) {
 		double total = 0.0;
 		for (int i = 0; i < pool.size(); i++) {
 			total += i < weights.size() ? weights.get(i) : 1.0;

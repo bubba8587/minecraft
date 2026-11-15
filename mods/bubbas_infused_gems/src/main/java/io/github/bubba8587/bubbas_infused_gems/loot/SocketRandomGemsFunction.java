@@ -20,20 +20,24 @@ import net.minecraft.world.level.storage.loot.providers.number.ints.ContextIntPr
 
 /**
  * Loot function {@code bubbas_infused_gems:socket_random_gems}: puts {@code count} gems rolled from {@link GemRollSpec}
- * into gear that takes gems (up to its free slots). Anything else passes through unchanged.
+ * into gear that takes gems (up to its free slots); {@code gear} limits it to {@code "armor"} or {@code "weapon"}
+ * (default {@code "any"}). Anything else passes through unchanged.
  */
 public class SocketRandomGemsFunction extends LootItemConditionalFunction {
 	public static final MapCodec<SocketRandomGemsFunction> MAP_CODEC = RecordCodecBuilder.mapCodec(i -> commonFields(i)
 			.and(ContextIntProviders.CODEC.optionalFieldOf("count", ContextIntProviders.exactly(1)).forGetter(f -> f.count))
+			.and(com.mojang.serialization.Codec.STRING.optionalFieldOf("gear", "any").forGetter(f -> f.gear))
 			.and(GemRollSpec.MAP_CODEC.forGetter(f -> f.spec))
 			.apply(i, SocketRandomGemsFunction::new));
 
 	private final Holder<ContextIntProvider> count;
+	private final String gear;
 	private final GemRollSpec spec;
 
-	private SocketRandomGemsFunction(Optional<Holder<LootItemCondition>> condition, Holder<ContextIntProvider> count, GemRollSpec spec) {
+	private SocketRandomGemsFunction(Optional<Holder<LootItemCondition>> condition, Holder<ContextIntProvider> count, String gear, GemRollSpec spec) {
 		super(condition);
 		this.count = count;
+		this.gear = gear;
 		this.spec = spec;
 	}
 
@@ -50,6 +54,9 @@ public class SocketRandomGemsFunction extends LootItemConditionalFunction {
 
 	@Override
 	protected ItemStack run(ItemStack stack, LootContext context) {
+		if (("armor".equals(this.gear) && !stack.is(Sockets.ARMOR)) || ("weapon".equals(this.gear) && !stack.is(Sockets.WEAPONS))) {
+			return stack;
+		}
 		int free = Sockets.slots(stack) - Sockets.gems(stack).size();
 		if (free <= 0 || stack.getCount() != 1) {
 			return stack;

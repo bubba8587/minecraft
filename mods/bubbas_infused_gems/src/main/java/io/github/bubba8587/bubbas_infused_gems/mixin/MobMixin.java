@@ -10,12 +10,32 @@ import io.github.bubba8587.bubbas_infused_gems.loot.GemLoot;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.monster.Vex;
+import net.minecraft.world.entity.monster.illager.Pillager;
+import net.minecraft.world.entity.monster.illager.Vindicator;
+import net.minecraft.world.entity.monster.piglin.Piglin;
+import net.minecraft.world.entity.monster.piglin.PiglinBrute;
+import net.minecraft.world.entity.monster.skeleton.AbstractSkeleton;
+import net.minecraft.world.entity.monster.skeleton.WitherSkeleton;
+import net.minecraft.world.entity.monster.zombie.Drowned;
+import net.minecraft.world.entity.monster.zombie.Zombie;
+import net.minecraft.world.entity.monster.zombie.ZombifiedPiglin;
 
-/** Gems on mobs' spawn armor (owner): after vanilla picks the armor, each piece may get gems (data: item_modifier/mob_armor). */
-@Mixin(Mob.class)
+/**
+ * Gems on mobs' spawn gear (owner): after vanilla picks a mob's armor and weapons, each piece may get gems (data:
+ * item_modifier/mob_gear). Every class that chooses spawn equipment is hooked, since overrides set weapons after (or
+ * instead of) Mob's armor; a depth count adds the gems once, when the outermost call returns.
+ */
+@Mixin({Mob.class, Zombie.class, Drowned.class, ZombifiedPiglin.class, AbstractSkeleton.class, WitherSkeleton.class,
+		Piglin.class, PiglinBrute.class, Pillager.class, Vindicator.class, Vex.class})
 abstract class MobMixin {
-	@Inject(method = "populateDefaultEquipmentSlots", at = @At("TAIL"))
-	private void bubbas_infused_gems$gemSpawnArmor(RandomSource random, DifficultyInstance difficulty, CallbackInfo ci) {
-		GemLoot.gemSpawnArmor((Mob) (Object) this);
+	@Inject(method = "populateDefaultEquipmentSlots", at = @At("HEAD"))
+	private void bubbas_infused_gems$enterSpawnGear(RandomSource random, DifficultyInstance difficulty, CallbackInfo ci) {
+		GemLoot.enterSpawnGear();
+	}
+
+	@Inject(method = "populateDefaultEquipmentSlots", at = @At("RETURN"))
+	private void bubbas_infused_gems$gemSpawnGear(RandomSource random, DifficultyInstance difficulty, CallbackInfo ci) {
+		GemLoot.leaveSpawnGear((Mob) (Object) this);
 	}
 }

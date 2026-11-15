@@ -566,21 +566,31 @@ def worn_value(key, s):
 # Loot (owner: gems of every type and gemmed armor are findable loot, in chests and worn by mobs; rare and mostly weak,
 # better in harder places). One table: the loot levels, the places, the mob gear. A found gem is made as if brewed and
 # enchanted: an Infusion level and a tier drawn from its level's lists (a repeat is a weight), then the normal tier odds.
-# Craftable gems from loot never use Infusion VI (nether star), so the perfect craftable gem stays crafted only; a
-# found-only gem has no other source, so ominous vaults can give a perfect one.
+# Only ominous vaults use Infusion VI (nether star) (owner): there it always makes a PERFECT gem (Infusion VI, tier 3, full
+# strength, any effect, craftable ones included) that normally comes with a drawback; PERFECT_CLEAN_CHANCE of them are
+# clean. Every other level never gives a craftable gem Infusion VI, so a clean perfect craftable gem is otherwise crafted.
 # level: (description, base gems (repeats weight them), tiers (repeats weight them), potion variant ("normal" = the
-#         weakest; "any" = any of the effect's variants), armor materials for gemmed gear, gems per gemmed piece (min, max))
+#         weakest; "any" = any of the effect's variants), armor materials for gemmed gear, gems per gemmed piece (min, max),
+#         weapons for gemmed gear (owner: weapons too, where they fit the place))
 LOOT = {
 	"common":  ("Common loot (dungeons, mineshafts, temples, shipwrecks, ruins, fishing treasure, hero gifts, most mobs)",
-		["amethyst", "amethyst", "quartz"], [1], "normal", ["leather", "copper", "golden", "chainmail"], (1, 1)),
+		["amethyst", "amethyst", "quartz"], [1], "normal", ["leather", "copper", "golden", "chainmail"], (1, 1),
+		["stone_sword", "copper_sword", "stone_axe", "bow"]),
 	"rare":    ("Rare loot (strongholds, buried treasure, outposts, mansions, nether fortresses, piglins)",
-		["amethyst", "quartz", "quartz", "ender_pearl"], [1, 1, 2], "normal", ["chainmail", "golden", "iron"], (1, 1)),
+		["amethyst", "quartz", "quartz", "ender_pearl"], [1, 1, 2], "normal", ["chainmail", "golden", "iron"], (1, 1),
+		["iron_sword", "iron_axe", "golden_sword", "bow", "crossbow"]),
 	"hard":    ("Hard places (ancient cities, bastions, end cities, trial vaults, elder guardians, trial chamber mobs)",
-		["quartz", "ender_pearl", "ender_pearl", "diamond"], [1, 2, 2], "any", ["iron", "diamond"], (1, 2)),
+		["quartz", "ender_pearl", "ender_pearl", "diamond"], [1, 2, 2], "any", ["iron", "diamond"], (1, 2),
+		["iron_sword", "diamond_sword", "diamond_axe", "bow", "crossbow", "trident"]),
 	"ominous": ("Ominous vaults in trial chambers",
-		["ender_pearl", "diamond", "diamond", "prismarine", "nether_star"], [2, 2, 3], "any", ["diamond"], (1, 3)),
+		["ender_pearl", "diamond", "diamond", "prismarine", "nether_star"], [2, 2, 3], "any", ["diamond"], (1, 3),
+		["diamond_sword", "diamond_axe", "bow", "crossbow", "trident", "mace"]),
 }
-GEAR_SHARE = 0.25  # of a level's rolls, the share that is a gemmed armor piece instead of a gem
+PERFECT_LOOT = {"ominous"}       # levels whose Infusion VI gems are perfect gems (owner)
+PERFECT_CLEAN_CHANCE = 1 / 20    # owner: 1 in 20 perfect loot gems has no drawback
+ARMOR_SHARE = 0.20               # of a level's rolls, the share that is a gemmed armor piece
+WEAPON_SHARE = 0.15              # ... and a gemmed weapon (the rest are loose gems)
+WEAPON_HARMFUL_SHARE = 0.75      # owner: weapon gems are mostly harmful effects (they hit you); any gem is allowed
 FOUND_SHARE = 1 / 3  # where a place has found-only gems (and general ones too): the share of its rolls that is one of them
 HERO_GIFTS = ["armorer", "baby", "butcher", "cartographer", "cleric", "farmer", "fisherman", "fletcher", "leatherworker",
 	"librarian", "mason", "shepherd", "toolsmith", "unemployed", "weaponsmith"]
@@ -615,14 +625,16 @@ LOOT_PLACES = [
 	("entities/elder_guardian", "entity", "hard", 0.20, ["mining_fatigue"], False),
 	("chests/trial_chambers/reward_ominous", "chest", "ominous", 0.10, FOUND_ONLY_KEYS, True),
 ]
-# Mob gear: each armor piece a mob spawns with gets gems with this chance (vanilla drop chances; the gems stay in the
-# piece). (who, entity predicate or None for every other mob, level, chance per piece)
+# Mob gear: each armor piece and weapon a mob spawns with gets gems with this chance (vanilla drop chances; the gems stay
+# in the piece). Owner: gems on mobs widen the difficulty curve of harder areas. (who, entity predicate or None for every
+# other mob, level, chance per piece)
 MOB_GEMS = [
 	("Piglins", {"minecraft:entity_type": "minecraft:piglin"}, "rare", 0.06),
-	("Every other mob that spawns in armor (zombies, husks, drowned, skeletons, strays, bogged...)", None, "common", 0.04),
+	("Every other mob that spawns with armor or a weapon (zombies, husks, drowned with tridents, skeletons and strays with bows, pillagers, vindicators...)", None, "common", 0.04),
 ]
-# Mobs from ominous trial spawners wear vanilla's trial chamber equipment table (they never drop it, vanilla).
-TRIAL_EQUIPMENT = ("equipment/trial_chamber", "hard", 0.10)
+# Mobs from ominous trial spawners wear vanilla's trial chamber equipment tables, armor and weapon (they never drop it,
+# vanilla). The melee and ranged tables nest the armor table, so the modifier on them reaches every piece.
+TRIAL_EQUIPMENT = (["equipment/trial_chamber_melee", "equipment/trial_chamber_ranged"], "hard", 0.10)
 
 # Effects that are truly not gems (every 26.3 effect is either a gem, drawback-only, or here).
 NOT_GEMS = {
@@ -1305,11 +1317,12 @@ def document(notes):
 			+ (" (or a drawback-only roll at tier 1)" if 1 in tiers else "")]
 			for name, bases, tiers, *_ in LOOT.values()]))
 	S.append(("h2", "Loot: where gems are found (one table, `LOOT_PLACES`)"))
-	S.append(("p", "Every place below gets **one extra roll** with the given chance per chest (fishing: per treasure catch; hero gift: per gift; elder guardian: per kill by a player). The roll adds a finished gem of any craftable effect, or (a quarter of the time) a gemmed armor piece of the level's materials, or, where found-only gems are listed, one of them (a third of the time). Vanilla's tables are never replaced; the extra roll is a data file of the mod (`loot_table/inject/...`), so a datapack can change or empty any of it. Rare and mostly weak, better in harder places (owner). Craftable gems from loot never reach Infusion VI, so a perfect craftable gem is always crafted; found-only gems can be perfect only from ominous vaults."))
-	S.append(("table", ["Level", "Infusion (weighted)", "Tiers (weighted)", "Potion variant", "Gemmed gear", "Gems per piece", "Gem quality (craftable)"],
+	S.append(("p", f"Every place below gets **one extra roll** with the given chance per chest (fishing: per treasure catch; hero gift: per gift; elder guardian: per kill by a player). The roll adds a finished gem of any craftable effect, or a gemmed armor piece of the level's materials ({ARMOR_SHARE:.0%}), or a gemmed weapon ({WEAPON_SHARE:.0%}), or, where found-only gems are listed, one of them (a third of the time). Vanilla's tables are never replaced; the extra roll is a data file of the mod (`loot_table/inject/...`), so a datapack can change or empty any of it. Rare and mostly weak, better in harder places (owner). Only ominous vaults use Infusion VI, and there it is always a perfect gem (tier 3, full strength) of any effect, which comes with a drawback except {PERFECT_CLEAN_CHANCE:.0%} of the time (owner); elsewhere loot never gives a craftable gem Infusion VI."))
+	S.append(("table", ["Level", "Infusion (weighted)", "Tiers (weighted)", "Potion variant", "Gemmed armor", "Gemmed weapons", "Gems per piece", "Gem quality"],
 		[[level, ", ".join(INFUSION[b] for b in bases), ", ".join(map(str, tiers)), "weakest" if variant == "normal" else "any",
-			", ".join(mats), f"{lo}" if lo == hi else f"{lo}-{hi}", f"{loot_quality(level, True)[0]:.2f} - {loot_quality(level, True)[1]:.2f}"]
-			for level, (_, bases, tiers, variant, mats, (lo, hi)) in LOOT.items()]))
+			", ".join(mats), ", ".join(w.replace("_", " ") for w in weapons), f"{lo}" if lo == hi else f"{lo}-{hi}",
+			f"{loot_quality(level, True)[0]:.2f} - {loot_quality(level, True)[1]:.2f}" + (" (VI: perfect, with a drawback 19 in 20)" if level in PERFECT_LOOT else "")]
+			for level, (_, bases, tiers, variant, mats, (lo, hi), weapons) in LOOT.items()]))
 	places = {}
 	for t, ctx, level, chance, fnd, general in LOOT_PLACES:
 		label = "Hero of the Village gifts (every profession)" if t.startswith("gameplay/hero_of_the_village/") else t
@@ -1317,10 +1330,11 @@ def document(notes):
 	S.append(("table", ["Where", "Level", "Chance", "Found-only gems there"],
 		[[w, lv, f"{c:.0%}", ", ".join(E[k]["name"] for k in f) + ("" if g else " (only)") if f else "-"] for w, (lv, c, f, g) in places.items()]))
 	S.append(("h3", "Gems on mobs"))
-	S.append(("p", "Each armor piece a mob spawns with gets gems with the chance below; the mob gets the gems' effects like a player (undead follow the undead rules). The piece drops with vanilla's equipment drop chance and keeps its gems. Mobs from ominous trial spawners wear vanilla's trial equipment table, which gets gems too; they never drop their gear (vanilla)."))
-	S.append(("table", ["Who", "Level", "Chance per armor piece", "Gems"],
+	S.append(("p", "Each armor piece and weapon a mob spawns with gets gems with the chance below; the mob gets the gems' effects like a player (undead follow the undead rules). The piece drops with vanilla's equipment drop chance and keeps its gems. Mobs from ominous trial spawners wear vanilla's trial equipment table, which gets gems too; they never drop their gear (vanilla)."))
+	S.append(("table", ["Who", "Level", "Chance per armor piece or weapon", "Gems"],
 		[[who, level, f"{chance:.0%}", str(gem_count(level))] for who, _, level, chance in MOB_GEMS]
 		+ [["Ominous trial spawner mobs", TRIAL_EQUIPMENT[1], f"{TRIAL_EQUIPMENT[2]:.0%}", "1-2" if gem_count(TRIAL_EQUIPMENT[1]) != 1 else "1"]]))
+	S.append(("p", f"Weapons (and gemmed weapons in chests) roll their gems from the harmful effects {WEAPON_HARMFUL_SHARE:.0%} of the time and from any gem otherwise (owner: they hit the player)."))
 
 	S.append(("h2", "Roll tables"))
 	S.append(("p", "One roll table per gem, whatever slot it later goes into. **Other** (tier 2 weak, tier 3 weak or medium): any gem effect of the main effect's kind except itself and the main-effect-only ones ("
@@ -1661,8 +1675,9 @@ def export_data():
 		"loot": {k: {"name": v[0], "bases": v[1], "tiers": v[2], "variant": v[3]} for k, v in LOOT.items()},
 		"loot_inject": {f"minecraft:{t}": f"{MOD_ID}:inject/{t}" for t, *_ in LOOT_PLACES},
 		"loot_chance": {f"minecraft:{t}": c for t, _, _, c, *_ in LOOT_PLACES},
-		"loot_equipment": {f"minecraft:{TRIAL_EQUIPMENT[0]}": f"{MOD_ID}:trial_chamber_equipment"},
-		"mob_armor_modifier": f"{MOD_ID}:mob_armor",
+		"loot_equipment": {f"minecraft:{t}": f"{MOD_ID}:trial_chamber_gear" for t in TRIAL_EQUIPMENT[0]},
+		"mob_gear_modifier": f"{MOD_ID}:mob_gear",
+		"loot_perfect_clean_chance": PERFECT_CLEAN_CHANCE, "loot_weapon_harmful_share": WEAPON_HARMFUL_SHARE,
 		"effects": effects,
 		"inverse_pairs": [[a, b] for a, b, _ in INVERSE_PAIRS],
 		"rules": RULES,
@@ -1711,15 +1726,20 @@ ARMOR_PIECES = ["helmet", "chestplate", "leggings", "boots"]
 INFUSION_LEVEL = {b: i + 1 for i, (b, _, _, _) in enumerate(BASE_GEMS)}
 
 def loot_infusions(level, craftable):
-	"""Infusion levels a level's gems are drawn from (repeats weight them); craftable gems never Infusion VI."""
-	return [INFUSION_LEVEL[b] for b in LOOT[level][1] if not (craftable and b == BEST_BASE)]
+	"""Infusion levels a level's gems are drawn from (repeats weight them); craftable gems get Infusion VI only where it
+	makes a perfect gem (PERFECT_LOOT)."""
+	return [INFUSION_LEVEL[b] for b in LOOT[level][1] if not (craftable and b == BEST_BASE and level not in PERFECT_LOOT)]
 
-def gem_roll(level, effects=None):
+def gem_roll(level, effects=None, weapon=False):
 	"""The roll fields of the mod's loot functions: no effects = any craftable gem effect."""
 	d = {}
 	if effects:
 		d["effects"] = [effect_id(k) for k in effects]
 	d.update({"infusion": loot_infusions(level, not effects), "tier": LOOT[level][2], "variant": LOOT[level][3]})
+	if weapon:
+		d["prefer_harmful"] = WEAPON_HARMFUL_SHARE
+	if level in PERFECT_LOOT:
+		d["perfect"] = {"infusion": INFUSION_LEVEL[BEST_BASE], "clean_chance": PERFECT_CLEAN_CHANCE}
 	return d
 
 def gem_count(level):
@@ -1729,13 +1749,22 @@ def gem_count(level):
 def level_pieces(level):
 	return [f"minecraft:{m}_{p}" for m in LOOT[level][4] for p in ARMOR_PIECES]
 
+def level_weapons(level):
+	return [f"minecraft:{w}" for w in LOOT[level][6]]
+
 def level_table(level):
-	pieces = level_pieces(level)
-	gem_weight = round(len(pieces) * (1 - GEAR_SHARE) / GEAR_SHARE)
-	entries = [{"type": "minecraft:item", "name": f"{MOD_ID}:gem", "weight": gem_weight,
+	"""Weights out of 100: loose gems, then the armor pieces and the weapons sharing their shares (whole numbers)."""
+	pieces, weapons = level_pieces(level), level_weapons(level)
+	total = len(pieces) * len(weapons) * 20
+	armor_w = round(total * ARMOR_SHARE / len(pieces))
+	weapon_w = round(total * WEAPON_SHARE / len(weapons))
+	gem_w = total - armor_w * len(pieces) - weapon_w * len(weapons)
+	entries = [{"type": "minecraft:item", "name": f"{MOD_ID}:gem", "weight": gem_w,
 		"modifier": {"type": f"{MOD_ID}:random_gem", **gem_roll(level)}}]
-	entries += [{"type": "minecraft:item", "name": item, "weight": 1,
+	entries += [{"type": "minecraft:item", "name": item, "weight": armor_w,
 		"modifier": {"type": f"{MOD_ID}:socket_random_gems", "count": gem_count(level), **gem_roll(level)}} for item in pieces]
+	entries += [{"type": "minecraft:item", "name": item, "weight": weapon_w,
+		"modifier": {"type": f"{MOD_ID}:socket_random_gems", "count": gem_count(level), **gem_roll(level, weapon=True)}} for item in weapons]
 	return {"type": "minecraft:empty", "pools": [{"rolls": 1, "entries": entries}]}
 
 def inject_table(table, ctx, level, chance, found, general):
@@ -1751,7 +1780,17 @@ def inject_table(table, ctx, level, chance, found, general):
 		condition = {"type": "minecraft:all_of", "terms": [{"type": "minecraft:killed_by_player"}, condition]}
 	return {"type": f"minecraft:{ctx}", "pools": [{"rolls": 1, "condition": condition, "entries": entries}]}
 
-def mob_armor_modifier():
+def gear_functions(level, chance, who_cond=None):
+	"""Socket functions for one mob group: armor pieces, then weapons (mostly harmful gems), each piece by its own chance."""
+	out = []
+	for gear in ("armor", "weapon"):
+		terms = ([who_cond] if who_cond else []) + [{"type": "minecraft:random_chance", "chance": chance}]
+		out.append({"type": f"{MOD_ID}:socket_random_gems",
+			"condition": terms[0] if len(terms) == 1 else {"type": "minecraft:all_of", "terms": terms},
+			"gear": gear, "count": gem_count(level), **gem_roll(level, weapon=gear == "weapon")})
+	return out
+
+def mob_gear_modifier():
 	functions = []
 	others = [m[1] for m in MOB_GEMS if m[1]]
 	for who, predicate, level, chance in MOB_GEMS:
@@ -1760,26 +1799,25 @@ def mob_armor_modifier():
 		else:
 			who_cond = {"type": "minecraft:inverted", "term": {"type": "minecraft:any_of", "terms": [
 				{"type": "minecraft:entity_properties", "entity": "this", "predicate": p} for p in others]}}
-		functions.append({"type": f"{MOD_ID}:socket_random_gems",
-			"condition": {"type": "minecraft:all_of", "terms": [who_cond, {"type": "minecraft:random_chance", "chance": chance}]},
-			"count": gem_count(level), **gem_roll(level)})
+		functions += gear_functions(level, chance, who_cond)
 	return {"type": "minecraft:sequence", "functions": functions}
 
 def loot_files():
 	files = {LOOT_GEMS_DIR / f"{level}.json": level_table(level) for level in LOOT}
 	for place in LOOT_PLACES:
 		files[LOOT_INJECT_DIR / f"{place[0]}.json"] = inject_table(*place)
-	files[MODIFIER_DIR / "mob_armor.json"] = mob_armor_modifier()
-	t, level, chance = TRIAL_EQUIPMENT
-	files[MODIFIER_DIR / "trial_chamber_equipment.json"] = {"type": f"{MOD_ID}:socket_random_gems",
-		"condition": {"type": "minecraft:random_chance", "chance": chance}, "count": gem_count(level), **gem_roll(level)}
+	files[MODIFIER_DIR / "mob_gear.json"] = mob_gear_modifier()
+	tables, level, chance = TRIAL_EQUIPMENT
+	files[MODIFIER_DIR / "trial_chamber_gear.json"] = {"type": "minecraft:sequence", "functions": gear_functions(level, chance)}
 	return files
 
 def loot_quality(level, craftable):
 	"""(weakest, strongest) gem quality a level's gems can have (a drawback-only roll aside)."""
-	_, bases, tiers, variant, _, _ = LOOT[level]
+	_, bases, tiers, variant, _, _, _ = LOOT[level]
 	grades = [GRADES[g] for t in set(tiers) for _, g, _, _ in TIERS[t] if g]
-	bs = [BASE[b] for b in bases if not (craftable and b == BEST_BASE)]
+	if level in PERFECT_LOOT and BEST_BASE in bases:
+		grades.append(1.0)  # an Infusion VI gem here is perfect
+	bs = [BASE[b] for b in bases if not (craftable and b == BEST_BASE and level not in PERFECT_LOOT)]
 	if craftable:
 		vmax = max(max(variant_factors(E[k]["variants"]).values()) for k in GEM_EFFECTS if E[k]["source"][0] != "found") if variant == "any" else \
 			max(variant_factors(E[k]["variants"]).get("normal", 1.0) for k in GEM_EFFECTS if E[k]["source"][0] != "found")
@@ -1808,10 +1846,11 @@ def check_loot(errors, notes):
 		for k in fnd:
 			if k not in found:
 				errors.append(f"loot: {t} lists {k}, which is not a found-only gem")
-	if VANILLA_DATA.exists() and not (VANILLA_DATA / "loot_table" / f"{TRIAL_EQUIPMENT[0]}.json").exists():
-		errors.append(f"loot: vanilla 26.3 has no loot table {TRIAL_EQUIPMENT[0]}")
+	for t in TRIAL_EQUIPMENT[0]:
+		if VANILLA_DATA.exists() and not (VANILLA_DATA / "loot_table" / f"{t}.json").exists():
+			errors.append(f"loot: vanilla 26.3 has no loot table {t}")
 	for level in LOOT:
-		for item in level_pieces(level):
+		for item in level_pieces(level) + level_weapons(level):
 			if not re.search(rf"Item {item.split(':')[1].upper()} = ", (SRC / "world/item/Items.java").read_text(encoding="utf-8")) and SRC.exists():
 				errors.append(f"loot: no item {item}")
 	order = list(LOOT)
@@ -1819,12 +1858,18 @@ def check_loot(errors, notes):
 		if not loot_quality(b, True)[1] > loot_quality(a, True)[1]:
 			errors.append(f"loot: {b} gems are not better than {a} gems")
 	for level in LOOT:
-		if loot_quality(level, True)[1] >= 1 - 1e-9:
-			errors.append(f"loot: a craftable gem from {level} loot is perfect; perfect craftable gems are crafted only")
+		perfect = loot_quality(level, True)[1] >= 1 - 1e-9
+		if perfect != (level in PERFECT_LOOT):
+			errors.append(f"loot: {level} loot {'gives' if perfect else 'never gives'} perfect craftable gems; only {sorted(PERFECT_LOOT)} should (owner)")
+		if level not in PERFECT_LOOT and BEST_BASE in [b for b in LOOT[level][1]] and INFUSION_LEVEL[BEST_BASE] in loot_infusions(level, True):
+			errors.append(f"loot: {level} gives craftable gems Infusion VI")
+	if not 0 < PERFECT_CLEAN_CHANCE <= 0.1 or not 0 <= WEAPON_HARMFUL_SHARE <= 1 or ARMOR_SHARE + WEAPON_SHARE >= 0.5:
+		errors.append("loot: perfect clean chance, weapon harmful share or gear shares out of range")
 	if any(not 0 < m[3] <= 0.1 for m in MOB_GEMS) or not 0 < TRIAL_EQUIPMENT[2] <= 0.25:
 		errors.append("loot: mob gear chances out of range")
 	notes.append(f"loot: {len(LOOT_PLACES)} vanilla tables get one extra roll (chance {min(p[3] for p in LOOT_PLACES):.0%}-{max(p[3] for p in LOOT_PLACES):.0%}); "
-		"each level's best gem beats the level below; no craftable gem from loot is perfect (Infusion VI is never used for them); "
+		"each level's best gem beats the level below; only ominous vaults give perfect gems (any effect, Infusion VI, tier 3), "
+		f"with a drawback except {PERFECT_CLEAN_CHANCE:.0%} of the time; nowhere else gives a craftable gem Infusion VI; "
 		"every found-only gem is listed at exactly the levels its source names; every table and item exists in 26.3")
 
 def check_export(errors):

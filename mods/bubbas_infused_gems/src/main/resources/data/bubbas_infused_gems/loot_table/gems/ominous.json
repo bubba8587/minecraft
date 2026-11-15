@@ -7,27 +7,32 @@
 				{
 					"type": "minecraft:item",
 					"name": "bubbas_infused_gems:gem",
-					"weight": 12,
+					"weight": 312,
 					"modifier": {
 						"type": "bubbas_infused_gems:random_gem",
 						"infusion": [
 							3,
 							4,
 							4,
-							5
+							5,
+							6
 						],
 						"tier": [
 							2,
 							2,
 							3
 						],
-						"variant": "any"
+						"variant": "any",
+						"perfect": {
+							"infusion": 6,
+							"clean_chance": 0.05
+						}
 					}
 				},
 				{
 					"type": "minecraft:item",
 					"name": "minecraft:diamond_helmet",
-					"weight": 1,
+					"weight": 24,
 					"modifier": {
 						"type": "bubbas_infused_gems:socket_random_gems",
 						"count": {
@@ -39,20 +44,25 @@
 							3,
 							4,
 							4,
-							5
+							5,
+							6
 						],
 						"tier": [
 							2,
 							2,
 							3
 						],
-						"variant": "any"
+						"variant": "any",
+						"perfect": {
+							"infusion": 6,
+							"clean_chance": 0.05
+						}
 					}
 				},
 				{
 					"type": "minecraft:item",
 					"name": "minecraft:diamond_chestplate",
-					"weight": 1,
+					"weight": 24,
 					"modifier": {
 						"type": "bubbas_infused_gems:socket_random_gems",
 						"count": {
@@ -64,20 +74,25 @@
 							3,
 							4,
 							4,
-							5
+							5,
+							6
 						],
 						"tier": [
 							2,
 							2,
 							3
 						],
-						"variant": "any"
+						"variant": "any",
+						"perfect": {
+							"infusion": 6,
+							"clean_chance": 0.05
+						}
 					}
 				},
 				{
 					"type": "minecraft:item",
 					"name": "minecraft:diamond_leggings",
-					"weight": 1,
+					"weight": 24,
 					"modifier": {
 						"type": "bubbas_infused_gems:socket_random_gems",
 						"count": {
@@ -89,20 +104,25 @@
 							3,
 							4,
 							4,
-							5
+							5,
+							6
 						],
 						"tier": [
 							2,
 							2,
 							3
 						],
-						"variant": "any"
+						"variant": "any",
+						"perfect": {
+							"infusion": 6,
+							"clean_chance": 0.05
+						}
 					}
 				},
 				{
 					"type": "minecraft:item",
 					"name": "minecraft:diamond_boots",
-					"weight": 1,
+					"weight": 24,
 					"modifier": {
 						"type": "bubbas_infused_gems:socket_random_gems",
 						"count": {
@@ -114,14 +134,205 @@
 							3,
 							4,
 							4,
-							5
+							5,
+							6
 						],
 						"tier": [
 							2,
 							2,
 							3
 						],
-						"variant": "any"
+						"variant": "any",
+						"perfect": {
+							"infusion": 6,
+							"clean_chance": 0.05
+						}
+					}
+				},
+				{
+					"type": "minecraft:item",
+					"name": "minecraft:diamond_sword",
+					"weight": 12,
+					"modifier": {
+						"type": "bubbas_infused_gems:socket_random_gems",
+						"count": {
+							"type": "minecraft:uniform",
+							"min": 1,
+							"max": 3
+						},
+						"infusion": [
+							3,
+							4,
+							4,
+							5,
+							6
+						],
+						"tier": [
+							2,
+							2,
+							3
+						],
+						"variant": "any",
+						"prefer_harmful": 0.75,
+						"perfect": {
+							"infusion": 6,
+							"clean_chance": 0.05
+						}
+					}
+				},
+				{
+					"type": "minecraft:item",
+					"name": "minecraft:diamond_axe",
+					"weight": 12,
+					"modifier": {
+						"type": "bubbas_infused_gems:socket_random_gems",
+						"count": {
+							"type": "minecraft:uniform",
+							"min": 1,
+							"max": 3
+						},
+						"infusion": [
+							3,
+							4,
+							4,
+							5,
+							6
+						],
+						"tier": [
+							2,
+							2,
+							3
+						],
+						"variant": "any",
+						"prefer_harmful": 0.75,
+						"perfect": {
+							"infusion": 6,
+							"clean_chance": 0.05
+						}
+					}
+				},
+				{
+					"type": "minecraft:item",
+					"name": "minecraft:bow",
+					"weight": 12,
+					"modifier": {
+						"type": "bubbas_infused_gems:socket_random_gems",
+						"count": {
+							"type": "minecraft:uniform",
+							"min": 1,
+							"max": 3
+						},
+						"infusion": [
+							3,
+							4,
+							4,
+							5,
+							6
+						],
+						"tier": [
+							2,
+							2,
+							3
+						],
+						"variant": "any",
+						"prefer_harmful": 0.75,
+						"perfect": {
+							"infusion": 6,
+							"clean_chance": 0.05
+						}
+					}
+				},
+				{
+					"type": "minecraft:item",
+					"name": "minecraft:crossbow",
+					"weight": 12,
+					"modifier": {
+						"type": "bubbas_infused_gems:socket_random_gems",
+						"count": {
+							"type": "minecraft:uniform",
+							"min": 1,
+							"max": 3
+						},
+						"infusion": [
+							3,
+							4,
+							4,
+							5,
+							6
+						],
+						"tier": [
+							2,
+							2,
+							3
+						],
+						"variant": "any",
+						"prefer_harmful": 0.75,
+						"perfect": {
+							"infusion": 6,
+							"clean_chance": 0.05
+						}
+					}
+				},
+				{
+					"type": "minecraft:item",
+					"name": "minecraft:trident",
+					"weight": 12,
+					"modifier": {
+						"type": "bubbas_infused_gems:socket_random_gems",
+						"count": {
+							"type": "minecraft:uniform",
+							"min": 1,
+							"max": 3
+						},
+						"infusion": [
+							3,
+							4,
+							4,
+							5,
+							6
+						],
+						"tier": [
+							2,
+							2,
+							3
+						],
+						"variant": "any",
+						"prefer_harmful": 0.75,
+						"perfect": {
+							"infusion": 6,
+							"clean_chance": 0.05
+						}
+					}
+				},
+				{
+					"type": "minecraft:item",
+					"name": "minecraft:mace",
+					"weight": 12,
+					"modifier": {
+						"type": "bubbas_infused_gems:socket_random_gems",
+						"count": {
+							"type": "minecraft:uniform",
+							"min": 1,
+							"max": 3
+						},
+						"infusion": [
+							3,
+							4,
+							4,
+							5,
+							6
+						],
+						"tier": [
+							2,
+							2,
+							3
+						],
+						"variant": "any",
+						"prefer_harmful": 0.75,
+						"perfect": {
+							"infusion": 6,
+							"clean_chance": 0.05
+						}
 					}
 				}
 			]

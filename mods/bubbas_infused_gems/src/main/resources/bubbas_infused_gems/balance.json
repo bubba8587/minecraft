@@ -338,9 +338,12 @@
 		"minecraft:chests/trial_chambers/reward_ominous": 0.1
 	},
 	"loot_equipment": {
-		"minecraft:equipment/trial_chamber": "bubbas_infused_gems:trial_chamber_equipment"
+		"minecraft:equipment/trial_chamber_melee": "bubbas_infused_gems:trial_chamber_gear",
+		"minecraft:equipment/trial_chamber_ranged": "bubbas_infused_gems:trial_chamber_gear"
 	},
-	"mob_armor_modifier": "bubbas_infused_gems:mob_armor",
+	"mob_gear_modifier": "bubbas_infused_gems:mob_gear",
+	"loot_perfect_clean_chance": 0.05,
+	"loot_weapon_harmful_share": 0.75,
 	"effects": {
 		"speed": {
 			"name": "Speed",

@@ -33,12 +33,14 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 /**
  * Gems as loot (owner). Additive only: vanilla tables are never replaced. Each listed vanilla table (balance.json
  * {@code loot_inject}) gets one pool that rolls the mod's own table {@code bubbas_infused_gems:inject/<vanilla path>}, and
- * the trial chamber equipment table gets the item modifier {@code bubbas_infused_gems:trial_chamber_equipment}; mobs'
- * spawn armor goes through {@code bubbas_infused_gems:mob_armor}. All three are data files, so a datapack can change or
+ * the trial chamber melee and ranged equipment tables get the item modifier {@code bubbas_infused_gems:trial_chamber_gear};
+ * mobs' spawn armor and weapons go through {@code bubbas_infused_gems:mob_gear}. All three are data files, so a datapack can change or
  * empty any of them. A table replaced through Fabric's REPLACE event is left alone.
  */
 public final class GemLoot {
-	public static final ResourceKey<LootItemFunction> MOB_ARMOR = ResourceKey.create(Registries.ITEM_MODIFIER, BubbasInfusedGems.id("mob_armor"));
+	private static ResourceKey<LootItemFunction> mobGear;
+	/** Spawn equipment calls nest (an override calls super): gems are added once, when the outermost call returns. */
+	private static final ThreadLocal<int[]> SPAWN_DEPTH = ThreadLocal.withInitial(() -> new int[1]);
 	private static final Map<Identifier, ResourceKey<LootTable>> INJECT = new LinkedHashMap<>();
 	private static final Map<Identifier, ResourceKey<LootItemFunction>> EQUIPMENT = new LinkedHashMap<>();
 
@@ -53,6 +55,7 @@ public final class GemLoot {
 		Registry.register(BuiltInRegistries.LOOT_FUNCTION_TYPE, BubbasInfusedGems.id("random_gem"), RandomGemFunction.MAP_CODEC);
 		Registry.register(BuiltInRegistries.LOOT_FUNCTION_TYPE, BubbasInfusedGems.id("socket_random_gems"), SocketRandomGemsFunction.MAP_CODEC);
 		JsonObject raw = Balance.get().raw;
+		mobGear = ResourceKey.create(Registries.ITEM_MODIFIER, Identifier.parse(raw.get("mob_gear_modifier").getAsString()));
 		raw.getAsJsonObject("loot_inject").entrySet().forEach(e -> INJECT.put(Identifier.parse(e.getKey()),
 				ResourceKey.create(Registries.LOOT_TABLE, Identifier.parse(e.getValue().getAsString()))));
 		raw.getAsJsonObject("loot_equipment").entrySet().forEach(e -> EQUIPMENT.put(Identifier.parse(e.getKey()),
@@ -74,19 +77,32 @@ public final class GemLoot {
 		});
 	}
 
-	/** After a mob's spawn armor is chosen: each piece may get gems (item modifier {@code mob_armor}). */
-	public static void gemSpawnArmor(Mob mob) {
+	public static void enterSpawnGear() {
+		SPAWN_DEPTH.get()[0]++;
+	}
+
+	/** Leaving a spawn equipment method: at the outermost one, the mob's gear may get gems. */
+	public static void leaveSpawnGear(Mob mob) {
+		int[] depth = SPAWN_DEPTH.get();
+		depth[0] = Math.max(0, depth[0] - 1);
+		if (depth[0] == 0) {
+			gemSpawnGear(mob);
+		}
+	}
+
+	/** After a mob's spawn armor and weapons are chosen: each piece may get gems (item modifier {@code mob_gear}). */
+	public static void gemSpawnGear(Mob mob) {
 		if (!(mob.level() instanceof ServerLevel level)) {
 			return;
 		}
 		Optional<? extends Holder<LootItemFunction>> modifier = level.getServer().reloadableRegistries().lookup()
-				.lookup(Registries.ITEM_MODIFIER).flatMap(r -> r.get(MOB_ARMOR));
+				.lookup(Registries.ITEM_MODIFIER).flatMap(r -> r.get(mobGear));
 		if (modifier.isEmpty()) {
 			return;
 		}
 		LootContext context = null;
 		for (EquipmentSlot slot : EquipmentSlot.values()) {
-			if (slot.getType() != EquipmentSlot.Type.HUMANOID_ARMOR) {
+			if (slot.getType() != EquipmentSlot.Type.HUMANOID_ARMOR && slot.getType() != EquipmentSlot.Type.HAND) {
 				continue;
 			}
 			ItemStack stack = mob.getItemBySlot(slot);
