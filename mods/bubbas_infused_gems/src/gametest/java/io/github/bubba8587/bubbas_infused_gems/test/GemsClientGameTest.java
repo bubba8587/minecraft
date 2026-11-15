@@ -36,7 +36,8 @@ import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContex
  * Looks at the gems (screenshots in build/run/clientGameTest/screenshots/): several colors in the inventory with their
  * tooltips (inventory), a big view of finished and Infused Gems in many colors (colors), the enchanting table with an Infused
  * Gem and its hint (enchanting), socketing at the smithing table (smithing), and a player in gemmed armor with /gems
- * (worn), a pig hit by a Glowing + Poison sword and /gems for Turtle Master gear (hits). Run a part with -PclientTests=inventory,... (ClientTests).
+ * (worn), a pig hit by a Glowing + Poison sword and /gems for Turtle Master gear (hits), a zombie spawned in gemmed armor
+ * (Glowing, Speed) and the loot of a few hard-place rolls (mobs). Run a part with -PclientTests=inventory,... (ClientTests).
  */
 @SuppressWarnings("UnstableApiUsage")
 public class GemsClientGameTest implements FabricClientGameTest {
@@ -53,7 +54,7 @@ public class GemsClientGameTest implements FabricClientGameTest {
 
 	@Override
 	public void runTest(ClientGameTestContext context) {
-		if (!List.of("inventory", "colors", "enchanting", "smithing", "worn", "hits").stream().anyMatch(ClientTests::run)) {
+		if (!List.of("inventory", "colors", "enchanting", "smithing", "worn", "hits", "mobs").stream().anyMatch(ClientTests::run)) {
 			return;
 		}
 		try (TestSingleplayerContext sp = context.worldBuilder()
@@ -83,6 +84,9 @@ public class GemsClientGameTest implements FabricClientGameTest {
 			}
 			if (ClientTests.run("hits")) {
 				hits(context, server);
+			}
+			if (ClientTests.run("mobs")) {
+				mobs(context, server);
 			}
 		}
 	}
@@ -358,5 +362,69 @@ public class GemsClientGameTest implements FabricClientGameTest {
 		context.runOnClient(mc -> mc.player.connection.sendCommand("gems"));
 		context.waitTicks(10);
 		context.takeScreenshot("gems-command-turtle-master-and-weapon");
+	}
+
+	/** A zombie in gemmed iron armor: the Glowing gem outlines it, the armor renders as vanilla; then gem loot in the inventory. */
+	private static void mobs(ClientGameTestContext context, TestServerContext server) {
+		server.runCommand("difficulty easy");
+		server.runCommand("time set noon");
+		BlockPos at = stationPos(server).offset(-2, 0, 3);
+		server.runOnServer(s -> {
+			ServerPlayer p = player(s);
+			for (EquipmentSlot slot : io.github.bubba8587.bubbas_infused_gems.effect.GemTotals.ARMOR) {
+				p.setItemSlot(slot, ItemStack.EMPTY);
+			}
+			p.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
+			p.getInventory().clearContent();
+			net.minecraft.world.entity.monster.zombie.Zombie z = net.minecraft.world.entity.EntityTypes.ZOMBIE.create(p.level(),
+					net.minecraft.world.entity.EntitySpawnReason.COMMAND);
+			z.setPos(at.getX() + 0.5, at.getY(), at.getZ() + 0.5);
+			z.setNoAi(true);
+			z.setPersistenceRequired();
+			z.setYRot(180.0F);
+			z.setYHeadRot(180.0F);
+			z.setYBodyRot(180.0F);
+			z.setItemSlot(EquipmentSlot.HEAD, GemKit.socketed(Items.IRON_HELMET, GemKit.gem("speed", 0.4)));
+			z.setItemSlot(EquipmentSlot.CHEST, GemKit.socketed(Items.IRON_CHESTPLATE, GemKit.gem("glowing", 0.4)));
+			z.setItemSlot(EquipmentSlot.LEGS, new ItemStack(Items.IRON_LEGGINGS));
+			z.setItemSlot(EquipmentSlot.FEET, GemKit.socketed(Items.IRON_BOOTS, GemKit.gem("regeneration", 0.3)));
+			p.level().addFreshEntity(z);
+		});
+		context.waitTicks(40);
+		context.getInput().lookAt(at.above());
+		context.waitTicks(5);
+		context.takeScreenshot("gems-mobs-zombie-gemmed-armor-glowing");
+		// Closer, from the side.
+		server.runOnServer(s -> {
+			ServerPlayer p = player(s);
+			p.teleportTo(at.getX() + 3.5, at.getY(), at.getZ() + 1.5);
+		});
+		context.waitTicks(10);
+		context.getInput().lookAt(at.above());
+		context.waitTicks(5);
+		context.takeScreenshot("gems-mobs-zombie-gemmed-armor-close");
+		// A few hard-place rolls in the hotbar and inventory, one tooltip.
+		server.runOnServer(s -> {
+			ServerPlayer p = player(s);
+			var table = s.reloadableRegistries().getLootTable(net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.LOOT_TABLE,
+					io.github.bubba8587.bubbas_infused_gems.BubbasInfusedGems.id("gems/hard")));
+			var params = new net.minecraft.world.level.storage.loot.LootParams.Builder(p.level())
+					.create(net.minecraft.world.level.storage.loot.parameters.LootContextParamSets.EMPTY);
+			int slot = 0;
+			for (long seed = 1; slot < 18 && seed < 400; seed++) {
+				for (ItemStack st : table.getRandomItems(params, seed)) {
+					if (slot < 18 && (slot < 9 || st.has(io.github.bubba8587.bubbas_infused_gems.registry.ModComponents.SOCKETED_GEMS))) {
+						p.getInventory().setItem(slot++, st);
+					}
+				}
+			}
+		});
+		context.waitTicks(5);
+		context.setScreen(() -> new InventoryScreen(Minecraft.getInstance().player));
+		context.waitTicks(5);
+		hover(context, 9);
+		context.takeScreenshot("gems-mobs-hard-loot-gear-tooltip");
+		context.runOnClient(mc -> mc.player.closeContainer());
+		server.runCommand("difficulty peaceful");
 	}
 }
