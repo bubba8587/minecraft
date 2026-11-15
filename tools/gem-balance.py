@@ -352,7 +352,7 @@ effect("hunger", name="Hunger", potion=None, role="weapon", kind="scaled", level
 	impl="Gem Hunger mob effect: causeFoodExhaustion(0.015 x potency) per tick (players only; mobs have no food). As a drawback: the same, permanent while worn.",
 	src="HungerMobEffect, Consumables.PUFFERFISH / ROTTEN_FLESH")
 for key, name, src_item, ticks, is_hit, how, src in [
-		("glowing", "Glowing", "spectral arrow", 200, True, "Spectral arrow hit: Glowing for 10 s", "SpectralArrow"),
+		("glowing", "Glowing", "glowstone dust", 200, True, "Spectral arrow hit: Glowing for 10 s", "SpectralArrow"),
 		("levitation", "Levitation", "shulker shell", 200, True, "Shulker bullet hit: Levitation I for 10 s", "ShulkerBullet"),
 		("blindness", "Blindness", "suspicious stew of azure bluet or open eyeblossom (Fabric API's components ingredient)", 400, False,
 			"Illusioner's spell: Blindness for 20 s, at arrow scale 2.5 s", "Illusioner, Blocks.AZURE_BLUET"),
@@ -482,7 +482,7 @@ SRC_EXPECT_FILES = {
 	"world/item/equipment/ArmorMaterials.java": [r"ArmorMaterial COPPER", r"ArmorMaterial TURTLE_SCUTE", r"ArmorMaterial NETHERITE"],
 	"world/item/ToolMaterial.java": [rf"ToolMaterial {m.upper()} = " for m in WEAPON_MATERIALS],
 	"world/item/Items.java": [r"POTION_DURATION_SCALE, 0\.125F", r"Item PRISMARINE_SHARD", r"Item NAUTILUS_SHELL", r"Item HEART_OF_THE_SEA",
-		r"Item ECHO_SHARD", r"Item SHULKER_SHELL", r"Item SPECTRAL_ARROW", r"Item ENCHANTED_GOLDEN_APPLE", r"Item SUSPICIOUS_STEW", r"Item NETHERITE_SPEAR", r"Item WOODEN_SPEAR", r"Item MACE",
+		r"Item ECHO_SHARD", r"Item SHULKER_SHELL", r"Item SPECTRAL_ARROW", r"Item GLOWSTONE_DUST", r"Item ENCHANTED_GOLDEN_APPLE", r"Item SUSPICIOUS_STEW", r"Item NETHERITE_SPEAR", r"Item WOODEN_SPEAR", r"Item MACE",
 		r"Item TRIDENT", r"Item CROSSBOW"],
 	"world/entity/monster/ElderGuardian.java": [r"MINING_FATIGUE, 6000, 2"],
 	"world/inventory/BrewingStandMenu.java": [r"PotionIngredient\.isPotionInput\(itemStack, this\.recipeAccess\)"],

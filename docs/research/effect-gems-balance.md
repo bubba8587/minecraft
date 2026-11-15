@@ -152,7 +152,7 @@ Every one of the 40 status effects in 26.3 (the script reads them from the sourc
 | Wither | weapon | Craftable: wither rose (dropped where the Wither kills a mob) in the bottle slot + base gem; gunpowder then dragon's breath raise its form |
 | Mining Fatigue | weapon | Found only: elder guardian drops (a rare extra drop); vanilla's only source is the elder guardian; plus ominous vaults |
 | Hunger | weapon | Craftable: rotten flesh (Hunger I, 80% chance in vanilla) in the bottle slot + base gem; gunpowder then dragon's breath raise its form |
-| Glowing | weapon | Craftable: spectral arrow in the bottle slot + base gem; gunpowder then dragon's breath raise its form |
+| Glowing | weapon | Craftable: glowstone dust in the bottle slot + base gem; gunpowder then dragon's breath raise its form |
 | Levitation | weapon | Craftable: shulker shell in the bottle slot + base gem; gunpowder then dragon's breath raise its form |
 | Blindness | weapon | Craftable: suspicious stew of azure bluet or open eyeblossom (Fabric API's components ingredient) in the bottle slot + base gem; gunpowder then dragon's breath raise its form |
 | Nausea | weapon | Craftable: pufferfish in the bottle slot + base gem; gunpowder then dragon's breath raise its form |
@@ -351,7 +351,7 @@ Armor gem effects are attribute modifiers, data components or small tick and dam
 
 ## Checks (all passed)
 
-- vanilla facts: 127 facts matched against build/mcsrc/26.3
+- vanilla facts: 128 facts matched against build/mcsrc/26.3
 - every ladder step (base gem, armor, weapon material, run, grade, potion variant) is at least +4% on the one below; nether star and netherite are the only bests; each tier's odds add up to 100%
 - a gem's own strength reaches 1.0 only from the strongest potion or source item + lingering form + tier 3 + nether star, for every craftable armor and weapon effect; a found-only gem is perfect only from ominous loot with a nether star base and tier 3
 - all 40 status effects in 26.3 are classified: 30 craftable gems, 5 found-only gems, 1 drawback-only, 4 not gems
