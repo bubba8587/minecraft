@@ -46,9 +46,26 @@ def quant(v, n):
 	return int(round(v * steps) / steps * 255)
 
 
+def octagon(hw, hh, c):
+	"""A tall octagon centred on (0.5, 0.5): half width hw, half height hh, corners cut by c."""
+	return [(0.5 - hw + c, 0.5 - hh), (0.5 + hw - c, 0.5 - hh), (0.5 + hw, 0.5 - hh + c), (0.5 + hw, 0.5 + hh - c),
+		(0.5 + hw - c, 0.5 + hh), (0.5 - hw + c, 0.5 + hh), (0.5 - hw, 0.5 + hh - c), (0.5 - hw, 0.5 - hh + c)]
+
+
+OUTER = octagon(0.31, 0.45, 0.20)  # finished gem: an emerald-style step cut seen from above (owner)
+TABLE = octagon(0.13, 0.25, 0.07)  # the flat top facet
+
+
 def cut_gem(n):
-	m = mask(n, lambda u, v: inside(CUT, u, v))
+	m = mask(n, lambda u, v: inside(OUTER, u, v))
 	body, line, high = (Image.new("RGBA", (n, n), (0, 0, 0, 0)) for _ in range(3))
+	edges = []  # (outward normal, offset) for each side of the outer octagon
+	for i in range(8):
+		(x1, y1), (x2, y2) = OUTER[i], OUTER[(i + 1) % 8]
+		nx, ny = y2 - y1, x1 - x2
+		ln = math.hypot(nx, ny)
+		nx, ny = nx / ln, ny / ln
+		edges.append((nx, ny, nx * x1 + ny * y1))
 	for y in range(n):
 		for x in range(n):
 			if not m[y][x]:
@@ -57,19 +74,16 @@ def cut_gem(n):
 			if edge(m, x, y):
 				line.putpixel((x, y), (34, 30, 44, 255))
 				continue
-			if v < CROWN_V:  # crown: three facets, lit from the top left
-				shade = 0.95 if u < 0.38 else 0.82 if u < 0.62 else 0.68
-				if u < 0.40:
+			if inside(TABLE, u, v):  # table: bright and flat, a little darker toward the bottom right
+				shade = 0.88 - 0.25 * ((u - 0.5) + (v - 0.5))
+			else:  # bevel: the facet is the side the pixel is closest to, lit from the top left
+				nx, ny, _ = min(edges, key=lambda e: e[2] - (e[0] * u + e[1] * v))
+				shade = 0.66 + 0.30 * (-0.7071 * nx - 0.7071 * ny)
+				if nx < -0.5 and ny < -0.5:  # the upper-left corner facet carries the second effect's color
 					high.putpixel((x, y), (235, 235, 235, 255))
-			else:  # pavilion: facets fanning from the point, alternating light and dark
-				ang = math.atan2(u - 0.5, 0.92 - v)
-				band = int((ang + 1.2) / 0.4)
-				shade = 0.72 + 0.18 * (band % 2) - 0.25 * (v - CROWN_V)
-			g = quant(max(0.35, min(1.0, shade)), n)
+			g = quant(max(0.3, min(1.0, shade)), n)
 			body.putpixel((x, y), (g, g, g, 255))
-			if abs(v - CROWN_V) < 0.5 / n:
-				line.putpixel((x, y), (60, 56, 72, 140))  # girdle line between crown and pavilion
-	sparkle(line, n, 0.30, 0.20)
+	sparkle(line, n, 0.40, 0.30)
 	return body, line, high
 
 
