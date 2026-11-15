@@ -204,10 +204,6 @@ public class GemsEverywhereGameTest {
 	public void playerOnlyGemsWork(GameTestHelper helper) {
 		Player player = helper.makeMockServerPlayer(GameType.SURVIVAL);
 		double s = Balance.get().cap;
-		wear(player, "saturation");
-		player.causeFoodExhaustion(1.0F);
-		close(((FoodDataAccessor) player.getFoodData()).bubbas$exhaustion(), 1 - s, 1e-5, helper, "saturation: exhaustion");
-		strip(player);
 		wear(player, "hunger");
 		float before = ((FoodDataAccessor) player.getFoodData()).bubbas$exhaustion();
 		WornEffects.tick(helper.getLevel(), player, WornEffects.of(player));
@@ -558,6 +554,41 @@ public class GemsEverywhereGameTest {
 			attacker.discard();
 			target.discard();
 		}
+		helper.succeed();
+	}
+
+	/** Owner: worn Saturation restores food like the vanilla effect; one weak gem slowly, the best build about a point a second. */
+	@GameTest
+	public void saturationGemsRestoreFood(GameTestHelper helper) {
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		player.setGameMode(GameType.SURVIVAL);
+		// One weak gem in a netherite chestplate: a food point every 20-30 s, so +1 within 30 s.
+		player.setItemSlot(EquipmentSlot.CHEST, GemKit.socketed(Items.NETHERITE_CHESTPLATE, GemKit.gem("saturation", 0.5)));
+		WornEffects.refresh(player);
+		double weak = WornEffects.of(player).value("saturation");
+		double every = 1.0 / WornEffects.saturationRate(weak);
+		check(helper, every >= 20.0 && every <= 30.0, "one weak Saturation gem restores a point every " + every + " s");
+		player.getFoodData().setFoodLevel(6);
+		player.getFoodData().setSaturation(0.0F);
+		for (int t = 0; t < 600; t++) {
+			WornEffects.tick(helper.getLevel(), player, WornEffects.of(player));
+		}
+		check(helper, player.getFoodData().getFoodLevel() >= 7, "weak Saturation: food " + player.getFoodData().getFoodLevel() + " after 30 s");
+		check(helper, player.getFoodData().getSaturationLevel() > 0.0F, "weak Saturation gave no saturation");
+		strip(player);
+		wear(player, "saturation");
+		player.getFoodData().setFoodLevel(6);
+		player.getFoodData().setSaturation(0.0F);
+		for (int t = 0; t < 100; t++) {
+			WornEffects.tick(helper.getLevel(), player, WornEffects.of(player));
+		}
+		check(helper, player.getFoodData().getFoodLevel() >= 10, "best Saturation: food " + player.getFoodData().getFoodLevel() + " after 5 s");
+		strip(player);
+		// On a hit: the target gets the same restore for a few seconds.
+		player.getFoodData().setFoodLevel(6);
+		GemHits.apply(helper.getLevel(), player, null, null, List.of(new GemHits.Entry("saturation", Balance.get().cap, false)));
+		check(helper, player.hasEffect(ModEffects.gem("saturation")), "Saturation hit applied nothing");
+		GemKit.remove(helper, player);
 		helper.succeed();
 	}
 

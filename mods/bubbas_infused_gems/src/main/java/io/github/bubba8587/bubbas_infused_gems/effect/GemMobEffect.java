@@ -116,7 +116,7 @@ public class GemMobEffect extends MobEffect {
 	@Override
 	public boolean shouldApplyEffectTickThisTick(int tickCount, int amplification) {
 		return switch (this.key) {
-			case "regeneration", "hunger", "conduit_power" -> true;
+			case "regeneration", "hunger", "conduit_power", "saturation" -> true;
 			case "poison", "wither" -> tickCount % DAMAGE_INTERVAL == 0;
 			default -> false;
 		};
@@ -145,6 +145,11 @@ public class GemMobEffect extends MobEffect {
 			}
 			case "wither" -> mob.hurtServer(level, mob.damageSources().wither(), (float) (e.hitUnit() * p * DAMAGE_INTERVAL / 20.0));
 			case "conduit_power" -> WornEffects.wetTick(mob);
+			case "saturation" -> {
+				if (mob instanceof Player player) {
+					WornEffects.restoreFood(player, p);
+				}
+			}
 			default -> {
 			}
 		}

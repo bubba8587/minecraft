@@ -350,11 +350,20 @@ effect("dolphins_grace", name="Dolphin's Grace", potion=None, role="main", varia
 	value=lambda s: 0.8 + 0.16 * s, show=lambda s: f"water drag {0.8 + 0.16 * s:.3f} (vanilla 0.800)",
 	impl="On/off made partial: water slow-down 0.8 + 0.16 x s (mixin where travelInWater sets 0.96).",
 	src="LivingEntity.travelInWater, DOLPHINS_GRACE_WATER_DRAG, Dolphin")
+# Saturation (owner, 2026-11-15): like the vanilla effect, it restores food and saturation, at a rate by strength: food
+# points per second from SATURATION_MIN_RATE (a single weak gem: about one food point every 22 s) to SATURATION_BEST_RATE
+# at the cap (one food point a second: in practice never hungry; vanilla's is 20 a second), geometric in between.
+SATURATION_MIN_RATE = 0.035
+SATURATION_BEST_RATE = 1.0
+
+def saturation_rate(s):
+	return 0.0 if s <= 0 else SATURATION_MIN_RATE * (SATURATION_BEST_RATE / SATURATION_MIN_RATE) ** (s / CAP)
+
 effect("saturation", name="Saturation", potion=None, role="main", variants={"normal": None},
 	source=("item", "suspicious stew of dandelion, golden dandelion or blue orchid (matched by its stew effect: Fabric API's components ingredient)"),
 	anchor="Saturation: hunger never drops (on/off; vanilla refills food and saturation every tick)",
-	value=lambda s: s, show=lambda s: f"hunger drains {pct(-s)} slower",
-	impl="On/off made partial: food exhaustion x (1 - s) (mixin at FoodData.addExhaustion). Food still drains, just slower, so eating stays part of the game.",
+	value=saturation_rate, show=lambda s: f"restores 1 food point (and its saturation) every {1 / saturation_rate(s):.1f} s",
+	impl="Restores food and saturation like the vanilla effect (FoodData.eat(n, 1.0)), at saturation_rate(s) food points per second, whole points as they build up.",
 	src="SaturationMobEffect, FoodData.addExhaustion, Blocks.DANDELION / BLUE_ORCHID")
 effect("conduit_power", name="Conduit Power", potion=None, role="main", variants={"normal": None},
 	source=("item", "heart of the sea (buried treasure; the conduit's core)"),
@@ -1572,7 +1581,7 @@ WORN = {
 	"invisibility": {"attributes": [("minecraft:waypoint_transmit_range", -1.0, "add_multiplied_total", f"step:{INVISIBILITY_LOCATOR_HIDE_AT}")],
 		"visibility_reduction": 0.93, "full_at": INVISIBILITY_FULL_AT},
 	"dolphins_grace": {"drag_target": 0.96},
-	"saturation": {"exhaustion_reduction": 1.0},
+	"saturation": {"rate_min": SATURATION_MIN_RATE, "rate_best": SATURATION_BEST_RATE},
 	"conduit_power": {"attributes": [("minecraft:oxygen_bonus", 1.0, "add_value", "odds"), ("minecraft:submerged_mining_speed", 0.8, "add_value")],
 		"wet_only": True, "underwater_sight": 1.0},
 	"hero_of_the_village": {"price_cut": HERO_CUT},

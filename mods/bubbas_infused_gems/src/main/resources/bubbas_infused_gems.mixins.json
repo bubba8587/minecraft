@@ -12,7 +12,6 @@
 		"GrindstoneResultSlotMixin",
 		"LivingEntityMixin",
 		"MobMixin",
-		"PlayerMixin",
 		"VillagerMixin"
 	],
 	"injectors": {

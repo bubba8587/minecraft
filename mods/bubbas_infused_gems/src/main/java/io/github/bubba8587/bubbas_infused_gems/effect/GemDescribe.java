@@ -49,7 +49,7 @@ public final class GemDescribe {
 					attr(key, 0, s) < 0 ? ", hidden on the locator bar" : "",
 					s >= e.wornNumber("full_at", 1.0) - 1e-9 ? ", real invisibility" : "");
 			case "dolphins_grace" -> f("swims %.0f%% of the way to Dolphin's Grace", 100 * s);
-			case "saturation" -> f("hunger drains %.0f%% slower", 100 * s * e.wornNumber("exhaustion_reduction", 1.0));
+			case "saturation" -> f("restores 1 food point every %.1f s", 1.0 / WornEffects.saturationRate(s));
 			case "conduit_power" -> f("in water or rain: %s, underwater mining %+.2f", air(s), attr(key, 1, s));
 			case "hero_of_the_village" -> f("villager trades %.0f%% cheaper", 100 * e.wornNumber("price_cut", 0.55) * s);
 			case "hunger" -> f("extra hunger: 1 food point per %.0f s", 4 / (e.wornNumber("exhaustion_per_tick", 0.015) * 20 * s));

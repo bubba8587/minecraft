@@ -15,5 +15,10 @@ public interface GemEntity {
 	/** Entity tick count of the last time equipping Absorption gems filled the shield at once. */
 	int bubbas$lastEquipFillTick();
 
+	/** Saturation gems: food restored so far that has not made a whole point yet. */
+	float bubbas$foodCarry();
+
+	void bubbas$setFoodCarry(float carry);
+
 	void bubbas$setLastEquipFillTick(int tick);
 }

@@ -51,6 +51,18 @@ public abstract class LivingEntityMixin implements GemEntity {
 	private int bubbas$lastHurtTick = -100000;
 	@Unique
 	private int bubbas$lastEquipFillTick = -100000;
+	@Unique
+	private float bubbas$foodCarry;
+
+	@Override
+	public float bubbas$foodCarry() {
+		return this.bubbas$foodCarry;
+	}
+
+	@Override
+	public void bubbas$setFoodCarry(float carry) {
+		this.bubbas$foodCarry = carry;
+	}
 
 	@Override
 	public int bubbas$lastEquipFillTick() {

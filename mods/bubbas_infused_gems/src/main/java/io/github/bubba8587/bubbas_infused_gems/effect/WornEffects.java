@@ -186,6 +186,10 @@ public final class WornEffects {
 		if (regen > 0.0 && entity.getHealth() < entity.getMaxHealth() && !entity.is(EntityTypeTags.IGNORES_POISON_AND_REGEN)) {
 			entity.heal((float) (b.effect("regeneration").wornNumber("heal_per_second", 0.8) * regen / 20.0));
 		}
+		double saturation = GemValues.worn(entity, "saturation");
+		if (saturation > 0.0 && entity instanceof Player player) {
+			restoreFood(player, saturation);
+		}
 		double hunger = GemValues.worn(entity, "hunger");
 		if (hunger > 0.0 && entity instanceof Player player) {
 			player.causeFoodExhaustion((float) (b.effect("hunger").wornNumber("exhaustion_per_tick", 0.015) * hunger));
@@ -344,10 +348,24 @@ public final class WornEffects {
 		return s > 0.0 && slowDown < target ? slowDown + (target - slowDown) * s : slowDown;
 	}
 
-	/** Saturation gem: food exhaustion x (1 - s). */
-	public static float exhaustion(Player player, float amount) {
-		double s = GemValues.value(player, "saturation");
-		return s > 0.0 ? (float) (amount * (1.0 - Balance.get().effect("saturation").wornNumber("exhaustion_reduction", 1.0) * s)) : amount;
+	/** Saturation gem's food points per second at strength s: rate_min to rate_best at the cap, geometric in between. */
+	public static double saturationRate(double s) {
+		Balance.EffectData e = Balance.get().effect("saturation");
+		double min = e.wornNumber("rate_min", 0.035);
+		double best = e.wornNumber("rate_best", 1.0);
+		return s <= 0.0 ? 0.0 : min * Math.pow(best / min, s / Balance.get().cap);
+	}
+
+	/** One tick of Saturation (worn or from a hit): food and saturation back like the vanilla effect, whole points as they build up. */
+	public static void restoreFood(Player player, double s) {
+		GemEntity g = (GemEntity) player;
+		float carry = g.bubbas$foodCarry() + (float) (saturationRate(s) / 20.0);
+		if (carry >= 1.0F) {
+			int points = (int) carry;
+			player.getFoodData().eat(points, 1.0F);
+			carry -= points;
+		}
+		g.bubbas$setFoodCarry(carry);
 	}
 
 	/**
