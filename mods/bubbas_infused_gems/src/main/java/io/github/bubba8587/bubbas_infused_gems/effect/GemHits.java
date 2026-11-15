@@ -88,7 +88,7 @@ public final class GemHits {
 		double share = kind(e).equals("onoff") ? rel : Math.pow(rel, 1.0 - b.weaponSplit);
 		int floor = d.hitFloorTicks();
 		if (d.hitFloorHealHp() > 0.0) {
-			floor = (int) Math.ceil(d.hitFloorHealHp() / (d.hitUnit() * potency(e)) * 20.0);
+			floor = (int) Math.ceil(d.hitFloorHealHp() / (d.hitUnit() * GemMobEffect.potency(GemMobEffect.amplifier(potency(e)))) /* the effect heals at its 1% steps */ * 20.0);
 		}
 		return Math.max(floor, (int) Math.round(share * d.hitTicks()));
 	}

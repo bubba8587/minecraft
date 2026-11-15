@@ -39,13 +39,13 @@ WEAPON_SLOTS = 2      # gem slots per weapon (owner)
 PIECES = ["helmet", "chestplate", "leggings", "boots"]   # adjacency order (owner)
 MIN_REL_STEP = 0.04   # every ladder step is at least +4% on the step below
 MIN_ABS_DROP = 0.025  # from the best build, any one step down loses at least 0.025 of the scale
-EARLY_SINGLE_FLOOR = 0.03       # the weakest possible single gem still does this much
-EARLY_BUILD_RANGE = (0.10, 0.30)  # a typical early kit (armor or weapon) lands in this band
+EARLY_SINGLE_FLOOR = 0.015      # the weakest possible single gem still does this much (owner's wider Infusion ladder, 2026-11-15)
+EARLY_BUILD_RANGE = (0.08, 0.30)  # a typical early kit (armor or weapon) lands in this band
 
 # Healing gem (owner): a non-lethal hit or fall gives back a fraction of the health it took.
 HEAL_BEST = 0.25      # fraction of each hit returned by the best possible build
 HEAL_EXP = 0.7        # heal = HEAL_BEST x (total / CAP)^HEAL_EXP: flatter than linear, so early gems still show
-HEAL_EARLY_FLOOR = 0.05  # the early kit returns at least 5% of each hit
+HEAL_EARLY_FLOOR = 0.045  # the early kit returns at least 4.5% of each hit
 HEAL_MIN_DROP = 0.005    # one step down from the best loses at least half a percentage point
 
 # Drawbacks (owner): a bad roll puts a mild harmful effect on the wearer (armor gems), or a mild
@@ -64,11 +64,11 @@ WEAPON_SPLIT = 0.5    # weapon strength s goes to potency as s^0.5 and duration 
 # ---------------------------------------------------------------- factor tables
 # Base gems, weakest first, by how hard they are to get (owner). Strength only, no traits (owner).
 BASE_GEMS = [
-	("amethyst", "Amethyst shard", 0.80, "Overworld geodes, first trip underground"),
-	("quartz", "Nether quartz", 0.84, "First Nether trip"),
-	("ender_pearl", "Ender pearl", 0.88, "Endermen; farmable"),
-	("diamond", "Diamond", 0.92, "Deep mining; common in chest loot"),
-	("prismarine", "Prismarine shard (owner)", 0.96, "Ocean monuments, a guarded structure (minecraft:prismarine_shard)"),
+	("amethyst", "Amethyst shard", 0.40, "Overworld geodes, first trip underground"),
+	("quartz", "Nether quartz", 0.50, "First Nether trip"),
+	("ender_pearl", "Ender pearl", 0.62, "Endermen; farmable"),
+	("diamond", "Diamond", 0.75, "Deep mining; common in chest loot"),
+	("prismarine", "Prismarine shard (owner)", 0.87, "Ocean monuments, a guarded structure (minecraft:prismarine_shard)"),
 	("nether_star", "Nether star", 1.00, "The Wither: the best base (owner)"),
 ]
 BASE = {b: f for b, _, f, _ in BASE_GEMS}
@@ -120,6 +120,9 @@ WEAPON_ALL = {**{m: f for m, (f, _) in WEAPON_MATERIALS.items()}, **{w: f for w,
 
 # Enchant tier outcome grades (owner's words: weak / medium / strongest).
 GRADES = {"weak": 0.50, "medium": 0.75, "strongest": 1.00}
+# Owner (2026-11-15): enchanting a gem works like gear: vanilla's bookshelf costs, the full level cost paid, and tiers gated
+# by bookshelves (tier 2 needs 8, tier 3 all 15).
+TIER_MIN_SHELVES = {1: 0, 2: 8, 3: 15}
 FORM_MAX_TIER = {"normal": 1, "splash": 2, "lingering": 3,   # owner
 	"item": 3}  # owner (2026-11-15): an Infused Gem brewed from an item reaches tier 3; collecting 12 of the item is the cost
 # Per item source, a lower max tier for one that proves too strong: {(effect, variant): tier}. Empty: all reach tier 3.
@@ -1841,7 +1844,7 @@ def export_data():
 		"armor_materials": {m: f for m, (f, _) in MATERIALS.items()}, "helmet_only": sorted(HELMET_ONLY),
 		"run": {str(k): v for k, v in RUN.items()},
 		"weapon_materials": WEAPON_ALL,
-		"grades": GRADES, "form_max_tier": FORM_MAX_TIER,
+		"grades": GRADES, "form_max_tier": FORM_MAX_TIER, "tier_min_shelves": {str(k): v for k, v in TIER_MIN_SHELVES.items()},
 		"tiers": {str(t): [{"label": o[0], "main": o[1],
 			"other": next((g for kind, g in o[2] if kind == "other"), None),
 			"drawback": next((g for kind, g in o[2] if kind == "drawback"), None), "odds": o[3]} for o in outs] for t, outs in TIERS.items()},

@@ -126,10 +126,34 @@ public class EnchantingGameTest {
 		helper.succeed();
 	}
 
+	/** Owner: tiers are gated by bookshelves (tier 2 needs 8, tier 3 all 15), like gear's strongest enchantments. */
+	@GameTest
+	public void tiersNeedTheirBookshelves(GameTestHelper helper) {
+		InfusedGem gem = infused("speed", GemForm.LINGERING);
+		for (int seed = 0; seed < 200; seed++) {
+			int[] seven = GemEnchanting.costs(seed, 7, gem);
+			int[] fourteen = GemEnchanting.costs(seed, 14, gem);
+			int[] fifteen = GemEnchanting.costs(seed, 15, gem);
+			check(helper, seven[1] == 0 && seven[2] == 0, "tier 2 or 3 with 7 shelves: " + java.util.Arrays.toString(seven));
+			check(helper, fourteen[2] == 0, "tier 3 with 14 shelves: " + java.util.Arrays.toString(fourteen));
+			check(helper, fifteen[0] > 0 && fifteen[1] > 0 && fifteen[2] >= 15, "rows with 15 shelves: " + java.util.Arrays.toString(fifteen));
+		}
+		helper.succeed();
+	}
+
 	@GameTest
 	public void enchantingTableMakesAFinishedGem(GameTestHelper helper) {
-		BlockPos table = new BlockPos(1, 1, 1);
+		// A table with a full ring of bookshelves (owner: tier 2 needs 8, tier 3 all 15).
+		BlockPos table = new BlockPos(4, 1, 4);
 		helper.setBlock(table, Blocks.ENCHANTING_TABLE);
+		for (int dx = -2; dx <= 2; dx++) {
+			for (int dz = -2; dz <= 2; dz++) {
+				if (Math.max(Math.abs(dx), Math.abs(dz)) == 2) {
+					helper.setBlock(table.offset(dx, 0, dz), Blocks.BOOKSHELF);
+					helper.setBlock(table.offset(dx, 1, dz), Blocks.BOOKSHELF);
+				}
+			}
+		}
 		ServerPlayer player = helper.makeMockServerPlayerInLevel();
 		player.getAbilities().instabuild = false; // pays lapis and levels like survival
 		player.setExperienceLevels(30);
@@ -141,27 +165,17 @@ public class EnchantingGameTest {
 		check(helper, !menu.clickMenuButton(player, 2), "tier 3 allowed on a splash gem");
 		int seed = menu.getEnchantmentSeed();
 		Gem expected = GemEnchanting.roll(seed, 2, GemKit.infused("strength", "strong", GemForm.SPLASH, 3).get(ModComponents.INFUSED_GEM));
+		int cost2 = menu.costs[1];
 		check(helper, menu.clickMenuButton(player, 1), "tier 2 refused");
 		ItemStack out = menu.getSlot(0).getItem();
 		check(helper, out.is(ModItems.GEM), "no finished gem: " + out);
 		check(helper, expected.equals(out.get(ModComponents.GEM)), "rolled " + out.get(ModComponents.GEM) + ", preview said " + expected);
 		check(helper, menu.getSlot(1).getItem().getCount() == 8, "lapis not used (2)");
 		check(helper, menu.costs[0] == 0, "a finished gem can be enchanted again");
-		check(helper, player.experienceLevel == 28, "levels paid: " + player.experienceLevel);
+		check(helper, player.experienceLevel == 30 - cost2, "the full level cost " + cost2 + " was not paid: " + player.experienceLevel);
 		menu.removed(player);
 		// An item-sourced Infused Gem (owner, 2026-11-15) reaches tier 3 like a lingering potion's, through the real table.
-		// A second table with a full ring of bookshelves, so tier 3 has a cost whatever the seed.
-		BlockPos table2 = new BlockPos(4, 1, 4);
-		helper.setBlock(table2, Blocks.ENCHANTING_TABLE);
-		for (int dx = -2; dx <= 2; dx++) {
-			for (int dz = -2; dz <= 2; dz++) {
-				if (Math.max(Math.abs(dx), Math.abs(dz)) == 2) {
-					helper.setBlock(table2.offset(dx, 0, dz), Blocks.BOOKSHELF);
-					helper.setBlock(table2.offset(dx, 1, dz), Blocks.BOOKSHELF);
-				}
-			}
-		}
-		EnchantmentMenu menu2 = new EnchantmentMenu(2, player.getInventory(), ContainerLevelAccess.create(helper.getLevel(), helper.absolutePos(table2)));
+		EnchantmentMenu menu2 = new EnchantmentMenu(2, player.getInventory(), ContainerLevelAccess.create(helper.getLevel(), helper.absolutePos(table)));
 		player.setExperienceLevels(30);
 		ItemStack apple = GemKit.infused("absorption", "strong", GemForm.ITEM, 6);
 		check(helper, apple.getHoverName().getString().equals("Infused Gem: Infusion VI, Absorption"), "item gem name " + apple.getHoverName().getString());

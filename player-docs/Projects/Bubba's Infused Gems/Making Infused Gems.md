@@ -38,16 +38,16 @@ The player places a potion in a bottle slot of a brewing stand and a **base gem*
 
 ### Base gems
 
-The base gem sets the gem's **Infusion level**, which affects strength only.
+The base gem sets the gem's **Infusion level**, which affects strength only, and matters a lot: a nether star gem is two and a half times as strong as an amethyst one.
 
-| Infusion | Base gem |
-|---|---|
-| I | Amethyst shard |
-| II | Nether quartz |
-| III | Ender pearl |
-| IV | Diamond |
-| V | Prismarine shard |
-| VI | Nether star |
+| Infusion | Base gem | Strength |
+|---|---|---|
+| I | Amethyst shard | 40% |
+| II | Nether quartz | 50% |
+| III | Ender pearl | 62% |
+| IV | Diamond | 75% |
+| V | Prismarine shard | 87% |
+| VI | Nether star | 100% |
 
 ## Properties
 

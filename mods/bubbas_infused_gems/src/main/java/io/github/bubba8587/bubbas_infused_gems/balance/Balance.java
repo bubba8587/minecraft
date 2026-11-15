@@ -46,6 +46,8 @@ public final class Balance {
 	public final Map<String, Double> weaponMaterials = new LinkedHashMap<>();
 	public final Map<String, Double> grades = new LinkedHashMap<>();
 	public final Map<String, Integer> formMaxTier = new LinkedHashMap<>();
+	/** Owner: bookshelves needed for each enchanting tier (tier 2: 8, tier 3: 15). */
+	public final Map<Integer, Integer> tierMinShelves = new LinkedHashMap<>();
 	public final Map<Integer, List<Outcome>> tiers = new LinkedHashMap<>();
 	public final Map<String, EffectData> effects = new LinkedHashMap<>();
 	/** Effects an Infused Gem can be brewed for now (the rest come from loot or later work; all of them work). */
@@ -130,6 +132,7 @@ public final class Balance {
 		o.getAsJsonObject("weapon_materials").entrySet().forEach(e -> this.weaponMaterials.put(e.getKey(), e.getValue().getAsDouble()));
 		o.getAsJsonObject("grades").entrySet().forEach(e -> this.grades.put(e.getKey(), e.getValue().getAsDouble()));
 		o.getAsJsonObject("form_max_tier").entrySet().forEach(e -> this.formMaxTier.put(e.getKey(), e.getValue().getAsInt()));
+		o.getAsJsonObject("tier_min_shelves").entrySet().forEach(e -> this.tierMinShelves.put(Integer.parseInt(e.getKey()), e.getValue().getAsInt()));
 		o.getAsJsonObject("tiers").entrySet().forEach(e -> {
 			List<Outcome> list = new ArrayList<>();
 			for (JsonElement x : e.getValue().getAsJsonArray()) {

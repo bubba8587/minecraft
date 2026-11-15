@@ -38,7 +38,9 @@ public final class GemEnchanting {
 		for (int slot = 0; slot < 3; slot++) {
 			int selected = random.nextInt(8) + 1 + (shelves >> 1) + random.nextInt(shelves + 1);
 			int cost = slot == 0 ? Math.max(selected / 3, 1) : slot == 1 ? selected * 2 / 3 + 1 : Math.max(selected, shelves * 2);
-			costs[slot] = cost < slot + 1 || slot + 1 > gem.maxTier() ? 0 : cost;
+			// Off: below vanilla's minimum, above the gem's form, or without the tier's bookshelves (owner: tier 2 needs 8, tier 3 all 15).
+			boolean gated = bookshelves < Balance.get().tierMinShelves.getOrDefault(slot + 1, 0);
+			costs[slot] = cost < slot + 1 || slot + 1 > gem.maxTier() || gated ? 0 : cost;
 		}
 		return costs;
 	}

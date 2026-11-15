@@ -26,11 +26,11 @@ Total for an effect, in symbols: `total = 0.9 x sum(gem_i x 0.85^(rank_i)) / sum
 
 | Infusion | Base gem | Factor | Why here |
 |---|---|---|---|
-| Infusion I | Amethyst shard | 0.80 | Overworld geodes, first trip underground |
-| Infusion II | Nether quartz | 0.84 | First Nether trip |
-| Infusion III | Ender pearl | 0.88 | Endermen; farmable |
-| Infusion IV | Diamond | 0.92 | Deep mining; common in chest loot |
-| Infusion V | Prismarine shard (owner) | 0.96 | Ocean monuments, a guarded structure (minecraft:prismarine_shard) |
+| Infusion I | Amethyst shard | 0.40 | Overworld geodes, first trip underground |
+| Infusion II | Nether quartz | 0.50 | First Nether trip |
+| Infusion III | Ender pearl | 0.62 | Endermen; farmable |
+| Infusion IV | Diamond | 0.75 | Deep mining; common in chest loot |
+| Infusion V | Prismarine shard (owner) | 0.87 | Ocean monuments, a guarded structure (minecraft:prismarine_shard) |
 | Infusion VI | Nether star | 1.00 | The Wither: the best base (owner) |
 
 ### Potion variant (by what that effect really has in 26.3)
@@ -175,10 +175,10 @@ A found gem is made as if brewed and enchanted: its potion factor is 1.0 (one fo
 
 | Loot source | Infusion levels | Tiers | Strength range (gem quality) |
 |---|---|---|---|
-| Common loot (dungeons, mineshafts, temples, shipwrecks, ruins, fishing treasure, hero gifts, most mobs) | Infusion I (amethyst), Infusion I (amethyst), Infusion II (quartz) | 1 | 0.40 - 0.42 (or a drawback-only roll at tier 1) |
-| Rare loot (strongholds, buried treasure, outposts, mansions, nether fortresses, piglins) | Infusion I (amethyst), Infusion II (quartz), Infusion II (quartz), Infusion III (ender pearl) | 1, 1, 2 | 0.40 - 0.66 (or a drawback-only roll at tier 1) |
-| Hard places (ancient cities, bastions, end cities, trial vaults, elder guardians, trial chamber mobs) | Infusion II (quartz), Infusion III (ender pearl), Infusion III (ender pearl), Infusion IV (diamond) | 1, 2, 2 | 0.42 - 0.69 (or a drawback-only roll at tier 1) |
-| Ominous vaults in trial chambers | Infusion III (ender pearl), Infusion IV (diamond), Infusion IV (diamond), Infusion V (prismarine shard), Infusion VI (nether star) | 2, 2, 3 | 0.66 - 1.00 |
+| Common loot (dungeons, mineshafts, temples, shipwrecks, ruins, fishing treasure, hero gifts, most mobs) | Infusion I (amethyst), Infusion I (amethyst), Infusion II (quartz) | 1 | 0.20 - 0.25 (or a drawback-only roll at tier 1) |
+| Rare loot (strongholds, buried treasure, outposts, mansions, nether fortresses, piglins) | Infusion I (amethyst), Infusion II (quartz), Infusion II (quartz), Infusion III (ender pearl) | 1, 1, 2 | 0.20 - 0.46 (or a drawback-only roll at tier 1) |
+| Hard places (ancient cities, bastions, end cities, trial vaults, elder guardians, trial chamber mobs) | Infusion II (quartz), Infusion III (ender pearl), Infusion III (ender pearl), Infusion IV (diamond) | 1, 2, 2 | 0.25 - 0.56 (or a drawback-only roll at tier 1) |
+| Ominous vaults in trial chambers | Infusion III (ender pearl), Infusion IV (diamond), Infusion IV (diamond), Infusion V (prismarine shard), Infusion VI (nether star) | 2, 2, 3 | 0.46 - 1.00 |
 
 ## Loot: where gems are found (one table, `LOOT_PLACES`)
 
@@ -186,10 +186,10 @@ Every place below gets **one extra roll** with the given chance per chest (fishi
 
 | Level | Infusion (weighted) | Tiers (weighted) | Potion variant | Gemmed armor | Gemmed weapons | Gems per piece | Gem quality |
 |---|---|---|---|---|---|---|---|
-| common | I, I, II | 1 | weakest | leather, copper, golden, chainmail | stone sword, copper sword, stone axe, bow | 1 | 0.32 - 0.42 |
-| rare | I, II, II, III | 1, 1, 2 | weakest | chainmail, golden, iron | iron sword, iron axe, golden sword, bow, crossbow | 1 | 0.32 - 0.66 |
-| hard | II, III, III, IV | 1, 2, 2 | any | iron, diamond | iron sword, diamond sword, diamond axe, bow, crossbow, trident | 1-2 | 0.34 - 0.69 |
-| ominous | III, IV, IV, V, VI | 2, 2, 3 | any | diamond | diamond sword, diamond axe, bow, crossbow, trident, mace | 1-3 | 0.53 - 1.00 (VI: perfect, with a drawback 19 in 20) |
+| common | I, I, II | 1 | weakest | leather, copper, golden, chainmail | stone sword, copper sword, stone axe, bow | 1 | 0.16 - 0.25 |
+| rare | I, II, II, III | 1, 1, 2 | weakest | chainmail, golden, iron | iron sword, iron axe, golden sword, bow, crossbow | 1 | 0.16 - 0.46 |
+| hard | II, III, III, IV | 1, 2, 2 | any | iron, diamond | iron sword, diamond sword, diamond axe, bow, crossbow, trident | 1-2 | 0.20 - 0.56 |
+| ominous | III, IV, IV, V, VI | 2, 2, 3 | any | diamond | diamond sword, diamond axe, bow, crossbow, trident, mace | 1-3 | 0.37 - 1.00 (VI: perfect, with a drawback 19 in 20) |
 
 | Where | Level | Chance | Found-only gems there |
 |---|---|---|---|
@@ -389,10 +389,10 @@ When the wearer takes damage from an attack or a fall and survives it, they inst
 
 | Build | Gem total | Share of each hit returned | A 6 HP zombie hit | A 20 HP fall (survived) |
 |---|---|---|---|---|
-| Starter | 0.032 | 2.4% | +0.15 HP | +0.5 HP |
-| Early | 0.147 | 7.0% | +0.42 HP | +1.4 HP |
-| Mid | 0.469 | 15.8% | +0.95 HP | +3.2 HP |
-| Late | 0.770 | 22.4% | +1.34 HP | +4.5 HP |
+| Starter | 0.016 | 1.5% | +0.09 HP | +0.3 HP |
+| Early | 0.087 | 4.9% | +0.29 HP | +1.0 HP |
+| Mid | 0.330 | 12.4% | +0.74 HP | +2.5 HP |
+| Late | 0.628 | 19.4% | +1.17 HP | +3.9 HP |
 | Best | 0.900 | 25.0% | +1.50 HP | +5.0 HP |
 
 ## In a weapon: what one hit gives the target
@@ -532,10 +532,10 @@ Worn (armor) effects are attribute modifiers, data components or small tick and 
 
 | Build | What it is | Speed | Strength | Regeneration | Fire Resistance | Healing |
 |---|---|---|---|---|---|---|
-| Starter | 1 gem on a lone leather chestplate; normal potion, Infusion I (amethyst), tier 1 weak | 0.054: +2.1% speed | 0.032: +0.19 attack damage | 0.032: 0.03 HP/s (1 heart per 77.9 s) | 0.036: fire damage -3.6% (lava 3.86/hit), burn time -3.6% | 0.032: 2.4% of each non-lethal hit back (6 HP hit: +0.15 HP) |
-| Early | Full iron set, 1 gem per piece (4); normal potion, Infusion II (quartz), tier 1 weak | 0.244: +9.8% speed | 0.147: +0.88 attack damage | 0.147: 0.12 HP/s (1 heart per 17.1 s) | 0.165: fire damage -16.5% (lava 3.34/hit), burn time -16.5% | 0.147: 7.0% of each non-lethal hit back (6 HP hit: +0.42 HP) |
-| Mid | Full diamond set, 2 gems per piece (8); splash of the strong potion, Infusion III (ender pearl), tier 2 medium | 0.781: +31.2% speed | 0.469: +2.81 attack damage | 0.469: 0.37 HP/s (1 heart per 5.3 s) | 0.469: fire damage -46.9% (lava 2.13/hit), burn time -46.9% | 0.469: 15.8% of each non-lethal hit back (6 HP hit: +0.95 HP) |
-| Late | Full diamond set, 12 gems; lingering strong potion, Infusion IV (diamond), tier 3 | 1.283: +51.3% speed | 0.770: +4.62 attack damage | 0.770: 0.62 HP/s (1 heart per 3.2 s) | 0.770: fire damage -77.0% (lava 0.92/hit), burn time -77.0% | 0.770: 22.4% of each non-lethal hit back (6 HP hit: +1.34 HP) |
+| Starter | 1 gem on a lone leather chestplate; normal potion, Infusion I (amethyst), tier 1 weak | 0.027: +1.1% speed | 0.016: +0.10 attack damage | 0.016: 0.01 HP/s (1 heart per 155.7 s) | 0.018: fire damage -1.8% (lava 3.93/hit), burn time -1.8% | 0.016: 1.5% of each non-lethal hit back (6 HP hit: +0.09 HP) |
+| Early | Full iron set, 1 gem per piece (4); normal potion, Infusion II (quartz), tier 1 weak | 0.145: +5.8% speed | 0.087: +0.52 attack damage | 0.087: 0.07 HP/s (1 heart per 28.6 s) | 0.098: fire damage -9.8% (lava 3.61/hit), burn time -9.8% | 0.087: 4.9% of each non-lethal hit back (6 HP hit: +0.29 HP) |
+| Mid | Full diamond set, 2 gems per piece (8); splash of the strong potion, Infusion III (ender pearl), tier 2 medium | 0.550: +22.0% speed | 0.330: +1.98 attack damage | 0.330: 0.26 HP/s (1 heart per 7.6 s) | 0.330: fire damage -33.0% (lava 2.68/hit), burn time -33.0% | 0.330: 12.4% of each non-lethal hit back (6 HP hit: +0.74 HP) |
+| Late | Full diamond set, 12 gems; lingering strong potion, Infusion IV (diamond), tier 3 | 1.046: +41.9% speed | 0.628: +3.77 attack damage | 0.628: 0.50 HP/s (1 heart per 4.0 s) | 0.628: fire damage -62.8% (lava 1.49/hit), burn time -62.8% | 0.628: 19.4% of each non-lethal hit back (6 HP hit: +1.17 HP) |
 | Best | Full netherite set, 12 gems; lingering strong potion, Infusion VI (nether star), tier 3 | 1.500: +60.0% speed | 0.900: +5.40 attack damage | 0.900: 0.72 HP/s (1 heart per 2.8 s) | 0.900: fire damage -90.0% (lava 0.40/hit), burn time -90.0% | 0.900: 25.0% of each non-lethal hit back (6 HP hit: +1.50 HP) |
 
 ### One step down from the best armor (Speed)
@@ -544,7 +544,7 @@ Worn (armor) effects are attribute modifiers, data components or small tick and 
 |---|---|---|
 | (best) | 0.900 | +36.0% speed |
 | long potion instead of strong | 0.765 | +30.6% speed |
-| Infusion V (prismarine shard) instead of VI (nether star) | 0.864 | +34.6% speed |
+| Infusion V (prismarine shard) instead of VI (nether star) | 0.783 | +31.3% speed |
 | splash potion (tier 2 at best: medium) | 0.675 | +27.0% speed |
 | full diamond armor | 0.837 | +33.5% speed |
 | diamond boots break the run | 0.840 | +33.6% speed |
@@ -554,10 +554,10 @@ Worn (armor) effects are attribute modifiers, data components or small tick and 
 
 | Build | What it is | Poison | Slowness | Weakness | Harming |
 |---|---|---|---|---|---|
-| Starter | Wooden sword, 1 gem; normal potion, Infusion I (amethyst), tier 1 weak | 0.117: 0.57 HP/s poison for 2.9 s | 0.117: -20.5% speed for 2.9 s | 0.131: -1.45 attack damage for 3.1 s | 0.117: +1.0 magic damage every hit |
-| Early | Iron sword, 1 gem; normal potion, Infusion II (quartz), tier 1 weak | 0.142: 0.63 HP/s poison for 3.2 s | 0.142: -22.6% speed for 3.2 s | 0.160: -1.60 attack damage for 3.4 s | 0.142: +1.0 magic damage every hit |
-| Mid | Diamond sword, 2 gems; splash of the strong potion, Infusion III (ender pearl), tier 2 medium | 0.552: 1.24 HP/s poison for 6.3 s | 0.552: -44.6% speed for 6.3 s | 0.552: -2.97 attack damage for 6.3 s | 0.552: +1.4 magic damage every hit |
-| Late | Diamond sword, 2 gems; lingering strong potion, Infusion IV (diamond), tier 3 | 0.770: 1.46 HP/s poison for 7.4 s | 0.770: -52.7% speed for 7.4 s | 0.770: -3.51 attack damage for 7.4 s | 0.770: +1.9 magic damage every hit |
+| Starter | Wooden sword, 1 gem; normal potion, Infusion I (amethyst), tier 1 weak | 0.058: 0.40 HP/s poison for 2.5 s | 0.058: -14.5% speed for 2.0 s | 0.066: -1.03 attack damage for 2.2 s | 0.058: +1.0 magic damage every hit |
+| Early | Iron sword, 1 gem; normal potion, Infusion II (quartz), tier 1 weak | 0.085: 0.48 HP/s poison for 2.5 s | 0.085: -17.5% speed for 2.5 s | 0.095: -1.23 attack damage for 2.6 s | 0.085: +1.0 magic damage every hit |
+| Mid | Diamond sword, 2 gems; splash of the strong potion, Infusion III (ender pearl), tier 2 medium | 0.389: 1.04 HP/s poison for 5.3 s | 0.389: -37.4% speed for 5.3 s | 0.389: -2.50 attack damage for 5.3 s | 0.389: +1.0 magic damage every hit |
+| Late | Diamond sword, 2 gems; lingering strong potion, Infusion IV (diamond), tier 3 | 0.628: 1.32 HP/s poison for 6.7 s | 0.628: -47.5% speed for 6.7 s | 0.628: -3.17 attack damage for 6.7 s | 0.628: +1.6 magic damage every hit |
 | Bow | Bow, 2 gems; lingering strong potion, Infusion VI (nether star), tier 3 (the best ranged) | 0.837: 1.52 HP/s poison for 7.7 s | 0.837: -54.9% speed for 7.7 s | 0.837: -3.66 attack damage for 7.7 s | 0.837: +2.1 magic damage every hit |
 | Best | Netherite sword, axe or spear, 2 gems; lingering strong potion, Infusion VI (nether star), tier 3 | 0.900: 1.58 HP/s poison for 8.0 s | 0.900: -56.9% speed for 8.0 s | 0.900: -3.79 attack damage for 8.0 s | 0.900: +2.2 magic damage every hit |
 
@@ -567,7 +567,7 @@ Worn (armor) effects are attribute modifiers, data components or small tick and 
 |---|---|---|
 | (best) | 0.900 | 1.58 HP/s poison for 8.0 s |
 | long potion instead of strong | 0.765 | 1.46 HP/s poison for 7.4 s |
-| Infusion V (prismarine shard) instead of VI (nether star) | 0.864 | 1.55 HP/s poison for 7.8 s |
+| Infusion V (prismarine shard) instead of VI (nether star) | 0.783 | 1.47 HP/s poison for 7.5 s |
 | splash potion (tier 2 at best: medium) | 0.675 | 1.37 HP/s poison for 6.9 s |
 | diamond weapon | 0.837 | 1.52 HP/s poison for 7.7 s |
 | bow, crossbow, trident or mace | 0.837 | 1.52 HP/s poison for 7.7 s |
@@ -580,14 +580,14 @@ Worn (armor) effects are attribute modifiers, data components or small tick and 
 - a gem's own strength reaches 1.0 only from the strongest potion (lingering) or source item + tier 3 + Infusion VI (nether star), for every craftable gem, so every one can reach the cap (owner); a found-only gem is perfect only from ominous loot at Infusion VI and tier 3
 - all 40 status effects in 26.3 are classified: 33 craftable gems, 6 found-only gems, 1 drawback-only, 4 not gems
 - 707,281 armor layouts x gem counts enumerated: only full contiguous netherite with 12 gems reaches 0.9; next best 0.874
-- 27,335 weapons x gem combinations enumerated: only a netherite weapon with 2 perfect gems reaches 0.9; next best weapon or gem count with perfect gems 0.837
+- 18,821 weapons x gem combinations enumerated: only a netherite weapon with 2 perfect gems reaches 0.9; next best weapon or gem count with perfect gems 0.837
 - from the best armor build and the best weapon build, every single step down (potion, base, tier, material, run, one gem fewer, a material-less weapon) loses at least 0.025
-- weakest single armor gem (normal potion, Infusion I, tier 1, lone leather piece) = 0.032; early armor kit (iron set, 4 Infusion II tier-1 gems) = 0.147-0.183; weakest weapon gem (wooden sword, Infusion I, tier 1) = 0.117; early weapon (iron sword, 1 Infusion II tier-1 gem) = 0.142-0.178
+- weakest single armor gem (normal potion, Infusion I, tier 1, lone leather piece) = 0.016; early armor kit (iron set, 4 Infusion II tier-1 gems) = 0.087-0.109; weakest weapon gem (wooden sword, Infusion I, tier 1) = 0.058; early weapon (iron sword, 1 Infusion II tier-1 gem) = 0.085-0.106
 - stacking: 25,000 random armor and weapon stacks never pass 0.9 x their strongest gem; adding a gem never lowers a total; 12 tier-1 armor gems lose to 4 tier-3 in every set, and 2 tier-1 weapon gems lose to 1 tier-3 on every weapon
 - every one of the 39 gems has a worn (armor) and a hit-applied (weapon) form; every worn mapping rises with strength and stays short of the vanilla level at the cap, except the owner's raised mobility caps Haste 2, Jump Boost 1.9994, Dolphin's Grace 1.5, Slow Falling 1.5, Speed 1.5 (above the strongest potion)
-- healing: best build returns 25% of each non-lethal hit (never a whole hit, so taking damage is always a net loss); early kit 7.0%; every step down from the best loses at least 0.5 points; the curve is flatter than linear
+- healing: best build returns 25% of each non-lethal hit (never a whole hit, so taking damage is always a net loss); early kit 4.9%; every step down from the best loses at least 0.5 points; the curve is flatter than linear
 - drawbacks: one is 10% of the strongest vanilla level, any number of one effect stays under 20%, below vanilla's level I for every drawback effect; Poison and Wither roll less often (uncommon weight, owner); Healing, Harming and the rest of the never-drawback list never roll
-- inversion: the strongest inverted gem is 0.72 (never perfect); each gem's grade reads back from its strength; roll weights by rarity {'common': 4, 'uncommon': 2, 'rare': 1}
+- inversion: the strongest inverted gem is 0.65 (never perfect); each gem's grade reads back from its strength; roll weights by rarity {'common': 4, 'uncommon': 2, 'rare': 1}
 - rolls: each of the 39 gems has one roll table; 'other' pools 11-24 effects, all the main effect's kind and never itself; drawback pools 5-22 effects, all the opposite kind, none on the never-drawback list, and none a direct opposite (13 inverse pairs, the owner's 12 included)
 - weapons: per hit, potency rises with strength toward the strongest potion's level (never reaching it); a hit lasts at most 8 s (the best weapon), less below it, never under its floor (owner); a real tipped arrow and a gem of the same effect don't add, the stronger level applies
 - loot: 40 vanilla tables get one extra roll (chance 4%-20%); each level's best gem beats the level below; only ominous vaults give perfect gems (any effect, Infusion VI, tier 3), with a drawback except 5% of the time; nowhere else gives a craftable gem Infusion VI; every found-only gem is listed at exactly the levels its source names; every table and item exists in 26.3
@@ -599,7 +599,7 @@ Worn (armor) effects are attribute modifiers, data components or small tick and 
 3. Answered (owner, 2026-11-14): the turtle helmet takes no gems for now.
 4. Answered (owner, 2026-11-14): Resistance's 1.0 is Resistance II, the beacon level (40%, gems up to 36%); no potion makes a plain Resistance gem.
 5. Answered (owner, 2026-11-14): a combined Turtle Master gem, brewed from Turtle Master potions, gives its Resistance and its full Slowness together, measured against the strong potion (Resistance IV + Slowness VI).
-6. Healing gem in armor returns at most 25% of each survivable hit (early iron kit about 7%)? yes / no.
+6. Healing gem in armor returns at most 25% of each survivable hit (early iron kit about 5%)? yes / no.
 7. Answered (owner, 2026-11-14): drawbacks stay 10% for one, under 20% for many, for now; tuned by playtesting.
 8. Answered (owner, 2026-11-14): Poison and Wither do roll as a beneficial gem's drawback, less often than the common ones (rarity weights, 2026-11-15; gem Poison still never kills).
 9. Answered (owner, 2026-11-14): a harmful gem's drawback rolls from every beneficial effect that works as a short effect on a target (all but Healing), minus the direct opposite: random, real combinations.

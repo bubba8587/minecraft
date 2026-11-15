@@ -36,7 +36,7 @@ public class BalanceGameTest {
 		close(b.cap, 0.90, 1e-9, helper, "cap (owner, question 1)");
 		close(b.stackR, 0.85, 1e-9, helper, "stack_r");
 		check(helper, b.armorSlots == 3 && b.weaponSlots == 2, "slots 3/2");
-		close(b.infusion(1).factor(), 0.80, 1e-9, helper, "Infusion I");
+		close(b.infusion(1).factor(), 0.40, 1e-9, helper, "Infusion I (owner: wider ladder)");
 		close(b.infusion(6).factor(), 1.00, 1e-9, helper, "Infusion VI");
 		check(helper, b.infusion(6).item().equals("minecraft:nether_star") && b.infusion(5).item().equals("minecraft:prismarine_shard"), "base gems");
 		close(b.armorMaterials.get("netherite"), 1.0, 1e-9, helper, "netherite");

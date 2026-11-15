@@ -689,7 +689,7 @@ public class GemsEverywhereGameTest {
 		attacker.setItemSlot(EquipmentSlot.MAINHAND, GemKit.socketed(Items.WOODEN_SWORD, weakest("regeneration")));
 		attacker.doHurtTarget(helper.getLevel(), healed);
 		float healedAfterHit = healed.getHealth();
-		helper.runAfterDelay(160, () -> {
+		helper.runAfterDelay(300, () -> { // past the weakest Regeneration hit's floor (long enough to heal a heart)
 			// Three damage ticks of the weakest poison or wither at least.
 			double p = GemMobEffect.potency(GemMobEffect.amplifier(Math.sqrt(Balance.get().stack(List.of(weakest("poison").main() * 0.75), Balance.get().weaponNorm))));
 			check(helper, poisonedAfterHit - poisoned.getHealth() >= 3 * 0.5 * 25 / 12.0 * 0.8 * p * 0.99, "the weakest poison hit barely ticked: "

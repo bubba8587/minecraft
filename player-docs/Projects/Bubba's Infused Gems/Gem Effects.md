@@ -13,6 +13,7 @@ Any Gem fits armor or a weapon; **where it is set decides who gets its effects**
 Most gem effects are weaker than a real potion: the best possible build reaches 90% of the strongest potion level, and only one build does: twelve perfect gems of one effect in a full set of netherite armor (or two in a netherite weapon). A few movement effects in armor go further than any potion at the best build, so a perfect set is worth chasing: Haste, Jump Boost, Dolphin's Grace, Slow Falling and Speed (see the table below). Weapon hits always stay under the potion.
 
 - **Stacking:** gems of the same effect add up, each extra one counting a little less than the one before.
+- **Base gem:** the gem's Infusion level (its base gem) matters most: a full iron set of amethyst gems reaches about a third of the best, diamond-base gems in diamond armor about 70%.
 - **Material:** the same gem is stronger in better armor or weapons, from leather and wood up to netherite. Gold counts like diamond, for its strong enchanting. Bows, crossbows, tridents and maces count like diamond.
 - **Matching set:** armor pieces of the same material next to each other (helmet, chestplate, leggings, boots) add strength. A matching helmet and chestplate beat a matching helmet and boots; a full matching set is best.
 - **Drawbacks** are small and fixed, about a tenth of the effect's strongest potion level. Several of the same drawback add up a little, but stay weaker than the weakest real potion.

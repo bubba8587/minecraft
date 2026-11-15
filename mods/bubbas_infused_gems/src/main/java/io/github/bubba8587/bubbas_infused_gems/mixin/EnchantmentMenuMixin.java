@@ -30,7 +30,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
  * An Infused Gem in the enchanting table (station/GemEnchanting): the three rows are its three tiers, with vanilla's
- * bookshelf costs, lapis 1-3 and XP; rows above the gem's form stay off. Choosing a row turns it into the finished gem
+ * bookshelf costs (the full level cost is paid) and lapis 1-3; rows above the gem's form, and tiers without their
+ * bookshelves (tier 2: 8, tier 3: 15; owner), stay off. Choosing a row turns it into the finished gem
  * rolled from that tier with the player's enchantment seed. The hint is drawn by the client (EnchantmentScreenMixin),
  * so the vanilla clue stays empty.
  */
@@ -103,7 +104,8 @@ public abstract class EnchantmentMenuMixin extends AbstractContainerMenu {
 		InfusedGem infused = stack.get(ModComponents.INFUSED_GEM);
 		this.access.execute((level, pos) -> {
 			Gem gem = GemEnchanting.roll(this.enchantmentSeed.get(), tier, infused);
-			player.onEnchantmentPerformed(stack, tier);
+			// Owner: the full level cost shown is paid (vanilla gear pays only 1-3).
+			player.onEnchantmentPerformed(stack, free ? 0 : this.costs[buttonId]);
 			ItemStack result = GemEnchanting.finished(gem);
 			this.enchantSlots.setItem(0, result);
 			lapis.consume(tier, player);

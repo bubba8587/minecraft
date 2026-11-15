@@ -13,7 +13,7 @@
 
 ## Usage
 
-The player places an Infused Gem and lapis lazuli in an enchanting table. The three rows are three **tiers**. Each costs 1, 2 or 3 levels and lapis lazuli as in normal enchanting, and bookshelves around the table raise the level requirement the same way.
+The player places an Infused Gem and lapis lazuli in an enchanting table. The three rows are three **tiers**. As with gear, bookshelves around the table set each row's level cost, and the full cost shown is paid (about 10, 20 and 30 levels with 15 bookshelves), plus 1, 2 or 3 lapis lazuli. Tier 2 needs at least 8 bookshelves and tier 3 all 15; without them the row is unavailable.
 
 Rows above the gem's form are disabled:
 
