@@ -1,0 +1,6 @@
+{
+	"parent": "bubbas_reworked_mobs:item/grave_talisman_held",
+	"textures": {
+		"layer0": "bubbas_reworked_mobs:item/grave_talisman"
+	}
+}
