@@ -66,8 +66,8 @@ execute if score #r tw matches 1
 execute store result score #r tw run gamerule command_block_output
 execute if score #r tw matches 0
 execute if block 0 -61 20 minecraft:dark_oak_planks
-execute if data block -3 -58 19 {allow_op_features:1b}
-execute if data block -3 -58 19 front_text.messages[1].click_event{command:"gems kit speed"}
+execute if data block -3 -57 19 {allow_op_features:1b}
+execute if data block -3 -57 19 front_text.messages[1].click_event{command:"gems kit speed"}
 execute if data block 3 -59 19 front_text.messages[1].click_event{command:"gems kit speed leather"}
 # the wardrobe's take-off command clears every armor slot (tried on an armor stand)
 summon minecraft:armor_stand 0.5 -60 44.5 {Tags:["tw_probe"],NoGravity:1b,equipment:{head:{id:"minecraft:iron_helmet",count:1},feet:{id:"minecraft:iron_boots",count:1}}}
@@ -114,3 +114,12 @@ execute if data block 16 -60 53 Items[{id:"minecraft:netherite_pickaxe",componen
 execute if data block 16 -60 53 Items[{Slot:20b,id:"minecraft:iron_axe"}]
 execute if block 10 -59 56 minecraft:dirt
 execute if block 24 -58 56 minecraft:oak_log
+# Infusion V twins (owner: test what the perfect set's extras add)
+execute if block -3 -58 19 minecraft:birch_wall_sign
+execute if data block -3 -58 19 front_text.messages[1].click_event{command:"gems kit speed netherite 5"}
+execute if data block -3 -60 31 front_text.messages[1].click_event{command:"gems kit hero_of_the_village netherite 5"}
+execute if data block 3 -58 31 front_text.messages[1].click_event{command:"gems kit infested netherite 5"}
+execute if data block -35 -59 18 front_text.messages[1].click_event{command:"gems kit ender netherite 5"}
+execute if data block -23 -60 36 front_text.messages[1].click_event{command:"gems kit weaving netherite 5"}
+execute if data block 0 -60 53 front_text.messages[1].click_event{command:"gems kit saturation netherite 5"}
+execute if data block 45 -60 18 front_text.messages[1].click_event{command:"gems kit invisibility netherite 5"}

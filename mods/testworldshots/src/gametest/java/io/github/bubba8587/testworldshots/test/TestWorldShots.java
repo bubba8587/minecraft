@@ -168,8 +168,8 @@ public class TestWorldShots implements FabricClientGameTest {
 		// Wardrobe: aisle x -3..3, z 18..32; wall signs at x -3 (helpful, face east) and x 3 (harmful, materials, tools).
 		shot("wardrobe_entrance", 0.5, -58.2, 14.5, 0.5, -59, 26);
 		for (double z : new double[] {21, 25.5, 29.5}) {
-			shot("wardrobe_west_z" + (int) z, -0.8, -58.5, z, -3.5, -58.6, z);
-			shot("wardrobe_east_z" + (int) z, 1.8, -58.5, z, 4.5, -58.6, z);
+			shot("wardrobe_west_z" + (int) z, 0.2, -58.4, z, -3.5, -58.5, z);
+			shot("wardrobe_east_z" + (int) z, 0.8, -58.4, z, 4.5, -58.5, z);
 		}
 		wardrobeClick();
 		shot("stands", 0.5, -57.6, 31.5, 0.5, -59.4, 37);
@@ -230,7 +230,7 @@ public class TestWorldShots implements FabricClientGameTest {
 		world.getServer().runCommand("gamemode creative @a");
 		world.getServer().runCommand("tp @a 0.5 -60 19.5 90 0");
 		context.waitTicks(5);
-		clickSign(-3, -58, 19);
+		clickSign(-3, -57, 19);
 		world.getServer().runOnServer(server -> {
 			ServerPlayer player = server.getPlayerList().getPlayers().getFirst();
 			ItemStack chest = player.getItemBySlot(EquipmentSlot.CHEST);
