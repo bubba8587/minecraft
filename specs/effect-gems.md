@@ -21,7 +21,7 @@ Asked one at a time; answers land here.
 1. ~~How gems attach~~ **Decided (owner): data on the armor via vanilla stations.** A smithing table adds a gem to a piece of armor (like a trim); a grindstone removes it and returns the gem (like stripping enchantments). The gem is stored on the armor item and shown in its tooltip. No new GUI.
 2. ~~Strength~~ **Decided (owner):**
    - A gem gives a **partial** version of its effect, never a full potion (where an effect can't be partial, e.g. night vision, its drawback balances it instead).
-   - Its strength comes from **the potion used to make it** and **the base gem it's crafted from**. Base gems: diamond, quartz, ender pearl, nether star, prismarine, amethyst. **Diamond is the best.**
+   - Its strength comes from **the potion used to make it** and **the base gem it's crafted from**. Base gems: diamond, quartz, ender pearl, nether star, prismarine, amethyst. (Order revised below: by difficulty of getting it, nether star strongest.)
    - **More than one gem** can go on armor, and the same effect **stacks**: the best possible stack (diamond gems from the strongest potions) reaches **just under the strongest vanilla potion level** of that effect, never equal to it.
    - **Broken armor pops its gems out** (dropped, not lost). If that's tricky, gems fall out at very low durability instead.
    - **3 gem slots on every armor piece**, any material (owner).
@@ -52,3 +52,4 @@ The numbers for item 6 live in `tools/gem-balance.py`, which checks them and gen
 - **Harmful-effect gems work like Thorns:** poison, slowness, weakness, harming (and similar) gems put that effect on whatever attacks the wearer, not on the wearer and not on what the wearer hits.
 - **Healing gem:** when the wearer takes damage from an attack or a fall that doesn't kill them, they instantly regain a portion of that damage instance (a killing blow still kills). Its own, much flatter curve so the best possible version stays modest (starting idea: at most ~25 % of each hit returned; to settle in the tables).
 - Open: with harmful gems turned outward, do the enchant outcomes still include **negative effects on the wearer** (tier 1 "weak negative", tier 3 "strongest + weak negative")?
+- **Base gem order by difficulty of getting it (owner), weakest to strongest:** amethyst, quartz, ender pearl (farmable), diamond (common in chest loot), prismarine (ocean monuments; crystals also in buried treasure), nether star (the Wither). The very best build is therefore **lingering potion + nether star + tier 3 + full netherite**. No loot tables are changed for this.
