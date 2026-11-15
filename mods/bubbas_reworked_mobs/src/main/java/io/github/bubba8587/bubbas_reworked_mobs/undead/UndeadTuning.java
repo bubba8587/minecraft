@@ -37,6 +37,14 @@ public final class UndeadTuning {
 	/** ... and walk to the group's centre, stopping this close. */
 	public static final double DRIFT_STOP_DISTANCE = 3.0;
 
+	// The zombie shamble (ZombieGait): a long drag, then a fall onto the good leg. Starting values, owner to tune.
+	/** Ticks per shamble cycle (one drag and one step). */
+	public static final int GAIT_PERIOD_TICKS = 30;
+	/** The first this much of the cycle is the slow drag; the rest is the step, a fall onto the good leg. */
+	public static final float GAIT_DRAG_FRACTION = 0.75F;
+	/** Body speed during the drag, as a fraction of the average speed (the step makes up the rest). */
+	public static final float GAIT_DRAG_SPEED = 0.9F;
+
 	// Robbing: one item per empty-hand use; armor always risks more than the weapon.
 	public static final float ROB_WEAPON_WAKE_CHANCE = 0.1F;
 	public static final float ROB_ARMOR_WAKE_CHANCE = 0.3F;
