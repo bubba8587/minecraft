@@ -17,7 +17,7 @@ Gems are a class of items, each embodying a **permanent** potion effect, added t
 
 Asked one at a time; answers land here.
 
-1. How gems attach: data on the armor via a vanilla station (smithing table to add, grindstone to remove) vs. new slots/GUI.
+1. ~~How gems attach~~ **Decided (owner): data on the armor via vanilla stations.** A smithing table adds a gem to a piece of armor (like a trim); a grindstone removes it and returns the gem (like stripping enchantments). The gem is stored on the armor item and shown in its tooltip. No new GUI.
 2. Strength cap and stacking (one gem per piece? same effect on several pieces?).
 3. Drawbacks.
 4. How gems are obtained (and lost).
