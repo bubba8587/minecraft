@@ -46,3 +46,11 @@ execute if entity @e[type=minecraft:item_frame,x=-26,y=-59,z=10,distance=..1]
 execute if block 23 -30 6 minecraft:ladder[facing=west]
 execute if data block 21 0 6 Items[{id:"bubbas_crafting_tweaks:glider"}]
 execute if data block 21 0 6 Items[{id:"minecraft:elytra"}]
+# infused gems station
+execute if block 36 -60 6 minecraft:brewing_stand
+execute if block 40 -60 10 minecraft:enchanting_table
+execute if block 42 -60 12 minecraft:bookshelf
+execute if data block 34 -60 6 Items[{id:"minecraft:lingering_potion",components:{"minecraft:potion_contents":{potion:"minecraft:strong_swiftness"}}}]
+execute if data block 31 -60 6 Items[{id:"minecraft:nether_star"}]
+execute if data block 45 -60 6 Items[{id:"minecraft:netherite_chestplate"}]
+execute if entity @e[type=minecraft:pig,x=35.5,y=-60,z=11.5,distance=..1]
