@@ -10,13 +10,27 @@ import java.nio.file.StandardCopyOption;
 import java.util.Locale;
 import java.util.stream.Stream;
 
+import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.ContainerScreen;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
 import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.LeverBlock;
+import net.minecraft.world.level.block.entity.SignBlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.entity.EntityTypeTest;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.level.block.entity.SignTextSlot;
 
 import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
@@ -138,6 +152,163 @@ public class TestWorldShots implements FabricClientGameTest {
 		chest("gems_chest_run_test", 45, -60, 12);
 		chest("gems_chest_weapons", 45, -60, 13);
 		chest("gems_chest_drawback_gear", 46, -60, 9);
+
+		grounds();
+	}
+
+	/** Gem Testing Grounds, south of the hub (x -47..46, z 11..63; specs/testworld.md, Layout). */
+	private void grounds() {
+		shot("grounds_hub_signs", 0, -58.4, 7.5, 0, -59.5, 11.5);
+		shot("grounds_hub_west_sign", -7, -58.6, 6.2, -7, -59.5, 3.5);
+		shot("grounds_overview", 0.5, -25, -2, 0.5, -60, 38);
+		shot("grounds_overview_west", -24, -30, 8, -24, -60, 40);
+		shot("grounds_overview_east", 26, -30, 8, 26, -60, 40);
+
+		// Wardrobe: aisle x -3..3, z 18..32; wall signs at x -3 (helpful, face east) and x 3 (harmful, materials, tools).
+		shot("wardrobe_entrance", 0.5, -58.2, 14.5, 0.5, -59, 26);
+		for (double z : new double[] {21, 25.5, 29.5}) {
+			shot("wardrobe_west_z" + (int) z, -0.8, -58.5, z, -3.5, -58.6, z);
+			shot("wardrobe_east_z" + (int) z, 1.8, -58.5, z, 4.5, -58.6, z);
+		}
+		wardrobeClick();
+		shot("stands", 0.5, -57.6, 31.5, 0.5, -59.4, 37);
+
+		// Arrow gallery x -44..-30, z 19..31; Live range x -46..-32, z 37..47.
+		shot("gallery_overview", -37, -50, 13, -37, -60, 25);
+		shot("gallery_kit_signs", -37, -58.4, 15.6, -37, -59, 18.5);
+		shot("gallery_spot_lever", -37, -58.2, 23.4, -36.5, -59.5, 20);
+		shot("gallery_front_dispenser", -36.5, -58.4, 22.5, -36.5, -59, 30);
+		galleryLever();
+		shot("range_overview", -39, -47, 34, -39, -58, 44);
+		shot("range_signs", -40, -58.4, 41.2, -40, -59, 38.5);
+		shot("range_turrets", -39.5, -58.4, 39.5, -39.5, -57, 45.5);
+
+		// Drop pads x -22..-10 (pillars at z 23), jump steps x -13..-7 (z 40), cobweb field x -23..-17 (z 38..46).
+		shot("drops_overview", -16, -48, 12, -16, -52, 26);
+		shot("drops_signs", -18, -58.4, 16.2, -18, -59.5, 20);
+		shot("drops_top_24", -10, -34.4, 25.3, -10, -60, 31);
+		shot("jumps_webs", -16, -55, 31, -16, -60, 41);
+		shot("webs_signs", -20, -58.4, 33.5, -20, -59.5, 36.5);
+
+		// Deep pool x 8..18, z 20..30; sky column x 21..25.
+		shot("pool_outside", 13, -56, 12, 13, -57, 24);
+		shot("pool_above", 13, -46, 25.5, 13, -60, 25.6);
+		shot("pool_signs", 7.5, -58.4, 16, 7.5, -59.5, 19.5);
+		shot("sky_column", 14, -44, 12, 24, -42, 23);
+		shot("sky_signs", 23, -58.4, 17, 23, -59.5, 20.5);
+
+		// Mob pen x 30..44, z 19..31 (spawn signs at z 18); dummies x 8..24, z 36..46; villagers x 30..44.
+		shot("pen_overview", 37, -53, 10, 37, -59, 25);
+		shot("pen_signs_west", 34.5, -58.4, 15, 34.5, -59.5, 18.5);
+		shot("pen_signs_east", 41.5, -58.4, 15, 41.5, -59.5, 18.5);
+		shot("dummies_overview", 16, -55, 31, 16, -60, 43);
+		shot("dummies_signs_west", 12, -58.4, 34, 12, -59.5, 37.5);
+		shot("dummies_signs_east", 19, -58.4, 34, 19, -59.5, 37.5);
+		shot("villagers", 37, -57.4, 34, 37, -59.5, 42);
+		dummiesReset();
+
+		// Row 3 (z 52..63): sculk hall x -42..-38, lava moat x -28..-20, dark room x -12..-4, food bench x 0..8, mining wall x 12..22.
+		shot("sculk_overview", -40, -53, 46, -40, -60, 58);
+		shot("sculk_signs", -40, -58.4, 48.6, -40, -59.5, 52.5);
+		shot("sculk_inside", -40, -58.4, 53.5, -40, -59.5, 61);
+		shot("lava_overview", -24, -53, 47, -24, -61, 57);
+		shot("lava_signs", -23.5, -58.4, 49.6, -23.5, -59.5, 53.5);
+		shot("dark_signs", -7, -58.4, 48.6, -7, -59.5, 52.5);
+		shot("dark_inside_exit_sign", -7.5, -58.4, 56.5, -7.8, -58.6, 54);
+		shot("dark_inside_zombie", -7.5, -58.4, 55.5, -7.5, -59, 59.5);
+		shot("food_bench", 4.5, -58, 49.5, 4.5, -59.5, 54);
+		shot("mining_wall", 17, -57.4, 49, 17, -59, 55);
+	}
+
+	/**
+	 * Clicks the wardrobe's Speed sign as the player (the sign's own click path, as a right click runs it) and checks the
+	 * worn chestplate got gems; then a third-person picture of the player in it, and the Take off sign empties the slot.
+	 */
+	private void wardrobeClick() {
+		world.getServer().runCommand("gamemode creative @a");
+		world.getServer().runCommand("tp @a 0.5 -60 19.5 90 0");
+		context.waitTicks(5);
+		clickSign(-3, -58, 19);
+		world.getServer().runOnServer(server -> {
+			ServerPlayer player = server.getPlayerList().getPlayers().getFirst();
+			ItemStack chest = player.getItemBySlot(EquipmentSlot.CHEST);
+			boolean gems = chest.getComponents().keySet().stream()
+					.anyMatch(t -> "bubbas_infused_gems:socketed_gems".equals(String.valueOf(BuiltInRegistries.DATA_COMPONENT_TYPE.getKey(t))));
+			if (!chest.is(Items.NETHERITE_CHESTPLATE) || !gems) {
+				throw new AssertionError("wardrobe Speed sign did not put on a gemmed netherite chestplate: " + chest);
+			}
+		});
+		context.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_FRONT));
+		context.waitTicks(5);
+		world.getConnection().waitForChunksRender();
+		context.waitTicks(5);
+		context.takeScreenshot("wardrobe_speed_set_worn");
+		context.runOnClient(mc -> mc.options.setCameraType(CameraType.FIRST_PERSON));
+		clickSign(3, -59, 27);
+		world.getServer().runOnServer(server -> {
+			ServerPlayer player = server.getPlayerList().getPlayers().getFirst();
+			if (!player.getItemBySlot(EquipmentSlot.CHEST).isEmpty() || !player.getItemBySlot(EquipmentSlot.HEAD).isEmpty()) {
+				throw new AssertionError("wardrobe Take off sign left armor on");
+			}
+			player.getInventory().clearContent();
+		});
+		world.getServer().runCommand("gamemode spectator @a");
+		context.waitTicks(2);
+	}
+
+	/**
+	 * Flips the gallery lever on (as a player's click does), checks the command block clock under the floor fires the
+	 * dispensers (arrows in the air), screenshots one in flight, and flips it off again.
+	 */
+	private void galleryLever() {
+		BlockPos lever = new BlockPos(-35, -60, 20);
+		world.getServer().runOnServer(server -> {
+			BlockState state = server.overworld().getBlockState(lever);
+			((LeverBlock) state.getBlock()).pull(state, server.overworld(), lever, null);
+		});
+		context.waitTicks(30);
+		world.getServer().runOnServer(server -> {
+			if (server.overworld().getEntitiesOfClass(AbstractArrow.class, new AABB(-46, -62, 18, -29, -55, 33)).isEmpty()) {
+				throw new AssertionError("gallery lever on, but no dispenser fired after 30 ticks");
+			}
+		});
+		shot("gallery_arrows_flying", -33, -57, 25.5, -37, -59, 25);
+		world.getServer().runOnServer(server -> {
+			BlockState state = server.overworld().getBlockState(lever);
+			((LeverBlock) state.getBlock()).pull(state, server.overworld(), lever, null);
+		});
+	}
+
+	/** Kills a dummy, clicks the Reset dummies sign, and checks all five are back (once each) and the trigger is gone. */
+	private void dummiesReset() {
+		world.getServer().runCommand("kill @e[tag=tw_d_pig]");
+		context.waitTicks(2);
+		world.getServer().runCommand("gamemode creative @a");
+		clickSign(21, -60, 37);
+		context.waitTicks(3);
+		world.getServer().runOnServer(server -> {
+			int n = server.overworld().getEntities(EntityTypeTest.forClass(Entity.class), e -> e.isAlive() && e.entityTags().contains("tw_dummy")).size();
+			if (n != 5) {
+				throw new AssertionError("Reset dummies left " + n + " dummies, expected 5");
+			}
+			if (!server.overworld().getBlockState(new BlockPos(9, -61, 39)).is(Blocks.GRASS_BLOCK)) {
+				throw new AssertionError("Reset dummies left its redstone block in the floor");
+			}
+		});
+		world.getServer().runCommand("gamemode spectator @a");
+	}
+
+	/** Runs a sign's click commands for the player, as a right click on its front does. */
+	private void clickSign(int x, int y, int z) {
+		BlockPos pos = new BlockPos(x, y, z);
+		world.getServer().runOnServer(server -> {
+			ServerPlayer player = server.getPlayerList().getPlayers().getFirst();
+			if (!(server.overworld().getBlockEntity(pos) instanceof SignBlockEntity sign)
+					|| !sign.executeClickCommandsIfPresent(server.overworld(), player, pos, SignTextSlot.FRONT)) {
+				throw new AssertionError("no click sign at " + pos.toShortString());
+			}
+		});
+		context.waitTicks(3);
 	}
 
 	/** One graveyard row (z): each half (sitting, lying) from the south and from the north. */

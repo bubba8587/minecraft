@@ -1,0 +1,14 @@
+# Dark room x -12..-4, z 53..61: sealed blackstone box, no light inside; signs teleport in and out.
+fill -12 -61 53 -4 -56 61 minecraft:polished_blackstone_bricks outline
+setblock -9 -59 61 minecraft:red_concrete
+setblock -8 -59 61 minecraft:lime_concrete
+setblock -7 -59 61 minecraft:blue_concrete
+summon minecraft:zombie -7.5 -60 59.5 {Tags:["tw_dark"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Rotation:[180f,0f]}
+setblock -8 -59 54 minecraft:oak_wall_sign[facing=south]{allow_op_features:1b,front_text:{has_glowing_text:1b,messages:[{text:"Way out",bold:true,color:"yellow",click_event:{action:"run_command",command:"tp @s -7.5 -60 51.5 180 0"}},{text:"click me",color:"yellow"},{text:"(glowing sign)",color:"gold"},{text:""}]}}
+setblock -9 -60 52 minecraft:oak_sign[rotation=8]{allow_op_features:1b,front_text:{messages:[{text:"Dark Room",bold:true,color:"black",click_event:{action:"run_command",command:"tp @s -7.5 -60 56.5 180 0"}},{text:"click to go in;"},{text:"pitch dark,"},{text:"a zombie waits"}]}}
+setblock -8 -60 52 minecraft:oak_sign[rotation=8]{allow_op_features:1b,front_text:{messages:[{text:"Night Vision",bold:true,color:"dark_green",click_event:{action:"run_command",command:"item override entity @s armor.* with minecraft:air"}},{text:"netherite set",click_event:{action:"run_command",command:"gems kit night_vision"}},{text:"+ sword",click_event:{action:"run_command",command:"playsound minecraft:item.armor.equip_netherite player @s ~ ~ ~ 1 1"}},{text:"see inside",color:"gray"}]}}
+setblock -7 -60 52 minecraft:oak_sign[rotation=8]{allow_op_features:1b,front_text:{messages:[{text:"Darkness",bold:true,color:"dark_red",click_event:{action:"run_command",command:"item override entity @s armor.* with minecraft:air"}},{text:"netherite set",click_event:{action:"run_command",command:"gems kit darkness"}},{text:"+ sword",click_event:{action:"run_command",command:"playsound minecraft:item.armor.equip_netherite player @s ~ ~ ~ 1 1"}},{text:"click to wear",color:"gray"}]}}
+setblock -6 -60 52 minecraft:oak_sign[rotation=8]{allow_op_features:1b,front_text:{messages:[{text:"Blindness",bold:true,color:"dark_red",click_event:{action:"run_command",command:"item override entity @s armor.* with minecraft:air"}},{text:"netherite set",click_event:{action:"run_command",command:"gems kit blindness"}},{text:"+ sword",click_event:{action:"run_command",command:"playsound minecraft:item.armor.equip_netherite player @s ~ ~ ~ 1 1"}},{text:"click to wear",color:"gray"}]}}
+setblock -5 -60 52 minecraft:oak_sign[rotation=8]{allow_op_features:1b,front_text:{messages:[{text:"No effects",bold:true,color:"black",click_event:{action:"run_command",command:"effect clear @s"}},{text:"clears potion"},{text:"effects"},{text:""}]}}
+setblock -11 -57 51 minecraft:light[level=15]
+setblock -5 -57 51 minecraft:light[level=15]

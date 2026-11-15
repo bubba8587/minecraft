@@ -8,3 +8,4 @@ function bubba_testworld:arena
 function bubba_testworld:loot
 function bubba_testworld:graveyard
 function bubba_testworld:gems
+function bubba_testworld:grounds

@@ -1,6 +1,6 @@
 # Checks run on a copy of the finished world (tools/build-testworld.py verify step). Every setblock and display
 # command of the build is also checked automatically (the block and its state are there); these are the rest.
-forceload add -48 -48 47 15
+forceload add -48 -48 47 63
 scoreboard objectives add tw dummy
 # world rules
 execute store result score #r tw run gamerule advance_time
@@ -60,3 +60,48 @@ execute if block 40 -58 8 minecraft:bookshelf
 execute if block 40 -59 8 minecraft:air
 execute if data block 45 -60 9 Items[{id:"minecraft:diamond_chestplate"}]
 execute if data block 45 -60 13 Items[{id:"minecraft:mace"}]
+# gem testing grounds (south of the hub)
+execute store result score #r tw run gamerule command_blocks_work
+execute if score #r tw matches 1
+execute store result score #r tw run gamerule command_block_output
+execute if score #r tw matches 0
+execute if block 0 -61 20 minecraft:dark_oak_planks
+execute if data block -3 -58 19 {allow_op_features:1b}
+execute if data block -3 -58 19 front_text.messages[1].click_event{command:"gems kit speed"}
+execute if data block 3 -59 19 front_text.messages[1].click_event{command:"gems kit speed leather"}
+# the wardrobe's take-off command clears every armor slot (tried on an armor stand)
+summon minecraft:armor_stand 0.5 -60 44.5 {Tags:["tw_probe"],NoGravity:1b,equipment:{head:{id:"minecraft:iron_helmet",count:1},feet:{id:"minecraft:iron_boots",count:1}}}
+execute as @e[tag=tw_probe] run item override entity @s armor.* with minecraft:air
+execute unless data entity @e[tag=tw_probe,limit=1] equipment.head
+execute unless data entity @e[tag=tw_probe,limit=1] equipment.feet
+kill @e[tag=tw_probe]
+execute if entity @e[type=minecraft:armor_stand,tag=tw_stand,x=-4.5,y=-60,z=37.5,distance=..1,nbt={equipment:{chest:{components:{"bubbas_infused_gems:socketed_gems":[{effect:"minecraft:speed"}]}}}}]
+execute if data block -37 -59 30 Items[{id:"minecraft:arrow"}]
+execute if data block -35 -62 20 {Command:"scoreboard players add #gallery tw_clock 1"}
+execute if block -45 -62 20 minecraft:chain_command_block
+execute if entity @e[type=minecraft:skeleton,tag=tw_turret,limit=2]
+execute if entity @e[type=minecraft:pillager,tag=tw_turret]
+execute if entity @e[type=minecraft:oak_boat,tag=tw_turret]
+execute if block -22 -57 23 minecraft:stone_bricks
+execute if block -10 -37 25 minecraft:stone_bricks
+execute if block -10 -40 22 minecraft:ladder[facing=north]
+execute if block -22 -59 42 minecraft:cobweb
+execute if block 13 -60 25 minecraft:water
+execute if block 13 -54 25 minecraft:water
+execute if block 13 -58 20 minecraft:glass
+execute if block 23 -62 23 minecraft:water
+execute if block 25 -21 23 minecraft:red_concrete
+execute if block 37 -56 25 minecraft:glass
+execute if block 37 -58 25 minecraft:air
+execute if entity @e[type=minecraft:wither_skeleton,tag=tw_dummy]
+execute if entity @e[type=minecraft:pig,tag=tw_dummy]
+execute if data block 10 -62 37 {auto:1b}
+execute if entity @e[type=minecraft:villager,tag=tw_villager,nbt={VillagerData:{profession:"minecraft:librarian"}}]
+execute if entity @e[type=minecraft:villager,tag=tw_villager,nbt={Offers:{Recipes:[{buy:{count:20}}]}}]
+execute if block -24 -62 57 minecraft:lava
+execute if block -24 -61 60 minecraft:deepslate_brick_stairs
+execute if block -8 -58 57 minecraft:air
+execute if block -8 -56 57 minecraft:polished_blackstone_bricks
+execute if entity @e[type=minecraft:zombie,tag=tw_dark]
+execute if data block 4 -60 55 Items[{id:"minecraft:cooked_beef"}]
+execute if block 20 -59 56 minecraft:obsidian

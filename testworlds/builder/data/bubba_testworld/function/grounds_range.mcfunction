@@ -1,0 +1,25 @@
+# Live range x -46..-32, z 37..47: walls 5 high, door in the west wall at z 38 (out of the archers' sight from
+# the avenue). Skeletons and a pillager sit in boats on a ledge (z 45..46); they only shoot survival players.
+fill -46 -60 37 -32 -56 47 minecraft:stone_bricks outline
+fill -45 -60 38 -33 -56 46 minecraft:air
+fill -46 -61 37 -32 -61 47 minecraft:smooth_stone
+fill -46 -60 38 -46 -59 38 minecraft:air
+fill -45 -60 45 -33 -58 46 minecraft:stone_bricks
+setblock -39 -61 40 minecraft:red_concrete
+summon minecraft:oak_boat -42.5 -57 45.5 {Tags:["tw_turret"],Rotation:[180f,0f],Passengers:[{id:"minecraft:skeleton",Tags:["tw_turret"],PersistenceRequired:1b,equipment:{mainhand:{id:"minecraft:bow",count:1}}}]}
+summon minecraft:oak_boat -39.5 -57 45.5 {Tags:["tw_turret"],Rotation:[180f,0f],Passengers:[{id:"minecraft:pillager",Tags:["tw_turret"],PersistenceRequired:1b,equipment:{mainhand:{id:"minecraft:crossbow",count:1}}}]}
+summon minecraft:oak_boat -36.5 -57 45.5 {Tags:["tw_turret"],Rotation:[180f,0f],Passengers:[{id:"minecraft:skeleton",Tags:["tw_turret"],PersistenceRequired:1b,equipment:{mainhand:{id:"minecraft:bow",count:1}}}]}
+setblock -44 -59 38 minecraft:oak_wall_sign[facing=south]{is_waxed:1b,front_text:{messages:[{text:"Live Range",bold:true,color:"dark_red"},{text:"archers shoot"},{text:"survival"},{text:"players only"}]}}
+setblock -43 -59 38 minecraft:oak_wall_sign[facing=south]{allow_op_features:1b,front_text:{messages:[{text:"Turrets on",bold:true,color:"dark_red",click_event:{action:"run_command",command:"kill @e[tag=tw_turret]"}},{text:"re-seats the",click_event:{action:"run_command",command:'summon minecraft:oak_boat -42.5 -57 45.5 {Tags:["tw_turret"],Rotation:[180f,0f],Passengers:[{id:"minecraft:skeleton",Tags:["tw_turret"],PersistenceRequired:1b,equipment:{mainhand:{id:"minecraft:bow",count:1}}}]}'}},{text:"archers",click_event:{action:"run_command",command:'summon minecraft:oak_boat -39.5 -57 45.5 {Tags:["tw_turret"],Rotation:[180f,0f],Passengers:[{id:"minecraft:pillager",Tags:["tw_turret"],PersistenceRequired:1b,equipment:{mainhand:{id:"minecraft:crossbow",count:1}}}]}'}},{text:"",click_event:{action:"run_command",command:'summon minecraft:oak_boat -36.5 -57 45.5 {Tags:["tw_turret"],Rotation:[180f,0f],Passengers:[{id:"minecraft:skeleton",Tags:["tw_turret"],PersistenceRequired:1b,equipment:{mainhand:{id:"minecraft:bow",count:1}}}]}'}}]}}
+setblock -42 -59 38 minecraft:oak_wall_sign[facing=south]{allow_op_features:1b,front_text:{messages:[{text:"Turrets off",bold:true,color:"dark_red",click_event:{action:"run_command",command:"kill @e[tag=tw_turret]"}},{text:"removes them",click_event:{action:"run_command",command:"kill @e[type=minecraft:arrow,x=-46,y=-61,z=37,dx=14,dy=6,dz=10]"}},{text:"and arrows",click_event:{action:"run_command",command:"kill @e[type=minecraft:item,x=-46,y=-61,z=37,dx=14,dy=6,dz=10]"}},{text:""}]}}
+setblock -40 -59 38 minecraft:oak_wall_sign[facing=south]{allow_op_features:1b,front_text:{messages:[{text:"Ender",bold:true,color:"dark_green",click_event:{action:"run_command",command:"item override entity @s armor.* with minecraft:air"}},{text:"netherite set",click_event:{action:"run_command",command:"gems kit ender"}},{text:"+ sword",click_event:{action:"run_command",command:"playsound minecraft:item.armor.equip_netherite player @s ~ ~ ~ 1 1"}},{text:"blinks you",color:"gray"}]}}
+setblock -39 -59 38 minecraft:oak_wall_sign[facing=south]{allow_op_features:1b,front_text:{messages:[{text:"Breeze",bold:true,color:"dark_green",click_event:{action:"run_command",command:"item override entity @s armor.* with minecraft:air"}},{text:"netherite set",click_event:{action:"run_command",command:"gems kit breeze"}},{text:"+ sword",click_event:{action:"run_command",command:"playsound minecraft:item.armor.equip_netherite player @s ~ ~ ~ 1 1"}},{text:"deflects",color:"gray"}]}}
+setblock -37 -59 38 minecraft:oak_wall_sign[facing=south]{allow_op_features:1b,front_text:{messages:[{text:"Survival",bold:true,color:"dark_blue",click_event:{action:"run_command",command:"gamemode survival @s"}},{text:"click to take"},{text:"damage here"},{text:""}]}}
+setblock -36 -59 38 minecraft:oak_wall_sign[facing=south]{allow_op_features:1b,front_text:{messages:[{text:"Creative",bold:true,color:"dark_blue",click_event:{action:"run_command",command:"gamemode creative @s"}},{text:"click to stop"},{text:"taking damage"},{text:""}]}}
+setblock -45 -60 35 minecraft:oak_sign[rotation=8]{is_waxed:1b,front_text:{messages:[{text:"Live Range",bold:true,color:"dark_red"},{text:"door on the"},{text:"west side;"},{text:"real archers"}]}}
+setblock -44 -57 39 minecraft:light[level=15]
+setblock -44 -57 44 minecraft:light[level=15]
+setblock -39 -57 39 minecraft:light[level=15]
+setblock -39 -57 44 minecraft:light[level=15]
+setblock -34 -57 39 minecraft:light[level=15]
+setblock -34 -57 44 minecraft:light[level=15]
