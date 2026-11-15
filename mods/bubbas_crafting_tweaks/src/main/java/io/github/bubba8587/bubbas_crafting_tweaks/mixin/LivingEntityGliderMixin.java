@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.At;
 
 /**
  * The Glider turns more slowly: in {@code updateFallFlyingMovement} the horizontal velocity blends toward the look
- * direction by the constant 0.1 per tick (used twice, for x and z); with our Glider worn it is 0.05.
+ * direction by the constant 0.1 per tick (used twice, for x and z); with our Glider worn it is GliderHandling.GLIDER_TURN_BLEND (0.03).
  */
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityGliderMixin {

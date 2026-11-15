@@ -13,7 +13,7 @@ import net.minecraft.world.phys.Vec3;
 public final class GliderHandling {
 	/** Vanilla blends the flight direction 10 % per tick toward where the player looks; the Glider 5 %. */
 	public static final double VANILLA_TURN_BLEND = 0.1;
-	public static final double GLIDER_TURN_BLEND = 0.05;
+	public static final double GLIDER_TURN_BLEND = 0.03;
 
 	/**
 	 * A firework rocket pulls a gliding player toward 1.5 blocks/tick along the look direction (plus a 0.1 push);
