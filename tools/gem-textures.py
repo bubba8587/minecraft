@@ -47,13 +47,13 @@ def quant(v, n):
 
 
 def octagon(hw, hh, c):
-	"""A tall octagon centred on (0.5, 0.5): half width hw, half height hh, corners cut by c."""
+	"""An octagon centred on (0.5, 0.5): half width hw, half height hh, corners cut by c."""
 	return [(0.5 - hw + c, 0.5 - hh), (0.5 + hw - c, 0.5 - hh), (0.5 + hw, 0.5 - hh + c), (0.5 + hw, 0.5 + hh - c),
 		(0.5 + hw - c, 0.5 + hh), (0.5 - hw + c, 0.5 + hh), (0.5 - hw, 0.5 + hh - c), (0.5 - hw, 0.5 - hh + c)]
 
 
-OUTER = octagon(0.31, 0.45, 0.20)  # finished gem: an emerald-style step cut seen from above (owner)
-TABLE = octagon(0.13, 0.25, 0.07)  # the flat top facet
+OUTER = octagon(0.43, 0.43, 0.43 * 2 / (2 + 2 ** 0.5))  # finished gem: a regular octagon seen from above, emerald-like, not an emerald copy (owner)
+TABLE = octagon(0.22, 0.22, 0.22 * 2 / (2 + 2 ** 0.5))  # the flat top facet
 
 
 def cut_gem(n):
