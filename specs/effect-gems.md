@@ -34,7 +34,7 @@ Asked one at a time; answers land here.
    - **Brewing stand:** a potion + a base gem brews an **Infused Gem**. Six infused items in all, one per base gem (Infused Diamond, Infused Quartz, Infused Ender Pearl, Infused Nether Star, Infused Prismarine, Infused Amethyst): a glowing version of the base gem that carries the potion's effect and strength as data. 26.3 brewing recipes are data-driven (`minecraft:brewing`: potion-matching input, item reagent, any output item), so the recipes can be generated per potion x base gem.
    - **Enchanting table:** the infused gem is "enchanted" like gear, with vanilla's mechanics (XP levels, lapis, bookshelves, the seed and its preview). The three option rows are three tiers, each locking in one outcome by chance:
      - **Tier 1 (top row):** a weak negative effect, or a weak form of the intended effect.
-     - **Tier 2:** a medium form of the intended effect + a weak form of another effect.
+     - **Tier 2:** a medium form of the intended effect alone, or medium + a weak form of another effect (plain medium added by the owner).
      - **Tier 3:** one of: the strongest form alone; strongest + a weak other effect; strongest + a medium other effect; strongest + a weak negative effect.
      The result is the finished effect gem, ready for the smithing table.
    - **The potion form sets the highest tier the infused gem can reach (owner):** a normal potion allows tier 1 only; splash, tiers 1-2; lingering, all three. So gems start early and the strongest results stay endgame. The base gem is a second progression line (amethyst/quartz early ... diamond; nether star's place to settle in the tables). The enchanting table's preview and vanilla's reroll trick keep bad rolls from feeling final.
