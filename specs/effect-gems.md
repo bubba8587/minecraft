@@ -1,7 +1,7 @@
 <!-- dte:C4,B9,B15 -->
-# Effect gems (spec, early design)
+# Bubba's Infused Gems (spec, early design)
 
-Builds the C4 effectGems direction. Mod name and id not decided. Independent of the other mods.
+Builds the C4 effectGems direction as **Bubba's Infused Gems** (owner's name), mod id `bubbas_infused_gems`, Modrinth slug `bubbas-infused-gems` (free on 2026-11-14). Independent of the other mods.
 
 ## Owner's brief (2026-11-14)
 
