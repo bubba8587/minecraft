@@ -105,29 +105,41 @@ public final class GemActions {
 		}
 	}
 
-	/** Living Oozing slimes of this owner, anywhere (kept on the overworld; owner: at most slime_cap each). */
+	/** How near the owner an Oozing slime counts toward the cap (owner: left-behind slimes don't). */
+	public static final double SLIME_NEAR = 128.0;
+	/** Live Oozing slimes by owner (in memory: the slimes are never saved, so this is all of them). */
+	private static final java.util.Map<UUID, java.util.Set<UUID>> SLIMES = new java.util.concurrent.ConcurrentHashMap<>();
+
+	/** The owner's Oozing slimes alive near them (owner: the cap of 8 counts these; a few lookups, no entity search). */
 	public static int ownedSlimes(ServerLevel level, LivingEntity owner) {
-		java.util.Map<UUID, Integer> counts = level.getServer().overworld().getAttached(ModAttachments.SLIME_COUNTS);
-		return counts == null ? 0 : counts.getOrDefault(owner.getUUID(), 0);
-	}
-
-	private static void countSlime(ServerLevel level, UUID owner, int delta) {
-		ServerLevel overworld = level.getServer().overworld();
-		java.util.Map<UUID, Integer> counts = new java.util.HashMap<>(overworld.getAttachedOrElse(ModAttachments.SLIME_COUNTS, java.util.Map.of()));
-		int n = Math.max(0, counts.getOrDefault(owner, 0) + delta);
-		if (n == 0) {
-			counts.remove(owner);
-		} else {
-			counts.put(owner, n);
+		java.util.Set<UUID> set = SLIMES.get(owner.getUUID());
+		if (set == null) {
+			return 0;
 		}
-		overworld.setAttached(ModAttachments.SLIME_COUNTS, java.util.Map.copyOf(counts));
+		int n = 0;
+		for (java.util.Iterator<UUID> it = set.iterator(); it.hasNext();) {
+			Entity slime = level.getEntity(it.next());
+			if (slime == null || slime.isRemoved()) {
+				if (slime != null) {
+					it.remove();
+				}
+				continue; // another dimension, or gone: not near
+			}
+			if (slime.distanceToSqr(owner) <= SLIME_NEAR * SLIME_NEAR) {
+				n++;
+			}
+		}
+		return n;
 	}
 
-	/** An entity leaves the world for good (killed or discarded): an Oozing slime frees its owner's count. */
+	/** An Oozing slime leaves the world (killed, discarded, or its chunk unloads): forget it. */
 	public static void removed(Entity entity, Entity.RemovalReason reason) {
 		UUID owner = entity.getAttached(ModAttachments.SLIME_OWNER);
-		if (owner != null && reason.shouldDestroy() && entity.level() instanceof ServerLevel level) {
-			countSlime(level, owner, -1);
+		if (owner != null && reason != Entity.RemovalReason.CHANGED_DIMENSION) {
+			java.util.Set<UUID> set = SLIMES.get(owner);
+			if (set != null) {
+				set.remove(entity.getUUID());
+			}
 		}
 	}
 
@@ -142,11 +154,11 @@ public final class GemActions {
 			}
 			slime.setSize(1, true);
 			slime.setAttached(ModAttachments.SLIME_OWNER, owner.getUUID());
-			slime.setPersistenceRequired(); // owner: they stay (no despawn timer, no distance despawn)
+			slime.setPersistenceRequired(); // no despawning while loaded near the owner; never saved, so left-behind ones dissolve
 			slime.snapTo(target.getX() + (target.getRandom().nextDouble() - 0.5), target.getY() + 0.5,
 					target.getZ() + (target.getRandom().nextDouble() - 0.5), target.getRandom().nextFloat() * 360.0F, 0.0F);
 			if (level.addFreshEntity(slime)) {
-				countSlime(level, owner.getUUID(), 1);
+				SLIMES.computeIfAbsent(owner.getUUID(), k -> java.util.concurrent.ConcurrentHashMap.newKeySet()).add(slime.getUUID());
 			}
 		}
 	}

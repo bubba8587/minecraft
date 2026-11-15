@@ -32,6 +32,12 @@ public abstract class EntityMixin {
 		GemActions.removed((Entity) (Object) this, reason);
 	}
 
+	/** Oozing slimes are never saved: when their chunk unloads (left behind, or a server stop) they dissolve (owner). */
+	@ModifyReturnValue(method = "shouldBeSaved", at = @At("RETURN"))
+	private boolean bubbas$slimeNotSaved(boolean save) {
+		return save && !GemActions.ownedSlime((Entity) (Object) this);
+	}
+
 	@ModifyReturnValue(method = "considersEntityAsAlly", at = @At("RETURN"))
 	private boolean bubbas$slimeOwner(boolean ally, Entity other) {
 		return ally || GemActions.ownedBy((Entity) (Object) this, other);

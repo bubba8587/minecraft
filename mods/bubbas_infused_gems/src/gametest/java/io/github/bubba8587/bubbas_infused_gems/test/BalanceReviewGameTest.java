@@ -186,21 +186,27 @@ public class BalanceReviewGameTest {
 		helper.succeed();
 	}
 
-	/** 7. The Oozing slime cap is a true per-owner count: a slime gone for good frees a place. */
+	/** 7. The Oozing cap counts only slimes near the owner; slimes are never saved (left-behind ones dissolve). */
 	@GameTest
-	public void oozingSlimeCountFollowsDeaths(GameTestHelper helper) {
+	public void oozingSlimeCapCountsNearbySlimesOnly(GameTestHelper helper) {
 		ServerPlayer player = helper.makeMockServerPlayerInLevel();
 		player.setItemSlot(EquipmentSlot.MAINHAND, GemKit.socketed(Items.NETHERITE_SWORD, GemKit.gem("oozing", 1.0), GemKit.gem("oozing", 1.0)));
-		Mob pig = helper.spawnWithNoFreeWill(EntityTypes.PIG, new BlockPos(2, 1, 2));
-		pig.setHealth(0.05F);
-		int before = GemActions.ownedSlimes(helper.getLevel(), player);
-		player.attack(pig);
-		int after = GemActions.ownedSlimes(helper.getLevel(), player);
-		check(helper, after == before + 2, "slime count " + before + " -> " + after);
-		var slime = helper.getLevel().getEntitiesOfClass(net.minecraft.world.entity.monster.cubemob.Slime.class, pig.getBoundingBox().inflate(16),
+		Vec3 home = helper.absoluteVec(new Vec3(1.5, 1, 1.5));
+		player.teleportTo(home.x, home.y, home.z);
+		for (int kill = 0; kill < 6; kill++) {
+			Mob pig = helper.spawnWithNoFreeWill(EntityTypes.PIG, new BlockPos(2, 1, 2));
+			pig.setHealth(0.05F);
+			player.attack(pig);
+		}
+		check(helper, GemActions.ownedSlimes(helper.getLevel(), player) == 8, "nearby cap: " + GemActions.ownedSlimes(helper.getLevel(), player));
+		var slime = helper.getLevel().getEntitiesOfClass(net.minecraft.world.entity.monster.cubemob.Slime.class, new net.minecraft.world.phys.AABB(home, home).inflate(16),
 				x -> x.hasAttached(ModAttachments.SLIME_OWNER)).getFirst();
+		check(helper, !slime.shouldBeSaved(), "an Oozing slime would be saved with its chunk");
 		slime.discard();
-		check(helper, GemActions.ownedSlimes(helper.getLevel(), player) == after - 1, "a removed slime still counts");
+		check(helper, GemActions.ownedSlimes(helper.getLevel(), player) == 7, "a removed slime still counts");
+		// Run far away: the slimes left behind don't count, so a fresh 8 is possible there.
+		player.teleportTo(home.x + 300, home.y, home.z);
+		check(helper, GemActions.ownedSlimes(helper.getLevel(), player) == 0, "left-behind slimes still count: " + GemActions.ownedSlimes(helper.getLevel(), player));
 		GemKit.remove(helper, player);
 		helper.succeed();
 	}

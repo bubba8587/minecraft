@@ -367,7 +367,7 @@ effect("oozing", name="Oozing", potion="oozing", role="main", kind="action", var
 	anchor="Oozing: slimes split off where you die; a slime block's bounce",
 	value=lambda s: OOZING_BOUNCE_BEST * rel(s),
 	show=lambda s: f"bounces off landings like a slime block ({OOZING_BOUNCE_BEST * rel(s):.0%} of the fall speed), fall damage {1 - rel(s):.0%} of normal",
-	impl=f"Worn: fall damage x (1 - s/cap) and the wearer bounced back up with OOZING_BOUNCE_BEST x s/cap of the impact speed. Hit: a kill splits off {OOZING_SLIMES[0]}-{OOZING_SLIMES[1]} small slimes, neutral (no attack goals), owned by the attacker (isAlliedTo, stored on the slime), persistent (never despawn); at most OOZING_SLIME_CAP living per owner anywhere (a counter, not a search); no loot.",
+	impl=f"Worn: fall damage x (1 - s/cap) and the wearer bounced back up with OOZING_BOUNCE_BEST x s/cap of the impact speed. Hit: a kill splits off {OOZING_SLIMES[0]}-{OOZING_SLIMES[1]} small slimes, neutral (no attack goals), owned by the attacker (isAlliedTo, stored on the slime), never despawning while loaded but never saved (left-behind ones dissolve when their chunk unloads; owner); at most OOZING_SLIME_CAP living within 128 blocks of the owner; no loot.",
 	src="OozingMobEffect, SlimeBlock")
 effect("silence", name="Silence", potion=None, role="main", variants={"normal": None},
 	source=("item", "echo shard (ancient cities; owner)"),
