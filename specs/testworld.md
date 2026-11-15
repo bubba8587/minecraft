@@ -8,7 +8,7 @@ A superflat world with a station for every playable feature, so the owner can tr
 
 - **Pristine:** `testworlds/bubba-test-world/` in the repo. Built only by `tools/build-testworld.py`, never opened in a game, committed to git. Holds a `BUILD_INFO.txt` with the date and the mod versions it was built with.
 - **Playable:** `tools/install-to-modrinth.ps1` copies the pristine world into the Modrinth profile's `saves/` as "Bubba Test World". The owner plays that copy; nothing in it flows back to the repo.
-  - The copy is made when it's missing. If the pristine world is newer than the copy, the script says so and leaves the copy alone; `-ResetWorld` replaces it (the old copy is renamed with a timestamp, never deleted).
+  - The copy is made when it's missing. If the pristine world is newer than the copy, the script says so and leaves the copy alone; `-ResetWorld` writes over it with a fresh copy (owner: no old copies are kept; a reset also deletes any "Bubba Test World (old ...)" backups from earlier versions of the script).
   - The install also copies the owner's own settings, see `tools/sync-minecraft-settings.ps1`.
 
 ## How it's built

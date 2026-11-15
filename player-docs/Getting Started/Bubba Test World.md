@@ -11,4 +11,4 @@ A ready-made creative world with a station for every feature:
 
 It's always night, nothing spawns on its own, and signs at the spawn point say where everything is. Keep-inventory is on, so dying in the arena costs nothing.
 
-It appears in the "mod testing" profile's world list after an install. Your copy is yours to wreck; installing again never overwrites it. To get a fresh one, install with the reset option (your old copy is kept under a new name).
+It appears in the "mod testing" profile's world list after an install. Your copy is yours to wreck; installing again never overwrites it. To get a fresh one, install with the reset option, which writes over your copy (nothing from the old one is kept).

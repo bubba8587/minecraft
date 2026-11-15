@@ -3,7 +3,7 @@
 #
 #   pwsh tools/install-to-modrinth.ps1                      # profile "mod testing"
 #   pwsh tools/install-to-modrinth.ps1 -Profile "other"     # another profile (must be Fabric on the repo's Minecraft version)
-#   pwsh tools/install-to-modrinth.ps1 -ResetWorld          # also replace the test world (the old copy is renamed, not deleted)
+#   pwsh tools/install-to-modrinth.ps1 -ResetWorld          # also write over the test world with a fresh copy (no old copy kept)
 #
 # Also copies the test world (testworlds/bubba-test-world) into the profile's saves as "Bubba Test World" when missing,
 # and the owner's own game settings (tools/sync-minecraft-settings.ps1).
@@ -59,17 +59,20 @@ if (-not (Get-ChildItem $target -Filter "fabric-api-*.jar")) {
 Write-Output "Installed into '$Profile':"
 Get-ChildItem $target -Filter "*.jar" | ForEach-Object { "  $($_.Name)" }
 
-# The test world (specs/testworld.md): copy the pristine world into saves/ if the profile has none. The owner's copy
-# is never deleted: -ResetWorld renames it with a timestamp before copying a fresh one.
+# The test world (specs/testworld.md): copy the pristine world into saves/ if the profile has none. -ResetWorld
+# writes over the owner's copy with a fresh one (owner: no old copies kept).
 $pristine = Join-Path $root "testworlds\bubba-test-world"
 $saves = Join-Path $modrinth "profiles\$Profile\saves"
 $copy = Join-Path $saves "Bubba Test World"
 if (Test-Path (Join-Path $pristine "level.dat")) {
 	New-Item -ItemType Directory -Force $saves | Out-Null
-	if ((Test-Path $copy) -and $ResetWorld) {
-		$old = "Bubba Test World (old $(Get-Date -Format 'yyyy-MM-dd HHmmss'))"
-		Rename-Item $copy $old
-		Write-Output "Kept your old test world as saves\$old"
+	if ($ResetWorld) {
+		# Owner: no old copies; a reset writes over the test world. Also clears backups left by earlier versions of this script.
+		Get-ChildItem $saves -Directory -Filter "Bubba Test World (old *)" | Remove-Item -Recurse -Force
+		if (Test-Path $copy) {
+			Remove-Item $copy -Recurse -Force
+			Write-Output "Wrote over your test world with a fresh copy"
+		}
 	}
 	if (-not (Test-Path $copy)) {
 		Copy-Item $pristine $copy -Recurse
@@ -77,7 +80,7 @@ if (Test-Path (Join-Path $pristine "level.dat")) {
 	} else {
 		$new = Join-Path $pristine "BUILD_INFO.txt"; $have = Join-Path $copy "BUILD_INFO.txt"
 		if ((Test-Path $new) -and (-not (Test-Path $have) -or (Get-Item $new).LastWriteTime -gt (Get-Item $have).LastWriteTime)) {
-			Write-Output "Note: a newer test world has been built. Your copy was kept; run with -ResetWorld to get the new one (your copy is renamed, not deleted)."
+			Write-Output "Note: a newer test world has been built. Your copy was kept; run with -ResetWorld to write over it with the new one."
 		}
 	}
 } else {
