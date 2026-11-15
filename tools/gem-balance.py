@@ -335,8 +335,8 @@ effect("haste", name="Haste", potion=None, role="main", level_one=0.5, variants=
 effect("absorption", name="Absorption", potion=None, role="main", level_one=0.25, variants={"normal": None, "strong": None},
 	source=("item", "golden apple (Absorption I: normal) or enchanted golden apple (Absorption IV: strong)"),
 	anchor="Absorption IV (enchanted golden apple): 16 absorption HP (4 x (level + 1))",
-	value=lambda s: 16 * s, show=lambda s: f"{16 * s:.1f} HP shield, refills 30 s after it was last hit",
-	impl="max_absorption +16 x s, refilled to full 30 s after it was last hit.",
+	value=lambda s: 16 * s, show=lambda s: f"{16 * s:.1f} HP shield, full when put on, refills 30 s after it was last hit",
+	impl="max_absorption +16 x s, filled when the gems are put on (at most once per 30 s, owner), refilled to full 30 s after it was last hit.",
 	src="AbsorptionMobEffect, Consumables.GOLDEN_APPLE / ENCHANTED_GOLDEN_APPLE")
 effect("health_boost", name="Health Boost", potion=None, role="main", level_one=0.5, variants={"normal": None},
 	source=("found", ["hard", "ominous"], "end city and ancient city chests (hard); no vanilla item or source gives Health Boost"),

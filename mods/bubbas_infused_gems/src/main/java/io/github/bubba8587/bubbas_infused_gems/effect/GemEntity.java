@@ -11,4 +11,9 @@ public interface GemEntity {
 	int bubbas$lastHurtTick();
 
 	void bubbas$setLastHurtTick(int tick);
+
+	/** Entity tick count of the last time equipping Absorption gems filled the shield at once. */
+	int bubbas$lastEquipFillTick();
+
+	void bubbas$setLastEquipFillTick(int tick);
 }

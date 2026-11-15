@@ -413,18 +413,26 @@ public class GemsEverywhereGameTest {
 	@GameTest
 	public void absorptionDoesNotRefillOnReequip(GameTestHelper helper) {
 		Mob pig = pig(helper, 1, 1);
+		double full = 16 * Balance.get().cap;
+		pig.tickCount = 1000;
+		wear(pig, "absorption");
+		close(pig.getAbsorptionAmount(), full, 1e-3, helper, "equipping fills the shield at once (owner)");
+		// Hurt, then swap gear right away: no second equip-fill within 30 s.
+		pig.setAbsorptionAmount(2.0F);
+		strip(pig);
 		wear(pig, "absorption");
 		WornEffects.tick(helper.getLevel(), pig, WornEffects.of(pig));
-		close(pig.getAbsorptionAmount(), 0.0, 1e-6, helper, "a new shield starts empty");
+		check(helper, pig.getAbsorptionAmount() < full - 0.5, "a quick re-equip refilled the shield: " + pig.getAbsorptionAmount());
+		check(helper, ((GemEntity) pig).bubbas$lastHurtTick() == pig.tickCount, "a quick re-equip did not start the usual wait");
+		// 30 s without damage: the normal refill.
 		pig.tickCount += 600;
 		WornEffects.tick(helper.getLevel(), pig, WornEffects.of(pig));
-		close(pig.getAbsorptionAmount(), 16 * Balance.get().cap, 1e-3, helper, "shield after 30 s");
-		pig.setItemSlot(EquipmentSlot.HEAD, ItemStack.EMPTY);
-		WornEffects.refresh(pig);
+		close(pig.getAbsorptionAmount(), full, 1e-3, helper, "refilled 30 s after the last damage");
+		// A re-equip 30 s after the last equip-fill fills at once again.
+		pig.setAbsorptionAmount(0.0F);
+		strip(pig);
 		wear(pig, "absorption");
-		WornEffects.tick(helper.getLevel(), pig, WornEffects.of(pig));
-		check(helper, pig.getAbsorptionAmount() < 16 * Balance.get().cap - 0.5, "re-equipping refilled the shield at once: " + pig.getAbsorptionAmount());
-		check(helper, ((GemEntity) pig).bubbas$lastHurtTick() == pig.tickCount, "re-equip did not restart the wait");
+		close(pig.getAbsorptionAmount(), full, 1e-3, helper, "equip-fill again once 30 s have passed");
 		pig.discard();
 		helper.succeed();
 	}

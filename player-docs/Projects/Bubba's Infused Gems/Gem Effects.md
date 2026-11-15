@@ -46,7 +46,7 @@ Values are for the best build (90%); weaker builds give less.
 | Invisibility | Mobs notice the wearer from closer the stronger the gems (at the best, 16% of the usual range); from about half strength the wearer is hidden on the locator bar. Only the perfect complete set makes the wearer truly invisible; armor still shows, as with the potion. |
 | Slow Falling | Slower falling and less fall damage |
 | Healing | Each survived hit or fall returns part of the lost health (up to 25%) |
-| Absorption | A shield of extra health (up to 14.4) that fills 30 seconds after the last hit; a newly worn shield starts empty |
+| Absorption | A shield of extra health (up to 14.4). It fills as soon as the gems are put on (or on joining the game), then refills 30 seconds after the wearer was last hurt. Swapping the armor off and on again does not refill it more than once every 30 seconds. |
 | Health Boost | More maximum health (up to +7.2; found gems only) |
 | Dolphin's Grace | Faster swimming |
 | Saturation | Hunger drains more slowly (up to 90% slower) |

@@ -43,7 +43,7 @@ public final class GemDescribe {
 			case "slow_falling" -> f("%.0f%% less fall damage, falls slower", 100 * s);
 			case "instant_health" -> f("%.1f%% of each survived hit healed back", 100 * b.healFraction(s));
 			case "instant_damage" -> f("%.1f%% more damage from each hit taken", 100 * b.healFraction(s));
-			case "absorption" -> f("%.1f HP shield, refills 30 s after a hit", attr(key, 0, s));
+			case "absorption" -> f("%.1f HP shield, full when put on, refills 30 s after a hit", attr(key, 0, s));
 			case "health_boost" -> f("%+.1f max health", attr(key, 0, s));
 			case "invisibility" -> f("mobs notice you at %.0f%% of the range%s%s", 100 * (1 - e.wornNumber("visibility_reduction", 0.93) * s),
 					attr(key, 0, s) < 0 ? ", hidden on the locator bar" : "",

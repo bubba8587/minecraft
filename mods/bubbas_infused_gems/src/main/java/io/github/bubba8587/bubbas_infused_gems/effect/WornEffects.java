@@ -82,8 +82,16 @@ public final class WornEffects {
 		dropKeptEffects(entity);
 		double absorptionNow = g.bubbas$wornGems().value("absorption");
 		if (absorptionNow > absorptionBefore + 1e-9) {
-			// A new or bigger shield starts empty and fills after the usual wait (no instant refill on re-equip).
-			g.bubbas$setLastHurtTick(entity.tickCount);
+			// Owner (playtest): a new or bigger shield fills at once on equip (and on joining or respawning), but only if
+			// the last equip-fill was at least the refill time ago; otherwise it waits like a refill after damage, so
+			// swapping gear can't refill it.
+			int refill = (int) Balance.get().effect("absorption").wornNumber("refill_ticks", 600);
+			if (entity.tickCount - g.bubbas$lastEquipFillTick() >= refill) {
+				entity.setAbsorptionAmount(entity.getMaxAbsorption());
+				g.bubbas$setLastEquipFillTick(entity.tickCount);
+			} else {
+				g.bubbas$setLastHurtTick(entity.tickCount);
+			}
 		}
 	}
 

@@ -49,6 +49,18 @@ public abstract class LivingEntityMixin implements GemEntity {
 	private GemTotals bubbas$worn = GemTotals.NONE;
 	@Unique
 	private int bubbas$lastHurtTick = -100000;
+	@Unique
+	private int bubbas$lastEquipFillTick = -100000;
+
+	@Override
+	public int bubbas$lastEquipFillTick() {
+		return this.bubbas$lastEquipFillTick;
+	}
+
+	@Override
+	public void bubbas$setLastEquipFillTick(int tick) {
+		this.bubbas$lastEquipFillTick = tick;
+	}
 
 	@Override
 	public GemTotals bubbas$wornGems() {
