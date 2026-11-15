@@ -30,7 +30,7 @@ if (-not $env:JAVA_HOME) {
 
 Push-Location $root
 try {
-	$tasks = $Mods | ForEach-Object { ":${_}:assemble" }
+	$tasks = @($Mods | ForEach-Object { ':' + $_ + ':assemble' })
 	& .\gradlew.bat @tasks --console=plain -q
 	if ($LASTEXITCODE -ne 0) { throw "Build failed." }
 } finally { Pop-Location }
