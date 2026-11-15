@@ -45,13 +45,13 @@ Total for an effect, in symbols: `total = 0.95 x sum(gem_i x 0.85^(rank_i)) / su
 
 ### Potion form -> highest enchant tier (owner)
 
-| Form | Highest tier | Best grade reachable | Item-sourced gem (proposal) |
-|---|---|---|---|
-| Normal | 1 | weak | as brewed from the item |
-| Splash | 2 | medium | brewed again with gunpowder |
-| Lingering | 3 | strongest | then again with dragon's breath |
+| Form | Highest tier | Best grade reachable |
+|---|---|---|
+| Normal | 1 | weak |
+| Splash | 2 | medium |
+| Lingering | 3 | strongest |
 
-An item has no splash or lingering form, so an Infused Gem brewed from an item starts at the normal form and is raised the way potions are: put it back in the bottle slot with gunpowder (splash form), then dragon's breath (lingering form). So lingering-level effort is still what opens tier 3, for every craftable gem.
+The form is the potion's form, fixed at brewing; nothing raises it later (owner: potion -> gem, no other pathway). An item has no splash or lingering form, so an Infused Gem brewed from an item is normal form and reaches tier 1 at most; that gap is accepted.
 
 ### Enchant tier outcomes
 
@@ -143,20 +143,20 @@ Every one of the 40 status effects in 26.3 (the script reads them from the sourc
 | Oozing | harmful | Craftable: oozing potion (normal, splash or lingering) + base gem (sets the Infusion level) |
 | Infested | harmful | Craftable: infested potion (normal, splash or lingering) + base gem (sets the Infusion level) |
 | Haste | beneficial | Found only: mineshaft chests (common), stronghold and ancient city chests (rare); only beacons give Haste in vanilla; plus ominous vaults |
-| Absorption | beneficial | Craftable: golden apple (Absorption I: normal) or enchanted golden apple (Absorption IV: strong) in the bottle slot + base gem (sets the Infusion level); gunpowder then dragon's breath raise its form |
+| Absorption | beneficial | Craftable: golden apple (Absorption I: normal) or enchanted golden apple (Absorption IV: strong) in the bottle slot + base gem (sets the Infusion level); normal form only, so tier 1 at most |
 | Health Boost | beneficial | Found only: end city and ancient city chests (rare); no vanilla item or source gives Health Boost; plus ominous vaults |
-| Dolphin's Grace | beneficial | Craftable: nautilus shell (drowned, fishing treasure; dolphins give the effect) in the bottle slot + base gem (sets the Infusion level); gunpowder then dragon's breath raise its form |
-| Saturation | beneficial | Craftable: suspicious stew of dandelion, golden dandelion or blue orchid (matched by its stew effect: Fabric API's components ingredient) in the bottle slot + base gem (sets the Infusion level); gunpowder then dragon's breath raise its form |
-| Conduit Power | beneficial | Craftable: heart of the sea (buried treasure; the conduit's core) in the bottle slot + base gem (sets the Infusion level); gunpowder then dragon's breath raise its form |
+| Dolphin's Grace | beneficial | Craftable: nautilus shell (drowned, fishing treasure; dolphins give the effect) in the bottle slot + base gem (sets the Infusion level); normal form only, so tier 1 at most |
+| Saturation | beneficial | Craftable: suspicious stew of dandelion, golden dandelion or blue orchid (matched by its stew effect: Fabric API's components ingredient) in the bottle slot + base gem (sets the Infusion level); normal form only, so tier 1 at most |
+| Conduit Power | beneficial | Craftable: heart of the sea (buried treasure; the conduit's core) in the bottle slot + base gem (sets the Infusion level); normal form only, so tier 1 at most |
 | Hero of the Village | beneficial | Found only: hero-of-the-village gifts (common), pillager outpost chests (rare); only winning a raid gives it in vanilla; plus ominous vaults |
-| Wither | harmful | Craftable: wither rose (dropped where the Wither kills a mob) in the bottle slot + base gem (sets the Infusion level); gunpowder then dragon's breath raise its form |
+| Wither | harmful | Craftable: wither rose (dropped where the Wither kills a mob) in the bottle slot + base gem (sets the Infusion level); normal form only, so tier 1 at most |
 | Mining Fatigue | harmful | Found only: elder guardian drops (a rare extra drop); vanilla's only source is the elder guardian; plus ominous vaults |
-| Hunger | harmful | Craftable: rotten flesh (Hunger I, 80% chance in vanilla) in the bottle slot + base gem (sets the Infusion level); gunpowder then dragon's breath raise its form |
-| Glowing | harmful | Craftable: glowstone dust in the bottle slot + base gem (sets the Infusion level); gunpowder then dragon's breath raise its form |
-| Levitation | harmful | Craftable: shulker shell in the bottle slot + base gem (sets the Infusion level); gunpowder then dragon's breath raise its form |
-| Blindness | harmful | Craftable: suspicious stew of azure bluet or open eyeblossom (Fabric API's components ingredient) in the bottle slot + base gem (sets the Infusion level); gunpowder then dragon's breath raise its form |
-| Nausea | harmful | Craftable: pufferfish in the bottle slot + base gem (sets the Infusion level); gunpowder then dragon's breath raise its form |
-| Darkness | harmful | Craftable: echo shard (ancient cities) in the bottle slot + base gem (sets the Infusion level); gunpowder then dragon's breath raise its form |
+| Hunger | harmful | Craftable: rotten flesh (Hunger I, 80% chance in vanilla) in the bottle slot + base gem (sets the Infusion level); normal form only, so tier 1 at most |
+| Glowing | harmful | Craftable: glowstone dust in the bottle slot + base gem (sets the Infusion level); normal form only, so tier 1 at most |
+| Levitation | harmful | Craftable: shulker shell in the bottle slot + base gem (sets the Infusion level); normal form only, so tier 1 at most |
+| Blindness | harmful | Craftable: suspicious stew of azure bluet or open eyeblossom (Fabric API's components ingredient) in the bottle slot + base gem (sets the Infusion level); normal form only, so tier 1 at most |
+| Nausea | harmful | Craftable: pufferfish in the bottle slot + base gem (sets the Infusion level); normal form only, so tier 1 at most |
+| Darkness | harmful | Craftable: echo shard (ancient cities) in the bottle slot + base gem (sets the Infusion level); normal form only, so tier 1 at most |
 | Bad Luck | harmful | Drawback only: Bad Luck only ever matters for loot and fishing, too little to be worth a gem slot, so it stays a drawback |
 | Bad Omen | - | Not a gem: a one-shot trigger, used up when a raid starts; worn permanently it would chain raids without end, and it has no partial form |
 | Raid Omen | - | Not a gem: the raid's own countdown, not something a player carries |
@@ -518,17 +518,16 @@ Worn (armor) effects are attribute modifiers, data components or small tick and 
 19. Harming and Healing on a weapon strike once per 10 s charge (not every hit)? yes / no.
 20. The weapon's 1.0 is the strongest vanilla tipped arrow (Poison II 2.7 s, Slowness IV 2.5 s), not the drunk potion (Poison II 21.6 s)? yes / no.
 21. Wither's 1.0: (a) the wither skeleton's hit, Wither I for 10 s (model: a weapon matches a weapon), (b) the Wither boss's skull, Wither II for 10 s.
-22. Item-sourced Infused Gems reach splash and lingering form by brewing them again with gunpowder, then dragon's breath? yes / no.
-23. Wither gems from the wither rose? yes / no (the alternative is found-only, from Wither-fight loot).
-24. Saturation gems: (a) from suspicious stew of dandelion, golden dandelion or blue orchid (model), (b) from a golden dandelion itself, (c) found-only.
-25. Blindness gems from suspicious stew of azure bluet or open eyeblossom, and Nausea gems from pufferfish? yes / no.
-26. Darkness gems from echo shards (ancient cities)? yes / no (the alternative is found-only, in ancient cities).
-27. Conduit Power gems from a heart of the sea, and Dolphin's Grace gems from a nautilus shell? yes / no.
-28. Haste, Health Boost, Luck and Hero of the Village are found-only, in the places listed? yes / no.
-29. Hero of the Village gems: villager trades up to 52% cheaper at the best build, while worn? yes / no (a permanent discount is strong; the alternative is not a gem).
-30. Mining Fatigue gems come only from elder guardians (a rare extra drop) and ominous vaults? yes / no.
-31. Bad Omen, Trial Omen, Raid Omen and Breath of the Nautilus are not gems? yes / no.
-32. A gem and a drunk potion of the same effect: the stronger applies, they don't add? yes / no.
-33. Undead follow vanilla's inversion (a healing gem hurts a zombie wearer, harming heals an undead target; undead ignore poison and regeneration)? yes / no.
-34. Invisibility gems give stealth only (mobs notice you later, hidden on the locator bar), never a see-through body? yes / no.
-35. Enchant odds as proposed (tier 1: 50/50; tier 2: medium alone 50%, + weak other 50%; tier 3: alone 40%, + weak other 30%, + medium other 15%, + weak drawback 15%)? yes / no.
+22. Wither gems from the wither rose? yes / no (the alternative is found-only, from Wither-fight loot).
+23. Saturation gems: (a) from suspicious stew of dandelion, golden dandelion or blue orchid (model), (b) from a golden dandelion itself, (c) found-only.
+24. Blindness gems from suspicious stew of azure bluet or open eyeblossom, and Nausea gems from pufferfish? yes / no.
+25. Darkness gems from echo shards (ancient cities)? yes / no (the alternative is found-only, in ancient cities).
+26. Conduit Power gems from a heart of the sea, and Dolphin's Grace gems from a nautilus shell? yes / no.
+27. Haste, Health Boost, Luck and Hero of the Village are found-only, in the places listed? yes / no.
+28. Hero of the Village gems: villager trades up to 52% cheaper at the best build, while worn? yes / no (a permanent discount is strong; the alternative is not a gem).
+29. Mining Fatigue gems come only from elder guardians (a rare extra drop) and ominous vaults? yes / no.
+30. Bad Omen, Trial Omen, Raid Omen and Breath of the Nautilus are not gems? yes / no.
+31. A gem and a drunk potion of the same effect: the stronger applies, they don't add? yes / no.
+32. Undead follow vanilla's inversion (a healing gem hurts a zombie wearer, harming heals an undead target; undead ignore poison and regeneration)? yes / no.
+33. Invisibility gems give stealth only (mobs notice you later, hidden on the locator bar), never a see-through body? yes / no.
+34. Enchant odds as proposed (tier 1: 50/50; tier 2: medium alone 50%, + weak other 50%; tier 3: alone 40%, + weak other 30%, + medium other 15%, + weak drawback 15%)? yes / no.

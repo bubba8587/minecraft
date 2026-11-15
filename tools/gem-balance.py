@@ -580,7 +580,7 @@ def source_text(k):
 	if src[0] == "potion":
 		return f"Craftable: {E[k]['potion'].replace('_', ' ')} potion (normal, splash or lingering) + base gem (sets the Infusion level)"
 	if src[0] == "item":
-		return f"Craftable: {src[1]} in the bottle slot + base gem (sets the Infusion level); gunpowder then dragon's breath raise its form"
+		return f"Craftable: {src[1]} in the bottle slot + base gem (sets the Infusion level); normal form only, so tier 1 at most"
 	return f"Found only: {src[2]}; plus ominous vaults"
 
 # ---------------------------------------------------------------- source verification
@@ -1112,10 +1112,9 @@ def document(notes):
 		["Absorption: golden apple (normal) or enchanted golden apple (strong)", "0.80", "-", "1.00"],
 	]))
 	S.append(("h3", "Potion form -> highest enchant tier (owner)"))
-	S.append(("table", ["Form", "Highest tier", "Best grade reachable", "Item-sourced gem (proposal)"], [
-		["Normal", "1", "weak", "as brewed from the item"], ["Splash", "2", "medium", "brewed again with gunpowder"],
-		["Lingering", "3", "strongest", "then again with dragon's breath"]]))
-	S.append(("p", "An item has no splash or lingering form, so an Infused Gem brewed from an item starts at the normal form and is raised the way potions are: put it back in the bottle slot with gunpowder (splash form), then dragon's breath (lingering form). So lingering-level effort is still what opens tier 3, for every craftable gem."))
+	S.append(("table", ["Form", "Highest tier", "Best grade reachable"], [
+		["Normal", "1", "weak"], ["Splash", "2", "medium"], ["Lingering", "3", "strongest"]]))
+	S.append(("p", "The form is the potion's form, fixed at brewing; nothing raises it later (owner: potion -> gem, no other pathway). An item has no splash or lingering form, so an Infused Gem brewed from an item is normal form and reaches tier 1 at most; that gap is accepted."))
 	S.append(("h3", "Enchant tier outcomes"))
 	S.append(("table", ["Tier", "Outcome", "Main effect", "Extra effect", "Proposed odds"],
 		[[str(t), lab, (f"{g} ({GRADES[g]:.2f})" if g else "-"),
@@ -1257,7 +1256,6 @@ def document(notes):
 		f"Harming and Healing on a weapon strike once per {HARM_CHARGE_S} s charge (not every hit)? yes / no.",
 		"The weapon's 1.0 is the strongest vanilla tipped arrow (Poison II 2.7 s, Slowness IV 2.5 s), not the drunk potion (Poison II 21.6 s)? yes / no.",
 		"Wither's 1.0: (a) the wither skeleton's hit, Wither I for 10 s (model: a weapon matches a weapon), (b) the Wither boss's skull, Wither II for 10 s.",
-		"Item-sourced Infused Gems reach splash and lingering form by brewing them again with gunpowder, then dragon's breath? yes / no.",
 		"Wither gems from the wither rose? yes / no (the alternative is found-only, from Wither-fight loot).",
 		"Saturation gems: (a) from suspicious stew of dandelion, golden dandelion or blue orchid (model), (b) from a golden dandelion itself, (c) found-only.",
 		"Blindness gems from suspicious stew of azure bluet or open eyeblossom, and Nausea gems from pufferfish? yes / no.",

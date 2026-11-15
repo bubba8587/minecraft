@@ -23,8 +23,6 @@ The player places a potion in a bottle slot of a brewing stand and a **base gem*
 | Golden apple | Base gem | Infused Gem: Absorption (normal form) |
 | Enchanted golden apple | Base gem | Stronger Infused Gem: Absorption (normal form) |
 | Wither rose | Base gem | Infused Gem: Wither (normal form) |
-| Infused Gem (normal form) | Gunpowder | The same Infused Gem in splash form |
-| Infused Gem (splash form) | Dragon's breath | The same Infused Gem in lingering form |
 
 ### Base gems
 
@@ -43,7 +41,7 @@ The base gem sets the gem's **Infusion level**, which affects strength only.
 
 - **Effect**: from the potion or item used.
 - **Potion strength**: a strong (glowstone) potion makes a stronger gem, a long (redstone) potion a slightly stronger one.
-- **Form**: normal, splash or lingering. The form sets the highest enchanting tier: normal reaches tier 1, splash tier 2, lingering tier 3. *Main article: [[Enchanting Gems]]*
+- **Form**: normal, splash or lingering. The form is the potion's form and can't be changed after brewing. It sets the highest enchanting tier: normal reaches tier 1, splash tier 2, lingering tier 3. Golden apples and wither roses have no splash or lingering form, so their Infused Gems reach tier 1 only. *Main article: [[Enchanting Gems]]*
 
 The item name shows these, for example *Infused Gem: Infusion III, Speed (Splash)*.
 
@@ -53,4 +51,4 @@ Swiftness, Strength, Leaping, Regeneration, Turtle Master (gives Resistance), Fi
 
 ## Notes
 
-- A hopper on the side of a brewing stand also pushes golden apples, wither roses and Infused Gems into the bottle slots.
+- A hopper on the side of a brewing stand also pushes golden apples and wither roses into the bottle slots.
