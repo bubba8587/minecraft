@@ -59,6 +59,13 @@ BASE_GEMS = [
 	("nether_star", "Nether star", 1.00, "The Wither: the best base (owner)"),
 ]
 BASE = {b: f for b, _, f, _ in BASE_GEMS}
+# One Infused Gem item (owner): the base gem is its Infusion level, I (amethyst) to VI (nether star).
+INFUSION = {b: r for (b, _, _, _), r in zip(BASE_GEMS, ["I", "II", "III", "IV", "V", "VI"])}
+INFUSION_NAME = {"amethyst": "amethyst", "quartz": "quartz", "ender_pearl": "ender pearl", "diamond": "diamond",
+	"prismarine": "prismarine shard", "nether_star": "nether star"}
+
+def inf(b):
+	return f"Infusion {INFUSION[b]} ({INFUSION_NAME[b]})"
 BEST_BASE = "nether_star"
 
 # Armor materials (ArmorMaterials.java, 26.3: durability multiplier and chest defense quoted
@@ -570,9 +577,9 @@ EXAMPLES = [("speed", "strength", "hunger"), ("poison", "slowness", "resistance"
 def source_text(k):
 	src = E[k]["source"]
 	if src[0] == "potion":
-		return f"Craftable: {E[k]['potion'].replace('_', ' ')} potion (normal, splash or lingering) + base gem"
+		return f"Craftable: {E[k]['potion'].replace('_', ' ')} potion (normal, splash or lingering) + base gem (sets the Infusion level)"
 	if src[0] == "item":
-		return f"Craftable: {src[1]} in the bottle slot + base gem; gunpowder then dragon's breath raise its form"
+		return f"Craftable: {src[1]} in the bottle slot + base gem (sets the Infusion level); gunpowder then dragon's breath raise its form"
 	return f"Found only: {src[2]}; plus ominous vaults"
 
 # ---------------------------------------------------------------- source verification
@@ -743,7 +750,7 @@ def run_checks():
 			errors.append(f"tier {t} outcome odds don't add up to 100%")
 	if [o[1] for o in TIERS[2]] != ["medium", "medium"] or TIERS[2][0][2]:
 		errors.append("tier 2 must be: medium alone, or medium + weak other (owner)")
-	notes.append("every ladder step (base gem, armor, weapon material, run, grade, potion variant) is at least +4% on the one below; nether star and netherite are the only bests; each tier's odds add up to 100%")
+	notes.append("every ladder step (Infusion level, armor, weapon material, run, grade, potion variant) is at least +4% on the one below; Infusion VI (nether star) and netherite are the only bests; each tier's odds add up to 100%")
 
 	# 2. Gem quality: 1.0 only for strongest potion + lingering + tier 3 + nether star, for every gem effect.
 	for k in GEM_EFFECTS:
@@ -776,7 +783,7 @@ def run_checks():
 		want = [(top_variant(k), "lingering", 3, BEST_BASE)]
 		if sorted(set(hits)) != want:
 			errors.append(f"{k}: best gem reachable by {sorted(set(hits))}, expected only {want}")
-	notes.append("a gem's own strength reaches 1.0 only from the strongest potion or source item + lingering form + tier 3 + nether star, for every craftable armor and weapon effect; a found-only gem is perfect only from ominous loot with a nether star base and tier 3")
+	notes.append("a gem's own strength reaches 1.0 only from the strongest potion or source item + lingering form + tier 3 + Infusion VI (nether star), for every craftable gem; a found-only gem is perfect only from ominous loot at Infusion VI and tier 3")
 
 	# 2b. Every 26.3 status effect is classified: a gem (craftable or found), drawback-only, or not a gem.
 	if SRC.exists():
@@ -865,8 +872,8 @@ def run_checks():
 	wearly = [weapon_total("iron", 1, gem_quality(k, "normal", "quartz", "weak")) for k in GEM_EFFECTS]
 	if not all(EARLY_BUILD_RANGE[0] <= x <= EARLY_BUILD_RANGE[1] for x in wearly):
 		errors.append(f"early weapon range {min(wearly):.3f}-{max(wearly):.3f} outside {EARLY_BUILD_RANGE}")
-	notes.append(f"weakest single armor gem (normal potion, amethyst, tier 1, lone leather piece) = {worst:.3f}; early armor kit (iron set, 4 quartz tier-1 gems) = {min(early):.3f}-{max(early):.3f}; "
-		f"weakest weapon gem (wooden sword, amethyst, tier 1) = {wworst:.3f}; early weapon (iron sword, 1 quartz tier-1 gem) = {min(wearly):.3f}-{max(wearly):.3f}")
+	notes.append(f"weakest single armor gem (normal potion, Infusion I, tier 1, lone leather piece) = {worst:.3f}; early armor kit (iron set, 4 Infusion II tier-1 gems) = {min(early):.3f}-{max(early):.3f}; "
+		f"weakest weapon gem (wooden sword, Infusion I, tier 1) = {wworst:.3f}; early weapon (iron sword, 1 Infusion II tier-1 gem) = {min(wearly):.3f}-{max(wearly):.3f}")
 
 	# 6. Stacking: never beyond cap x the strongest gem; adding a gem never lowers it; weak gems lose to strong.
 	rng = random.Random(26_3)
@@ -1008,7 +1015,7 @@ def downgrade_rows(k):
 		v2 = max(lower, key=vf.get)
 		rows.append((f"{v2} potion instead of {tv}", build_total(["netherite"] * 4, [3] * 4, gem_quality(k, v2, BEST_BASE, "strongest"))))
 	rows += [
-		("prismarine base instead of nether star", build_total(["netherite"] * 4, [3] * 4, gem_quality(k, tv, "prismarine", "strongest"))),
+		("Infusion V (prismarine shard) instead of VI (nether star)", build_total(["netherite"] * 4, [3] * 4, gem_quality(k, tv, "prismarine", "strongest"))),
 		("splash potion (tier 2 at best: medium)", build_total(["netherite"] * 4, [3] * 4, gem_quality(k, tv, BEST_BASE, "medium"))),
 		("full diamond armor", build_total(["diamond"] * 4, [3] * 4, best_q)),
 		("diamond boots break the run", build_total(["netherite"] * 3 + ["diamond"], [3] * 4, best_q)),
@@ -1026,7 +1033,7 @@ def weapon_downgrade_rows(k):
 		v2 = max(lower, key=vf.get)
 		rows.append((f"{v2} potion instead of {tv}", weapon_total("netherite", 2, gem_quality(k, v2, BEST_BASE, "strongest"))))
 	rows += [
-		("prismarine base instead of nether star", weapon_total("netherite", 2, gem_quality(k, tv, "prismarine", "strongest"))),
+		("Infusion V (prismarine shard) instead of VI (nether star)", weapon_total("netherite", 2, gem_quality(k, tv, "prismarine", "strongest"))),
 		("splash potion (tier 2 at best: medium)", weapon_total("netherite", 2, gem_quality(k, tv, BEST_BASE, "medium"))),
 		("diamond weapon", weapon_total("diamond", 2, best_q)),
 		("bow, crossbow, trident or mace", weapon_total("bow", 2, best_q)),
@@ -1035,24 +1042,24 @@ def weapon_downgrade_rows(k):
 	return rows
 
 BUILDS = [
-	("Starter", "1 gem on a lone leather chestplate; normal potion, amethyst, tier 1 weak",
+	("Starter", "1 gem on a lone leather chestplate; normal potion, Infusion I (amethyst), tier 1 weak",
 		[None, "leather", None, None], [0, 1, 0, 0], "normal", "amethyst", "weak"),
-	("Early", "Full iron set, 1 gem per piece (4); normal potion, quartz, tier 1 weak",
+	("Early", "Full iron set, 1 gem per piece (4); normal potion, Infusion II (quartz), tier 1 weak",
 		["iron"] * 4, [1] * 4, "normal", "quartz", "weak"),
-	("Mid", "Full diamond set, 2 gems per piece (8); splash of the strong potion, ender pearl, tier 2 medium",
+	("Mid", "Full diamond set, 2 gems per piece (8); splash of the strong potion, Infusion III (ender pearl), tier 2 medium",
 		["diamond"] * 4, [2] * 4, "top", "ender_pearl", "medium"),
-	("Late", "Full diamond set, 12 gems; lingering strong potion, diamond, tier 3",
+	("Late", "Full diamond set, 12 gems; lingering strong potion, Infusion IV (diamond), tier 3",
 		["diamond"] * 4, [3] * 4, "top", "diamond", "strongest"),
-	("Best", "Full netherite set, 12 gems; lingering strong potion, nether star, tier 3",
+	("Best", "Full netherite set, 12 gems; lingering strong potion, Infusion VI (nether star), tier 3",
 		["netherite"] * 4, [3] * 4, "top", BEST_BASE, "strongest"),
 ]
 WEAPON_BUILDS = [
-	("Starter", "Wooden sword, 1 gem; normal potion, amethyst, tier 1 weak", "wood", 1, "normal", "amethyst", "weak"),
-	("Early", "Iron sword, 1 gem; normal potion, quartz, tier 1 weak", "iron", 1, "normal", "quartz", "weak"),
-	("Mid", "Diamond sword, 2 gems; splash of the strong potion, ender pearl, tier 2 medium", "diamond", 2, "top", "ender_pearl", "medium"),
-	("Late", "Diamond sword, 2 gems; lingering strong potion, diamond, tier 3", "diamond", 2, "top", "diamond", "strongest"),
-	("Bow", "Bow, 2 gems; lingering strong potion, nether star, tier 3 (the best ranged)", "bow", 2, "top", BEST_BASE, "strongest"),
-	("Best", "Netherite sword, axe or spear, 2 gems; lingering strong potion, nether star, tier 3", "netherite", 2, "top", BEST_BASE, "strongest"),
+	("Starter", "Wooden sword, 1 gem; normal potion, Infusion I (amethyst), tier 1 weak", "wood", 1, "normal", "amethyst", "weak"),
+	("Early", "Iron sword, 1 gem; normal potion, Infusion II (quartz), tier 1 weak", "iron", 1, "normal", "quartz", "weak"),
+	("Mid", "Diamond sword, 2 gems; splash of the strong potion, Infusion III (ender pearl), tier 2 medium", "diamond", 2, "top", "ender_pearl", "medium"),
+	("Late", "Diamond sword, 2 gems; lingering strong potion, Infusion IV (diamond), tier 3", "diamond", 2, "top", "diamond", "strongest"),
+	("Bow", "Bow, 2 gems; lingering strong potion, Infusion VI (nether star), tier 3 (the best ranged)", "bow", 2, "top", BEST_BASE, "strongest"),
+	("Best", "Netherite sword, axe or spear, 2 gems; lingering strong potion, Infusion VI (nether star), tier 3", "netherite", 2, "top", BEST_BASE, "strongest"),
 ]
 LADDER_EFFECTS = ["speed", "strength", "regeneration", "fire_resistance", "instant_health"]
 WEAPON_LADDER_EFFECTS = ["poison", "slowness", "weakness", "instant_damage"]
@@ -1074,25 +1081,27 @@ def fmt(x, d=2):
 	return f"{x:.{d}f}"
 
 def document(notes):
-	S = []  # ("h1"|"h2"|"h3"|"p"|"ul"|"table", ...)
+	S = []  # ("h1"|"h2"|"h3"|"p"|"ul"|"ol"|"table", ...)
 	S.append(("h1", "Bubba's Infused Gems: balance model"))
 	S.append(("p", "Generated by `tools/gem-balance.py` from the owner's design in `specs/effect-gems.md`. Do not edit by hand: change the script and rerun it. Vanilla numbers come from the decompiled Minecraft 26.3 source and the script re-checks them against it."))
 	S.append(("h2", "The formula in plain words"))
 	S.append(("ul", [
-		"Every effect is measured on one scale: **1.0 = the strongest vanilla level of that effect** (Speed II, Strength II, Regeneration II, Resistance IV from strong Turtle Master...). For on/off effects 1.0 is the full effect. Weapon effects: 1.0 = what the strongest vanilla tipped arrow of that effect applies. Healing has its own, flatter scale.",
-		"**One gem's strength** = potion factor x base gem factor x enchant grade x gear factor. On armor the gear factor is armor material x matching run; on a weapon it is the weapon's material. Each is at most 1.0.",
+		"**A gem doesn't care where it goes** (owner). Every gem, from any potion, item or loot, fits armor (3 slots a piece) or a weapon (2 slots). **The slot decides who its effects reach:** in armor, the wearer; in a weapon, what it hits (bows and crossbows: the arrow). All of a gem's effects go the same way: main effect, any other effect and any drawback. So a Poison gem in your armor poisons you, and a Regeneration gem on a sword heals the target: allowed, just pointless.",
+		f"**There is one Infused Gem item** (owner); the base gem it was brewed from is its **Infusion level**: {', '.join(inf(b) for b in BASE)}. Names read like *Infused Gem: Infusion III, Speed (Splash)*.",
+		"Every effect has **two curves on one scale**, 1.0 = the strongest vanilla level. **Worn** (armor): the effect on the wearer all the time, 1.0 = the strongest level of the effect (Speed II, Strength II, Resistance IV...), on/off effects made partial. **Hit-applied** (weapon): what one hit gives the target, 1.0 = what the strongest vanilla tipped arrow of that effect applies. Healing has its own, flatter worn curve.",
+		"**One gem's strength** = potion factor x Infusion factor x enchant grade x gear factor. In armor the gear factor is armor material x matching run; in a weapon it is the weapon's material. Each is at most 1.0.",
 		f"**Armor stacking:** a piece holds {SLOTS} gems, so 12 in all. The gems of one effect are lined up strongest first; the first counts fully, each next one {STACK_R:.0%} of the one before. The sum is scaled so that 12 perfect gems give exactly **{CAP}**.",
 		f"**Weapon stacking:** a weapon holds {WEAPON_SLOTS} gems, same rule, scaled so 2 perfect gems give exactly **{CAP}**. One perfect gem gives {CAP / WW:.3f}: two gems of one effect, or one gem each of two effects.",
-		f"**The cap is {CAP}**: 5% short of vanilla's best. Only the single best build reaches it: **lingering potion + nether star + tier 3 + full contiguous netherite** (armor), or **+ a netherite weapon with both slots** (weapons).",
+		f"**The cap is {CAP}**: 5% short of vanilla's best. Only the single best build reaches it: **lingering potion + Infusion VI (nether star) + tier 3 + full contiguous netherite** (armor), or **+ a netherite weapon with both slots** (weapons).",
 		"**Potion form doesn't multiply**: it sets the highest enchant tier (normal 1, splash 2, lingering 3), and the tier sets the grade. So lingering is needed for the strongest grade.",
-		"**Base gems change strength only** (owner): no traits. Order, by how hard they are to get: amethyst, quartz, ender pearl, diamond, prismarine, nether star.",
-		"A gem's \"other\" effect from the enchant roll uses the same formula with its own grade and joins that effect's stack. A **drawback** roll is a fixed, mild size, whatever the gem or gear (below).",
+		"**Infusion level changes strength only** (owner): no traits. Order, by how hard the base gem is to get: amethyst, quartz, ender pearl, diamond, prismarine shard, nether star.",
+		"**One roll table per gem** (owner): its main effect, maybe an **other** effect of the same kind (a beneficial gem's bonus is another beneficial effect, a harmful gem's another harmful one, never the main effect itself), maybe a **drawback** of the opposite kind that is **never the main effect's direct opposite**. The other effect uses the same formula with its own grade and joins that effect's stack; a drawback is a fixed, mild size (below).",
 	]))
-	S.append(("p", f"Total for an effect, in symbols: `total = {CAP} x sum(gem_i x {STACK_R}^(rank_i)) / sum({STACK_R}^0..{STACK_R}^(slots-1))`, with `gem = potion x base x grade x gear`."))
+	S.append(("p", f"Total for an effect, in symbols: `total = {CAP} x sum(gem_i x {STACK_R}^(rank_i)) / sum({STACK_R}^0..{STACK_R}^(slots-1))`, with `gem = potion x infusion x grade x gear`."))
 
 	S.append(("h2", "Factor tables"))
-	S.append(("h3", "Base gem (strength only)"))
-	S.append(("table", ["Base gem", "Factor", "Why here"], [[n, fmt(f), w] for _, n, f, w in BASE_GEMS]))
+	S.append(("h3", "Infusion level (the base gem; strength only)"))
+	S.append(("table", ["Infusion", "Base gem", "Factor", "Why here"], [[inf(b).split(" (")[0], n, fmt(f), w] for b, n, f, w in BASE_GEMS]))
 	S.append(("h3", "Potion variant (by what that effect really has in 26.3)"))
 	S.append(("table", ["Variants that exist", "normal", "long", "strong"], [
 		["normal + long + strong (Swiftness, Strength, Leaping, Regeneration, Poison, Slowness, Turtle Master)", "0.80", "0.85", "1.00"],
@@ -1107,11 +1116,10 @@ def document(notes):
 		["Lingering", "3", "strongest", "then again with dragon's breath"]]))
 	S.append(("p", "An item has no splash or lingering form, so an Infused Gem brewed from an item starts at the normal form and is raised the way potions are: put it back in the bottle slot with gunpowder (splash form), then dragon's breath (lingering form). So lingering-level effort is still what opens tier 3, for every craftable gem."))
 	S.append(("h3", "Enchant tier outcomes"))
-	S.append(("table", ["Tier", "Outcome", "Intended effect", "Extra effect", "Proposed odds"],
+	S.append(("table", ["Tier", "Outcome", "Main effect", "Extra effect", "Proposed odds"],
 		[[str(t), lab, (f"{g} ({GRADES[g]:.2f})" if g else "-"),
 			", ".join(f"{kind} {gr}" + (f" ({GRADES[gr]:.2f})" if kind == "other" else f" ({DRAWBACK_ONE:.2f}, fixed)") for kind, gr in ex) or "-", f"{p:.0%}"]
 			for t, outs in TIERS.items() for lab, g, ex, p in outs]))
-	S.append(("p", "Armor \"other\" rolls from: " + ", ".join(E[k]["name"] for k in ARMOR_OTHER) + ". Weapon \"other\" rolls (a second harmful effect on hit) from: " + ", ".join(E[k]["name"] for k in WEAPON_OTHER) + "."))
 	S.append(("h3", "Armor material"))
 	S.append(("table", ["Material", "Factor", "Vanilla 26.3 (ArmorMaterials)"],
 		[[m, fmt(f), why] for m, (f, why) in sorted(MATERIALS.items(), key=lambda x: (x[1][0], x[0]))]))
@@ -1134,66 +1142,93 @@ def document(notes):
 		 ["Weapon: running total (perfect gems)"] + [f"{CAP * sum(STACK_R ** j for j in range(i + 1)) / WW:.3f}" if i < WEAPON_SLOTS else "-" for i in range(12)]]))
 
 	S.append(("h2", "Every status effect: craftable, found-only, or not a gem"))
-	S.append(("p", "Every one of the 40 status effects in 26.3 (the script reads them from the source and fails if one is missing). Beneficial effects are armor gems; harmful ones are weapon gems. An effect with a potion is brewed from it. One without a potion is brewed from a vanilla item that already carries it: in 26.3 the brewing stand's bottle slot takes any item that a brewing recipe names as its input (BrewingStandMenu.PotionSlot asks the recipes, PotionIngredient.isPotionInput), so this is data, no menu change. Stews are told apart by their stew effect with Fabric API's components ingredient. An effect with no sensible item is a **found-only** gem: loot and mob gear, never brewed."))
-	S.append(("table", ["Effect", "Goes on", "How it's had"],
-		[[E[k]["name"], "armor" if E[k]["role"] in ("main", "healing") else "weapon", source_text(k)] for k in GEM_EFFECTS]
-		+ [[E[k]["name"], "-", "Drawback only: " + why] for k, why in DRAWBACK_ONLY.items()]
+	S.append(("p", "Every one of the 40 status effects in 26.3 (the script reads them from the source and fails if one is missing). Any gem goes into armor or a weapon. An effect with a potion is brewed from it. One without a potion is brewed from a vanilla item that already carries it: in 26.3 the brewing stand's bottle slot takes any item that a brewing recipe names as its input (BrewingStandMenu.PotionSlot asks the recipes, PotionIngredient.isPotionInput), so this is data, no menu change. Stews are told apart by their stew effect with Fabric API's components ingredient. An effect with no sensible item is a **found-only** gem: loot and mob gear, never brewed."))
+	S.append(("table", ["Effect", "Kind", "How it's had"],
+		[[E[k]["name"], "beneficial" if E[k]["good"] else "harmful", source_text(k)] for k in GEM_EFFECTS]
+		+ [[E[k]["name"], "harmful", "Drawback only: " + why] for k, why in DRAWBACK_ONLY.items()]
 		+ [[k.replace("_", " ").title(), "-", "Not a gem: " + why] for k, why in NOT_GEMS.items()]))
 	S.append(("h3", "Found-only gems: what they come with"))
-	S.append(("p", "A found gem is made as if brewed and enchanted: its potion factor is 1.0 (one form of the effect), its base gem is picked from the loot source's list and its tier rolled from the source's tiers with the normal tier odds. Same strength scale as crafted gems; only ominous loot can give a perfect one."))
-	S.append(("table", ["Loot source", "Base gems", "Tiers", "Strength range (gem quality)"],
-		[[name, ", ".join(bases), ", ".join(map(str, tiers)),
-			f"{min(BASE[b] for b in bases) * min(GRADES[g] for t in tiers for _, g, _, _ in TIERS[t] if g):.2f} - {max(BASE[b] for b in bases) * max(GRADES[g] for t in tiers for _, g, _, _ in TIERS[t] if g):.2f} (or a drawback-only roll at tier 1)" if 1 in tiers else
-			f"{min(BASE[b] for b in bases) * min(GRADES[g] for t in tiers for _, g, _, _ in TIERS[t] if g):.2f} - {max(BASE[b] for b in bases) * max(GRADES[g] for t in tiers for _, g, _, _ in TIERS[t] if g):.2f}"]
+	S.append(("p", "A found gem is made as if brewed and enchanted: its potion factor is 1.0 (one form of the effect), its Infusion level is picked from the loot source's list and its tier rolled from the source's tiers with the normal tier odds. Same strength scale as crafted gems; only ominous loot can give a perfect one."))
+	S.append(("table", ["Loot source", "Infusion levels", "Tiers", "Strength range (gem quality)"],
+		[[name, ", ".join(inf(b) for b in bases), ", ".join(map(str, tiers)),
+			f"{min(BASE[b] for b in bases) * min(GRADES[g] for t in tiers for _, g, _, _ in TIERS[t] if g):.2f} - {max(BASE[b] for b in bases) * max(GRADES[g] for t in tiers for _, g, _, _ in TIERS[t] if g):.2f}"
+			+ (" (or a drawback-only roll at tier 1)" if 1 in tiers else "")]
 			for name, bases, tiers in LOOT.values()]))
 
-	S.append(("h2", "Armor gems: what the scale means in game"))
-	cols = [0.05, 0.10, 0.25, 0.50, 0.75, CAP]
-	keys = [k for k in E if E[k]["role"] == "main"]
-	S.append(("table", ["Effect", "1.0 means (vanilla)"] + [f"s = {c:.2f}" for c in cols],
-		[[E[k]["name"], E[k]["anchor"]] + [E[k]["show"](c) for c in cols] for k in keys]))
+	S.append(("h2", "Roll tables"))
+	S.append(("p", "One roll table per gem, whatever slot it later goes into. **Other** (tier 2 weak, tier 3 weak or medium): any gem effect of the main effect's kind except itself and the main-effect-only ones ("
+		+ "; ".join(f"{E[k]['name']}: {why}" for k, why in OTHER_EXCLUDED.items()) + "). **Drawback** (tier 1 alone, tier 3 with the strongest main effect): one of the opposite kind, never the main effect's direct opposite."))
+	S.append(("h3", "Direct opposites (never a drawback of each other)"))
+	S.append(("table", ["Beneficial", "Harmful", "Why they cancel out"], [[E[a]["name"], E[b]["name"], why] for a, b, why in INVERSE_PAIRS]))
+	S.append(("p", "Checked and left out (no direct opposite in vanilla): " + "; ".join(f"**{E[k]['name']}**: {why}" for k, why in NO_OPPOSITE.items())
+		+ ". Harmful effects with no beneficial counterpart: Nausea, Wind Charged, Weaving, Oozing, Infested."))
+	S.append(("h3", "Drawback candidates"))
+	S.append(("p", "A beneficial gem's drawback rolls from: " + ", ".join(E[k]["name"] for k in HARMFUL_DRAWBACKS)
+		+ ". A harmful gem's drawback rolls from: " + ", ".join(E[k]["name"] for k in BENEFICIAL_DRAWBACKS)
+		+ ". Minus the main effect's direct opposite, which leaves every gem at least "
+		+ f"{min(len(drawback_pool(k)) for k in GEM_EFFECTS)} candidates. Never a drawback: "
+		+ "; ".join(f"{E[k]['name']} ({why})" for k, why in NEVER_DRAWBACK.items()) + "."))
+	S.append(("table", ["Gem", "Kind", "Other rolls from", "Drawback rolls from", "Excluded as its direct opposite"],
+		[[E[k]["name"], "beneficial" if E[k]["good"] else "harmful",
+			f"any other {'beneficial' if E[k]['good'] else 'harmful'} gem effect ({len(other_pool(k))})",
+			", ".join(E[d]["name"] for d in drawback_pool(k)),
+			", ".join(E[o]["name"] for o in sorted(OPPOSITE.get(k, ()))) or "-"] for k in GEM_EFFECTS]))
+	S.append(("h3", "Three example gems, armor vs weapon"))
+	S.append(("p", f"Strengths used: the main effect at the best build ({CAP}: 12 perfect gems in full netherite, or 2 in a netherite weapon) and as one perfect gem alone (armor {stack([1.0]):.3f} in a full netherite set; weapon {wstack([1.0]):.3f}); an other effect as the only gem of that effect, Infusion VI in netherite, weak ({stack([GRADES['weak']]):.3f} armor, {wstack([GRADES['weak']]):.3f} weapon) or medium ({stack([GRADES['medium']]):.3f}, {wstack([GRADES['medium']]):.3f}); one drawback ({DRAWBACK_ONE:.2f})."))
+	for k, o, d in EXAMPLES:
+		S.append(("p", f"**{E[k]['name']}** ({'beneficial' if E[k]['good'] else 'harmful'}). Other rolls from {len(other_pool(k))} {'beneficial' if E[k]['good'] else 'harmful'} effects; drawback rolls from "
+			+ ", ".join(E[x]["name"] for x in drawback_pool(k)) + "; never " + (", ".join(E[x]["name"] for x in sorted(OPPOSITE.get(k, ()))) or "-") + "."))
+		S.append(("table", ["Part", "In armor (the wearer, while worn)", "In a weapon (the target, per hit or arrow)"], [
+			["Main, best build", worn_show(k, CAP), hit_show(k, CAP)],
+			["Main, one perfect gem", worn_show(k, stack([1.0])), hit_show(k, wstack([1.0]))],
+			[f"Weak other: e.g. {E[o]['name']}", worn_show(o, stack([GRADES['weak']])), hit_show(o, wstack([GRADES['weak']]))],
+			[f"Medium other: e.g. {E[o]['name']}", worn_show(o, stack([GRADES['medium']])), hit_show(o, wstack([GRADES['medium']]))],
+			[f"Drawback: e.g. {E[d]['name']}", potency_text(d, DRAWBACK_ONE) + ", all the time", f"{potency_text(d, DRAWBACK_ONE)} for {DRAWBACK_HIT_S} s, refreshed by each hit"],
+		]))
 
-	S.append(("h2", "Healing gem"))
-	S.append(("p", "When the wearer takes damage from an attack or a fall and survives it, they instantly get back a fraction of the health that hit took. A killing blow still kills. Its own curve: `heal = " + f"{HEAL_BEST} x (total / {CAP})^{HEAL_EXP}" + "`, so the best build returns exactly 25% and early gems are flattened upward to stay noticeable."))
+	S.append(("h2", "In armor: what each gem does to the wearer"))
+	cols = [0.05, 0.10, 0.25, 0.50, 0.75, CAP]
+	S.append(("p", "Beneficial gems are what armor is for. Harmful gems in armor hit the wearer (pointless, but allowed): damage-over-time and attribute effects at the same level as their hit anchor, on/off effects pulsed for a share of every 10 s, death and hurt triggers as a chance. Harming in armor mirrors the Healing gem: each survivable hit taken deals a share more."))
+	S.append(("table", ["Effect", "1.0 means (worn)"] + [f"s = {c:.2f}" for c in cols],
+		[[E[k]["name"], worn_anchor_text(k)] + [worn_show(k, c) for c in cols] for k in GEM_EFFECTS if k != "instant_health"]))
+
+	S.append(("h2", "Healing gem (in armor)"))
+	S.append(("p", "When the wearer takes damage from an attack or a fall and survives it, they instantly get back a fraction of the health that hit took. A killing blow still kills. Its own curve: `heal = " + f"{HEAL_BEST} x (total / {CAP})^{HEAL_EXP}" + "`, so the best build returns exactly 25% and early gems are flattened upward to stay noticeable. On a weapon it heals the target, as a charged strike (below)."))
 	S.append(("p", "**Why 25% at the very best:** it works like 25% less damage from survivable hits, between Resistance I (20%) and Resistance II (40%), and far below the Resistance gem's own best (76%) or full Protection IV armor (64%). It never stops a one-shot, never heals outside a fight, and is always a net loss (you can't farm it with fall damage). A Healing II potion gives 8 HP at once; at 25% the wearer must take 32 HP of hits, about one and a half health bars, to get that much back. So it is a comfort in long fights, not a second health bar."))
 	S.append(("table", ["Build", "Gem total", "Share of each hit returned", "A 6 HP zombie hit", "A 20 HP fall (survived)"],
 		[[b[0], fmt(build_value("instant_health", b), 3), f"{heal_fraction(build_value('instant_health', b)) * 100:.1f}%",
 			f"+{6 * heal_fraction(build_value('instant_health', b)):.2f} HP", f"+{20 * heal_fraction(build_value('instant_health', b)):.1f} HP"] for b in BUILDS]))
 
-	S.append(("h2", "Drawbacks"))
-	S.append(("p", f"A drawback roll (tier 1's weak drawback alone, or tier 3's strongest + weak drawback) is a fixed size: **{DRAWBACK_ONE:.0%} of the strongest vanilla level** of that effect, whatever the potion, base gem or gear (a better gem shouldn't hurt more). More drawbacks of the same effect add less and less and never pass {DRAWBACK_CAP:.0%}, which is below vanilla's weakest level of every drawback effect. So they sting, but never as much as a real potion of it."))
-	dcols = [1, 2, 3, 12]
-	S.append(("h3", "Armor drawbacks (on the wearer, while worn)"))
-	S.append(("table", ["Effect", "1.0 means (vanilla)"] + [f"{n} drawback{'s' if n > 1 else ''} ({drawback_total(n):.3f})" for n in dcols],
-		[[E[k]["name"], DRAWBACK_ANCHOR[k]] + [(E[k]["wearer"] if "wearer" in E[k] else E[k]["show"])(drawback_total(n)) for n in dcols] for k in ARMOR_DRAWBACKS]))
-	S.append(("h3", f"Weapon drawbacks (the inverse: a mild buff on the target, {DRAWBACK_HIT_S} s, refreshed by each hit)"))
-	S.append(("table", ["Effect on the target", "1.0 means (vanilla)"] + [f"{n} drawback{'s' if n > 1 else ''} ({drawback_total(n):.3f})" for n in (1, 2)],
-		[[E[k]["name"], E[k]["anchor"]] + [E[k]["show"](drawback_total(n)) for n in (1, 2)] for k in WEAPON_DRAWBACKS]))
-	S.append(("p", DRAWBACK_EXCLUDED))
+	S.append(("h2", "In a weapon: what one hit gives the target"))
+	S.append(("p", f"A weapon holds {WEAPON_SLOTS} gems. Swords, axes, maces, tridents and spears apply the gem's effects to what they hit; bows and crossbows turn each fired arrow into its tipped form carrying them (picked up again, it's a plain arrow). Each hit **refreshes** the effect, it never stacks. A real tipped arrow fired from a gemmed bow: the stronger effect applies (higher strength wins, then longer duration), never both. Harmful gems are what weapons are for; a beneficial gem on a weapon buffs the target (pointless, but allowed)."))
+	S.append(("p", f"**Per hit:** the weapon's strength `s` is shared equally between how hard and how long: potency = s^{WEAPON_SPLIT} of the 1.0 level, duration = s^{1 - WEAPON_SPLIT} of the 1.0 duration, so potency x duration = s. On/off harmful effects (Wind Charged, Weaving, Oozing, Infested, Glowing, Levitation, Blindness, Nausea, Darkness) put it all into duration. Harmful effects with no tipped arrow are anchored on their strongest vanilla source: a hit source (wither skeleton, spectral arrow, shulker bullet) at its full duration, any other source (food, a mob's pulse or spell) at tipped-arrow scale, 1/8. Beneficial effects with no potion: the strongest vanilla source at arrow scale (Absorption: the enchanted golden apple), or, with none, a 3:00 potion's tipped arrow ({DEFAULT_HIT_TICKS / T:.1f} s, proposal). Harming and Healing are charged strikes: the first hit or arrow after a {HARM_CHARGE_S} s charge deals s x 12 magic damage, or heals the target s x 8 HP, so a bow can't fire them without limit."))
+	S.append(("table", ["Effect", "1.0 means (one hit)"] + [f"s = {c:.2f}" for c in cols],
+		[[E[k]["name"], hit_anchor_text(k)] + [hit_show(k, c) for c in cols] for k in BAD_GEMS + GOOD_GEMS]))
 
-	S.append(("h2", "Weapon gems"))
-	S.append(("p", f"Harmful gems go on weapons ({WEAPON_SLOTS} slots). Swords, axes, maces, tridents and spears apply the effect to what they hit; bows and crossbows turn each fired arrow into its tipped form carrying the gem's effect (picked up again, it's a plain arrow). Each hit **refreshes** the effect, it never stacks. A real tipped arrow fired from a gemmed bow: the stronger effect applies (higher strength wins, then longer duration), never both."))
-	S.append(("p", f"**Per hit:** the weapon's strength `s` is shared equally between how hard and how long: potency = s^{WEAPON_SPLIT} of the strongest arrow's level, duration = s^{1 - WEAPON_SPLIT} of its duration, so potency x duration = s. On/off effects (Wind Charged, Weaving, Oozing, Infested, Glowing, Levitation, Blindness, Nausea, Darkness) put it all into duration. Effects with no tipped arrow are anchored on their strongest vanilla source: a hit source (wither skeleton, spectral arrow, shulker bullet) at its full duration, any other source (food, a mob's pulse or spell) at tipped-arrow scale, 1/8. Harming is a charged strike: the first hit or arrow after a {HARM_CHARGE_S} s charge deals s x 12 magic damage, so a bow can't fire unlimited harming arrows."))
-	S.append(("table", ["Effect", "1.0 means (strongest tipped arrow, or strongest vanilla hit)"] + [f"s = {c:.2f}" for c in cols],
-		[[E[k]["name"], E[k]["anchor"]] + [E[k]["show"](c) for c in cols] for k in WEAPON_GEMS]))
+	S.append(("h2", "Drawbacks"))
+	S.append(("p", f"A drawback roll (tier 1's weak drawback alone, or tier 3's strongest + weak drawback) is a fixed size: **{DRAWBACK_ONE:.0%} of the strongest vanilla level** of that effect, whatever the potion, Infusion level or gear (a better gem shouldn't hurt more). More drawbacks of the same effect add less and less and never pass {DRAWBACK_CAP:.0%}, which is below vanilla's weakest level of every drawback effect. So they sting, but never as much as a real potion of it. It goes where the gem's main effect goes: in armor, on the wearer while worn; in a weapon, on the target for {DRAWBACK_HIT_S} s, refreshed by each hit (a beneficial gem's harmful drawback on a weapon therefore lands on the target too)."))
+	dcols = [1, 2, 3, 12]
+	S.append(("table", ["Drawback", "Rolls on", "1.0 means (vanilla)"] + [f"{n} drawback{'s' if n > 1 else ''} ({drawback_total(n):.3f})" for n in dcols],
+		[[E[k]["name"], "beneficial gems" if not E[k]["good"] else "harmful gems", DRAWBACK_ANCHOR.get(k, E[k]["anchor"])]
+			+ [potency_text(k, drawback_total(n)) for n in dcols] for k in HARMFUL_DRAWBACKS + BENEFICIAL_DRAWBACKS]))
 
 	S.append(("h3", "How each effect is made partial"))
 	S.append(("table", ["Effect", "Implementation", "Source (26.3)"], [[E[k]["name"], E[k]["impl"], E[k]["src"]] for k in E]))
-	S.append(("p", "Armor gem effects are attribute modifiers, data components or small tick and damage hooks, not potion effect instances: vanilla levels are whole numbers and their icons and timers would claim a full level. Weapon effects (and weapon drawbacks on the target) are gem mob effects whose amplifier counts strength in 1% steps, with vanilla's icon and timer; a gem arrow carries one as its potion contents with a duration scale of 1. A gem and a drunk potion of the same effect don't add up: the stronger applies (open question)."))
+	S.append(("p", "Worn (armor) effects are attribute modifiers, data components or small tick and damage hooks, not potion effect instances: vanilla levels are whole numbers and their icons and timers would claim a full level. Hit-applied (weapon) effects, and weapon drawbacks on the target, are gem mob effects whose amplifier counts strength in 1% steps, with vanilla's icon and timer; a gem arrow carries one as its potion contents with a duration scale of 1. A gem and a drunk potion of the same effect don't add up: the stronger applies (open question)."))
 
 	S.append(("h2", "Progression ladders"))
 	S.append(("h3", "Armor"))
 	S.append(("table", ["Build", "What it is"] + [E[k]["name"] for k in LADDER_EFFECTS],
-		[[b[0], b[1]] + [f"{build_value(k, b):.3f}: {E[k]['show'](build_value(k, b))}" for k in LADDER_EFFECTS] for b in BUILDS]))
+		[[b[0], b[1]] + [f"{build_value(k, b):.3f}: {worn_show(k, build_value(k, b))}" for k in LADDER_EFFECTS] for b in BUILDS]))
 	S.append(("h3", "One step down from the best armor (Speed)"))
 	S.append(("table", ["Change from the best build", "Total", "In game"],
-		[["(best)", fmt(CAP, 3), E["speed"]["show"](CAP)]] + [[lab, fmt(t, 3), E["speed"]["show"](t)] for lab, t in downgrade_rows("speed")]))
+		[["(best)", fmt(CAP, 3), worn_show("speed", CAP)]] + [[lab, fmt(t, 3), worn_show("speed", t)] for lab, t in downgrade_rows("speed")]))
 	S.append(("h3", "Weapons"))
 	S.append(("table", ["Build", "What it is"] + [E[k]["name"] for k in WEAPON_LADDER_EFFECTS],
-		[[b[0], b[1]] + [f"{weapon_build_value(k, b):.3f}: {E[k]['show'](weapon_build_value(k, b))}" for k in WEAPON_LADDER_EFFECTS] for b in WEAPON_BUILDS]))
+		[[b[0], b[1]] + [f"{weapon_build_value(k, b):.3f}: {hit_show(k, weapon_build_value(k, b))}" for k in WEAPON_LADDER_EFFECTS] for b in WEAPON_BUILDS]))
 	S.append(("h3", "One step down from the best weapon (Poison)"))
 	S.append(("table", ["Change from the best build", "Total", "In game"],
-		[["(best)", fmt(CAP, 3), E["poison"]["show"](CAP)]] + [[lab, fmt(t, 3), E["poison"]["show"](t)] for lab, t in weapon_downgrade_rows("poison")]))
+		[["(best)", fmt(CAP, 3), hit_show("poison", CAP)]] + [[lab, fmt(t, 3), hit_show("poison", t)] for lab, t in weapon_downgrade_rows("poison")]))
 
 	S.append(("h2", "Checks (all passed)"))
 	S.append(("ul", notes))
@@ -1204,15 +1239,21 @@ def document(notes):
 		"Gold armor and gold weapons: (a) chainmail-level factor 0.83 (model), (b) a magic bonus up to diamond-level 0.93, echoing gold's high enchantability.",
 		"Turtle helmet counts as its own material (iron-level, always a run of 1)? yes / no.",
 		"Resistance's 1.0: (a) Resistance IV from strong Turtle Master, 80% less damage (the rule as written; gems up to 76%), (b) Resistance II, the beacon level, 40% (gems up to 38%).",
-		"Turtle Master gems also carry Turtle Master's Slowness, on the wearer? yes / no.",
-		f"Healing gem returns at most {HEAL_BEST:.0%} of each survivable hit (early iron kit about {heal_fraction(build_value('instant_health', BUILDS[1])) * 100:.0f}%)? yes / no.",
+		"Turtle Master gems also carry Turtle Master's Slowness? yes / no.",
+		f"Healing gem in armor returns at most {HEAL_BEST:.0%} of each survivable hit (early iron kit about {heal_fraction(build_value('instant_health', BUILDS[1])) * 100:.0f}%)? yes / no.",
 		f"Drawback size: one drawback is {DRAWBACK_ONE:.0%} of the strongest vanilla level, many of one effect stay under {DRAWBACK_CAP:.0%}, the same whatever the gem or gear? yes / no.",
-		"Poison and wither never roll as armor drawbacks? yes / no (the alternative is a non-lethal poison that stops at half health).",
-		"Weapon drawbacks give the target speed, regeneration or resistance (no others)? yes / no.",
+		"Poison and wither never roll as a beneficial gem's drawback (its pool stays Slowness, Weakness, Mining Fatigue, Hunger, Bad Luck, minus the direct opposite: 4-5 candidates)? yes / no.",
+		"A harmful gem's drawback rolls from Speed, Regeneration, Resistance and Jump Boost (Jump Boost is new, so no harmful gem is left with only 2), minus the direct opposite? yes / no.",
+		"Conduit Power and Mining Fatigue count as direct opposites (Conduit Power's underwater mining is the conduit's Haste)? yes / no.",
+		"Jump Boost, Resistance, Health Boost, Absorption, Fire Resistance, Water Breathing and Dolphin's Grace have no direct opposite (nothing excluded from their drawbacks)? yes / no.",
+		"Healing, Harming and Hero of the Village are main-effect-only, never an 'other' roll? yes / no.",
+		"Harming in armor mirrors the Healing gem (each survivable hit taken deals up to 25% more)? (a) yes (model), (b) a magic-damage pulse every 10 s instead.",
+		"Harmful on/off gems in armor (Blindness, Darkness, Nausea, Glowing, Levitation) are on for a share of every 10 s, by strength? yes / no (the alternative is always on).",
+		f"Beneficial gems with no potion or timed source (Haste, Health Boost, Saturation, Dolphin's Grace, Conduit Power, Hero of the Village), on a weapon: the target gets the effect for up to {DEFAULT_HIT_TICKS / T:.1f} s, as if from a 3:00 potion's tipped arrow? yes / no.",
 		"Weapon material is a strength factor, like armor (wood ... netherite)? yes / no.",
 		"Bows, crossbows, tridents and maces (no material): (a) diamond-level 0.93, so only netherite weapons reach the cap (model), (b) netherite-level 1.00.",
 		"Weapon strength per hit: (a) shared between potency and duration (model), (b) all into potency, always the strongest arrow's duration.",
-		f"Harming weapon gems strike once per {HARM_CHARGE_S} s charge (not every hit)? yes / no.",
+		f"Harming and Healing on a weapon strike once per {HARM_CHARGE_S} s charge (not every hit)? yes / no.",
 		"The weapon's 1.0 is the strongest vanilla tipped arrow (Poison II 2.7 s, Slowness IV 2.5 s), not the drunk potion (Poison II 21.6 s)? yes / no.",
 		"Wither's 1.0: (a) the wither skeleton's hit, Wither I for 10 s (model: a weapon matches a weapon), (b) the Wither boss's skull, Wither II for 10 s.",
 		"Item-sourced Infused Gems reach splash and lingering form by brewing them again with gunpowder, then dragon's breath? yes / no.",
