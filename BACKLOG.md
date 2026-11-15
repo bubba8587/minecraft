@@ -20,6 +20,7 @@ Parked ideas and open items, newest first within each project. Agents add to it 
 - **Drawbacks** (shelved by the owner): ideas in `specs/effect-gems.md`.
 - **Per-weapon tuning for gems in bows, crossbows, tridents and maces** (owner, 2026-11-14): they have no material, so they count as diamond level for now; each probably needs its own factor.
 - **Drawback sizes** (owner will playtest): currently 10% each, under 20% stacked.
+- **Tipped arrow vs gem arrow of the same effect** (owner: come back to it): now the higher level wins (a Poison II tipped arrow beats a longer, near-perfect Poison gem arrow); alternative is comparing total effect (level x time).
 - **Gem inversion** (owner idea, 2026-11-14): some way to turn a gem into its opposite (e.g. Mining Fatigue into Haste), so odd harmful gems have another use. Not designed yet.
 
 ## Repo
