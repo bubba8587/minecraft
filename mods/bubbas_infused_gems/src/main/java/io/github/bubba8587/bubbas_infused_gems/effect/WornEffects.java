@@ -308,8 +308,12 @@ public final class WornEffects {
 	public static double gravity(LivingEntity entity, double gravity) {
 		double lev = GemValues.rawWorn(entity, "levitation");
 		if (lev > 0.0 && !entity.hasEffect(MobEffects.LEVITATION) && !entity.isNoGravity() && !entity.isInLiquid() && !entity.isFallFlying()) {
-			double rise = Balance.get().effect("levitation").wornNumber("rise_per_tick", 0.02) * lev;
-			return -(rise - entity.getDeltaMovement().y) * 0.2; // travelInAir subtracts it: y += (rise - y) x 0.2, as vanilla does
+			double rise = levitationRise(lev);
+			double y = entity.getDeltaMovement().y;
+			// travelInAir subtracts this. Below the rise speed, go straight to it (vanilla eases by 0.2 a tick, but at these
+			// slow speeds the first steps would fall under the 0.003 blocks/tick that aiStep rounds to 0, and nothing would
+			// move); above it (a jump), ease down as vanilla does.
+			return y < rise ? -(rise - y) : -(rise - y) * 0.2;
 		}
 		if (entity.getDeltaMovement().y > 0.0) {
 			return gravity;
@@ -320,6 +324,14 @@ public final class WornEffects {
 		}
 		double reduction = Balance.get().effect("slow_falling").wornNumber("gravity_reduction", 0.07) / 0.08;
 		return Math.min(gravity, entity.getGravity() * (1.0 - reduction * s));
+	}
+
+	/** Worn Levitation's rise speed, blocks per tick: any gem a slow but visible rise, the best build about half of Levitation I. */
+	public static double levitationRise(double s) {
+		Balance.EffectData e = Balance.get().effect("levitation");
+		double min = e.wornNumber("rise_min", 0.008);
+		double best = e.wornNumber("rise_best", 0.0232);
+		return s <= 0.0 ? 0.0 : min + (best - min) * Math.min(s / Balance.get().cap, 1.0);
 	}
 
 	/** Dolphin's Grace gem: the water slow-down s of the way to the effect's 0.96. */

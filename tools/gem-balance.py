@@ -511,7 +511,15 @@ ALWAYS_ON = {"glowing"}  # worn: on all the time (owner, Q14); can't be partial
 # total darkness that blinked): s of the way to vanilla's strongest look. Darkness: lightmap dim and fog; Blindness: fog;
 # Nausea: wobble. No vanilla effect instance on the wearer, so nothing pulses or restarts.
 SCREEN_EFFECTS = {"darkness": "a steady dimming", "blindness": "fog closing in", "nausea": "a screen wobble"}
-LEVITATION_RISE = 0.02  # worn Levitation: rise speed at strength 1.0, blocks per tick (vanilla Levitation I: 0.05), owner Q14: a slow drift
+# Worn Levitation (owner, Q14 and playtest 2026-11-15): always rising, like vanilla Levitation but slower. Rise speed in blocks
+# per tick from LEVITATION_MIN_RISE (any gem: slow but clearly visible) to LEVITATION_BEST_RISE at the cap, about half of
+# vanilla Levitation I (which settles near 0.045 blocks/tick, 0.9 blocks/s).
+LEVITATION_MIN_RISE = 0.008
+LEVITATION_BEST_RISE = 0.0232
+LEVITATION_RISE = LEVITATION_BEST_RISE
+
+def levitation_rise(s):
+	return 0.0 if s <= 0 else LEVITATION_MIN_RISE + (LEVITATION_BEST_RISE - LEVITATION_MIN_RISE) * min(s / CAP, 1.0)
 PULSED = ALWAYS_ON | set(SCREEN_EFFECTS) | {"levitation"}
 
 def worn_show(key, s):
@@ -526,7 +534,7 @@ def worn_show(key, s):
 	if key == "infested":
 		return f"{10 * s:.1f}% chance of silverfish each time the wearer is hurt"
 	if key == "levitation":
-		return f"drifts the wearer up at {LEVITATION_RISE * s * T * 0.98:.2f} blocks/s, all the time"
+		return f"lifts the wearer at {levitation_rise(s) * T * 0.98:.2f} blocks/s, all the time"
 	if key in SCREEN_EFFECTS:
 		return f"{SCREEN_EFFECTS[key]} on the wearer's screen, {s:.0%} of the way to {e['name']}'s strongest, steady"
 	if key in ALWAYS_ON:
@@ -542,7 +550,7 @@ def worn_anchor_text(key):
 	if key in DEATH_TRIGGER or key == "infested":
 		return f"{e['name']}: the vanilla trigger every time (on/off; the strength is its chance)"
 	if key == "levitation":
-		return f"Levitation, made a slow drift: rise speed {LEVITATION_RISE} blocks/tick at 1.0 (vanilla Levitation I: 0.05)"
+		return f"Levitation, slower: rise {LEVITATION_MIN_RISE * T * 0.98:.2f} blocks/s for any gem up to {LEVITATION_BEST_RISE * T * 0.98:.2f} at the cap (vanilla Levitation I: about 0.9)"
 	if key in SCREEN_EFFECTS:
 		return f"{e['name']}'s strongest look on the wearer's screen, made partial and steady (owner)"
 	if key in ALWAYS_ON:
@@ -1407,7 +1415,7 @@ def document(notes):
 		"Answered (owner, 2026-11-14): Jump Boost, Resistance, Health Boost, Absorption, Fire Resistance, Water Breathing and Dolphin's Grace have no direct opposite.",
 		"Answered (owner, 2026-11-14): Healing, Harming and Hero of the Village are main-effect only.",
 		"Answered (owner, 2026-11-14): Harming in armor mirrors the Healing gem: each survivable hit taken deals up to 25% more.",
-		f"Answered (owner, 2026-11-14): harmful on/off gems in armor are always on; Levitation is a slow drift up by strength (at most {LEVITATION_RISE} blocks/tick, vanilla Levitation I 0.05); Blindness, Darkness, Nausea and Glowing can't be partial, so on is on.",
+		f"Answered (owner, 2026-11-14): harmful on/off gems in armor are always on; Levitation is a slow drift up by strength (at most {LEVITATION_BEST_RISE * T * 0.98:.2f} blocks/s, about half of vanilla Levitation I); Blindness, Darkness, Nausea and Glowing can't be partial, so on is on.",
 		f"Answered (owner, 2026-11-14): beneficial gems with no potion (Haste, Health Boost, Saturation, Dolphin's Grace, Conduit Power, Hero of the Village) on a weapon follow the same rule: potency against the level a potion, beacon or source gives, at most {MAX_HIT_SECONDS:.0f} s, never under the floor.",
 		"Answered (owner, 2026-11-14): weapon material is a strength factor, like armor.",
 		"Answered (owner, 2026-11-14): bows, crossbows, tridents and maces stay diamond-level 0.93 for now (per-weapon tuning is backlogged).",
@@ -1556,7 +1564,7 @@ WORN = {
 	"hero_of_the_village": {"price_cut": HERO_CUT},
 	**{k: {"always_on": True} for k in sorted(ALWAYS_ON)},
 	**{k: {"screen": True} for k in sorted(SCREEN_EFFECTS)},
-	"levitation": {"rise_per_tick": LEVITATION_RISE},
+	"levitation": {"rise_min": LEVITATION_MIN_RISE, "rise_best": LEVITATION_BEST_RISE},
 	**{k: {"death_chance": 1.0} for k in ("wind_charged", "weaving", "oozing")},
 	"infested": {"hurt_chance": 1.0},
 }

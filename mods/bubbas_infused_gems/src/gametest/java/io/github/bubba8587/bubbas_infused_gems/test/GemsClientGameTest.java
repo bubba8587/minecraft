@@ -54,7 +54,7 @@ public class GemsClientGameTest implements FabricClientGameTest {
 
 	@Override
 	public void runTest(ClientGameTestContext context) {
-		if (!List.of("inventory", "colors", "enchanting", "smithing", "worn", "hits", "mobs", "screen").stream().anyMatch(ClientTests::run)) {
+		if (!List.of("inventory", "colors", "enchanting", "smithing", "worn", "hits", "mobs", "screen", "levitation").stream().anyMatch(ClientTests::run)) {
 			return;
 		}
 		try (TestSingleplayerContext sp = context.worldBuilder()
@@ -90,6 +90,9 @@ public class GemsClientGameTest implements FabricClientGameTest {
 			}
 			if (ClientTests.run("screen")) {
 				screen(context, server);
+			}
+			if (ClientTests.run("levitation")) {
+				levitation(context, server);
 			}
 		}
 	}
@@ -477,5 +480,54 @@ public class GemsClientGameTest implements FabricClientGameTest {
 				player(s).setItemSlot(slot, ItemStack.EMPTY);
 			}
 		});
+	}
+
+	/** Owner (playtest): a Levitation set lifts the player continuously, in survival and in creative when not flying. */
+	private static void levitation(ClientGameTestContext context, TestServerContext server) {
+		for (String mode : List.of("survival", "creative")) {
+			for (String build : List.of("best", "weak")) {
+				server.runCommand("gamemode " + mode + " @a");
+				server.runOnServer(s -> {
+					ServerPlayer p = player(s);
+					for (EquipmentSlot slot : io.github.bubba8587.bubbas_infused_gems.effect.GemTotals.ARMOR) {
+						p.setItemSlot(slot, ItemStack.EMPTY);
+					}
+					p.getAbilities().flying = false;
+					p.onUpdateAbilities();
+				});
+				context.waitTicks(40); // land
+				server.runOnServer(s -> {
+					ServerPlayer p = player(s);
+					if (build.equals("weak")) {
+						p.setItemSlot(EquipmentSlot.CHEST, GemKit.socketed(Items.NETHERITE_CHESTPLATE, GemKit.gem("levitation", 0.5)));
+					} else {
+						Gem g = GemKit.gem("levitation", 1.0);
+						p.setItemSlot(EquipmentSlot.HEAD, GemKit.socketed(Items.NETHERITE_HELMET, g, g, g));
+						p.setItemSlot(EquipmentSlot.CHEST, GemKit.socketed(Items.NETHERITE_CHESTPLATE, g, g, g));
+						p.setItemSlot(EquipmentSlot.LEGS, GemKit.socketed(Items.NETHERITE_LEGGINGS, g, g, g));
+						p.setItemSlot(EquipmentSlot.FEET, GemKit.socketed(Items.NETHERITE_BOOTS, g, g, g));
+					}
+				});
+				context.waitTicks(5);
+				double y0 = context.computeOnClient(mc -> mc.player.getY());
+				context.waitTicks(80);
+				double y1 = context.computeOnClient(mc -> mc.player.getY());
+				double serverY = server.computeOnServer(s -> player(s).getY());
+				boolean flying = context.computeOnClient(mc -> mc.player.getAbilities().flying);
+				System.out.println("[levitation test] " + mode + " " + build + ": rose " + (y1 - y0) + " blocks in 4 s (server sees " + serverY + ", client " + y1 + ", flying " + flying + ")");
+				if (y1 - y0 < (build.equals("best") ? 1.6 : 0.5)) {
+					throw new AssertionError("Levitation " + build + " in " + mode + " rose only " + (y1 - y0) + " blocks in 4 s");
+				}
+				if (build.equals("best") && mode.equals("survival")) {
+					context.takeScreenshot("gems-levitation-best-survival-after-4s");
+				}
+			}
+		}
+		server.runOnServer(s -> {
+			for (EquipmentSlot slot : io.github.bubba8587.bubbas_infused_gems.effect.GemTotals.ARMOR) {
+				player(s).setItemSlot(slot, ItemStack.EMPTY);
+			}
+		});
+		server.runCommand("gamemode survival @a");
 	}
 }

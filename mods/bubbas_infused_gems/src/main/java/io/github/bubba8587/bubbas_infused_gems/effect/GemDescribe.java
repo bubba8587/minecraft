@@ -59,7 +59,7 @@ public final class GemDescribe {
 			case "darkness" -> f("your screen dims, %.0f%% of the way to Darkness", 100 * s);
 			case "blindness" -> f("fog closes in, %.0f%% of the way to Blindness", 100 * s);
 			case "nausea" -> f("your screen wobbles, %.0f%% of Nausea", 100 * s);
-			case "levitation" -> f("drifts you up at %.2f blocks/s", e.wornNumber("rise_per_tick", 0.02) * s * 20 * 0.98);
+			case "levitation" -> f("lifts you at %.2f blocks/s", WornEffects.levitationRise(s) * 20 * 0.98);
 			case "wind_charged" -> f("a wind burst where you die, %.0f%% chance", 100 * s);
 			case "weaving" -> f("cobwebs where you die, %.0f%% chance", 100 * s);
 			case "oozing" -> f("2 slimes where you die, %.0f%% chance", 100 * s);

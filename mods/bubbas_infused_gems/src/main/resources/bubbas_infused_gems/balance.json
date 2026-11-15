@@ -2980,7 +2980,8 @@
 				1.0
 			],
 			"worn": {
-				"rise_per_tick": 0.02
+				"rise_min": 0.008,
+				"rise_best": 0.0232
 			},
 			"worn_amplifier": 0,
 			"id": "minecraft:levitation",

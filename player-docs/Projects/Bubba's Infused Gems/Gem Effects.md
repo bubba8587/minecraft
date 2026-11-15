@@ -66,7 +66,7 @@ Harmful gems in armor affect the wearer:
 | Darkness | The wearer's screen dims steadily, more the stronger the gems (a single weak gem only slightly; the best build almost as dark as the potion), with no pulsing |
 | Blindness | Dark fog closes in on the wearer's screen, more the stronger the gems |
 | Nausea | The wearer's screen wobbles, more the stronger the gems |
-| Levitation | A slow drift upward (at most about a third of a block per second) |
+| Levitation | The wearer keeps rising, slower than the potion: from about 0.15 blocks per second for one gem to about 0.45 at the best build (the potion is about 0.9). Sneaking doesn't stop it; taking the armor off drops the wearer, with fall damage as usual. |
 | Wind Charged, Weaving, Oozing | A chance of the effect's burst, cobwebs or slimes when the wearer dies |
 | Infested | A chance of silverfish each time the wearer is hurt |
 

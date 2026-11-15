@@ -167,8 +167,7 @@ public class GemsEverywhereGameTest {
 				}
 				case "levitation" -> {
 					pig.setDeltaMovement(0, 0, 0);
-					double g = WornEffects.gravity(pig, 0.08);
-					close(-g, 0.02 * s * 0.2, 1e-9, helper, "levitation drift (y += (rise - y) x 0.2)");
+					close(-WornEffects.gravity(pig, 0.08), WornEffects.levitationRise(s), 1e-9, helper, "levitation: straight to the rise speed");
 				}
 				case "oozing", "weaving" -> {
 					int before = key.equals("oozing") ? count(helper, Slime.class, pig) : 0;
@@ -435,6 +434,26 @@ public class GemsEverywhereGameTest {
 		close(pig.getAbsorptionAmount(), full, 1e-3, helper, "equip-fill again once 30 s have passed");
 		pig.discard();
 		helper.succeed();
+	}
+
+	/** Owner (playtest): a Levitation set really lifts its wearer, continuously, like vanilla Levitation but slower. */
+	@GameTest(maxTicks = 120)
+	public void levitationSetLiftsTheWearer(GameTestHelper helper) {
+		Mob best = helper.spawn(EntityTypes.PIG, new BlockPos(1, 1, 1));
+		Mob weak = helper.spawn(EntityTypes.PIG, new BlockPos(3, 1, 1));
+		wear(best, "levitation");
+		weak.setItemSlot(EquipmentSlot.CHEST, GemKit.socketed(Items.NETHERITE_CHESTPLATE, GemKit.gem("levitation", 0.5)));
+		WornEffects.refresh(weak);
+		double y0 = best.getY();
+		double w0 = weak.getY();
+		helper.runAfterDelay(80, () -> {
+			double rose = best.getY() - y0;
+			double weakRose = weak.getY() - w0;
+			// 4 s: the best build drifts up near half of vanilla Levitation I's speed, a single weak gem slowly.
+			check(helper, rose > 1.6, "best Levitation set rose only " + rose + " blocks in 4 s");
+			check(helper, weakRose > 0.25 && weakRose < rose, "a weak Levitation gem rose " + weakRose + " blocks in 4 s");
+			helper.succeed();
+		});
 	}
 
 	/** Owner (Q33): stealth scales, the locator bar hides from a threshold, only the perfect full set is really invisible. */
