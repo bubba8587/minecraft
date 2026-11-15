@@ -29,4 +29,12 @@ Asked one at a time; answers land here.
    - So a gem's contribution = f(potion) x f(base gem) x f(armor material) x f(matching contiguous run), and the total per effect stays just under that effect's strongest vanilla potion level.
    - Still open: the strength ladder of the six base gems (and what's special about nether star, which outranks diamond in vanilla); prismarine shard or crystals.
 3. Drawbacks: **shelved for now (owner, 2026-11-14).** Candidates raised: gem-specific side effects, a general gem load, fragile gems that crack, undead drawn to gem-wearers. Balance meanwhile comes from partial strength, the stacking cap and how hard gems are to get.
-4. How gems are obtained (and lost).
+4. **Making gems (owner, 2026-11-14), two steps, both extending vanilla mechanics:**
+   - **Brewing stand:** a potion + a base gem brews an **Infused Gem**. Six infused items in all, one per base gem (Infused Diamond, Infused Quartz, Infused Ender Pearl, Infused Nether Star, Infused Prismarine, Infused Amethyst): a glowing version of the base gem that carries the potion's effect and strength as data. 26.3 brewing recipes are data-driven (`minecraft:brewing`: potion-matching input, item reagent, any output item), so the recipes can be generated per potion x base gem.
+   - **Enchanting table:** the infused gem is "enchanted" like gear, with vanilla's mechanics (XP levels, lapis, bookshelves, the seed and its preview). The three option rows are three tiers, each locking in one outcome by chance:
+     - **Tier 1 (top row):** a weak negative effect, or a weak form of the intended effect.
+     - **Tier 2:** a medium form of the intended effect + a weak form of another effect.
+     - **Tier 3:** one of: the strongest form alone; strongest + a weak other effect; strongest + a medium other effect; strongest + a weak negative effect.
+     The result is the finished effect gem, ready for the smithing table.
+   - **Owner's concern:** with a lingering-potion requirement (dragon's breath, so post-dragon only) this may feel unreachable or unsatisfying. Balance for satisfaction. Gating options being discussed.
+5. How gems are lost (beyond popping out of broken armor): open.
