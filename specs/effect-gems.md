@@ -18,6 +18,11 @@ Gems are a class of items, each embodying a **permanent** potion effect, added t
 Asked one at a time; answers land here.
 
 1. ~~How gems attach~~ **Decided (owner): data on the armor via vanilla stations.** A smithing table adds a gem to a piece of armor (like a trim); a grindstone removes it and returns the gem (like stripping enchantments). The gem is stored on the armor item and shown in its tooltip. No new GUI.
-2. Strength cap and stacking (one gem per piece? same effect on several pieces?).
+2. ~~Strength~~ **Decided (owner):**
+   - A gem gives a **partial** version of its effect, never a full potion (where an effect can't be partial, e.g. night vision, its drawback balances it instead).
+   - Its strength comes from **the potion used to make it** and **the base gem it's crafted from**. Base gems: diamond, quartz, ender pearl, nether star, prismarine, amethyst. **Diamond is the best.**
+   - **More than one gem** can go on armor, and the same effect **stacks**: the best possible stack (diamond gems from the strongest potions) reaches **just under the strongest vanilla potion level** of that effect, never equal to it.
+   - **Broken armor pops its gems out** (dropped, not lost). If that's tricky, gems fall out at very low durability instead.
+   - Still open: how many gems per armor piece; the strength ladder of the six base gems (and what's special about nether star, which outranks diamond in vanilla); prismarine shard or crystals.
 3. Drawbacks.
 4. How gems are obtained (and lost).
