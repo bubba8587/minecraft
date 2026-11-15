@@ -46,7 +46,7 @@ The base gem sets the gem's **Infusion level**, which affects strength only, and
 | II | Nether quartz | 50% |
 | III | Ender pearl | 62% |
 | IV | Diamond | 75% |
-| V | Prismarine shard | 87% |
+| V | Prismarine shard | 88% |
 | VI | Nether star | 100% |
 
 ## Properties

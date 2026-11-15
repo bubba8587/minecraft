@@ -10,10 +10,10 @@ Any Gem fits armor or a weapon; **where it is set decides who gets its effects**
 
 ### Strength
 
-Most gem effects are weaker than a real potion: the best possible build reaches 90% of the strongest potion level, and only one build does: twelve perfect gems of one effect in a full set of netherite armor (or two in a netherite weapon). A few movement effects in armor go further than any potion at the best build, so a perfect set is worth chasing: Haste, Jump Boost, Dolphin's Grace, Slow Falling and Speed (see the table below). Weapon hits always stay under the potion.
+Gems below the best are weaker than a real potion. The best possible build is twelve perfect gems of one effect in a full set of netherite armor (or two in a netherite weapon), and only that build reaches the top, so a perfect set is worth chasing. In armor it gives the full strongest potion permanently for fighting effects (Strength, Resistance, Turtle Master, Regeneration, Health Boost, Absorption); it makes on/off effects complete (Fire Resistance and Water Breathing become the real effect, and Night Vision, Conduit Power and Invisibility work fully); and it goes past any potion for movement effects (Haste, Speed, Jump Boost, Dolphin's Grace, Slow Falling) and Luck. Harmful gems in armor stay at 90%. A perfect weapon hits with the strongest potion's level.
 
 - **Stacking:** gems of the same effect add up, each extra one counting a little less than the one before.
-- **Base gem:** the gem's Infusion level (its base gem) matters most: a full iron set of amethyst gems reaches about a third of the best, diamond-base gems in diamond armor about 70%.
+- **Base gem:** the gem's Infusion level (its base gem) matters most: a full iron set of amethyst gems reaches about a third of the best, diamond-base gems in diamond armor about 70%, and prismarine-base gems in netherite 88%.
 - **Material:** the same gem is stronger in better armor or weapons, from leather and wood up to netherite. Gold counts like diamond, for its strong enchanting. Bows, crossbows, tridents and maces count like diamond.
 - **Matching set:** armor pieces of the same material next to each other (helmet, chestplate, leggings, boots) add strength. A matching helmet and chestplate beat a matching helmet and boots; a full matching set is best.
 - **Drawbacks** are small and fixed, about a tenth of the effect's strongest potion level. Several of the same drawback add up a little, but stay weaker than the weakest real potion.
@@ -34,26 +34,26 @@ Values are for the best build (90%); weaker builds give less.
 
 | Gem | Effect on the wearer |
 |---|---|
-| Speed | Faster movement (up to +60% with the best build, like Speed III; Speed II is +40%) |
-| Strength | More attack damage (up to +5.4) |
-| Jump Boost | Higher jumps and a longer safe fall (the best build jumps about 4.15 blocks, enough to jump straight onto a 4-block step; Jump Boost II reaches about 2.5) |
-| Haste | Faster mining and attacks: the best build mines like Haste IV (x1.8), well beyond the beacon's Haste II (found gems only) |
-| Regeneration | Slow healing when hurt |
-| Resistance | Less damage taken (up to 36% less; found gems only) |
-| Turtle Master | Much less damage taken (up to 72% less) and much slower movement (up to 81% slower), together |
-| Fire Resistance | Less fire and lava damage, and fire goes out sooner |
-| Water Breathing | Air lasts longer underwater |
-| Night Vision | The world is partly lit in the dark |
-| Invisibility | Mobs notice the wearer from closer the stronger the gems (at the best, 16% of the usual range); from about half strength the wearer is hidden on the locator bar. Only the perfect complete set makes the wearer truly invisible; armor still shows, as with the potion. |
-| Slow Falling | Slower falling and less fall damage; the best build falls 1.5 times slower than the potion, with no fall damage |
-| Healing | Each survived hit or fall returns part of the lost health (up to 25%) |
-| Absorption | A shield of extra health (up to 14.4). It fills as soon as the gems are put on (or on joining the game), then refills 30 seconds after the wearer was last hurt. Swapping the armor off and on again does not refill it more than once every 30 seconds. |
-| Health Boost | More maximum health (up to +7.2; found gems only) |
-| Dolphin's Grace | Faster swimming; the best build swims faster than the potion |
+| Speed | Faster movement (up to +75% with the best build; Speed II is +40%) |
+| Strength | More attack damage (up to +6, Strength II's, all the time) |
+| Jump Boost | Higher jumps and a longer safe fall (the best build jumps about 4.5 blocks, enough to jump straight onto a 4-block step; Jump Boost II reaches about 2.5) |
+| Haste | Faster mining and attacks: the best build mines twice as fast and attacks 50% faster, well beyond the beacon's Haste II (found gems only) |
+| Regeneration | Healing when hurt (the best build heals like Regeneration II, all the time) |
+| Resistance | Less damage taken (up to 40% less, the beacon's Resistance II; found gems only) |
+| Turtle Master | Much less damage taken (up to 80% less) and much slower movement (up to 90% slower), together, like the strong potion |
+| Fire Resistance | Less fire and lava damage, and fire goes out sooner; the perfect set gives real Fire Resistance |
+| Water Breathing | Air lasts longer underwater; the perfect set gives real Water Breathing |
+| Night Vision | The world is partly lit in the dark (fully at the best build) |
+| Invisibility | Mobs notice the wearer from closer the stronger the gems (at the best, 7% of the usual range); from about half strength the wearer is hidden on the locator bar. Only the perfect complete set makes the wearer truly invisible; armor still shows, as with the potion. |
+| Slow Falling | Slower falling and less fall damage; the best build falls 1.8 times slower than the potion, with no fall damage |
+| Healing | Each survived hit or fall returns part of the lost health (up to about 27%) |
+| Absorption | A shield of extra health (up to 16, an enchanted golden apple's). It fills as soon as the gems are put on (or on joining the game), then refills 30 seconds after the wearer was last hurt. Swapping the armor off and on again does not refill it more than once every 30 seconds. |
+| Health Boost | More maximum health (up to +8, Health Boost II's; found gems only) |
+| Dolphin's Grace | Faster swimming; the best build gains 1.8 times the potion's swim speed |
 | Saturation | Restores food and saturation over time, like the potion but slower: a single weak gem about half a drumstick every 22 seconds, the best build about half a drumstick every second. How full it keeps you grows with strength too: weak gems fill the bar only to about a third (7 of 20), a middling build to about two thirds, and only a perfect set fills it completely, so only a perfect set speeds up healing the way a full bar does. Weaker gems also give less saturation per point |
-| Conduit Power | In water or rain: air lasts longer, faster mining underwater, clearer sight underwater |
-| Hero of the Village | Cheaper villager trades (up to 20% cheaper; found gems only) |
-| Luck | A little more luck (mostly found; a Luck potion also brews one) |
+| Conduit Power | In water or rain: air lasts longer, faster mining underwater, clearer sight underwater (at the best build, air never runs out, as with a conduit) |
+| Hero of the Village | Cheaper villager trades (up to 30% cheaper; found gems only) |
+| Luck | A little more luck, up to a bit more than a Luck potion (mostly found; a Luck potion also brews one) |
 
 Harmful gems in armor affect the wearer:
 
@@ -77,15 +77,15 @@ Some gems do what their source does, rather than apply its potion.
 | Gem | Source | In armor | In a weapon |
 |---|---|---|---|
 | Wind Burst | Wind Charged potion | A fall's landing bounces the wearer with a small burst of wind, and the fall hurts less (not at all with the best build) | Throws the target up and away, like a wind charge; on a mace with the Wind Burst enchantment, much further than any other weapon can |
-| Weaving | Weaving potion | Walks through cobwebs faster, at full speed at the best build | A chance to web the target in place with a real cobweb (only placed into empty space, never replacing a block) |
+| Weaving | Weaving potion | Walks through cobwebs faster; at the best build cobwebs don't hold the wearer at all: walking, sprinting, jumping and falling are as in open air | A chance to web the target in place with a real cobweb (only placed into empty space, never replacing a block) |
 | Oozing | Oozing potion | Bounces off landings like a slime block, and falls hurt less (not at all with the best build) | A kill splits off small slimes that belong to the wielder: they never attack anyone and drop nothing; at most 8 near the player at a time; they stay while the player is around, and slimes left behind dissolve when their area unloads |
 | Silence | Echo shard | The wearer's footsteps, swimming, landing and other movement make no vibrations (sculk sensors, wardens), some of the time with weak gems and always at the best build | Silences the target (pointless) |
-| Ender | Chorus fruit | A chance that a projectile about to hurt the wearer teleports them away instead (not harmless ones like snowballs, and never explosions), like chorus fruit; stronger gems teleport further | Gives it to the target (pointless) |
-| Breeze | Breeze rod | A chance to deflect incoming projectiles, like a breeze | Gives it to the target (pointless) |
+| Ender | Chorus fruit | A chance that a projectile about to hurt the wearer teleports them away instead (not harmless ones like snowballs, and never explosions), like chorus fruit; stronger gems teleport further, and the perfect set always does. Other damage still hurts | Gives it to the target (pointless) |
+| Breeze | Breeze rod | A chance to deflect incoming projectiles, like a breeze: about half the time at 90% of the best, every time with the perfect set | Gives it to the target (pointless) |
 
 ## In weapons
 
-Each hit gives the target a partial effect for a few seconds, refreshed (never added up) by every hit. Its strength is measured against the strongest potion of the effect: the best weapon comes close to a Poison II or Slowness IV potion, but only for 8 seconds; weaker weapons give a weaker effect for a shorter time. Every hit lasts long enough to be noticed: Poison and Wither at least 2.5 seconds (enough for several damage ticks), Darkness 3 seconds, Hunger 4 seconds, Nausea 5 seconds, Regeneration long enough to heal a heart, everything else 2 seconds. The effect appears in the target's effects as a percentage, for example *Poison 46%*.
+Each hit gives the target a partial effect for a few seconds, refreshed (never added up) by every hit. Its strength is measured against the strongest potion of the effect: the best weapon matches a Poison II or Slowness IV potion, but only for 8 seconds; weaker weapons give a weaker effect for a shorter time. Every hit lasts long enough to be noticed: Poison and Wither at least 2.5 seconds (enough for several damage ticks), Darkness 3 seconds, Hunger 4 seconds, Nausea 5 seconds, Regeneration long enough to heal a heart, everything else 2 seconds. The effect appears in the target's effects as a percentage, for example *Poison 46%*.
 
 | Gem | Effect on the target |
 |---|---|

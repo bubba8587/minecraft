@@ -30,7 +30,7 @@ Total for an effect, in symbols: `total = 0.9 x sum(gem_i x 0.85^(rank_i)) / sum
 | Infusion II | Nether quartz | 0.50 | First Nether trip |
 | Infusion III | Ender pearl | 0.62 | Endermen; farmable |
 | Infusion IV | Diamond | 0.75 | Deep mining; common in chest loot |
-| Infusion V | Prismarine shard (owner; 0.93: a netherite set of tier 3 Infusion V lands near 90% of the perfect set) | 0.93 | Ocean monuments, a guarded structure (minecraft:prismarine_shard) |
+| Infusion V | Prismarine shard (owner; 0.88: a netherite set of tier 3 Infusion V lands at 88% of the perfect set) | 0.88 | Ocean monuments, a guarded structure (minecraft:prismarine_shard) |
 | Infusion VI | Nether star | 1.00 | The Wither: the best base (owner) |
 
 ### Potion variant (by what that effect really has in 26.3)
@@ -547,7 +547,7 @@ Worn (armor) effects are attribute modifiers, data components or small tick and 
 |---|---|---|
 | (best) | 0.900 | +36.0% speed |
 | long potion instead of strong | 0.765 | +30.6% speed |
-| Infusion V (prismarine shard) instead of VI (nether star) | 0.837 | +33.5% speed |
+| Infusion V (prismarine shard) instead of VI (nether star) | 0.792 | +31.7% speed |
 | splash potion (tier 2 at best: medium) | 0.675 | +27.0% speed |
 | full diamond armor | 0.837 | +33.5% speed |
 | diamond boots break the run | 0.840 | +33.6% speed |
@@ -570,7 +570,7 @@ Worn (armor) effects are attribute modifiers, data components or small tick and 
 |---|---|---|
 | (best) | 0.900 | 1.67 HP/s poison for 8.0 s |
 | long potion instead of strong | 0.765 | 1.54 HP/s poison for 7.4 s |
-| Infusion V (prismarine shard) instead of VI (nether star) | 0.837 | 1.61 HP/s poison for 7.7 s |
+| Infusion V (prismarine shard) instead of VI (nether star) | 0.792 | 1.56 HP/s poison for 7.5 s |
 | splash potion (tier 2 at best: medium) | 0.675 | 1.44 HP/s poison for 6.9 s |
 | diamond weapon | 0.837 | 1.61 HP/s poison for 7.7 s |
 | bow, crossbow, trident or mace | 0.837 | 1.61 HP/s poison for 7.7 s |
@@ -583,14 +583,14 @@ Worn (armor) effects are attribute modifiers, data components or small tick and 
 - a gem's own strength reaches 1.0 only from the strongest potion (lingering) or source item + tier 3 + Infusion VI (nether star), for every craftable gem, so every one can reach the cap (owner); a found-only gem is perfect only from ominous loot at Infusion VI and tier 3
 - all 40 status effects in 26.3 are classified: 33 craftable gems, 6 found-only gems, 1 drawback-only, 4 not gems
 - 707,281 armor layouts x gem counts enumerated: only full contiguous netherite with 12 gems reaches 0.9; next best 0.874
-- 16,940 weapons x gem combinations enumerated: only a netherite weapon with 2 perfect gems reaches 0.9; next best weapon or gem count with perfect gems 0.837
+- 18,821 weapons x gem combinations enumerated: only a netherite weapon with 2 perfect gems reaches 0.9; next best weapon or gem count with perfect gems 0.837
 - from the best armor build and the best weapon build, every single step down (potion, base, tier, material, run, one gem fewer, a material-less weapon) loses at least 0.025
 - weakest single armor gem (normal potion, Infusion I, tier 1, lone leather piece) = 0.016; early armor kit (iron set, 4 Infusion II tier-1 gems) = 0.087-0.109; weakest weapon gem (wooden sword, Infusion I, tier 1) = 0.058; early weapon (iron sword, 1 Infusion II tier-1 gem) = 0.085-0.106
 - stacking: 25,000 random armor and weapon stacks never pass 0.9 x their strongest gem; adding a gem never lowers a total; 12 tier-1 armor gems lose to 4 tier-3 in every set, and 2 tier-1 weapon gems lose to 1 tier-3 on every weapon
 - every one of the 39 gems has a worn (armor) and a hit-applied (weapon) form; every worn mapping rises with strength; harmful gems in armor stay short of the vanilla level at the cap; the perfect set reaches the full potion for Strength, Resistance, Turtle Master, Regeneration, Healing, Health Boost, Absorption, Water Breathing, Fire Resistance, Night Vision, Invisibility, Conduit Power, and passes it for Haste 2.5, Jump Boost 2.1921, Dolphin's Grace 1.8, Slow Falling 1.8, Speed 1.875, Luck 1.2 (owner, 2026-11-15)
 - healing: best build returns 25% of each non-lethal hit (never a whole hit, so taking damage is always a net loss); early kit 4.9%; every step down from the best loses at least 0.5 points; the curve is flatter than linear
 - drawbacks: one is 10% of the strongest vanilla level, any number of one effect stays under 20%, below vanilla's level I for every drawback effect; Poison and Wither roll less often (uncommon weight, owner); Healing, Harming and the rest of the never-drawback list never roll
-- inversion: the strongest inverted gem is 0.70 (never perfect); each gem's grade reads back from its strength; roll weights by rarity {'common': 4, 'uncommon': 2, 'rare': 1}
+- inversion: the strongest inverted gem is 0.66 (never perfect); each gem's grade reads back from its strength; roll weights by rarity {'common': 4, 'uncommon': 2, 'rare': 1}
 - rolls: each of the 39 gems has one roll table; 'other' pools 11-24 effects, all the main effect's kind and never itself; drawback pools 5-22 effects, all the opposite kind, none on the never-drawback list, and none a direct opposite (13 inverse pairs, the owner's 12 included)
 - weapons: per hit, potency rises with strength to the strongest potion's level at the perfect weapon (owner, 2026-11-15); a hit lasts at most 8 s (the best weapon), less below it, never under its floor (owner); a real tipped arrow and a gem of the same effect don't add, the stronger level applies
 - loot: 40 vanilla tables get one extra roll (chance 4%-20%); each level's best gem beats the level below; only ominous vaults give perfect gems (any effect, Infusion VI, tier 3), with a drawback except 5% of the time; nowhere else gives a craftable gem Infusion VI; every found-only gem is listed at exactly the levels its source names; every table and item exists in 26.3

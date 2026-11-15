@@ -687,16 +687,16 @@ public class GemsClientGameTest implements FabricClientGameTest {
 		for (int i = 0; i < 2; i++) {
 			int col = i == 0 ? -1 : -2;
 			server.runOnServer(s -> player(s).teleportTo(x + col + 0.5, y + 11.5, z + col + 0.5));
-			context.waitTicks(1);
+			context.waitFor(mc -> mc.player.getY() > y + 10); // the client has the new position
 			int t = 0;
-			while (t < 200 && !context.computeOnClient(mc -> mc.player.onGround())) {
+			while (t < 200 && context.computeOnClient(mc -> mc.player.getY()) > y + 0.001) { // until it lands on the floor
 				context.waitTicks(1);
 				t++;
 			}
 			ticks[i] = t;
 		}
 		org.slf4j.LoggerFactory.getLogger("bubbas_infused_gems-test").info("Weaving fall, ticks: open {}, web shaft {}", ticks[0], ticks[1]);
-		if (Math.abs(ticks[1] - ticks[0]) > 2) {
+		if (ticks[0] < 10 || Math.abs(ticks[1] - ticks[0]) > 2) {
 			throw new AssertionError("a perfect Weaving set fell through webs in " + ticks[1] + " ticks, open air " + ticks[0]);
 		}
 		server.runOnServer(s -> player(s).teleportTo(x + 20.5, y, z + 3.5));

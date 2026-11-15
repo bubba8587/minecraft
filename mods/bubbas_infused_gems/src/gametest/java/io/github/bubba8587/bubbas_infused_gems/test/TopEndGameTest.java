@@ -31,7 +31,7 @@ import net.fabricmc.fabric.api.gametest.v1.GameTest;
 
 /**
  * The new top end (owner, 2026-11-15): the perfect set reaches the full potion for combat effects, is complete for
- * on/off ones, goes past it for mobility; chance gems are certain; a netherite set of tier 3 Infusion V is 93 % of it.
+ * on/off ones, goes past it for mobility; chance gems are certain; a netherite set of tier 3 Infusion V is 88 % of it.
  */
 public class TopEndGameTest {
 	private static final String[] PIECES = {"helmet", "chestplate", "leggings", "boots"};
@@ -72,7 +72,7 @@ public class TopEndGameTest {
 		helper.succeed();
 	}
 
-	/** Owner: a full netherite set of tier 3 Infusion V gems lands at 93 % of the perfect set (was 87 %). */
+	/** Owner: a full netherite set of tier 3 Infusion V gems lands at 88 % of the perfect set (was 87 %; model 0.88). */
 	@GameTest
 	public void netheriteInfusionVReferenceBuild(GameTestHelper helper) {
 		ServerPlayer player = helper.makeMockServerPlayerInLevel();
@@ -87,7 +87,7 @@ public class TopEndGameTest {
 		}
 		WornEffects.refresh(player);
 		double share = WornEffects.of(player).value("speed") / Balance.get().effect("speed").wornCap();
-		check(helper, Math.abs(share - 0.93) < 0.005, "netherite + tier 3 Infusion V: " + share + " of the perfect set, model 0.93");
+		check(helper, Math.abs(share - 0.88) < 0.005, "netherite + tier 3 Infusion V: " + share + " of the perfect set, model 0.88");
 		helper.succeed();
 	}
 

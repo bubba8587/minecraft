@@ -75,7 +75,7 @@ BASE_GEMS = [
 	("quartz", "Nether quartz", 0.50, "First Nether trip"),
 	("ender_pearl", "Ender pearl", 0.62, "Endermen; farmable"),
 	("diamond", "Diamond", 0.75, "Deep mining; common in chest loot"),
-	("prismarine", "Prismarine shard (owner; 0.93: a netherite set of tier 3 Infusion V lands near 90% of the perfect set)", 0.93, "Ocean monuments, a guarded structure (minecraft:prismarine_shard)"),
+	("prismarine", "Prismarine shard (owner; 0.88: a netherite set of tier 3 Infusion V lands at 88% of the perfect set)", 0.88, "Ocean monuments, a guarded structure (minecraft:prismarine_shard)"),
 	("nether_star", "Nether star", 1.00, "The Wither: the best base (owner)"),
 ]
 BASE = {b: f for b, _, f, _ in BASE_GEMS}
