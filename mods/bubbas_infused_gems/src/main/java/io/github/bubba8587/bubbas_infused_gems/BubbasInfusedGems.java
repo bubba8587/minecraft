@@ -4,6 +4,7 @@ package io.github.bubba8587.bubbas_infused_gems;
 import io.github.bubba8587.bubbas_infused_gems.balance.Balance;
 import io.github.bubba8587.bubbas_infused_gems.loot.GemLoot;
 import io.github.bubba8587.bubbas_infused_gems.effect.WornEffects;
+import io.github.bubba8587.bubbas_infused_gems.registry.ModAttachments;
 import io.github.bubba8587.bubbas_infused_gems.registry.ModCommands;
 import io.github.bubba8587.bubbas_infused_gems.registry.ModComponents;
 import io.github.bubba8587.bubbas_infused_gems.registry.ModCreativeTabs;
@@ -32,6 +33,7 @@ public class BubbasInfusedGems implements ModInitializer {
 		Balance balance = Balance.get();
 		LOGGER.info("Infused Gems balance: cap {}, {} effects", balance.cap, balance.effects.size());
 		ModComponents.initialize();
+		ModAttachments.initialize();
 		ModItems.initialize();
 		ModEffects.initialize();
 		ModRecipes.initialize();

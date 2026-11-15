@@ -103,13 +103,13 @@ public class BalanceGameTest {
 	@GameTest
 	public void everyGemHasAWornAndAHitForm(GameTestHelper helper) {
 		Balance b = Balance.get();
-		check(helper, b.gemEffects.size() == 36, "gem effects: " + b.gemEffects.size());
+		check(helper, b.gemEffects.size() == 39, "gem effects: " + b.gemEffects.size());
 		for (String key : b.gemEffects) {
 			Balance.EffectData e = b.effect(key);
 			check(helper, e.worn() != null, key + " has no worn form in balance.json");
 			check(helper, !GemDescribe.worn(key, 0.5).matches("[0-9]+%"), key + " has no worn description");
 			boolean hitForm = switch (e.hitKind()) {
-				case "instant" -> true;
+				case "instant", "action" -> true;
 				case "onoff" -> ModEffects.vanilla(key) != null;
 				default -> ModEffects.gem(key) != null;
 			};

@@ -54,7 +54,7 @@ public class GemsClientGameTest implements FabricClientGameTest {
 
 	@Override
 	public void runTest(ClientGameTestContext context) {
-		if (!List.of("inventory", "colors", "enchanting", "smithing", "worn", "hits", "mobs", "screen", "levitation").stream().anyMatch(ClientTests::run)) {
+		if (!List.of("inventory", "colors", "enchanting", "smithing", "worn", "hits", "mobs", "screen", "levitation", "beyond").stream().anyMatch(ClientTests::run)) {
 			return;
 		}
 		try (TestSingleplayerContext sp = context.worldBuilder()
@@ -93,6 +93,9 @@ public class GemsClientGameTest implements FabricClientGameTest {
 			}
 			if (ClientTests.run("levitation")) {
 				levitation(context, server);
+			}
+			if (ClientTests.run("beyond")) {
+				beyond(context, server);
 			}
 		}
 	}
@@ -529,5 +532,43 @@ public class GemsClientGameTest implements FabricClientGameTest {
 			}
 		});
 		server.runCommand("gamemode survival @a");
+	}
+
+	/** Gems beyond potions: a Weaving sword webs a pig in place, an Oozing sword's kill splits off small neutral slimes. */
+	private static void beyond(ClientGameTestContext context, TestServerContext server) {
+		server.runCommand("time set noon");
+		context.runOnClient(mc -> mc.gui.hud.getChat().clearMessages(false));
+		BlockPos at = stationPos(server).offset(2, 0, 0);
+		server.runOnServer(s -> {
+			ServerPlayer p = player(s);
+			for (EquipmentSlot slot : io.github.bubba8587.bubbas_infused_gems.effect.GemTotals.ARMOR) {
+				p.setItemSlot(slot, ItemStack.EMPTY);
+			}
+			p.setItemSlot(EquipmentSlot.MAINHAND, GemKit.socketed(Items.NETHERITE_SWORD, GemKit.gem("weaving", 1.0), GemKit.gem("weaving", 1.0)));
+			for (int i = 0; i < 2; i++) {
+				net.minecraft.world.entity.animal.pig.Pig pig = net.minecraft.world.entity.EntityTypes.PIG.create(p.level(), net.minecraft.world.entity.EntitySpawnReason.COMMAND);
+				pig.setPos(at.getX() + 0.5, at.getY(), at.getZ() + 0.5 + i * 2 - 1);
+				pig.setNoAi(true);
+				pig.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH).setBaseValue(500.0);
+				pig.setHealth(i == 0 ? 500.0F : 1.0F);
+				p.level().addFreshEntity(pig);
+			}
+		});
+		context.waitTicks(10);
+		context.getInput().lookAt(at);
+		server.runOnServer(s -> {
+			ServerPlayer p = player(s);
+			var pigs = p.level().getEntitiesOfClass(net.minecraft.world.entity.animal.pig.Pig.class, p.getBoundingBox().inflate(8));
+			var webbed = pigs.stream().filter(x -> x.getHealth() > 100).findFirst().orElseThrow();
+			for (int t = 0; t < 60 && !p.level().getBlockState(webbed.blockPosition()).is(net.minecraft.world.level.block.Blocks.COBWEB); t++) {
+				webbed.damageCooldownTime = 0;
+				io.github.bubba8587.bubbas_infused_gems.effect.GemHits.onWeaponHit(p.level(), p, p, webbed, p.getMainHandItem());
+			}
+			p.setItemSlot(EquipmentSlot.MAINHAND, GemKit.socketed(Items.NETHERITE_SWORD, GemKit.gem("oozing", 1.0), GemKit.gem("oozing", 1.0)));
+			var doomed = pigs.stream().filter(x -> x.getHealth() < 100).findFirst().orElseThrow();
+			p.attack(doomed);
+		});
+		context.waitTicks(60);
+		context.takeScreenshot("gems-beyond-weaving-web-and-oozing-slimes");
 	}
 }

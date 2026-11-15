@@ -1,0 +1,20 @@
+{
+	"type": "minecraft:brewing",
+	"input": {
+		"item": "minecraft:chorus_fruit"
+	},
+	"reagent": {
+		"item": "minecraft:prismarine_shard"
+	},
+	"output": {
+		"id": "bubbas_infused_gems:infused_gem",
+		"components": {
+			"bubbas_infused_gems:infused_gem": {
+				"effect": "bubbas_infused_gems:ender",
+				"variant": "normal",
+				"form": "item",
+				"infusion": 5
+			}
+		}
+	}
+}

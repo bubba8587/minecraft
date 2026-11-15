@@ -83,7 +83,7 @@ public final class Balance {
 	public record EffectData(String key, String name, boolean good, String role, String hitKind, double levelOne,
 			Map<String, Variant> variants, String source, int hitTicks, int hitAmplifier, List<String> otherPool,
 			int hitFloorTicks, double hitFloorHealHp, double hitFloorExhaustion, List<String> drawbackPool, List<Double> drawbackWeights, List<Attr> wornAttributes, JsonObject worn, double hitUnit, List<String> opposites,
-			int wornAmplifier, String id, Map<String, Double> parts) {
+			int wornAmplifier, String id, Map<String, Double> parts, int color) {
 		public boolean wornFlag(String name) {
 			return this.worn != null && this.worn.has(name) && this.worn.get(name).getAsBoolean();
 		}
@@ -176,7 +176,7 @@ public final class Balance {
 				list(e, "drawback_pool"), doubles(e, "drawback_weights"), List.copyOf(attrs), worn,
 				e.has("hit_unit") ? e.get("hit_unit").getAsDouble() : 1.0, list(e, "opposites"),
 				e.has("worn_amplifier") ? e.get("worn_amplifier").getAsInt() : 0,
-				e.has("id") ? e.get("id").getAsString() : "minecraft:" + key, Map.copyOf(parts));
+				e.has("id") ? e.get("id").getAsString() : "minecraft:" + key, Map.copyOf(parts), e.has("color") ? e.get("color").getAsInt() : 0);
 	}
 
 	private static String str(JsonObject o, String name) {

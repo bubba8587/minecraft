@@ -24,7 +24,7 @@ public final class GemText {
 	/** Healing and Harming read better than vanilla's "Instant Health"/"Instant Damage" on a gem. */
 	public static MutableComponent effectName(Holder<MobEffect> effect) {
 		String key = key(effect);
-		if (key.equals("instant_health") || key.equals("instant_damage")) {
+		if (key.equals("instant_health") || key.equals("instant_damage") || key.equals("wind_charged")) {
 			return Component.translatable(KEY + "effect." + key);
 		}
 		return effect.value().getDisplayName().copy();

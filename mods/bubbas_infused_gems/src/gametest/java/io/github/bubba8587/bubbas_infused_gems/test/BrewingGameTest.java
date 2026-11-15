@@ -180,7 +180,7 @@ public class BrewingGameTest {
 				helper.fail("not brewed yet");
 			}
 			check(helper, a.key().equals("speed") && a.form() == GemForm.LINGERING && a.infusion() == 6, "stand brewed " + a);
-			check(helper, b.key().equals("darkness") && b.form() == GemForm.ITEM && b.infusion() == 6, "stand brewed " + b);
+			check(helper, b.key().equals("silence") && b.form() == GemForm.ITEM && b.infusion() == 6, "stand brewed " + b);
 			check(helper, c.key().equals("saturation") && c.form() == GemForm.ITEM && c.infusion() == 6, "stand brewed " + c);
 			check(helper, stand.getItem(3).isEmpty(), "nether star not used up");
 		});

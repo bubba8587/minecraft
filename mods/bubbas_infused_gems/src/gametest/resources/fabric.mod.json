@@ -14,6 +14,7 @@
 			"io.github.bubba8587.bubbas_infused_gems.test.GemsCommandGameTest",
 			"io.github.bubba8587.bubbas_infused_gems.test.GemsEverywhereGameTest",
 			"io.github.bubba8587.bubbas_infused_gems.test.GemVsPotionGameTest",
+			"io.github.bubba8587.bubbas_infused_gems.test.BeyondPotionsGameTest",
 			"io.github.bubba8587.bubbas_infused_gems.test.LootGameTest"
 		],
 		"fabric-client-gametest": [

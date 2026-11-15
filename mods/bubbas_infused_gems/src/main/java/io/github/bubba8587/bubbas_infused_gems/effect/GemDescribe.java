@@ -60,9 +60,12 @@ public final class GemDescribe {
 			case "blindness" -> f("fog closes in, %.0f%% of the way to Blindness", 100 * s);
 			case "nausea" -> f("your screen wobbles, %.0f%% of Nausea", 100 * s);
 			case "levitation" -> f("lifts you at %.2f blocks/s", WornEffects.levitationRise(s) * 20 * 0.98);
-			case "wind_charged" -> f("a wind burst where you die, %.0f%% chance", 100 * s);
-			case "weaving" -> f("cobwebs where you die, %.0f%% chance", 100 * s);
-			case "oozing" -> f("2 slimes where you die, %.0f%% chance", 100 * s);
+			case "wind_charged" -> f("landings bounce you %.2f up with a small burst, no fall damage", e.wornNumber("land_bounce", 0.6) * s / b.cap);
+			case "weaving" -> f("walks through cobwebs %.0f%% of the way to full speed", 100 * Math.min(1.0, s / b.cap));
+			case "oozing" -> f("bounces off landings like a slime block (%.0f%%), no fall damage", 100 * e.wornNumber("bounce", 0.9) * s / b.cap);
+			case "silence" -> f("%.0f%% of your movement vibrations silenced", 100 * Math.min(1.0, s / b.cap));
+			case "ender" -> f("%.0f%% chance a projectile blinks you away", 100 * e.wornNumber("chance", 0.5) * s / b.cap);
+			case "breeze" -> f("%.0f%% chance to deflect a projectile", 100 * e.wornNumber("chance", 0.5) * s / b.cap);
 			case "infested" -> f("%.1f%% chance of silverfish each time you are hurt", 10 * s);
 			default -> f("%.0f%%", 100 * s);
 		};
@@ -83,6 +86,16 @@ public final class GemDescribe {
 			if (e.hitKind().equals("instant")) {
 				return f(key.equals("instant_damage") ? "+%.1f magic damage every hit" : "heals the target %.1f HP every hit",
 						GemHits.strike(key, entry.s()));
+			}
+			if (e.hitKind().equals("action")) {
+				return switch (key) {
+					case "wind_charged" -> {
+						double[] l = GemActions.windLaunch(entry.s(), false);
+						yield f("throws the target %.2f up and %.2f away", l[0], l[1]);
+					}
+					case "weaving" -> f("%.0f%% chance to web the target", 100 * e.wornNumber("web_chance", 0.35) * entry.s() / b.cap);
+					default -> "a kill splits off small neutral slimes of yours";
+				};
 			}
 			if (e.hitKind().equals("onoff")) {
 				return f("%s for %.1f s", e.name(), seconds);

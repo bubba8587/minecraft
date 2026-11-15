@@ -169,19 +169,39 @@ public class GemsEverywhereGameTest {
 					pig.setDeltaMovement(0, 0, 0);
 					close(-WornEffects.gravity(pig, 0.08), WornEffects.levitationRise(s), 1e-9, helper, "levitation: straight to the rise speed");
 				}
-				case "oozing", "weaving" -> {
-					int before = key.equals("oozing") ? count(helper, Slime.class, pig) : 0;
-					boolean happened = false;
-					for (int t = 0; t < 30 && !happened; t++) {
-						WornEffects.onDeath(pig);
-						happened = key.equals("oozing") ? count(helper, Slime.class, pig) > before
-								: BlockPos.betweenClosedStream(pig.blockPosition().offset(-3, -1, -3), pig.blockPosition().offset(3, 2, 3))
-										.anyMatch(p -> helper.getLevel().getBlockState(p).is(Blocks.COBWEB));
-					}
-					check(helper, happened, key + " death trigger never fired");
-					helper.getLevel().getEntitiesOfClass(Slime.class, new AABB(pig.blockPosition()).inflate(4)).forEach(Slime::discard);
+				case "wind_charged", "oozing" -> {
+					// A landing bounces instead of hurting (Wind Burst: a small burst; Oozing: a slime block's bounce).
+					pig.setDeltaMovement(0, -0.8, 0);
+					check(helper, io.github.bubba8587.bubbas_infused_gems.effect.GemActions.landing(pig, 6.0), key + " did not cancel a 6-block fall");
+					check(helper, pig.getDeltaMovement().y > 0.2, key + " landing bounce " + pig.getDeltaMovement().y);
 				}
-				case "wind_charged" -> WornEffects.onDeath(pig); // a wind burst: must not fail
+				case "weaving" -> close(io.github.bubba8587.bubbas_infused_gems.effect.GemActions.webSlowdown(pig, new Vec3(0.25, 0.05, 0.25)).x, 1.0,
+						1e-6, helper, "Weaving at the cap: full speed in cobwebs");
+				case "silence" -> check(helper, io.github.bubba8587.bubbas_infused_gems.effect.GemActions.silenced(pig,
+						net.minecraft.world.level.gameevent.GameEvent.STEP), "Silence at the cap left a step vibration");
+				case "ender" -> {
+					Zombie shooter = helper.spawnWithNoFreeWill(EntityTypes.ZOMBIE, new BlockPos(3, 1, 1));
+					Arrow arrow = (Arrow) ((ArrowItem) Items.ARROW).createArrow(helper.getLevel(), new ItemStack(Items.ARROW), shooter, null);
+					boolean blinked = false;
+					for (int t = 0; t < 40 && !blinked; t++) {
+						Vec3 at = pig.position();
+						blinked = !pig.hurtServer(helper.getLevel(), pig.damageSources().arrow(arrow, shooter), 2.0F) && !pig.position().equals(at);
+						pig.damageCooldownTime = 0;
+					}
+					check(helper, blinked, "Ender never blinked away from an arrow");
+					pig.teleportTo(helper.absoluteVec(new Vec3(1.5, 1, 1.5)).x, helper.absoluteVec(new Vec3(1.5, 1, 1.5)).y, helper.absoluteVec(new Vec3(1.5, 1, 1.5)).z);
+					shooter.discard();
+				}
+				case "breeze" -> {
+					Zombie shooter = helper.spawnWithNoFreeWill(EntityTypes.ZOMBIE, new BlockPos(3, 1, 1));
+					Arrow arrow = (Arrow) ((ArrowItem) Items.ARROW).createArrow(helper.getLevel(), new ItemStack(Items.ARROW), shooter, null);
+					boolean deflected = false;
+					for (int t = 0; t < 40 && !deflected; t++) {
+						deflected = pig.deflection(arrow) != net.minecraft.world.entity.projectile.ProjectileDeflection.NONE;
+					}
+					check(helper, deflected, "Breeze never deflected an arrow");
+					shooter.discard();
+				}
 				case "infested" -> {
 					boolean hatched = false;
 					for (int t = 0; t < 400 && !hatched; t++) {
@@ -255,6 +275,12 @@ public class GemsEverywhereGameTest {
 			Balance.EffectData e = b.effect(key);
 			GemHits.Entry entry = new GemHits.Entry(key, s, false);
 			switch (e.hitKind()) {
+				case "action" -> {
+					// Wind Burst throws the target; Weaving (a chance) and Oozing (on a kill) have their own tests.
+					if (key.equals("wind_charged")) {
+						check(helper, target.getDeltaMovement().y > 0.5, "Wind Burst hit threw the target only " + target.getDeltaMovement().y);
+					}
+				}
 				case "instant" -> {
 					Mob control = pig(helper, 3, 3);
 					Zombie plain = helper.spawnWithNoFreeWill(EntityTypes.ZOMBIE, new BlockPos(1, 1, 3));
@@ -530,6 +556,11 @@ public class GemsEverywhereGameTest {
 			float before = target.getHealth();
 			attacker.doHurtTarget(helper.getLevel(), target);
 			switch (e.hitKind()) {
+				case "action" -> {
+					if (key.equals("wind_charged")) {
+						check(helper, target.getDeltaMovement().y > 0.05, "the weakest Wind Burst hit threw nothing: " + target.getDeltaMovement().y);
+					}
+				}
 				case "instant" -> {
 					// Against a hit with no gem: the strike adds or heals at least 1 HP.
 					Mob control = pig(helper, 3, 3);

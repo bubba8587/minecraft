@@ -17,6 +17,12 @@ public abstract class HudMixin {
 	private static Identifier bubbas$vanillaIcon(Identifier sprite, Holder<MobEffect> effect) {
 		// Turtle Master has no vanilla effect icon: it shows Resistance's, its main part.
 		return effect.value() instanceof GemMobEffect gem
-				? Identifier.withDefaultNamespace("mob_effect/" + (gem.key().equals("turtle_master") ? "resistance" : gem.key())) : sprite;
+				? Identifier.withDefaultNamespace("mob_effect/" + switch (gem.key()) {
+					case "turtle_master" -> "resistance";
+					case "silence" -> "darkness";
+					case "ender" -> "slow_falling";
+					case "breeze" -> "wind_charged";
+					default -> gem.key();
+				}) : sprite;
 	}
 }

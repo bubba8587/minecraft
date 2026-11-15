@@ -93,9 +93,19 @@ public final class GemHits {
 
 	/** Applies a hit's entries to the target. */
 	public static void apply(ServerLevel level, LivingEntity target, @Nullable Entity attacker, @Nullable Entity direct, List<Entry> entries) {
+		apply(level, target, attacker, direct, entries, ItemStack.EMPTY);
+	}
+
+	/** Applies a hit's entries to the target; the weapon matters for Wind Burst on a Wind Burst mace. */
+	public static void apply(ServerLevel level, LivingEntity target, @Nullable Entity attacker, @Nullable Entity direct, List<Entry> entries,
+			ItemStack weapon) {
 		Balance b = Balance.get();
 		for (Entry e : entries) {
 			String kind = kind(e);
+			if (kind.equals("action")) {
+				GemActions.hit(level, e.key(), e.s(), target, attacker, direct, weapon);
+				continue;
+			}
 			if (kind.equals("instant")) {
 				boolean harm = e.key().equals("instant_damage") != (b.undeadInversion && target.isInvertedHealAndHarm());
 				if (harm) {
@@ -143,7 +153,7 @@ public final class GemHits {
 		}
 		List<Entry> entries = plan(weapon);
 		if (!entries.isEmpty()) {
-			apply(level, target, attacker, direct, entries);
+			apply(level, target, attacker, direct, entries, weapon);
 		}
 	}
 

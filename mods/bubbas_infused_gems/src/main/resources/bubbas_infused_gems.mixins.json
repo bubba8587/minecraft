@@ -7,11 +7,14 @@
 		"ArrowMixin",
 		"EnchantmentHelperMixin",
 		"EnchantmentMenuMixin",
+		"EntityMixin",
 		"GrindstoneMenuAccessor",
 		"GrindstoneMenuMixin",
 		"GrindstoneResultSlotMixin",
 		"LivingEntityMixin",
 		"MobMixin",
+		"OwnedSlimeMixin",
+		"ServerLevelMixin",
 		"VillagerMixin"
 	],
 	"injectors": {

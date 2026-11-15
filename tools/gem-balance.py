@@ -238,6 +238,7 @@ effect("turtle_master", name="Turtle Master", potion="turtle_master", role="main
 	impl="Both parts at strength s: the resistance damage hook x (1 - 0.8 x s) and a movement_speed modifier -0.9 x s (add_multiplied_total). Against Resistance gems the strongest reduction applies.",
 	src="Potions.STRONG_TURTLE_MASTER (Slowness 400 ticks amplifier 5, Resistance amplifier 3)")
 COMPOUND = {"turtle_master": {"resistance": 0.8, "slowness": -0.9}}  # a mod status effect, not one of vanilla's
+MOD_EFFECTS = {"turtle_master": 0x7C4FA0, "silence": 0x0B6E73, "ender": 0x8E5FB4, "breeze": 0x9DB3E8}  # mod status effects and their colors
 SLOWNESS_AMP = {"normal": 3, "long": 3, "strong": 5}  # Turtle Master's Slowness amplifiers (Potions.java)
 effect("fire_resistance", name="Fire Resistance", potion="fire_resistance", role="main",
 	variants={"normal": (3600, 0), "long": (9600, 0)},
@@ -320,10 +321,61 @@ effect("instant_damage", name="Harming", potion="harming", role="harmful", kind=
 	anchor="Strongest potion (strong Harming): Harming II, 12 magic damage at once (6 << level)",
 	impl=f"On a weapon: every hit or arrow deals +{HIT_STRIKE_HARM} x s magic damage (at least {HIT_STRIKE_FLOOR}). Undead are healed instead, as in vanilla. In armor: the Healing gem's mirror.",
 	src="HealOrHarmMobEffect")
+# Gems beyond potions (owner, 2026-11-15): these do what the thing does, not just apply its potion. Their numbers:
+WIND_HIT_UP_BEST = 0.9        # a Wind Burst hit at the cap: the target's upward speed, blocks/tick (a wind charge's own is about 1)
+WIND_HIT_PUSH_BEST = 0.6      # ... and its push away from the attacker, blocks/tick
+WIND_LAND_BOUNCE_BEST = 0.6   # worn: the bounce off a fall's landing at the cap, blocks/tick up (any fall's damage is cancelled)
+WIND_MACE_BONUS = 1.6         # owner: on a mace with the Wind Burst enchantment, gem strength x this, past the 90% cap
+WEAVING_WEB_CHANCE_BEST = 0.35  # a Weaving hit at the cap: chance to web the target in place (a real cobweb, only into air)
+OOZING_BOUNCE_BEST = 0.9      # worn: the share of a fall's impact speed bounced back at the cap, slime-block style; no fall damage
+OOZING_SLIMES = (1, 2)        # a kill with an Oozing weapon: small neutral slimes split off (weakest gem, the cap)
+OOZING_SLIME_CAP = 8          # at most this many living Oozing slimes per owner; past it, kills split off none
+ENDER_CHANCE_BEST = 0.5       # worn Ender at the cap: chance a projectile that would hit blinks the wearer away instead
+ENDER_DIAMETER = (4.0, 16.0)  # ... how far, as chorus fruit's teleport diameter (weakest gem, the cap; chorus fruit 16)
+BREEZE_CHANCE_BEST = 0.5      # worn Breeze at the cap: chance to deflect an incoming projectile, as breezes do
+
+def rel(s):
+	return max(s, 0.0) / CAP
+
+effect("wind_charged", name="Wind Burst", potion="wind_charged", role="main", kind="action", variants={"normal": (3600, 0)},
+	anchor="Wind charge: a burst that throws what it hits up and away (from Wind Charged potions)",
+	value=lambda s: WIND_LAND_BOUNCE_BEST * rel(s),
+	show=lambda s: f"a fall's landing bounces the wearer {WIND_LAND_BOUNCE_BEST * rel(s):.2f} blocks/tick up with a small burst, no fall damage",
+	impl="Worn: when the wearer would take fall damage, the damage is cancelled and a small wind burst (sound and particles) bounces them up at WIND_LAND_BOUNCE_BEST x s/cap. Hit: the target is thrown up (WIND_HIT_UP_BEST x s/cap) and away from the attacker (WIND_HIT_PUSH_BEST x s/cap); on a mace with the Wind Burst enchantment, x WIND_MACE_BONUS past the cap (owner).",
+	src="WindChargedMobEffect, AbstractWindCharge, MaceItem")
+effect("weaving", name="Weaving", potion="weaving", role="main", kind="action", variants={"normal": (3600, 0)},
+	anchor="Weaving: cobwebs slow you less, and webs spread where you die",
+	value=lambda s: rel(s),
+	show=lambda s: f"walks through cobwebs {rel(s):.0%} of the way to full speed",
+	impl="Worn: the cobweb slowdown (Entity.makeStuckInBlock) moves s/cap of the way to none. Hit: a chance (WEAVING_WEB_CHANCE_BEST x s/cap) to place a real cobweb at the target's feet, only into air, never replacing a block; it stays (owner).",
+	src="WebBlock, WeavingMobEffect")
+effect("oozing", name="Oozing", potion="oozing", role="main", kind="action", variants={"normal": (3600, 0)},
+	anchor="Oozing: slimes split off where you die; a slime block's bounce",
+	value=lambda s: OOZING_BOUNCE_BEST * rel(s),
+	show=lambda s: f"bounces off landings like a slime block ({OOZING_BOUNCE_BEST * rel(s):.0%} of the fall speed), no fall damage",
+	impl=f"Worn: fall damage cancelled and the wearer bounced back up with OOZING_BOUNCE_BEST x s/cap of the impact speed. Hit: a kill splits off {OOZING_SLIMES[0]}-{OOZING_SLIMES[1]} small slimes, neutral (no attack goals), owned by the attacker (isAlliedTo, stored on the slime), persistent (never despawn); at most OOZING_SLIME_CAP living per owner; no loot.",
+	src="OozingMobEffect, SlimeBlock")
+effect("silence", name="Silence", potion=None, role="main", variants={"normal": None},
+	source=("item", "echo shard (ancient cities; owner)"),
+	anchor="Silence: none of the wearer's movement makes a vibration (step, swim, splash, land, flap)",
+	value=lambda s: rel(s), show=lambda s: f"{rel(s):.0%} of the wearer's movement vibrations are silenced",
+	impl="Movement game events (step, swim, splash, hit ground, flap, elytra glide) from the wearer are dropped before they reach any listener, each with chance s/cap (all at the cap): sculk sensors, wardens and other mods' hearing all use vanilla game events.",
+	src="Entity.gameEvent, GameEvent, VibrationSystem")
+effect("ender", name="Ender", potion=None, role="main", variants={"normal": None},
+	source=("item", "chorus fruit"),
+	anchor="Chorus fruit: a random teleport up to 8 blocks away (diameter 16)",
+	value=lambda s: ENDER_CHANCE_BEST * rel(s),
+	show=lambda s: f"{ENDER_CHANCE_BEST * rel(s):.0%} chance a projectile that would hit blinks you away (up to {ENDER_DIAMETER[0] + (ENDER_DIAMETER[1] - ENDER_DIAMETER[0]) * rel(s):.0f}-block diameter)",
+	impl="When a projectile would hurt the wearer: with chance ENDER_CHANCE_BEST x s/cap, chorus fruit's random teleport instead (diameter from ENDER_DIAMETER by strength) and no damage.",
+	src="TeleportRandomlyConsumeEffect, EnderMan.hurtServer")
+effect("breeze", name="Breeze", potion=None, role="main", variants={"normal": None},
+	source=("item", "breeze rod"),
+	anchor="Breeze: incoming projectiles bounce off",
+	value=lambda s: BREEZE_CHANCE_BEST * rel(s),
+	show=lambda s: f"{BREEZE_CHANCE_BEST * rel(s):.0%} chance to deflect an incoming projectile",
+	impl="Entity.deflection for the wearer: with chance BREEZE_CHANCE_BEST x s/cap, ProjectileDeflection.REVERSE, as a breeze does.",
+	src="Breeze.deflection, ProjectileDeflection")
 for key, name, extra in [
-		("wind_charged", "Wind Charged", "a wind burst when the target dies"),
-		("weaving", "Weaving", "cobwebs where the target dies"),
-		("oozing", "Oozing", "2 slimes when the target dies"),
 		("infested", "Infested", "1-2 silverfish when the target is hurt (vanilla 10% per hit)")]:
 	effect(key, name=name, potion=key, role="harmful", kind="onoff", variants={"normal": (3600, 0)},
 		unit=None, unit_fmt=None,
@@ -417,7 +469,7 @@ for key, name, src_item, ticks, is_hit, how, src in [
 		("blindness", "Blindness", "suspicious stew of azure bluet or open eyeblossom (Fabric API's components ingredient)", 400, False,
 			"Illusioner's spell: Blindness for 20 s", "Illusioner, Blocks.AZURE_BLUET"),
 		("nausea", "Nausea", "pufferfish", 300, False, "Pufferfish: Nausea for 15 s", "Consumables.PUFFERFISH"),
-		("darkness", "Darkness", "echo shard (ancient cities)", 260, False, "Warden's pulse: Darkness for 13 s", "Warden")]:
+		("darkness", "Darkness", "sculk shrieker (ancient cities; owner, 2026-11-15)", 260, False, "Warden's pulse: Darkness for 13 s", "Warden")]:
 	effect(key, name=name, potion=None, role="harmful", kind="onoff", variants={"normal": None},
 		source=("item", src_item), hit=hit_anchor(ticks, 0, is_hit), unit=None, unit_fmt=None,
 		anchor=how + " (on/off effect: the strength goes into duration)",
@@ -484,7 +536,7 @@ def weapon_hit(key, s):
 		return p, max(hit_floor(key, p), MAX_HIT_SECONDS * (s / CAP) ** (1 - WEAPON_SPLIT))
 	if e["kind"] == "onoff":
 		return 1.0, max(hit_floor(key, 1.0), MAX_HIT_SECONDS * s / CAP)
-	return s, 0.0  # instant
+	return s, 0.0  # instant, action
 
 def potency_text(key, x):
 	"""The effect at x of its 1.0 level, with no duration (what a drawback or a worn harmful gem does)."""
@@ -503,7 +555,15 @@ def hit_show(key, s):
 		return f"{potency_text(key, p)} for {d:.1f} s"
 	if e["kind"] == "onoff":
 		return f"{e['name']} for {d:.1f} s"
+	if e["kind"] == "action":
+		return ACTION_HIT[key](s)
 	return f"{e['unit_fmt'](max(HIT_STRIKE_FLOOR, p * e['unit']))} every hit"
+
+ACTION_HIT = {
+	"wind_charged": lambda s: f"throws the target {WIND_HIT_UP_BEST * rel(s):.2f} up and {WIND_HIT_PUSH_BEST * rel(s):.2f} away (blocks/tick)",
+	"weaving": lambda s: f"{WEAVING_WEB_CHANCE_BEST * rel(s):.0%} chance to web the target in place",
+	"oozing": lambda s: f"a kill splits off {OOZING_SLIMES[0] if rel(s) < 0.5 else OOZING_SLIMES[1]} small neutral slime(s) of yours",
+}
 
 def hit_anchor_text(key):
 	e = E[key]
@@ -520,7 +580,7 @@ def hit_anchor_text(key):
 	return f"Strongest potion, as drunk: {level} for {ticks / T:.0f} s"
 
 # Harmful gems worn (pointless, but allowed: a poison gem in your armor poisons you, owner).
-DEATH_TRIGGER = {"wind_charged": "a wind burst", "weaving": "cobwebs", "oozing": "2 slimes"}
+DEATH_TRIGGER = {}
 ALWAYS_ON = {"glowing"}  # worn: on all the time (owner, Q14); can't be partial
 # Worn screen effects made partial and steady on the wearer's own screen (owner after playtest, 2026-11-15: one gem gave
 # total darkness that blinked): s of the way to vanilla's strongest look. Darkness: lightmap dim and fog; Blindness: fog;
@@ -711,15 +771,15 @@ for a, b, _ in INVERSE_PAIRS:
 HARMFUL_DRAWBACKS = ["slowness", "weakness", "mining_fatigue", "hunger", "unluck", "poison", "wither"]  # poison, wither: owner Q8
 # Owner (Q9): a harmful gem's drawback is any beneficial effect that works as a short effect on a target, so real, random
 # combinations happen. Only Healing is left out: it is instant and has no mild timed form to land for a few seconds.
-BENEFICIAL_DRAWBACKS = [k for k in GOOD_GEMS if E[k].get("kind") != "instant"]
+BENEFICIAL_DRAWBACKS = [k for k in GOOD_GEMS if E[k].get("kind") not in ("instant", "action")]
 # Drawback roll weights (default 1): poison and wither roll, but half as often as the others (owner, Q8).
 DRAWBACK_WEIGHTS = {"poison": 0.5, "wither": 0.5}
 NEVER_DRAWBACK = {
 	"instant_damage": "instant, no mild form", "instant_health": "instant, no mild form",
 	"blindness": "ruins the screen, not just the gem", "darkness": "ruins the screen, not just the gem",
 	"nausea": "ruins the screen, not just the gem", "levitation": "dangerous, not mild",
-	"glowing": "harmless alone, a beacon in PvP", "wind_charged": "only felt at death", "weaving": "only felt at death",
-	"oozing": "only felt at death", "infested": "spawns mobs, not mild",
+	"glowing": "harmless alone, a beacon in PvP", "wind_charged": "an action, no mild level", "weaving": "an action, no mild level",
+	"oozing": "an action, no mild level", "infested": "spawns mobs, not mild",
 }
 # Main effect only, never an "other" roll.
 OTHER_EXCLUDED = {"instant_health": "its own per-hit curve: main effect only", "instant_damage": "a strike on every hit: main effect only",
@@ -964,12 +1024,12 @@ def run_checks():
 	if SRC.exists():
 		mob = re.sub(r"\s+", " ", (SRC / "world/effect/MobEffects.java").read_text(encoding="utf-8"))
 		ids = set(re.findall(r'Holder<MobEffect> [A-Z_]+ = register\( ?"([a-z_]+)"', mob))
-		known = (set(GEM_EFFECTS) - set(COMPOUND)) | set(NOT_GEMS) | set(DRAWBACK_ONLY)
+		known = (set(GEM_EFFECTS) - set(MOD_EFFECTS)) | set(NOT_GEMS) | set(DRAWBACK_ONLY)
 		if ids != known:
 			errors.append(f"status effects not classified: {sorted(ids - known)}; classified but not in 26.3: {sorted(known - ids)}")
 		n_ids = len(ids)
 	else:
-		n_ids = len((set(GEM_EFFECTS) - set(COMPOUND)) | set(NOT_GEMS) | set(DRAWBACK_ONLY))
+		n_ids = len((set(GEM_EFFECTS) - set(MOD_EFFECTS)) | set(NOT_GEMS) | set(DRAWBACK_ONLY))
 	for k in GEM_EFFECTS:
 		src = E[k]["source"]
 		if src[0] == "found" and not set(src[1]) <= set(LOOT):
@@ -1168,15 +1228,15 @@ def run_checks():
 			kind = E[k]["kind"]
 			# Regeneration's floor is a heal amount, so its floored duration shortens as the rate rises; the heal never drops.
 			grows = p * d >= p_prev * d_prev - 1e-12 if k in HIT_FLOOR_HEAL_HP else d >= d_prev - 1e-12
-			if (kind != "onoff" and not p > p_prev) or (kind != "instant" and not grows):
+			if (kind != "onoff" and not p > p_prev) or (kind not in ("instant", "action") and not grows):
 				errors.append(f"{k}: weapon potency not rising or duration falling")
 				break
-			if kind != "instant" and d < hit_floor(k, p) - 1e-12:
+			if kind not in ("instant", "action") and d < hit_floor(k, p) - 1e-12:
 				errors.append(f"{k}: a hit lasts less than its floor")
 				break
 			p_prev, d_prev = p, d
 		p, d = weapon_hit(k, CAP)
-		if E[k]["kind"] != "instant" and abs(d - MAX_HIT_SECONDS) > 1e-9 and d > MAX_HIT_SECONDS:
+		if E[k]["kind"] not in ("instant", "action") and abs(d - MAX_HIT_SECONDS) > 1e-9 and d > MAX_HIT_SECONDS:
 			errors.append(f"{k}: the best weapon's hit lasts {d:.1f} s, past {MAX_HIT_SECONDS} s")
 		if E[k]["kind"] == "scaled" and not p < 1.0:
 			errors.append(f"{k}: the best weapon gem's potency reaches the strongest potion's level")
@@ -1456,7 +1516,7 @@ def document(notes):
 		"Answered (owner, 2026-11-14): as modeled (item-sources table): Wither gems from the wither rose.",
 		"Answered (owner, 2026-11-14): as modeled (item-sources table): Saturation gems from suspicious stew of dandelion, golden dandelion or blue orchid.",
 		"Answered (owner, 2026-11-14): as modeled (item-sources table): Blindness gems from suspicious stew of azure bluet or open eyeblossom, Nausea gems from pufferfish.",
-		"Answered (owner, 2026-11-14): as modeled (item-sources table): Darkness gems from echo shards.",
+		"Answered (owner, 2026-11-14; changed 2026-11-15): Darkness gems from the sculk shrieker; echo shards now make Silence gems.",
 		"Answered (owner, 2026-11-14): as modeled (item-sources table): Conduit Power gems from a heart of the sea, Dolphin's Grace gems from a nautilus shell.",
 		"Answered (owner, 2026-11-14): as modeled (item-sources table): Haste, Health Boost, Luck, Hero of the Village (and now Resistance) are found-only.",
 		f"Answered (owner, 2026-11-14): Hero of the Village gems stay, toned down: at most {HERO_BEST_DISCOUNT:.0%} cheaper trades at the best build.",
@@ -1550,7 +1610,9 @@ ITEM_SOURCES = {
 	"dolphins_grace": {"normal": ("nautilus_shell", "minecraft:nautilus_shell")}, "conduit_power": {"normal": ("heart_of_the_sea", "minecraft:heart_of_the_sea")},
 	"wither": {"normal": ("wither_rose", "minecraft:wither_rose")}, "hunger": {"normal": ("rotten_flesh", "minecraft:rotten_flesh")},
 	"glowing": {"normal": ("glowstone_dust", "minecraft:glowstone_dust")}, "levitation": {"normal": ("shulker_shell", "minecraft:shulker_shell")},
-	"nausea": {"normal": ("pufferfish", "minecraft:pufferfish")}, "darkness": {"normal": ("echo_shard", "minecraft:echo_shard")},
+	"nausea": {"normal": ("pufferfish", "minecraft:pufferfish")}, "darkness": {"normal": ("sculk_shrieker", "minecraft:sculk_shrieker")},
+	"silence": {"normal": ("echo_shard", "minecraft:echo_shard")}, "ender": {"normal": ("chorus_fruit", "minecraft:chorus_fruit")},
+	"breeze": {"normal": ("breeze_rod", "minecraft:breeze_rod")},
 	"saturation": {"normal": ("saturation_stew", stew("saturation", STEW_TICKS["saturation"]))},
 	"blindness": {"normal": ("blindness_stew", stew("blindness", STEW_TICKS["blindness"]))},
 }
@@ -1595,7 +1657,12 @@ WORN = {
 	**{k: {"always_on": True} for k in sorted(ALWAYS_ON)},
 	**{k: {"screen": True} for k in sorted(SCREEN_EFFECTS)},
 	"levitation": {"rise_min": LEVITATION_MIN_RISE, "rise_best": LEVITATION_BEST_RISE},
-	**{k: {"death_chance": 1.0} for k in ("wind_charged", "weaving", "oozing")},
+	"wind_charged": {"land_bounce": WIND_LAND_BOUNCE_BEST, "hit_up": WIND_HIT_UP_BEST, "hit_push": WIND_HIT_PUSH_BEST, "mace_bonus": WIND_MACE_BONUS},
+	"weaving": {"web_chance": WEAVING_WEB_CHANCE_BEST},
+	"oozing": {"bounce": OOZING_BOUNCE_BEST, "slimes_min": OOZING_SLIMES[0], "slimes_max": OOZING_SLIMES[1], "slime_cap": OOZING_SLIME_CAP},
+	"silence": {"silence": 1.0},
+	"ender": {"chance": ENDER_CHANCE_BEST, "diameter_min": ENDER_DIAMETER[0], "diameter_max": ENDER_DIAMETER[1]},
+	"breeze": {"chance": BREEZE_CHANCE_BEST},
 	"infested": {"hurt_chance": 1.0},
 }
 # Amplifier of each effect's 1.0 level (what a vanilla instance is compared against: "the stronger applies"). Effects
@@ -1614,7 +1681,7 @@ HIT_UNIT = {"poison": 25 / 12 * 0.8, "wither": 1.0, "regeneration": 0.8, "resist
 	"instant_damage": HIT_STRIKE_HARM, "instant_health": HIT_STRIKE_HEAL}
 def effect_id(k):
 	"""The status effect id a gem names: vanilla's, or the mod's own for a combined gem."""
-	return f"{MOD_ID}:{k}" if k in COMPOUND else f"minecraft:{k}"
+	return f"{MOD_ID}:{k}" if k in MOD_EFFECTS else f"minecraft:{k}"
 
 def worn_amplifier(k):
 	e = E[k]
@@ -1664,6 +1731,8 @@ def export_data():
 		d["id"] = effect_id(k)
 		if k in COMPOUND:
 			d["parts"] = COMPOUND[k]
+		if k in MOD_EFFECTS:
+			d["color"] = MOD_EFFECTS[k]
 		d["opposites"] = sorted(OPPOSITE.get(k, ()))
 		d["never_drawback"] = k in NEVER_DRAWBACK
 		effects[k] = d

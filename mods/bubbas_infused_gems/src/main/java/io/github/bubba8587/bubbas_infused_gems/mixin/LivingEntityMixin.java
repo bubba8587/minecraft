@@ -194,6 +194,35 @@ public abstract class LivingEntityMixin implements GemEntity {
 		}
 	}
 
+	/** Wind Burst and Oozing gems: a landing bounces instead of hurting. */
+	@Inject(method = "causeFallDamage", at = @At("HEAD"), cancellable = true)
+	private void bubbas$gemLanding(double fallDistance, float damageModifier, net.minecraft.world.damagesource.DamageSource source,
+			CallbackInfoReturnable<Boolean> cir) {
+		if (io.github.bubba8587.bubbas_infused_gems.effect.GemActions.landing((LivingEntity) (Object) this, fallDistance)) {
+			cir.setReturnValue(false);
+		}
+	}
+
+	/** Ender gems: a projectile that would hit may blink the wearer away instead. */
+	@Inject(method = "hurtServer", at = @At("HEAD"), cancellable = true)
+	private void bubbas$gemEnder(ServerLevel level, DamageSource source, float damage, CallbackInfoReturnable<Boolean> cir) {
+		if (!this.bubbas$worn.isEmpty() && source.getDirectEntity() != null
+				&& io.github.bubba8587.bubbas_infused_gems.effect.GemActions.blink(level, (LivingEntity) (Object) this, source.getDirectEntity())) {
+			cir.setReturnValue(false);
+		}
+	}
+
+	/** Oozing slimes drop nothing (no slime ball farm). */
+	@ModifyReturnValue(method = "shouldDropLoot", at = @At("RETURN"))
+	private boolean bubbas$noSlimeLoot(boolean drop) {
+		return drop && !io.github.bubba8587.bubbas_infused_gems.effect.GemActions.ownedSlime((LivingEntity) (Object) this);
+	}
+
+	@ModifyReturnValue(method = "shouldDropExperience", at = @At("RETURN"))
+	private boolean bubbas$noSlimeXp(boolean drop) {
+		return drop && !io.github.bubba8587.bubbas_infused_gems.effect.GemActions.ownedSlime((LivingEntity) (Object) this);
+	}
+
 	@Inject(method = "onEquippedItemBroken", at = @At("TAIL"))
 	private void bubbas$popGems(ItemStack brokenItem, EquipmentSlot inSlot, CallbackInfo ci) {
 		if (Sockets.hasGems(brokenItem)) {

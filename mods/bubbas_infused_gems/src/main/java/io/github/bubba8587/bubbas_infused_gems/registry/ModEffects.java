@@ -36,15 +36,16 @@ public final class ModEffects {
 	public static void initialize() {
 		Balance b = Balance.get();
 		for (Balance.EffectData e : b.effects.values()) {
-			if (!e.parts().isEmpty()) {
-				int color = PotionContents.getColorOptional(Potions.TURTLE_MASTER.value().getEffects()).orElse(0x8E5FA8);
+			if (!e.id().startsWith("minecraft:")) {
+				// A gem with no vanilla status effect (Turtle Master, Silence, Ender, Breeze): its own names it and is what hits apply.
+				int color = !e.parts().isEmpty() ? PotionContents.getColorOptional(Potions.TURTLE_MASTER.value().getEffects()).orElse(e.color()) : e.color();
 				GEM_EFFECTS.put(e.key(), Registry.registerForHolder(BuiltInRegistries.MOB_EFFECT, Identifier.parse(e.id()),
 						new GemMobEffect(e.key(), MobEffectCategory.BENEFICIAL, color)));
 			}
 		}
 		for (String key : b.effects.keySet().stream().sorted().toList()) {
 			Balance.EffectData e = b.effect(key);
-			if (!e.hitKind().equals("scaled") || !e.parts().isEmpty()) {
+			if (!e.hitKind().equals("scaled") || !e.id().startsWith("minecraft:")) {
 				continue;
 			}
 			MobEffect vanilla = GemText.holder(key).value();
