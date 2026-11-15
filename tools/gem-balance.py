@@ -720,9 +720,20 @@ LOOT_PLACES = [
 # Mob gear: each armor piece and weapon a mob spawns with gets gems with this chance (vanilla drop chances; the gems stay
 # in the piece). Owner: gems on mobs widen the difficulty curve of harder areas. (who, entity predicate or None for every
 # other mob, level, chance per piece)
+# Owner (2026-11-15, review C): ordinary spawns are rare, harder areas keep more. The first matching row applies.
+HARD_AREA_STRUCTURES = ["minecraft:ancient_city", "minecraft:bastion_remnant", "minecraft:end_city", "minecraft:mansion",
+	"minecraft:monument", "minecraft:fortress", "minecraft:pillager_outpost"]
+MOB_GEMS_HARD_AREA = 0.07     # mobs spawning in those structures
+MOB_GEMS_RAID = 0.07          # raid mobs
+MOB_GEMS_PIGLIN = 0.015       # piglins elsewhere
+MOB_GEMS_ORDINARY = 0.01      # every other mob with spawn armor or a weapon
 MOB_GEMS = [
-	("Piglins", {"minecraft:entity_type": "minecraft:piglin"}, "rare", 0.06),
-	("Every other mob that spawns with armor or a weapon (zombies, husks, drowned with tridents, skeletons and strays with bows, pillagers, vindicators...)", None, "common", 0.04),
+	("Mobs spawning in ancient cities, bastions, end cities, woodland mansions, ocean monuments, nether fortresses and pillager outposts",
+		{"minecraft:location": {"structures": HARD_AREA_STRUCTURES}}, "hard", MOB_GEMS_HARD_AREA),
+	("Raid mobs (pillagers, vindicators... in a raid)", {"minecraft:type_specific/raider": {"has_raid": True}}, "hard", MOB_GEMS_RAID),
+	("Raid captains (the same rate)", {"minecraft:type_specific/raider": {"has_raid": True, "is_captain": True}}, "hard", MOB_GEMS_RAID),
+	("Piglins elsewhere", {"minecraft:entity_type": "minecraft:piglin"}, "rare", MOB_GEMS_PIGLIN),
+	("Every other mob that spawns with armor or a weapon (zombies, husks, drowned with tridents, skeletons and strays with bows...)", None, "common", MOB_GEMS_ORDINARY),
 ]
 # Mobs from ominous trial spawners wear vanilla's trial chamber equipment tables, armor and weapon (they never drop it,
 # vanilla). The melee and ranged tables nest the armor table, so the modifier on them reaches every piece.
@@ -1495,7 +1506,7 @@ def document(notes):
 	S.append(("h3", "Gems on mobs"))
 	S.append(("p", "Each armor piece and weapon a mob spawns with gets gems with the chance below; the mob gets the gems' effects like a player (undead follow the undead rules). The piece drops with vanilla's equipment drop chance and keeps its gems. Mobs from ominous trial spawners wear vanilla's trial equipment table, which gets gems too; they never drop their gear (vanilla)."))
 	S.append(("table", ["Who", "Level", "Chance per armor piece or weapon", "Gems"],
-		[[who, level, f"{chance:.0%}", str(gem_count(level))] for who, _, level, chance in MOB_GEMS]
+		[[who, level, f"{chance * 100:g}%", "1-2" if gem_count(level) != 1 else "1"] for who, _, level, chance in MOB_GEMS]
 		+ [["Ominous trial spawner mobs", TRIAL_EQUIPMENT[1], f"{TRIAL_EQUIPMENT[2]:.0%}", "1-2" if gem_count(TRIAL_EQUIPMENT[1]) != 1 else "1"]]))
 	S.append(("p", f"Weapons (and gemmed weapons in chests) roll their gems from the harmful effects {WEAPON_HARMFUL_SHARE:.0%} of the time and from any gem otherwise (owner: they hit the player)."))
 
@@ -1969,15 +1980,18 @@ def gear_functions(level, chance, who_cond=None):
 	return out
 
 def mob_gear_modifier():
+	"""Each MOB_GEMS row applies only to mobs matching it and none of the rows above it (first match wins)."""
 	functions = []
-	others = [m[1] for m in MOB_GEMS if m[1]]
+	earlier = []
 	for who, predicate, level, chance in MOB_GEMS:
-		if predicate:
-			who_cond = {"type": "minecraft:entity_properties", "entity": "this", "predicate": predicate}
-		else:
-			who_cond = {"type": "minecraft:inverted", "term": {"type": "minecraft:any_of", "terms": [
-				{"type": "minecraft:entity_properties", "entity": "this", "predicate": p} for p in others]}}
+		terms = [{"type": "minecraft:entity_properties", "entity": "this", "predicate": predicate}] if predicate else []
+		if earlier:
+			terms.append({"type": "minecraft:inverted", "term": {"type": "minecraft:any_of", "terms": [
+				{"type": "minecraft:entity_properties", "entity": "this", "predicate": p} for p in earlier]}})
+		who_cond = None if not terms else terms[0] if len(terms) == 1 else {"type": "minecraft:all_of", "terms": terms}
 		functions += gear_functions(level, chance, who_cond)
+		if predicate:
+			earlier.append(predicate)
 	return {"type": "minecraft:sequence", "functions": functions}
 
 def loot_files():

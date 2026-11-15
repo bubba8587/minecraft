@@ -10,12 +10,454 @@
 						"type": "minecraft:entity_properties",
 						"entity": "this",
 						"predicate": {
-							"minecraft:entity_type": "minecraft:piglin"
+							"minecraft:location": {
+								"structures": [
+									"minecraft:ancient_city",
+									"minecraft:bastion_remnant",
+									"minecraft:end_city",
+									"minecraft:mansion",
+									"minecraft:monument",
+									"minecraft:fortress",
+									"minecraft:pillager_outpost"
+								]
+							}
 						}
 					},
 					{
 						"type": "minecraft:random_chance",
-						"chance": 0.06
+						"chance": 0.07
+					}
+				]
+			},
+			"gear": "armor",
+			"count": {
+				"type": "minecraft:uniform",
+				"min": 1,
+				"max": 2
+			},
+			"infusion": [
+				2,
+				3,
+				3,
+				4
+			],
+			"tier": [
+				1,
+				2,
+				2
+			],
+			"variant": "any"
+		},
+		{
+			"type": "bubbas_infused_gems:socket_random_gems",
+			"condition": {
+				"type": "minecraft:all_of",
+				"terms": [
+					{
+						"type": "minecraft:entity_properties",
+						"entity": "this",
+						"predicate": {
+							"minecraft:location": {
+								"structures": [
+									"minecraft:ancient_city",
+									"minecraft:bastion_remnant",
+									"minecraft:end_city",
+									"minecraft:mansion",
+									"minecraft:monument",
+									"minecraft:fortress",
+									"minecraft:pillager_outpost"
+								]
+							}
+						}
+					},
+					{
+						"type": "minecraft:random_chance",
+						"chance": 0.07
+					}
+				]
+			},
+			"gear": "weapon",
+			"count": {
+				"type": "minecraft:uniform",
+				"min": 1,
+				"max": 2
+			},
+			"infusion": [
+				2,
+				3,
+				3,
+				4
+			],
+			"tier": [
+				1,
+				2,
+				2
+			],
+			"variant": "any",
+			"prefer_harmful": 0.75
+		},
+		{
+			"type": "bubbas_infused_gems:socket_random_gems",
+			"condition": {
+				"type": "minecraft:all_of",
+				"terms": [
+					{
+						"type": "minecraft:all_of",
+						"terms": [
+							{
+								"type": "minecraft:entity_properties",
+								"entity": "this",
+								"predicate": {
+									"minecraft:type_specific/raider": {
+										"has_raid": true
+									}
+								}
+							},
+							{
+								"type": "minecraft:inverted",
+								"term": {
+									"type": "minecraft:any_of",
+									"terms": [
+										{
+											"type": "minecraft:entity_properties",
+											"entity": "this",
+											"predicate": {
+												"minecraft:location": {
+													"structures": [
+														"minecraft:ancient_city",
+														"minecraft:bastion_remnant",
+														"minecraft:end_city",
+														"minecraft:mansion",
+														"minecraft:monument",
+														"minecraft:fortress",
+														"minecraft:pillager_outpost"
+													]
+												}
+											}
+										}
+									]
+								}
+							}
+						]
+					},
+					{
+						"type": "minecraft:random_chance",
+						"chance": 0.07
+					}
+				]
+			},
+			"gear": "armor",
+			"count": {
+				"type": "minecraft:uniform",
+				"min": 1,
+				"max": 2
+			},
+			"infusion": [
+				2,
+				3,
+				3,
+				4
+			],
+			"tier": [
+				1,
+				2,
+				2
+			],
+			"variant": "any"
+		},
+		{
+			"type": "bubbas_infused_gems:socket_random_gems",
+			"condition": {
+				"type": "minecraft:all_of",
+				"terms": [
+					{
+						"type": "minecraft:all_of",
+						"terms": [
+							{
+								"type": "minecraft:entity_properties",
+								"entity": "this",
+								"predicate": {
+									"minecraft:type_specific/raider": {
+										"has_raid": true
+									}
+								}
+							},
+							{
+								"type": "minecraft:inverted",
+								"term": {
+									"type": "minecraft:any_of",
+									"terms": [
+										{
+											"type": "minecraft:entity_properties",
+											"entity": "this",
+											"predicate": {
+												"minecraft:location": {
+													"structures": [
+														"minecraft:ancient_city",
+														"minecraft:bastion_remnant",
+														"minecraft:end_city",
+														"minecraft:mansion",
+														"minecraft:monument",
+														"minecraft:fortress",
+														"minecraft:pillager_outpost"
+													]
+												}
+											}
+										}
+									]
+								}
+							}
+						]
+					},
+					{
+						"type": "minecraft:random_chance",
+						"chance": 0.07
+					}
+				]
+			},
+			"gear": "weapon",
+			"count": {
+				"type": "minecraft:uniform",
+				"min": 1,
+				"max": 2
+			},
+			"infusion": [
+				2,
+				3,
+				3,
+				4
+			],
+			"tier": [
+				1,
+				2,
+				2
+			],
+			"variant": "any",
+			"prefer_harmful": 0.75
+		},
+		{
+			"type": "bubbas_infused_gems:socket_random_gems",
+			"condition": {
+				"type": "minecraft:all_of",
+				"terms": [
+					{
+						"type": "minecraft:all_of",
+						"terms": [
+							{
+								"type": "minecraft:entity_properties",
+								"entity": "this",
+								"predicate": {
+									"minecraft:type_specific/raider": {
+										"has_raid": true,
+										"is_captain": true
+									}
+								}
+							},
+							{
+								"type": "minecraft:inverted",
+								"term": {
+									"type": "minecraft:any_of",
+									"terms": [
+										{
+											"type": "minecraft:entity_properties",
+											"entity": "this",
+											"predicate": {
+												"minecraft:location": {
+													"structures": [
+														"minecraft:ancient_city",
+														"minecraft:bastion_remnant",
+														"minecraft:end_city",
+														"minecraft:mansion",
+														"minecraft:monument",
+														"minecraft:fortress",
+														"minecraft:pillager_outpost"
+													]
+												}
+											}
+										},
+										{
+											"type": "minecraft:entity_properties",
+											"entity": "this",
+											"predicate": {
+												"minecraft:type_specific/raider": {
+													"has_raid": true
+												}
+											}
+										}
+									]
+								}
+							}
+						]
+					},
+					{
+						"type": "minecraft:random_chance",
+						"chance": 0.07
+					}
+				]
+			},
+			"gear": "armor",
+			"count": {
+				"type": "minecraft:uniform",
+				"min": 1,
+				"max": 2
+			},
+			"infusion": [
+				2,
+				3,
+				3,
+				4
+			],
+			"tier": [
+				1,
+				2,
+				2
+			],
+			"variant": "any"
+		},
+		{
+			"type": "bubbas_infused_gems:socket_random_gems",
+			"condition": {
+				"type": "minecraft:all_of",
+				"terms": [
+					{
+						"type": "minecraft:all_of",
+						"terms": [
+							{
+								"type": "minecraft:entity_properties",
+								"entity": "this",
+								"predicate": {
+									"minecraft:type_specific/raider": {
+										"has_raid": true,
+										"is_captain": true
+									}
+								}
+							},
+							{
+								"type": "minecraft:inverted",
+								"term": {
+									"type": "minecraft:any_of",
+									"terms": [
+										{
+											"type": "minecraft:entity_properties",
+											"entity": "this",
+											"predicate": {
+												"minecraft:location": {
+													"structures": [
+														"minecraft:ancient_city",
+														"minecraft:bastion_remnant",
+														"minecraft:end_city",
+														"minecraft:mansion",
+														"minecraft:monument",
+														"minecraft:fortress",
+														"minecraft:pillager_outpost"
+													]
+												}
+											}
+										},
+										{
+											"type": "minecraft:entity_properties",
+											"entity": "this",
+											"predicate": {
+												"minecraft:type_specific/raider": {
+													"has_raid": true
+												}
+											}
+										}
+									]
+								}
+							}
+						]
+					},
+					{
+						"type": "minecraft:random_chance",
+						"chance": 0.07
+					}
+				]
+			},
+			"gear": "weapon",
+			"count": {
+				"type": "minecraft:uniform",
+				"min": 1,
+				"max": 2
+			},
+			"infusion": [
+				2,
+				3,
+				3,
+				4
+			],
+			"tier": [
+				1,
+				2,
+				2
+			],
+			"variant": "any",
+			"prefer_harmful": 0.75
+		},
+		{
+			"type": "bubbas_infused_gems:socket_random_gems",
+			"condition": {
+				"type": "minecraft:all_of",
+				"terms": [
+					{
+						"type": "minecraft:all_of",
+						"terms": [
+							{
+								"type": "minecraft:entity_properties",
+								"entity": "this",
+								"predicate": {
+									"minecraft:entity_type": "minecraft:piglin"
+								}
+							},
+							{
+								"type": "minecraft:inverted",
+								"term": {
+									"type": "minecraft:any_of",
+									"terms": [
+										{
+											"type": "minecraft:entity_properties",
+											"entity": "this",
+											"predicate": {
+												"minecraft:location": {
+													"structures": [
+														"minecraft:ancient_city",
+														"minecraft:bastion_remnant",
+														"minecraft:end_city",
+														"minecraft:mansion",
+														"minecraft:monument",
+														"minecraft:fortress",
+														"minecraft:pillager_outpost"
+													]
+												}
+											}
+										},
+										{
+											"type": "minecraft:entity_properties",
+											"entity": "this",
+											"predicate": {
+												"minecraft:type_specific/raider": {
+													"has_raid": true
+												}
+											}
+										},
+										{
+											"type": "minecraft:entity_properties",
+											"entity": "this",
+											"predicate": {
+												"minecraft:type_specific/raider": {
+													"has_raid": true,
+													"is_captain": true
+												}
+											}
+										}
+									]
+								}
+							}
+						]
+					},
+					{
+						"type": "minecraft:random_chance",
+						"chance": 0.015
 					}
 				]
 			},
@@ -40,15 +482,64 @@
 				"type": "minecraft:all_of",
 				"terms": [
 					{
-						"type": "minecraft:entity_properties",
-						"entity": "this",
-						"predicate": {
-							"minecraft:entity_type": "minecraft:piglin"
-						}
+						"type": "minecraft:all_of",
+						"terms": [
+							{
+								"type": "minecraft:entity_properties",
+								"entity": "this",
+								"predicate": {
+									"minecraft:entity_type": "minecraft:piglin"
+								}
+							},
+							{
+								"type": "minecraft:inverted",
+								"term": {
+									"type": "minecraft:any_of",
+									"terms": [
+										{
+											"type": "minecraft:entity_properties",
+											"entity": "this",
+											"predicate": {
+												"minecraft:location": {
+													"structures": [
+														"minecraft:ancient_city",
+														"minecraft:bastion_remnant",
+														"minecraft:end_city",
+														"minecraft:mansion",
+														"minecraft:monument",
+														"minecraft:fortress",
+														"minecraft:pillager_outpost"
+													]
+												}
+											}
+										},
+										{
+											"type": "minecraft:entity_properties",
+											"entity": "this",
+											"predicate": {
+												"minecraft:type_specific/raider": {
+													"has_raid": true
+												}
+											}
+										},
+										{
+											"type": "minecraft:entity_properties",
+											"entity": "this",
+											"predicate": {
+												"minecraft:type_specific/raider": {
+													"has_raid": true,
+													"is_captain": true
+												}
+											}
+										}
+									]
+								}
+							}
+						]
 					},
 					{
 						"type": "minecraft:random_chance",
-						"chance": 0.06
+						"chance": 0.015
 					}
 				]
 			},
@@ -82,6 +573,42 @@
 									"type": "minecraft:entity_properties",
 									"entity": "this",
 									"predicate": {
+										"minecraft:location": {
+											"structures": [
+												"minecraft:ancient_city",
+												"minecraft:bastion_remnant",
+												"minecraft:end_city",
+												"minecraft:mansion",
+												"minecraft:monument",
+												"minecraft:fortress",
+												"minecraft:pillager_outpost"
+											]
+										}
+									}
+								},
+								{
+									"type": "minecraft:entity_properties",
+									"entity": "this",
+									"predicate": {
+										"minecraft:type_specific/raider": {
+											"has_raid": true
+										}
+									}
+								},
+								{
+									"type": "minecraft:entity_properties",
+									"entity": "this",
+									"predicate": {
+										"minecraft:type_specific/raider": {
+											"has_raid": true,
+											"is_captain": true
+										}
+									}
+								},
+								{
+									"type": "minecraft:entity_properties",
+									"entity": "this",
+									"predicate": {
 										"minecraft:entity_type": "minecraft:piglin"
 									}
 								}
@@ -90,7 +617,7 @@
 					},
 					{
 						"type": "minecraft:random_chance",
-						"chance": 0.04
+						"chance": 0.01
 					}
 				]
 			},
@@ -120,6 +647,42 @@
 									"type": "minecraft:entity_properties",
 									"entity": "this",
 									"predicate": {
+										"minecraft:location": {
+											"structures": [
+												"minecraft:ancient_city",
+												"minecraft:bastion_remnant",
+												"minecraft:end_city",
+												"minecraft:mansion",
+												"minecraft:monument",
+												"minecraft:fortress",
+												"minecraft:pillager_outpost"
+											]
+										}
+									}
+								},
+								{
+									"type": "minecraft:entity_properties",
+									"entity": "this",
+									"predicate": {
+										"minecraft:type_specific/raider": {
+											"has_raid": true
+										}
+									}
+								},
+								{
+									"type": "minecraft:entity_properties",
+									"entity": "this",
+									"predicate": {
+										"minecraft:type_specific/raider": {
+											"has_raid": true,
+											"is_captain": true
+										}
+									}
+								},
+								{
+									"type": "minecraft:entity_properties",
+									"entity": "this",
+									"predicate": {
 										"minecraft:entity_type": "minecraft:piglin"
 									}
 								}
@@ -128,7 +691,7 @@
 					},
 					{
 						"type": "minecraft:random_chance",
-						"chance": 0.04
+						"chance": 0.01
 					}
 				]
 			},

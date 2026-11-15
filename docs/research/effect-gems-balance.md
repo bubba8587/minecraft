@@ -226,8 +226,11 @@ Each armor piece and weapon a mob spawns with gets gems with the chance below; t
 
 | Who | Level | Chance per armor piece or weapon | Gems |
 |---|---|---|---|
-| Piglins | rare | 6% | 1 |
-| Every other mob that spawns with armor or a weapon (zombies, husks, drowned with tridents, skeletons and strays with bows, pillagers, vindicators...) | common | 4% | 1 |
+| Mobs spawning in ancient cities, bastions, end cities, woodland mansions, ocean monuments, nether fortresses and pillager outposts | hard | 7% | 1-2 |
+| Raid mobs (pillagers, vindicators... in a raid) | hard | 7% | 1-2 |
+| Raid captains (the same rate) | hard | 7% | 1-2 |
+| Piglins elsewhere | rare | 1.5% | 1 |
+| Every other mob that spawns with armor or a weapon (zombies, husks, drowned with tridents, skeletons and strays with bows...) | common | 1% | 1 |
 | Ominous trial spawner mobs | hard | 10% | 1-2 |
 
 Weapons (and gemmed weapons in chests) roll their gems from the harmful effects 75% of the time and from any gem otherwise (owner: they hit the player).

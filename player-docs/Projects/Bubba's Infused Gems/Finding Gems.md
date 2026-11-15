@@ -44,12 +44,14 @@ Each place below has a small chance per chest (fishing: per treasure catch; hero
 
 ### Mobs
 
-Mobs that spawn with armor or a weapon sometimes have gems set in them, and they get those gems' effects like a player would (a zombie with a Glowing gem glows; undead follow the usual undead rules). A gemmed weapon puts its gems' effects on whatever the mob hits: a skeleton's gemmed bow fires tipped arrows, a drowned's gemmed trident poisons. A piece drops with the usual chance for mob equipment and keeps its gems.
+Mobs that spawn with armor or a weapon sometimes have gems set in them, and they get those gems' effects like a player would (a zombie with a Glowing gem glows; undead follow the usual undead rules). A gemmed weapon puts its gems' effects on whatever the mob hits: a skeleton's gemmed bow fires tipped arrows, a drowned's gemmed trident poisons. A piece drops with the usual chance for mob equipment and keeps its gems. Mobs out in the open rarely have gems; mobs in dangerous places have them far more often.
 
 | Mob | Chance per armor piece or weapon | Level |
 |---|---|---|
-| Zombies, husks, drowned (tridents), skeletons and strays (bows), pillagers, vindicators and other mobs that spawn with armor or a weapon | 4% | Common |
-| Piglins (armor, swords and crossbows) | 6% | Rare |
+| Mobs that spawn inside an ancient city, bastion, end city, woodland mansion, ocean monument, nether fortress or pillager outpost | 7% | Hard |
+| Raid pillagers and vindicators | 7% | Hard |
+| Piglins anywhere else (armor, swords and crossbows) | 1.5% | Rare |
+| Every other mob that spawns with armor or a weapon: zombies, husks, drowned (tridents), skeletons and strays (bows) | 1% | Common |
 | Mobs from ominous trial spawners | 10% | Hard (1 or 2 gems; these mobs never drop their gear) |
 
 ## Strength

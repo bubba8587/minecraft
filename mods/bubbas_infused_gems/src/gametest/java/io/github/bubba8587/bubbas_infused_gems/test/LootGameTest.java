@@ -293,19 +293,20 @@ public class LootGameTest {
 	}
 
 	/**
-	 * Spawn gear (vanilla's choice) gets gems at the model's chance per piece: most mobs 4 %, piglins 6 %; armor, and
+	 * Spawn gear (vanilla's choice) gets gems at the model's chance per piece: ordinary mobs 1 %, piglins 1.5 % (owner,
+	 * review C); armor, and
 	 * weapons (skeleton bows, drowned tridents, piglin crossbows and swords, vindicator axes).
 	 */
 	@GameTest(maxTicks = 300)
 	public void spawnGearSometimesHasGems(GameTestHelper helper) {
 		DifficultyInstance hard = new DifficultyInstance(Difficulty.HARD, 3_600_000L, 3_600_000L, 1.0F);
 		Map<String, Double> rates = new java.util.LinkedHashMap<>();
-		rates.put("zombie/armor", 0.04);
-		rates.put("piglin/armor", 0.06);
-		rates.put("skeleton/weapon", 0.04);
-		rates.put("drowned/weapon", 0.04);
-		rates.put("piglin/weapon", 0.06);
-		rates.put("vindicator/weapon", 0.04);
+		rates.put("zombie/armor", 0.01);
+		rates.put("piglin/armor", 0.015);
+		rates.put("skeleton/weapon", 0.01);
+		rates.put("drowned/weapon", 0.01);
+		rates.put("piglin/weapon", 0.015);
+		rates.put("vindicator/weapon", 0.01);
 		for (String key : rates.keySet()) {
 			String who = key.split("/")[0];
 			gearKind = key.split("/")[1];
@@ -318,7 +319,7 @@ public class LootGameTest {
 			};
 			int total = 0;
 			int gemmed = 0;
-			for (int i = 0; i < 40000 && total < 3000; i++) {
+			for (int i = 0; i < 60000 && total < 8000; i++) {
 				for (EquipmentSlot slot : EquipmentSlot.values()) {
 					mob.setItemSlot(slot, ItemStack.EMPTY);
 				}
@@ -338,7 +339,7 @@ public class LootGameTest {
 				}
 			}
 			double rate = gemmed / (double) Math.max(total, 1);
-			check(helper, total > 300 && rate > rates.get(key) * 0.5 && rate < rates.get(key) * 1.6,
+			check(helper, total > 3000 && rate > rates.get(key) * 0.5 && rate < rates.get(key) * 1.6,
 					key + ": " + gemmed + " gemmed of " + total + " pieces (" + rate + "), model " + rates.get(key));
 			mob.discard();
 		}
@@ -355,6 +356,34 @@ public class LootGameTest {
 		}
 		check(helper, trial.stream().filter(s -> !s.has(ModComponents.SOCKETED_GEMS)).anyMatch(s -> s.has(net.minecraft.core.component.DataComponents.TRIM)),
 				"trial chamber armor lost its vanilla trims");
+		helper.succeed();
+	}
+
+	/**
+	 * Owner (review C): mobs in harder areas keep a higher rate, 7 % per piece. Tested on a raid vindicator's axe, handed out
+	 * by the raid (the same "hard" level as structure mobs; a test can't register a structure start for the location check).
+	 */
+	@GameTest(maxTicks = 300)
+	public void raidMobsKeepAHigherRate(GameTestHelper helper) {
+		var level = helper.getLevel();
+		Mob mob = helper.spawnWithNoFreeWill(EntityTypes.VINDICATOR, new BlockPos(1, 1, 1));
+		((net.minecraft.world.entity.raid.Raider) mob).setCurrentRaid(new net.minecraft.world.entity.raid.Raid(mob.blockPosition(), Difficulty.HARD));
+		gearKind = "weapon";
+		int total = 0;
+		int gemmed = 0;
+		for (int i = 0; i < 6000 && total < 3000; i++) {
+			for (EquipmentSlot slot : EquipmentSlot.values()) {
+				mob.setItemSlot(slot, ItemStack.EMPTY);
+			}
+			((net.minecraft.world.entity.raid.Raider) mob).applyRaidBuffs(level, 1, false);
+			total += pieces(mob);
+			gemmed += gemmedPieces(mob);
+		}
+		gearKind = "armor";
+		double rate = gemmed / (double) Math.max(total, 1);
+		check(helper, total > 1000 && rate > 0.07 * 0.6 && rate < 0.07 * 1.5, "raid vindicator weapons: " + gemmed + " gemmed of " + total + " (" + rate + "), model 0.07");
+		((net.minecraft.world.entity.raid.Raider) mob).setCurrentRaid(null);
+		mob.discard();
 		helper.succeed();
 	}
 

@@ -16,6 +16,7 @@
 		"MobMixin",
 		"OwnedSlimeMixin",
 		"PotionIngredientMixin",
+		"RaiderGearMixin",
 		"ServerLevelMixin",
 		"VillagerMixin"
 	],
