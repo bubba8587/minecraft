@@ -32,6 +32,9 @@ Parked ideas and open items, newest first within each project. Agents add to it 
 - **Hidden timers to review** (owner: no hidden cooldowns): Absorption's 30 s refill after damage and 30 s equip-fill throttle.
 - **Gem inversion** (owner idea, 2026-11-14): some way to turn a gem into its opposite (e.g. Mining Fatigue into Haste), so odd harmful gems have another use. Not designed yet.
 
+## Bubba's Reworked Beacons (planned, C5)
+- Design in specs/reworked-beacons.md; open questions listed there. Not built yet.
+
 ## Repo
 - Owner to read and ratify (or rewrite) the goal drafts A1-A4 (`python3 tools/dte.py unratified`).
 - A future mod drastically reducing unenchanted mining speed.
