@@ -22,6 +22,11 @@ Owner's idea (2026-11-16), to make mob farming possible again after the spawn cu
 - **F9 (owner):** they arrive **on the surface above and around the factory** (within ~96 blocks sideways), on dark ground at night like a natural spawn, in a burst of particles. So **seeing mobs teleport in with particles near you tells you a factory is under your feet**; stopping it thins the surface above.
 - **F10 (owner):** once they wake they are **reworked mobs** (watcher creepers, caretaker endermen, reworked undead): the world's monsters, not spawner stock.
 
+## Owner feedback on the first look (2026-11-16)
+
+- The warped growth should form more **alien "chains"/spurs** that **curve up around the cavern's walls, then curl in and bend toward the central drop spot**.
+- The **teleporter has a redstone-visible activation timer and particle effects even with no mob on it**, so a player could **hop on it to escape, with the right timing** (it sends a player up too).
+
 ## Independence (first thoughts)
 
 Lives in Reworked Mobs, built from vanilla blocks (B15). With Bubba's Reworked Beacons installed its two halves could also be a real paired beacon (to be designed); without it, the factory still works.
