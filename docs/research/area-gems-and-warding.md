@@ -257,3 +257,10 @@ If yes, the details go into `specs/effect-gems.md` and `specs/undead.md`. The ow
 12. Soul lantern as the Warding gem's source item? (yes, or name another)
 13. Should an ordinary bell be extra loud to sleepers (ringing one in a crypt wakes it)? (yes/no)
 14. Strong light at a sleeper calms it a little, in Reworked Mobs, even without gems? (yes/no)
+
+## Owner decisions (2026-11-16)
+
+- Bells: a bell feels activation-only (it matters while it rings), so not the always-on Warding mount.
+- Armor stands: fully out; inert with respect to gems.
+- **Beacons are reworked around gems** (owner): the beacon menu loses primary/secondary powers and the iron/gold/emerald/diamond payment; it gets one gem slot, and the screen shows what the beacon will do in the gem's tooltip words. Pyramid size caps the gem's level: 1 layer Gem Power I, 2 layers up to III, 3 layers up to V, 4 layers VI; a stronger gem is capped with a message (e.g. 'Only outputting Gem Power III'). Range grows with the pyramid as in vanilla. Big product call: could be a decision-tree leaf if the owner wants it preserved.
+- **'Infusion' level renamed 'Gem Power' everywhere** (owner).
