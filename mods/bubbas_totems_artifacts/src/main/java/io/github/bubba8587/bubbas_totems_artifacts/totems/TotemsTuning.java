@@ -16,6 +16,8 @@ public final class TotemsTuning {
 	// --- Gathering -------------------------------------------------------------------------------------
 	/** Held: dropped items within this many blocks fly to the holder (vanilla's XP orbs follow a player from 8). */
 	public static final double GATHER_RADIUS = 8.0;
+	/** Held: how fast pulled items fly (blocks per tick; 0.3 brings an item from 8 blocks in about 1.5 s). */
+	public static final double GATHER_SPEED = 0.3;
 	/** Held: at most this many items are pulled per tick (the nearest are not sorted; it only bounds the work). */
 	public static final int GATHER_MAX_ITEMS_PER_TICK = 64;
 	/** Beacon: at most this many items (and as many XP orbs) move per pulse. */

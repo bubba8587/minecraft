@@ -88,9 +88,9 @@ public class TotemsGameTest {
 		helper.assertFalse(Keeping.isKept(reborn), "the respawned player is still marked kept");
 
 		// No totem left: the next death drops as usual.
-		Vec3 there = reborn.position();
 		die(reborn);
-		boolean dropped = !reborn.level().getEntitiesOfClass(ItemEntity.class, new AABB(there, there).inflate(6.0), e -> e.getItem().is(Items.DIRT)).isEmpty();
+		// The respawn point may be in a chunk that isn't loaded, so look at the inventory: dropping empties it.
+		boolean dropped = count(reborn.getInventory(), Items.DIRT) == 0 && !Keeping.isKept(reborn);
 		level.getServer().getPlayerList().remove(reborn);
 		helper.assertTrue(dropped, "a death without a totem kept the inventory");
 		helper.succeed();

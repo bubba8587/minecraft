@@ -26,9 +26,10 @@ import org.jspecify.annotations.Nullable;
  * The Totem of Gathering (specs/totems-artifacts.md).
  *
  * <p><b>Held</b> ({@link #pull}, every tick): dropped items within {@link TotemsTuning#GATHER_RADIUS} fly to the
- * holder exactly the way vanilla's XP orbs fly to a player (same pull, ExperienceOrb.followNearbyPlayer, B17), and are
- * picked up by the usual rules. XP orbs already do that by themselves in vanilla within the same 8 blocks, so the
- * totem leaves them to it. Items the holder just threw (still on their pickup delay) and items that can never be
+ * holder at {@link TotemsTuning#GATHER_SPEED} blocks a tick, aimed like vanilla's XP orbs (at the holder's middle), and
+ * are picked up by the usual rules. (Vanilla's orb pull itself was tried first, B17: on the ground an item's friction
+ * eats it, and items 6 blocks out moved under a block in 5 s.) XP orbs already fly to a player by themselves in vanilla
+ * within the same 8 blocks, so the totem leaves them to it. Items the holder just threw (still on their pickup delay) and items that can never be
  * picked up (displays) are left alone. Players and mobs alike (B18).
  *
  * <p><b>In a beacon</b> ({@link #intoChest}, every pulse): dropped items in the beacon's area go into the nearest chest
@@ -64,11 +65,13 @@ public final class Gathering {
 			if (pulled++ >= TotemsTuning.GATHER_MAX_ITEMS_PER_TICK) {
 				break;
 			}
-			// Vanilla's XP orb pull, verbatim.
+			// Aimed like an XP orb (the holder's middle); a steady speed, slowing in the last block so it doesn't overshoot.
 			Vec3 delta = new Vec3(holder.getX() - item.getX(), holder.getY() + holder.getEyeHeight() / 2.0 - item.getY(), holder.getZ() - item.getZ());
-			double power = 1.0 - Math.sqrt(delta.lengthSqr()) / r;
-			if (power > 0.0 && delta.lengthSqr() > 1.0E-4) {
-				item.setDeltaMovement(item.getDeltaMovement().add(delta.normalize().scale(power * power * 0.1)));
+			double distance = delta.length();
+			if (distance > 1.0E-3) {
+				double speed = TotemsTuning.GATHER_SPEED * Math.min(1.0, distance);
+				// Plus gravity's pull back, so the item glides instead of scraping along the ground.
+				item.setDeltaMovement(delta.scale(speed / distance).add(0.0, 0.04, 0.0));
 				item.needsSync = true; // items only sync motion now and then; this one is steering
 			}
 		}

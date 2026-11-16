@@ -17,7 +17,8 @@
 		],
 		"fabric-client-gametest": [
 			"io.github.bubba8587.bubbas_totems_artifacts.test.GraveTalismanClientGameTest",
-			"io.github.bubba8587.bubbas_totems_artifacts.test.WardingClientGameTest"
+			"io.github.bubba8587.bubbas_totems_artifacts.test.WardingClientGameTest",
+			"io.github.bubba8587.bubbas_totems_artifacts.test.TotemsClientGameTest"
 		]
 	}
 }

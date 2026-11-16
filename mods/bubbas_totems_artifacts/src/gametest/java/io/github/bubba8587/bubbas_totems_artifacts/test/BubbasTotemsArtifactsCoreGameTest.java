@@ -93,7 +93,7 @@ public class BubbasTotemsArtifactsCoreGameTest {
 		new TotemsGameTest().keepingKeepsEverythingOnce(helper);
 	}
 
-	@GameTest(structure = TestSupport.FIELD, maxTicks = 400)
+	@GameTest(structure = TestSupport.FIELD, maxTicks = 100)
 	public void gatheringPullsNearbyItems(GameTestHelper helper) {
 		new TotemsGameTest().gatheringPullsNearbyItems(helper);
 	}
