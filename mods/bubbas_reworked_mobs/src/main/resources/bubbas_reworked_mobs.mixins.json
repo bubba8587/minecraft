@@ -6,6 +6,7 @@
 		"BellBlockMixin",
 		"CreeperMixin",
 		"EndermanMixin",
+		"MobFinalizeSpawnMixin",
 		"SpawnStateMixin"
 	],
 	"injectors": {

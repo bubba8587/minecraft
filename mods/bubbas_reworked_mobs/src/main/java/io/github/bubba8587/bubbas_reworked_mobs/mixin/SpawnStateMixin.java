@@ -2,7 +2,6 @@
 package io.github.bubba8587.bubbas_reworked_mobs.mixin;
 
 import io.github.bubba8587.bubbas_reworked_mobs.creeper.WatcherSpawning;
-import io.github.bubba8587.bubbas_reworked_mobs.enderman.EndermanSpawning;
 import io.github.bubba8587.bubbas_reworked_mobs.spawn.MonsterCap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.core.BlockPos;
@@ -36,7 +35,7 @@ abstract class SpawnStateMixin {
 	@Inject(method = "canSpawn", at = @At("HEAD"), cancellable = true)
 	private void brm$cutMonsterCap(EntityType<?> type, Level level, BlockPos pos, ChunkAccess chunk, CallbackInfoReturnable<Boolean> cir) {
 		if (level instanceof ServerLevel serverLevel
-				&& (WatcherSpawning.blocksVanillaSpawn(serverLevel, type) || EndermanSpawning.blocksVanillaSpawn(serverLevel, type))
+				&& WatcherSpawning.blocksVanillaSpawn(serverLevel, type)
 				&& !MonsterCap.isStructureSpawn(serverLevel, pos)) {
 			cir.setReturnValue(false);
 			return;

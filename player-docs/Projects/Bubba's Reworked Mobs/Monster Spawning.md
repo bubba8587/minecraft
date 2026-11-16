@@ -4,7 +4,7 @@
 
 **Monster spawning** is cut by [[Bubba's Reworked Mobs]] to 15 % of normal for natural spawns, everywhere: on the surface, in caves, in the Nether and in the End. Most undead a player meets are [[Sleeping Undead|sleeping]] ones instead.
 
-Creepers do not spawn randomly at all. Each player has one watching creeper at night instead (see [[Creepers]]). Endermen in the overworld spawn only near enderman cairns (see [[Endermen]]).
+Creepers do not spawn randomly at all. Each player has one watching creeper at night instead (see [[Creepers]]). Most endermen in the overworld spawn near enderman cairns, and a few anywhere (see [[Endermen]]).
 
 ## Unchanged
 

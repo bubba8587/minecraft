@@ -302,17 +302,23 @@ public class EndermanGameTest {
 	private void spawnsBuildersUpToItsCap(GameTestHelper helper) {
 		CreeperGameTest.forceNight(helper);
 		ServerLevel level = helper.getLevel();
-		helper.assertTrue(EndermanSpawning.blocksVanillaSpawn(level, EntityTypes.ENDERMAN), "vanilla overworld enderman spawns should be blocked");
-		helper.assertFalse(EndermanSpawning.blocksVanillaSpawn(level, EntityTypes.ZOMBIE), "only endermen are blocked");
-		level.getGameRules().set(ModGameRules.CAIRN_ENDERMEN, false, level.getServer());
-		helper.assertFalse(EndermanSpawning.blocksVanillaSpawn(level, EntityTypes.ENDERMAN), "the rule turns the block off");
-		level.getGameRules().set(ModGameRules.CAIRN_ENDERMEN, true, level.getServer());
 		helper.assertTrue(EndermanSpawning.chance(true, 1.0F, 0) >= EndermanSpawning.chance(false, 0.95F, 0)
 				&& EndermanSpawning.chance(false, 0.95F, 0) > EndermanSpawning.chance(false, 0.5F, 0)
 				&& EndermanSpawning.chance(false, 0.5F, 0) > EndermanSpawning.chance(false, 0.0F, 0), "the taller the spire, the faster it spawns");
 		helper.assertTrue(EndermanSpawning.cap(true, 1.0F) > EndermanSpawning.cap(false, 0.5F) && EndermanSpawning.cap(false, 0.5F) > EndermanSpawning.cap(false, 0.0F),
 				"the taller the spire, the more endermen it keeps");
 		helper.assertTrue(EndermanSpawning.chance(false, 0.5F, 2) > EndermanSpawning.chance(false, 0.5F, 0), "more endermen about, faster (snowball)");
+
+		// Vanilla's random natural spawns stay vanilla endermen (owner); the cairn spawner's stay caretakers.
+		Enderman natural = EntityTypes.ENDERMAN.create(level, net.minecraft.world.entity.EntitySpawnReason.NATURAL);
+		natural.finalizeSpawn(level, level.getCurrentDifficultyAt(natural.blockPosition()), net.minecraft.world.entity.EntitySpawnReason.NATURAL, null);
+		helper.assertTrue(EndermanMind.of(natural) == null, "a random natural spawn should stay a vanilla enderman");
+		natural.discard();
+		Enderman fromCairn = EntityTypes.ENDERMAN.create(level, net.minecraft.world.entity.EntitySpawnReason.NATURAL);
+		((io.github.bubba8587.bubbas_reworked_mobs.enderman.EndermanAccess) fromCairn).brm$markCairnSpawn();
+		fromCairn.finalizeSpawn(level, level.getCurrentDifficultyAt(fromCairn.blockPosition()), net.minecraft.world.entity.EntitySpawnReason.NATURAL, null);
+		helper.assertTrue(EndermanMind.of(fromCairn) != null, "a cairn spawn should be a caretaker");
+		fromCairn.discard();
 
 		CairnSite site = CairnSites.addSite(level, helper.absolutePos(new BlockPos(12, 1, 8)), 99L);
 		List<Enderman> spawned = new ArrayList<>();
