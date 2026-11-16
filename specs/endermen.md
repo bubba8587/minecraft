@@ -20,7 +20,7 @@ Owner's design (2026-11-16), being worked out in conversation. Endermen are the 
 
 ## Cairn look, details (owner ideas, 2026-11-16)
 
-- **Overworld meets End:** the twisting purpur spire with end-city touches (purpur stairs/slabs as branch knuckles, magenta stained glass, a magenta banner), plus **offerings** at its foot from what endermen carry in vanilla (#minecraft:enderman_holdable: small flowers, dirt, grass, moss, mud, sand, red sand, gravel, clay, mushrooms, pumpkins, melons, cactus and its flower, crimson/warped fungus, roots and nylium, TNT), varying by biome.
+- **Overworld meets End:** the twisting purpur spire with end-city touches (purpur stairs/slabs as branch knuckles, magenta stained glass, a magenta banner), plus **offerings** at its foot from what endermen carry in vanilla (#minecraft:enderman_holdable: small flowers, dirt, grass, moss, mud, sand, red sand, gravel, clay, mushrooms, pumpkins, melons, cactus and its flower, crimson/warped fungus, roots and nylium, TNT), varying by biome. Rare **TNT** offerings are allowed (owner: yes).
 - **Stronghold pointer simplified:** the **tallest end rod tilts toward the nearest stronghold**; the other pointer bits are dropped.
 
 ## Cairns as their home (D2: deliberate spawning)
