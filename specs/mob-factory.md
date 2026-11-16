@@ -32,7 +32,7 @@ Owner's idea (2026-11-16), to make mob farming possible again after the spawn cu
 - **Owner on the built look (2026-11-16): "really close"**; add **streaks of crimson** through the warped, and **less sculk** (it's a bit heavy).
 - **Sculk detailing follows real ancient cities** (owner): the same palette and patterns (patches with veins creeping up walls and edges, sparse catalysts and shriekers, sensors by walkways, cracking).
 - The "timer" is **lamps that light up** in sequence, not an actual redstone clock (owner).
-- The Warden's observation area is its **office**: **chests** (loot), and a **jukebox with a weird music disc that's always playing** (owner). It loops with a vanilla hopper loop (a playing jukebox's redstone signal locks the hopper that would pull the disc; when the song ends the hopper pulls it and another feeds it back), no code.
+- The Warden's observation area is its **office**: **chests** (loot), and a **jukebox with a weird music disc that's always playing** (owner). Looping: vanilla's infinite jukebox is in current snapshots (owner); plan for it when we move to that release, no workaround now (it plays once until then).
 - **Right before it fires, whatever is on the pad gets a bit of Levitation**, lifting slightly off the pad, then it teleports.
 
 ## Independence (first thoughts)

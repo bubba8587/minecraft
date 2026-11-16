@@ -14,6 +14,7 @@ Parked ideas and open items, newest first within each project. Agents add to it 
 - **Flaky tests seen 2026-11-16** (pre-existing; `strongLightCalmsSleepers` and the night spawn tests fixed the same day): `BubbasReworkedMobsGameTest.sneakingNearbyDoesNotWakeSleeper` (once in 6 runs), `UndeadCombatGameTest.idleZombiesDriftTogether` (once in 6; idle wandering timing), `CreeperGameTest.oneWatcherSpawnsBehindCoverOutOfView`, `GrabLootGameTest.idleSkeletonTakesADisplayedSword`.
 - **Drowned** (first build done, `specs/drowned.md`): owner to playtest numbers and review the builder's choices; test world "drowned shore" station idea there; grab by the feet (owner, in progress).
 - **Ancient Fabricators** (look built; owner to review, then mechanics; `specs/mob-factory.md`; one beside every ancient city): underground nether/warped/bone ceiling growth drops mobs onto an ancient-city redstone platform; open questions F1-F6. Also structures for farming: crypts, war camps, bigger dungeons with spawners (owner, 2026-11-16).
+- **Infinite jukebox** (owner, 2026-11-16): in current snapshots; when we move to that release, make the Ancient Fabricator office jukebox loop with it.
 - **Slime merging** (owner: decent idea, not now): slimes that bump into each other merge.
 - Later parts: **monster camps and the blood moon** (structures with fixed rosters and key blocks, a 7-day blood moon that respawns uncleared structures, red-sky effects; owner's earlier idea with integration notes in `docs/research/camps-blood-moon-idea.md`).
 
