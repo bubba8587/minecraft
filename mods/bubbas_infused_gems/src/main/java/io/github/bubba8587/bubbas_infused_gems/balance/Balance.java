@@ -110,6 +110,11 @@ public final class Balance {
 	 * A hit's dial set per build (owner, strength proposal answers): straight lines between the (strength share, value)
 	 * points of the reference weak, mid and perfect weapons, flat below the weak one. NaN when the effect has none.
 	 */
+	/** Gems in Reworked Beacons: the share of a full netherite set of the gem that a beacon gives (model BEACON_SHARE). */
+	public double beaconShare() {
+		return this.raw.has("beacon_share") ? this.raw.get("beacon_share").getAsDouble() : 0.5;
+	}
+
 	public double hitCurve(String key, String which, double rel) {
 		JsonObject e = this.raw.getAsJsonObject("effects").getAsJsonObject(key);
 		if (e == null || !e.has("hit_curve") || !e.getAsJsonObject("hit_curve").has(which)) {

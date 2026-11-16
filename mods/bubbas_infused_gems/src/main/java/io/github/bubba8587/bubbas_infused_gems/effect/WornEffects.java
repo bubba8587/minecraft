@@ -197,6 +197,7 @@ public final class WornEffects {
 
 	/** Server tick of a wearer with gems: health over time, hunger, absorption refill, Conduit Power, pulsed effects. */
 	public static void tick(ServerLevel level, LivingEntity entity, GemTotals t) {
+		GemBeacons.expire(entity);
 		Balance b = Balance.get();
 		double regen = GemValues.worn(entity, "regeneration");
 		if (regen > 0.0 && entity.getHealth() < entity.getMaxHealth() && !entity.is(EntityTypeTags.IGNORES_POISON_AND_REGEN)) {

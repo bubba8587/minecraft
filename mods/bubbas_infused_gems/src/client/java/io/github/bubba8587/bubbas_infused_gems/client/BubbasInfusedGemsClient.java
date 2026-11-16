@@ -18,6 +18,7 @@ public class BubbasInfusedGemsClient implements ClientModInitializer {
 	/** The local player's armor last time its gem totals were computed (client copy, for gravity and night vision). */
 	private static final ItemStack[] LAST_ARMOR = {ItemStack.EMPTY, ItemStack.EMPTY, ItemStack.EMPTY, ItemStack.EMPTY};
 	private static LocalPlayer lastPlayer;
+	private static java.util.List<io.github.bubba8587.bubbas_infused_gems.effect.GemBeacons.Received> lastBeacon;
 
 	@Override
 	public void onInitializeClient() {
@@ -41,6 +42,12 @@ public class BubbasInfusedGemsClient implements ClientModInitializer {
 					LAST_ARMOR[i] = now.copy();
 					changed = true;
 				}
+			}
+			// Gems from Reworked Beacons arrive as a synced attachment; recompute when it changes or a receipt runs out.
+			var beacon = player.getAttached(io.github.bubba8587.bubbas_infused_gems.registry.ModAttachments.BEACON_GEMS);
+			if (beacon != lastBeacon || (beacon != null && beacon.stream().anyMatch(r -> r.until() <= player.level().getGameTime()))) {
+				lastBeacon = beacon;
+				changed = true;
 			}
 			if (changed) {
 				((GemEntity) player).bubbas$setWornGems(GemTotals.ofArmor(player));

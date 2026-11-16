@@ -7,6 +7,7 @@
 		"ArrowMixin",
 		"BreezeVeerFireballMixin",
 		"BreezeVeerMixin",
+		"BreezeVeerShulkerMixin",
 		"EnchantmentHelperMixin",
 		"EnchantmentMenuMixin",
 		"EnderConfusionMixin",

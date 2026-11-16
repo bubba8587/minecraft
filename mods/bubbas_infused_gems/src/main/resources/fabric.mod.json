@@ -16,6 +16,9 @@
 		],
 		"client": [
 			"io.github.bubba8587.bubbas_infused_gems.client.BubbasInfusedGemsClient"
+		],
+		"bubbas_reworked_beacons:payload": [
+			"io.github.bubba8587.bubbas_infused_gems.compat.GemBeaconPayload"
 		]
 	},
 	"mixins": [
@@ -30,5 +33,8 @@
 		"minecraft": "~${minecraft_version}",
 		"java": ">=${java_version}",
 		"fabric-api": "*"
+	},
+	"suggests": {
+		"bubbas_reworked_beacons": "*"
 	}
 }

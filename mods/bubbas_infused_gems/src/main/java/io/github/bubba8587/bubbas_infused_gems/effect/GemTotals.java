@@ -119,12 +119,30 @@ public record GemTotals(Map<String, Double> totals, Map<String, Integer> drawbac
 
 	// ------------------------------------------------------------------ totals
 
+	/** What the entity wears from gems: its armor, joined by gems from Reworked Beacons (the stronger per effect). */
 	public static GemTotals ofArmor(LivingEntity entity) {
 		ItemStack[] pieces = new ItemStack[ARMOR.length];
 		for (int i = 0; i < ARMOR.length; i++) {
 			pieces[i] = entity.getItemBySlot(ARMOR[i]);
 		}
-		return ofArmor(pieces);
+		return stronger(ofArmor(pieces), GemBeacons.totals(entity));
+	}
+
+	/** Per effect, the stronger of two sources' totals and drawbacks (never added). */
+	public static GemTotals stronger(GemTotals a, GemTotals b) {
+		if (b.isEmpty()) {
+			return a;
+		}
+		if (a.isEmpty()) {
+			return b;
+		}
+		Map<String, Double> totals = new HashMap<>(a.totals());
+		b.totals().forEach((k, v) -> totals.merge(k, v, Math::max));
+		Map<String, Double> drawbacks = new HashMap<>(a.drawbacks());
+		b.drawbacks().forEach((k, v) -> drawbacks.merge(k, v, Math::max));
+		Map<String, Integer> counts = new HashMap<>(a.drawbackCounts());
+		b.drawbackCounts().forEach((k, v) -> counts.merge(k, v, Math::max));
+		return new GemTotals(Map.copyOf(totals), Map.copyOf(counts), Map.copyOf(drawbacks));
 	}
 
 	public static GemTotals ofArmor(ItemStack[] pieces) {

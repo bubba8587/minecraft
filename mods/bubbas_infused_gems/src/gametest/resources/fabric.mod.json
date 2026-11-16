@@ -23,7 +23,8 @@
 			"io.github.bubba8587.bubbas_infused_gems.test.LootGameTest",
 			"io.github.bubba8587.bubbas_infused_gems.test.BreezeMeasureGameTest",
 			"io.github.bubba8587.bubbas_infused_gems.test.TopEndGameTest",
-			"io.github.bubba8587.bubbas_infused_gems.test.StrengthAnswersGameTest"
+			"io.github.bubba8587.bubbas_infused_gems.test.StrengthAnswersGameTest",
+			"io.github.bubba8587.bubbas_infused_gems.test.GemBeaconGameTest"
 		],
 		"fabric-client-gametest": [
 			"io.github.bubba8587.bubbas_infused_gems.test.GemsClientGameTest"
