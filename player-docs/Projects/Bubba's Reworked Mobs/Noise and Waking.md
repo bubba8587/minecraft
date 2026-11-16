@@ -29,6 +29,18 @@ A sleeping undead that has been disturbed but not yet woken lets out a quiet, lo
 
 Sneaking makes footsteps and landings silent, and wool walls block sound completely, as with sculk sensors. Walking in Creative mode makes noise; flying in Creative makes none.
 
+## Light
+
+A sleeping undead whose block is brightly lit by a block light level of 12 or more (a torch right next to it, a lantern, glowstone) hears every noise at 70% and is that much less likely to wake when robbed. Daylight does not count. Placing the light is itself a noise, like placing any block.
+
+## Bells
+
+Sleeping undead hear a ringing bell as far as players do, 32 blocks. A ring is very loud: it wakes sleepers within about 19 blocks and stirs those out to about 25 blocks. Walls and wool muffle it like any other noise, so a bell on the surface does not wake a crypt below. Every way of ringing a bell counts: hitting it, a projectile, or redstone.
+
+## Warding
+
+Each pulse of a held [[Totem of Warding]] settles sleeping undead within 8 blocks a little. Inside a ward made by a Totem of Warding in a beacon with a full 4-layer pyramid, sleeping undead never wake.
+
 ## Chain waking
 
 A waking undead wakes up to four more sleepers within about 6 blocks of it, and those can wake more in turn. Undead woken by their neighbors, or by anything other than a player, do not fight each other when they get up; they go looking for players.
@@ -41,3 +53,4 @@ Animals do not wake sleeping undead: cows and pigs can wander through a graveyar
 
 - [[Woken Undead]]
 - [[Grave Talisman]]
+- [[Totem of Warding]]

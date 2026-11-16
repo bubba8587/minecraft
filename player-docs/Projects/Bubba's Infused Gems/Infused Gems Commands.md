@@ -24,7 +24,7 @@ Under *Gems on <player>:*, one line for every effect from all gems in the armor 
 > Strength +1.97 damage (34%)
 > Turtle Master -72.0% damage, -81.0% speed (100%)
 
-Drawbacks are the same kind of line in red, for example *Hunger 1 extra food per 133 s (50%)*. Under *Target, on hit:* the command lists what each hit of the weapon in the main hand applies, for example *Poison 1.24 HP/s for 6.3 s (48%)*.
+Drawbacks are the same kind of line in red, for example *Hunger 1 extra food per 133 s (50%)*. Under *Target, on hit:* the command lists what each hit of the weapon in the main hand applies, for example *Poison 1.15 HP/s for 5.5 s (48%)*.
 
 The output appears even when the `send_command_feedback` game rule is off.
 

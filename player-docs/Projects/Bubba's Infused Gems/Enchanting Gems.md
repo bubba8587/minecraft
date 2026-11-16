@@ -62,7 +62,7 @@ The brewing stand does not take a Gem that has no drawback, a Gem whose main eff
 
 | Before | After inverting |
 |---|---|
-| Speed (100%), + Strength (50%), Hunger (in red), Gem Power VI | Hunger (72%), + Strength (50%), Speed (in red), Gem Power V |
+| Speed (100%), + Strength (50%), Hunger (in red), Gem Power VI | Hunger (66%), + Strength (50%), Speed (in red), Gem Power V |
 
 ## Which effects come up
 

@@ -58,6 +58,12 @@ Weapons and tools lie on the ground, hang on walls, stand stuck in the ground or
 
 A talisman whose gem glows brighter the closer undead are.
 
+## Totem of Warding
+
+*Main article: [[Totem of Warding]]*
+
+A found item that makes nearby monsters run away while held, and in a beacon from [[Bubba's Reworked Beacons]] keeps an area free of monster spawns.
+
 ## Monster spawning
 
 *Main article: [[Monster Spawning]]*
@@ -84,11 +90,13 @@ The mod comes with vanilla-style 16x textures. A higher-resolution set, **Bubba'
 
 The mod requires Fabric API. Only this mod's own undead are changed: normal zombies and skeletons from spawners and other mods behave as usual.
 
+Optional: [[Bubba's Reworked Beacons]]. With it, the [[Totem of Warding]] can be placed in a beacon to ward its area. Without it, everything else works the same.
+
 ## History
 
 | Version | Changes |
 |---|---|
-| 0.1.0 | Added part 1, the undead: sleeping and woken skeletons and zombies, loot on display, the Grave Talisman and the monster spawn cut. Early test version. |
+| 0.1.0 | Added part 1, the undead: sleeping and woken skeletons and zombies, loot on display, the Grave Talisman, the Totem of Warding (with wards in Reworked Beacons beacons), loud bells, light that calms sleepers, and the monster spawn cut. Early test version. |
 
 ## See also
 

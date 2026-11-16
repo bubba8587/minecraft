@@ -6,13 +6,13 @@
 > | | |
 > |---|---|
 > | **Variants** | Sleeping Skeleton, Sleeping Zombie |
-> | **Poses** | Skeleton: sitting slumped. Zombie: sitting or lying on its back |
+> | **Poses** | Sitting slumped, or lying on its back (both variants) |
 > | **Behavior** | Motionless until woken |
 > | **Gear** | Often a weapon and armor |
 > | **Mined with** | Silk Touch pickaxe (drops the body) |
 > | **Wakes into** | [[Woken Undead\|Woken undead]] |
 
-A **sleeping undead** is a dormant skeleton or zombie that lies motionless in the world until noise wakes it. Skeletons sit slumped; zombies sit or lie on their backs. They often hold a weapon and wear armor, and they neither move nor attack while asleep.
+A **sleeping undead** is a dormant skeleton or zombie that lies motionless in the world until noise wakes it. Both skeletons and zombies sit slumped or lie on their backs. They often hold a weapon and wear armor, and they neither move nor attack while asleep.
 
 ## Behavior
 

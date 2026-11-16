@@ -18,9 +18,9 @@ side: client and server
 > | **Side** | Client and server |
 > | **Status** | Active |
 
-**Bubba's Infused Gems** is a Fabric mod that lets the player brew a potion into a gem, enchant the gem, and set it into armor or a weapon, giving a permanent but partial version of the potion's effect.
+**Bubba's Infused Gems** is a Fabric mod that lets the player brew a potion into a gem, enchant the gem, and set it into armor or a weapon, giving a permanent version of the potion's effect.
 
-Armor gems affect the wearer all the time; weapon gems affect whatever the weapon hits. Gems are never as strong as a real potion, gems of the same effect stack, and some gems carry a drawback.
+Armor gems affect the wearer all the time; weapon gems affect whatever the weapon hits. Gems below the very best are weaker than a real potion; only a perfect set matches the strongest potion (and goes past it for movement effects). Gems of the same effect stack, and some gems carry a drawback.
 
 In this test version the gem textures are simple placeholders. Every gem effect works in armor and in weapons.
 
@@ -58,6 +58,8 @@ The mod comes with vanilla-style 16x textures. A higher resolution set is availa
 ## Compatibility
 
 Requires Fabric API. Mods that also give armor effects (such as trim-effect mods) work alongside it; their effects and gem effects do not interact.
+
+With [[Bubba's Reworked Beacons]] installed, a Gem can be placed in a beacon, which gives the gem's effects to every living thing in its area; the beacon then no longer takes the plain base-gem payments. *Main article: [[Gem Effects#In beacons]]*. Without it, the mod works the same.
 
 ## History
 

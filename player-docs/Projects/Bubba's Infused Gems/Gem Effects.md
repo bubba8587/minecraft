@@ -2,7 +2,7 @@
 
 *Part of [[Bubba's Infused Gems]].*
 
-**Gem effects** are the permanent, partial potion effects that socketed Gems give: to the wearer from armor, and to the target from weapons. Every gem effect works in both.
+**Gem effects** are the permanent potion effects that socketed Gems give: to the wearer from armor, and to the target from weapons. Every gem effect works in both.
 
 ## Behavior
 
@@ -30,7 +30,7 @@ The `/gems` command shows the player's combined totals. *Main article: [[Infused
 
 ## In armor
 
-Values are for the best build (90%); weaker builds give less.
+Values are for the best build (the perfect set); weaker builds give less.
 
 | Gem | Effect on the wearer |
 |---|---|
@@ -100,7 +100,7 @@ Each hit gives the target an effect for a few seconds, refreshed (never added up
 | Wind Burst | Throws the target up and away like a wind charge; even a weak gem throws it about half a block |
 | Weaving | A chance to web the target with a real cobweb: 10% with a weak gem, 25% with a good one, 50% with the best, which drops 2 to 3 webs around it |
 | Ender | A chance to teleport the target away like chorus fruit (up to 8 blocks, onto a floor): 10% with a weak gem, 25% with a good one, 40% with the best. A mob that gets teleported is confused for a second and forgets who it was fighting. Works on players too (they are only teleported) |
-| Breeze | For a few seconds the target's own arrows, tridents and fireballs fly off course: a little with a weak gem, most of them miss with the best |
+| Breeze | For a few seconds everything the target shoots or throws flies off course (arrows, crossbow bolts and fireworks, tridents, snowballs, witches' potions, llama spit, blaze and ghast fireballs, wither skulls, wind charges), and shulker bullets wobble while they home in: a little with a weak gem, most of them miss with the best |
 | Harming | A little extra magic damage on every hit (up to 2.25) |
 | Healing | Heals the target a little on every hit (up to 1.8) |
 | Turtle Master | Its Resistance and Slowness together |
@@ -117,6 +117,33 @@ Swords, axes, spears, maces and tridents apply their gems on every hit, includin
 ### Bows and crossbows
 
 Bows and crossbows with gems turn every arrow they fire into a tipped arrow with the gems' effects. The arrow flies and trails like a tipped arrow, but picked up again it is a plain arrow; an arrow in flight keeps its gems when the world is saved. When a real tipped arrow of the same effect is fired, the stronger effect applies; they do not add up.
+
+## In beacons
+
+*See also: [[Beacon]]*
+
+With [[Bubba's Reworked Beacons]] installed, a finished Gem can be placed in a beacon's item slot. It stays in the beacon and can be taken out again.
+
+- The beacon gives the gem's effects, as if worn, to **every living thing in its area**: players and mobs, including the player who built it. A harmful gem makes a trap for everyone; only the player's own gems protect against it.
+- Everything on the gem counts: its main effect, its bonus and its drawback.
+- The pyramid limits the gem's Gem Power: 1 layer Gem Power I, 2 layers up to III, 3 layers up to V, 4 layers VI. A stronger gem works at the limit, and the beacon screen says *Only outputting Gem Power N*. The screen shows the gem's own tooltip lines, for example *Speed (100%)*.
+- A perfect gem in a full 4-layer beacon is worth half a perfect armor set of that gem.
+- A beacon and the player's own armor (or another beacon, or a potion) of the same effect do not add up: the stronger one applies.
+- The effect lasts a little longer than the beacon's pulse (9 seconds plus 2 per pyramid layer, as in vanilla), so it fades soon after leaving the area.
+- With this mod installed, the beacon's plain payments (an amethyst shard for Speed and so on) no longer work; only finished Gems and other mods' beacon items, such as the [[Totem of Warding]], fit the slot.
+
+| Gem (perfect, 4 layers) | Effect in range |
+|---|---|
+| Speed | +37.5% speed (Speed II is +40%) |
+| Strength | +3 attack damage (Strength I) |
+| Resistance | 20% less damage (Resistance I) |
+| Regeneration | 0.4 health per second (Regeneration I) |
+| Haste | +50% mining speed, +25% attack speed |
+| Fire Resistance | Half fire damage; fire goes out twice as fast |
+| Breeze, Ender | 50% chance to deflect or teleport away from a projectile |
+| Saturation | 1 food point every 5.3 seconds, up to 13 food |
+| Poison (harmful) | 0.75 health per second, never below 1 health, for everyone in range |
+| Slowness (harmful) | 27% slower, for everyone in range |
 
 ## Found gems
 
