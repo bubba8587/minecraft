@@ -12,6 +12,17 @@ Owner's design (2026-11-16), being worked out in conversation. Endermen are the 
    - **Look (owner):** strange, twisty, **chorus-plant-like** spires rather than stacked stones: purpur pillar trunks that step sideways as they climb, branches ending in end-rod 'flowers', on an end stone brick footing (preview in the test world east of the hub).
    - **Cairns point to the stronghold** (owner): a few blocks in each cairn's design, not too obvious (e.g. a leaning top stone, a line of end stone along the base), point toward the nearest stronghold. Observant players can follow cairns there.
 
+## The target world (owner, 2026-11-16)
+
+- Endermen's **ideal world state is fixed at world generation: natural terrain + every cairn** (cairns decided at worldgen, offerings included), maybe plus a few other deliberate things later. It's computed from the seed, never stored. Cheap and deterministic: an enderman only ever checks one block (what's here) against another (what the target says).
+- **How they work:** an enderman either **spawns already carrying a block** whose final destination is known and delivers it, or **spawns empty, picks up a block that doesn't match the target, and carries it to a spot that needs that block**. If it can't find one, it **vanishes with the block when it despawns**.
+- So there are no exemptions: a cairn's offering flower is 'correct', a stray flower elsewhere gets moved.
+
+## Cairn look, details (owner ideas, 2026-11-16)
+
+- **Overworld meets End:** the twisting purpur spire with end-city touches (purpur stairs/slabs as branch knuckles, magenta stained glass, a magenta banner), plus **offerings** at its foot from what endermen carry in vanilla (#minecraft:enderman_holdable: small flowers, dirt, grass, moss, mud, sand, red sand, gravel, clay, mushrooms, pumpkins, melons, cactus and its flower, crimson/warped fungus, roots and nylium, TNT), varying by biome.
+- **Stronghold pointer simplified:** the **tallest end rod tilts toward the nearest stronghold**; the other pointer bits are dropped.
+
 ## Cairns as their home (D2: deliberate spawning)
 
 - Endermen spawn near cairns and tend to stand on top of completed ones, instead of spawning randomly.
