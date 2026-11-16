@@ -22,7 +22,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.GameType;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
@@ -33,52 +32,15 @@ import net.minecraft.world.phys.Vec3;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 
 /**
- * The lurking drowned (specs/drowned.md). Each test builds the same pool on the flat field: land at x 0-6 (top at
- * y 2), 2-deep shallows at x 7-11 (floor top y 0, surface ~1.89), an 8-deep pit at x 12-18 (floor top y -6). Each test
+ * The lurking drowned (specs/drowned.md). Structure drowned_pool: land at x 0-6 (top at y 9), 2-deep shallows at
+ * x 7-11 (floor top y 7, surface ~8.89), an 8-deep pit at x 12-18 (floor top y 1), all between z 4 and 12. Each test
  * has its own environment so its batch is alone (a drowned senses 16 blocks).
  */
 public class DrownedGameTest {
-	static final String FIELD = CreeperGameTest.FIELD;
+	/** The pool, built into its own structure (the runner clears it between batches; digging under a shared field didn't). */
+	static final String FIELD = "bubbas_reworked_mobs-test:drowned_pool";
 	/** The lurk spot the tests use: by the shore, 2 deep. */
-	static final BlockPos SPOT = new BlockPos(7, -1, 8);
-
-	/**
-	 * Builds the pool (relative coordinates; the field's ceiling is at y 4, so the pool is dug into the ground). Kept
-	 * small (z 3-13) and set without neighbour updates: a big pool's light updates slowed the light engine enough to
-	 * break the in-world light test that runs after it.
-	 */
-	static void pool(GameTestHelper helper) {
-		for (int z = 3; z <= 13; z++) {
-			for (int x = 0; x <= 19; x++) {
-				boolean wallZ = z == 3 || z == 13;
-				if (x <= 6) {
-					set(helper, x, 1, z, Blocks.STONE);
-				} else if (x <= 11) {
-					set(helper, x, -1, z, Blocks.STONE);
-					set(helper, x, 0, z, wallZ ? Blocks.STONE : Blocks.WATER);
-					set(helper, x, 1, z, wallZ ? Blocks.STONE : Blocks.WATER);
-					if (x == 11) {
-						for (int y = -7; y <= -2; y++) {
-							set(helper, x, y, z, Blocks.STONE);
-						}
-					}
-				} else if (x <= 18) {
-					for (int y = -7; y <= 1; y++) {
-						boolean wall = wallZ || y == -7;
-						set(helper, x, y, z, wall ? Blocks.STONE : Blocks.WATER);
-					}
-				} else {
-					for (int y = -7; y <= 1; y++) {
-						set(helper, x, y, z, Blocks.STONE);
-					}
-				}
-			}
-		}
-	}
-
-	private static void set(GameTestHelper helper, int x, int y, int z, net.minecraft.world.level.block.Block block) {
-		helper.getLevel().setBlock(helper.absolutePos(new BlockPos(x, y, z)), block.defaultBlockState(), net.minecraft.world.level.block.Block.UPDATE_CLIENTS);
-	}
+	static final BlockPos SPOT = new BlockPos(7, 6, 8);
 
 	static Drowned drowned(GameTestHelper helper, double x, double y, double z) {
 		Drowned drowned = helper.spawn(EntityTypes.DROWNED, new Vec3(x, y, z));
@@ -105,10 +67,10 @@ public class DrownedGameTest {
 		return DrownedAccess.mind(drowned);
 	}
 
-	/** A survival player standing on the land at (x, 2, z), facing {@code yaw} (90: away from the water, toward -x). */
+	/** A survival player standing on the land at (x, 9, z), facing {@code yaw} (90: away from the water, toward -x). */
 	static ServerPlayer playerOnLand(GameTestHelper helper, double x, double z, float yaw, float pitch) {
 		ServerPlayer player = SleeperNoiseGameTest.survivalPlayer(helper);
-		Vec3 abs = helper.absoluteVec(new Vec3(x, 2.0, z));
+		Vec3 abs = helper.absoluteVec(new Vec3(x, 9.0, z));
 		player.snapTo(abs.x, abs.y, abs.z, yaw, pitch);
 		player.setYHeadRot(yaw);
 		player.setOnGround(true);
@@ -125,7 +87,6 @@ public class DrownedGameTest {
 
 	/** A player at the edge with their back to the water is grabbed, held (can't sneak off) and dragged backwards to deep water. */
 	public void grabsAndDragsToDeepWater(GameTestHelper helper) {
-		pool(helper);
 		Drowned drowned = lurker(helper);
 		ServerPlayer player = playerOnLand(helper, 5.5, 8.5, 90.0F, 0.0F);
 		double startY = player.getY();
@@ -159,9 +120,8 @@ public class DrownedGameTest {
 
 	/** Fast hard hits (an axe) fill the grip-break meter and it lets go; one weak hit doesn't; the meter drains. */
 	public void gripBreakMeterBreaksTheHold(GameTestHelper helper) {
-		pool(helper);
-		Drowned drowned = drowned(helper, 9.5, 0.0, 8.5);
-		Villager villager = helper.spawn(EntityTypes.VILLAGER, new Vec3(9.5, 0.0, 9.5));
+		Drowned drowned = drowned(helper, 9.5, 7.0, 8.5);
+		Villager villager = helper.spawn(EntityTypes.VILLAGER, new Vec3(9.5, 7.0, 9.5));
 		ServerPlayer friend = playerOnLand(helper, 5.5, 8.5, -90.0F, 0.0F);
 		ServerLevel level = helper.getLevel();
 		helper.runAtTickTime(2, () -> {
@@ -192,7 +152,6 @@ public class DrownedGameTest {
 
 	/** Lurking, its eyes are just above the water; stared at, it sinks below; looked away from (out of reach), it rises again. */
 	public void staredAtItSinks(GameTestHelper helper) {
-		pool(helper);
 		Drowned drowned = lurker(helper);
 		double surface = spot(helper).surfaceY();
 		ServerPlayer player = playerOnLand(helper, 1.5, 8.5, -90.0F, 10.0F);
@@ -234,8 +193,7 @@ public class DrownedGameTest {
 	/** Spawned in the deep pit with a player on the shore, it swims to a 2-deep lurk spot by the shore and lurks there facing it. */
 	@GameTest(environment = "bubbas_reworked_mobs-test:drowned_travel", structure = FIELD, maxTicks = 400)
 	public void swimsToALurkSpotNearThePlayer(GameTestHelper helper) {
-		pool(helper);
-		Drowned drowned = drowned(helper, 16.5, -6.0, 8.5);
+		Drowned drowned = drowned(helper, 16.5, 1.0, 8.5);
 		ServerPlayer player = playerOnLand(helper, 2.5, 8.5, 90.0F, 0.0F);
 		helper.succeedWhen(() -> {
 			face(player, 90.0F, 0.0F);
@@ -252,13 +210,12 @@ public class DrownedGameTest {
 	/** Facing the water, nobody is grabbed (back turned only); a creative player isn't grabbed either. */
 	@GameTest(environment = "bubbas_reworked_mobs-test:drowned_facing", structure = FIELD, maxTicks = 100)
 	public void onlyBacksTurnedAreGrabbed(GameTestHelper helper) {
-		pool(helper);
 		Drowned drowned = lurker(helper);
 		ServerPlayer facing = playerOnLand(helper, 5.5, 7.5, -90.0F, 0.0F);
 		@SuppressWarnings("deprecation")
 		ServerPlayer creative = helper.makeMockServerPlayerInLevel();
 		creative.setGameMode(GameType.CREATIVE);
-		Vec3 abs = helper.absoluteVec(new Vec3(5.5, 2.0, 10.5));
+		Vec3 abs = helper.absoluteVec(new Vec3(5.5, 9.0, 10.5));
 		creative.snapTo(abs.x, abs.y, abs.z, 90.0F, 0.0F);
 		creative.setYHeadRot(90.0F);
 		helper.assertTrue(creative.isCreative(), "the creative player should be in creative");
@@ -277,12 +234,11 @@ public class DrownedGameTest {
 	@GameTest(environment = "bubbas_reworked_mobs-test:drowned_air", structure = FIELD, maxTicks = 40)
 	public void hitsKnockAirOutUnlessWaterBreathing(GameTestHelper helper) {
 		helper.assertTrue(DrownedTuning.HIT_AIR_LOSS > 0, "hits should knock air out");
-		pool(helper);
 		ServerLevel level = helper.getLevel();
-		Drowned a = drowned(helper, 9.5, 0.0, 4.5);
-		Drowned b = drowned(helper, 9.5, 0.0, 11.5);
-		Villager plain = helper.spawn(EntityTypes.VILLAGER, new Vec3(9.5, 0.0, 5.5));
-		Villager breathing = helper.spawn(EntityTypes.VILLAGER, new Vec3(9.5, 0.0, 12.5));
+		Drowned a = drowned(helper, 9.5, 7.0, 4.5);
+		Drowned b = drowned(helper, 9.5, 7.0, 11.5);
+		Villager plain = helper.spawn(EntityTypes.VILLAGER, new Vec3(9.5, 7.0, 5.5));
+		Villager breathing = helper.spawn(EntityTypes.VILLAGER, new Vec3(9.5, 7.0, 12.5));
 		breathing.addEffect(new MobEffectInstance(MobEffects.WATER_BREATHING, 600));
 		helper.runAtTickTime(2, () -> {
 			mind(a).grab(a, level, plain);
