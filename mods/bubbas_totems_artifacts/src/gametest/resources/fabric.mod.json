@@ -11,11 +11,14 @@
 		"bubba-milestone-gametest": [
 			"io.github.bubba8587.bubbas_totems_artifacts.test.GraveTalismanGameTest",
 			"io.github.bubba8587.bubbas_totems_artifacts.test.WardingGameTest",
-			"io.github.bubba8587.bubbas_totems_artifacts.test.WardingBeaconGameTest"
+			"io.github.bubba8587.bubbas_totems_artifacts.test.WardingBeaconGameTest",
+			"io.github.bubba8587.bubbas_totems_artifacts.test.TotemsGameTest",
+			"io.github.bubba8587.bubbas_totems_artifacts.test.TotemsBeaconGameTest"
 		],
 		"fabric-client-gametest": [
 			"io.github.bubba8587.bubbas_totems_artifacts.test.GraveTalismanClientGameTest",
-			"io.github.bubba8587.bubbas_totems_artifacts.test.WardingClientGameTest"
+			"io.github.bubba8587.bubbas_totems_artifacts.test.WardingClientGameTest",
+			"io.github.bubba8587.bubbas_totems_artifacts.test.TotemsClientGameTest"
 		]
 	}
 }
