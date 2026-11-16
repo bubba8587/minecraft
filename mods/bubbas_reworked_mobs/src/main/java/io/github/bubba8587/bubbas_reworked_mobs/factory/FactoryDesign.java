@@ -69,6 +69,8 @@ public final class FactoryDesign {
 	/** The paired beacons' column. */
 	static final int BEAM_X = -6;
 	static final int BEAM_Z = -1;
+	/** The drop point: the teleporter pad's middle. The long spikes and the chains' ends hang over it. */
+	static final int DROP_Z = 3;
 
 	/** The mobs a factory can make, each with a face on the wall. */
 	public enum Mob {
@@ -108,6 +110,7 @@ public final class FactoryDesign {
 	private BlockPos floorBeacon;
 	private BlockPos ceilingBeacon;
 	private final BlockPos warden = new BlockPos(15, 6, 0);
+	private BlockPos jukebox;
 	private final int[] ceilCache = new int[SX * SZ];
 
 	private FactoryDesign(long seed, Mob mob) {
@@ -125,6 +128,7 @@ public final class FactoryDesign {
 		d.carve();
 		d.shell();
 		d.growth();
+		d.tendrils();
 		d.floorDetails();
 		d.platform();
 		d.faceWall();
@@ -155,6 +159,11 @@ public final class FactoryDesign {
 	}
 
 	/** Where the Warden stands (feet), local. It looks toward -x, out of its window. */
+	/** Local position of the office jukebox. */
+	public BlockPos jukebox() {
+		return this.jukebox;
+	}
+
 	public BlockPos wardenSpot() {
 		return this.warden;
 	}
@@ -383,7 +392,7 @@ public final class FactoryDesign {
 			double a = this.random.nextDouble() * Math.PI * 2.0;
 			double r = Math.pow(this.random.nextDouble(), 0.75) * 15.0;
 			int x = (int) Math.round(Math.cos(a) * r);
-			int z = (int) Math.round(Math.sin(a) * r) + 1;
+			int z = (int) Math.round(Math.sin(a) * r) + DROP_Z;
 			if (nearBeam(x, z, 2.6) || !inGrowth(x, z) || x >= 12) {
 				continue;
 			}
@@ -397,11 +406,11 @@ public final class FactoryDesign {
 			if (crowded) {
 				continue;
 			}
-			double centre = Math.max(0.0, 1.0 - Math.hypot(x, z - 1) / 15.0);
+			double centre = Math.max(0.0, 1.0 - Math.hypot(x, z - DROP_Z) / 15.0);
 			int length = 3 + (int) Math.round(centre * centre * 11.0 + this.random.nextDouble() * (3.0 + centre * 5.0));
 			double base = 0.55 + centre * 0.9 + this.random.nextDouble() * 0.5;
 			// Keep the view clear: short over the face wall and in the Warden's line of sight.
-			if (z < -4 || x > 4 && Math.abs(z) < 5) {
+			if (z < 0 || x > 4 && Math.abs(z) < 5) {
 				length = Math.min(length, 3 + this.random.nextInt(3));
 				base = Math.min(base, 0.9);
 			}
@@ -422,11 +431,11 @@ public final class FactoryDesign {
 			double r = Math.sqrt(this.random.nextDouble()) * 15.0;
 			int x = (int) Math.round(Math.cos(a) * r);
 			int z = (int) Math.round(Math.sin(a) * r);
-			if (nearBeam(x, z, 1.6) || !inGrowth(x, z) || !isOpen(x, ceil(x, z) - 1, z) || z < -4 && this.random.nextBoolean()) {
+			if (nearBeam(x, z, 1.6) || !inGrowth(x, z) || !isOpen(x, ceil(x, z) - 1, z) || z < 0 && this.random.nextBoolean()) {
 				continue;
 			}
 			int c = ceil(x, z);
-			int length = 1 + this.random.nextInt(z < -4 ? 2 : 6);
+			int length = 1 + this.random.nextInt(z < 0 ? 2 : 6);
 			int y = c - 1;
 			for (int d = 0; d < length && isOpen(x, y - 1, z); d++, y--) {
 				solid(x, y, z, d % 3 == 2 ? Blocks.BASALT.defaultBlockState() : Blocks.BONE_BLOCK.defaultBlockState());
@@ -528,6 +537,110 @@ public final class FactoryDesign {
 
 	private static boolean nearBeam(int x, int z, double r) {
 		return Math.hypot(x - BEAM_X, z - BEAM_Z) < r;
+	}
+
+	// ---- The chains: alien spurs climbing the walls and curling in to the drop point ----
+
+	/**
+	 * Owner (2026-11-16): the warped growth forms alien "chains"/spurs that curve up around the cavern's walls, then
+	 * curl in and bend toward the central drop spot. Each is a tapering tube along a cubic curve: from low on the wall,
+	 * up it, along the ceiling (twisting as it goes, so they spiral in), and down to a point hanging over the deck's
+	 * middle. Warped wart flesh with bone vertebrae every few blocks and bone spurs with dripstone points sticking
+	 * out and down. None start on the face wall, the Warden's tower or the entrance.
+	 */
+	private void tendrils() {
+		int count = 9 + this.random.nextInt(3);
+		double start = this.random.nextDouble() * Math.PI * 2.0;
+		for (int i = 0; i < count; i++) {
+			double a = start + i * Math.PI * 2.0 / count + (this.random.nextDouble() - 0.5) * 0.35;
+			double ca = Math.cos(a);
+			double sa = Math.sin(a);
+			// Skip the face wall (behind, -z), the tower (+x) and the tunnel mouth (+z, middle).
+			if (sa < -0.55 || ca > 0.8 || sa > 0.93) {
+				continue;
+			}
+			double e = RADIUS + wobble(a);
+			double turn = (this.random.nextBoolean() ? 1 : -1) * (0.5 + this.random.nextDouble() * 0.4);
+			double[][] ctrl = {
+					{ e - 2.5, -3.0 + this.random.nextDouble() * 3.0, 0.0 },
+					{ e - 4.0, 11.0, turn * 0.15 },
+					{ 10.0, 19.0, turn * 0.6 },
+					{ 2.5 + this.random.nextDouble() * 1.5, 11.0 + this.random.nextDouble() * 3.0, turn },
+			};
+			double base = 0.95 + this.random.nextDouble() * 0.4;
+			double lastX = Double.NaN;
+			int step = 0;
+			for (double t = 0.0; t <= 1.0; t += 0.012, step++) {
+				double u = 1.0 - t;
+				double[] b = { u * u * u, 3 * u * u * t, 3 * u * t * t, t * t * t };
+				double r = 0;
+				double y = 0;
+				double tw = 0;
+				for (int k = 0; k < 4; k++) {
+					r += b[k] * ctrl[k][0];
+					y += b[k] * ctrl[k][1];
+					tw += b[k] * ctrl[k][2];
+				}
+				double ang = a + tw;
+				double cx = Math.cos(ang) * r;
+				double cz = Math.sin(ang) * r + t * t * DROP_Z;
+				// Never poke through the ceiling growth's top or below the deck's middle.
+				int ceilHere = ceil((int) Math.round(cx), (int) Math.round(cz));
+				if (ceilHere != Integer.MIN_VALUE) {
+					y = Math.min(y, ceilHere - 0.5);
+				}
+				double radius = base * (1.0 - 0.75 * t) + 0.25;
+				boolean rib = step % 7 == 0;
+				int reach = (int) Math.ceil(radius + (rib ? 0.8 : 0));
+				for (int x = (int) Math.floor(cx) - reach; x <= (int) Math.ceil(cx) + reach; x++) {
+					for (int yy = (int) Math.floor(y) - reach; yy <= (int) Math.ceil(y) + reach; yy++) {
+						for (int z = (int) Math.floor(cz) - reach; z <= (int) Math.ceil(cz) + reach; z++) {
+							double d = Math.sqrt((x - cx) * (x - cx) + (yy - y) * (yy - y) + (z - cz) * (z - cz));
+							if (nearBeam(x, z, 1.6) || inTower(x, z) || yy <= 1 && Math.abs(x) <= PX + 1 && z >= PZ_BACK && z <= PZ_FRONT) {
+								continue;
+							}
+							if (d <= radius) {
+								BlockState flesh = hash(x, yy, z, 21) < 0.12 ? Blocks.NETHER_WART_BLOCK.defaultBlockState()
+										: hash(x, yy, z, 22) < 0.06 ? Blocks.SHROOMLIGHT.defaultBlockState()
+										: Blocks.WARPED_WART_BLOCK.defaultBlockState();
+								solid(x, yy, z, flesh);
+							} else if (rib && d <= radius + 0.8) {
+								solid(x, yy, z, Blocks.BONE_BLOCK.defaultBlockState());
+							}
+						}
+					}
+				}
+				// Spurs: a bone thorn sticking out and down every so often, tipped with dripstone.
+				if (step % 14 == 7 && t > 0.25 && t < 0.9) {
+					double out = this.random.nextDouble() * Math.PI * 2.0;
+					int sx = (int) Math.round(cx + Math.cos(out) * (radius + 0.8));
+					int sz = (int) Math.round(cz + Math.sin(out) * (radius + 0.8));
+					int sy = (int) Math.round(y - radius * 0.5);
+					int len = 1 + this.random.nextInt(3);
+					int k = 0;
+					for (; k < len && isOpen(sx, sy - k, sz) && !nearBeam(sx, sz, 1.6); k++) {
+						solid(sx, sy - k, sz, Blocks.BONE_BLOCK.defaultBlockState());
+					}
+					if (k > 0) {
+						drip(sx, sy - k + 1, sz, 1 + this.random.nextInt(2));
+					}
+				}
+				lastX = cx;
+			}
+			// The end hangs over the drop point: a bone tip and a long dripstone point.
+			double endAng = a + ctrl[3][2];
+			int ex = (int) Math.round(Math.cos(endAng) * ctrl[3][0]);
+			int ez = (int) Math.round(Math.sin(endAng) * ctrl[3][0] + DROP_Z);
+			int ey = (int) Math.round(Math.min(ctrl[3][1], ceil(ex, ez) - 0.5));
+			if (!nearBeam(ex, ez, 1.6)) {
+				solid(ex, ey - 1, ez, Blocks.BONE_BLOCK.defaultBlockState());
+				drip(ex, ey - 1, ez, 2 + this.random.nextInt(3));
+			}
+		}
+	}
+
+	private static boolean inTower(int x, int z) {
+		return x >= 9 && Math.abs(z) <= 6;
 	}
 
 	// ---- The cavern floor ----
@@ -633,17 +746,24 @@ public final class FactoryDesign {
 				solid(x, -2, z, Blocks.REDSTONE_BLOCK.defaultBlockState());
 			}
 		}
-		// The teleporter pad: a lodestone ringed by crying obsidian and reinforced deepslate.
-		int pz = 3;
+		// The teleporter pad: a lodestone ringed by crying obsidian, then the timer ring (owner, 2026-11-16: a
+		// redstone-visible activation timer: lamps that light up, not a redstone clock). Eight lamps go round clockwise from the back; mechanics will light one
+		// per step toward the moment it fires. The look shows it mid-count: the first five lit (on redstone blocks).
+		int pz = DROP_Z;
+		int[][] timer = { { 0, -2 }, { 2, -2 }, { 2, 0 }, { 2, 2 }, { 0, 2 }, { -2, 2 }, { -2, 0 }, { -2, -2 } };
 		for (int dx = -2; dx <= 2; dx++) {
 			for (int dz = -2; dz <= 2; dz++) {
 				int ring = Math.max(Math.abs(dx), Math.abs(dz));
 				BlockState s = ring == 0 ? Blocks.LODESTONE.defaultBlockState()
 						: ring == 1 ? Blocks.CRYING_OBSIDIAN.defaultBlockState()
-						: Math.abs(dx) == 2 && Math.abs(dz) == 2 ? Blocks.CHISELED_DEEPSLATE.defaultBlockState()
 						: Blocks.REINFORCED_DEEPSLATE.defaultBlockState();
 				solid(dx, -1, pz + dz, s);
 			}
+		}
+		for (int i = 0; i < timer.length; i++) {
+			boolean lit = i < 5;
+			solid(timer[i][0], -1, pz + timer[i][1], Blocks.REDSTONE_LAMP.defaultBlockState().setValue(RedstoneLampBlock.LIT, lit));
+			solid(timer[i][0], -2, pz + timer[i][1], lit ? Blocks.REDSTONE_BLOCK.defaultBlockState() : Blocks.POLISHED_DEEPSLATE.defaultBlockState());
 		}
 		// Floor beacon on its iron inlay, framed by polished blackstone, with candles at the corners.
 		this.floorBeacon = new BlockPos(BEAM_X, 0, BEAM_Z);
@@ -800,11 +920,44 @@ public final class FactoryDesign {
 				}
 			}
 		}
-		// Inside: soul lanterns on chains, a catalyst, sensors.
+		// Inside: the Warden's office (owner, 2026-11-16). Soul lanterns on chains, a gray carpet laid on wool
+		// (wool under the carpet and round the jukebox, so its music doesn't reach the sculk), filing chests along
+		// the back wall, a desk (tile slab on a lectern-and-stair frame) and a jukebox playing an eerie disc
+		// (music disc 13, loaded when the factory is placed). A sculk catalyst in the corner, where it grew in.
 		attach(17, 10, -2, Blocks.SOUL_LANTERN.defaultBlockState().setValue(LanternBlock.HANGING, true));
 		attach(17, 10, 2, Blocks.SOUL_LANTERN.defaultBlockState().setValue(LanternBlock.HANGING, true));
-		solid(19, 5, 3, Blocks.SCULK_CATALYST.defaultBlockState());
-		attach(19, 6, -3, Blocks.SCULK_SENSOR.defaultBlockState());
+		for (int x = 15; x <= 19; x++) {
+			for (int z = -3; z <= 3; z++) {
+				solid(x, 5, z, Blocks.WOOL.gray().defaultBlockState());
+				if (x >= 16) {
+					attach(x, 6, z, Blocks.CARPET.gray().defaultBlockState());
+				}
+			}
+		}
+		solid(19, 5, -3, Blocks.SCULK_CATALYST.defaultBlockState());
+		this.attached.remove(new BlockPos(19, 6, -3));
+		// Filing: three chests against the back wall, facing into the room, a candle on one.
+		for (int z : new int[] { -2, -1, 0 }) {
+			solid(19, 6, z, Blocks.CHEST.defaultBlockState().setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.WEST));
+			this.attached.remove(new BlockPos(19, 6, z));
+		}
+		attach(19, 7, -1, candle(2));
+		// The desk, along the south wall: a lectern with a stair "chair" in front of it and a slab desktop beside.
+		solid(17, 6, 3, Blocks.LECTERN.defaultBlockState().setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.NORTH));
+		solid(16, 6, 3, Blocks.POLISHED_DEEPSLATE_SLAB.defaultBlockState().setValue(BlockStateProperties.SLAB_TYPE, SlabType.TOP));
+		solid(17, 6, 2, Blocks.DEEPSLATE_TILE_STAIRS.defaultBlockState().setValue(StairBlock.FACING, Direction.NORTH));
+		attach(16, 7, 3, candle(1));
+		for (BlockPos pos : new BlockPos[] { new BlockPos(17, 6, 3), new BlockPos(16, 6, 3), new BlockPos(17, 6, 2) }) {
+			this.attached.remove(pos);
+		}
+		// The jukebox in the corner, on wool, with wool beside it.
+		this.jukebox = new BlockPos(19, 6, 2);
+		solid(19, 6, 2, Blocks.JUKEBOX.defaultBlockState());
+		solid(19, 6, 3, Blocks.WOOL.gray().defaultBlockState());
+		solid(18, 6, 3, Blocks.WOOL.gray().defaultBlockState());
+		this.attached.remove(new BlockPos(19, 6, 2));
+		this.attached.remove(new BlockPos(19, 6, 3));
+		this.attached.remove(new BlockPos(18, 6, 3));
 		// Window sill: a ledge out over the platform, carried on upside-down stairs.
 		for (int x = 10; x <= 13; x++) {
 			for (int z = -1; z <= 1; z++) {
@@ -873,6 +1026,10 @@ public final class FactoryDesign {
 				}
 				level.setBlock(origin.offset(e.getKey().rotate(rotation)), state.rotate(rotation), flags);
 			}
+		}
+		// The office jukebox plays music disc 13 (eerie; owner: "a weird music disc that's always playing").
+		if (level.getBlockEntity(toWorld(origin, this.jukebox, rotation)) instanceof net.minecraft.world.level.block.entity.JukeboxBlockEntity box) {
+			box.setTheItem(new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.MUSIC_DISC_13));
 		}
 		// Walls, bars and chains settle their connections now that everything stands.
 		for (Map<BlockPos, BlockState> pass : List.of(this.blocks, this.attached)) {

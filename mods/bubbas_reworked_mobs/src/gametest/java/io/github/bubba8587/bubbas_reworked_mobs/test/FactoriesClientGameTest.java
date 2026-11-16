@@ -55,7 +55,7 @@ public class FactoriesClientGameTest implements FabricClientGameTest {
 				if (i == 0) {
 					fullTour(context, sp, server, o);
 				} else {
-					shot(context, server, o, 0.5, 8.0, 7.5, 180.0F, 0.0F, "factory-face-" + mobs[i]);
+					faceShot(context, server, o, "factory-face-" + mobs[i]);
 					shot(context, server, o, 0.5, 9.0, 18.5, 180.0F, 12.0F, "factory-overview-" + mobs[i]);
 				}
 			}
@@ -64,18 +64,30 @@ public class FactoriesClientGameTest implements FabricClientGameTest {
 
 	private static void fullTour(ClientGameTestContext context, TestSingleplayerContext sp, TestServerContext server, BlockPos o) {
 		shot(context, server, o, 0.5, 9.0, 18.5, 180.0F, 12.0F, "factory-overview");
-		shot(context, server, o, -16.5, 13.0, 12.5, 220.0F, 22.0F, "factory-side");
+		shot(context, server, o, 6.5, 6.0, 12.5, 150.0F, -8.0F, "factory-side");
 		shot(context, server, o, 2.5, 2.0, 6.5, 180.0F, -55.0F, "factory-ceiling");
 		shot(context, server, o, 5.5, 9.0, 1.5, 150.0F, -35.0F, "factory-ceiling-close");
 		shot(context, server, o, 0.5, 5.0, 12.5, 180.0F, 30.0F, "factory-platform");
-		shot(context, server, o, 0.5, 8.0, 7.5, 180.0F, 0.0F, "factory-face");
+		// The teleporter pad mid-count, its particles running (they run even with nothing on it: a player could ride it).
+		tp(context, server, o.getX() + 0.5, o.getY() + 3.5, o.getZ() + 9.5, 180.0F, 35.0F);
+		context.waitTicks(10);
+		for (int i = 0; i < 4; i++) {
+			server.runCommand("particle minecraft:reverse_portal %d.5 %d.2 %d.5 0.7 1.5 0.7 0.02 120 force".formatted(o.getX(), o.getY(), o.getZ() + 3));
+			server.runCommand("particle minecraft:portal %d.5 %d.5 %d.5 1.0 0.2 1.0 0.4 80 force".formatted(o.getX(), o.getY(), o.getZ() + 3));
+			context.waitTicks(4);
+		}
+		context.takeScreenshot("factory-pad");
+		faceShot(context, server, o, "factory-face");
 		shot(context, server, o, 8.5, 8.0, 0.5, -90.0F, 4.0F, "factory-warden");
 		shot(context, server, o, -3.5, 7.0, 7.5, -125.0F, 8.0F, "factory-warden-wide");
+		shot(context, server, o, 15.3, 8.6, -2.6, -42.0F, 32.0F, "factory-office");
 		shot(context, server, o, 2.5, 3.0, 4.5, 122.0F, -35.0F, "factory-beam");
 		shot(context, server, o, -6.5, 8.0, 10.5, 240.0F, 10.0F, "factory-tower");
 		server.runCommand("effect give @p minecraft:night_vision infinite 0 true");
 		shot(context, server, o, 0.5, 9.0, 18.5, 180.0F, 12.0F, "factory-overview-lit");
-		shot(context, server, o, -16.5, 13.0, 12.5, 220.0F, 22.0F, "factory-side-lit");
+		shot(context, server, o, 6.5, 6.0, 12.5, 150.0F, -8.0F, "factory-side-lit");
+		shot(context, server, o, 3.5, 3.0, 9.5, 130.0F, -28.0F, "factory-chains-lit");
+		shot(context, server, o, 8.5, 6.0, 8.5, 90.0F, -12.0F, "factory-chains-lit-2");
 		server.runCommand("effect clear @p");
 	}
 
@@ -84,6 +96,13 @@ public class FactoriesClientGameTest implements FabricClientGameTest {
 		tp(context, server, o.getX() + x, o.getY() + y, o.getZ() + z, yaw, pitch);
 		context.waitTicks(10);
 		context.takeScreenshot(name);
+	}
+
+	/** The face wall square on, from close in front (under the short spikes) with a wide field of view. */
+	private static void faceShot(ClientGameTestContext context, TestServerContext server, BlockPos o, String name) {
+		context.runOnClient(mc -> mc.options.fov().set(95));
+		shot(context, server, o, 0.5, 8.5, -2.5, 180.0F, 0.0F, name);
+		context.runOnClient(mc -> mc.options.fov().set(70));
 	}
 
 	private static void tp(ClientGameTestContext context, TestServerContext server, double x, double y, double z, float yaw, float pitch) {
