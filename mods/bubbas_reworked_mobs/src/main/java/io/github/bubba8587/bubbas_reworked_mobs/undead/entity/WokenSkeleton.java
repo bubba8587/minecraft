@@ -2,6 +2,8 @@
 package io.github.bubba8587.bubbas_reworked_mobs.undead.entity;
 
 import io.github.bubba8587.bubbas_reworked_mobs.loot.GrabLootGoal;
+import io.github.bubba8587.bubbas_reworked_mobs.loot.LootGrabbing;
+import net.minecraft.world.item.ItemStack;
 import io.github.bubba8587.bubbas_reworked_mobs.undead.UndeadCombat;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
@@ -15,9 +17,38 @@ import net.minecraft.world.level.Level;
  * A skeleton that woke from a sleeper block. Its own entity type (tagged as a skeleton and undead) so tuning and
  * later behaviour stay scoped to this mod's undead; rendered with the vanilla skeleton renderer.
  */
-public class WokenSkeleton extends Skeleton {
+public class WokenSkeleton extends Skeleton implements LootGrabbing.DeferredHold {
+	/** Loot grabbed during a goal tick, equipped at the start of the next tick (see LootGrabbing.hold). */
+	private ItemStack pendingHold = ItemStack.EMPTY;
+
 	public WokenSkeleton(EntityType<? extends Skeleton> type, Level level) {
 		super(type, level);
+	}
+
+	@Override
+	public void bubbas$holdNextTick(ItemStack stack) {
+		this.pendingHold = stack;
+	}
+
+	private void equipPending() {
+		if (!this.pendingHold.isEmpty()) {
+			ItemStack stack = this.pendingHold;
+			this.pendingHold = ItemStack.EMPTY;
+			LootGrabbing.equip(this, stack);
+		}
+	}
+
+	@Override
+	public void tick() {
+		this.equipPending(); // before AI runs, so the weapon goal swap never happens mid goal-tick
+		super.tick();
+	}
+
+	/** A grabbed item never vanishes: if it dies before its next tick, it holds (and drops) the item. */
+	@Override
+	public void die(DamageSource source) {
+		this.equipPending();
+		super.die(source);
 	}
 
 	/** Gear comes from the sleeper, never from the vanilla spawn roll (a skeleton would get a bow). */

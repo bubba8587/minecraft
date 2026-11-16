@@ -93,9 +93,28 @@ public final class LootGrabbing {
 		return true;
 	}
 
-	/** Into the main hand, always dropped on death (skeletons re-pick their attack goal through onEquipItem). */
+	/**
+	 * Into the main hand, always dropped on death. Skeletons rebuild their attack goals when their weapon changes
+	 * (Skeleton.reassessWeaponGoal), which edits the goal list; doing that from inside a running goal's tick crashed
+	 * the game (GoalSelector iterating a set being modified). Mobs that can defer take the item at the start of their
+	 * next tick instead, outside goal ticking.
+	 */
 	private static void hold(Mob mob, ItemStack stack) {
+		if (mob instanceof DeferredHold deferred) {
+			deferred.bubbas$holdNextTick(stack);
+			return;
+		}
+		equip(mob, stack);
+	}
+
+	/** Puts the stack in the main hand now; only call this outside the mob's own goal ticking. */
+	public static void equip(Mob mob, ItemStack stack) {
 		mob.setItemSlot(EquipmentSlot.MAINHAND, stack);
 		mob.setGuaranteedDrop(EquipmentSlot.MAINHAND);
+	}
+
+	/** A mob that takes grabbed loot into its hand on its next tick rather than mid-goal. */
+	public interface DeferredHold {
+		void bubbas$holdNextTick(ItemStack stack);
 	}
 }

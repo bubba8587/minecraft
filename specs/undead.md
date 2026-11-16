@@ -154,6 +154,7 @@ Sleeper on the server: 0 per tick. Hearing: under 0.05 ms per tick with 200 slee
 - None open. (Name: Bubba's Reworked Mobs, mod id `bubbas_reworked_mobs`.)
 
 ## Milestone test objectives
+- (objective, no test yet) A woken skeleton that grabs a bow or sword from a display or the ground never crashes the game: the item is equipped at the start of its next tick, outside goal ticking (crash 2026-11-15: GoalSelector NPE when Skeleton.reassessWeaponGoal ran mid goal-tick), and a skeleton killed before that tick still drops it.
 
 Test-lite policy (`specs/quality.md`, Test suites): `ReworkedMobsCoreGameTest` runs on every build and push; everything below is the milestone suite, run on release tags, manual CI dispatch and `-PmilestoneTests`. Each line says what the class proves.
 
