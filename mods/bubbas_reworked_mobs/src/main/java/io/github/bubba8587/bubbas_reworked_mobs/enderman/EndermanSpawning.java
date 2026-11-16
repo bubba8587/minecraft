@@ -98,9 +98,17 @@ public final class EndermanSpawning {
 			return null;
 		}
 		boolean complete = site.complete(level);
-		int present = endermenAt(level, site).size();
+		List<Enderman> own = endermenAt(level, site);
+		int present = own.size();
+		boolean bottleneck = false;
 		if (present >= (complete ? EndermanTuning.CAP_COMPLETE : EndermanTuning.CAP_UNFINISHED)) {
-			return null;
+			// At the cap, an unfinished cairn still calls one builder for the block that could go in next if nobody
+			// carries it (its holder died or despawned): otherwise builders holding higher blocks wait forever.
+			BlockPos next = complete ? null : site.nextUnclaimed(level, own);
+			if (next == null || !CairnSite.canPlace(level, next, site.at(next))) {
+				return null;
+			}
+			bottleneck = true;
 		}
 		RandomSource random = level.getRandom();
 		if (!force && random.nextFloat() >= chance(complete, present)) {
@@ -127,7 +135,7 @@ public final class EndermanSpawning {
 				continue;
 			}
 			enderman.finalizeSpawn(level, level.getCurrentDifficultyAt(cell), EntitySpawnReason.NATURAL, null);
-			giveJob(level, enderman, site, complete, random);
+			giveJob(level, enderman, site, complete, bottleneck, random);
 			return level.tryAddFreshEntityWithPassengers(enderman) ? enderman : null;
 		}
 		return null;
@@ -150,11 +158,16 @@ public final class EndermanSpawning {
 
 	/** Builder (carries a missing cairn block), filler (carries the block a nearby hole needs) or repairer (empty). */
 	public static void giveJob(ServerLevel level, Enderman enderman, CairnSite site, boolean complete, RandomSource random) {
+		giveJob(level, enderman, site, complete, false, random);
+	}
+
+	/** As above; {@code builder} makes it a builder for sure (the cap's bottleneck spawn). */
+	public static void giveJob(ServerLevel level, Enderman enderman, CairnSite site, boolean complete, boolean builder, RandomSource random) {
 		EndermanMind mind = EndermanMind.of(enderman);
 		if (mind == null || !level.getGameRules().get(GameRules.MOB_GRIEFING)) {
 			return;
 		}
-		if (!complete && random.nextFloat() < EndermanTuning.BUILDER_SHARE) {
+		if (!complete && (builder || random.nextFloat() < EndermanTuning.BUILDER_SHARE)) {
 			// The lowest missing block nobody here carries yet; it goes in now if it can, else it waits by the cairn.
 			BlockPos spot = site.nextUnclaimed(level, endermenAt(level, site));
 			if (spot != null) {

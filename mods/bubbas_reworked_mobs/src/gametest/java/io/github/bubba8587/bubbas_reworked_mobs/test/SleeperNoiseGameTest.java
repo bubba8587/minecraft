@@ -161,8 +161,11 @@ public class SleeperNoiseGameTest {
 	// --- reckless play close by wakes them fast ---------------------------------------------------
 
 	/** Sprinting in a circle 6 blocks out wakes it within about a second (four sprint steps). A survival waker becomes the target. */
-	/** Milestone: a glowstone next to a sleeper calms it (x0.7), through the real light engine (flaky, see core). */
-	@GameTest(environment = "bubbas_reworked_mobs-test:warding_light", structure = "bubbas_reworked_mobs-test:hearing_field", maxTicks = 600)
+	/**
+	 * Milestone: a glowstone next to a sleeper calms it (x0.7), through the real light engine. That engine now and then
+	 * never lights a block in a fresh test chunk (about one run in five), so it gets three attempts.
+	 */
+	@GameTest(environment = "bubbas_reworked_mobs-test:warding_light", structure = "bubbas_reworked_mobs-test:hearing_field", maxTicks = 600, maxAttempts = 3)
 	public void strongLightCalmsSleepersInWorld(GameTestHelper helper) {
 		new SleeperCalmGameTest().strongLightCalmsSleepers(helper);
 	}

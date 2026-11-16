@@ -36,9 +36,9 @@ public final class EndermanTuning {
 	/** Ticks between job searches for an idle enderman (spread over endermen by id). */
 	public static final int JOB_SCAN_INTERVAL = 20;
 	/** Every column within this distance is checked first (nearest first), then the random ones below. */
-	public static final int NEAR_RADIUS = 3;
+	public static final int NEAR_RADIUS = 5;
 	/** Columns sampled per pickup search, within SCAN_RADIUS. */
-	public static final int SCAN_COLUMNS = 8;
+	public static final int SCAN_COLUMNS = 16;
 	public static final int SCAN_RADIUS = 12;
 	/** Each pickup column is checked from its real top, but at most this far above the original ground, down to one below it. */
 	public static final int SCAN_HEIGHT = 8;
@@ -69,8 +69,8 @@ public final class EndermanTuning {
 	/** How far one hop goes. */
 	public static final int ROAM_MIN = 8;
 	public static final int ROAM_MAX = 24;
-	/** Roaming stays within this distance of the nearest cairn (its territory); farther out, hops lead back toward it. */
-	public static final int ROAM_RADIUS = 64;
+	/** Roaming stays within the nearest cairn's territory; farther out, hops lead back toward it. */
+	public static final int ROAM_RADIUS = 64; // same as SITE_RADIUS (declared below)
 	/** A builder whose block can't go in yet waits within this distance of its cairn (teleports back if farther). */
 	public static final int WAIT_RADIUS = 8;
 
@@ -79,8 +79,8 @@ public final class EndermanTuning {
 	public static final int SPAWN_INTERVAL = 100;
 	/** A site spawns only while a player is within this distance of it (and its chunk is loaded). */
 	public static final int SITE_ACTIVE_RANGE = 96;
-	/** Endermen within this distance of a site count as its own. */
-	public static final int SITE_RADIUS = 40;
+	/** A site's territory: endermen within this distance count as its own, and idle ones roam within it. */
+	public static final int SITE_RADIUS = 64;
 	/** Spawn spots: this far from the site centre (out of the end rods' light). */
 	public static final int SPAWN_MIN_DISTANCE = 12;
 	public static final int SPAWN_MAX_DISTANCE = 28;

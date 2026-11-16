@@ -23,17 +23,19 @@ Endermen in the Nether and the End are unchanged.
 
 An enderman takes blocks that don't belong in the natural landscape (a pile of dirt, a pillar, the wrong block on the ground's surface) and carries them to where they are missing. Holes dug near the surface slowly fill back in with the right kind of block, and farmland where dirt used to be gets jumped on until it turns back to dirt. Mines, caves and deep pits are left alone, and water and lava are never put back.
 
+Endermen range over the land within about 64 blocks of their cairn, hopping from place to place when they have nothing to do, so farms and buildings near a cairn get their attention too.
+
 Blocks that never generate naturally, such as planks, glass and bricks, are mostly left alone, but not always. Trees, flowers and other natural features are left where they are, unless a nearby cairn needs that exact block as an offering.
 
 ### Building cairns
 
-An **enderman cairn** is a twisting spire of purpur on a footing of end stone bricks, with end rods sprouting from its branches like flowers and offerings at its foot that depend on the biome: flowers, pumpkins, mushrooms, cactus and, rarely, TNT. Every cairn is different. A new cairn site starts as a small stub of end stone; endermen arrive carrying End blocks and grow it to its full shape.
+An **enderman cairn** is a twisting spire of purpur on a footing of end stone bricks, with end rods sprouting from its branches like flowers and offerings at its foot that depend on the biome: flowers, pumpkins, mushrooms, cactus and, rarely, TNT. Every cairn is different. A new cairn site starts as a small stub of end stone; endermen arrive carrying the End blocks it is missing, each bringing a different one, and grow it to its full shape. An enderman whose block can't go in yet waits by the cairn until the blocks below it are in place. Killed, an enderman drops the block it carries.
 
 The tallest end rod of every cairn lies on its side and points toward the nearest stronghold.
 
 ### Hostility
 
-Endermen still become hostile when a player looks at them, unless they are busy working. Breaking a block of a cairn, or hitting an enderman near one, turns every enderman within 24 blocks against the player.
+Endermen still become hostile when a player looks at them, unless they are busy working. Breaking a block of a cairn, or hitting an enderman in the land around one, turns every enderman within 24 blocks against the player.
 
 Endermen still take damage from water.
 

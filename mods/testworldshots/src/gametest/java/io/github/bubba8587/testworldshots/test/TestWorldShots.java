@@ -77,103 +77,127 @@ public class TestWorldShots implements FabricClientGameTest {
 		}
 	}
 
+	/**
+	 * Whether this part of the tour runs: `-PclientTests=cairns,creepers` photographs only those stations (each part
+	 * still loads the world, ~20 s); without the property (or with -PmilestoneTests alone) every part runs. Parts: hub,
+	 * preview, creepers, cairns, graveyard, loot, arena, crafting, tower, gems, grounds.
+	 */
+	private static boolean part(String name) {
+		String only = System.getProperty("bubba.clientTests", "").trim();
+		return only.isEmpty() || java.util.Arrays.stream(only.split(",")).map(String::trim).anyMatch(name::equals);
+	}
+
 	private void tour() {
-		// Hub: spawn plaza with the station signs at z 3 (facing south).
-		shot("hub_overview", 0.5, -50, 20, 0.5, -60, 2);
-		shot("hub_signs", 1, -58.3, 8.5, 1, -59.6, 3.5);
-		shot("hub_signs_left", -3, -58.6, 6.2, -3, -59.5, 3.5);
-		shot("hub_signs_right", 4.5, -58.6, 6.2, 4.5, -59.5, 3.5);
-		shot("hub_fresh_copy_sign", 7.5, -58.6, 7.2, 7.5, -59.5, 5.5);
-		shot("cairn_front", 12.5, -53, 5.5, 12.5, -53.5, -7);
-		shot("cairn_angle", 3.5, -51.5, 1, 12.5, -54, -7);
-		shot("cairn_side", 24, -51.5, -12, 12.5, -54, -7);
-		// Creeper grove: x 52..82, z -14..16, east of the gems station; signs on the viewing strip x 52..56.
-		shot("creepers_signs_north", 54, -58.6, 0.5, 54, -59.5, -3);
-		shot("creepers_signs_south", 54.5, -58.6, -0.5, 54.5, -59.5, 3);
-		shot("creepers_grove", 54, -56.5, 1, 67, -59, -1);
-		shot("creepers_open", 70, -56.5, 13, 80.5, -59.5, 11.5);
-		// Cairns and endermen: x -132..-82, z -10..56, far west (hub click sign); yard x -130..-84, z -8..20.
-		shot("cairns_arrival", -106.5, -58.4, 26.5, -106.5, -58, 6);
-		shot("cairns_signs", -106.5, -58.6, 25, -106.5, -59.5, 22);
-		shot("cairns_row", -107, -54, 24, -107, -55, 42);
-		shot("cairns_close_11", -122, -54, 30, -122, -54, 42);
-		shot("cairns_close_33", -92, -54, 30, -92, -54, 42);
-		shot("cairns_unfinished", -112, -55, 18, -118, -58, 6);
-		shot("cairns_repair_before", -95, -54, 20, -95, -60, 6);
-		context.waitTicks(600); // 30 s of work: caretakers trample farmland, builders grow the unfinished cairn
-		shot("cairns_repair_after", -95, -54, 20, -95, -60, 6);
-		shot("cairns_unfinished_after", -112, -55, 18, -118, -58, 6);
-
-		// Graveyard: x -44..-14, z -44..-14. Rows: skeletons z -18, zombies z -24; sitting x -42..-33, lying -30..-21.
-		shot("graveyard_overview", -10, -46, -8, -29, -60, -29);
-		shot("graveyard_entrance_signs", -19, -58.2, -8.8, -19, -59.5, -14);
-		rowShots("skeletons", -18);
-		rowShots("zombies", -24);
-		shot("graveyard_close_skeleton_sitting", -40, -58.2, -15.6, -38.6, -59.6, -18);
-		shot("graveyard_close_zombie_lying", -31.5, -57.8, -20.8, -29.5, -59.7, -24);
-		shot("graveyard_wool_pen", -39, -52.5, -29, -39, -60, -33);
-		shot("graveyard_crypt_above", -25, -50, -28, -25, -60, -39);
-		shot("graveyard_crypt_inside", -25, -57.3, -33.2, -25, -59.8, -39.5);
-		shot("graveyard_crypt_side", -17.5, -55.8, -39, -25, -60, -39);
-		shot("graveyard_tools_chest", -16.5, -58.6, -13.6, -16.5, -59.6, -16);
-
-		// Loot on display: rows wall z -30, stuck -27, ground -24, buried -21 at x -3..3, signs at x -5.
-		shot("loot_overview", 0.5, -54, -13, 0.5, -60, -25);
-		shot("loot_row_wall", -0.5, -58.3, -25.6, -0.5, -59, -30);
-		shot("loot_row_stuck", -0.5, -57.4, -22.6, -0.5, -60, -27);
-		shot("loot_row_ground", -0.5, -57.4, -19.6, -0.5, -60, -24);
-		shot("loot_row_buried", -0.5, -57.4, -16.6, -0.5, -60, -21);
-		shot("loot_side", 10.5, -55.5, -25.5, 0, -60, -25.5);
-		shot("loot_grabbing", 3, -58.2, -22, 6.5, -60, -23);
-		shot("loot_signs", -2.5, -58.4, -19.2, -4.5, -59.6, -25.5);
-
-		// Combat arena: fenced x 14..40, z -44..-14; chests and signs at z -12; sleepers at z -40 and -30.
-		shot("arena_overview", 27.5, -48, -5, 27.5, -60, -30);
-		shot("arena_chests_signs", 27.5, -57.8, -7.6, 27.5, -59.7, -12);
-		shot("arena_geared_sleepers", 27.5, -54.5, -31.5, 27.5, -60, -40);
-		shot("arena_unarmed_sleepers", 27.5, -56.3, -23.5, 27.5, -60, -30);
-
-		// Crafting Tweaks: x -30..-14, z -4..12; stations along x -20 face east, ores at x -26, frames at x -27.
-		shot("crafting_overview", -9, -52, 4, -22, -60, 4);
-		shot("crafting_station_crafting", -16, -58.2, -3, -20, -59.6, -3);
-		shot("crafting_station_blast_furnace", -16, -58.2, 1, -20, -59.6, 1);
-		shot("crafting_station_smoker", -16, -58.2, 5, -20, -59.6, 5);
-		shot("crafting_ore_columns", -22.6, -58.8, 3.5, -26, -59, 3.5);
-		shot("crafting_ore_columns_angle", -22.8, -57.6, 7.6, -26, -59, 3.5);
-		shot("crafting_paper_frames", -23.6, -58.6, 9, -26.5, -59.3, 9);
-		shot("crafting_paper_frames_angle", -23.4, -58.4, 12, -26.5, -59.4, 9);
-
-		// Glider tower: x 20..24, z 4..8, platform at y -1 with the Wings chest at (21, 0, 6).
-		shot("tower_outside", -4, -44, 34, 22, -32, 6);
-		shot("tower_entrance", 16.2, -58.4, 7.5, 19.5, -59.5, 5.5);
-		shot("tower_top", 26.5, 3, 11.5, 21.5, 0, 6);
-		shot("tower_top_glide_sign", 21.5, 1.2, 5.75, 21.5, 0.4, 4.5);
-		shot("tower_top_glider_sign", 21.5, 1.2, 7.25, 21.5, 0.4, 8.5);
-
-		// Infused Gems: x 30..46, z 2..14; signs at z 5 face north over the chest row at z 6.
-		shot("gems_overview", 38.5, -49, -5, 38.5, -60, 8);
-		shot("gems_row_brew", 33, -58.2, 1.4, 33, -59.6, 5.5);
-		shot("gems_row_enchant", 38.5, -58.2, 1.4, 38.5, -59.6, 5.5);
-		shot("gems_row_socket", 44, -58.2, 1.4, 44, -59.6, 5.5);
-		shot("gems_library_doorway", 40.5, -58.5, 6.9, 40.5, -59.5, 10.5);
-		shot("gems_library_inside", 39.4, -57.9, 11.6, 40.8, -59.6, 9.2);
-		shot("gems_library_above", 40.5, -53.5, 13.5, 40.5, -60, 10);
-		shot("gems_target_pen", 33.5, -56.8, 7.4, 33.5, -60, 12);
-		// The set signs at x 44 face west with the library wall at x 42: read them from inside that wall
-		// (a spectator sees through the block it is in).
-		shot("gems_set_signs", 42.2, -58.3, 11, 44.5, -59.5, 11);
-		shot("gems_set_chests_above", 43, -55, 11, 45.5, -60, 11);
-
-		chest("gems_chest_best_build", 37, -60, 6);
-		chest("gems_chest_ready_made_gems", 38, -60, 6);
-		chest("gems_chest_tank_set", 45, -60, 9);
-		chest("gems_chest_diver_set", 45, -60, 10);
-		chest("gems_chest_healer_set", 45, -60, 11);
-		chest("gems_chest_run_test", 45, -60, 12);
-		chest("gems_chest_weapons", 45, -60, 13);
-		chest("gems_chest_drawback_gear", 46, -60, 9);
-
-		grounds();
+		if (part("hub")) {
+			// Hub: spawn plaza with the station signs at z 3 (facing south).
+			shot("hub_overview", 0.5, -50, 20, 0.5, -60, 2);
+			shot("hub_signs", 1, -58.3, 8.5, 1, -59.6, 3.5);
+			shot("hub_signs_left", -3, -58.6, 6.2, -3, -59.5, 3.5);
+			shot("hub_signs_right", 4.5, -58.6, 6.2, 4.5, -59.5, 3.5);
+			shot("hub_fresh_copy_sign", 7.5, -58.6, 7.2, 7.5, -59.5, 5.5);
+		}
+		if (part("preview")) {
+			shot("cairn_front", 12.5, -53, 5.5, 12.5, -53.5, -7);
+			shot("cairn_angle", 3.5, -51.5, 1, 12.5, -54, -7);
+			shot("cairn_side", 24, -51.5, -12, 12.5, -54, -7);
+		}
+		if (part("creepers")) {
+			// Creeper grove: x 52..82, z -14..16, east of the gems station; signs on the viewing strip x 52..56.
+			shot("creepers_signs_north", 54, -58.6, 0.5, 54, -59.5, -3);
+			shot("creepers_signs_south", 54.5, -58.6, -0.5, 54.5, -59.5, 3);
+			shot("creepers_grove", 54, -56.5, 1, 67, -59, -1);
+			shot("creepers_open", 70, -56.5, 13, 80.5, -59.5, 11.5);
+		}
+		if (part("cairns")) {
+			// Cairns and endermen: x -232..-182, z -10..56, far west (hub click sign); yard x -230..-184, z -8..20.
+			shot("cairns_arrival", -206.5, -58.4, 26.5, -206.5, -58, 6);
+			shot("cairns_signs", -206.5, -58.6, 25, -206.5, -59.5, 22);
+			shot("cairns_row", -207, -54, 24, -207, -55, 42);
+			shot("cairns_close_11", -222, -54, 30, -222, -54, 42);
+			shot("cairns_close_33", -192, -54, 30, -192, -54, 42);
+			shot("cairns_unfinished", -212, -55, 18, -218, -58, 6);
+			shot("cairns_repair_before", -195, -54, 20, -195, -60, 6);
+			context.waitTicks(600); // 30 s of work: caretakers trample farmland, builders grow the unfinished cairn
+			shot("cairns_repair_after", -195, -54, 20, -195, -60, 6);
+			shot("cairns_unfinished_after", -212, -55, 18, -218, -58, 6);
+		}
+		if (part("graveyard")) {
+			// Graveyard: x -44..-14, z -44..-14. Rows: skeletons z -18, zombies z -24; sitting x -42..-33, lying -30..-21.
+			shot("graveyard_overview", -10, -46, -8, -29, -60, -29);
+			shot("graveyard_entrance_signs", -19, -58.2, -8.8, -19, -59.5, -14);
+			rowShots("skeletons", -18);
+			rowShots("zombies", -24);
+			shot("graveyard_close_skeleton_sitting", -40, -58.2, -15.6, -38.6, -59.6, -18);
+			shot("graveyard_close_zombie_lying", -31.5, -57.8, -20.8, -29.5, -59.7, -24);
+			shot("graveyard_wool_pen", -39, -52.5, -29, -39, -60, -33);
+			shot("graveyard_crypt_above", -25, -50, -28, -25, -60, -39);
+			shot("graveyard_crypt_inside", -25, -57.3, -33.2, -25, -59.8, -39.5);
+			shot("graveyard_crypt_side", -17.5, -55.8, -39, -25, -60, -39);
+			shot("graveyard_tools_chest", -16.5, -58.6, -13.6, -16.5, -59.6, -16);
+		}
+		if (part("loot")) {
+			// Loot on display: rows wall z -30, stuck -27, ground -24, buried -21 at x -3..3, signs at x -5.
+			shot("loot_overview", 0.5, -54, -13, 0.5, -60, -25);
+			shot("loot_row_wall", -0.5, -58.3, -25.6, -0.5, -59, -30);
+			shot("loot_row_stuck", -0.5, -57.4, -22.6, -0.5, -60, -27);
+			shot("loot_row_ground", -0.5, -57.4, -19.6, -0.5, -60, -24);
+			shot("loot_row_buried", -0.5, -57.4, -16.6, -0.5, -60, -21);
+			shot("loot_side", 10.5, -55.5, -25.5, 0, -60, -25.5);
+			shot("loot_grabbing", 3, -58.2, -22, 6.5, -60, -23);
+			shot("loot_signs", -2.5, -58.4, -19.2, -4.5, -59.6, -25.5);
+		}
+		if (part("arena")) {
+			// Combat arena: fenced x 14..40, z -44..-14; chests and signs at z -12; sleepers at z -40 and -30.
+			shot("arena_overview", 27.5, -48, -5, 27.5, -60, -30);
+			shot("arena_chests_signs", 27.5, -57.8, -7.6, 27.5, -59.7, -12);
+			shot("arena_geared_sleepers", 27.5, -54.5, -31.5, 27.5, -60, -40);
+			shot("arena_unarmed_sleepers", 27.5, -56.3, -23.5, 27.5, -60, -30);
+		}
+		if (part("crafting")) {
+			// Crafting Tweaks: x -30..-14, z -4..12; stations along x -20 face east, ores at x -26, frames at x -27.
+			shot("crafting_overview", -9, -52, 4, -22, -60, 4);
+			shot("crafting_station_crafting", -16, -58.2, -3, -20, -59.6, -3);
+			shot("crafting_station_blast_furnace", -16, -58.2, 1, -20, -59.6, 1);
+			shot("crafting_station_smoker", -16, -58.2, 5, -20, -59.6, 5);
+			shot("crafting_ore_columns", -22.6, -58.8, 3.5, -26, -59, 3.5);
+			shot("crafting_ore_columns_angle", -22.8, -57.6, 7.6, -26, -59, 3.5);
+			shot("crafting_paper_frames", -23.6, -58.6, 9, -26.5, -59.3, 9);
+			shot("crafting_paper_frames_angle", -23.4, -58.4, 12, -26.5, -59.4, 9);
+		}
+		if (part("tower")) {
+			// Glider tower: x 20..24, z 4..8, platform at y -1 with the Wings chest at (21, 0, 6).
+			shot("tower_outside", -4, -44, 34, 22, -32, 6);
+			shot("tower_entrance", 16.2, -58.4, 7.5, 19.5, -59.5, 5.5);
+			shot("tower_top", 26.5, 3, 11.5, 21.5, 0, 6);
+			shot("tower_top_glide_sign", 21.5, 1.2, 5.75, 21.5, 0.4, 4.5);
+			shot("tower_top_glider_sign", 21.5, 1.2, 7.25, 21.5, 0.4, 8.5);
+		}
+		if (part("gems")) {
+			// Infused Gems: x 30..46, z 2..14; signs at z 5 face north over the chest row at z 6.
+			shot("gems_overview", 38.5, -49, -5, 38.5, -60, 8);
+			shot("gems_row_brew", 33, -58.2, 1.4, 33, -59.6, 5.5);
+			shot("gems_row_enchant", 38.5, -58.2, 1.4, 38.5, -59.6, 5.5);
+			shot("gems_row_socket", 44, -58.2, 1.4, 44, -59.6, 5.5);
+			shot("gems_library_doorway", 40.5, -58.5, 6.9, 40.5, -59.5, 10.5);
+			shot("gems_library_inside", 39.4, -57.9, 11.6, 40.8, -59.6, 9.2);
+			shot("gems_library_above", 40.5, -53.5, 13.5, 40.5, -60, 10);
+			shot("gems_target_pen", 33.5, -56.8, 7.4, 33.5, -60, 12);
+			// The set signs at x 44 face west with the library wall at x 42: read them from inside that wall
+			// (a spectator sees through the block it is in).
+			shot("gems_set_signs", 42.2, -58.3, 11, 44.5, -59.5, 11);
+			shot("gems_set_chests_above", 43, -55, 11, 45.5, -60, 11);
+			chest("gems_chest_best_build", 37, -60, 6);
+			chest("gems_chest_ready_made_gems", 38, -60, 6);
+			chest("gems_chest_tank_set", 45, -60, 9);
+			chest("gems_chest_diver_set", 45, -60, 10);
+			chest("gems_chest_healer_set", 45, -60, 11);
+			chest("gems_chest_run_test", 45, -60, 12);
+			chest("gems_chest_weapons", 45, -60, 13);
+			chest("gems_chest_drawback_gear", 46, -60, 9);
+		}
+		if (part("grounds")) {
+			grounds();
+		}
 	}
 
 	/** Gem Testing Grounds, south of the hub (x -47..46, z 11..63; specs/testworld.md, Layout). */
