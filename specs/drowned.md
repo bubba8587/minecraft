@@ -64,6 +64,20 @@ The next segment of Bubba's Reworked Mobs (C1), after creepers and endermen. Own
 
 **Cost (per drowned).** Idle: a players-list lookup per tick. Seeking: one spot search a second at most (40 columns x up to 10 block reads, shore check only on qualifying columns). Lurking: one 16-block entity box query every 4 ticks; per thing found a dot product, a block raycast only for those looking its way, and a line-of-sight check only for grabbable things within 4.5 blocks. Dragging: the deep-water search (121 columns x up to 24 block reads) once per grab and per arrival; no entity queries.
 
+**Held by the ankles (owner, 2026-11-16).**
+
+- The victim is held by the feet, not the shoulders. Upright (lurking spot, dragging in water): the victim's soles sit at the drowned's outstretched hands (vanilla's zombie arm pose, about 80 degrees forward from hanging, hands at ~1.25 above its feet), 0.72 in front of it and 1.2 above its feet. The victim floats above and in front of it and goes down feet first as it walks backwards into deep water.
+- Lying (crawling on land): the victim's feet are at its hands on the ground, 1.2 in front of it (its arms reach past its head). Between the two postures the hold follows the drowned's swim amount (the posture easing in and out), which both client and server tick, so it still needs no syncing.
+- Numbers in `DrownedTuning`: `HOLD_FORWARD` 0.72, `HOLD_UP` 1.2, `HOLD_LYING_FORWARD` 1.2, `HOLD_LYING_UP` 0 (code: `DrownedMixin.getPassengerAttachmentPoint`). No arm-pose code was needed: vanilla's drowned arm pose already reaches to the ankles, and the crawl's arms already reach ahead.
+- Crosshair targeting still works for a held player: the drowned is now below and behind them; they look down at it (the pick fix is unchanged; the drowned's box is clear of their eyes).
+- In the 2-deep shallows a freshly grabbed player's head is above the water for a moment (their feet are at the drowned's hands); they go under as it backs into deeper water. In 3-deep or deeper water they're under at once.
+- Not done: the victim keeps a standing pose (no flailing arms, no lying-on-the-back pose when dragged over land).
+
+**Lower lurk (owner, 2026-11-16).**
+
+- Lurking, only its eyes and the top of its head show; the waterline is just under the eyes. `LURK_EYES_ABOVE_SURFACE` 0.25 → **0.12** (entity eye height; the drawn eyes sit right at the surface, the scalp about 0.33 above it).
+
+
 ## Numbers (all in `DrownedTuning`; builder's starting values, owner to playtest)
 
 | | Value |

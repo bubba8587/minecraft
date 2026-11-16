@@ -19,11 +19,11 @@ Drowned spawn in water as before, at the reduced rate of all monsters (see [[Mon
 
 ### Lurking
 
-A drowned swims to a shallow spot by the shore, about two blocks deep, and waits there with only the top of its head above the water, facing the land. A drowned that someone is looking at sinks out of sight and rises again when they look away. While anyone watches it, it grabs no one.
+A drowned swims to a shallow spot by the shore, about two blocks deep, and waits there with only its eyes and the top of its head above the water, facing the land. A drowned that someone is looking at sinks out of sight and rises again when they look away. While anyone watches it, it grabs no one.
 
 ### The grab
 
-A drowned lunges out at a player, animal or villager near the water's edge with its back turned, up to a few blocks onto the bank, and grabs it. It then drags its victim backwards into the deepest water nearby. A held player cannot swim up or get free by sneaking. Now and then the drowned hits its victim, and each hit knocks out some of its breath. On land a drowned crawls, low and sideways.
+A drowned lunges out at a player, animal or villager near the water's edge with its back turned, up to a few blocks onto the bank, and grabs it by the ankles. It then drags its victim backwards, feet first, into the deepest water nearby. A held player cannot swim up or get free by sneaking. Now and then the drowned hits its victim, and each hit knocks out some of its breath. On land a drowned crawls, low and sideways.
 
 ### Breaking free
 
