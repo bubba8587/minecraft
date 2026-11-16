@@ -38,9 +38,9 @@ The player places a potion in a bottle slot of a brewing stand and a **base gem*
 
 ### Base gems
 
-The base gem sets the gem's **Infusion level**, which affects strength only, and matters a lot: a nether star gem is two and a half times as strong as an amethyst one.
+The base gem sets the gem's **Gem Power level**, which affects strength only, and matters a lot: a nether star gem is two and a half times as strong as an amethyst one.
 
-| Infusion | Base gem | Strength |
+| Gem Power | Base gem | Strength |
 |---|---|---|
 | I | Amethyst shard | 40% |
 | II | Nether quartz | 50% |
@@ -53,9 +53,9 @@ The base gem sets the gem's **Infusion level**, which affects strength only, and
 
 - **Effect**: from the potion or item used.
 - **Potion strength**: a strong (glowstone) potion makes a stronger gem, a long (redstone) potion a slightly stronger one.
-- **Form**: normal, splash or lingering. The form is the potion's form and can't be changed after brewing. It sets the highest enchanting tier: normal reaches tier 1, splash tier 2, lingering tier 3. Items in the bottle slot (golden apples, wither roses, stews and the rest) have no form: their Infused Gems show no form in the name, for example *Infused Gem: Infusion IV, Absorption*, and reach tier 3 like a lingering potion's. Collecting the items is the cost. *Main article: [[Enchanting Gems]]*
+- **Form**: normal, splash or lingering. The form is the potion's form and can't be changed after brewing. It sets the highest enchanting tier: normal reaches tier 1, splash tier 2, lingering tier 3. Items in the bottle slot (golden apples, wither roses, stews and the rest) have no form: their Infused Gems show no form in the name, for example *Infused Gem: Gem Power IV, Absorption*, and reach tier 3 like a lingering potion's. Collecting the items is the cost. *Main article: [[Enchanting Gems]]*
 
-The item name shows these, for example *Infused Gem: Infusion III, Speed (Splash)*.
+The item name shows these, for example *Infused Gem: Gem Power III, Speed (Splash)*.
 
 ## Supported potions
 

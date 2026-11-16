@@ -33,7 +33,7 @@ The **gem testing grounds** are a set of stations for trying [[Gem Effects|gem e
 
 1. Walk south from the spawn plaza into the wardrobe, the hall lined with signs.
 2. Right-click the sign of a gem. The worn armor is taken off (and deleted), and a full netherite set with three perfect gems in every piece is put on; a sword with two of the same gems goes into the inventory. Gems that need a tool to test also give one: Haste a netherite pickaxe, shovel and axe, Mining Fatigue and Conduit Power a netherite pickaxe, Luck a fishing rod.
-3. Every gem has two signs, one above the other: the oak sign gives the perfect set, the birch sign below it gives the same set at Infusion V (88% strength). Perfect sets have extras that weaker sets lack (for example, only a perfect Breeze set deflects every projectile), so trying both shows what the perfect set adds. Stations that test such an extra have both signs as well.
+3. Every gem has two signs, one above the other: the oak sign gives the perfect set, the birch sign below it gives the same set at Gem Power V (88% strength). Perfect sets have extras that weaker sets lack (for example, only a perfect Breeze set deflects every projectile), so trying both shows what the perfect set adds. Stations that test such an extra have both signs as well.
 4. Signs on the right are helpful gems, signs on the left harmful ones. The lower row on the left gives Speed in every armor material, for comparing materials, and holds the Take off, Empty bag, No effects, Survival and Creative signs.
 
 Each station below also has signs for the gems it tests. The armor stands past the wardrobe wear showcase sets; clicking a piece takes it.

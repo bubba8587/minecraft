@@ -46,7 +46,7 @@ WEAPON_SLOTS = 2      # gem slots per weapon (owner)
 PIECES = ["helmet", "chestplate", "leggings", "boots"]   # adjacency order (owner)
 MIN_REL_STEP = 0.04   # every ladder step is at least +4% on the step below
 MIN_ABS_DROP = 0.025  # from the best build, any one step down loses at least 0.025 of the scale
-EARLY_SINGLE_FLOOR = 0.015      # the weakest possible single gem still does this much (owner's wider Infusion ladder, 2026-11-15)
+EARLY_SINGLE_FLOOR = 0.015      # the weakest possible single gem still does this much (owner's wider Gem Power ladder, 2026-11-15)
 EARLY_BUILD_RANGE = (0.08, 0.30)  # a typical early kit (armor or weapon) lands in this band
 
 # Healing gem (owner): a non-lethal hit or fall gives back a fraction of the health it took.
@@ -75,17 +75,17 @@ BASE_GEMS = [
 	("quartz", "Nether quartz", 0.50, "First Nether trip"),
 	("ender_pearl", "Ender pearl", 0.62, "Endermen; farmable"),
 	("diamond", "Diamond", 0.75, "Deep mining; common in chest loot"),
-	("prismarine", "Prismarine shard (owner; 0.88: a netherite set of tier 3 Infusion V lands at 88% of the perfect set)", 0.88, "Ocean monuments, a guarded structure (minecraft:prismarine_shard)"),
+	("prismarine", "Prismarine shard (owner; 0.88: a netherite set of tier 3 Gem Power V lands at 88% of the perfect set)", 0.88, "Ocean monuments, a guarded structure (minecraft:prismarine_shard)"),
 	("nether_star", "Nether star", 1.00, "The Wither: the best base (owner)"),
 ]
 BASE = {b: f for b, _, f, _ in BASE_GEMS}
-# One Infused Gem item (owner): the base gem is its Infusion level, I (amethyst) to VI (nether star).
+# One Infused Gem item (owner): the base gem is its Gem Power level, I (amethyst) to VI (nether star).
 INFUSION = {b: r for (b, _, _, _), r in zip(BASE_GEMS, ["I", "II", "III", "IV", "V", "VI"])}
 INFUSION_NAME = {"amethyst": "amethyst", "quartz": "quartz", "ender_pearl": "ender pearl", "diamond": "diamond",
 	"prismarine": "prismarine shard", "nether_star": "nether star"}
 
 def inf(b):
-	return f"Infusion {INFUSION[b]} ({INFUSION_NAME[b]})"
+	return f"Gem Power {INFUSION[b]} ({INFUSION_NAME[b]})"
 BEST_BASE = "nether_star"
 
 # Armor materials (ArmorMaterials.java, 26.3: durability multiplier and chest defense quoted
@@ -731,10 +731,10 @@ def worn_value(key, s):
 
 # Loot (owner: gems of every type and gemmed armor are findable loot, in chests and worn by mobs; rare and mostly weak,
 # better in harder places). One table: the loot levels, the places, the mob gear. A found gem is made as if brewed and
-# enchanted: an Infusion level and a tier drawn from its level's lists (a repeat is a weight), then the normal tier odds.
-# Only ominous vaults use Infusion VI (nether star) (owner): there it always makes a PERFECT gem (Infusion VI, tier 3, full
+# enchanted: a Gem Power level and a tier drawn from its level's lists (a repeat is a weight), then the normal tier odds.
+# Only ominous vaults use Gem Power VI (nether star) (owner): there it always makes a PERFECT gem (Gem Power VI, tier 3, full
 # strength, any effect, craftable ones included) that normally comes with a drawback; PERFECT_CLEAN_CHANCE of them are
-# clean. Every other level never gives a craftable gem Infusion VI, so a clean perfect craftable gem is otherwise crafted.
+# clean. Every other level never gives a craftable gem Gem Power VI, so a clean perfect craftable gem is otherwise crafted.
 # level: (description, base gems (repeats weight them), tiers (repeats weight them), potion variant ("normal" = the
 #         weakest; "any" = any of the effect's variants), armor materials for gemmed gear, gems per gemmed piece (min, max),
 #         weapons for gemmed gear (owner: weapons too, where they fit the place))
@@ -752,7 +752,7 @@ LOOT = {
 		["ender_pearl", "diamond", "diamond", "prismarine", "nether_star"], [2, 2, 3], "any", ["diamond"], (1, 3),
 		["diamond_sword", "diamond_axe", "bow", "crossbow", "trident", "mace"]),
 }
-PERFECT_LOOT = {"ominous"}       # levels whose Infusion VI gems are perfect gems (owner)
+PERFECT_LOOT = {"ominous"}       # levels whose Gem Power VI gems are perfect gems (owner)
 PERFECT_CLEAN_CHANCE = 1 / 20    # owner: 1 in 20 perfect loot gems has no drawback
 ARMOR_SHARE = 0.20               # of a level's rolls, the share that is a gemmed armor piece
 WEAPON_SHARE = 0.15              # ... and a gemmed weapon (the rest are loose gems)
@@ -894,11 +894,11 @@ def roll_weight(k):
 
 # Gem inversion (owner, 2026-11-15): a finished gem with a drawback + a fermented spider eye at the brewing stand swaps
 # main and drawback. Nerfs every time: the new main is one grade lower than the old (a weak one can't invert) and the gem
-# loses an Infusion level (Infusion I can't invert). The bonus stays as it is. Inverting back is allowed.
+# loses a Gem Power level (Gem Power I can't invert). The bonus stays as it is. Inverting back is allowed.
 INVERSION_REAGENT = "minecraft:fermented_spider_eye"
 
 def invert_quality(main, grade, base):
-	"""The new main's strength after inverting a gem whose main is `main` at `grade` on `base`: one grade and one Infusion lower."""
+	"""The new main's strength after inverting a gem whose main is `main` at `grade` on `base`: one grade and one Gem Power lower."""
 	order = ["weak", "medium", "strongest"]
 	names = [b for b, _, _, _ in BASE_GEMS]
 	if grade == "weak" or base == names[0]:
@@ -930,9 +930,9 @@ EXAMPLES = [("speed", "strength", "hunger"), ("poison", "slowness", "resistance"
 def source_text(k):
 	src = E[k]["source"]
 	if src[0] == "potion":
-		return f"Craftable: {E[k]['potion'].replace('_', ' ')} potion (normal, splash or lingering) + base gem (sets the Infusion level)"
+		return f"Craftable: {E[k]['potion'].replace('_', ' ')} potion (normal, splash or lingering) + base gem (sets the Gem Power level)"
 	if src[0] == "item":
-		return f"Craftable: {src[1]} in the bottle slot + base gem (sets the Infusion level); reaches tier 3, like a lingering potion's gem (owner)"
+		return f"Craftable: {src[1]} in the bottle slot + base gem (sets the Gem Power level); reaches tier 3, like a lingering potion's gem (owner)"
 	if E[k]["potion"]:
 		return f"Found: {src[2]}; plus ominous vaults. Also brewed from its potion (normal, splash or lingering), which has no survival recipe"
 	return f"Found only: {src[2]}; plus ominous vaults"
@@ -1116,7 +1116,7 @@ def run_checks():
 	for g in {g for outs in TIERS.values() for _, _, extra, _ in outs for kind, g in extra if kind == "drawback"}:
 		if not drawback_size(g) < DRAWBACK_CAP or drawback_sum([drawback_size(g)] * 12) >= DRAWBACK_CAP:
 			errors.append(f"a {g} drawback reaches the drawback cap")
-	notes.append("every ladder step (Infusion level, armor, weapon material, run, grade, potion variant) is at least +4% on the one below; Infusion VI (nether star) and netherite are the only bests; each tier's odds add up to 100%")
+	notes.append("every ladder step (Gem Power level, armor, weapon material, run, grade, potion variant) is at least +4% on the one below; Gem Power VI (nether star) and netherite are the only bests; each tier's odds add up to 100%")
 
 	# 2. Gem quality: 1.0 only for strongest potion + lingering + tier 3 + nether star, for every gem effect.
 	for k in GEM_EFFECTS:
@@ -1150,7 +1150,7 @@ def run_checks():
 		want = [(top_variant(k), "lingering" if E[k]["potion"] else "item", 3, BEST_BASE)]
 		if sorted(set(hits)) != want:
 			errors.append(f"{k}: best gem reachable by {sorted(set(hits))}, expected only {want}")
-	notes.append("a gem's own strength reaches 1.0 only from the strongest potion (lingering) or source item + tier 3 + Infusion VI (nether star), for every craftable gem, so every one can reach the cap (owner); a found-only gem is perfect only from ominous loot at Infusion VI and tier 3")
+	notes.append("a gem's own strength reaches 1.0 only from the strongest potion (lingering) or source item + tier 3 + Gem Power VI (nether star), for every craftable gem, so every one can reach the cap (owner); a found-only gem is perfect only from ominous loot at Gem Power VI and tier 3")
 
 	# 2b. Every 26.3 status effect is classified: a gem (craftable or found), drawback-only, or not a gem.
 	if SRC.exists():
@@ -1239,8 +1239,8 @@ def run_checks():
 	wearly = [weapon_total("iron", 1, gem_quality(k, "normal", "quartz", "weak")) for k in GEM_EFFECTS]
 	if not all(EARLY_BUILD_RANGE[0] <= x <= EARLY_BUILD_RANGE[1] for x in wearly):
 		errors.append(f"early weapon range {min(wearly):.3f}-{max(wearly):.3f} outside {EARLY_BUILD_RANGE}")
-	notes.append(f"weakest single armor gem (normal potion, Infusion I, tier 1, lone leather piece) = {worst:.3f}; early armor kit (iron set, 4 Infusion II tier-1 gems) = {min(early):.3f}-{max(early):.3f}; "
-		f"weakest weapon gem (wooden sword, Infusion I, tier 1) = {wworst:.3f}; early weapon (iron sword, 1 Infusion II tier-1 gem) = {min(wearly):.3f}-{max(wearly):.3f}")
+	notes.append(f"weakest single armor gem (normal potion, Gem Power I, tier 1, lone leather piece) = {worst:.3f}; early armor kit (iron set, 4 Gem Power II tier-1 gems) = {min(early):.3f}-{max(early):.3f}; "
+		f"weakest weapon gem (wooden sword, Gem Power I, tier 1) = {wworst:.3f}; early weapon (iron sword, 1 Gem Power II tier-1 gem) = {min(wearly):.3f}-{max(wearly):.3f}")
 
 	# 6. Stacking: never beyond cap x the strongest gem; adding a gem never lowers it; weak gems lose to strong.
 	rng = random.Random(26_3)
@@ -1364,7 +1364,7 @@ def run_checks():
 	for k, o, d in EXAMPLES:
 		if o not in other_pool(k) or d not in drawback_pool(k):
 			errors.append(f"example {k}: {o} / {d} not in its roll tables")
-	# 9c. Inversion (owner): never a perfect gem; the grade can be read back from a gem's strength and Infusion level.
+	# 9c. Inversion (owner): never a perfect gem; the grade can be read back from a gem's strength and Gem Power level.
 	best_inverted = 0.0
 	for k in GEM_EFFECTS:
 		for v, vf in variant_factors(E[k]["variants"]).items():
@@ -1420,7 +1420,7 @@ def downgrade_rows(k):
 		v2 = max(lower, key=vf.get)
 		rows.append((f"{v2} potion instead of {tv}", build_total(["netherite"] * 4, [3] * 4, gem_quality(k, v2, BEST_BASE, "strongest"))))
 	rows += [
-		("Infusion V (prismarine shard) instead of VI (nether star)", build_total(["netherite"] * 4, [3] * 4, gem_quality(k, tv, "prismarine", "strongest"))),
+		("Gem Power V (prismarine shard) instead of VI (nether star)", build_total(["netherite"] * 4, [3] * 4, gem_quality(k, tv, "prismarine", "strongest"))),
 		("splash potion (tier 2 at best: medium)", build_total(["netherite"] * 4, [3] * 4, gem_quality(k, tv, BEST_BASE, "medium"))),
 		("full diamond armor", build_total(["diamond"] * 4, [3] * 4, best_q)),
 		("diamond boots break the run", build_total(["netherite"] * 3 + ["diamond"], [3] * 4, best_q)),
@@ -1438,7 +1438,7 @@ def weapon_downgrade_rows(k):
 		v2 = max(lower, key=vf.get)
 		rows.append((f"{v2} potion instead of {tv}", weapon_total("netherite", 2, gem_quality(k, v2, BEST_BASE, "strongest"))))
 	rows += [
-		("Infusion V (prismarine shard) instead of VI (nether star)", weapon_total("netherite", 2, gem_quality(k, tv, "prismarine", "strongest"))),
+		("Gem Power V (prismarine shard) instead of VI (nether star)", weapon_total("netherite", 2, gem_quality(k, tv, "prismarine", "strongest"))),
 		("splash potion (tier 2 at best: medium)", weapon_total("netherite", 2, gem_quality(k, tv, BEST_BASE, "medium"))),
 		("diamond weapon", weapon_total("diamond", 2, best_q)),
 		("bow, crossbow, trident or mace", weapon_total("bow", 2, best_q)),
@@ -1447,24 +1447,24 @@ def weapon_downgrade_rows(k):
 	return rows
 
 BUILDS = [
-	("Starter", "1 gem on a lone leather chestplate; normal potion, Infusion I (amethyst), tier 1 weak",
+	("Starter", "1 gem on a lone leather chestplate; normal potion, Gem Power I (amethyst), tier 1 weak",
 		[None, "leather", None, None], [0, 1, 0, 0], "normal", "amethyst", "weak"),
-	("Early", "Full iron set, 1 gem per piece (4); normal potion, Infusion II (quartz), tier 1 weak",
+	("Early", "Full iron set, 1 gem per piece (4); normal potion, Gem Power II (quartz), tier 1 weak",
 		["iron"] * 4, [1] * 4, "normal", "quartz", "weak"),
-	("Mid", "Full diamond set, 2 gems per piece (8); splash of the strong potion, Infusion III (ender pearl), tier 2 medium",
+	("Mid", "Full diamond set, 2 gems per piece (8); splash of the strong potion, Gem Power III (ender pearl), tier 2 medium",
 		["diamond"] * 4, [2] * 4, "top", "ender_pearl", "medium"),
-	("Late", "Full diamond set, 12 gems; lingering strong potion, Infusion IV (diamond), tier 3",
+	("Late", "Full diamond set, 12 gems; lingering strong potion, Gem Power IV (diamond), tier 3",
 		["diamond"] * 4, [3] * 4, "top", "diamond", "strongest"),
-	("Best", "Full netherite set, 12 gems; lingering strong potion, Infusion VI (nether star), tier 3",
+	("Best", "Full netherite set, 12 gems; lingering strong potion, Gem Power VI (nether star), tier 3",
 		["netherite"] * 4, [3] * 4, "top", BEST_BASE, "strongest"),
 ]
 WEAPON_BUILDS = [
-	("Starter", "Wooden sword, 1 gem; normal potion, Infusion I (amethyst), tier 1 weak", "wood", 1, "normal", "amethyst", "weak"),
-	("Early", "Iron sword, 1 gem; normal potion, Infusion II (quartz), tier 1 weak", "iron", 1, "normal", "quartz", "weak"),
-	("Mid", "Diamond sword, 2 gems; splash of the strong potion, Infusion III (ender pearl), tier 2 medium", "diamond", 2, "top", "ender_pearl", "medium"),
-	("Late", "Diamond sword, 2 gems; lingering strong potion, Infusion IV (diamond), tier 3", "diamond", 2, "top", "diamond", "strongest"),
-	("Bow", "Bow, 2 gems; lingering strong potion, Infusion VI (nether star), tier 3 (the best ranged)", "bow", 2, "top", BEST_BASE, "strongest"),
-	("Best", "Netherite sword, axe or spear, 2 gems; lingering strong potion, Infusion VI (nether star), tier 3", "netherite", 2, "top", BEST_BASE, "strongest"),
+	("Starter", "Wooden sword, 1 gem; normal potion, Gem Power I (amethyst), tier 1 weak", "wood", 1, "normal", "amethyst", "weak"),
+	("Early", "Iron sword, 1 gem; normal potion, Gem Power II (quartz), tier 1 weak", "iron", 1, "normal", "quartz", "weak"),
+	("Mid", "Diamond sword, 2 gems; splash of the strong potion, Gem Power III (ender pearl), tier 2 medium", "diamond", 2, "top", "ender_pearl", "medium"),
+	("Late", "Diamond sword, 2 gems; lingering strong potion, Gem Power IV (diamond), tier 3", "diamond", 2, "top", "diamond", "strongest"),
+	("Bow", "Bow, 2 gems; lingering strong potion, Gem Power VI (nether star), tier 3 (the best ranged)", "bow", 2, "top", BEST_BASE, "strongest"),
+	("Best", "Netherite sword, axe or spear, 2 gems; lingering strong potion, Gem Power VI (nether star), tier 3", "netherite", 2, "top", BEST_BASE, "strongest"),
 ]
 LADDER_EFFECTS = ["speed", "strength", "regeneration", "fire_resistance", "instant_health"]
 WEAPON_LADDER_EFFECTS = ["poison", "slowness", "weakness", "instant_damage"]
@@ -1511,21 +1511,21 @@ def document(notes):
 	S.append(("h2", "The formula in plain words"))
 	S.append(("ul", [
 		"**A gem doesn't care where it goes** (owner). Every gem, from any potion, item or loot, fits armor (3 slots a piece) or a weapon (2 slots). **The slot decides who its effects reach:** in armor, the wearer; in a weapon, what it hits (bows and crossbows: the arrow). All of a gem's effects go the same way: main effect, any other effect and any drawback. So a Poison gem in your armor poisons you, and a Regeneration gem on a sword heals the target: allowed, just pointless.",
-		f"**There is one Infused Gem item** (owner); the base gem it was brewed from is its **Infusion level**: {', '.join(inf(b) for b in BASE)}. Names read like *Infused Gem: Infusion III, Speed (Splash)*.",
+		f"**There is one Infused Gem item** (owner); the base gem it was brewed from is its **Gem Power level**: {', '.join(inf(b) for b in BASE)}. Names read like *Infused Gem: Gem Power III, Speed (Splash)*.",
 		"Every effect has **two curves on one scale**, 1.0 = the strongest vanilla level. **Worn** (armor): the effect on the wearer all the time, 1.0 = the strongest level of the effect (Speed II, Strength II, Resistance IV...), on/off effects made partial. **Hit-applied** (weapon): what one hit gives the target, 1.0 = the strongest vanilla potion of that effect as drunk (owner: potions, not tipped arrows), so a hit is a nerfed potion. Healing has its own, flatter worn curve.",
-		"**One gem's strength** = potion factor x Infusion factor x enchant grade x gear factor. In armor the gear factor is armor material x matching run; in a weapon it is the weapon's material. Each is at most 1.0.",
+		"**One gem's strength** = potion factor x Gem Power factor x enchant grade x gear factor. In armor the gear factor is armor material x matching run; in a weapon it is the weapon's material. Each is at most 1.0.",
 		f"**Armor stacking:** a piece holds {SLOTS} gems, so 12 in all. The gems of one effect are lined up strongest first; the first counts fully, each next one {STACK_R:.0%} of the one before. The sum is scaled so that 12 perfect gems give exactly **{CAP}**.",
 		f"**Weapon stacking:** a weapon holds {WEAPON_SLOTS} gems, same rule, scaled so 2 perfect gems give exactly **{CAP}**. One perfect gem gives {CAP / WW:.3f}: two gems of one effect, or one gem each of two effects.",
-		f"**The cap is {CAP}**: 5% short of vanilla's best. Only the single best build reaches it: **lingering potion + Infusion VI (nether star) + tier 3 + full contiguous netherite** (armor), or **+ a netherite weapon with both slots** (weapons).",
+		f"**The cap is {CAP}**: 5% short of vanilla's best. Only the single best build reaches it: **lingering potion + Gem Power VI (nether star) + tier 3 + full contiguous netherite** (armor), or **+ a netherite weapon with both slots** (weapons).",
 		"**Potion form doesn't multiply**: it sets the highest enchant tier (normal 1, splash 2, lingering 3), and the tier sets the grade. So lingering is needed for the strongest grade.",
-		"**Infusion level changes strength only** (owner): no traits. Order, by how hard the base gem is to get: amethyst, quartz, ender pearl, diamond, prismarine shard, nether star.",
+		"**Gem Power level changes strength only** (owner): no traits. Order, by how hard the base gem is to get: amethyst, quartz, ender pearl, diamond, prismarine shard, nether star.",
 		"**One roll table per gem** (owner): its main effect, maybe an **other** effect of the same kind (a beneficial gem's bonus is another beneficial effect, a harmful gem's another harmful one, never the main effect itself), maybe a **drawback** of the opposite kind that is **never the main effect's direct opposite**. The other effect uses the same formula with its own grade and joins that effect's stack; a drawback is a fixed, mild size (below).",
 	]))
-	S.append(("p", f"Total for an effect, in symbols: `total = {CAP} x sum(gem_i x {STACK_R}^(rank_i)) / sum({STACK_R}^0..{STACK_R}^(slots-1))`, with `gem = potion x infusion x grade x gear`."))
+	S.append(("p", f"Total for an effect, in symbols: `total = {CAP} x sum(gem_i x {STACK_R}^(rank_i)) / sum({STACK_R}^0..{STACK_R}^(slots-1))`, with `gem = potion x gem power x grade x gear`."))
 
 	S.append(("h2", "Factor tables"))
-	S.append(("h3", "Infusion level (the base gem; strength only)"))
-	S.append(("table", ["Infusion", "Base gem", "Factor", "Why here"], [[inf(b).split(" (")[0], n, fmt(f), w] for b, n, f, w in BASE_GEMS]))
+	S.append(("h3", "Gem Power level (the base gem; strength only)"))
+	S.append(("table", ["Gem Power", "Base gem", "Factor", "Why here"], [[inf(b).split(" (")[0], n, fmt(f), w] for b, n, f, w in BASE_GEMS]))
 	S.append(("h3", "Potion variant (by what that effect really has in 26.3)"))
 	S.append(("table", ["Variants that exist", "normal", "long", "strong"], [
 		["normal + long + strong (Swiftness, Strength, Leaping, Regeneration, Poison, Slowness, Turtle Master)", "0.80", "0.85", "1.00"],
@@ -1571,15 +1571,15 @@ def document(notes):
 		+ [[E[k]["name"], "harmful", "Drawback only: " + why] for k, why in DRAWBACK_ONLY.items()]
 		+ [[k.replace("_", " ").title(), "-", "Not a gem: " + why] for k, why in NOT_GEMS.items()]))
 	S.append(("h3", "Found-only gems: what they come with"))
-	S.append(("p", "A found gem is made as if brewed and enchanted: its potion factor is 1.0 (one form of the effect), its Infusion level is picked from the loot source's list and its tier rolled from the source's tiers with the normal tier odds. Same strength scale as crafted gems; only ominous loot can give a perfect one."))
-	S.append(("table", ["Loot source", "Infusion levels", "Tiers", "Strength range (gem quality)"],
+	S.append(("p", "A found gem is made as if brewed and enchanted: its potion factor is 1.0 (one form of the effect), its Gem Power level is picked from the loot source's list and its tier rolled from the source's tiers with the normal tier odds. Same strength scale as crafted gems; only ominous loot can give a perfect one."))
+	S.append(("table", ["Loot source", "Gem Power levels", "Tiers", "Strength range (gem quality)"],
 		[[name, ", ".join(inf(b) for b in bases), ", ".join(map(str, tiers)),
 			f"{min(BASE[b] for b in bases) * min(GRADES[g] for t in tiers for _, g, _, _ in TIERS[t] if g):.2f} - {max(BASE[b] for b in bases) * max(GRADES[g] for t in tiers for _, g, _, _ in TIERS[t] if g):.2f}"
 			+ (" (or a drawback-only roll at tier 1)" if 1 in tiers else "")]
 			for name, bases, tiers, *_ in LOOT.values()]))
 	S.append(("h2", "Loot: where gems are found (one table, `LOOT_PLACES`)"))
-	S.append(("p", f"Every place below gets **one extra roll** with the given chance per chest (fishing: per treasure catch; hero gift: per gift; elder guardian: per kill by a player). The roll adds a finished gem of any craftable effect, or a gemmed armor piece of the level's materials ({ARMOR_SHARE:.0%}), or a gemmed weapon ({WEAPON_SHARE:.0%}), or, where found-only gems are listed, one of them (a third of the time). Vanilla's tables are never replaced; the extra roll is a data file of the mod (`loot_table/inject/...`), so a datapack can change or empty any of it. Rare and mostly weak, better in harder places (owner). Only ominous vaults use Infusion VI, and there it is always a perfect gem (tier 3, full strength) of any effect, which comes with a drawback except {PERFECT_CLEAN_CHANCE:.0%} of the time (owner); elsewhere loot never gives a craftable gem Infusion VI."))
-	S.append(("table", ["Level", "Infusion (weighted)", "Tiers (weighted)", "Potion variant", "Gemmed armor", "Gemmed weapons", "Gems per piece", "Gem quality"],
+	S.append(("p", f"Every place below gets **one extra roll** with the given chance per chest (fishing: per treasure catch; hero gift: per gift; elder guardian: per kill by a player). The roll adds a finished gem of any craftable effect, or a gemmed armor piece of the level's materials ({ARMOR_SHARE:.0%}), or a gemmed weapon ({WEAPON_SHARE:.0%}), or, where found-only gems are listed, one of them (a third of the time). Vanilla's tables are never replaced; the extra roll is a data file of the mod (`loot_table/inject/...`), so a datapack can change or empty any of it. Rare and mostly weak, better in harder places (owner). Only ominous vaults use Gem Power VI, and there it is always a perfect gem (tier 3, full strength) of any effect, which comes with a drawback except {PERFECT_CLEAN_CHANCE:.0%} of the time (owner); elsewhere loot never gives a craftable gem Gem Power VI."))
+	S.append(("table", ["Level", "Gem Power (weighted)", "Tiers (weighted)", "Potion variant", "Gemmed armor", "Gemmed weapons", "Gems per piece", "Gem quality"],
 		[[level, ", ".join(INFUSION[b] for b in bases), ", ".join(map(str, tiers)), "weakest" if variant == "normal" else "any",
 			", ".join(mats), ", ".join(w.replace("_", " ") for w in weapons), f"{lo}" if lo == hi else f"{lo}-{hi}",
 			f"{loot_quality(level, True)[0]:.2f} - {loot_quality(level, True)[1]:.2f}" + (" (VI: perfect, with a drawback 19 in 20)" if level in PERFECT_LOOT else "")]
@@ -1616,7 +1616,7 @@ def document(notes):
 			", ".join(E[d]["name"] for d in drawback_pool(k)),
 			", ".join(E[o]["name"] for o in sorted(OPPOSITE.get(k, ()))) or "-"] for k in GEM_EFFECTS]))
 	S.append(("h3", "Three example gems, armor vs weapon"))
-	S.append(("p", f"Strengths used: the main effect at the best build ({CAP}: 12 perfect gems in full netherite, or 2 in a netherite weapon) and as one perfect gem alone (armor {stack([1.0]):.3f} in a full netherite set; weapon {wstack([1.0]):.3f}); an other effect as the only gem of that effect, Infusion VI in netherite, weak ({stack([GRADES['weak']]):.3f} armor, {wstack([GRADES['weak']]):.3f} weapon) or medium ({stack([GRADES['medium']]):.3f}, {wstack([GRADES['medium']]):.3f}); one drawback ({DRAWBACK_ONE:.2f})."))
+	S.append(("p", f"Strengths used: the main effect at the best build ({CAP}: 12 perfect gems in full netherite, or 2 in a netherite weapon) and as one perfect gem alone (armor {stack([1.0]):.3f} in a full netherite set; weapon {wstack([1.0]):.3f}); an other effect as the only gem of that effect, Gem Power VI in netherite, weak ({stack([GRADES['weak']]):.3f} armor, {wstack([GRADES['weak']]):.3f} weapon) or medium ({stack([GRADES['medium']]):.3f}, {wstack([GRADES['medium']]):.3f}); one drawback ({DRAWBACK_ONE:.2f})."))
 	for k, o, d in EXAMPLES:
 		S.append(("p", f"**{E[k]['name']}** ({'beneficial' if E[k]['good'] else 'harmful'}). Other rolls from {len(other_pool(k))} {'beneficial' if E[k]['good'] else 'harmful'} effects; drawback rolls from "
 			+ ", ".join(E[x]["name"] for x in drawback_pool(k)) + "; never " + (", ".join(E[x]["name"] for x in sorted(OPPOSITE.get(k, ()))) or "-") + "."))
@@ -1648,7 +1648,7 @@ def document(notes):
 		[[E[k]["name"], hit_anchor_text(k)] + [hit_show(k, c) for c in cols] for k in BAD_GEMS + GOOD_GEMS]))
 
 	S.append(("h2", "Drawbacks"))
-	S.append(("p", f"A drawback roll is a fixed size: **{DRAWBACK_ONE:.0%} of the strongest vanilla level** of that effect for a weak one, {drawback_size('medium'):.0%} for tier 3's medium one, whatever the potion, Infusion level or gear (a better gem shouldn't hurt more). More drawbacks of the same effect add less and less and never pass {DRAWBACK_CAP:.0%}, which is below vanilla's weakest level of every drawback effect. So they sting, but never as much as a real potion of it. It goes where the gem's main effect goes: in armor, on the wearer while worn; in a weapon, on the target for {DRAWBACK_HIT_S} s, refreshed by each hit (a beneficial gem's harmful drawback on a weapon therefore lands on the target too)."))
+	S.append(("p", f"A drawback roll is a fixed size: **{DRAWBACK_ONE:.0%} of the strongest vanilla level** of that effect for a weak one, {drawback_size('medium'):.0%} for tier 3's medium one, whatever the potion, Gem Power level or gear (a better gem shouldn't hurt more). More drawbacks of the same effect add less and less and never pass {DRAWBACK_CAP:.0%}, which is below vanilla's weakest level of every drawback effect. So they sting, but never as much as a real potion of it. It goes where the gem's main effect goes: in armor, on the wearer while worn; in a weapon, on the target for {DRAWBACK_HIT_S} s, refreshed by each hit (a beneficial gem's harmful drawback on a weapon therefore lands on the target too)."))
 	dcols = [1, 2, 3, 12]
 	S.append(("table", ["Drawback", "Rolls on", "1.0 means (vanilla)"] + [f"{n} drawback{'s' if n > 1 else ''} ({drawback_total(n):.3f})" for n in dcols],
 		[[E[k]["name"], "beneficial gems" if not E[k]["good"] else "harmful gems", DRAWBACK_ANCHOR.get(k, E[k]["anchor"])]
@@ -2004,7 +2004,7 @@ ARMOR_PIECES = ["helmet", "chestplate", "leggings", "boots"]
 INFUSION_LEVEL = {b: i + 1 for i, (b, _, _, _) in enumerate(BASE_GEMS)}
 
 def loot_infusions(level, craftable):
-	"""Infusion levels a level's gems are drawn from (repeats weight them); craftable gems get Infusion VI only where it
+	"""Gem Power levels a level's gems are drawn from (repeats weight them); craftable gems get Gem Power VI only where it
 	makes a perfect gem (PERFECT_LOOT)."""
 	return [INFUSION_LEVEL[b] for b in LOOT[level][1] if not (craftable and b == BEST_BASE and level not in PERFECT_LOOT)]
 
@@ -2097,7 +2097,7 @@ def loot_quality(level, craftable):
 	_, bases, tiers, variant, _, _, _ = LOOT[level]
 	grades = [GRADES[g] for t in set(tiers) for _, g, _, _ in TIERS[t] if g]
 	if level in PERFECT_LOOT and BEST_BASE in bases:
-		grades.append(1.0)  # an Infusion VI gem here is perfect
+		grades.append(1.0)  # a Gem Power VI gem here is perfect
 	bs = [BASE[b] for b in bases if not (craftable and b == BEST_BASE and level not in PERFECT_LOOT)]
 	if craftable:
 		vmax = max(max(variant_factors(E[k]["variants"]).values()) for k in GEM_EFFECTS if E[k]["source"][0] != "found") if variant == "any" else \
@@ -2143,14 +2143,14 @@ def check_loot(errors, notes):
 		if perfect != (level in PERFECT_LOOT):
 			errors.append(f"loot: {level} loot {'gives' if perfect else 'never gives'} perfect craftable gems; only {sorted(PERFECT_LOOT)} should (owner)")
 		if level not in PERFECT_LOOT and BEST_BASE in [b for b in LOOT[level][1]] and INFUSION_LEVEL[BEST_BASE] in loot_infusions(level, True):
-			errors.append(f"loot: {level} gives craftable gems Infusion VI")
+			errors.append(f"loot: {level} gives craftable gems Gem Power VI")
 	if not 0 < PERFECT_CLEAN_CHANCE <= 0.1 or not 0 <= WEAPON_HARMFUL_SHARE <= 1 or ARMOR_SHARE + WEAPON_SHARE >= 0.5:
 		errors.append("loot: perfect clean chance, weapon harmful share or gear shares out of range")
 	if any(not 0 < m[3] <= 0.1 for m in MOB_GEMS) or not 0 < TRIAL_EQUIPMENT[2] <= 0.25:
 		errors.append("loot: mob gear chances out of range")
 	notes.append(f"loot: {len(LOOT_PLACES)} vanilla tables get one extra roll (chance {min(p[3] for p in LOOT_PLACES):.0%}-{max(p[3] for p in LOOT_PLACES):.0%}); "
-		"each level's best gem beats the level below; only ominous vaults give perfect gems (any effect, Infusion VI, tier 3), "
-		f"with a drawback except {PERFECT_CLEAN_CHANCE:.0%} of the time; nowhere else gives a craftable gem Infusion VI; "
+		"each level's best gem beats the level below; only ominous vaults give perfect gems (any effect, Gem Power VI, tier 3), "
+		f"with a drawback except {PERFECT_CLEAN_CHANCE:.0%} of the time; nowhere else gives a craftable gem Gem Power VI; "
 		"every found-only gem is listed at exactly the levels its source names; every table and item exists in 26.3")
 
 def check_export(errors):

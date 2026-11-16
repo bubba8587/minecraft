@@ -50,7 +50,7 @@ public final class ModCommands {
 						.then(Commands.argument("player", EntityArgument.player())
 								.requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
 								.executes(c -> show(c.getSource(), EntityArgument.getPlayer(c, "player"))))
-						// /gems kit <effect> [material] [infusion] (owner, for testing): a full set and sword of one effect.
+						// /gems kit <effect> [material] [power] (owner, for testing): a full set and sword of one effect.
 						.then(Commands.literal("kit")
 								.requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
 								.then(Commands.argument("effect", StringArgumentType.word())
@@ -60,11 +60,11 @@ public final class ModCommands {
 												.suggests((c, b) -> SharedSuggestionProvider.suggest(KIT_MATERIALS, b))
 												.executes(c -> kit(c.getSource(), StringArgumentType.getString(c, "effect"),
 														StringArgumentType.getString(c, "material")))
-												// [infusion] 1-6 (owner): tier 3 full-strength gems at that Infusion level; 6 is perfect.
-												.then(Commands.argument("infusion", com.mojang.brigadier.arguments.IntegerArgumentType.integer(1, 6))
+												// [power] 1-6 (owner): tier 3 full-strength gems at that Gem Power (the internal infusion level); 6 is perfect.
+												.then(Commands.argument("power", com.mojang.brigadier.arguments.IntegerArgumentType.integer(1, 6))
 														.executes(c -> kit(c.getSource(), StringArgumentType.getString(c, "effect"),
 																StringArgumentType.getString(c, "material"),
-																com.mojang.brigadier.arguments.IntegerArgumentType.getInteger(c, "infusion")))))))));
+																com.mojang.brigadier.arguments.IntegerArgumentType.getInteger(c, "power")))))))));
 	}
 
 	/** Armor materials the kit can use (vanilla's item name prefixes follow). */

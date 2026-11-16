@@ -178,7 +178,7 @@ public class EnchantingGameTest {
 		EnchantmentMenu menu2 = new EnchantmentMenu(2, player.getInventory(), ContainerLevelAccess.create(helper.getLevel(), helper.absolutePos(table)));
 		player.setExperienceLevels(30);
 		ItemStack apple = GemKit.infused("absorption", "strong", GemForm.ITEM, 6);
-		check(helper, apple.getHoverName().getString().equals("Infused Gem: Infusion VI, Absorption"), "item gem name " + apple.getHoverName().getString());
+		check(helper, apple.getHoverName().getString().equals("Infused Gem: Gem Power VI, Absorption"), "item gem name " + apple.getHoverName().getString());
 		menu2.getSlot(0).set(apple);
 		menu2.getSlot(1).set(new ItemStack(Items.LAPIS_LAZULI, 10));
 		check(helper, menu2.costs[2] > 0, "item gem has no tier 3 row: " + java.util.Arrays.toString(menu2.costs));
