@@ -79,17 +79,22 @@ public final class EndermanSpawning {
 		return level.getEntitiesOfClass(Enderman.class, new AABB(site.origin()).inflate(EndermanTuning.SITE_RADIUS), Enderman::isAlive);
 	}
 
-	/** This check's spawn chance for a site {@code finished} (0-1) built, with {@code present} of its endermen about. */
-	public static float chance(float finished, int present) {
-		float base = finished >= 1.0F ? EndermanTuning.SPAWN_CHANCE_COMPLETE
-				: Mth.lerp(finished, EndermanTuning.SPAWN_CHANCE_EMPTY, EndermanTuning.SPAWN_CHANCE_ALMOST);
+	/** This check's spawn chance for a site whose spire has grown {@code growth} (0-1), with {@code present} of its endermen about. */
+	public static float chance(boolean complete, float growth, int present) {
+		float base = complete ? EndermanTuning.SPAWN_CHANCE_COMPLETE : EndermanTuning.SPAWN_CHANCE_EMPTY
+				+ (EndermanTuning.SPAWN_CHANCE_ALMOST - EndermanTuning.SPAWN_CHANCE_EMPTY) * (float) Math.pow(growth, EndermanTuning.SPAWN_CURVE);
 		return Math.min(1.0F, base * (1.0F + EndermanTuning.SNOWBALL_PER_ENDERMAN * present));
 	}
 
-	/** How many of its own endermen a site {@code finished} (0-1) built spawns at most. */
-	public static int cap(float finished) {
-		return finished >= 1.0F ? EndermanTuning.CAP_COMPLETE
-				: EndermanTuning.CAP_EMPTY + Math.round((EndermanTuning.CAP_ALMOST - EndermanTuning.CAP_EMPTY) * finished);
+	/** How many of its own endermen a site spawns at most. */
+	public static int cap(boolean complete, float growth) {
+		return complete ? EndermanTuning.CAP_COMPLETE
+				: EndermanTuning.CAP_EMPTY + Math.round((EndermanTuning.CAP_ALMOST - EndermanTuning.CAP_EMPTY) * growth * growth);
+	}
+
+	/** The share of newcomers at an unfinished site that arrive carrying one of its missing blocks. */
+	public static float builderShare(float growth) {
+		return EndermanTuning.BUILDER_SHARE_EMPTY + (EndermanTuning.BUILDER_SHARE_ALMOST - EndermanTuning.BUILDER_SHARE_EMPTY) * growth;
 	}
 
 	/**
@@ -104,17 +109,17 @@ public final class EndermanSpawning {
 		if (!level.isLoaded(site.origin()) || EndermanWards.isWarded(level, site.origin())) {
 			return null;
 		}
-		float finished = site.finished(level);
-		boolean complete = finished >= 1.0F;
+		boolean complete = site.complete(level);
+		float growth = complete ? 1.0F : site.growth(level);
 		List<Enderman> own = endermenAt(level, site);
 		int present = own.size();
 		boolean bottleneck = false;
-		if (present >= cap(finished)) {
-			// At the cap, an unfinished cairn still calls one builder when every block its endermen carry has to wait
+		if (present >= cap(complete, growth)) {
+			// At the cap, an unfinished cairn still calls one builder when all its endermen are builders whose blocks wait
 			// (the blocks under them are missing) and the block that could go in next is carried by nobody (its holder
 			// died or despawned): otherwise the build stalls for good. Once that builder is there it can work, so at
 			// most one extra.
-			if (complete || own.stream().anyMatch(e -> e.getCarriedBlock() != null && site.spotFor(level, e.getCarriedBlock()) != null)) {
+			if (complete || own.stream().anyMatch(e -> e.getCarriedBlock() == null || site.spotFor(level, e.getCarriedBlock()) != null)) {
 				return null;
 			}
 			BlockPos next = site.nextUnclaimed(level, own);
@@ -124,7 +129,7 @@ public final class EndermanSpawning {
 			bottleneck = true;
 		}
 		RandomSource random = level.getRandom();
-		if (!force && random.nextFloat() >= chance(finished, present)) {
+		if (!force && random.nextFloat() >= chance(complete, growth, present)) {
 			return null;
 		}
 		for (int i = 0; i < EndermanTuning.SPAWN_TRIES; i++) {
@@ -186,7 +191,7 @@ public final class EndermanSpawning {
 		if (complete) {
 			return;
 		}
-		if (builder || random.nextFloat() < EndermanTuning.BUILDER_SHARE) {
+		if (builder || random.nextFloat() < builderShare(site.growth(level))) {
 			// The lowest missing block nobody here carries yet; it goes in now if it can, else it waits by the cairn.
 			BlockPos spot = site.nextUnclaimed(level, endermenAt(level, site));
 			if (spot != null) {

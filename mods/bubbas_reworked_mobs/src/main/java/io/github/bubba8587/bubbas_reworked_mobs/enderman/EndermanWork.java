@@ -112,7 +112,8 @@ public final class EndermanWork {
 		if (!TerrainKinds.liftable(level, pos, real)) {
 			return null;
 		}
-		if (wanted.contains(real.getBlock())) {
+		if (wanted.contains(real.getBlock()) && TerrainKinds.family(real) == null) {
+			// A loose natural thing a cairn wants (a flower, a pumpkin): fetch it. Never dig ground out for an offering.
 			return Kind.TAKE;
 		}
 		TerrainKinds.Family family = TerrainKinds.family(real);

@@ -89,21 +89,30 @@ public final class EndermanTuning {
 	/** Spawn spots are within this many blocks up or down of the site's ground (not on a mountain above it or in a cave below). */
 	public static final int SPAWN_HEIGHT = 6;
 	/**
-	 * Chance per spawn check that a site spawns one enderman (owner, 2026-11-16: building is slow, and speeds up as the
-	 * cairn fills in): from SPAWN_CHANCE_EMPTY with nothing standing, rising in step with the share of the design that
-	 * stands, to SPAWN_CHANCE_ALMOST one block short; SPAWN_CHANCE_COMPLETE once it matches its design (E2).
+	 * Chance per spawn check that a site spawns one enderman (owner, 2026-11-16: about 1-2 spire blocks a night for a
+	 * while, so players wonder; once it's obvious the endermen are building something, it speeds up). It follows the
+	 * spire's growth g (CairnSite.growth, 0 for a fresh stub): SPAWN_CHANCE_EMPTY + (SPAWN_CHANCE_ALMOST -
+	 * SPAWN_CHANCE_EMPTY) * g^SPAWN_CURVE, and SPAWN_CHANCE_COMPLETE once the whole design stands (E2). Tuned on a model
+	 * of nights (110 checks each): a 30-block spire takes about 13 nights with a player nearby (1-2 blocks a night for
+	 * the first week, 4-5 at the end); 20 blocks about 8, 45 about 20.
 	 */
-	public static final float SPAWN_CHANCE_EMPTY = 0.02F;
-	public static final float SPAWN_CHANCE_ALMOST = 0.20F;
+	public static final float SPAWN_CHANCE_EMPTY = 0.04F;
+	public static final float SPAWN_CHANCE_ALMOST = 0.35F;
+	public static final float SPAWN_CURVE = 3.0F;
 	public static final float SPAWN_CHANCE_COMPLETE = 0.35F;
 	/** Snowball: each enderman already at the site raises the chance by this fraction of itself (left alone, more come). */
 	public static final float SNOWBALL_PER_ENDERMAN = 0.3F;
-	/** A site stops spawning at this many of its own endermen: CAP_EMPTY rising to CAP_ALMOST as it fills in, CAP_COMPLETE once done. */
+	/**
+	 * A site stops spawning at this many of its own endermen: CAP_EMPTY + (CAP_ALMOST - CAP_EMPTY) * g^2 while building
+	 * (2 until the spire is about a third up: endermen linger, so this is what keeps early nights to a block or two),
+	 * CAP_COMPLETE once done (the vigil ring).
+	 */
 	public static final int CAP_EMPTY = 2;
-	public static final int CAP_ALMOST = 6;
+	public static final int CAP_ALMOST = 8;
 	public static final int CAP_COMPLETE = 8;
-	/** At an unfinished site, the share of new endermen that arrive carrying one of its blocks. */
-	public static final float BUILDER_SHARE = 0.5F;
+	/** At an unfinished site, the share of new endermen that arrive carrying one of its blocks: rising with growth. */
+	public static final float BUILDER_SHARE_EMPTY = 0.5F;
+	public static final float BUILDER_SHARE_ALMOST = 0.9F;
 
 	// --- hostility (E4) ------------------------------------------------------------------------
 	/** Breaking a cairn block, or hitting an enderman near a site, angers endermen within this distance. */

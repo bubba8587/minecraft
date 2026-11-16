@@ -83,6 +83,27 @@ public final class CairnSite {
 		return count;
 	}
 
+	/**
+	 * How far its spire has grown, 0 to 1: the share standing of its End blocks from one block above the ground up
+	 * (not the footing, rim and first trunk block that the worldgen stub already has, and not the offerings). What
+	 * spawning follows: a fresh stub is near 0, and building speeds up only once the spire is visibly rising (owner).
+	 */
+	public float growth(ServerLevel level) {
+		int total = 0;
+		int standing = 0;
+		for (BlockPos pos : order) {
+			BlockState want = blocks.get(pos.asLong());
+			if (pos.getY() <= origin.getY() || want.is(net.minecraft.tags.BlockTags.ENDERMAN_HOLDABLE)) {
+				continue;
+			}
+			total++;
+			if (level.isLoaded(pos) && TerrainKinds.matches(level.getBlockState(pos), want)) {
+				standing++;
+			}
+		}
+		return total == 0 ? 1.0F : standing / (float) total;
+	}
+
 	/** The share of the design standing right now, 0 to 1. */
 	public float finished(ServerLevel level) {
 		return order.isEmpty() ? 1.0F : standing(level) / (float) order.size();
