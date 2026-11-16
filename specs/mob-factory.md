@@ -1,7 +1,7 @@
 <!-- dte:C1,B15,B17,B19 -->
-# Reworked Mobs: Ancient Factories (spec, design agreed 2026-11-16: visual pass in progress)
+# Reworked Mobs: Ancient Fabricators (spec, design agreed 2026-11-16: visual pass in progress)
 
-**Name (owner): Ancient Factories. Placement (owner): one next to every ancient city.**
+**Name (owner): Ancient Fabricators. Placement (owner): one next to every ancient city.**
 
 Owner's idea (2026-11-16), to make mob farming possible again after the spawn cut, creeper watchers and cairn endermen: an **underground factory**. A drippy, spiky growth on the ceiling, mixing **nether, warped and bone** elements (like dripstone made of bone blocks, warped wart, basalt), **spits out mobs** onto a platform below built in an **ancient city + redstone** style; mobs that aren't dealt with are **teleported away after some time**. Earlier the owner mentioned doing "something really awesome with huge underground areas with our double paired beacons": the ceiling growth and the platform are natural halves of a paired beacon.
 
