@@ -1,5 +1,5 @@
 <!-- dte:A3 -->
-<!-- covers: testworlds/*, tools/build-testworld.py, tools/nbt.py -->
+<!-- covers: testworlds/*, tools/build-testworld.py, tools/nbt.py, mods/testworldshots/* -->
 # Test world (spec)
 
 A superflat world with a station for every playable feature, so the owner can try everything in one place (A3 ownerSteersByPlay).
