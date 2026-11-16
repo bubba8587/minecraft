@@ -1,0 +1,16 @@
+{
+	"schemaVersion": 1,
+	"id": "bubbas_reworked_beacons-test",
+	"version": "1.0.0",
+	"name": "Bubba's Reworked Beacons Tests",
+	"environment": "*",
+	"entrypoints": {
+		"fabric-gametest": [
+			"io.github.bubba8587.bubbas_reworked_beacons.test.BubbasReworkedBeaconsCoreGameTest"
+		],
+		"bubba-milestone-gametest": [],
+		"fabric-client-gametest": [
+			"io.github.bubba8587.bubbas_reworked_beacons.test.BubbasReworkedBeaconsClientGameTest"
+		]
+	}
+}

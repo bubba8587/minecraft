@@ -1,7 +1,37 @@
 <!-- dte:C5 -->
-# Bubba's Reworked Beacons (spec, design only: not built yet)
+# Bubba's Reworked Beacons (spec)
 
-A separate mod that reworks vanilla beacons into a general "area" system. Mod id `bubbas_reworked_beacons` (planned). Design history and the options considered: `docs/research/area-gems-and-warding.md`.
+A separate mod that reworks vanilla beacons into a general "area" system. Mod id `bubbas_reworked_beacons`, code in `mods/bubbas_reworked_beacons/`, Java package `io.github.bubba8587.bubbas_reworked_beacons`. Design history and the options considered: `docs/research/area-gems-and-warding.md`.
+
+## Payload API (the hook other mods use)
+
+Other mods (Infused Gems, Reworked Mobs) supply beacon items **without depending on this mod and without this mod knowing them**. Everything public lives in the package `io.github.bubba8587.bubbas_reworked_beacons.api`; nothing outside it is API. Keep it small and stable: add methods only as `default` methods.
+
+**Registering.** Implement `BeaconPayload` (public no-argument constructor) and list it under the entrypoint key `"bubbas_reworked_beacons:payload"` in the supplying mod's `fabric.mod.json`:
+
+```json
+"entrypoints": { "bubbas_reworked_beacons:payload": ["io.github.bubba8587.bubbas_infused_gems.compat.GemBeaconPayload"] }
+```
+
+Compile against this mod only (`compileOnly project(':bubbas_reworked_beacons')`, or the published jar), and add it under `"suggests"`, not `"depends"`. Without Reworked Beacons the entrypoint is never loaded, so the payload class (the only class that touches the API) never loads. Payloads are created lazily, the first time a beacon needs them, after every mod has initialised. Code outside the payload that calls `BeaconAreas` must check `FabricLoader.getInstance().isModLoaded("bubbas_reworked_beacons")` first.
+
+**`BeaconPayload`** (one per supplying mod):
+
+| Method | Meaning |
+|---|---|
+| `boolean accepts(ItemStack)` | Whether this payload handles the stack. The beacon slot only accepts stacks some payload accepts. |
+| `int priority()` (default 0) | Highest wins when several accept the same stack. The standalone payments are -1000. |
+| `int power(ItemStack)` (default 1) | The item's Gem Power, 1-6. The beacon caps it by pyramid (1 layer I, 2 III, 3 V, 4 VI) and shows "Only outputting Gem Power N" when it does. |
+| `int requiredLevels(ItemStack)` (default 1) | Pyramid layers needed before it works at all; below that the screen says "Needs a N-layer pyramid" and the beacon idles. |
+| `List<Component> describe(ItemStack, BeaconContext)` | The screen text, in the item's own tooltip words. Client and server; no world access. `context.levels()` is at least 1 here. |
+| `void apply(ServerLevel, ItemStack, BeaconContext)` | One pulse (every 80 ticks, vanilla's rhythm) of an active beacon, server only. `context.livingEntities()` is every living thing in the area, players and mobs. Effects should last `context.effectDurationTicks()` (vanilla's (9 + 2 x layers) s). |
+| `boolean replacesStandalonePayments()` (default false) | True switches the standalone gem-base payments off while that mod is installed. |
+
+**`BeaconContext`**: `level()`, `pos()` (the item's beacon; for a pair, the floor one), `mode()` (`BeaconMode.SKY` or `PAIRED`), `levels()` (1-4; a pair's smaller pyramid), `powerCap()`, `effectivePower()` (the item's power after the cap), `range()`, `area()` (an `AABB`), `effectDurationTicks()`, `livingEntities()`. Static rules, public for other mods' tests: `powerCapFor(levels)`, `skyRange(levels)`, `pairedRange(levels)`, `skyArea(level, pos, levels)`, `pairedArea(floor, floorLevels, ceilingY, ceilingLevels, levels)`.
+
+**`BeaconAreas`** (server, main thread): `isInside(level, BlockPos or Vec3, Predicate<ItemStack>)` answers "is this inside an active beacon area supplied by item X" (Warding's spawn check), `at(level, Vec3)` lists the active beacons covering a point, `all(level)` lists every active one. Each `ActiveBeacon` has `pos, mode, levels, effectivePower, area, item, lastPulse`. A beacon is listed from its first pulse with a working item until it goes idle, is broken or unloads; an entry that missed two pulses counts as gone.
+
+**Standalone payments are a payload too** (`beacon/StandalonePayload`, registered under the same key in this mod's own `fabric.mod.json`), so the hook is exercised by this mod's own tests.
 
 ## Why its own mod (owner, 2026-11-16)
 
