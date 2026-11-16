@@ -85,4 +85,31 @@ public class BubbasTotemsArtifactsCoreGameTest {
 	public void wardPushesBackMobsThatDoNotPath(GameTestHelper helper) {
 		new WardingGameTest().wardPushesBackMobsThatDoNotPath(helper);
 	}
+
+	// --- the five totems of 2026-11-16 (bodies in TotemsGameTest) ---
+
+	@GameTest(structure = TestSupport.FIELD, maxTicks = 20)
+	public void keepingKeepsEverythingOnce(GameTestHelper helper) {
+		new TotemsGameTest().keepingKeepsEverythingOnce(helper);
+	}
+
+	@GameTest(structure = TestSupport.FIELD, maxTicks = 400)
+	public void gatheringPullsNearbyItems(GameTestHelper helper) {
+		new TotemsGameTest().gatheringPullsNearbyItems(helper);
+	}
+
+	@GameTest(structure = TestSupport.FIELD, maxTicks = 20)
+	public void fortificationStopsBlockDamage(GameTestHelper helper) {
+		new TotemsGameTest().fortificationStopsBlockDamage(helper);
+	}
+
+	@GameTest(structure = TestSupport.FIELD, maxTicks = 20)
+	public void growthSpeedsUpCrops(GameTestHelper helper) {
+		new TotemsGameTest().growthSpeedsUpCrops(helper);
+	}
+
+	@GameTest(structure = TestSupport.FIELD, maxTicks = 20)
+	public void seekingChoosesAndPoints(GameTestHelper helper) {
+		new TotemsGameTest().seekingChoosesAndPoints(helper);
+	}
 }

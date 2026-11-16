@@ -224,7 +224,7 @@ public final class StructureSeeker {
 	}
 
 	/** The {@code index}-th of the 8r cells on the edge of the square ring of radius {@code r} (r = 0: the centre). */
-	static int[] ringCell(int r, int index) {
+	public static int[] ringCell(int r, int index) {
 		if (r == 0) {
 			return new int[] {0, 0};
 		}
