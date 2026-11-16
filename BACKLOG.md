@@ -8,6 +8,7 @@ Parked ideas and open items, newest first within each project. Agents add to it 
 - **Bury-break system:** how buried loot comes out (shovel-only vs breaking by hand, noise, tools). Today: shovel digs it out loudly; breaking by hand also works, slowly like packed dirt. `specs/undead.md`, Loot on display.
 - **Survival players placing items on display** (decor). Owner: "will need care and consideration." Ops-only command for now. `specs/undead.md`, Loot on display.
 - Anti-waking magic (on the player, applied to sleepers). `specs/undead.md`.
+- Warding and sleepers (owner, 2026-11-15): light, soul fire and a "lull" game event tag that calm sleepers, plus the Warding bell's toll from Infused Gems (data-only link). See `docs/research/area-gems-and-warding.md`.
 - Mob spawner tweaks. `specs/undead.md`.
 - Part 1 next pass: remaining undead variants, armor-shredding fists, Smite insta-kill, bow and headshot rules, stagger animation, zombie grouping, graves and crypts in worldgen, hybrid rendering, real 16x/32x art.
 - Later parts: creepers; **monster camps and the blood moon** (structures with fixed rosters and key blocks, a 7-day blood moon that respawns uncleared structures, red-sky effects; owner's earlier idea with integration notes in `docs/research/camps-blood-moon-idea.md`).
@@ -17,6 +18,7 @@ Parked ideas and open items, newest first within each project. Agents add to it 
 - Real Glider art (16x and 32x, made by a person).
 
 ## Effect gems
+- **Area gems and Warding** (owner ideas, 2026-11-15): mount gems in a vanilla block for an area effect (recommended: bells first, beacons later) and a Warding gem that stops spawns, makes mobs avoid the area and calms sleepers. Options, prior art and owner questions: `docs/research/area-gems-and-warding.md`.
 - **Drawbacks** (shelved by the owner): ideas in `specs/effect-gems.md`.
 - **Per-weapon tuning for gems in bows, crossbows, tridents and maces** (owner, 2026-11-14): they have no material, so they count as diamond level for now; each probably needs its own factor.
 - **Drawback sizes** (owner will playtest): currently 10% each, under 20% stacked.
