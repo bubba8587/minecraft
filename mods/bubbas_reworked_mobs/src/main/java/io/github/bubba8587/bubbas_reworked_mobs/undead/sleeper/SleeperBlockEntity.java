@@ -6,6 +6,8 @@ import java.util.UUID;
 
 import io.github.bubba8587.bubbas_reworked_mobs.registry.ModBlockEntities;
 import io.github.bubba8587.bubbas_reworked_mobs.undead.UndeadTuning;
+import io.github.bubba8587.bubbas_reworked_mobs.warding.Wards;
+import io.github.bubba8587.bubbas_reworked_mobs.warding.WardingTuning;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
@@ -23,6 +25,8 @@ import net.minecraft.world.Containers;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemContainerContents;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -126,6 +130,16 @@ public class SleeperBlockEntity extends BlockEntity implements GameEventListener
 		return disturbance;
 	}
 
+	/** Takes points off the meter (after decaying it to now), never below 0: a Totem of Warding's pulse. */
+	public void calm(long gameTime, float points) {
+		float now = getDisturbance(gameTime);
+		if (now > 0.0F) {
+			disturbance = Math.max(0.0F, now - points);
+			disturbanceTime = gameTime;
+			setChanged();
+		}
+	}
+
 	public boolean isWakePending() {
 		return wakePending;
 	}
@@ -149,6 +163,22 @@ public class SleeperBlockEntity extends BlockEntity implements GameEventListener
 
 	public float getSensitivity() {
 		return sensitivity;
+	}
+
+	/**
+	 * What noise (and robbing) is multiplied by right now: the stored sensitivity, times the light calm when the block
+	 * light here is strong (specs/undead.md "Warding": like torches on a spawner), and 0 inside a full-pyramid ward.
+	 */
+	public float effectiveSensitivity(Level level) {
+		if (Wards.keepsSleepersAsleep(level, worldPosition)) {
+			return 0.0F;
+		}
+		return sensitivity * lightCalm(level, worldPosition);
+	}
+
+	/** {@link WardingTuning#LIGHT_CALM_FACTOR} at block light {@link WardingTuning#LIGHT_CALM_LEVEL} or more, else 1. */
+	public static float lightCalm(Level level, BlockPos pos) {
+		return level.getBrightness(LightLayer.BLOCK, pos) >= WardingTuning.LIGHT_CALM_LEVEL ? WardingTuning.LIGHT_CALM_FACTOR : 1.0F;
 	}
 
 	public void setSensitivity(float sensitivity) {

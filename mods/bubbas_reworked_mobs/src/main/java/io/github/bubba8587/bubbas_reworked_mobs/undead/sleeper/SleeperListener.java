@@ -21,7 +21,9 @@ import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.gameevent.GameEventListener;
 import net.minecraft.world.level.gameevent.PositionSource;
 import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Hears game events for one sleeper, with vanilla's vibration rules (copied from VibrationSystem: spectators,
@@ -93,9 +95,28 @@ public final class SleeperListener implements GameEventListener {
 		if (BlockPos.containing(from).equals(pos)) {
 			return false; // its own block being placed or changed is not a noise to it
 		}
+		// A bell's ring is heard through its own, longer-range path (SleeperBells); its plain block-change vibration isn't.
+		if (event.is(GameEvent.BLOCK_CHANGE) && level.getBlockState(BlockPos.containing(from)).is(Blocks.BELL)) {
+			return false;
+		}
 		Vec3 here = Vec3.atCenterOf(pos);
 		double distance = from.distanceTo(here);
-		float points = SleeperHearing.loudness(event, distance, entity != null && entity.isSprinting()) * sleeper.getSensitivity();
+		float points = SleeperHearing.loudness(event, distance, entity != null && entity.isSprinting());
+		if (points <= 0.0F) {
+			return false; // out of earshot: skip the light and ward lookups
+		}
+		return hear(level, from, points * sleeper.effectiveSensitivity(level), entity, distance, awaken);
+	}
+
+	/**
+	 * A noise of {@code points} (after falloff and sensitivity, before walls) reaches this sleeper from {@code from}:
+	 * wool blocks it, walls muffle it, then it fills the meter and may stir or wake the sleeper.
+	 *
+	 * @return whether the sleeper heard it
+	 */
+	boolean hear(ServerLevel level, Vec3 from, float points, @Nullable Entity entity, double distance, boolean awaken) {
+		BlockPos pos = sleeper.getBlockPos();
+		Vec3 here = Vec3.atCenterOf(pos);
 		if (points <= 0.0F || isOccluded(level, from, here)) {
 			return false;
 		}

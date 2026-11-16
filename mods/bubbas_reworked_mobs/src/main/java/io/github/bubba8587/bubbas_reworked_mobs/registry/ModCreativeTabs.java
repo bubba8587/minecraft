@@ -32,6 +32,7 @@ public final class ModCreativeTabs {
 							}
 						}
 						output.accept(ModItems.GRAVE_TALISMAN);
+						output.accept(ModItems.TOTEM_OF_WARDING);
 					})
 					.build());
 

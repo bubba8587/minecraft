@@ -13,5 +13,6 @@
   "gamerule.bubbas_reworked_mobs.cut_monster_spawns": "Cut natural monster spawns",
   "gamerule.bubbas_reworked_mobs.monster_cap_percent": "Natural monster cap (% of vanilla)",
   "item.bubbas_reworked_mobs.grave_talisman": "Grave Talisman",
+  "item.bubbas_reworked_mobs.totem_of_warding": "Totem of Warding",
   "itemGroup.bubbas_reworked_mobs": "Bubba's Reworked Mobs"
 }

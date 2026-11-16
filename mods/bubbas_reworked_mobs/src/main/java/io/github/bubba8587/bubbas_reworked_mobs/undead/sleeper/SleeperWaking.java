@@ -104,7 +104,7 @@ public final class SleeperWaking {
 			player.getInventory().placeItemBackInInventory(stack, Prediction.SERVER_ONLY);
 			level.playSound(null, pos, SoundEvents.ARMOR_EQUIP_GENERIC.value(), SoundSource.PLAYERS, 0.6F, 0.8F);
 			float chance = (slot.getType() == EquipmentSlot.Type.HAND ? UndeadTuning.ROB_WEAPON_WAKE_CHANCE : UndeadTuning.ROB_ARMOR_WAKE_CHANCE)
-					* sleeper.getSensitivity();
+					* sleeper.effectiveSensitivity(level);
 			if (!sleeper.isWakePending() && level.getRandom().nextFloat() < chance) {
 				sleeper.scheduleWake(level, player.position(), player.getUUID(), 2);
 			}

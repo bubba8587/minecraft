@@ -165,6 +165,7 @@ public class ModDataGenerator implements DataGeneratorEntrypoint {
 			builder.add(ModEntities.woken(UndeadVariant.SKELETON), "Skeleton");
 			builder.add(ModEntities.woken(UndeadVariant.ZOMBIE), "Zombie");
 			builder.add(ModItems.GRAVE_TALISMAN, "Grave Talisman");
+			builder.add(ModItems.TOTEM_OF_WARDING, "Totem of Warding");
 			builder.add(ModCreativeTabs.MAIN_KEY, "Bubba's Reworked Mobs");
 			builder.add(ModBlocks.LOOT_DISPLAY, "Loot on Display");
 			builder.add(LootDisplays.BURIED_HINT, "It's buried. Dig it up with a shovel.");
@@ -203,6 +204,7 @@ public class ModDataGenerator implements DataGeneratorEntrypoint {
 			for (UndeadVariant variant : UndeadVariant.values()) {
 				gen.generateFlatItem(ModItems.sleeper(variant), ModelTemplates.FLAT_ITEM);
 			}
+			gen.generateFlatItem(ModItems.TOTEM_OF_WARDING, ModelTemplates.FLAT_ITEM);
 			// Grave Talisman: the flat item, plus a lit gem by glow level. The models are hand-written in src/main/resources
 			// (they share a held pose, item/grave_talisman_held, and the gem cuboids give off light).
 			GraveTalismanGlow.registerProperty();
