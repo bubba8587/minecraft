@@ -9,12 +9,21 @@ apply from: rootProject.file('gradle/fabric-mod.gradle')
 
 // The mods under test, as their built jars on the game's classpath (Fabric Loader finds a fabric.mod.json in
 // each jar and loads it as a mod, the same as in a Modrinth profile). Gradle builds the jars first.
-def modsUnderTest = ['bubbas_reworked_mobs', 'bubbas_crafting_tweaks', 'bubbas_infused_gems']
+def modsUnderTest = ['bubbas_reworked_mobs', 'bubbas_crafting_tweaks', 'bubbas_infused_gems', 'bubbas_reworked_beacons']
 // Configure those projects first so their jar tasks exist whichever project Gradle configures first.
 modsUnderTest.each { evaluationDependsOn(":${it}") }
 def modJars = files(modsUnderTest.collect { m -> rootProject.project(":${m}").tasks.named('jar').flatMap { it.archiveFile } })
+// The game reads the jars from a private copy: another agent rebuilding a mod mid-run rewrites its jar in place, and
+// the running game then fails to load classes from it ("invalid LOC header").
+def snapshotDir = layout.buildDirectory.dir('modsUnderTest')
+def snapshotJars = tasks.register('snapshotModJars', Sync) {
+	from modJars
+	into snapshotDir
+}
 dependencies {
-	runtimeOnly modJars
+	runtimeOnly files(snapshotDir.map { d -> d.asFileTree }) {
+		builtBy snapshotJars
+	}
 }
 
 def testWorld = rootProject.file('testworlds/bubba-test-world')

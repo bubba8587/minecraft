@@ -1,5 +1,5 @@
-built: 2026-11-15T22:21:59-06:00
+built: 2026-11-15T23:45:17-06:00
 minecraft: 26.3
-mods: bubbas_reworked_mobs-0.1.0+26.3.jar, bubbas_crafting_tweaks-0.1.0+26.3.jar, bubbas_infused_gems-0.1.0+26.3.jar
+mods: bubbas_reworked_mobs-0.1.0+26.3.jar, bubbas_crafting_tweaks-0.1.0+26.3.jar, bubbas_infused_gems-0.1.0+26.3.jar, bubbas_reworked_beacons-0.1.0+26.3.jar
 builder: testworlds/builder (python tools/build-testworld.py); spec: specs/testworld.md
 Pristine copy: never open this folder in the game. tools/install-to-modrinth.ps1 copies it into saves/.

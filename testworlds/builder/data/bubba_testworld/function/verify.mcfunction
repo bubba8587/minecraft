@@ -169,3 +169,21 @@ execute if block 16 -56 92 minecraft:stone_bricks
 execute if block 0 -58 80 minecraft:air
 execute if data block 4 -59 65 front_text.messages[0].click_event{command:"kill @e[tag=tw_boss]"}
 execute if data block -13 -59 65 front_text.messages[1].click_event{command:"gems kit breeze"}
+# beacons and warding (Reworked Beacons + Reworked Mobs)
+execute if block 33 -57 81 minecraft:iron_block
+execute if block 29 -60 85 minecraft:iron_block
+execute if data block 34 -60 75 Items[{id:"bubbas_infused_gems:gem",components:{"bubbas_infused_gems:gem":{effect:"minecraft:speed",infusion:5}}}]
+execute if data block -40 -59 88 {"bubbas_reworked_beacons:item":{components:{"bubbas_infused_gems:gem":{effect:"minecraft:poison"}}}}
+execute if entity @e[type=minecraft:pig,tag=tw_trap]
+execute if block 0 30 79 minecraft:beacon[upside_down=true]
+execute if block 0 24 79 minecraft:beacon[upside_down=false]
+execute if block 0 27 79 minecraft:air
+execute if block 4 34 83 minecraft:gold_block
+execute if block -4 20 75 minecraft:iron_block
+execute if data block -5 24 73 Items[{id:"bubbas_reworked_mobs:totem_of_warding"}]
+execute if block 0 13 79 minecraft:air
+execute if block 0 49 79 minecraft:air
+execute if block 0 15 79 minecraft:deepslate_tiles
+execute if data block 3 -60 27 front_text.messages[0].click_event{command:"give @s bubbas_reworked_mobs:totem_of_warding"}
+execute if data block 14 -60 62 front_text.messages[0].click_event{command:"gamerule spawn_mobs true"}
+execute unless entity @e[type=bubbas_reworked_mobs:woken_skeleton,x=43,y=-60,z=85,distance=..16]

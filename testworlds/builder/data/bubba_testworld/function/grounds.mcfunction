@@ -40,3 +40,5 @@ function bubba_testworld:grounds_dark
 function bubba_testworld:grounds_food
 function bubba_testworld:grounds_mining
 function bubba_testworld:grounds_arena
+function bubba_testworld:grounds_beacons
+function bubba_testworld:grounds_paired

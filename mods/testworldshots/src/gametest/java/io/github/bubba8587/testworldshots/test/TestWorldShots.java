@@ -229,6 +229,33 @@ public class TestWorldShots implements FabricClientGameTest {
 		context.waitTicks(10);
 		shot("bossarena_juggernaut", 0.5, -57.8, 75.5, 0.5, -59, 80.5);
 		world.getServer().runCommand("kill @e[tag=tw_boss]");
+
+		// Beacons and warding: beacon yard x 20..37, z 64..86; poison trap around (-40, 88); bell lane z 54; light rings at
+		// (43, 80) lit and (43, 90) dark; paired beacons room high above the boss arena (floor beacon 0 24 79).
+		shot("beacons_yard", 28, -46, 58, 28, -58, 78);
+		shot("beacons_yard_4layer_signs", 33, -58.4, 71.8, 33, -59.5, 75.5);
+		chest("beacons_gem_chest", 34, -60, 75);
+		shot("beacons_trap_zone", -36, -52, 70, -40, -60, 83);
+		// The beacon pulses every 80 ticks once its chunk ticks again; a Poison gem hurts steadily (never below 1 health),
+		// so the pig loses health. Give it up to 300 ticks.
+		boolean poisoned = false;
+		for (int i = 0; i < 15 && !poisoned; i++) {
+			context.waitTicks(20);
+			poisoned = world.getServer().computeOnServer(server -> server.overworld().getEntities(
+					EntityTypeTest.forClass(net.minecraft.world.entity.LivingEntity.class),
+					e -> e.entityTags().contains("tw_trap") && e instanceof net.minecraft.world.entity.animal.pig.Pig
+							&& e.getHealth() < e.getMaxHealth()).size() == 1);
+		}
+		if (!poisoned) {
+			throw new AssertionError("the Poison beacon's trap zone did not hurt the pig within 300 ticks");
+		}
+		shot("beacons_trap_poisoned", -40, -57.2, 76.5, -41, -59.8, 81.5);
+		shot("warding_bell_lane", 38, -57, 48.5, 38, -60, 54);
+		shot("warding_light_rings", 35.5, -55, 85, 43, -60, 85);
+		shot("warding_ground_signs", 15, -58.4, 58.8, 15, -59.5, 62.5);
+		shot("paired_room_beam", 6, 25.8, 73.5, 0, 27, 79);
+		shot("paired_room_signs", 1, 25.6, 74.5, 1, 25.2, 71);
+		shot("paired_room_sleepers", 0.5, 26.2, 77, 0, 24.5, 85.5);
 	}
 
 	/**
