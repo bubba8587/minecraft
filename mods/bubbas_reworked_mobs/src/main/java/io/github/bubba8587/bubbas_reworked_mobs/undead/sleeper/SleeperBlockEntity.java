@@ -176,7 +176,12 @@ public class SleeperBlockEntity extends BlockEntity implements GameEventListener
 
 	/** {@link UndeadTuning#LIGHT_CALM_FACTOR} at block light {@link UndeadTuning#LIGHT_CALM_LEVEL} or more, else 1. */
 	public static float lightCalm(Level level, BlockPos pos) {
-		return level.getBrightness(LightLayer.BLOCK, pos) >= UndeadTuning.LIGHT_CALM_LEVEL ? UndeadTuning.LIGHT_CALM_FACTOR : 1.0F;
+		return lightCalm(level.getBrightness(LightLayer.BLOCK, pos));
+	}
+
+	/** The light-calm factor for this block light level. */
+	public static float lightCalm(int blockLight) {
+		return blockLight >= UndeadTuning.LIGHT_CALM_LEVEL ? UndeadTuning.LIGHT_CALM_FACTOR : 1.0F;
 	}
 
 	public void setSensitivity(float sensitivity) {

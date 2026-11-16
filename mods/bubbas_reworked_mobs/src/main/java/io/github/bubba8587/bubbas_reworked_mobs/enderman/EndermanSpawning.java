@@ -32,8 +32,8 @@ import org.jspecify.annotations.Nullable;
  * the overworld, and endermen spawn near cairn sites instead (the nexus). A site spawns while a player is within
  * SITE_ACTIVE_RANGE: slowly while its cairn is unfinished, much faster once it matches its design, and faster the more
  * of its endermen are already about (left alone it snowballs; killing them slows it, tearing the cairn down drops it
- * back to the unfinished rate). A ward over the site's centre stops it. New endermen arrive carrying one of the
- * cairn's missing blocks (builders), carrying the original block for a hole nearby, or empty-handed (repairers).
+ * back to the unfinished rate). A ward over the site's centre stops it. New endermen arrive carrying the lowest of the
+ * cairn's missing blocks that no enderman there carries yet (builders; one that can't go in yet waits by the cairn), carrying the original block for a hole nearby, or empty-handed (repairers).
  *
  * <p>Vanilla's spawn rules still apply to each spot: the biome must list endermen, the spot must pass the enderman's
  * spawn placement and darkness rules, and spawn_mobs / spawn_monsters and peaceful turn it off. Everything follows
@@ -155,10 +155,14 @@ public final class EndermanSpawning {
 			return;
 		}
 		if (!complete && random.nextFloat() < EndermanTuning.BUILDER_SHARE) {
-			BlockPos spot = site.nextBuildable(level);
+			// The lowest missing block nobody here carries yet; it goes in now if it can, else it waits by the cairn.
+			BlockPos spot = site.nextUnclaimed(level, endermenAt(level, site));
 			if (spot != null) {
-				enderman.setCarriedBlock(site.at(spot));
-				mind.set(EndermanMind.Job.DELIVER, spot, level.getGameTime());
+				BlockState want = site.at(spot);
+				enderman.setCarriedBlock(want);
+				if (CairnSite.canPlace(level, spot, want)) {
+					mind.set(EndermanMind.Job.DELIVER, spot, level.getGameTime());
+				}
 				return;
 			}
 		}

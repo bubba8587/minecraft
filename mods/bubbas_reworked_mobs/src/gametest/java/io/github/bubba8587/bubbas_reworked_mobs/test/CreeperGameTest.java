@@ -39,6 +39,18 @@ public class CreeperGameTest {
 		return creeper;
 	}
 
+	/**
+	 * Midnight, clear sky, right now. The night test environments set the clock at batch start, but these spawn tests
+	 * still saw daylight-level sky light (12) now and then (rain, or the clock not applied yet); spawning needs dark.
+	 */
+	static void forceNight(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		level.getServer().clockManager().setTotalTicks(
+				level.registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.WORLD_CLOCK).getOrThrow(net.minecraft.world.clock.WorldClocks.OVERWORLD), 18000L);
+		level.getServer().setWeatherParameters(12000, 0, false, false);
+		level.updateSkyBrightness();
+	}
+
 	static ServerPlayer player(GameTestHelper helper, double x, double z) {
 		ServerPlayer player = SleeperNoiseGameTest.survivalPlayer(helper);
 		Vec3 abs = helper.absoluteVec(new Vec3(x, 1.0, z));
@@ -242,6 +254,7 @@ public class CreeperGameTest {
 	 */
 	@GameTest(environment = "bubbas_reworked_mobs-test:creeper_spawn", structure = FIELD, maxTicks = 200)
 	public void oneWatcherSpawnsBehindCoverOutOfView(GameTestHelper helper) {
+		forceNight(helper);
 		for (int x = 2; x <= 22; x += 3) {
 			for (int y = 1; y <= 3; y++) {
 				helper.setBlock(new BlockPos(x, y, 10), Blocks.STONE);

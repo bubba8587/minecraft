@@ -62,6 +62,17 @@ public final class EndermanTuning {
 	/** Idle near a complete cairn: chance per job search to go and stand on it, and for how long. */
 	public static final float PERCH_CHANCE = 0.08F;
 	public static final int PERCH_TICKS = 300;
+	/** Idle with nothing to do: chance per job search to hop (teleport) somewhere nearby and look for work there. */
+	public static final float ROAM_CHANCE = 0.06F;
+	/** ...but only after this many job searches in a row found nothing here (about 10 s: it looks around first). */
+	public static final int ROAM_PATIENCE = 8;
+	/** How far one hop goes. */
+	public static final int ROAM_MIN = 8;
+	public static final int ROAM_MAX = 24;
+	/** Roaming stays within this distance of the nearest cairn (its territory); farther out, hops lead back toward it. */
+	public static final int ROAM_RADIUS = 64;
+	/** A builder whose block can't go in yet waits within this distance of its cairn (teleports back if farther). */
+	public static final int WAIT_RADIUS = 8;
 
 	// --- spawning (D2) -------------------------------------------------------------------------
 	/** Ticks between spawn checks. */

@@ -103,6 +103,34 @@ public final class CairnSite {
 		return false;
 	}
 
+	/**
+	 * The lowest missing block that none of {@code nearby} is already carrying, or null. Stateless: carried blocks are
+	 * matched to missing spots of the same block, bottom up, so each newcomer brings the next block nobody has yet
+	 * (builders split the work instead of all bringing the same one). It may not be placeable yet.
+	 */
+	public @Nullable BlockPos nextUnclaimed(ServerLevel level, List<? extends net.minecraft.world.entity.monster.Enderman> nearby) {
+		java.util.Map<net.minecraft.world.level.block.Block, Integer> carried = new java.util.HashMap<>();
+		for (net.minecraft.world.entity.monster.Enderman e : nearby) {
+			BlockState held = e.getCarriedBlock();
+			if (held != null) {
+				carried.merge(held.getBlock(), 1, Integer::sum);
+			}
+		}
+		for (BlockPos pos : order) {
+			BlockState want = blocks.get(pos.asLong());
+			if (!level.isLoaded(pos) || TerrainKinds.matches(level.getBlockState(pos), want)) {
+				continue;
+			}
+			Integer held = carried.get(want.getBlock());
+			if (held != null && held > 0) {
+				carried.put(want.getBlock(), held - 1);
+				continue;
+			}
+			return pos;
+		}
+		return null;
+	}
+
 	/** The lowest missing block that can be placed now, or null (the cairn is complete or nothing is reachable). */
 	public @Nullable BlockPos nextBuildable(ServerLevel level) {
 		for (BlockPos pos : order) {

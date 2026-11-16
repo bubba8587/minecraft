@@ -40,6 +40,12 @@ public class SleeperCalmGameTest {
 	 * Core. A sleeper in the dark takes noise in full; with a glowstone block next to it (light 14) it takes x0.7.
 	 * The test server's light engine catches up slowly (light was still 0 after 40 ticks), hence the long timeout.
 	 */
+	/** Core part: a sleeper in the dark takes noise in full (reads the real light; 0 is the light engine's default). */
+	public void darkSleeperAtFullSensitivity(GameTestHelper helper) {
+		SleeperBlockEntity sleeper = sleeper(helper, new BlockPos(4, 1, 4));
+		helper.assertTrue(sleeper.effectiveSensitivity(helper.getLevel()) == 1.0F, "dark sleeper not at full sensitivity");
+	}
+
 	public void strongLightCalmsSleepers(GameTestHelper helper) {
 		BlockPos pos = new BlockPos(4, 1, 4);
 		SleeperBlockEntity sleeper = sleeper(helper, pos);

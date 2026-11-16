@@ -8,6 +8,8 @@ import java.util.List;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.monster.Enderman;
 import net.minecraft.world.level.block.Block;
@@ -15,6 +17,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.gamerules.GameRules;
+import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
@@ -24,7 +27,8 @@ import org.jspecify.annotations.Nullable;
  * goals: carrying a block, it takes it to a spot that needs it (a cairn's missing block, or a hole whose original
  * terrain is its family); empty-handed, it takes a block that doesn't belong, or jumps on farmland that should be dirt.
  * It walks, and teleports when far or stuck. If no spot needs what it carries it keeps it (and the block vanishes
- * when it despawns). Off while angry, and off when mob griefing is off (vanilla's rule for enderman blocks).
+ * when it despawns); a builder whose block can't go in yet waits by its cairn. With nothing to do it now and then hops
+ * somewhere else in its cairn's territory (ROAM_RADIUS) and looks for work there. Off while angry, and off when mob griefing is off (vanilla's rule for enderman blocks).
  */
 public final class EndermanJobGoal extends Goal {
 	private final Enderman enderman;
@@ -33,6 +37,8 @@ public final class EndermanJobGoal extends Goal {
 	private int nextPath;
 	private double bestDistance;
 	private int stuckTicks;
+	/** Job searches in a row that found nothing to do here. */
+	private int idleSearches;
 
 	public EndermanJobGoal(Enderman enderman, EndermanMind mind) {
 		this.enderman = enderman;
@@ -57,7 +63,9 @@ public final class EndermanJobGoal extends Goal {
 			return false;
 		}
 		nextSearch = enderman.tickCount + EndermanTuning.JOB_SCAN_INTERVAL + enderman.getRandom().nextInt(10);
-		return plan(level);
+		boolean found = plan(level);
+		idleSearches = found ? 0 : idleSearches + 1;
+		return found;
 	}
 
 	/** Looks for a job; true when it found one. */
@@ -71,12 +79,24 @@ public final class EndermanJobGoal extends Goal {
 				mind.set(EndermanMind.Job.DELIVER, spot, now);
 				return true;
 			}
+			// A builder whose block can't go in yet (the blocks under it are still missing) waits by its cairn.
+			CairnSite waitingFor = siteWanting(level, here, carried);
+			if (waitingFor != null) {
+				if (Math.sqrt(horizontalDistSqr(here, waitingFor.origin())) > EndermanTuning.WAIT_RADIUS) {
+					teleportNear(level, waitingFor.origin().above(2));
+				}
+				return false;
+			}
 		} else {
 			EndermanWork.Found found = EndermanWork.findWork(level, here, enderman.getRandom(), EndermanWork.wanted(level, here));
 			if (found != null) {
 				mind.set(found.kind() == EndermanWork.Kind.TRAMPLE ? EndermanMind.Job.TRAMPLE : EndermanMind.Job.TAKE, found.pos(), now);
 				return true;
 			}
+		}
+		if (idleSearches >= EndermanTuning.ROAM_PATIENCE && enderman.getRandom().nextFloat() < EndermanTuning.ROAM_CHANCE) {
+			roam(level, here);
+			return false;
 		}
 		if (enderman.getRandom().nextFloat() < EndermanTuning.PERCH_CHANCE) {
 			CairnSite site = CairnSites.nearest(level, here, EndermanTuning.SITE_RADIUS);
@@ -185,6 +205,53 @@ public final class EndermanJobGoal extends Goal {
 		if (--nextPath <= 0) {
 			nextPath = 10;
 			enderman.getNavigation().moveTo(goal.x, goal.y, goal.z, 1.0);
+		}
+	}
+
+	/** The nearest unfinished cairn within SITE_WORK_RADIUS that is missing {@code carried}'s block, or null. */
+	private static @Nullable CairnSite siteWanting(ServerLevel level, BlockPos here, BlockState carried) {
+		CairnSite best = null;
+		for (CairnSite site : CairnSites.near(level, here, EndermanTuning.SITE_WORK_RADIUS)) {
+			if (site.wants(level, carried.getBlock()) && (best == null || horizontalDistSqr(site.origin(), here) < horizontalDistSqr(best.origin(), here))) {
+				best = site;
+			}
+		}
+		return best;
+	}
+
+	private static double horizontalDistSqr(BlockPos a, BlockPos b) {
+		double dx = a.getX() - b.getX();
+		double dz = a.getZ() - b.getZ();
+		return dx * dx + dz * dz;
+	}
+
+	/**
+	 * One hop somewhere nearby to look for work there (the caretaker ranging over its cairn's territory). Stays within
+	 * ROAM_RADIUS of the nearest cairn: from farther out, the hop leads back toward it. Endermen with no cairn about
+	 * (spawn eggs) hop anywhere.
+	 */
+	private void roam(ServerLevel level, BlockPos here) {
+		RandomSource random = enderman.getRandom();
+		CairnSite home = CairnSites.nearest(level, here, EndermanTuning.ROAM_RADIUS * 2);
+		for (int i = 0; i < 4; i++) {
+			double angle = random.nextDouble() * Math.PI * 2.0;
+			double distance = Mth.lerp(random.nextDouble(), EndermanTuning.ROAM_MIN, EndermanTuning.ROAM_MAX);
+			if (home != null && horizontalDistSqr(here, home.origin()) > (double) EndermanTuning.ROAM_RADIUS * EndermanTuning.ROAM_RADIUS) {
+				angle = Math.atan2(home.origin().getZ() - here.getZ(), home.origin().getX() - here.getX()) + (random.nextDouble() - 0.5);
+			}
+			int x = Mth.floor(here.getX() + Math.cos(angle) * distance);
+			int z = Mth.floor(here.getZ() + Math.sin(angle) * distance);
+			if (!level.hasChunk(x >> 4, z >> 4)) {
+				continue;
+			}
+			BlockPos feet = new BlockPos(x, level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z), z);
+			if (home != null && horizontalDistSqr(feet, home.origin()) > (double) EndermanTuning.ROAM_RADIUS * EndermanTuning.ROAM_RADIUS
+					&& horizontalDistSqr(feet, home.origin()) >= horizontalDistSqr(here, home.origin())) {
+				continue;
+			}
+			if (standable(level, feet) && !EndermanWards.isWarded(level, feet) && enderman.teleport(x + 0.5, feet.getY(), z + 0.5)) {
+				return;
+			}
 		}
 	}
 

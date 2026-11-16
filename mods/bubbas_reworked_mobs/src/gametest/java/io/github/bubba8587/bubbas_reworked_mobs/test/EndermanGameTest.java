@@ -300,6 +300,7 @@ public class EndermanGameTest {
 	}
 
 	private void spawnsBuildersUpToItsCap(GameTestHelper helper) {
+		CreeperGameTest.forceNight(helper);
 		ServerLevel level = helper.getLevel();
 		helper.assertTrue(EndermanSpawning.blocksVanillaSpawn(level, EntityTypes.ENDERMAN), "vanilla overworld enderman spawns should be blocked");
 		helper.assertFalse(EndermanSpawning.blocksVanillaSpawn(level, EntityTypes.ZOMBIE), "only endermen are blocked");
@@ -325,19 +326,32 @@ public class EndermanGameTest {
 				double d = Math.sqrt(e.blockPosition().distSqr(site.origin().atY(e.getBlockY())));
 				helper.assertTrue(d >= 3.0 && d <= 8.0, "spawned " + d + " blocks out");
 			}
-			// Jobs for newcomers: most carry one of the unfinished cairn's blocks, destined for its spot.
+			// Jobs for newcomers: most carry one of the unfinished cairn's missing blocks (going in now when it can).
 			int builders = 0;
 			for (int i = 0; i < 20; i++) {
 				Enderman e = EntityTypes.ENDERMAN.create(level, net.minecraft.world.entity.EntitySpawnReason.NATURAL);
 				e.snapTo(Vec3.atBottomCenterOf(site.origin().offset(5, 0, 0)));
 				EndermanSpawning.giveJob(level, e, site, false, level.getRandom());
 				EndermanMind mind = EndermanMind.of(e);
-				if (e.getCarriedBlock() != null && mind.job() == EndermanMind.Job.DELIVER && site.at(mind.target()) == e.getCarriedBlock()) {
+				if (e.getCarriedBlock() != null && site.wants(level, e.getCarriedBlock().getBlock())
+						&& (mind.job() == null || mind.job() == EndermanMind.Job.DELIVER && site.at(mind.target()) == e.getCarriedBlock())) {
 					builders++;
 				}
 				e.discard();
 			}
 			helper.assertTrue(builders >= 6 && builders < 20, "about two thirds of newcomers should be builders, got " + builders + " of 20");
+			// Builders split the work: each newcomer brings the lowest missing block nobody there carries yet.
+			List<Enderman> carriers = new ArrayList<>();
+			List<BlockPos> claimed = new ArrayList<>();
+			for (int i = 0; i < 3; i++) {
+				BlockPos next = site.nextUnclaimed(level, carriers);
+				helper.assertTrue(next != null && !claimed.contains(next), "newcomer " + i + " should bring a block nobody carries, got " + next + " after " + claimed);
+				Enderman carrier = EntityTypes.ENDERMAN.create(level, net.minecraft.world.entity.EntitySpawnReason.NATURAL);
+				carrier.setCarriedBlock(site.at(next));
+				carriers.add(carrier);
+				claimed.add(next);
+			}
+			carriers.forEach(Enderman::discard);
 		} finally {
 			spawned.forEach(e -> e.discard());
 			CairnSites.removeSite(level, site);
