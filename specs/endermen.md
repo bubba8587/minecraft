@@ -19,6 +19,7 @@ Owner's design (2026-11-16), being worked out in conversation. Endermen are the 
 ## Owner answers
 
 - **E1 what they touch:** no record of placed blocks. Endermen cheaply bucket each spot by **'does this block generate naturally'**: natural block types (dirt, stone, grass, sand...) are freely reverted toward the original, **including air where ground used to be** (dig out an area and they slowly fill it back; they might eventually bury your house); **unnatural** blocks (planks, glass, bricks, anything crafted) have only a **much smaller chance** of being touched.
+- **E2 protection, both:** cairn sites are predetermined at worldgen and act as a **nexus**: a higher endermen spawn rate there, **significantly higher once the cairn is complete**. Killing endermen thins them but doesn't stop the flow from a nexus. **Wards definitely work**: a Totem of Warding area keeps endermen (and their work) out.
 
 ## Open questions (owner)
 
