@@ -59,18 +59,11 @@ public final class EndermanTuning {
 	public static final int STUCK_TICKS = 60;
 	/** A job not done in this long is dropped (the block, if carried, is kept). */
 	public static final int JOB_TIMEOUT = 600;
-	/** Idle near a complete cairn: chance per job search to go and stand on it, and for how long. */
-	public static final float PERCH_CHANCE = 0.08F;
-	public static final int PERCH_TICKS = 300;
-	/** Idle with nothing to do: chance per job search to hop (teleport) somewhere nearby and look for work there. */
-	public static final float ROAM_CHANCE = 0.06F;
-	/** ...but only after this many job searches in a row found nothing here (about 10 s: it looks around first). */
-	public static final int ROAM_PATIENCE = 8;
-	/** How far one hop goes. */
-	public static final int ROAM_MIN = 8;
-	public static final int ROAM_MAX = 24;
-	/** Roaming stays within the nearest cairn's territory; farther out, hops lead back toward it. */
-	public static final int ROAM_RADIUS = 64; // same as SITE_RADIUS (declared below)
+	/** Vigil (owner, 2026-11-16): endermen with nothing to do at a complete cairn stand in a ring around it, staring at it. */
+	/** The ring is this far outside the cairn's footprint. */
+	public static final int VIGIL_GAP = 3;
+	/** A vigil lasts this long, then it looks around for work (and most likely takes up its place again). */
+	public static final int VIGIL_TICKS = 1200;
 	/** A builder whose block can't go in yet waits within this distance of its cairn (teleports back if farther). */
 	public static final int WAIT_RADIUS = 8;
 
@@ -79,7 +72,7 @@ public final class EndermanTuning {
 	public static final int SPAWN_INTERVAL = 100;
 	/** A site spawns only while a player is within this distance of it (and its chunk is loaded). */
 	public static final int SITE_ACTIVE_RANGE = 96;
-	/** A site's territory: endermen within this distance count as its own, and idle ones roam within it. */
+	/** Endermen within this distance of a site count as its own (snowball and cap). */
 	public static final int SITE_RADIUS = 64;
 	/** Spawn spots: this far from the site centre (out of the end rods' light). */
 	public static final int SPAWN_MIN_DISTANCE = 12;
@@ -87,16 +80,22 @@ public final class EndermanTuning {
 	public static final int SPAWN_TRIES = 8;
 	/** Spawn spots are within this many blocks up or down of the site's ground (not on a mountain above it or in a cave below). */
 	public static final int SPAWN_HEIGHT = 6;
-	/** Chance per spawn check that a site spawns one enderman: unfinished, and complete (E2: significantly higher). */
-	public static final float SPAWN_CHANCE_UNFINISHED = 0.12F;
+	/**
+	 * Chance per spawn check that a site spawns one enderman (owner, 2026-11-16: building is slow, and speeds up as the
+	 * cairn fills in): from SPAWN_CHANCE_EMPTY with nothing standing, rising in step with the share of the design that
+	 * stands, to SPAWN_CHANCE_ALMOST one block short; SPAWN_CHANCE_COMPLETE once it matches its design (E2).
+	 */
+	public static final float SPAWN_CHANCE_EMPTY = 0.02F;
+	public static final float SPAWN_CHANCE_ALMOST = 0.20F;
 	public static final float SPAWN_CHANCE_COMPLETE = 0.35F;
 	/** Snowball: each enderman already at the site raises the chance by this fraction of itself (left alone, more come). */
 	public static final float SNOWBALL_PER_ENDERMAN = 0.3F;
-	/** A site stops spawning at this many of its own endermen. */
-	public static final int CAP_UNFINISHED = 3;
+	/** A site stops spawning at this many of its own endermen: CAP_EMPTY rising to CAP_ALMOST as it fills in, CAP_COMPLETE once done. */
+	public static final int CAP_EMPTY = 2;
+	public static final int CAP_ALMOST = 6;
 	public static final int CAP_COMPLETE = 8;
 	/** At an unfinished site, the share of new endermen that arrive carrying one of its blocks. */
-	public static final float BUILDER_SHARE = 0.65F;
+	public static final float BUILDER_SHARE = 0.5F;
 
 	// --- hostility (E4) ------------------------------------------------------------------------
 	/** Breaking a cairn block, or hitting an enderman near a site, angers endermen within this distance. */

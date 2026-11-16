@@ -30,8 +30,8 @@ import org.jspecify.annotations.Nullable;
 /**
  * Where overworld endermen come from (D2, E2, specs/endermen.md): vanilla's random natural enderman spawns are off in
  * the overworld, and endermen spawn near cairn sites instead (the nexus). A site spawns while a player is within
- * SITE_ACTIVE_RANGE: slowly while its cairn is unfinished, much faster once it matches its design, and faster the more
- * of its endermen are already about (left alone it snowballs; killing them slows it, tearing the cairn down drops it
+ * SITE_ACTIVE_RANGE: slowly while its cairn is a stub, faster as it fills in (chance and cap rise with the share
+ * standing), much faster once it matches its design, and faster the more of its endermen are already about (left alone it snowballs; killing them slows it, tearing the cairn down drops it
  * back to the unfinished rate). A ward over the site's centre stops it. New endermen arrive carrying the lowest of the
  * cairn's missing blocks that no enderman there carries yet (builders; one that can't go in yet waits by the cairn), carrying the original block for a hole nearby, or empty-handed (repairers).
  *
@@ -79,10 +79,17 @@ public final class EndermanSpawning {
 		return level.getEntitiesOfClass(Enderman.class, new AABB(site.origin()).inflate(EndermanTuning.SITE_RADIUS), Enderman::isAlive);
 	}
 
-	/** This check's spawn chance for a site with {@code present} of its endermen about. */
-	public static float chance(boolean complete, int present) {
-		float base = complete ? EndermanTuning.SPAWN_CHANCE_COMPLETE : EndermanTuning.SPAWN_CHANCE_UNFINISHED;
+	/** This check's spawn chance for a site {@code finished} (0-1) built, with {@code present} of its endermen about. */
+	public static float chance(float finished, int present) {
+		float base = finished >= 1.0F ? EndermanTuning.SPAWN_CHANCE_COMPLETE
+				: Mth.lerp(finished, EndermanTuning.SPAWN_CHANCE_EMPTY, EndermanTuning.SPAWN_CHANCE_ALMOST);
 		return Math.min(1.0F, base * (1.0F + EndermanTuning.SNOWBALL_PER_ENDERMAN * present));
+	}
+
+	/** How many of its own endermen a site {@code finished} (0-1) built spawns at most. */
+	public static int cap(float finished) {
+		return finished >= 1.0F ? EndermanTuning.CAP_COMPLETE
+				: EndermanTuning.CAP_EMPTY + Math.round((EndermanTuning.CAP_ALMOST - EndermanTuning.CAP_EMPTY) * finished);
 	}
 
 	/**
@@ -97,21 +104,27 @@ public final class EndermanSpawning {
 		if (!level.isLoaded(site.origin()) || EndermanWards.isWarded(level, site.origin())) {
 			return null;
 		}
-		boolean complete = site.complete(level);
+		float finished = site.finished(level);
+		boolean complete = finished >= 1.0F;
 		List<Enderman> own = endermenAt(level, site);
 		int present = own.size();
 		boolean bottleneck = false;
-		if (present >= (complete ? EndermanTuning.CAP_COMPLETE : EndermanTuning.CAP_UNFINISHED)) {
-			// At the cap, an unfinished cairn still calls one builder for the block that could go in next if nobody
-			// carries it (its holder died or despawned): otherwise builders holding higher blocks wait forever.
-			BlockPos next = complete ? null : site.nextUnclaimed(level, own);
+		if (present >= cap(finished)) {
+			// At the cap, an unfinished cairn still calls one builder when every block its endermen carry has to wait
+			// (the blocks under them are missing) and the block that could go in next is carried by nobody (its holder
+			// died or despawned): otherwise the build stalls for good. Once that builder is there it can work, so at
+			// most one extra.
+			if (complete || own.stream().anyMatch(e -> e.getCarriedBlock() != null && site.spotFor(level, e.getCarriedBlock()) != null)) {
+				return null;
+			}
+			BlockPos next = site.nextUnclaimed(level, own);
 			if (next == null || !CairnSite.canPlace(level, next, site.at(next))) {
 				return null;
 			}
 			bottleneck = true;
 		}
 		RandomSource random = level.getRandom();
-		if (!force && random.nextFloat() >= chance(complete, present)) {
+		if (!force && random.nextFloat() >= chance(finished, present)) {
 			return null;
 		}
 		for (int i = 0; i < EndermanTuning.SPAWN_TRIES; i++) {
@@ -156,7 +169,10 @@ public final class EndermanSpawning {
 		return null;
 	}
 
-	/** Builder (carries a missing cairn block), filler (carries the block a nearby hole needs) or repairer (empty). */
+	/**
+	 * Builder (carries a missing cairn block), filler (carries the block a nearby hole needs) or repairer (empty). At a
+	 * complete cairn newcomers come empty-handed: with nothing to do they stand vigil around it.
+	 */
 	public static void giveJob(ServerLevel level, Enderman enderman, CairnSite site, boolean complete, RandomSource random) {
 		giveJob(level, enderman, site, complete, false, random);
 	}
@@ -167,7 +183,10 @@ public final class EndermanSpawning {
 		if (mind == null || !level.getGameRules().get(GameRules.MOB_GRIEFING)) {
 			return;
 		}
-		if (!complete && (builder || random.nextFloat() < EndermanTuning.BUILDER_SHARE)) {
+		if (complete) {
+			return;
+		}
+		if (builder || random.nextFloat() < EndermanTuning.BUILDER_SHARE) {
 			// The lowest missing block nobody here carries yet; it goes in now if it can, else it waits by the cairn.
 			BlockPos spot = site.nextUnclaimed(level, endermenAt(level, site));
 			if (spot != null) {

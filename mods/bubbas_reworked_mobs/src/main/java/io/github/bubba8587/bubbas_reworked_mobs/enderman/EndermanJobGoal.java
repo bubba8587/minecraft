@@ -9,7 +9,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.monster.Enderman;
 import net.minecraft.world.level.block.Block;
@@ -27,8 +26,8 @@ import org.jspecify.annotations.Nullable;
  * goals: carrying a block, it takes it to a spot that needs it (a cairn's missing block, or a hole whose original
  * terrain is its family); empty-handed, it takes a block that doesn't belong, or jumps on farmland that should be dirt.
  * It walks, and teleports when far or stuck. If no spot needs what it carries it keeps it (and the block vanishes
- * when it despawns); a builder whose block can't go in yet waits by its cairn. With nothing to do it now and then hops
- * somewhere else in its cairn's territory (ROAM_RADIUS) and looks for work there. Off while angry, and off when mob griefing is off (vanilla's rule for enderman blocks).
+ * when it despawns); a builder whose block can't go in yet waits by its cairn. With nothing to do at a complete cairn
+ * it stands vigil in a ring around it, staring at it. Off while angry, and off when mob griefing is off (vanilla's rule for enderman blocks).
  */
 public final class EndermanJobGoal extends Goal {
 	private final Enderman enderman;
@@ -37,14 +36,14 @@ public final class EndermanJobGoal extends Goal {
 	private int nextPath;
 	private double bestDistance;
 	private int stuckTicks;
-	/** Job searches in a row that found nothing to do here. */
-	private int idleSearches;
+	/** What a vigil stares at: the middle of its cairn. */
+	private BlockPos vigilCentre = BlockPos.ZERO;
 
 	public EndermanJobGoal(Enderman enderman, EndermanMind mind) {
 		this.enderman = enderman;
 		this.mind = mind;
 		this.nextSearch = (enderman.getId() & 15);
-		this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.JUMP));
+		this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.JUMP, Goal.Flag.LOOK));
 	}
 
 	private boolean allowed(ServerLevel level) {
@@ -63,9 +62,7 @@ public final class EndermanJobGoal extends Goal {
 			return false;
 		}
 		nextSearch = enderman.tickCount + EndermanTuning.JOB_SCAN_INTERVAL + enderman.getRandom().nextInt(10);
-		boolean found = plan(level);
-		idleSearches = found ? 0 : idleSearches + 1;
-		return found;
+		return plan(level);
 	}
 
 	/** Looks for a job; true when it found one. */
@@ -94,18 +91,13 @@ public final class EndermanJobGoal extends Goal {
 				return true;
 			}
 		}
-		if (idleSearches >= EndermanTuning.ROAM_PATIENCE && enderman.getRandom().nextFloat() < EndermanTuning.ROAM_CHANCE) {
-			roam(level, here);
-			return false;
-		}
-		if (enderman.getRandom().nextFloat() < EndermanTuning.PERCH_CHANCE) {
-			CairnSite site = CairnSites.nearest(level, here, EndermanTuning.SITE_RADIUS);
-			if (site != null && site.complete(level)) {
-				BlockPos perch = perchOn(level, site);
-				if (perch != null) {
-					mind.set(EndermanMind.Job.PERCH, perch, now);
-					return true;
-				}
+		// Nothing to do near it: at a complete cairn it stands vigil in the ring around it, staring at it (owner).
+		CairnSite site = CairnSites.nearest(level, here, EndermanTuning.SITE_RADIUS);
+		if (site != null && site.complete(level)) {
+			BlockPos place = vigilPlace(level, site);
+			if (place != null) {
+				mind.set(EndermanMind.Job.VIGIL, place, now);
+				return true;
 			}
 		}
 		return false;
@@ -114,7 +106,7 @@ public final class EndermanJobGoal extends Goal {
 	@Override
 	public boolean canContinueToUse() {
 		return mind.job() != null && enderman.level() instanceof ServerLevel level && allowed(level)
-				&& level.getGameTime() - mind.started() < (mind.job() == EndermanMind.Job.PERCH ? EndermanTuning.PERCH_TICKS : EndermanTuning.JOB_TIMEOUT);
+				&& level.getGameTime() - mind.started() < (mind.job() == EndermanMind.Job.VIGIL ? EndermanTuning.VIGIL_TICKS : EndermanTuning.JOB_TIMEOUT);
 	}
 
 	@Override
@@ -173,15 +165,20 @@ public final class EndermanJobGoal extends Goal {
 					approach(level, target.above(), on);
 				}
 			}
-			case PERCH -> {
-				Vec3 on = Vec3.atBottomCenterOf(target);
-				if (enderman.position().distanceToSqr(on) > 1.0) {
-					enderman.teleport(on.x, on.y, on.z);
-					if (enderman.position().distanceToSqr(on) > 1.0) {
-						mind.clear();
-					}
+			case VIGIL -> {
+				Vec3 at = Vec3.atBottomCenterOf(target);
+				CairnSite site = CairnSites.covering(level, vigilCentre);
+				if (site == null || !site.complete(level)) {
+					// Its cairn was damaged or is gone: look for work instead.
+					mind.clear();
+					return;
 				}
-				enderman.getNavigation().stop();
+				if (enderman.position().distanceToSqr(at) > 1.0) {
+					approach(level, target, at);
+				} else {
+					enderman.getNavigation().stop();
+				}
+				enderman.getLookControl().setLookAt(vigilCentre.getX() + 0.5, vigilCentre.getY() + 0.5, vigilCentre.getZ() + 0.5);
 			}
 		}
 	}
@@ -223,36 +220,6 @@ public final class EndermanJobGoal extends Goal {
 		double dx = a.getX() - b.getX();
 		double dz = a.getZ() - b.getZ();
 		return dx * dx + dz * dz;
-	}
-
-	/**
-	 * One hop somewhere nearby to look for work there (the caretaker ranging over its cairn's territory). Stays within
-	 * ROAM_RADIUS of the nearest cairn: from farther out, the hop leads back toward it. Endermen with no cairn about
-	 * (spawn eggs) hop anywhere.
-	 */
-	private void roam(ServerLevel level, BlockPos here) {
-		RandomSource random = enderman.getRandom();
-		CairnSite home = CairnSites.nearest(level, here, EndermanTuning.ROAM_RADIUS * 2);
-		for (int i = 0; i < 4; i++) {
-			double angle = random.nextDouble() * Math.PI * 2.0;
-			double distance = Mth.lerp(random.nextDouble(), EndermanTuning.ROAM_MIN, EndermanTuning.ROAM_MAX);
-			if (home != null && horizontalDistSqr(here, home.origin()) > (double) EndermanTuning.ROAM_RADIUS * EndermanTuning.ROAM_RADIUS) {
-				angle = Math.atan2(home.origin().getZ() - here.getZ(), home.origin().getX() - here.getX()) + (random.nextDouble() - 0.5);
-			}
-			int x = Mth.floor(here.getX() + Math.cos(angle) * distance);
-			int z = Mth.floor(here.getZ() + Math.sin(angle) * distance);
-			if (!level.hasChunk(x >> 4, z >> 4)) {
-				continue;
-			}
-			BlockPos feet = new BlockPos(x, level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z), z);
-			if (home != null && horizontalDistSqr(feet, home.origin()) > (double) EndermanTuning.ROAM_RADIUS * EndermanTuning.ROAM_RADIUS
-					&& horizontalDistSqr(feet, home.origin()) >= horizontalDistSqr(here, home.origin())) {
-				continue;
-			}
-			if (standable(level, feet) && !EndermanWards.isWarded(level, feet) && enderman.teleport(x + 0.5, feet.getY(), z + 0.5)) {
-				return;
-			}
-		}
 	}
 
 	/** Teleports to a free standing spot within reach of {@code job} (on the cairn itself for high blocks). */
@@ -333,13 +300,26 @@ public final class EndermanJobGoal extends Goal {
 		nextSearch = enderman.tickCount;
 	}
 
-	/** A free spot on top of the cairn (its highest standable blocks), or null. */
-	private @Nullable BlockPos perchOn(ServerLevel level, CairnSite site) {
-		List<BlockPos> order = site.order();
-		for (int i = order.size() - 1; i >= 0; i--) {
-			BlockPos above = order.get(i).above();
-			if (site.at(above) == null && standable(level, above)) {
-				return above;
+	/**
+	 * Its place in the ring around a complete cairn: VIGIL_GAP outside the footprint, at an angle fixed by its id (so
+	 * the ring spreads out and each keeps its place), on the ground there. Also sets what it stares at (the cairn's
+	 * middle). Null when no standable spot is found near that angle.
+	 */
+	private @Nullable BlockPos vigilPlace(ServerLevel level, CairnSite site) {
+		double radius = site.radius() + EndermanTuning.VIGIL_GAP + 0.5;
+		double base = enderman.getId() * 2.399963; // golden angle: neighbours' ids land far apart on the ring
+		for (int i = 0; i < 6; i++) {
+			double angle = base + i * 0.35;
+			int x = Mth.floor(site.origin().getX() + 0.5 + Math.cos(angle) * radius);
+			int z = Mth.floor(site.origin().getZ() + 0.5 + Math.sin(angle) * radius);
+			if (!level.hasChunk(x >> 4, z >> 4)) {
+				continue;
+			}
+			BlockPos feet = new BlockPos(x, level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z), z);
+			if (Math.abs(feet.getY() - site.origin().getY()) <= 4 && standable(level, feet)) {
+				int top = site.box().maxY();
+				vigilCentre = new BlockPos(site.origin().getX(), (site.origin().getY() + top) / 2, site.origin().getZ());
+				return feet;
 			}
 		}
 		return null;

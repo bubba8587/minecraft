@@ -18,8 +18,8 @@ public final class EndermanMind {
 		TAKE,
 		/** Jump on the farmland at {@link #target()} until it is dirt again. */
 		TRAMPLE,
-		/** Stand on a finished cairn for a while (not a job: eye contact still angers it). */
-		PERCH
+		/** Stand in the ring around a complete cairn, staring at it (owner; not work: eye contact still angers it). */
+		VIGIL
 	}
 
 	private @Nullable Job job;
@@ -52,7 +52,7 @@ public final class EndermanMind {
 
 	/** E4: while repairing or building it ignores eye contact. */
 	public boolean busy() {
-		return busy && job != null && job != Job.PERCH;
+		return busy && job != null && job != Job.VIGIL;
 	}
 
 	public void setBusy(boolean busy) {

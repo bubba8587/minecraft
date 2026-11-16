@@ -26,7 +26,8 @@ Owner's design (2026-11-16), being worked out in conversation. Endermen are the 
 
 ## Cairns as their home (D2: deliberate spawning)
 
-- Endermen spawn near cairns and tend to stand on top of completed ones, instead of spawning randomly.
+- Endermen spawn near cairns instead of spawning randomly. At a finished cairn they stand in a circle around it and stare at it (owner, 2026-11-16; earlier: stand on top of completed ones).
+- Building is slow and speeds up as the cairn fills in: the more of it stands, the more endermen come to finish it (owner, 2026-11-16).
 - **Left alone, they snowball:** more endermen spawn, faster, and they finish their work faster. Interfering (killing them, taking the cairns apart) slows or stops it.
 
 ## Owner answers
@@ -54,7 +55,6 @@ Owner's design (2026-11-16), being worked out in conversation. Endermen are the 
 - *Carrying:* it looks for a spot that needs its block: a missing block of a cairn within 48 (lowest placeable first), else a hole within 3 (all columns) or 16 (16 random columns): air above a sturdy floor, at most 12 below the original surface, whose original block is the carried block's family. It puts the original block back (cobblestone fills a stone hole with stone; dirt fills a grass hole with grass). Nothing needs it: it keeps it and wanders.
 - *Getting there:* walks; farther than 20 blocks or no closer for 3 s, it teleports to a free standing spot within reach (4 blocks from its eyes), on the cairn itself for high blocks. A job not done in 30 s is dropped (the block is kept).
 - *Despawning:* a caretaker carrying a block still despawns (vanilla keeps every block-carrying enderman forever), so a block it couldn't place vanishes with it.
-- *Perching:* idle near a complete cairn, 8 % of its job searches send it to stand on top of the cairn for 15 s ("they stand on top of completed ones").
 
 **Cairn sites (`CairnSites`, `CairnSite`; E2, D2).** Fixed from the seed like structure placement: the overworld is cut into 24 x 24-chunk regions (384 blocks); each has one candidate spot at least 4 chunks from its edges (sites at least 128 blocks apart), and the candidate is a site when the ground there is dry (above sea level, no water on it) and fairly flat (8 points 4 blocks out within 2 of the centre). Worked out on demand off the main thread and cached per region. In seed 20261116, 8 sites within 1500 blocks of spawn (about 1 per km^2).
 
@@ -71,14 +71,16 @@ Owner's design (2026-11-16), being worked out in conversation. Endermen are the 
 
 **Spawning (`EndermanSpawning`; D2, E2, E3).**
 - Vanilla's random natural enderman spawns are blocked in the overworld (`SpawnStateMixin`, same hook as creepers). Nether and End spawns, spawners and commands are untouched.
-- Every 5 s, each site with a player within 96 blocks and its centre loaded may spawn one enderman: chance 12 % while its cairn is unfinished, 35 % once it matches its design (E2: significantly higher), times (1 + 0.3 per enderman already in its territory, 64 blocks) (the snowball: left alone, more come faster; killing them slows it). Cap: 3 at an unfinished site, 8 at a complete one; at the cap an unfinished site still calls one builder when the block that could go in next is carried by nobody (its holder died or despawned), else builders holding higher blocks would wait forever. Tearing the cairn down drops it to the unfinished rate; repairing it brings the high rate back (E3, "complete" = every block matches).
+- Every 5 s, each site with a player within 96 blocks and its centre loaded may spawn one enderman. Owner (2026-11-16): building is slow and speeds up as the cairn fills in, so the chance rises with the share of the design standing, from 2 % (nothing) to 20 % (one block short), and 35 % once it matches its design (E2), times (1 + 0.3 per enderman already within 64 blocks) (the snowball: left alone, more come faster; killing them slows it). The cap rises the same way, 2 to 6, and 8 when complete; at the cap an unfinished site still calls one builder when the block that could go in next is carried by nobody (its holder died or despawned), else builders holding higher blocks would wait forever. Tearing the cairn down drops it to the unfinished rate; repairing it brings the high rate back (E3, "complete" = every block matches).
 - Spots: 12-28 blocks from the centre (out of the end rods' light), within 6 blocks up or down of the site's ground, passing vanilla's rules (the biome lists endermen, spawn placement, darkness), never within 24 blocks of a player. So in practice at night.
-- Newcomers at an unfinished site: 65 % arrive **carrying a missing block** (builders): the lowest missing block that no enderman in the territory already carries (`CairnSite.nextUnclaimed`: carried blocks are matched to missing spots of the same block, bottom up, so builders split the work instead of all bringing the same block). If it can go in now they head for it; if not (the blocks under it are still missing) they **wait by the cairn** (within 8 blocks; one that wanders farther teleports back) until it can; the rest half the time carry the original block for a hole near the site (fillers), else arrive empty-handed (repairers). Complete site: fillers or repairers.
+- Newcomers at an unfinished site: half arrive **carrying a missing block** (builders): the lowest missing block that no enderman in the territory already carries (`CairnSite.nextUnclaimed`: carried blocks are matched to missing spots of the same block, bottom up, so builders split the work instead of all bringing the same block). If it can go in now they head for it; if not (the blocks under it are still missing) they **wait by the cairn** (within 8 blocks; one that wanders farther teleports back) until it can; the rest half the time carry the original block for a hole near the site (fillers), else arrive empty-handed (repairers: they clear what's in the cairn's way, grass, dirt, trees, and may fetch a block it wants if they happen to see one). Complete site: empty-handed, they stand vigil.
 - `spawn_mobs`, `spawn_monsters` and Peaceful turn it off. New game rule `bubbas_reworked_mobs:cairn_endermen` (default true, "Overworld endermen spawn at cairns"): false brings vanilla's random spawns back and stops ours. It doesn't switch the jobs off (`mobGriefing` does, like vanilla).
 
-**Roaming (builder's choice, 2026-11-16, owner asked for the rest to "fall out naturally").** Spawning only at cairns would keep endermen in a 12-28 block ring and the land around them (farms, bases) would never see a caretaker. So an enderman with nothing to do near it, after about 10 s of looking (8 searches in a row), now and then (6 % per search) hops 8-24 blocks to a standable spot (not warded) and looks for work there. Hops stay inside the nearest cairn's territory (64 blocks); from outside it they lead back toward it. One with no cairn about (spawn eggs) hops anywhere. Waiting builders don't roam. Vanilla's daylight teleports scatter them too.
+**Vigil (owner, 2026-11-16; replaces the earlier "perch on top").** An enderman with nothing to do near a complete cairn walks to its place in a ring around it (3 blocks outside the footprint, at an angle fixed by its id so the ring spreads out) and stands there staring at the cairn's middle, for a minute at a time, then looks for work and most likely takes its place again. Newcomers at a complete cairn arrive empty-handed, so a finished cairn gathers a growing ring of silent watchers. A vigil isn't work: eye contact still angers them. If the cairn is damaged the vigil breaks up (and the site spawns builders again).
 
-**Hostility (E4).** Vanilla eye contact still angers an idle enderman; one busy on a job (repairing or building, not perching) ignores it (`isBeingStaredBy` returns false). Breaking a block of a cairn that stood as designed, or hitting a caretaker in a site's territory (64 blocks), angers every caretaker within 24 blocks of it at that player (vanilla's anger timer). Creative and spectator players don't anger them this way. Explosions don't count.
+**Where they work (owner, 2026-11-16).** Return to nature is relative to the enderman: it judges blocks around wherever it stands, so one pushed off its cairn onto farmland or a path restores that. Nothing guarantees it notices anything: every column within 5 blocks is checked each time, farther ones (to 12) only by a few random samples. (Roaming hops around a cairn's territory were tried the same day and dropped for this model.)
+
+**Hostility (E4).** Vanilla eye contact still angers an idle enderman; one busy on a job (repairing or building, not standing vigil) ignores it (`isBeingStaredBy` returns false). Breaking a block of a cairn that stood as designed, or hitting a caretaker within 64 blocks of a site, angers every caretaker within 24 blocks of it at that player (vanilla's anger timer). Creative and spectator players don't anger them this way. Explosions don't count.
 
 **Wards (E2).** New Reworked Mobs API `api/Endermen` (`keepOut`, `release`, `isKeptOut`, `isCairnBlock`; like `api/Sleepers`, lapses unless refreshed). Inside a kept-out area endermen judge nothing (no repair, no building there) and a site whose centre is inside spawns nothing. Bubba's Totems & Artifacts calls it for **every** ward (any pyramid), through its `compat/SleeperHook` (new methods `keepEndermenOut` / `releaseEndermen`; `ReworkedMobsSleepers` calls the API and ignores a `LinkageError` from an older Reworked Mobs). The Totem of Warding's existing barrier already keeps endermen (monsters) from walking in.
 
@@ -105,15 +107,15 @@ Owner's design (2026-11-16), being worked out in conversation. Endermen are the 
 | Cairn work radius | 48 |
 | Reach / teleport if farther / stuck | 4 / 20 blocks / 3 s |
 | Job timeout | 30 s |
-| Perch | 8 % of idle searches near a complete cairn, 15 s |
 | Spawn check | every 5 s, player within 96 of the site |
-| Spawn chance | 12 % unfinished / 35 % complete, x (1 + 0.3 per enderman in the territory) |
-| Cap | 3 unfinished / 8 complete (+1 builder for an unclaimed next block) |
-| Territory (counting, roaming) | 64 blocks around a site |
-| Roaming | after 8 empty searches (~10 s), 6 % per search: one hop 8-24 blocks, inside the territory |
+| Spawn chance | 2 % (none standing) rising with the share standing to 20 % (one short); 35 % complete; x (1 + 0.3 per enderman within 64) |
+| Cap | 2 rising to 6 with the share standing; 8 complete (+1 builder when every carrier must wait and the next block is unclaimed) |
+| Counting radius | 64 blocks around a site |
 | Waiting builder | stays within 8 of its cairn |
+| Vigil | ring 3 outside the footprint, 60 s at a time |
+| Example (owner's "slow") | a fresh stub (~40 % standing, ~27 missing) gets a newcomer about every minute at night with a player near, half of them builders: several nights to finish, faster toward the end |
 | Spawn ring | 12-28 blocks out, within 6 up/down of site ground, no player within 24 |
-| Builders among newcomers (unfinished) | 65 % |
+| Builders among newcomers (unfinished) | 50 % |
 | Anger radius | 24 |
 | Terrain cache | 96 chunks per level; structure margin 2 |
 
@@ -132,7 +134,6 @@ Owner's design (2026-11-16), being worked out in conversation. Endermen are the 
 11. Breaking a cairn block in creative doesn't anger them (easier for the owner to build and test).
 12. Endermen are not saved with a job: after a reload each picks one again (vanilla saves the carried block).
 13. **Builders are a slow End-block source** (vanilla drops a carried block on death): killing the builders of an unfinished cairn gives purpur, end stone and end rods before the End. Left as is; say if it should be curbed (e.g. builders' blocks vanish on death).
-14. **Roaming** (see Roaming above): idle endermen range over their cairn's 64-block territory so caretaking reaches farms and bases near cairns, not only the cairn's ring.
 
 ## Test world station
 
@@ -150,4 +151,4 @@ Core (every build, `ReworkedMobsCoreGameTest`): `endermanTerrainOracleAnswersFla
 
 `EndermenClientGameTest` (client part `endermen`, a default-preset world, seed 20261116): prints the oracle's accuracy and timing and the "untouched world" repair counts; screenshots of the three sites nearest spawn as generated (stub) and built (close, far, top), and an enderman carrying a purpur pillar.
 
-Not yet tested (objectives): a high cairn block is reached by teleporting onto the cairn; a stray flower is fetched for an offering; an unnatural block is taken only sometimes; a torn-down cairn drops back to the unfinished rate and a repaired one returns to the high rate (spawning numbers checked as functions only); perching; the footing feature places only End blocks up to one above the ground; endermen keep out of a ward placed by Totems & Artifacts (needs both mods; `WardingGameTest` could call `api/Endermen.isKeptOut`).
+Not yet tested (objectives): a high cairn block is reached by teleporting onto the cairn; a stray flower is fetched for an offering; an unnatural block is taken only sometimes; a torn-down cairn drops back to the unfinished rate and a repaired one returns to the high rate (spawning numbers checked as functions only); the vigil ring forms around a complete cairn and breaks up when it's damaged (checked in the test world tour, `cairns_vigil`); the footing feature places only End blocks up to one above the ground; endermen keep out of a ward placed by Totems & Artifacts (needs both mods; `WardingGameTest` could call `api/Endermen.isKeptOut`).

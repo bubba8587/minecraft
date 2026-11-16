@@ -120,6 +120,8 @@ public class TestWorldShots implements FabricClientGameTest {
 			context.waitTicks(600); // 30 s of work: caretakers trample farmland, builders grow the unfinished cairn
 			shot("cairns_repair_after", -195, -54, 20, -195, -60, 6);
 			shot("cairns_unfinished_after", -212, -55, 18, -218, -58, 6);
+			shot("cairns_vigil", -207, -46, 24, -207, -58, 44);
+			shot("cairns_vigil_close", -196, -57, 34, -207, -57, 42);
 		}
 		if (part("graveyard")) {
 			// Graveyard: x -44..-14, z -44..-14. Rows: skeletons z -18, zombies z -24; sitting x -42..-33, lying -30..-21.

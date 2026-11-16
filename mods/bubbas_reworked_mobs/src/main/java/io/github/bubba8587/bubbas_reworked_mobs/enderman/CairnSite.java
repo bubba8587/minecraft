@@ -83,6 +83,16 @@ public final class CairnSite {
 		return count;
 	}
 
+	/** The share of the design standing right now, 0 to 1. */
+	public float finished(ServerLevel level) {
+		return order.isEmpty() ? 1.0F : standing(level) / (float) order.size();
+	}
+
+	/** The largest horizontal distance of any of its blocks from its origin. */
+	public int radius() {
+		return Math.max(Math.max(origin.getX() - box.minX(), box.maxX() - origin.getX()), Math.max(origin.getZ() - box.minZ(), box.maxZ() - origin.getZ()));
+	}
+
 	/** Complete = every block matches its design (E3: a repaired cairn counts as complete again). */
 	public boolean complete(ServerLevel level) {
 		return standing(level) == order.size();

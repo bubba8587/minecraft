@@ -235,7 +235,7 @@ public class EndermanGameTest {
 		mind.set(EndermanMind.Job.TAKE, enderman.blockPosition(), helper.getLevel().getGameTime());
 		mind.setBusy(true);
 		helper.assertFalse(stare.brmTest$isBeingStaredBy(player), "a busy enderman should ignore the stare");
-		mind.set(EndermanMind.Job.PERCH, enderman.blockPosition(), helper.getLevel().getGameTime());
+		mind.set(EndermanMind.Job.VIGIL, enderman.blockPosition(), helper.getLevel().getGameTime());
 		helper.assertTrue(stare.brmTest$isBeingStaredBy(player), "standing on a cairn is not a job");
 		CreeperGameTest.remove(helper, player);
 		enderman.discard();
@@ -307,21 +307,26 @@ public class EndermanGameTest {
 		level.getGameRules().set(ModGameRules.CAIRN_ENDERMEN, false, level.getServer());
 		helper.assertFalse(EndermanSpawning.blocksVanillaSpawn(level, EntityTypes.ENDERMAN), "the rule turns the block off");
 		level.getGameRules().set(ModGameRules.CAIRN_ENDERMEN, true, level.getServer());
-		helper.assertTrue(EndermanSpawning.chance(true, 0) > EndermanSpawning.chance(false, 0), "a complete cairn spawns faster");
-		helper.assertTrue(EndermanSpawning.chance(false, 2) > EndermanSpawning.chance(false, 0), "more endermen about, faster (snowball)");
+		helper.assertTrue(EndermanSpawning.chance(1.0F, 0) > EndermanSpawning.chance(0.95F, 0)
+				&& EndermanSpawning.chance(0.95F, 0) > EndermanSpawning.chance(0.4F, 0)
+				&& EndermanSpawning.chance(0.4F, 0) > EndermanSpawning.chance(0.0F, 0), "the fuller the cairn, the faster it spawns; complete fastest");
+		helper.assertTrue(EndermanSpawning.cap(1.0F) > EndermanSpawning.cap(0.95F) && EndermanSpawning.cap(0.95F) > EndermanSpawning.cap(0.0F),
+				"the fuller the cairn, the more endermen it keeps");
+		helper.assertTrue(EndermanSpawning.chance(0.5F, 2) > EndermanSpawning.chance(0.5F, 0), "more endermen about, faster (snowball)");
 
 		CairnSite site = CairnSites.addSite(level, helper.absolutePos(new BlockPos(12, 1, 8)), 99L);
 		List<Enderman> spawned = new ArrayList<>();
 		// Endermen left by earlier tests nearby would count toward this site's cap.
 		EndermanSpawning.endermenAt(level, site).forEach(Enderman::discard);
 		try {
-			for (int i = 0; i < 40 && spawned.size() < EndermanTuning.CAP_UNFINISHED + 1; i++) {
+			for (int i = 0; i < 40 && spawned.size() < EndermanSpawning.cap(site.finished(level)) + 1; i++) {
 				Enderman e = EndermanSpawning.trySpawnAt(level, site, true, 4.0, 7.0);
 				if (e != null) {
 					spawned.add(e);
 				}
 			}
-			helper.assertTrue(spawned.size() == EndermanTuning.CAP_UNFINISHED, "an unfinished site should spawn up to its cap, got " + spawned.size() + " (nearest player " + level.getNearestPlayer(site.origin().getX(), site.origin().getY(), site.origin().getZ(), 40.0, false) + ", light " + level.getMaxLocalRawBrightness(site.origin().east(5)) + ", sky " + level.getSkyDarken() + ")");
+			helper.assertTrue(spawned.size() == EndermanSpawning.cap(site.finished(level))
+					|| spawned.size() == EndermanSpawning.cap(site.finished(level)) + 1 && spawned.get(spawned.size() - 1).getCarriedBlock() != null, "an unfinished site should spawn up to its cap, got " + spawned.size() + " (nearest player " + level.getNearestPlayer(site.origin().getX(), site.origin().getY(), site.origin().getZ(), 40.0, false) + ", light " + level.getMaxLocalRawBrightness(site.origin().east(5)) + ", sky " + level.getSkyDarken() + ")");
 			for (Enderman e : spawned) {
 				double d = Math.sqrt(e.blockPosition().distSqr(site.origin().atY(e.getBlockY())));
 				helper.assertTrue(d >= 3.0 && d <= 8.0, "spawned " + d + " blocks out");
@@ -339,7 +344,7 @@ public class EndermanGameTest {
 				}
 				e.discard();
 			}
-			helper.assertTrue(builders >= 6 && builders < 20, "about two thirds of newcomers should be builders, got " + builders + " of 20");
+			helper.assertTrue(builders >= 4 && builders < 17, "about half of newcomers should be builders, got " + builders + " of 20");
 			// Builders split the work: each newcomer brings the lowest missing block nobody there carries yet.
 			List<Enderman> carriers = new ArrayList<>();
 			List<BlockPos> claimed = new ArrayList<>();
