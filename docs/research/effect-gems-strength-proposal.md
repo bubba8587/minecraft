@@ -163,3 +163,11 @@ Strong combos the proposal makes, and what to watch:
 20. **Q20** Silence hit: no sounds, no vibrations, no calling allies? yes/no
 21. **Q21** Silence hit also deafens players? yes/no
 22. **Q22** Breeze hit: the target's own projectiles veer off? yes/no
+
+## Owner answers so far (2026-11-15)
+
+- Q1 one dial per effect: **yes**.
+- Q2 potency hits linger 4 s at the weakest, 8 s at perfect: **yes**.
+- Q3 perfect Wither weapon past vanilla: **no** (owner: Wither is very strong; stays at the skull's level).
+- Q15 webs from hits fade: **no** (owner decided earlier: webs stay).
+- Next session: continue at Q4. Nothing is built from this proposal until the questions are answered.
