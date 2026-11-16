@@ -16,6 +16,10 @@ Owner's design (2026-11-16), being worked out in conversation. Endermen are the 
 - Endermen spawn near cairns and tend to stand on top of completed ones, instead of spawning randomly.
 - **Left alone, they snowball:** more endermen spawn, faster, and they finish their work faster. Interfering (killing them, taking the cairns apart) slows or stops it.
 
+## Owner answers
+
+- **E1 what they touch:** no record of placed blocks. Endermen cheaply bucket each spot by **'does this block generate naturally'**: natural block types (dirt, stone, grass, sand...) are freely reverted toward the original, **including air where ground used to be** (dig out an area and they slowly fill it back; they might eventually bury your house); **unnatural** blocks (planks, glass, bricks, anything crafted) have only a **much smaller chance** of being touched.
+
 ## Open questions (owner)
 
 - See the conversation; answers land here.
