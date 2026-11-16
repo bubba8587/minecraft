@@ -14,6 +14,8 @@ import net.minecraft.util.Mth;
  * staggered drag, the body snaking side to side and rolling onto each shoulder as one arm pulls, then the other.
  */
 public final class DrownedPoses {
+	/** The hint shown when a drowned grabs you (instead of vanilla's "Press Shift to dismount"). */
+	public static final String GRABBED_HINT = "bubbas_reworked_mobs.drowned.grabbed";
 	/** Crawl cycles per block moved (each cycle is two pulls, one per arm). */
 	private static final float CRAWL_CYCLES_PER_BLOCK = 0.55F;
 	/** Side-to-side yaw of the whole body at full crawl (degrees). */

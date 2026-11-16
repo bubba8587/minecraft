@@ -105,8 +105,8 @@ public class DrownedClientGameTest implements FabricClientGameTest {
 			context.waitTicks(6);
 			tp(context, server, x + 4.5, y + 0.6, z + 3.5, 90.0F, 15.0F);
 			context.takeScreenshot("drowned-grab");
-			waitFor(context, server, "dragged deep", level -> drowned(level).getZ() > z + 10.5 && drowned(level).onGround());
-			context.waitTicks(10);
+			waitFor(context, server, "dragged deep", level -> drowned(level).getZ() > z + 9.0 && drowned(level).getY() < y - 8.5);
+			context.waitTicks(5);
 			double dz = onServer(server, level -> drowned(level).getZ());
 			double dy = onServer(server, level -> drowned(level).getY());
 			tp(context, server, x + 4.0, dy + 1.0, dz, 90.0F, 5.0F);
@@ -133,7 +133,8 @@ public class DrownedClientGameTest implements FabricClientGameTest {
 			server.runCommand("kill @e[tag=%s]".formatted(TAG));
 			context.waitTicks(30);
 
-			// --- lying: crawling on land toward the water ----------------------------------------------
+			// --- lying: crawling on land toward the water (at night: in daylight it burns on land, vanilla) ----
+			server.runCommand("time set midnight");
 			server.runCommand("summon minecraft:drowned %d.5 %d %d.5 {PersistenceRequired:1b,Silent:1b,Rotation:[0f,0f],Tags:[\"%s\"]}".formatted(x, y, z - 9, TAG));
 			context.waitTicks(2);
 			for (int i = 0; i < 25; i++) {
@@ -144,7 +145,7 @@ public class DrownedClientGameTest implements FabricClientGameTest {
 				context.waitTick();
 			}
 			double cz = onServer(server, level -> drowned(level).getZ());
-			tp(context, server, x + 4.0, y + 1.0, cz, 90.0F, 15.0F);
+			tp(context, server, x + 3.0, y + 0.5, cz + 0.5, 90.0F, 10.0F);
 			for (int i = 0; i < 3; i++) {
 				onServer(server, level -> {
 					drowned(level).getNavigation().moveTo(x + 0.5, y, z + 2.5, 1.0);
@@ -154,7 +155,7 @@ public class DrownedClientGameTest implements FabricClientGameTest {
 			}
 			context.takeScreenshot("drowned-crawl-side");
 			double cz2 = onServer(server, level -> drowned(level).getZ());
-			tp(context, server, x + 0.5, y + 2.2, cz2 + 3.0, 180.0F, 35.0F);
+			tp(context, server, x + 1.3, y + 1.2, cz2 + 2.6, 160.0F, 25.0F);
 			for (int i = 0; i < 6; i++) {
 				onServer(server, level -> {
 					drowned(level).getNavigation().moveTo(x + 0.5, y, z + 2.5, 1.0);
@@ -164,12 +165,13 @@ public class DrownedClientGameTest implements FabricClientGameTest {
 			}
 			context.takeScreenshot("drowned-crawl-front");
 			server.runCommand("kill @e[tag=%s]".formatted(TAG));
+			server.runCommand("time set noon");
 			context.waitTicks(30);
 
 			// --- upright: holding the camera player (survival), from the front --------------------------
 			server.runCommand("gamemode survival @p");
 			server.runCommand("effect give @p minecraft:resistance infinite 4 true");
-			server.runCommand("tp @p %d.5 %d %d.5 180 10".formatted(x, y - 2, z + 6));
+			server.runCommand("tp @p %d.5 %d %d.5 90 10".formatted(x, y - 2, z + 6));
 			server.runCommand("summon minecraft:drowned %d.5 %d %d.5 {PersistenceRequired:1b,Silent:1b,Rotation:[180f,0f],Tags:[\"%s\"]}".formatted(x, y - 2, z + 7, TAG));
 			context.waitTicks(5);
 			onServer(server, level -> {

@@ -3,6 +3,7 @@
   "block.bubbas_reworked_mobs.loot_display.buried_hint": "It's buried. Dig it up with a shovel.",
   "block.bubbas_reworked_mobs.skeleton_sleeper": "Sleeping Skeleton",
   "block.bubbas_reworked_mobs.zombie_sleeper": "Sleeping Zombie",
+  "bubbas_reworked_mobs.drowned.grabbed": "A drowned has you! Hit it hard and fast to break free",
   "commands.bubbas_reworked_mobs.display.needs_wall": "Look at the side of a block to hang it on the wall",
   "commands.bubbas_reworked_mobs.display.no_room": "There is a block in the way",
   "commands.bubbas_reworked_mobs.display.no_support": "Nothing there to hold it up",

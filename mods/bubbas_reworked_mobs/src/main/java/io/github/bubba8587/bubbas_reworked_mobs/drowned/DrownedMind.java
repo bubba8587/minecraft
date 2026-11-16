@@ -16,6 +16,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffectUtil;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -209,7 +210,14 @@ public final class DrownedMind {
 		}
 	}
 
+	private static void posture(Drowned drowned, Pose pose) {
+		if (drowned.getPose() != pose) {
+			drowned.setPose(pose);
+		}
+	}
+
 	private void enterIdle(Drowned drowned) {
+		posture(drowned, Pose.STANDING);
 		state = State.IDLE;
 		spot = null;
 		sunk = false;
@@ -232,6 +240,9 @@ public final class DrownedMind {
 			}
 		}
 		sunk = stared;
+		// Sunk: it also crouches (the synced vanilla pose; the model drops its head about a quarter block), since in
+		// 2-deep water the floor stops a standing drowned with the top of its head level with the surface.
+		posture(drowned, sunk ? Pose.CROUCHING : Pose.STANDING);
 		if (surgeAt != null) {
 			startSurge(drowned, surgeAt);
 			return;
@@ -332,6 +343,7 @@ public final class DrownedMind {
 		state = State.SURGE;
 		victim = target;
 		sunk = false;
+		posture(drowned, Pose.STANDING);
 		drowned.setNoGravity(false);
 		drowned.playSound(SoundEvents.DROWNED_SWIM, 1.0F, 0.8F);
 	}
@@ -385,6 +397,7 @@ public final class DrownedMind {
 		victim = target;
 		grip = 0.0F;
 		sunk = false;
+		posture(drowned, Pose.STANDING);
 		stared = false;
 		drowned.setNoGravity(false);
 		drowned.getNavigation().stop();

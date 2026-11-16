@@ -6,6 +6,7 @@
 		"DrownedModelMixin",
 		"DrownedRendererMixin",
 		"EntityRenderDispatcherAccessor",
+		"GrabbedHintMixin",
 		"HeldVictimPoseMixin"
 	],
 	"injectors": {

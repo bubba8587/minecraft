@@ -49,8 +49,8 @@ public final class DrownedTuning {
 
 	// --- lurking ----------------------------------------------------------------------------------
 	/** Lurking: its eyes this far above the water's surface (just the top of the head shows; it floats a little off the floor). */
-	public static final double LURK_EYES_ABOVE_SURFACE = 0.15;
-	/** Sunk: the top of its head this far below the surface, or as low as the floor allows (in 2-deep water it stands on the floor). */
+	public static final double LURK_EYES_ABOVE_SURFACE = 0.25;
+	/** Sunk: the top of its head this far below the surface, or as low as the floor allows (in 2-deep water it stands on the floor and crouches). */
 	public static final double SUNK_HEAD_BELOW_SURFACE = 0.1;
 	/** How fast it rises and sinks (blocks a tick; the spring toward its height is capped at this). */
 	public static final double BOB_SPEED = 0.06;

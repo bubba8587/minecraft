@@ -34,7 +34,7 @@ import net.fabricmc.fabric.api.gametest.v1.GameTest;
 
 /**
  * The lurking drowned (specs/drowned.md). Each test builds the same pool on the flat field: land at x 0-6 (top at
- * y 2), 2-deep shallows at x 7-11 (floor top y 0, surface ~1.89), an 8-deep pit at x 12-20 (floor top y -6). Each test
+ * y 2), 2-deep shallows at x 7-11 (floor top y 0, surface ~1.89), an 8-deep pit at x 12-18 (floor top y -6). Each test
  * has its own environment so its batch is alone (a drowned senses 16 blocks).
  */
 public class DrownedGameTest {
@@ -42,34 +42,42 @@ public class DrownedGameTest {
 	/** The lurk spot the tests use: by the shore, 2 deep. */
 	static final BlockPos SPOT = new BlockPos(7, -1, 8);
 
-	/** Builds the pool (relative coordinates; the field's ceiling is at y 4, so the pool is dug into the ground). */
+	/**
+	 * Builds the pool (relative coordinates; the field's ceiling is at y 4, so the pool is dug into the ground). Kept
+	 * small (z 3-13) and set without neighbour updates: a big pool's light updates slowed the light engine enough to
+	 * break the in-world light test that runs after it.
+	 */
 	static void pool(GameTestHelper helper) {
-		for (int z = 0; z <= 15; z++) {
-			for (int x = 0; x <= 23; x++) {
-				boolean wallZ = z == 0 || z == 15;
+		for (int z = 3; z <= 13; z++) {
+			for (int x = 0; x <= 19; x++) {
+				boolean wallZ = z == 3 || z == 13;
 				if (x <= 6) {
-					helper.setBlock(x, 1, z, Blocks.STONE);
+					set(helper, x, 1, z, Blocks.STONE);
 				} else if (x <= 11) {
-					helper.setBlock(x, -1, z, Blocks.STONE);
-					helper.setBlock(x, 0, z, wallZ ? Blocks.STONE : Blocks.WATER);
-					helper.setBlock(x, 1, z, wallZ ? Blocks.STONE : Blocks.WATER);
+					set(helper, x, -1, z, Blocks.STONE);
+					set(helper, x, 0, z, wallZ ? Blocks.STONE : Blocks.WATER);
+					set(helper, x, 1, z, wallZ ? Blocks.STONE : Blocks.WATER);
 					if (x == 11) {
 						for (int y = -7; y <= -2; y++) {
-							helper.setBlock(x, y, z, Blocks.STONE);
+							set(helper, x, y, z, Blocks.STONE);
 						}
 					}
-				} else if (x <= 20) {
+				} else if (x <= 18) {
 					for (int y = -7; y <= 1; y++) {
 						boolean wall = wallZ || y == -7;
-						helper.setBlock(x, y, z, wall ? Blocks.STONE : Blocks.WATER);
+						set(helper, x, y, z, wall ? Blocks.STONE : Blocks.WATER);
 					}
 				} else {
 					for (int y = -7; y <= 1; y++) {
-						helper.setBlock(x, y, z, Blocks.STONE);
+						set(helper, x, y, z, Blocks.STONE);
 					}
 				}
 			}
 		}
+	}
+
+	private static void set(GameTestHelper helper, int x, int y, int z, net.minecraft.world.level.block.Block block) {
+		helper.getLevel().setBlock(helper.absolutePos(new BlockPos(x, y, z)), block.defaultBlockState(), net.minecraft.world.level.block.Block.UPDATE_CLIENTS);
 	}
 
 	static Drowned drowned(GameTestHelper helper, double x, double y, double z) {
@@ -198,7 +206,7 @@ public class DrownedGameTest {
 				face(player, 90.0F, 0.0F);
 			}
 			if (tick[0] == 40) {
-				helper.assertTrue(mind(drowned).isSunk(), "stared at, it should sink");
+				helper.assertTrue(mind(drowned).isSunk() && drowned.isCrouching(), "stared at, it should sink (and crouch)");
 				helper.assertTrue(drowned.getY() + drowned.getBbHeight() < surface + 0.1, "its head should be at or under the surface: top "
 						+ (drowned.getY() + drowned.getBbHeight()) + " surface " + surface);
 			}
@@ -227,7 +235,7 @@ public class DrownedGameTest {
 	@GameTest(environment = "bubbas_reworked_mobs-test:drowned_travel", structure = FIELD, maxTicks = 400)
 	public void swimsToALurkSpotNearThePlayer(GameTestHelper helper) {
 		pool(helper);
-		Drowned drowned = drowned(helper, 17.5, -6.0, 8.5);
+		Drowned drowned = drowned(helper, 16.5, -6.0, 8.5);
 		ServerPlayer player = playerOnLand(helper, 2.5, 8.5, 90.0F, 0.0F);
 		helper.succeedWhen(() -> {
 			face(player, 90.0F, 0.0F);
