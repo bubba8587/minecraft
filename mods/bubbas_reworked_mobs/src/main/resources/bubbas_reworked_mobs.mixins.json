@@ -6,6 +6,7 @@
 		"BellBlockMixin",
 		"MobAccessor",
 		"PhantomSpawnerMixin",
+		"MobTickMixin",
 		"SpawnStateMixin",
 		"SwimNodeEvaluatorMixin",
 		"WalkNodeEvaluatorMixin"

@@ -46,9 +46,9 @@ public final class WardingTuning {
 	public static final int WARD_DEFAULT_LIFETIME_TICKS = 100;
 
 	// --- where the Totem of Warding is found (additive pools; Totem of Undying: evokers only, 1 each) ---
-	/** Chance per roll of each table to add one Totem of Warding. */
+	/** Chance per roll of each table to add one Totem of Warding. Chests are the main source; evokers rarely carry one (owner). */
 	public static final Map<ResourceKey<LootTable>, Float> LOOT = Map.of(
-			ResourceKey.create(net.minecraft.core.registries.Registries.LOOT_TABLE, net.minecraft.resources.Identifier.withDefaultNamespace("entities/evoker")), 1.0F,
+			ResourceKey.create(net.minecraft.core.registries.Registries.LOOT_TABLE, net.minecraft.resources.Identifier.withDefaultNamespace("entities/evoker")), 0.05F,
 			BuiltInLootTables.WOODLAND_MANSION, 0.20F,
 			BuiltInLootTables.ANCIENT_CITY, 0.12F,
 			BuiltInLootTables.TRIAL_CHAMBERS_REWARD, 0.08F,

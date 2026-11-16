@@ -16,6 +16,7 @@ import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
@@ -27,8 +28,10 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
  * <ul>
  * <li>no natural monster spawns inside it ({@link #blocksNaturalSpawn}; spawners, trial spawners, raids, bosses and
  * commands are untouched);</li>
- * <li>monsters ({@link Enemy}, all treated the same) don't path into it ({@link #blocksEntry}, used by the node
- * evaluator mixins), and ones found inside walk out of it (a sweep every {@link WardingTuning#WARD_SWEEP_TICKS});</li>
+ * <li>monsters ({@link Enemy}, all treated the same) and happy ghasts don't path into it ({@link #blocksEntry}, used
+ * by the node evaluator mixins); ones found inside walk out of it (a sweep every {@link WardingTuning#WARD_SWEEP_TICKS});
+ * and whatever doesn't follow paths (flyers, slimes, a ridden happy ghast) is pushed back at the edge every tick
+ * ({@link WardBarrier});</li>
  * <li>if it {@code keepsSleepersAsleep} (a full pyramid), sleepers inside never wake ({@link #keepsSleepersAsleep}).</li>
  * </ul>
  * A ward lapses unless its source refreshes it: sources call {@link #put} on their own tick, so a broken or unloaded
@@ -112,11 +115,11 @@ public final class Wards {
 	}
 
 	/**
-	 * For pathfinding: a monster may not path onto the block {@code (x, y, z)} when it lies in a ward the monster is
+	 * For pathfinding: a monster (or a happy ghast) may not path onto the block {@code (x, y, z)} when it lies in a ward the monster is
 	 * not already inside (one already inside may move about, so it can walk out).
 	 */
 	public static boolean blocksEntry(Mob mob, int x, int y, int z) {
-		if (!(mob instanceof Enemy)) {
+		if (!WardBarrier.keptOut(mob)) {
 			return false;
 		}
 		Map<Object, Ward> wards = wardsIn(mob.level());
@@ -131,6 +134,20 @@ public final class Wards {
 		return false;
 	}
 
+	/** Called at the end of every mob's tick: one map check when there are no wards. */
+	public static void afterMobTick(Mob mob) {
+		Map<Object, Ward> wards = wardsIn(mob.level());
+		if (wards == null || !WardBarrier.keptOut(mob)) {
+			return;
+		}
+		Vec3 pos = mob.position();
+		for (Ward ward : wards.values()) {
+			if (ward.area.inflate(3.0).contains(pos)) {
+				WardBarrier.afterMove(mob, ward.area, mob.level().getGameTime());
+			}
+		}
+	}
+
 	private static void tick(ServerLevel level) {
 		Map<Object, Ward> wards = WARDS.get(level);
 		if (wards == null || wards.isEmpty()) {
@@ -138,10 +155,11 @@ public final class Wards {
 		}
 		long now = level.getGameTime();
 		wards.values().removeIf(ward -> ward.expiresAt <= now);
+		List<Ward> active = List.copyOf(wards.values());
 		if (now % WardingTuning.WARD_SWEEP_TICKS != 0) {
 			return;
 		}
-		for (Ward ward : List.copyOf(wards.values())) {
+		for (Ward ward : active) {
 			for (PathfinderMob mob : level.getEntitiesOfClass(PathfinderMob.class, ward.area, m -> m instanceof Enemy && m.isAlive() && WardFleeGoal.isGoalDriven(m))) {
 				WardFleeGoal.of(mob).leave(ward.area, now + WardingTuning.WARD_SWEEP_TICKS * 2L);
 			}

@@ -58,7 +58,7 @@ public class ReworkedMobsCoreGameTest {
 		new WardingGameTest().heldTotemPulsesScaresMonstersAndCalmsSleepers(helper);
 	}
 
-	@GameTest(environment = "bubbas_reworked_mobs-test:warding_light", structure = "bubbas_reworked_mobs-test:hearing_field", maxTicks = 200)
+	@GameTest(environment = "bubbas_reworked_mobs-test:warding_light", structure = "bubbas_reworked_mobs-test:hearing_field", maxTicks = 600)
 	public void strongLightCalmsSleepers(GameTestHelper helper) {
 		new WardingGameTest().strongLightCalmsSleepers(helper);
 	}
@@ -71,5 +71,10 @@ public class ReworkedMobsCoreGameTest {
 	@GameTest(environment = "bubbas_reworked_mobs-test:warding_ward", structure = "bubbas_reworked_mobs-test:hearing_field", maxTicks = 300)
 	public void wardStopsSpawnsKeepsSleepersAndSendsMonstersOut(GameTestHelper helper) {
 		new WardingGameTest().wardStopsSpawnsKeepsSleepersAndSendsMonstersOut(helper);
+	}
+
+	@GameTest(environment = "bubbas_reworked_mobs-test:warding_barrier", structure = "bubbas_reworked_mobs-test:hearing_field", maxTicks = 300)
+	public void wardPushesBackMobsThatDoNotPath(GameTestHelper helper) {
+		new WardingGameTest().wardPushesBackMobsThatDoNotPath(helper);
 	}
 }

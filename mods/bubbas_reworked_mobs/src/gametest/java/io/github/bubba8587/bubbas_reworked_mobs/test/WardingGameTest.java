@@ -20,6 +20,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.monster.cubemob.Slime;
 import net.minecraft.world.entity.monster.zombie.Zombie;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.LightLayer;
@@ -171,6 +172,60 @@ public class WardingGameTest {
 		});
 	}
 
+	/**
+	 * Core. Mobs that don't follow paths are held at the edge (owner): a slime pushed toward the ward every tick never
+	 * gets in; a slime and a (baby) happy ghast that start inside drift out.
+	 */
+	public void wardPushesBackMobsThatDoNotPath(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		AABB area = new AABB(Vec3.atLowerCornerOf(helper.absolutePos(new BlockPos(0, 0, 0))), Vec3.atLowerCornerOf(helper.absolutePos(new BlockPos(10, 6, 16))));
+		Object key = new Object();
+		Wards.put(level, key, area, false, 400);
+		Slime outsider = helper.spawn(EntityTypes.SLIME, new BlockPos(13, 1, 4));
+		outsider.setSize(1, true);
+		Slime insider = helper.spawn(EntityTypes.SLIME, new BlockPos(8, 1, 12));
+		insider.setSize(1, true);
+		// A ghastling: an adult is 4 blocks wide and hits the test area's walls.
+		var ghast = helper.spawn(EntityTypes.HAPPY_GHAST, new BlockPos(8, 1, 8));
+		ghast.setAge(-24000);
+		helper.onEachTick(() -> {
+			outsider.setDeltaMovement(-0.3, outsider.getDeltaMovement().y, 0.0);
+			helper.assertFalse(area.contains(outsider.position()), "a slime got into the ward at " + outsider.position());
+		});
+		helper.succeedWhen(() -> {
+			helper.assertFalse(area.contains(insider.position()), "slime still inside at " + insider.position());
+			helper.assertFalse(area.contains(ghast.position()), "happy ghast still inside at " + ghast.position());
+			helper.assertTrue(outsider.getX() < area.maxX + 1.5, "the outside slime never reached the edge");
+			Wards.remove(level, key);
+		});
+	}
+
+	/**
+	 * Milestone. A player steering a harnessed happy ghast into a ward is put back outside the edge (the server moves
+	 * the vehicle and tells the rider's client, vanilla's vehicle correction).
+	 */
+	@GameTest(environment = "bubbas_reworked_mobs-test:warding_barrier", structure = FIELD, maxTicks = 20)
+	public void riddenHappyGhastIsPushedOut(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		AABB area = new AABB(Vec3.atLowerCornerOf(helper.absolutePos(new BlockPos(0, 0, 0))), Vec3.atLowerCornerOf(helper.absolutePos(new BlockPos(10, 6, 16))));
+		Object key = new Object();
+		Wards.put(level, key, area, false, 100);
+		var ghast = helper.spawn(EntityTypes.HAPPY_GHAST, new BlockPos(9, 1, 8));
+		ghast.setItemSlot(EquipmentSlot.BODY, new ItemStack(net.minecraft.world.item.Items.HARNESS.white()));
+		ServerPlayer rider = SleeperNoiseGameTest.survivalPlayer(helper);
+		rider.snapTo(ghast.getX(), ghast.getY() + 4, ghast.getZ(), 0.0F, 0.0F);
+		rider.startRiding(ghast, true, false);
+		helper.assertTrue(ghast.getControllingPassenger() == rider, "the player isn't steering the ghast");
+		helper.assertTrue(area.contains(ghast.position()), "ghast didn't start inside");
+		helper.runAfterDelay(2, () -> {
+			helper.assertFalse(area.contains(ghast.position()), "ridden ghast still inside at " + ghast.position());
+			rider.stopRiding();
+			level.getServer().getPlayerList().remove(rider);
+			Wards.remove(level, key);
+			helper.succeed();
+		});
+	}
+
 	/** Milestone. A zombie outside a ward can't path to a point inside it: its path stops short, every node outside. */
 	@GameTest(environment = "bubbas_reworked_mobs-test:warding_ward_path", structure = FIELD, maxTicks = 40)
 	public void monstersDoNotPathIntoAWard(GameTestHelper helper) {
@@ -199,7 +254,7 @@ public class WardingGameTest {
 
 	// --- loot -------------------------------------------------------------------------------------
 
-	/** Milestone. Every evoker drops a Totem of Warding (alongside its Totem of Undying); woodland mansion chests sometimes hold one. */
+	/** Milestone. Woodland mansion chests hold a Totem of Warding about 20 % of the time, evokers about 5 %. */
 	@GameTest(environment = "bubbas_reworked_mobs-test:warding_loot", maxTicks = 20)
 	public void totemIsFoundInLoot(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
@@ -215,11 +270,22 @@ public class WardingGameTest {
 		}
 		// 20 % a chest: 80 expected out of 400.
 		helper.assertTrue(found > 40 && found < 130, "mansion chests with a Totem of Warding: " + found + " of 400");
-		var evoker = helper.spawn(EntityTypes.EVOKER, new BlockPos(1, 1, 1));
-		evoker.kill(level);
-		helper.succeedWhen(() -> {
-			helper.assertItemEntityPresent(ModItems.TOTEM_OF_WARDING);
-			helper.assertItemEntityPresent(net.minecraft.world.item.Items.TOTEM_OF_UNDYING);
-		});
+		// Evokers: a rare 5 % bonus (owner). Rolled from the entity table with the evoker as the victim.
+		var evoker = helper.spawnWithNoFreeWill(EntityTypes.EVOKER, new BlockPos(1, 1, 1));
+		LootTable evokerLoot = level.getServer().reloadableRegistries().getLootTable(EntityTypes.EVOKER.getDefaultLootTable().orElseThrow());
+		int fromEvokers = 0;
+		for (int i = 0; i < 1000; i++) {
+			LootParams params = new LootParams.Builder(level).withParameter(LootContextParams.THIS_ENTITY, evoker)
+					.withParameter(LootContextParams.ORIGIN, evoker.position())
+					.withParameter(LootContextParams.DAMAGE_SOURCE, level.damageSources().generic()).create(LootContextParamSets.ENTITY);
+			for (ItemStack stack : evokerLoot.getRandomItems(params)) {
+				if (stack.is(ModItems.TOTEM_OF_WARDING)) {
+					fromEvokers++;
+				}
+			}
+		}
+		evoker.discard();
+		helper.assertTrue(fromEvokers > 25 && fromEvokers < 80, "evokers dropping a Totem of Warding: " + fromEvokers + " of 1000");
+		helper.succeed();
 	}
 }
