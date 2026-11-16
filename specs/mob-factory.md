@@ -1,5 +1,5 @@
 <!-- dte:C1,B15,B17,B19 -->
-# Reworked Mobs: mob factories (spec, design in progress: not built yet)
+# Reworked Mobs: mob factories (spec, design nearly agreed: not built yet)
 
 Owner's idea (2026-11-16), to make mob farming possible again after the spawn cut, creeper watchers and cairn endermen: an **underground factory**. A drippy, spiky growth on the ceiling, mixing **nether, warped and bone** elements (like dripstone made of bone blocks, warped wart, basalt), **spits out mobs** onto a platform below built in an **ancient city + redstone** style; mobs that aren't dealt with are **teleported away after some time**. Earlier the owner mentioned doing "something really awesome with huge underground areas with our double paired beacons": the ceiling growth and the platform are natural halves of a paired beacon.
 
@@ -9,18 +9,20 @@ Owner's idea (2026-11-16), to make mob farming possible again after the spawn cu
 - **A passive Warden** watches the operation from an **observation area**. It is passive until it **hears you** trying to get to the machine or the beacon.
 - **A paired beacon** over the factory gives several **debuffs in its area, especially Mining Fatigue**, and **sculk is everywhere**, so it's really hard to cheese your way in (tunnelling in is slow and loud).
 
+## Owner answers, round 3 (2026-11-16)
+
+- **F1:** a rare structure, **but not too rare**.
+- **F2:** it runs on its own, **with some controls**: the **redstone controls the teleporter** (so a player who takes over can stop mobs being sent away).
+- **F3:** **one mob type** per factory, with **a wall behind it showing that mob's face** in block art.
+- **F4:** mobs vanish: they are really **teleported somewhere much farther up** (typically). They need **particles at their destination too**, where they then **"wake up"**.
+- **F5:** rate needs playtesting.
+- **F6:** taking it over, yes. A **hidden, inert spawner buried in the machinery** is what ultimately stops it: break that and the factory is done.
+- F7, F8: not answered; the builder's suggestions stand (debuffs from a hidden core without Reworked Beacons, a real paired beacon with it; one vanilla Warden that's passive at its window until it hears you, no respawn).
+
 ## Still open (owner)
 
-Builder's suggestions in brackets.
-
-- **F1 Where and how rare.** [Deep underground at deep dark depth, rarer than ancient cities.]
-- **F2 Always running?** [It runs on its own while a player is within ~64 blocks (like a spawner's range): it's someone else's machine, not one you switch on.]
-- **F3 What comes out.** [One mob type per factory, fixed at worldgen (zombie, skeleton, creeper, spider...).]
-- **F4 How long until they're sent away.** [About 20 s after landing, with a visible build-up (portal particles thickening) so it isn't a hidden timer (B19).]
-- **F5 Rate.** [One every 5-10 s.]
-- **F6 Taking it over.** Can a player shut it down or claim it: break the beacon (debuffs end), kill the Warden, break the ceiling growth (the factory stops for good)? [Suggestion: breaking the paired beacon ends the debuffs; the factory keeps running and the Warden stays (killing it is its own feat); breaking the growth ends it. So the best farm is one where you've dealt with the beacon but left the machine.]
-- **F7 Without Reworked Beacons.** [The factory applies the same debuffs itself from a hidden heart block, so it works in Reworked Mobs alone; with Reworked Beacons it is a real paired beacon you can see and break.]
-- **F8 The Warden.** [Vanilla Warden once it hears you (vanilla anger and sniffing); before that it stands at the observation window, turning to follow the platform. One per factory, doesn't respawn.]
+- **F9 Where they arrive.** [On the surface above and around the factory (within ~96 blocks sideways), on dark ground at night, like a natural spawn: so a factory is a local source of monsters, and stopping one thins the surface above it.]
+- **F10 How they behave after waking.** [As natural spawns of their kind do: reworked creepers, endermen, undead (they are the world's monsters, not spawner stock). The factory's own spawner is inert and only marks/stops it.]
 
 ## Independence (first thoughts)
 
