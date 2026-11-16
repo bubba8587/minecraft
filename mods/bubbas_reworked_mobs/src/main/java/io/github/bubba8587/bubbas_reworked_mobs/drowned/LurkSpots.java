@@ -18,6 +18,9 @@ import org.jspecify.annotations.Nullable;
  * nearby (where it drags a victim). Bounded: a fixed number of columns, a fixed scan height each.
  */
 public final class LurkSpots {
+	/** Straight directions first, so a straight shore wins a tie with a diagonal one. */
+	private static final int[][] DIRECTIONS = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
+
 	private LurkSpots() {
 	}
 
@@ -126,24 +129,21 @@ public final class LurkSpots {
 		BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
 		int bestDistance = Integer.MAX_VALUE;
 		Float best = null;
-		for (int dx = -1; dx <= 1; dx++) {
-			for (int dz = -1; dz <= 1; dz++) {
-				if (dx == 0 && dz == 0) {
+		for (int[] dir : DIRECTIONS) {
+			int dx = dir[0];
+			int dz = dir[1];
+			for (int step = 1; step <= DrownedTuning.SHORE_MAX_DISTANCE && step < bestDistance; step++) {
+				int x = surface.getX() + dx * step;
+				int z = surface.getZ() + dz * step;
+				pos.set(x, surface.getY(), z);
+				if (isOpenWater(level, pos)) {
 					continue;
 				}
-				for (int step = 1; step <= DrownedTuning.SHORE_MAX_DISTANCE && step < bestDistance; step++) {
-					int x = surface.getX() + dx * step;
-					int z = surface.getZ() + dz * step;
-					pos.set(x, surface.getY(), z);
-					if (isOpenWater(level, pos)) {
-						continue;
-					}
-					if (standable(level, pos) || standable(level, pos.set(x, surface.getY() + 1, z))) {
-						bestDistance = step;
-						best = (float) (Mth.atan2(dz, dx) * Mth.RAD_TO_DEG) - 90.0F;
-					}
-					break;
+				if (standable(level, pos) || standable(level, pos.set(x, surface.getY() + 1, z))) {
+					bestDistance = step;
+					best = (float) (Mth.atan2(dz, dx) * Mth.RAD_TO_DEG) - 90.0F;
 				}
+				break;
 			}
 		}
 		return best;

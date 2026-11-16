@@ -27,7 +27,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 
@@ -256,7 +258,9 @@ public final class DrownedMind {
 		}
 		AABB box = drowned.getBoundingBox().inflate(DrownedTuning.SENSE_RANGE);
 		List<LivingEntity> nearby = level.getEntitiesOfClass(LivingEntity.class, box, e -> e != drowned && watcher(e));
-		Vec3 head = drowned.getEyePosition();
+		// Where its head shows when lurking: looking there is staring at it, sunk or not (so it doesn't bob in and
+		// out of a watcher's sight at the edge of the bank).
+		Vec3 head = lurkPoint(s);
 		double cone = Math.cos(Math.toRadians(DrownedTuning.STARE_HALF_ANGLE));
 		boolean anyStare = false;
 		LivingEntity best = null;
@@ -269,7 +273,7 @@ public final class DrownedMind {
 			if (length < 1.0E-4) {
 				continue;
 			}
-			if (!anyStare && e.getViewVector(1.0F).dot(to) / length >= cone && e.hasLineOfSight(drowned)) {
+			if (!anyStare && e.getViewVector(1.0F).dot(to) / length >= cone && clearSight(level, e, eye, head)) {
 				anyStare = true;
 			}
 			if (!grabbable(e)) {
@@ -295,6 +299,16 @@ public final class DrownedMind {
 			return null;
 		}
 		return best;
+	}
+
+	/** The point a watcher has to look at: the middle of the spot, just above the water's surface. */
+	public static Vec3 lurkPoint(LurkSpots.Spot s) {
+		Vec3 c = s.centre();
+		return new Vec3(c.x, s.surfaceY() + 0.1, c.z);
+	}
+
+	private static boolean clearSight(ServerLevel level, Entity watcher, Vec3 from, Vec3 to) {
+		return level.clip(new ClipContext(from, to, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, watcher)).getType() == HitResult.Type.MISS;
 	}
 
 	/** The drowned is more than BACK_TURNED_ANGLE degrees (horizontally) from where {@code e} faces. */
@@ -451,7 +465,8 @@ public final class DrownedMind {
 		return LurkSpots.deepest(level, at, surface, floor);
 	}
 
-	private static void hit(Drowned drowned, ServerLevel level, LivingEntity held) {
+	/** One small hit on the held victim: damage, and air knocked out unless it can't lose air (vanilla's Water Breathing, Conduit Power, creative). */
+	public static void hit(Drowned drowned, ServerLevel level, LivingEntity held) {
 		if (!held.hurtServer(level, level.damageSources().mobAttack(drowned), DrownedTuning.HIT_DAMAGE)) {
 			return;
 		}

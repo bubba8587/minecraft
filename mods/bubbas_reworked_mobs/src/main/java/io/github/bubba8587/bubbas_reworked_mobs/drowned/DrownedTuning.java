@@ -83,7 +83,7 @@ public final class DrownedTuning {
 	/** It gives up the surge when the victim gets this far away. */
 	public static final double SURGE_GIVE_UP = 7.0;
 	/** It grabs when the victim's box is within this of its own. */
-	public static final double GRAB_REACH = 0.5;
+	public static final double GRAB_REACH = 0.8;
 
 	// --- the grab ---------------------------------------------------------------------------------
 	/** The victim is held this far in front of it (centre to centre). */
