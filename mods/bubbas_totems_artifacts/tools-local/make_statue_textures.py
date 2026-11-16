@@ -1,88 +1,175 @@
 #!/usr/bin/env python3
 # dte:C6,B16
-"""Placeholder totem statue textures (agent-made, scripted; the owner will design the statues: docs/art-todo.md).
+"""The Totem of Warding statue: its block model and textures, 16x and the Faithful-style 32x twins (agent-made, listed
+in docs/art-todo.md for the owner to redo or tweak; never AI-generated).
 
   python mods/bubbas_totems_artifacts/tools-local/make_statue_textures.py
 
-Writes, at 16x and 32x (the 32x set into the built-in Faithful-style pack):
-  textures/block/totem_statue_plinth.png   shared plinth: side strip (0..10 x 0..2), top (0..10 x 2..12)
-  textures/block/totem_statue_<totem>.png  the column: front (0..8 x 0..12) carved with the totem's own item sprite,
-                                           side (8..16 x 0..12) plain carved stone with a glowing rune line
-Coordinates are in 16x pixels; the 32x copy draws everything at double size from the 32x item sprite.
+The statue is the Totem of Warding item (tools/warding-textures.py) carved life-size in soul stone and set on a polished
+deepslate plinth: a robed figure with stub arms held out, a deep hood with two soul-fire eyes in its shadow, a ward
+rune glowing on its chest, and a soul flame burning from the crown of the hood. Eyes, rune and flame are small elements
+with light_emission, so they glow at night like the item's. Fits 10x10 and 16 high (TotemStatueBlock.SHAPE).
+
+Writes models/block/totem_statue_warding.json and, at 16x and 32x:
+  textures/block/totem_statue_plinth.png  plinth and step (layout: PLINTH below)
+  textures/block/totem_statue_warding.png the figure (layout: FIGURE below)
+Texture grids are hand-placed at 16x; the 32x twins come from tools/pixelart.py. Needs Pillow.
 """
+import json
+import sys
 from pathlib import Path
 
-from PIL import Image
+HERE = Path(__file__).resolve().parent
+ROOT = HERE.parent.parent.parent
+sys.path.insert(0, str(ROOT / "tools"))
+from pixelart import check, render, render32  # noqa: E402
 
-RES = Path(__file__).resolve().parent.parent / "src/main/resources"
+RES = HERE.parent / "src/main/resources"
 MOD = "bubbas_totems_artifacts"
-# Deepslate-blue stone, darkest to lightest (the Totem of Warding's own stone colors).
-STONE = [(28, 33, 46), (46, 55, 74), (66, 78, 102), (88, 104, 130), (112, 130, 156), (140, 158, 182)]
-# Per totem: the glow color used for the side rune line.
-TOTEMS = {"warding": ("totem_of_warding", (95, 215, 220))}
+
+# Polished deepslate, vanilla's own ramp (block/polished_deepslate.png).
+DEEP = {"0": (36, 36, 36), "1": (45, 45, 45), "2": (56, 55, 55), "3": (65, 65, 65), "4": (75, 76, 79),
+	"5": (88, 88, 88), "6": (110, 110, 110)}
+# Soul stone, the item's ramp (tools/warding-textures.py), on letters here: o (darkest) .. u (lightest).
+SOUL = {"o": (24, 26, 38), "p": (40, 46, 64), "q": (57, 66, 88), "r": (78, 90, 116), "s": (104, 118, 146),
+	"t": (136, 150, 176), "u": (170, 182, 204)}
+# Soul fire, vanilla's soul fire ramp.
+FIRE = {"a": (1, 128, 133), "b": (10, 206, 212), "c": (106, 247, 252), "d": (207, 253, 255)}
+PALETTE = {**DEEP, **SOUL, **FIRE}
+MATERIAL = {**{k: "deep" for k in DEEP}, **{k: "soul" for k in SOUL}, **{k: "fire" for k in FIRE}}
+
+# Plinth texture. Regions (u0,v0)-(u1,v1) in 16x pixels:
+#   plinth side  (0,0)-(10,3)   chamfered top edge, a band of carved ward notches, shadowed foot
+#   plinth top   (0,3)-(10,13)  bevelled rim around a sunken square; the step's top reuses the inner (1,4)-(9,12)
+#   step side    (0,13)-(8,14)
+# The rest is spare and filled with plain polished deepslate (it shows as block-breaking particles).
+PLINTH = check([
+	"6655555554" + "455554",
+	"4240424042" + "544455",
+	"2111111110" + "455545",
+	"6666666664" + "545554",
+	"6" + "66555554" + "3" + "455455",
+	"5" + "65333342" + "3" + "554545",
+	"5" + "63444432" + "3" + "545554",
+	"5" + "63455432" + "3" + "455455",
+	"5" + "63455432" + "3" + "554545",
+	"5" + "63444432" + "3" + "545554",
+	"5" + "64333322" + "3" + "455455",
+	"5" + "42222221" + "2" + "554545",
+	"4222222221" + "545554",
+	"54444443" + "45455455",
+	"5455454545455455",
+	"4545545454545545",
+])
+
+# Figure texture. Regions:
+#   body front  (0,0)-(6,5)    robe under the hood's shadow, the rune element in front
+#   body side   (6,0)-(10,5)   robe side with a fold
+#   body back   (10,0)-(16,5)  robe back, the hood's drape
+#   hood side   (0,6)-(6,10)   top row: the hood's crown band; rows 7-9: the hood's cloth (also its back)
+#   hood front  (6,6)-(12,10)  the rim around the face: band on top, a column each side
+#   face        (12,6)-(16,9)  the dark recess inside the hood
+#   eye         (12,9)-(13,10) and rune (13,9)-(15,11): glowing parts
+#   arm end     (6,10)-(8,12), arm side (8,10)-(10,12)
+#   hood top    (0,10)-(6,16)  with the ember opening the flame rises from
+#   flame       (10,12)-(14,16) the soul flame, on two crossed planes
+FIGURE = check([
+	"qqqqqp" + "qqqp" + "rrrqqp",
+	"srrrrq" + "srqq" + "srrqqp",
+	"srqqrq" + "srqp" + "srqrqp",
+	"srqqrq" + "rrqp" + "srqrqp",
+	"rrqrqp" + "rqqp" + "rqqqpp",
+	"qqqqqqqqqqqqqqqq",
+	"uuttss" + "uuttss" + "oooo",
+	"tttssr" + "tqqqqr" + "oppo",
+	"tssrrq" + "sqqqqq" + "pppp",
+	"srrqqp" + "sqqqqp" + "c" + "cd" + "q",
+	"uuttts" + "ts" + "ts" + "qqq" + "bc" + "q",
+	"utoosr" + "sr" + "rq" + "qqqqqq",
+	"tobcor" + "qqqq" + "..a." + "qq",
+	"tocbor" + "qqqq" + ".bc." + "qq",
+	"sroorq" + "qqqq" + "bcdb" + "qq",
+	"srrqqq" + "qqqq" + "cddc" + "qq",
+])
 
 
-def noise(x, y, seed):
-    return ((x * 73856093) ^ (y * 19349663) ^ (seed * 83492791)) & 0xFF
+def face(uv, tex, **extra):
+	return {"uv": uv, "texture": tex, **extra}
 
 
-def stone(img, x0, y0, w, h, s, seed, base=2):
-    """Fill a box with speckled stone, a light top edge and a dark bottom edge (block-style)."""
-    for y in range(y0 * s, (y0 + h) * s):
-        for x in range(x0 * s, (x0 + w) * s):
-            n = noise(x // max(1, s // 2) if s > 1 else x, y // max(1, s // 2) if s > 1 else y, seed)
-            shade = base + (1 if n < 60 else 0) - (1 if n > 215 else 0)
-            if y < y0 * s + max(1, s // 16):
-                shade += 1
-            if y >= (y0 + h) * s - max(1, s // 16):
-                shade -= 1
-            img.putpixel((x, y), STONE[max(0, min(len(STONE) - 1, shade))] + (255,))
+def box(frm, to, faces, **extra):
+	return {"from": frm, "to": to, **extra, "faces": faces}
 
 
-def plinth(s):
-    img = Image.new("RGBA", (16 * s, 16 * s), (0, 0, 0, 0))
-    stone(img, 0, 0, 10, 2, s, 1, base=1)   # side strip
-    stone(img, 0, 2, 10, 10, s, 2, base=2)  # top
-    # A carved border on the top.
-    for i in range(10 * s):
-        for (x, y) in ((i, 2 * s), (i, 12 * s - 1), (0, 2 * s + i), (10 * s - 1, 2 * s + i)):
-            img.putpixel((x, y), STONE[1] + (255,))
-    return img
+def model():
+	P, F = "#plinth", "#figure"
+	side4 = lambda uv: {d: face(uv, P) for d in ("north", "east", "south", "west")}
+	el = []
+	# Plinth and step.
+	el.append(box([3, 0, 3], [13, 3, 13], {**side4([0, 0, 10, 3]), "up": face([0, 3, 10, 13], P),
+		"down": face([0, 3, 10, 13], P, cullface="down")}))
+	el.append(box([4, 3, 4], [12, 4, 12], {**side4([0, 13, 8, 14]), "up": face([1, 4, 9, 12], P)}))
+	# Body (robe).
+	el.append(box([5, 4, 6], [11, 9, 10], {"north": face([0, 0, 6, 5], F), "south": face([10, 0, 16, 5], F),
+		"east": face([6, 0, 10, 5], F), "west": face([6, 0, 10, 5], F), "up": face([12, 6, 16, 9], F)}))
+	# Arms held out to the sides.
+	for x0, x1, end in ((3, 5, "west"), (11, 13, "east")):
+		faces = {d: face([8, 10, 10, 12], F) for d in ("north", "south", "up", "down")}
+		faces[end] = face([6, 10, 8, 12], F)
+		el.append(box([x0, 6, 7], [x1, 8, 9], faces))
+	# The hood: a crown band on top of two side walls, open at the front over a recessed face.
+	el.append(box([5, 12, 5], [11, 13, 11], {"north": face([6, 6, 12, 7], F), "south": face([0, 6, 6, 7], F),
+		"east": face([0, 6, 6, 7], F), "west": face([0, 6, 6, 7], F), "up": face([0, 10, 6, 16], F),
+		"down": face([12, 6, 16, 7], F)}))
+	for x0, x1, front, inner_side in ((5, 6, [11, 7, 12, 10], "east"), (10, 11, [6, 7, 7, 10], "west")):
+		outer = "west" if inner_side == "east" else "east"
+		el.append(box([x0, 9, 5], [x1, 12, 11], {"north": face(front, F),
+			"south": face([5, 7, 6, 10] if x0 == 5 else [0, 7, 1, 10], F),
+			outer: face([0, 7, 6, 10], F), inner_side: face([12, 6, 13, 9], F)}))
+	el.append(box([6, 9, 6.5], [10, 12, 11], {"north": face([12, 6, 16, 9], F), "south": face([1, 7, 5, 10], F)}))
+	# Soul-fire eyes in the hood's shadow, the rune on the chest, the flame on the crown: they glow.
+	for x in (6.5, 8.5):
+		el.append(box([x, 10, 6.4], [x + 1, 11, 6.5], {"north": face([12, 9, 13, 10], F)}, light_emission=15))
+	rune = face([13, 9, 15, 11], F)
+	# The rune is a small square turned 45 degrees: a diamond, like the item's.
+	el.append(box([7.25, 5.75, 5.8], [8.75, 7.25, 6], {"north": rune, "east": face([13, 9, 13.2, 11], F),
+		"west": face([13, 9, 13.2, 11], F), "up": face([13, 9, 15, 9.2], F), "down": face([13, 10.8, 15, 11], F)},
+		rotation={"origin": [8, 6.5, 5.9], "axis": "z", "angle": 45}, light_emission=12))
+	# The flame stands on the hood's crown; its tip reaches a pixel above the block, like a torch flame.
+	flame = face([10, 12, 14, 16], F)
+	el.append(box([6, 13, 8], [10, 17, 8], {"north": flame, "south": flame},
+		rotation={"origin": [8, 13, 8], "axis": "y", "angle": 45}, light_emission=15))
+	el.append(box([8, 13, 6], [8, 17, 10], {"east": flame, "west": flame},
+		rotation={"origin": [8, 13, 8], "axis": "y", "angle": 45}, light_emission=15))
+	return {
+		"parent": "minecraft:block/block",
+		"textures": {"particle": f"{MOD}:block/totem_statue_plinth", "plinth": f"{MOD}:block/totem_statue_plinth",
+			"figure": f"{MOD}:block/totem_statue_warding"},
+		"elements": el,
+	}
 
 
-def column(s, item_png, glow):
-    img = Image.new("RGBA", (16 * s, 16 * s), (0, 0, 0, 0))
-    stone(img, 0, 0, 8, 12, s, 3, base=2)  # front background
-    stone(img, 8, 0, 8, 12, s, 4, base=2)  # side
-    # Front: the totem's item sprite as a relief, cropped to its outline and fitted to the face (1 px margin).
-    sprite = Image.open(item_png).convert("RGBA")
-    sprite = sprite.crop(sprite.getbbox()).resize((7 * s, 11 * s), Image.NEAREST)
-    ox, oy = s // 2, s // 2
-    for y in range(sprite.height):
-        for x in range(sprite.width):
-            c = sprite.getpixel((x, y))
-            if c[3]:
-                img.putpixel((ox + x, oy + y), c)
-    # Side: a vertical rune line in the totem's glow color, with notches.
-    gx = 8 * s + 4 * s - max(1, s // 2)
-    for y in range(2 * s, 10 * s):
-        for w in range(max(1, s // 2) + (0 if s == 1 else 0)):
-            img.putpixel((gx + w, y), glow + (255,))
-        if (y // s) % 3 == 0:
-            for w in range(-s, s + max(1, s // 2)):
-                img.putpixel((gx + w, y), glow + (255,))
-    return img
+def write_model(path):
+	"""Pretty JSON with each face on one line, tab-indented like the rest of the repo's models."""
+	text = json.dumps(model(), indent="\t")
+	path.write_text(text + "\n", encoding="utf-8")
 
 
 def main():
-    for s, base in ((1, RES / f"assets/{MOD}"), (2, RES / f"resourcepacks/{MOD}_32x/assets/{MOD}")):
-        out = base / "textures/block"
-        out.mkdir(parents=True, exist_ok=True)
-        plinth(s).save(out / "totem_statue_plinth.png")
-        for name, (item, glow) in TOTEMS.items():
-            column(s, base / f"textures/item/{item}.png", glow).save(out / f"totem_statue_{name}.png")
-        print("wrote", out)
+	fig = FIGURE
+	for s, base in ((1, RES / f"assets/{MOD}"), (2, RES / f"resourcepacks/{MOD}_32x/assets/{MOD}")):
+		out = base / "textures/block"
+		out.mkdir(parents=True, exist_ok=True)
+		if s == 1:
+			render(PLINTH, PALETTE).save(out / "totem_statue_plinth.png")
+			render(fig, PALETTE).save(out / "totem_statue_warding.png")
+		else:
+			render32(PLINTH, PALETTE, MATERIAL, smooth=False, bevel=0, grain=("deep",), seed=3).save(out / "totem_statue_plinth.png")
+			render32(fig, PALETTE, MATERIAL, smooth=False, bevel=0, grain=("soul",), seed=5).save(out / "totem_statue_warding.png")
+		print("wrote", out)
+	write_model(RES / f"assets/{MOD}/models/block/totem_statue_warding.json")
+	print("wrote model")
 
 
 if __name__ == "__main__":
-    main()
+	main()

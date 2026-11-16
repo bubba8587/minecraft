@@ -40,8 +40,8 @@ public class TotemStatueBlock extends HorizontalDirectionalBlock {
 	public static final EnumProperty<TotemType> TOTEM = EnumProperty.create("totem", TotemType.class);
 	/** Whether the block has the {@link #TOTEM} property yet (two or more totems). */
 	public static final boolean HAS_TYPES = TotemType.values().length > 1;
-	/** The placeholder statue: a 10x10 plinth and an 8-wide column, 14 high. */
-	private static final VoxelShape SHAPE = Block.column(10.0, 0.0, 14.0);
+	/** The statue: a 10x10 plinth and the carved figure on it, its soul flame reaching the top of the block. */
+	private static final VoxelShape SHAPE = Block.column(10.0, 0.0, 16.0);
 
 	public TotemStatueBlock(BlockBehaviour.Properties properties) {
 		super(properties);
