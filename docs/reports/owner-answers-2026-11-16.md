@@ -16,3 +16,8 @@ Collected by the orchestrator while builders worked; merge in the docs pass, the
 
 - C4 retitled (armor, weapons, beacons) and its body updated; C5 retitled to fit 100 chars (still unratified).
 - New unratified B leaves for the owner's principles: B17 vanillaFirst, B18 equalTreatment, B19 noHiddenCooldowns. Specs that follow them should cite them (dte:B17,B18,B19) in the docs pass.
+
+## Warding (Reworked Mobs) (owner)
+
+- Evokers: Totem of Warding is a rare bonus drop (5%), not 100% (owner: little lore sense for evokers to carry them); chests stay the main source.
+- Bells stay muffled by walls (a surface bell won't wake a crypt below).

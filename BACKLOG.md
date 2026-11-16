@@ -35,6 +35,14 @@ Parked ideas and open items, newest first within each project. Agents add to it 
 ## Bubba's Reworked Beacons (planned, C5)
 - Design in specs/reworked-beacons.md; open questions listed there. Not built yet.
 
+- **Totems** (owner, 2026-11-16): artifact items for things potions and enchantments don't cover, like the Totem of Warding. Many can work both held (personal, small) and in a Reworked Beacons beacon (area). Liked:
+  - **Keeping**: used up on death; you keep your inventory that once (a Totem of Undying for your items).
+  - **Gathering**: pulls nearby dropped items and XP to you; in a beacon, into a container under it.
+  - **Fortification**: explosions in the area don't break blocks (creeper/ghast-proof). NOT via the mobGriefing rule (that also stops villager farming, endermen etc.): only explosion block damage.
+  - **Growth** (name TBD, a verb-like word): crops and saplings grow faster (random tick boost), held around you or in a beacon area.
+  - **Seeking**: points toward the nearest structure of a chosen type, like an explorer map.
+  - Dropped: Fold (animal breeding), Stillness (no despawning).
+
 ## Repo
 - Owner to read and ratify (or rewrite) the goal drafts A1-A4 (`python3 tools/dte.py unratified`).
 - A future mod drastically reducing unenchanted mining speed.
