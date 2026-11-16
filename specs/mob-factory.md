@@ -29,6 +29,7 @@ Owner's idea (2026-11-16), to make mob farming possible again after the spawn cu
 - The warped growth should form more **alien "chains"/spurs** that **curve up around the cavern's walls, then curl in and bend toward the central drop spot**.
 - The **teleporter has a redstone-visible activation timer and particle effects even with no mob on it**, so a player could **hop on it to escape, with the right timing** (it sends a player up too).
 - **Warped first (owner):** warped is the primary material, bone only a minor accent, **no dripstone**. **One central "dripper"** hangs precisely above the teleporter pad; any other drippers are much smaller. (The first look's warped character was better than the bone-and-spike second look, minus its shapeless blobs.)
+- **Sculk detailing follows real ancient cities** (owner): the same palette and patterns (patches with veins creeping up walls and edges, sparse catalysts and shriekers, sensors by walkways, cracking).
 - The "timer" is **lamps that light up** in sequence, not an actual redstone clock (owner).
 - The Warden's observation area is its **office**: **chests** (loot), and a **jukebox with a weird music disc that's always playing** (owner).
 - **Right before it fires, whatever is on the pad gets a bit of Levitation**, lifting slightly off the pad, then it teleports.
