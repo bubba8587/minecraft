@@ -34,7 +34,9 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
  * and whatever doesn't follow paths (flyers, slimes, a ridden happy ghast) is pushed back at the edge every tick
  * ({@link WardBarrier});</li>
  * <li>if it {@code keepsSleepersAsleep} (a full pyramid), sleepers inside never wake ({@link #keepsSleepersAsleep}; the sleepers
- * belong to Bubba's Reworked Mobs, told through compat/SleeperHook, so this does nothing without it).</li>
+ * belong to Bubba's Reworked Mobs, told through compat/SleeperHook, so this does nothing without it);</li>
+ * <li>Reworked Mobs' caretaker endermen do no work inside it and a cairn site inside spawns none (also through
+ * compat/SleeperHook; specs/endermen.md, E2).</li>
  * </ul>
  * A ward lapses unless its source refreshes it: sources call {@link #put} on their own tick, so a broken or unloaded
  * source needs no cleanup hook. Server thread only.
@@ -60,7 +62,8 @@ public final class Wards {
 	public static void put(ServerLevel level, Object source, AABB area, boolean keepsSleepersAsleep, int lifetimeTicks) {
 		WARDS.computeIfAbsent(level, l -> new HashMap<>())
 				.put(source, new Ward(area, keepsSleepersAsleep, level.getGameTime() + Math.max(1, lifetimeTicks)));
-		// Sleepers are Reworked Mobs' (when installed): it keeps its own area per source, on the same lifetime.
+		// Sleepers and endermen are Reworked Mobs' (when installed): it keeps its own areas per source, on the same lifetime.
+		SleeperHook.get().keepEndermenOut(level, source, area, lifetimeTicks);
 		if (keepsSleepersAsleep) {
 			SleeperHook.get().keepAsleep(level, source, area, lifetimeTicks);
 		} else {
@@ -74,6 +77,7 @@ public final class Wards {
 			wards.remove(source);
 		}
 		SleeperHook.get().release(level, source);
+		SleeperHook.get().releaseEndermen(level, source);
 	}
 
 	/** The wards active in a level right now (a copy). */

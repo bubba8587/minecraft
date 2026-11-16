@@ -172,6 +172,7 @@ public class ModDataGenerator implements DataGeneratorEntrypoint {
 			builder.add(ModGameRules.CUT_MONSTER_SPAWNS.getDescriptionId(), "Cut natural monster spawns");
 			builder.add(ModGameRules.MONSTER_CAP_PERCENT.getDescriptionId(), "Natural monster cap (% of vanilla)");
 			builder.add(ModGameRules.WATCHER_CREEPERS.getDescriptionId(), "Creepers spawn as watchers");
+			builder.add(ModGameRules.CAIRN_ENDERMEN.getDescriptionId(), "Overworld endermen spawn at cairns");
 		}
 	}
 

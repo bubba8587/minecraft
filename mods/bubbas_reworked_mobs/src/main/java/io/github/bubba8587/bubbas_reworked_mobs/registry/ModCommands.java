@@ -3,6 +3,7 @@ package io.github.bubba8587.bubbas_reworked_mobs.registry;
 
 import io.github.bubba8587.bubbas_reworked_mobs.BubbasReworkedMobs;
 import io.github.bubba8587.bubbas_reworked_mobs.display.LootDisplayCommand;
+import io.github.bubba8587.bubbas_reworked_mobs.enderman.CairnCommand;
 import net.minecraft.commands.Commands;
 
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -16,6 +17,7 @@ public final class ModCommands {
 		CommandRegistrationCallback.EVENT.register((dispatcher, context, selection) -> dispatcher.register(
 				Commands.literal(BubbasReworkedMobs.MOD_ID)
 						.requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
-						.then(LootDisplayCommand.build(context))));
+						.then(LootDisplayCommand.build(context))
+						.then(CairnCommand.build())));
 	}
 }
