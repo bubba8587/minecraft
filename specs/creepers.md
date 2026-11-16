@@ -27,9 +27,12 @@ A **blinded** creeper can't see motion, so all of the above is disabled while it
 
 Charged creepers keep vanilla's current suicide-bomber behavior.
 
-## Open questions (owner)
+## Owner answers
 
-- See the conversation; answers land here.
+- **C1 fuse:** a full meter starts vanilla's 1.5 s hiss and swell. During the hiss, if nothing attacks it and the target either **sneaks** or **moves outside its trigger range**, it **defuses**. Hearing the hiss, crouching and backing up keeps you safe.
+- **C2 watching:** it **never stops watching a player** within aggro range (vanilla's 16 blocks). The meter still drains when nothing startles it (that's the calming down).
+- **C3 fast movement:** **any living thing moving faster than a walk within about 6 blocks** startles it: panicking animals, hopping rabbits, running horses and mobs, and players sprinting, gliding (elytra/Glider) or riding; being knocked toward it (e.g. Wind Burst) counts too (B18: same rule for everyone).
+- **C4 projectiles:** projectiles flying past close (near-misses) startle it, not just hits. So rapid things like snowballs set it off remotely; to kill one without an explosion, slay it in melee or one-shot it with a strong bow.
 
 ## Milestone test objectives
 
