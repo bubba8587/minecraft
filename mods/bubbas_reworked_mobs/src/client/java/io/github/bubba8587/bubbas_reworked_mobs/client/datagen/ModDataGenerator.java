@@ -171,6 +171,7 @@ public class ModDataGenerator implements DataGeneratorEntrypoint {
 			builder.add(display + "no_support", "Nothing there to hold it up");
 			builder.add(ModGameRules.CUT_MONSTER_SPAWNS.getDescriptionId(), "Cut natural monster spawns");
 			builder.add(ModGameRules.MONSTER_CAP_PERCENT.getDescriptionId(), "Natural monster cap (% of vanilla)");
+			builder.add(ModGameRules.WATCHER_CREEPERS.getDescriptionId(), "Creepers spawn as watchers");
 		}
 	}
 

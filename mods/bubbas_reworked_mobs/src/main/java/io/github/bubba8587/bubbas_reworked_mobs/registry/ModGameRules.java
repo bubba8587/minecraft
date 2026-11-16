@@ -15,6 +15,10 @@ public final class ModGameRules {
 	public static final GameRule<Integer> MONSTER_CAP_PERCENT = GameRuleBuilder.forInteger(15).range(0, 100)
 			.category(GameRuleCategory.SPAWNING).buildAndRegister(BubbasReworkedMobs.id("monster_cap_percent"));
 
+	/** Creepers come as watchers (one per player at night, behind cover) instead of vanilla's random natural spawns (specs/creepers.md). */
+	public static final GameRule<Boolean> WATCHER_CREEPERS = GameRuleBuilder.forBoolean(true)
+			.category(GameRuleCategory.SPAWNING).buildAndRegister(BubbasReworkedMobs.id("watcher_creepers"));
+
 	private ModGameRules() {
 	}
 

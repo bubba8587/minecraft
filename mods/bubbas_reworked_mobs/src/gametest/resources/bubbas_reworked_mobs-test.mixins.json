@@ -3,6 +3,7 @@
 	"package": "io.github.bubba8587.bubbas_reworked_mobs.test.mixin",
 	"compatibilityLevel": "JAVA_25",
 	"mixins": [
+		"CreeperAccessor",
 		"RefuseSpawnMixin"
 	],
 	"injectors": {

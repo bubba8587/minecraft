@@ -10,7 +10,7 @@ import net.fabricmc.fabric.api.gametest.v1.GameTest;
  * main mechanic. Each one runs a test whose body lives with its siblings in a milestone class (the method there has no
  * {@code @GameTest} of its own, so the full suite runs it once); the annotation (environment, structure, ticks) is the
  * one it had there. Everything else in this source set is the milestone suite, registered only with -PmilestoneTests.
- * Objectives: specs/undead.md, "Milestone test objectives".
+ * Objectives: specs/undead.md and specs/creepers.md, "Milestone test objectives".
  */
 public class ReworkedMobsCoreGameTest {
 	@GameTest
@@ -61,5 +61,32 @@ public class ReworkedMobsCoreGameTest {
 	@GameTest(environment = "bubbas_reworked_mobs-test:warding_bell", structure = "bubbas_reworked_mobs-test:hearing_field", maxTicks = 20)
 	public void apiCalmsSensesAndKeepsSleepersAsleep(GameTestHelper helper) {
 		new SleeperCalmGameTest().apiCalmsSensesAndKeepsSleepersAsleep(helper);
+	}
+
+	// --- creepers (specs/creepers.md) ---
+
+	@GameTest(environment = "bubbas_reworked_mobs-test:creeper_meter", structure = CreeperGameTest.FIELD, maxTicks = 140)
+	public void creeperHitsFillTheMeterAndItDrains(GameTestHelper helper) {
+		new CreeperGameTest().hitsFillTheMeterAndItDrains(helper);
+	}
+
+	@GameTest(environment = "bubbas_reworked_mobs-test:creeper_speed", structure = CreeperGameTest.FIELD, maxTicks = 140)
+	public void creeperSprintingNearbyStartlesWalkingDoesNot(GameTestHelper helper) {
+		new CreeperGameTest().sprintingNearbyStartlesWalkingDoesNot(helper);
+	}
+
+	@GameTest(environment = "bubbas_reworked_mobs-test:creeper_fuse", structure = CreeperGameTest.FIELD, maxTicks = 80)
+	public void creeperFullMeterHissesAndDefuses(GameTestHelper helper) {
+		new CreeperGameTest().fullMeterHissesAndDefuses(helper);
+	}
+
+	@GameTest(environment = "bubbas_reworked_mobs-test:creeper_blind", structure = CreeperGameTest.FIELD, maxTicks = 80)
+	public void blindedCreeperIgnoresMotion(GameTestHelper helper) {
+		new CreeperGameTest().blindedCreeperIgnoresMotion(helper);
+	}
+
+	@GameTest(environment = "bubbas_reworked_mobs-test:creeper_charged", structure = CreeperGameTest.FIELD, maxTicks = 100)
+	public void chargedCreeperStaysVanilla(GameTestHelper helper) {
+		new CreeperGameTest().chargedCreeperStaysVanilla(helper);
 	}
 }

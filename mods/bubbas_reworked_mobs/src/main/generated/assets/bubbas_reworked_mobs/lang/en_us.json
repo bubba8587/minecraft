@@ -12,5 +12,6 @@
   "entity.bubbas_reworked_mobs.woken_zombie": "Zombie",
   "gamerule.bubbas_reworked_mobs.cut_monster_spawns": "Cut natural monster spawns",
   "gamerule.bubbas_reworked_mobs.monster_cap_percent": "Natural monster cap (% of vanilla)",
+  "gamerule.bubbas_reworked_mobs.watcher_creepers": "Creepers spawn as watchers",
   "itemGroup.bubbas_reworked_mobs": "Bubba's Reworked Mobs"
 }
