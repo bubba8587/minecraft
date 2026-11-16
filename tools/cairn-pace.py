@@ -10,7 +10,9 @@ its cap, it spawns one enderman with the current chance (times the snowball); a 
 block and place it within about half a minute. Endermen linger the rest of the night (they count toward the cap) and
 are gone by the next night. Empty-handed endermen are ignored (offerings and clearing don't grow the spire).
 
-  python3 tools/cairn-pace.py            # table + nights for 20, 30 and 45-block spires
+  python3 tools/cairn-pace.py            # table + nights for cairns of 30, 45 and 60 End blocks
+
+'spire' is all of a cairn's End blocks, footing included (the worldgen stub is only natural offerings).
 """
 import random
 import statistics
@@ -27,7 +29,7 @@ def cap(g): return CAP_EMPTY + round((CAP_ALMOST - CAP_EMPTY) * g * g)
 def builders(g): return BUILDERS_EMPTY + (BUILDERS_ALMOST - BUILDERS_EMPTY) * g
 
 
-def build(spire, rng, stub=2):
+def build(spire, rng, stub=0):
     built, nights = stub, []
     while built < spire and len(nights) < 300:
         present = carrying = 0
@@ -51,7 +53,7 @@ def main():
     print("spire grown  chance/check  cap  builders")
     for g in (0, 0.2, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.97):
         print(f"   {g * 100:4.0f} %      {chance(g) * 100:4.1f} %      {cap(g)}    {builders(g) * 100:3.0f} %")
-    for spire in (20, 30, 45):
+    for spire in (30, 45, 60):
         rng = random.Random(4)
         runs = sorted((build(spire, rng) for _ in range(400)), key=len)
         n = [len(r) for r in runs]

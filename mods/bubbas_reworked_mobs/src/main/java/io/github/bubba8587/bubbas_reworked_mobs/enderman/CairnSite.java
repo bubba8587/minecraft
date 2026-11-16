@@ -84,16 +84,24 @@ public final class CairnSite {
 	}
 
 	/**
-	 * How far its spire has grown, 0 to 1: the share standing of its End blocks from one block above the ground up
-	 * (not the footing, rim and first trunk block that the worldgen stub already has, and not the offerings). What
-	 * spawning follows: a fresh stub is near 0, and building speeds up only once the spire is visibly rising (owner).
+	 * Whether this design block is part of the worldgen stub: a natural offering (owner: nothing unnatural a player
+	 * could already notice). Everything else, all the End blocks, endermen bring.
+	 */
+	public static boolean isStubBlock(BlockState state) {
+		return state.is(net.minecraft.tags.BlockTags.ENDERMAN_HOLDABLE) && TerrainKinds.isNatural(state)
+				&& !state.is(net.minecraft.world.level.block.Blocks.TNT);
+	}
+
+	/**
+	 * How far the cairn has grown, 0 to 1: the share standing of its End blocks (everything but the offerings, footing
+	 * included). What spawning follows: a fresh site is 0, and building speeds up only once it is visibly rising (owner).
 	 */
 	public float growth(ServerLevel level) {
 		int total = 0;
 		int standing = 0;
 		for (BlockPos pos : order) {
 			BlockState want = blocks.get(pos.asLong());
-			if (pos.getY() <= origin.getY() || want.is(net.minecraft.tags.BlockTags.ENDERMAN_HOLDABLE)) {
+			if (want.is(net.minecraft.tags.BlockTags.ENDERMAN_HOLDABLE)) {
 				continue;
 			}
 			total++;

@@ -6,7 +6,6 @@ import java.util.Optional;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Block;
@@ -15,11 +14,11 @@ import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.feature.Feature;
 
 /**
- * What a cairn site looks like before endermen arrive (builder's choice, specs/endermen.md): its footing and the
- * first block or two of its trunks, placed when the chunk generates, so players can find sites and endermen have
- * something to grow. Only the End blocks of the design up to one block above the ground; the offerings and the rest
- * are for endermen to bring. Runs once per overworld chunk (added to every overworld biome), and costs one cheap
- * seed hash unless the region's site is in this chunk.
+ * What a cairn site looks like before endermen arrive (owner, 2026-11-16: nothing unnatural a player could already
+ * notice): only its natural offerings, placed when the chunk generates: flowers on moss, mushrooms on podzol, sand and
+ * clay piles, cactus, melons, plain pumpkins. Never TNT or carved pumpkins (they don't generate naturally) and no End
+ * blocks: endermen bring every one of those, footing first. Runs once per overworld chunk (added to every overworld
+ * biome), and costs one cheap seed hash unless the region's site is in this chunk.
  */
 public record CairnFootingFeature() implements Feature {
 	public static final MapCodec<CairnFootingFeature> CODEC = MapCodec.unit(CairnFootingFeature::new);
@@ -47,10 +46,9 @@ public record CairnFootingFeature() implements Feature {
 		if (site.isEmpty()) {
 			return false;
 		}
-		BlockPos centre = site.get().origin();
 		for (BlockPos pos : site.get().order()) {
 			BlockState state = site.get().at(pos);
-			if (pos.getY() - centre.getY() <= 1 && !state.is(BlockTags.ENDERMAN_HOLDABLE)) {
+			if (CairnSite.isStubBlock(state)) {
 				level.setBlock(pos, state, Block.UPDATE_CLIENTS);
 			}
 		}
