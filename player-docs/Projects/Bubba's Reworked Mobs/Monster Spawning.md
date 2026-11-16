@@ -21,4 +21,4 @@ The amount, and whether the cut applies at all, can be changed with game rules.
 
 *Main article: [[Totem of Warding]]*
 
-With [[Bubba's Reworked Beacons]] installed, no monsters spawn naturally inside the area of a beacon holding a Totem of Warding, phantoms included. Spawners, trial spawners, raids and bosses still spawn as normal, but any monster that ends up inside a ward is pushed out, and no monster can enter one.
+With [[Bubba's Totems & Artifacts]] and [[Bubba's Reworked Beacons]] installed, no monsters spawn naturally inside the area of a beacon holding a Totem of Warding, phantoms included. Spawners, trial spawners, raids and bosses still spawn as normal, but any monster that ends up inside a ward is pushed out, and no monster can enter one.

@@ -52,17 +52,9 @@ Repeated fist hits shred armor, Smite can destroy a woken undead in one hit, arr
 
 Weapons and tools lie on the ground, hang on walls, stand stuck in the ground or are buried, and can be taken by players and by undead.
 
-## Grave Talisman
+## Grave Talisman and Totem of Warding
 
-*Main article: [[Grave Talisman]]*
-
-A talisman whose gem glows brighter the closer undead are.
-
-## Totem of Warding
-
-*Main article: [[Totem of Warding]]*
-
-A found item that makes nearby monsters run away while held, and in a beacon from [[Bubba's Reworked Beacons]] keeps an area free of monsters: none spawn there and none can get in.
+The [[Grave Talisman]] and the [[Totem of Warding]] are now part of [[Bubba's Totems & Artifacts]]. With that mod installed, the talisman also senses sleeping undead and the totem calms them. Players upgrading from an earlier version of this mod should install it to keep their talismans and totems.
 
 ## Monster spawning
 
@@ -90,15 +82,16 @@ The mod comes with vanilla-style 16x textures. A higher-resolution set, **Bubba'
 
 The mod requires Fabric API. Only this mod's own undead are changed: normal zombies and skeletons from spawners and other mods behave as usual.
 
-Optional: [[Bubba's Reworked Beacons]]. With it, the [[Totem of Warding]] can be placed in a beacon to ward its area. Without it, everything else works the same.
+Optional: [[Bubba's Totems & Artifacts]], whose [[Grave Talisman]] and [[Totem of Warding]] sense and calm this mod's sleeping undead. Everything here works the same without it.
 
 ## History
 
 | Version | Changes |
 |---|---|
-| 0.1.0 | Added part 1, the undead: sleeping and woken skeletons and zombies, loot on display, the Grave Talisman, the Totem of Warding (with wards in Reworked Beacons beacons), loud bells, light that calms sleepers, and the monster spawn cut. Early test version. |
+| 0.1.0 | Added part 1, the undead: sleeping and woken skeletons and zombies, loot on display, loud bells, light that calms sleepers, and the monster spawn cut. Early test version. (The Grave Talisman and Totem of Warding, first added here, moved to Bubba's Totems & Artifacts.) |
 
 ## See also
 
 - [[Installing Fabric Mods]]
 - [[Bubba Test World]]
+- [[Bubba's Totems & Artifacts]]
