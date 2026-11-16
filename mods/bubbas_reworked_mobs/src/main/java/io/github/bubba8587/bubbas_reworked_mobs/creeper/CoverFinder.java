@@ -121,12 +121,17 @@ public final class CoverFinder {
 		return new PeekSpot(cell, half, hidden);
 	}
 
-	/** Cheap pre-check before any raycast: something solid at head height within 2 cells around (where cover usually is). */
-	private static boolean coverNextTo(Level level, BlockPos cell) {
+	/**
+	 * Cheap pre-check before any raycast: something solid at head height within 2 cells, on the viewer's side of the
+	 * cell (cover sits between the creeper and what it watches).
+	 */
+	private static boolean coverNextTo(Level level, BlockPos cell, Vec3 viewer) {
+		double vx = viewer.x - (cell.getX() + 0.5);
+		double vz = viewer.z - (cell.getZ() + 0.5);
 		BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
 		for (int dx = -2; dx <= 2; dx++) {
 			for (int dz = -2; dz <= 2; dz++) {
-				if (dx == 0 && dz == 0) {
+				if (dx * vx + dz * vz <= 0.0) {
 					continue;
 				}
 				pos.set(cell.getX() + dx, cell.getY() + 1, cell.getZ() + dz);
@@ -166,7 +171,7 @@ public final class CoverFinder {
 					continue;
 				}
 				BlockPos cell = standableIn(level, around.getX() + dx, around.getY(), around.getZ() + dz, 2, 2);
-				if (cell == null || !coverNextTo(level, cell)) {
+				if (cell == null || !coverNextTo(level, cell, viewer)) {
 					continue;
 				}
 				double walk = Math.sqrt(dx * dx + dz * dz);

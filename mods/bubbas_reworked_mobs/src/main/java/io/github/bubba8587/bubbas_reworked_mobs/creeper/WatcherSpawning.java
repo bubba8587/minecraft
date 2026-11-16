@@ -88,8 +88,8 @@ public final class WatcherSpawning {
 			// Minecraft's yaw: 0 faces +Z (south), 90 faces -X.
 			int x = Mth.floor(player.getX() - Math.sin(yaw) * distance);
 			int z = Mth.floor(player.getZ() + Math.cos(yaw) * distance);
-			BlockPos cell = CoverFinder.standableIn(level, x, player.getBlockY(), z, 4, 6);
-			if (cell == null || !allowedHere(level, cell, random)) {
+			BlockPos cell = spawnCell(level, x, player.getBlockY(), z, random);
+			if (cell == null) {
 				continue;
 			}
 			CoverFinder.PeekSpot spot = CoverFinder.evaluate(level, EntityTypes.CREEPER.getDimensions(), cell, eye);
@@ -113,6 +113,18 @@ public final class WatcherSpawning {
 				return creeper;
 			}
 			return null;
+		}
+		return null;
+	}
+
+	/** The highest cell in this column, from 4 above to 6 below {@code y}, where vanilla's rules let a creeper spawn. */
+	private static @Nullable BlockPos spawnCell(ServerLevel level, int x, int y, int z, RandomSource random) {
+		BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
+		for (int dy = 4; dy >= -6; dy--) {
+			pos.set(x, y + dy, z);
+			if (CoverFinder.standable(level, pos) && allowedHere(level, pos, random)) {
+				return pos.immutable();
+			}
 		}
 		return null;
 	}

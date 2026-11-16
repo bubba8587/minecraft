@@ -234,6 +234,51 @@ public class CreeperGameTest {
 		});
 	}
 
+	// --- spawning ------------------------------------------------------------------------------------
+
+	/**
+	 * At night a player gets one watcher: behind cover (out of sight), outside their view, at a watching distance, already
+	 * watching them; a second isn't placed while it's near. Vanilla's random creeper spawns are blocked.
+	 */
+	@GameTest(environment = "bubbas_reworked_mobs-test:creeper_spawn", structure = FIELD, maxTicks = 200)
+	public void oneWatcherSpawnsBehindCoverOutOfView(GameTestHelper helper) {
+		for (int x = 2; x <= 22; x += 3) {
+			for (int y = 1; y <= 3; y++) {
+				helper.setBlock(new BlockPos(x, y, 10), Blocks.STONE);
+			}
+		}
+		ServerPlayer player = player(helper, 12.5, 1.5);
+		player.setYRot(180.0F);
+		player.setYHeadRot(180.0F);
+		ServerLevel level = helper.getLevel();
+		helper.assertTrue(io.github.bubba8587.bubbas_reworked_mobs.creeper.WatcherSpawning.blocksVanillaSpawn(level, EntityTypes.CREEPER),
+				"vanilla's random creeper spawns should be blocked");
+		Creeper[] spawned = {null};
+		helper.onEachTick(() -> {
+			if (spawned[0] == null) {
+				spawned[0] = io.github.bubba8587.bubbas_reworked_mobs.creeper.WatcherSpawning.trySpawnFor(level, player);
+				if (spawned[0] != null) {
+					helper.assertTrue(!CoverFinder.clear(level, player.getEyePosition(), spawned[0].getEyePosition()), "it should spawn out of sight");
+				}
+				return;
+			}
+			Creeper creeper = spawned[0];
+			Vec3 eye = player.getEyePosition();
+			Vec3 to = creeper.getEyePosition().subtract(eye);
+			double angle = Math.toDegrees(Math.acos(player.getViewVector(1.0F).dot(to.normalize())));
+			helper.assertTrue(angle > CreeperTuning.SPAWN_OUTSIDE_VIEW_HALF_ANGLE - 5.0, "spawned in view (" + angle + " degrees)");
+			double distance = Math.sqrt(creeper.distanceToSqr(player));
+			helper.assertTrue(distance >= CreeperTuning.SPAWN_MIN_DISTANCE - 1.5 && distance <= CreeperTuning.SPAWN_MAX_DISTANCE + 1.5, "distance " + distance);
+			helper.assertTrue(mind(creeper).watched() == player, "it should be watching its player");
+			helper.assertTrue(io.github.bubba8587.bubbas_reworked_mobs.creeper.WatcherSpawning.watchersOf(level, player) == 1, "one watcher");
+			helper.assertTrue(io.github.bubba8587.bubbas_reworked_mobs.creeper.WatcherSpawning.watchersOf(level, player) >= CreeperTuning.WATCHERS_PER_PLAYER,
+					"the per-player limit is reached");
+			creeper.discard();
+			remove(helper, player);
+			helper.succeed();
+		});
+	}
+
 	// --- watching -------------------------------------------------------------------------------------
 
 	/**

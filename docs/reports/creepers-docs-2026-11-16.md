@@ -1,0 +1,99 @@
+<!-- dte:C1,B17,B18,B19 -->
+# Docs report: Reworked Mobs creepers, first build (2026-11-16)
+
+Builder's report for merging into `specs/creepers.md` (and `specs/quality.md`, `CLAUDE.md`, the player vault). Nothing here is in the live docs yet.
+
+## Spec facts (as built)
+
+**No new entity type.** Every vanilla `Creeper` gets the behavior through `mixin/CreeperMixin` (natural spawns, spawners, eggs, commands alike). Vanilla's hunting goals (both target goals, `MeleeAttackGoal`, `SwellGoal`) are wrapped in `ChargedOnlyGoal`, so they run only while the creeper is charged; a charged creeper's goal list is exactly vanilla's. Uncharged creepers get `CreeperFuseGoal` (priority 2, vanilla SwellGoal's slot) and `CreeperWatchGoal` (priority 4, the melee slot). Floating, cat/ocelot avoidance, strolling and looking around stay vanilla (they run when it has nothing to watch). Code: `creeper/` package; all numbers in `CreeperTuning`.
+
+**Senses (`CreeperMind`, one per creeper, server only, not saved).** Ticked from `Creeper.tick`. Every 4 ticks (phase spread by entity id) one box query of 16 blocks for living things; speed = distance moved since the last scan / 4 (horizontal, plus vertical at half weight). Every 2 ticks a box query of 8 blocks for moving projectiles.
+- *Watching:* moving things (>= 0.03 blocks/tick) in its 120-degree field of view and in line of sight catch its eye; players first (nearest), else the nearest other mob. A player is watched while within 16 blocks, whatever they do (C2); anything else for 15 s, then it may pick something new. Never other creepers, spectators or invisible things.
+- *Startle meter:* 0-100, drains 0.5 a tick (10/s) when nothing startles it; frozen while hissing.
+  - an attack (any damage with an attacking entity: hits, arrows, thrown things) +40 (Fabric `ServerLivingEntityEvents.AFTER_DAMAGE`); falls, cactus, fire don't startle (vanilla's own fall-swell still shows);
+  - anything living moving faster than 0.24 blocks/tick within 6 blocks and in line of sight (field of view not needed) +8 per scan, per mover (sprinting, gliding, riding, panicking or hopping animals, running mobs, being knocked back: B18, one rule). A rider counts through its mount, once;
+  - a projectile whose path passes within 2 blocks of its middle +25, once per projectile (near-misses, C4).
+- *Full meter:* the hiss is vanilla's swell (30 ticks, primed sound, swelling). It stands still and stares at whoever startled it last. It defuses (meter drops to 60, swell runs back down) when nothing has hit it since the hiss began and that one sneaks (shift held) or is beyond 7 blocks (vanilla SwellGoal's range) or gone (C1). A hit during the hiss means sneaking no longer saves you. Flint and steel lights any creeper the vanilla way.
+
+**Watching (`CreeperWatchGoal`, `CoverFinder`).**
+- *Peek spots, "halfway behind a wall":* worked out from the watched entity's eyes. A spot is a floor cell where, sliding sideways across the line of sight, the view of the creeper's eyes goes from clear to blocked by any collision shape (trunks, walls, boulders; leaves count, like vanilla line of sight). Half-hidden: its middle 0.05 blocks on the open side of that edge (eyes peek, about half the body is behind cover). Hidden: 0.27 past the edge (body 0.6 wide: about 95 % behind).
+- Search: cells within 5 blocks (11 x 11, 5 heights) that are 6.5-13 blocks from the target and have something solid at head height within 2 cells on the target's side; best 12 by "distance near 7.5, short walk" get the raycast test (7 + 3 rays each). At most once a second, only while it has no spot. A held spot is re-checked every 10 ticks (the target moves).
+- *Peekaboo (owner, 2026-11-16):* while it sits at its spot and the watched player is looking within 45 degrees of it, it slides into the hidden place; when they look away it eases back out to half. Slides are 0.08 blocks a tick, sideways, still staring.
+- *Open ground (C5):* no cover in reach: it walks up to 6.5 blocks ("uncomfortably close", just outside a sprint-and-hit) and stares. Closer than 5.5 and it backs away (speed x1.2), so dashing at it makes it back up. Out of sight for 1 s (and no spot), it walks toward the target to see it again.
+- *Sneaking up:* a sneaking player within 12 blocks who is getting closer makes it look for cover farther away (1.5-8 blocks beyond its current distance) and sit hidden there, staring; with no cover it backs away.
+
+**Blindness:** a creeper with the vanilla Blindness effect senses nothing: meter only drains, watches nothing, ignores hits, and a hiss in progress defuses. Infused Gems' Blindness gems reach it only when they apply the vanilla effect (no gem-specific code; nothing to do when the mod is absent).
+
+**Charged:** vanilla in every way (vanilla's goals run; our meter stays empty).
+
+**Spawning (owner, 2026-11-16).**
+- Vanilla's random natural creeper spawns are blocked (`SpawnStateMixin`, same hook as the monster cap cut). Creepers from a structure's own spawn list, spawners, trial spawners, eggs and commands are untouched.
+- Instead each player gets **one** "natural" watcher (per player, owner's answer): every 10 s at night (`isDarkOutside`), per player (not spectators) with no watcher of their own within 48 blocks, up to 16 random tries for a spot 10-15 blocks away, outside 70 degrees of where they're looking, that passes vanilla's own rules (the biome's natural monster list includes creepers, the creeper's spawn placement and light/darkness rule) and is a peek spot from the player's eyes whose hidden place is out of their sight. It spawns there hidden, already watching the player, then eases out to half-hidden. Turn round fast and you can catch it half behind the tree; it ducks back when you look at it.
+- A watcher remembers whose it is (persistent attachment `bubbas_reworked_mobs:watcher_for`), so reloads keep the one-per-player count; one more than 48 blocks from its player no longer counts as theirs. Watchers despawn like any vanilla creeper (not persistent).
+- Vanilla's `spawn_mobs` and `spawn_monsters` rules and Peaceful turn it off. New game rule `bubbas_reworked_mobs:watcher_creepers` (default true, "Creepers spawn as watchers"): false brings vanilla's random spawns back and stops ours (for spawn-control mods). Off on the game test server (tests call the spawner directly).
+
+**Cost.** Per creeper: one 16-block entity box query every 4 ticks, one 8-block projectile query every 2 ticks (class-filtered), line-of-sight checks only for things that move. Cover search: at most once a second while it has no spot, a few block lookups per cell plus at most ~120 short raycasts. Spawner: every 10 s per player without a watcher, at most 16 column probes and a few raycasts.
+
+## Numbers (all in `CreeperTuning`; builder's starting values, owner to playtest)
+
+| | Value |
+|---|---|
+| Meter full / decay | 100 / 0.5 a tick (10/s) |
+| One attack | +40 (three sword hits 0.6 s apart set it off; one or two calm in ~4 s) |
+| Fast movement | faster than 0.24 blocks/tick (walk 0.216, sprint 0.28) within 6 blocks, +8 per 4-tick scan per mover (sprinting circles set it off in ~3.3 s) |
+| Near-miss | path within 2 blocks, +25 once per projectile (four snowballs) |
+| After defusing | meter 60 |
+| Defuse range | 7 blocks (vanilla) |
+| Field of view / notice speed / watch range | 120 degrees / 0.03 blocks/tick / 16 blocks (vanilla follow range) |
+| Non-player watched for | 15 s |
+| Uncomfortably close / backs off under | 6.5 / 5.5 blocks |
+| Peek spots | 6.5-13 blocks from target, within 5 of the creeper |
+| Peekaboo look cone | 45 degrees |
+| Slide speed | 0.08 blocks a tick |
+| Sneak notice | 12 blocks |
+| Watcher spawning | 1 per player, every 10 s at night, 10-15 blocks, outside 70 degrees of view, released beyond 48 blocks |
+
+## Builder's choices (the owner may want to change these)
+
+1. **Creative players are watched and startle creepers** (`IGNORE_CREATIVE_PLAYERS = false`), so the owner can try it in creative; vanilla's targeting ignores creative players. Flying fast in creative near a creeper startles it (it can't hurt you there).
+2. Fast movement needs line of sight but not the field of view (a sprint behind it still startles it); noticing something to watch needs both.
+3. Only damage with an attacker startles; environmental damage doesn't.
+4. A blinded creeper ignores hits too, and blinding it mid-hiss defuses it ("all of the above is disabled").
+5. Creepers never watch or startle each other (no chain reactions from a backing-up creeper).
+6. Defusing drops the meter to 60 rather than 0, so a defused creeper is still jumpy (no cooldown, B19: just a meter value).
+7. The meter isn't saved; a reloaded creeper starts calm.
+8. The fuse target is whoever startled it last (the last attacker, mover or shooter), else what it watches.
+9. Sneaking means holding sneak (`isShiftKeyDown`), checked every tick during the hiss.
+10. Spawn only at night (`isDarkOutside`), above ground or in caves, as long as vanilla's darkness rule passes at the spot; every 10 s.
+
+## Player-facing text (for the vault page)
+
+> **Creepers** don't hunt you any more. They're nervous watchers. Move where one can see you and it comes to look: it slips behind a tree or a wall, leans out just far enough to watch you, and ducks back when you look straight at it. Out in the open it creeps uncomfortably close, then backs off if you come at it.
+>
+> What sets one off is being startled: hitting it, running, riding or gliding near it, things flying past it. One startle and it calms down; keep startling it and it hisses. When it hisses, crouch, or back away out of range, and it calms down (unless you hit it). A calm approach is safe. A blinded creeper sees nothing. Charged creepers are the old kind: they come for you.
+>
+> At night, one creeper is out there for you. Turn round quickly and you may catch it, half behind a tree, looking at you.
+
+## Milestone test objectives (for the spec)
+
+Core (every build, `ReworkedMobsCoreGameTest`): `creeperHitsFillTheMeterAndItDrains`, `creeperSprintingNearbyStartlesWalkingDoesNot`, `creeperFullMeterHissesAndDefuses` (sneak, then backing out of range), `blindedCreeperIgnoresMotion`, `chargedCreeperStaysVanilla`.
+
+`CreeperGameTest` (milestone): `nearMissesStartle` (a snowball 1 block off counts, one 7.5 off doesn't); `aHitDuringTheHissStopsDefusing`; `peeksHalfBehindCover` (behind a wall it walks to a half-hidden spot with its eyes in view); `hidesWhenLookedAt` (peekaboo: hidden when looked at, half out again when looked away); `oneWatcherSpawnsBehindCoverOutOfView` (spawns out of sight, outside the view cone, 10-15 blocks, watching; one per player; vanilla random spawns blocked). Note: the spawn test failed once in ~12 runs early on (never reproduced after; maxTicks raised to 200); watch it.
+
+`CreeperClientGameTest` (client part `creepers`): screenshots `creeper-peek` (from the watched armor stand: half behind a one-log tree), `creeper-peek-side`, `creeper-hidden` (player looking at it), `creeper-caught` (looked away, then straight back).
+
+Not yet tested (objectives): riders and mounts counted once; knockback toward it startles; a sneaking player closing in makes it back behind cover; it repositions when the target leaves its view; it backs off when dashed at in the open; gliding with elytra startles; the game rule off brings vanilla spawns back.
+
+## Other docs to touch
+
+- `CLAUDE.md` / `ClientTests`: the Reworked Mobs client test names are now sleepers, displays, gait, creepers.
+- `specs/quality.md` timings: the full server suite is 72 tests (~15 s run on the owner's PC, unchanged in feel); the creepers client part takes ~20 s.
+- Art: nothing new (vanilla creeper model and textures); no `docs/art-todo.md` rows.
+
+## Test world station idea
+
+A "creeper grove" station: a flat grass clearing with three or four one-log trees (crowns 3 blocks up) and a stone wall segment, a creeper behind one trunk, spawn platform 11 blocks away, night vision, time locked at night with `spawn_mobs false` (so only the placed creeper is there). Signs: "Walk around: it peeks out. Look at it: it hides. Sprint past it: it hisses. Crouch: it calms." Add a lever-controlled dispenser of snowballs aimed past it for near-misses, and a second creeper on open ground for the "uncomfortably close" behavior.
+
+## Owner direction to record
+
+The owner's broader direction: almost eliminate random spawning for all mobs in Reworked Mobs (creepers are the first; the rest are later parts).

@@ -65,7 +65,7 @@ public final class CreeperTuning {
 	/** ... within this many blocks of the creeper (a 11 x 11 square, 5 heights). */
 	public static final int SPOT_SEARCH_RADIUS = 5;
 	/** At most this many candidate cells get the (raycast) cover test per search. */
-	public static final int SPOT_MAX_EVALUATIONS = 10;
+	public static final int SPOT_MAX_EVALUATIONS = 12;
 	/** Ticks between spot searches when it has none. */
 	public static final int SPOT_SEARCH_INTERVAL = 20;
 	/** Ticks between re-checks that its spot still half-hides it from the target (the target moves). */
