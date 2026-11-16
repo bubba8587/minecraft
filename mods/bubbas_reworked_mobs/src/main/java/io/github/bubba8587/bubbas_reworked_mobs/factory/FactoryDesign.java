@@ -811,6 +811,8 @@ public final class FactoryDesign {
 			for (int dz = -2; dz <= 2; dz++) {
 				boolean inner = Math.abs(dx) <= 1 && Math.abs(dz) <= 1;
 				solid(BEAM_X + dx, -1, BEAM_Z + dz, inner ? Blocks.IRON_BLOCK.defaultBlockState() : Blocks.POLISHED_BLACKSTONE_BRICKS.defaultBlockState());
+				// A second pyramid layer, hidden in the deck: 2 layers let a beacon gem through at up to Gem Power III.
+				solid(BEAM_X + dx, -2, BEAM_Z + dz, Blocks.IRON_BLOCK.defaultBlockState());
 			}
 		}
 		solid(BEAM_X, 0, BEAM_Z, Blocks.BEACON.defaultBlockState());
@@ -1042,6 +1044,12 @@ public final class FactoryDesign {
 				}
 			}
 		}
+		// Its second pyramid layer, 5 x 5 above that (2 layers: a beacon gem works at up to Gem Power III).
+		for (int dx = -2; dx <= 2; dx++) {
+			for (int dz = -2; dz <= 2; dz++) {
+				set(BEAM_X + dx, c + 2, BEAM_Z + dz, Blocks.IRON_BLOCK.defaultBlockState());
+			}
+		}
 	}
 
 	// ---- Sculk, grown the way ancient cities get theirs ----
@@ -1225,7 +1233,7 @@ public final class FactoryDesign {
 		for (BlockPos chest : this.chests) {
 			BlockPos at = toWorld(origin, chest, rotation);
 			if ((box == null || box.isInside(at)) && level.getBlockEntity(at) instanceof net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity c) {
-				c.setLootTable(FabricatorLoot.OFFICE);
+				c.setLootTable(FabricatorLoot.office());
 				c.setLootTableSeed(random.nextLong());
 			}
 		}

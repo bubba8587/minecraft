@@ -9,6 +9,7 @@
 		"EndermanMixin",
 		"MobDeactivatedMixin",
 		"MobFinalizeSpawnMixin",
+		"MobPersistenceAccessor",
 		"WardenJukeboxMixin",
 		"PlayerGripMixin",
 		"ProjectileUtilGripMixin",

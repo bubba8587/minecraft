@@ -28,8 +28,8 @@ public final class FabricatorTuning {
 	/** Debuffs: every 4 s (a beacon pulse), lasting 13 s (a 1-layer beacon's length). */
 	public static final int DEBUFF_EVERY_TICKS = 80;
 	public static final int DEBUFF_TICKS = 260;
-	/** The debuff box without Reworked Beacons: a 1-layer pair's (60 sideways; 10 past both pyramids). */
-	public static final int DEBUFF_RANGE = 60;
+	/** The debuff box without Reworked Beacons: a 2-layer pair's (90 sideways; 10 past both pyramids). */
+	public static final int DEBUFF_RANGE = 90;
 	/** Mining Fatigue III (like an elder guardian), Weakness I, Slowness I. */
 	public static final int FATIGUE_AMPLIFIER = 2;
 	/** The Warden hears a player this close to the hidden spawner, the ceiling beacon or the floor beacon. */

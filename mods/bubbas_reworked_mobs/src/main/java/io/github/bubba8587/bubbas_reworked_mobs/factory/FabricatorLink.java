@@ -20,6 +20,13 @@ import net.minecraft.world.item.component.CustomData;
  */
 public final class FabricatorLink {
 	public static final String BEACONS = "bubbas_reworked_beacons";
+	public static final String GEMS = "bubbas_infused_gems";
+	/**
+	 * The beacon's gem with Bubba's Infused Gems installed (owner, 2026-11-16): a perfect harmful Mining Fatigue gem
+	 * with a Slowness bonus, built from its item id and component by name (no link to that mod). Infused Gems' own
+	 * beacon payload then gives it to everything in the area; take it out and that ends.
+	 */
+	public static final String BEACON_GEM = "bubbas_infused_gems:gem[bubbas_infused_gems:gem={effect:\"minecraft:mining_fatigue\",infusion:6,tier:3,main:1.0f,other:{effect:\"minecraft:slowness\",strength:0.6f}}]";
 	private static final String HEART_KEY = "bubbas_reworked_mobs:fabricator_heart";
 
 	private FabricatorLink() {
@@ -44,7 +51,24 @@ public final class FabricatorLink {
 		return stack.is(Items.ECHO_SHARD) && data != null && data.copyTag().getBooleanOr(HEART_KEY, false);
 	}
 
+	public static boolean gemsLoaded() {
+		return FabricLoader.getInstance().isModLoaded(GEMS);
+	}
+
+	/** What the floor beacon holds: the Mining Fatigue gem with Infused Gems, else a Fabricator Heart. */
+	public static ItemStack beaconItem(ServerLevel level) {
+		if (gemsLoaded()) {
+			try {
+				return new net.minecraft.commands.arguments.item.ItemParser(level.registryAccess())
+						.parse(new com.mojang.brigadier.StringReader(BEACON_GEM)).createItemStack(1);
+			} catch (com.mojang.brigadier.exceptions.CommandSyntaxException e) {
+				io.github.bubba8587.bubbas_reworked_mobs.BubbasReworkedMobs.LOGGER.warn("Couldn't make the Fabricator's Infused Gems gem; using a Fabricator Heart", e);
+			}
+		}
+		return heart();
+	}
+
 	static void placeHeart(ServerLevel level, BlockPos floorBeacon) {
-		io.github.bubba8587.bubbas_reworked_mobs.compat.FabricatorBeaconPayload.placeHeart(level, floorBeacon);
+		io.github.bubba8587.bubbas_reworked_mobs.compat.FabricatorBeaconPayload.placeItem(level, floorBeacon, beaconItem(level));
 	}
 }

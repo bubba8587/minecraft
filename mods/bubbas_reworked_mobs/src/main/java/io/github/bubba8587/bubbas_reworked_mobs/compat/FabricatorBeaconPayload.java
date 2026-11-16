@@ -43,10 +43,10 @@ public final class FabricatorBeaconPayload implements BeaconPayload {
 		}
 	}
 
-	/** Puts a Fabricator Heart in the floor beacon (first time a Fabricator runs). */
-	public static void placeHeart(ServerLevel level, BlockPos floorBeacon) {
+	/** Loads the floor beacon (first time a Fabricator runs): the Infused Gems gem or a Fabricator Heart. */
+	public static void placeItem(ServerLevel level, BlockPos floorBeacon, ItemStack item) {
 		if (BeaconSlots.item(level, floorBeacon).isEmpty()) {
-			BeaconSlots.setItem(level, floorBeacon, FabricatorLink.heart());
+			BeaconSlots.setItem(level, floorBeacon, item);
 		}
 	}
 }

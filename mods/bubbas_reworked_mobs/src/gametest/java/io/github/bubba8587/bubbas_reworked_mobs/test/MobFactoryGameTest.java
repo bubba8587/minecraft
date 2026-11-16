@@ -1,0 +1,263 @@
+// dte:C1
+package io.github.bubba8587.bubbas_reworked_mobs.test;
+
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import io.github.bubba8587.bubbas_reworked_mobs.creeper.CreeperAccess;
+import io.github.bubba8587.bubbas_reworked_mobs.factory.FabricatorMobs;
+import io.github.bubba8587.bubbas_reworked_mobs.factory.FabricatorSite;
+import io.github.bubba8587.bubbas_reworked_mobs.factory.FabricatorSites;
+import io.github.bubba8587.bubbas_reworked_mobs.factory.Fabricators;
+import io.github.bubba8587.bubbas_reworked_mobs.factory.FactoryDesign;
+import net.minecraft.core.BlockPos;
+import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.monster.Creeper;
+import net.minecraft.world.entity.monster.warden.Warden;
+import net.minecraft.world.level.GameType;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.RedstoneLampBlock;
+import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.phys.AABB;
+
+import net.fabricmc.fabric.api.gametest.v1.GameTest;
+
+/**
+ * Ancient Fabricators at work (specs/mob-factory.md). Each test puts up a whole Fabricator far out from the test grid
+ * (its own spot, chunks force-loaded), waits until its chunks tick entities, then runs it without a player
+ * ({@code Fabricators.force}) and sends what the teleporter fires to a stone ledge 30 above the pad
+ * ({@code Fabricators.destinationOverride}; the superflat test world has no surface above it). It stands in the open
+ * there, so the tests use mobs that don't burn in daylight. Milestone suite; the core suite runs four of these.
+ */
+public class MobFactoryGameTest {
+	private static final AtomicInteger NEXT = new AtomicInteger();
+	/** A full count: 8 lamps x 40 ticks, then the 20-tick lift. */
+	static final int COUNT = 8 * 40 + 20;
+	/** Ticks allowed for the forced chunks to start ticking entities. */
+	static final int SETTLE = 100;
+
+	/** A running test Fabricator: {@code tick} is called every tick once it runs, with the ticks since it started. */
+	interface Body {
+		void tick(FabricatorSite site, int t);
+	}
+
+	static void run(GameTestHelper helper, FactoryDesign.Mob mob, Body body) {
+		ServerLevel level = helper.getLevel();
+		BlockPos base = helper.absolutePos(BlockPos.ZERO);
+		BlockPos origin = new BlockPos(base.getX() + 8000 + NEXT.getAndIncrement() * 160, 40, base.getZ() + 8000);
+		chunks(level, origin, true);
+		FabricatorSite site = FabricatorSites.addSite(level, new FabricatorSite(origin, Rotation.NONE, 4242L, mob, null));
+		site.design().place(level, origin, Rotation.NONE);
+		Fabricators.destinationOverride = (l, s) -> {
+			BlockPos to = s.pad().above(30);
+			l.setBlock(to.below(), Blocks.STONE.defaultBlockState(), 2);
+			return to;
+		};
+		int[] started = { -1 };
+		int[] t = { 0 };
+		helper.onEachTick(() -> {
+			if (started[0] < 0) {
+				if (level.isPositionEntityTicking(site.pad()) && level.isPositionEntityTicking(site.wardenSpot())
+						&& level.isPositionEntityTicking(site.pad().above(30))) {
+					started[0] = 0;
+					Fabricators.prepare(level, site);
+					Fabricators.force(level, site, true);
+				}
+				return;
+			}
+			body.tick(site, t[0]++);
+		});
+	}
+
+	static void done(GameTestHelper helper, FabricatorSite site) {
+		ServerLevel level = helper.getLevel();
+		Fabricators.force(level, site, false);
+		FabricatorSites.removeSite(level, site);
+		for (Entity e : level.getEntitiesOfClass(Entity.class, AABB.of(site.box()).inflate(8), e -> !(e instanceof ServerPlayer))) {
+			e.discard();
+		}
+		chunks(level, site.origin(), false);
+		helper.succeed();
+	}
+
+	private static void chunks(ServerLevel level, BlockPos origin, boolean on) {
+		int cx = origin.getX() >> 4;
+		int cz = origin.getZ() >> 4;
+		for (int x = cx - 3; x <= cx + 3; x++) {
+			for (int z = cz - 3; z <= cz + 3; z++) {
+				level.setChunkForced(x, z, on);
+			}
+		}
+	}
+
+	/** A real survival player in the level (the helper's own mock player is creative, which Wardens and debuffs ignore). */
+	static ServerPlayer survivalPlayer(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		net.minecraft.server.network.CommonListenerCookie cookie = net.minecraft.server.network.CommonListenerCookie.createInitial(
+				new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "test-fabricator"), false);
+		ServerPlayer player = new ServerPlayer(level.getServer(), level, cookie.gameProfile(), cookie.clientInformation()) {
+			@Override
+			public GameType gameMode() {
+				return GameType.SURVIVAL;
+			}
+		};
+		net.minecraft.network.Connection connection = new net.minecraft.network.Connection(net.minecraft.network.protocol.PacketFlow.SERVERBOUND);
+		new io.netty.channel.embedded.EmbeddedChannel(connection);
+		level.getServer().getPlayerList().placeNewPlayer(connection, player, cookie);
+		GameType.SURVIVAL.updatePlayerAbilities(player.getAbilities());
+		return player;
+	}
+
+	static String state(ServerLevel level, FabricatorSite site) {
+		Fabricators.Running r = Fabricators.running(level, site);
+		return "running " + (r == null ? "no" : "step " + r.step()) + ", mobs in box " + level.getEntitiesOfClass(Mob.class, AABB.of(site.box())).size()
+				+ ", game time " + level.getGameTime() + ", entity ticking " + level.isPositionEntityTicking(site.pad());
+	}
+
+	static List<Mob> deactivated(ServerLevel level, FabricatorSite site) {
+		return level.getEntitiesOfClass(Mob.class, site.deckArea(), FabricatorMobs::isDeactivated);
+	}
+
+	/** The dripper drops a deactivated mob onto the pad: limp, looking down, no AI, unhurt by the fall. */
+	// core: ReworkedMobsCoreGameTest
+	public void dropsDeactivatedMobOntoThePad(GameTestHelper helper) {
+		run(helper, FactoryDesign.Mob.SPIDER, (site, t) -> {
+			for (Mob mob : deactivated(helper.getLevel(), site)) {
+				if (mob.onGround() && site.padArea().contains(mob.position())) {
+					helper.assertTrue(mob.getXRot() > 45.0F, "a deactivated mob looks down, pitch " + mob.getXRot());
+					helper.assertTrue(mob.getHealth() == mob.getMaxHealth(), "the drop doesn't hurt it");
+					helper.assertTrue(mob.isSilent(), "deactivated mobs are silent");
+					helper.assertTrue(mob.getTarget() == null, "and target nothing");
+					done(helper, site);
+					return;
+				}
+			}
+		});
+	}
+
+	/**
+	 * The lamps count up, the mob on the pad is lifted (Levitation), then sent up to its destination, where it wakes
+	 * as a reworked mob (a watcher creeper, not a vanilla one).
+	 */
+	// core: ReworkedMobsCoreGameTest
+	public void teleporterSendsItUpAndItWakesReworked(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		boolean[] seen = new boolean[3]; // lamps counted, lifted, arrived
+		run(helper, FactoryDesign.Mob.CREEPER, (site, t) -> {
+			Fabricators.Running running = Fabricators.running(level, site);
+			if (running != null && running.step() >= 4) {
+				long lit = site.timerLamps().stream().filter(p -> level.getBlockState(p).getValue(RedstoneLampBlock.LIT)).count();
+				seen[0] |= lit == running.step();
+			}
+			for (Creeper c : level.getEntitiesOfClass(Creeper.class, site.padArea(), FabricatorMobs::isDeactivated)) {
+				seen[1] |= c.hasEffect(MobEffects.LEVITATION);
+			}
+			BlockPos to = site.pad().above(30);
+			for (Creeper c : level.getEntitiesOfClass(Creeper.class, new AABB(to).inflate(2))) {
+				FabricatorMobs.State state = c.getAttached(FabricatorMobs.DEACTIVATED);
+				if (state != null && state.stage() == FabricatorMobs.ARRIVED) {
+					seen[2] = true;
+				} else if (state == null && seen[2]) {
+					helper.assertTrue(seen[0], "the timer lamps lit one by one with the count");
+					helper.assertTrue(seen[1], "the mob on the pad was lifted before it fired");
+					helper.assertFalse(((CreeperAccess) c).brm$isVanilla(), "it wakes as a reworked (watcher) creeper");
+					helper.assertFalse(c.isSilent(), "awake, it makes sounds again");
+					done(helper, site);
+					return;
+				}
+			}
+		});
+	}
+
+	/** Redstone into the pad's lodestone stops the teleporter: the lamps stay dark and the mobs stay on the deck. */
+	// core: ReworkedMobsCoreGameTest
+	public void redstoneStopsTheTeleporter(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		run(helper, FactoryDesign.Mob.SPIDER, (site, t) -> {
+			if (t == 0) {
+				level.setBlock(site.control().below(), Blocks.REDSTONE_BLOCK.defaultBlockState(), 3);
+			}
+			Fabricators.Running running = Fabricators.running(level, site);
+			helper.assertTrue(running == null || running.step() == 0, "stopped: the count never starts");
+			for (BlockPos lamp : site.timerLamps()) {
+				helper.assertFalse(level.getBlockState(lamp).getValue(RedstoneLampBlock.LIT), "stopped: the lamps stay dark");
+			}
+			if (t == COUNT + 60) {
+				helper.assertTrue(!deactivated(level, site).isEmpty(), "the dropped mob is still on the deck, deactivated");
+				helper.assertTrue(level.getEntitiesOfClass(Mob.class, new AABB(site.pad().above(30)).inflate(3)).isEmpty(), "nothing was sent up");
+				done(helper, site);
+			}
+		});
+	}
+
+	/** Breaking the hidden spawner stops it for good: the mob on the deck wakes there and no more drop. */
+	// core: ReworkedMobsCoreGameTest
+	public void breakingTheHiddenSpawnerStopsItForGood(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		run(helper, FactoryDesign.Mob.ENDERMAN, (site, t) -> {
+			if (t == 50) {
+				helper.assertTrue(!deactivated(level, site).isEmpty(), "a mob dropped before the spawner broke; " + state(level, site));
+				helper.assertTrue(level.getBlockState(site.spawner()).is(Blocks.SPAWNER), "the hidden spawner is where the design says");
+				level.destroyBlock(site.spawner(), false);
+			} else if (t == 80) {
+				helper.assertTrue(FabricatorSites.has(level, site, FabricatorSites.BROKEN), "the Fabricator knows it's broken");
+				helper.assertTrue(deactivated(level, site).isEmpty(), "the mob on the deck woke up");
+			} else if (t == 80 + COUNT) {
+				helper.assertTrue(deactivated(level, site).isEmpty(), "nothing more dropped (a new drop would lie deactivated on the deck)");
+				done(helper, site);
+			}
+		});
+	}
+
+	/** The Warden stands passive in its office window until a player goes for the machine; then it's angry at them. */
+	@GameTest(maxTicks = SETTLE + 120)
+	public void wardenWakesWhenItHearsAPlayerAtTheMachine(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		ServerPlayer[] player = new ServerPlayer[1];
+		run(helper, FactoryDesign.Mob.SPIDER, (site, t) -> {
+			List<Warden> wardens = Fabricators.wardens(level, site);
+			if (t == 1) {
+				helper.assertTrue(wardens.size() == 1, "one Warden per Fabricator, found " + wardens.size());
+				Warden warden = wardens.getFirst();
+				helper.assertTrue(warden.isNoAi() && Boolean.TRUE.equals(warden.getAttached(Fabricators.WARDEN)), "it starts passive");
+				helper.assertTrue(warden.isPersistenceRequired(), "it never despawns");
+				player[0] = survivalPlayer(helper);
+				BlockPos near = site.floorBeacon().east(2);
+				player[0].snapTo(near.getX() + 0.5, near.getY(), near.getZ() + 0.5);
+			} else if (t == 50) {
+				Warden warden = wardens.getFirst();
+				helper.assertFalse(warden.isNoAi(), "it heard the player at the beacon and woke; " + state(level, site) + " player at " + player[0].blockPosition() + " in level " + level.players().contains(player[0]));
+				helper.assertTrue(warden.getAngerManagement().getActiveAnger(player[0]) >= 80, "angry at them");
+				helper.getLevel().getServer().getPlayerList().remove(player[0]);
+				done(helper, site);
+			}
+		});
+	}
+
+	/** Without a beacon mod, the floor beacon's core gives players in the area Mining Fatigue III, Weakness, Slowness. */
+	@GameTest(maxTicks = SETTLE + 120)
+	public void debuffsWithoutReworkedBeacons(GameTestHelper helper) {
+		ServerPlayer[] player = new ServerPlayer[1];
+		run(helper, FactoryDesign.Mob.SPIDER, (site, t) -> {
+			if (t == 0) {
+				player[0] = survivalPlayer(helper);
+				BlockPos at = site.pad().south(6);
+				player[0].snapTo(at.getX() + 0.5, at.getY(), at.getZ() + 0.5);
+			} else if (t == 90) {
+				if (!Fabricators.beaconsLoaded()) {
+					MobEffectInstance fatigue = player[0].getEffect(MobEffects.MINING_FATIGUE);
+					helper.assertTrue(fatigue != null && fatigue.getAmplifier() == 2, "Mining Fatigue III");
+					helper.assertTrue(player[0].hasEffect(MobEffects.WEAKNESS) && player[0].hasEffect(MobEffects.SLOWNESS), "Weakness and Slowness");
+				}
+				helper.getLevel().getServer().getPlayerList().remove(player[0]);
+				done(helper, site);
+			}
+		});
+	}
+}

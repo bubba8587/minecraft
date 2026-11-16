@@ -146,4 +146,26 @@ public class ReworkedMobsCoreGameTest {
 	public void drownedStaredAtItSinks(GameTestHelper helper) {
 		new DrownedGameTest().staredAtItSinks(helper);
 	}
+
+	// --- Ancient Fabricators (specs/mob-factory.md); bodies in MobFactoryGameTest ---
+
+	@GameTest(maxTicks = MobFactoryGameTest.SETTLE + 150)
+	public void fabricatorDropsDeactivatedMob(GameTestHelper helper) {
+		new MobFactoryGameTest().dropsDeactivatedMobOntoThePad(helper);
+	}
+
+	@GameTest(maxTicks = MobFactoryGameTest.SETTLE + MobFactoryGameTest.COUNT + 150)
+	public void fabricatorSendsItUpAndItWakesReworked(GameTestHelper helper) {
+		new MobFactoryGameTest().teleporterSendsItUpAndItWakesReworked(helper);
+	}
+
+	@GameTest(maxTicks = MobFactoryGameTest.SETTLE + MobFactoryGameTest.COUNT + 100)
+	public void fabricatorRedstoneStopsTheTeleporter(GameTestHelper helper) {
+		new MobFactoryGameTest().redstoneStopsTheTeleporter(helper);
+	}
+
+	@GameTest(maxTicks = MobFactoryGameTest.SETTLE + MobFactoryGameTest.COUNT + 120)
+	public void fabricatorBreakingTheSpawnerStopsIt(GameTestHelper helper) {
+		new MobFactoryGameTest().breakingTheHiddenSpawnerStopsItForGood(helper);
+	}
 }

@@ -26,7 +26,9 @@ import org.jspecify.annotations.Nullable;
  * AI step is skipped, {@code mixin/MobDeactivatedMixin}), silent, head hanging (looking down), never hurt by its
  * fall. Sent up, it lies limp on the surface in particles for {@link FabricatorTuning#WAKE_TICKS}, then <b>wakes</b>
  * as the world's reworked mob: it was made with the {@code TRIGGERED} spawn reason, which keeps it reworked
- * ({@code MobFinalizeSpawnMixin} only turns spawner and unmarked natural spawns vanilla). Saved with the mob.
+ * ({@code MobFinalizeSpawnMixin} only turns spawner and unmarked natural spawns vanilla). Persistent while
+ * deactivated (a pile on a stopped teleporter stays when you step away), an ordinary despawning mob once awake. Saved
+ * with the mob.
  */
 public final class FabricatorMobs {
 	/** On the deck, deactivated. */
@@ -70,7 +72,9 @@ public final class FabricatorMobs {
 			return null;
 		}
 		BlockPos at = site.dropPoint();
-		mob.snapTo(at.getX() + 0.5, at.getY(), at.getZ() + 0.5, level.getRandom().nextFloat() * 360.0F, LIMP_PITCH);
+		// Hanging just under the tip, head clear of it (an enderman is nearly 3 blocks tall).
+		double y = site.dripperTip().getY() - mob.getBbHeight() - 0.05;
+		mob.snapTo(at.getX() + 0.5, y, at.getZ() + 0.5, level.getRandom().nextFloat() * 360.0F, LIMP_PITCH);
 		mob.finalizeSpawn(level, level.getCurrentDifficultyAt(at), EntitySpawnReason.TRIGGERED, null);
 		deactivate(mob);
 		level.addFreshEntity(mob);
@@ -83,6 +87,7 @@ public final class FabricatorMobs {
 
 	public static void deactivate(Mob mob) {
 		mob.setAttached(DEACTIVATED, new State(ON_DECK, 0L));
+		((io.github.bubba8587.bubbas_reworked_mobs.mixin.MobPersistenceAccessor) mob).brm$setPersistenceRequired(true);
 		mob.setSilent(true);
 		mob.setXRot(LIMP_PITCH);
 		mob.setTarget(null);
@@ -106,6 +111,7 @@ public final class FabricatorMobs {
 	/** Wakes it: the AI comes back, a reworked mob of the world. */
 	public static void wake(Mob mob) {
 		mob.removeAttached(DEACTIVATED);
+		((io.github.bubba8587.bubbas_reworked_mobs.mixin.MobPersistenceAccessor) mob).brm$setPersistenceRequired(false);
 		mob.setSilent(false);
 		mob.setXRot(0.0F);
 		if (mob.level() instanceof ServerLevel level) {
