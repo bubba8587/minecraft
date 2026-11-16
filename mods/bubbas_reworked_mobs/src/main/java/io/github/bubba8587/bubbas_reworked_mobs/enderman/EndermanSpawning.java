@@ -203,6 +203,13 @@ public final class EndermanSpawning {
 				return;
 			}
 		}
+		// Empty-handed at an unfinished cairn: it knows one thing in the cairn's way and comes to clear it (owner: "if the
+		// cairn site calls for removal of dirt/trees/etc, then a block-less enderman can remove one").
+		BlockPos obstacle = site.nextObstacle(level);
+		if (obstacle != null) {
+			mind.set(EndermanMind.Job.TAKE, obstacle, level.getGameTime());
+			return;
+		}
 		if (random.nextBoolean()) {
 			// A filler: find a hole near the site and bring its original block.
 			BlockPos.MutableBlockPos at = new BlockPos.MutableBlockPos();

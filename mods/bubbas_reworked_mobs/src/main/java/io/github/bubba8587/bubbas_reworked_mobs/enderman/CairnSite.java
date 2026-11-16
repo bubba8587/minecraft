@@ -170,6 +170,23 @@ public final class CairnSite {
 		return null;
 	}
 
+	/**
+	 * The lowest spot of the design with something in its way that an enderman can lift (grass or dirt where the footing
+	 * sinks in, a tree grown into it, a block a player put there), or null.
+	 */
+	public @Nullable BlockPos nextObstacle(ServerLevel level) {
+		for (BlockPos pos : order) {
+			BlockState here = level.isLoaded(pos) ? level.getBlockState(pos) : null;
+			if (here == null || here.isAir() || here.canBeReplaced() || TerrainKinds.matches(here, blocks.get(pos.asLong()))) {
+				continue;
+			}
+			if (TerrainKinds.liftable(level, pos, here)) {
+				return pos;
+			}
+		}
+		return null;
+	}
+
 	/** The lowest missing block that can be placed now, or null (the cairn is complete or nothing is reachable). */
 	public @Nullable BlockPos nextBuildable(ServerLevel level) {
 		for (BlockPos pos : order) {
