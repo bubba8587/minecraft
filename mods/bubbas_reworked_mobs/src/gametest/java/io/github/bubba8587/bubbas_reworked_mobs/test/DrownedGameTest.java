@@ -280,8 +280,18 @@ public class DrownedGameTest {
 			DrownedMind mind = mind(drowned);
 			helper.assertTrue(mind.state() == DrownedMind.State.LURK, "should reach a lurk spot, state " + mind.state());
 			Vec3 rel = helper.relativeVec(drowned.position());
-			helper.assertTrue(rel.x >= 7.0 && rel.x < 10.0, "the lurk spot should be in the shallows by the shore, at " + rel);
-			helper.assertTrue(Math.abs(net.minecraft.util.Mth.wrapDegrees(drowned.getYRot() - 90.0F)) < 50.0F, "it should face the shore (-x), yaw " + drowned.getYRot());
+			// Any 2-deep column within 3 blocks of land is a spot: by the bank (facing -x) or by the pool's side walls,
+			// which are 1-block piers you can stand on (facing +z or -z). Flaky until 2026-11-16: this asserted the bank.
+			helper.assertTrue(rel.x >= 7.0 && rel.x < 12.0, "the lurk spot should be in the shallows, at " + rel);
+			helper.assertTrue(mind.spot() != null && Math.abs(net.minecraft.util.Mth.wrapDegrees(drowned.getYRot() - mind.spot().shoreYaw())) < 30.0F,
+					"it should face its spot's shore, yaw " + drowned.getYRot() + " spot " + mind.spot());
+			float yaw = mind.spot().shoreYaw() * net.minecraft.util.Mth.DEG_TO_RAD;
+			boolean land = false;
+			for (int step = 1; step <= 3 && !land; step++) {
+				BlockPos ahead = BlockPos.containing(drowned.getX() - net.minecraft.util.Mth.sin(yaw) * step, mind.spot().surfaceY() - 0.5, drowned.getZ() + net.minecraft.util.Mth.cos(yaw) * step);
+				land = !helper.getLevel().getBlockState(ahead).getCollisionShape(helper.getLevel(), ahead).isEmpty();
+			}
+			helper.assertTrue(land, "land (the bank or a wall's top) should be within 3 blocks ahead of it, yaw " + drowned.getYRot());
 			drowned.discard();
 			CreeperGameTest.remove(helper, player);
 		});
