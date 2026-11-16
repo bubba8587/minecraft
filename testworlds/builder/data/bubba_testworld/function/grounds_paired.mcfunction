@@ -12,7 +12,7 @@ fill -2 32 77 2 32 81 minecraft:gold_block
 fill -3 33 76 3 33 82 minecraft:gold_block
 fill -4 34 75 4 34 83 minecraft:gold_block
 setblock 0 30 79 minecraft:beacon[upside_down=true]
-setblock -5 24 73 minecraft:chest[facing=south]{CustomName:"Totems of Warding",Items:[{Slot:0b,id:"bubbas_reworked_mobs:totem_of_warding",count:1},{Slot:1b,id:"bubbas_reworked_mobs:totem_of_warding",count:1},{Slot:2b,id:"bubbas_reworked_mobs:totem_of_warding",count:1}]}
+setblock -5 24 73 minecraft:chest[facing=south]{CustomName:"Totems of Warding",Items:[{Slot:0b,id:"bubbas_totems_artifacts:totem_of_warding",count:1},{Slot:1b,id:"bubbas_totems_artifacts:totem_of_warding",count:1},{Slot:2b,id:"bubbas_totems_artifacts:totem_of_warding",count:1}]}
 setblock -6 24 85 bubbas_reworked_mobs:zombie_sleeper[facing=north,pose=lying]
 setblock -3 24 86 bubbas_reworked_mobs:skeleton_sleeper[facing=north,pose=sitting]
 setblock 6 24 85 bubbas_reworked_mobs:zombie_sleeper[facing=north,pose=lying]

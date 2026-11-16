@@ -180,10 +180,10 @@ execute if block 0 24 79 minecraft:beacon[upside_down=false]
 execute if block 0 27 79 minecraft:air
 execute if block 4 34 83 minecraft:gold_block
 execute if block -4 20 75 minecraft:iron_block
-execute if data block -5 24 73 Items[{id:"bubbas_reworked_mobs:totem_of_warding"}]
+execute if data block -5 24 73 Items[{id:"bubbas_totems_artifacts:totem_of_warding"}]
 execute if block 0 13 79 minecraft:air
 execute if block 0 49 79 minecraft:air
 execute if block 0 15 79 minecraft:deepslate_tiles
-execute if data block 3 -60 27 front_text.messages[0].click_event{command:"give @s bubbas_reworked_mobs:totem_of_warding"}
+execute if data block 3 -60 27 front_text.messages[0].click_event{command:"give @s bubbas_totems_artifacts:totem_of_warding"}
 execute if data block 14 -60 62 front_text.messages[0].click_event{command:"gamerule spawn_mobs true"}
 execute unless entity @e[type=bubbas_reworked_mobs:woken_skeleton,x=43,y=-60,z=85,distance=..16]

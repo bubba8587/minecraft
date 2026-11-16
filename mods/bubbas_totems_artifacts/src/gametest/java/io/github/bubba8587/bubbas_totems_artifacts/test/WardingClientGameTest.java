@@ -6,6 +6,7 @@ import io.github.bubba8587.bubbas_totems_artifacts.registry.ModItems;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.gui.screens.worldselection.WorldCreationUiState;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.packs.repository.PackRepository;
 import net.minecraft.world.item.ItemStack;
 
 import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
@@ -64,18 +65,55 @@ public class WardingClientGameTest implements FabricClientGameTest {
 
 			// A Totem of Warding set down as a statue, two blocks south, facing north at the player; then from the side
 			// and up close. (The torch-lit sleeper shot stayed with Reworked Mobs' light calming.)
+			// Wait out the last pulse's particles first.
+			context.waitTicks(60);
 			BlockPos s = base.offset(0, 0, 2);
 			server.runCommand("setblock %d %d %d %s:totem_statue[facing=north]".formatted(s.getX(), s.getY(), s.getZ(), ID));
 			context.waitFor(mc -> mc.level.getBlockState(s).is(ModBlocks.TOTEM_STATUE));
-			server.runCommand("tp @p %d.5 %d %d.5 0 20".formatted(base.getX(), base.getY(), base.getZ()));
-			context.waitTicks(10);
-			context.takeScreenshot("warding-statue-front");
-			server.runCommand("tp @p %d.5 %d %d.5 -135 25".formatted(base.getX() - 1, base.getY(), base.getZ()));
-			context.waitTicks(10);
-			context.takeScreenshot("warding-statue-angle");
-			server.runCommand("tp @p %d.5 %d.2 %d.9 0 30".formatted(base.getX(), base.getY(), base.getZ()));
-			context.waitTicks(10);
-			context.takeScreenshot("warding-statue-close");
+			statueShots(context, server, base, "");
+			// The same in the built-in 32x pack (B16).
+			setPack(context, PACK_32X, true);
+			statueShots(context, server, base, "-32x");
+			setPack(context, PACK_32X, false);
+		}
+	}
+
+	private static final String PACK_32X = ID + ":" + ID + "_32x";
+
+	private static void statueShots(ClientGameTestContext context, TestServerContext server, BlockPos base, String suffix) {
+		server.runCommand("tp @p %d.5 %d %d.5 0 20".formatted(base.getX(), base.getY(), base.getZ()));
+		context.waitTicks(10);
+		context.takeScreenshot("warding-statue-front" + suffix);
+		server.runCommand("tp @p %d.5 %d %d.5 -40 30".formatted(base.getX() - 2, base.getY(), base.getZ()));
+		context.waitTicks(10);
+		context.takeScreenshot("warding-statue-angle" + suffix);
+		server.runCommand("tp @p %d.5 %d.2 %d.9 0 30".formatted(base.getX(), base.getY(), base.getZ()));
+		context.waitTicks(10);
+		context.takeScreenshot("warding-statue-close" + suffix);
+	}
+
+	/** Turns a resource pack on or off and waits for the reload. */
+	private static void setPack(ClientGameTestContext context, String id, boolean on) {
+		boolean changed = context.computeOnClient(mc -> {
+			PackRepository repo = mc.getResourcePackRepository();
+			if (!repo.getAvailableIds().contains(id)) {
+				throw new AssertionError("no resource pack " + id + "; available: " + repo.getAvailableIds());
+			}
+			if (repo.getSelectedIds().contains(id) == on) {
+				return false;
+			}
+			if (on) {
+				repo.addPack(id);
+			} else {
+				repo.removePack(id);
+			}
+			mc.options.updateResourcePacks(repo);
+			return true;
+		});
+		if (changed) {
+			context.waitTicks(2);
+			context.waitFor(mc -> mc.gui.overlay() == null, 1200);
+			context.waitTicks(5);
 		}
 	}
 }
