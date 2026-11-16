@@ -35,10 +35,13 @@ public final class EndermanTuning {
 	// --- jobs ----------------------------------------------------------------------------------
 	/** Ticks between job searches for an idle enderman (spread over endermen by id). */
 	public static final int JOB_SCAN_INTERVAL = 20;
-	/** Columns sampled per pickup search, within SCAN_RADIUS; each column checks its top SCAN_DEPTH + 1 blocks. */
+	/** Every column within this distance is checked first (nearest first), then the random ones below. */
+	public static final int NEAR_RADIUS = 3;
+	/** Columns sampled per pickup search, within SCAN_RADIUS. */
 	public static final int SCAN_COLUMNS = 8;
 	public static final int SCAN_RADIUS = 12;
-	public static final int SCAN_DEPTH = 3;
+	/** Each pickup column is checked from its real top, but at most this far above the original ground, down to one below it. */
+	public static final int SCAN_HEIGHT = 8;
 	/** Columns sampled per search for a hole to fill, within FILL_RADIUS; each scans down from the original surface. */
 	public static final int FILL_COLUMNS = 16;
 	public static final int FILL_RADIUS = 16;
@@ -71,6 +74,8 @@ public final class EndermanTuning {
 	public static final int SPAWN_MIN_DISTANCE = 12;
 	public static final int SPAWN_MAX_DISTANCE = 28;
 	public static final int SPAWN_TRIES = 8;
+	/** Spawn spots are within this many blocks up or down of the site's ground (not on a mountain above it or in a cave below). */
+	public static final int SPAWN_HEIGHT = 6;
 	/** Chance per spawn check that a site spawns one enderman: unfinished, and complete (E2: significantly higher). */
 	public static final float SPAWN_CHANCE_UNFINISHED = 0.12F;
 	public static final float SPAWN_CHANCE_COMPLETE = 0.35F;

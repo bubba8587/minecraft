@@ -55,7 +55,7 @@ public final class EndermanMind {
 		return busy && job != null && job != Job.PERCH;
 	}
 
-	void setBusy(boolean busy) {
+	public void setBusy(boolean busy) {
 		this.busy = busy;
 	}
 

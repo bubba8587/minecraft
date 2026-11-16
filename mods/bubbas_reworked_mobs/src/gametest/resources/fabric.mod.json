@@ -15,12 +15,14 @@
 			"io.github.bubba8587.bubbas_reworked_mobs.test.UndeadCombatGameTest",
 			"io.github.bubba8587.bubbas_reworked_mobs.test.ZombieGaitGameTest",
 			"io.github.bubba8587.bubbas_reworked_mobs.test.SleeperNoiseGameTest",
-			"io.github.bubba8587.bubbas_reworked_mobs.test.CreeperGameTest"
+			"io.github.bubba8587.bubbas_reworked_mobs.test.CreeperGameTest",
+			"io.github.bubba8587.bubbas_reworked_mobs.test.EndermanGameTest"
 		],
 		"fabric-client-gametest": [
 			"io.github.bubba8587.bubbas_reworked_mobs.test.BubbasReworkedMobsClientGameTest",
 			"io.github.bubba8587.bubbas_reworked_mobs.test.UndeadGaitClientGameTest",
-			"io.github.bubba8587.bubbas_reworked_mobs.test.CreeperClientGameTest"
+			"io.github.bubba8587.bubbas_reworked_mobs.test.CreeperClientGameTest",
+			"io.github.bubba8587.bubbas_reworked_mobs.test.EndermenClientGameTest"
 		]
 	},
 	"mixins": [

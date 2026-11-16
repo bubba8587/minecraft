@@ -89,6 +89,11 @@ public final class EndermanSpawning {
 	 * One spawn check for a site; {@code force} skips the chance roll (tests). Returns the new enderman, or null.
 	 */
 	public static @Nullable Enderman trySpawnAt(ServerLevel level, CairnSite site, boolean force) {
+		return trySpawnAt(level, site, force, EndermanTuning.SPAWN_MIN_DISTANCE, EndermanTuning.SPAWN_MAX_DISTANCE);
+	}
+
+	/** As above, spawning between {@code minDistance} and {@code maxDistance} blocks from the site's centre. */
+	public static @Nullable Enderman trySpawnAt(ServerLevel level, CairnSite site, boolean force, double minDistance, double maxDistance) {
 		if (!level.isLoaded(site.origin()) || EndermanWards.isWarded(level, site.origin())) {
 			return null;
 		}
@@ -103,14 +108,14 @@ public final class EndermanSpawning {
 		}
 		for (int i = 0; i < EndermanTuning.SPAWN_TRIES; i++) {
 			double angle = random.nextDouble() * Math.PI * 2.0;
-			double distance = Mth.lerp(random.nextDouble(), EndermanTuning.SPAWN_MIN_DISTANCE, EndermanTuning.SPAWN_MAX_DISTANCE);
+			double distance = Mth.lerp(random.nextDouble(), minDistance, maxDistance);
 			int x = Mth.floor(site.origin().getX() + Math.cos(angle) * distance);
 			int z = Mth.floor(site.origin().getZ() + Math.sin(angle) * distance);
 			if (!level.hasChunk(x >> 4, z >> 4)) {
 				continue;
 			}
-			BlockPos cell = new BlockPos(x, level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z), z);
-			if (EndermanWards.isWarded(level, cell) || !allowedHere(level, cell, random) || level.getNearestPlayer(x + 0.5, cell.getY(), z + 0.5, 24.0, false) != null) {
+			BlockPos cell = spawnCell(level, x, site.origin().getY(), z);
+			if (cell == null || EndermanWards.isWarded(level, cell) || !allowedHere(level, cell, random) || level.getNearestPlayer(x + 0.5, cell.getY(), z + 0.5, 24.0, false) != null) {
 				continue;
 			}
 			Enderman enderman = EntityTypes.ENDERMAN.create(level, EntitySpawnReason.NATURAL);
@@ -128,8 +133,23 @@ public final class EndermanSpawning {
 		return null;
 	}
 
+	/** The highest spot in this column within SPAWN_HEIGHT of the site's ground with a floor and room for an enderman. */
+	private static @Nullable BlockPos spawnCell(ServerLevel level, int x, int y, int z) {
+		BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
+		for (int dy = EndermanTuning.SPAWN_HEIGHT; dy >= -EndermanTuning.SPAWN_HEIGHT; dy--) {
+			pos.set(x, y + dy, z);
+			BlockPos below = pos.below();
+			if (level.getBlockState(below).isFaceSturdy(level, below, net.minecraft.core.Direction.UP) && level.getBlockState(pos).isAir()
+					&& level.getBlockState(pos.above()).isAir() && level.getBlockState(pos.above(2)).isAir()
+					&& SpawnPlacements.isSpawnPositionOk(EntityTypes.ENDERMAN, level, pos)) {
+				return pos.immutable();
+			}
+		}
+		return null;
+	}
+
 	/** Builder (carries a missing cairn block), filler (carries the block a nearby hole needs) or repairer (empty). */
-	static void giveJob(ServerLevel level, Enderman enderman, CairnSite site, boolean complete, RandomSource random) {
+	public static void giveJob(ServerLevel level, Enderman enderman, CairnSite site, boolean complete, RandomSource random) {
 		EndermanMind mind = EndermanMind.of(enderman);
 		if (mind == null || !level.getGameRules().get(GameRules.MOB_GRIEFING)) {
 			return;

@@ -18,7 +18,8 @@ import org.jspecify.annotations.Nullable;
 /**
  * The comparisons behind the jobs (specs/endermen.md, E1): which real block doesn't belong, and where a carried block
  * should go. Each search samples a few random columns and compares one real block with one target block per step,
- * so its cost is fixed (at most SCAN_COLUMNS x (SCAN_DEPTH + 1) or FILL_COLUMNS x FILL_DEPTH block pairs).
+ * so its cost is bounded: every column within NEAR_RADIUS, nearest first, then a few random columns farther out;
+ * each column is a handful of block reads (about one for untouched ground).
  */
 public final class EndermanWork {
 	/** What to do at a spot. */
@@ -30,6 +31,19 @@ public final class EndermanWork {
 	}
 
 	public record Found(BlockPos pos, Kind kind) {
+	}
+
+	/** Column offsets checked first, nearest first (all of them, so nearby work is always found). */
+	private static final List<int[]> NEAR = new java.util.ArrayList<>();
+
+	static {
+		int r = EndermanTuning.NEAR_RADIUS;
+		for (int dx = -r; dx <= r; dx++) {
+			for (int dz = -r; dz <= r; dz++) {
+				NEAR.add(new int[] { dx, dz });
+			}
+		}
+		NEAR.sort(java.util.Comparator.comparingInt(o -> o[0] * o[0] + o[1] * o[1]));
 	}
 
 	private EndermanWork() {
@@ -52,14 +66,21 @@ public final class EndermanWork {
 	/** A block near {@code around} that doesn't belong (to take) or farmland that should be dirt, or null. */
 	public static @Nullable Found findWork(ServerLevel level, BlockPos around, RandomSource random, Set<Block> wanted) {
 		BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
-		for (int i = 0; i < EndermanTuning.SCAN_COLUMNS; i++) {
-			int x = around.getX() + random.nextInt(2 * EndermanTuning.SCAN_RADIUS + 1) - EndermanTuning.SCAN_RADIUS;
-			int z = around.getZ() + random.nextInt(2 * EndermanTuning.SCAN_RADIUS + 1) - EndermanTuning.SCAN_RADIUS;
+		int near = NEAR.size();
+		for (int i = 0; i < near + EndermanTuning.SCAN_COLUMNS; i++) {
+			int x = around.getX() + (i < near ? NEAR.get(i)[0] : random.nextInt(2 * EndermanTuning.SCAN_RADIUS + 1) - EndermanTuning.SCAN_RADIUS);
+			int z = around.getZ() + (i < near ? NEAR.get(i)[1] : random.nextInt(2 * EndermanTuning.SCAN_RADIUS + 1) - EndermanTuning.SCAN_RADIUS);
 			if (!level.hasChunk(x >> 4, z >> 4)) {
 				continue;
 			}
-			int top = level.getHeight(Heightmap.Types.WORLD_SURFACE, x, z) - 1;
-			for (int y = top; y >= top - EndermanTuning.SCAN_DEPTH; y--) {
+			// From the real top (under leaves, at most SCAN_HEIGHT above the original ground) down to just below the
+			// original ground: piles, pillars and walls on it, and its top layer.
+			int surface = TargetWorld.surface(level, x, z);
+			if (surface == Integer.MIN_VALUE) {
+				continue;
+			}
+			int top = Math.min(level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z) - 1, surface + EndermanTuning.SCAN_HEIGHT);
+			for (int y = top; y >= surface - 1; y--) {
 				pos.set(x, y, z);
 				Kind kind = judge(level, pos, random, wanted);
 				if (kind != null) {
@@ -144,21 +165,38 @@ public final class EndermanWork {
 			return null;
 		}
 		BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
-		for (int i = 0; i < EndermanTuning.FILL_COLUMNS; i++) {
-			int x = around.getX() + random.nextInt(2 * EndermanTuning.FILL_RADIUS + 1) - EndermanTuning.FILL_RADIUS;
-			int z = around.getZ() + random.nextInt(2 * EndermanTuning.FILL_RADIUS + 1) - EndermanTuning.FILL_RADIUS;
-			if (!level.hasChunk(x >> 4, z >> 4)) {
-				continue;
+		int near = NEAR.size();
+		for (int i = 0; i < near + EndermanTuning.FILL_COLUMNS; i++) {
+			int x = around.getX() + (i < near ? NEAR.get(i)[0] : random.nextInt(2 * EndermanTuning.FILL_RADIUS + 1) - EndermanTuning.FILL_RADIUS);
+			int z = around.getZ() + (i < near ? NEAR.get(i)[1] : random.nextInt(2 * EndermanTuning.FILL_RADIUS + 1) - EndermanTuning.FILL_RADIUS);
+			BlockPos hole = holeInColumn(level, x, z, carried, pos);
+			if (hole != null) {
+				return hole;
 			}
-			int surface = TargetWorld.surface(level, x, z);
-			if (surface == Integer.MIN_VALUE) {
-				continue;
-			}
-			for (int y = surface; y > surface - EndermanTuning.FILL_DEPTH; y--) {
-				pos.set(x, y, z);
-				if (needsFill(level, pos, carried)) {
-					return pos.immutable();
+		}
+		return null;
+	}
+
+	/**
+	 * The bottom of the hole in this column, if it has one {@code carried} fills: scanning down from the original
+	 * surface to the first real block (one block read for untouched ground), the air just above it.
+	 */
+	public static @Nullable BlockPos holeInColumn(ServerLevel level, int x, int z, BlockState carried, BlockPos.MutableBlockPos pos) {
+		if (!level.hasChunk(x >> 4, z >> 4)) {
+			return null;
+		}
+		int surface = TargetWorld.surface(level, x, z);
+		if (surface == Integer.MIN_VALUE) {
+			return null;
+		}
+		for (int y = surface; y > surface - EndermanTuning.FILL_DEPTH; y--) {
+			pos.set(x, y, z);
+			if (!level.getBlockState(pos).isAir()) {
+				if (y == surface) {
+					return null;
 				}
+				pos.set(x, y + 1, z);
+				return needsFill(level, pos, carried) ? pos.immutable() : null;
 			}
 		}
 		return null;

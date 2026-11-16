@@ -42,6 +42,9 @@ public final class CairnDesign {
 	private final RandomSource random;
 	private final Map<BlockPos, BlockState> blocks = new LinkedHashMap<>();
 	private final IntBinaryOperator groundAt;
+	/** No end rod but the pointer may be this high, so the pointer is always the tallest. */
+	private int rodCeiling;
+	private BlockPos pointerRod;
 
 	private CairnDesign(long seed, IntBinaryOperator groundAt) {
 		this.random = new LegacyRandomSource(seed);
@@ -71,6 +74,7 @@ public final class CairnDesign {
 		buildFooting(footing);
 		int trunks = 1 + (random.nextFloat() < 0.55F ? 1 : 0) + (random.nextFloat() < 0.2F ? 1 : 0);
 		int height = EndermanTuning.CAIRN_MIN_HEIGHT + random.nextInt(EndermanTuning.CAIRN_MAX_HEIGHT - EndermanTuning.CAIRN_MIN_HEIGHT + 1);
+		rodCeiling = height - 2;
 		boolean glassUsed = false;
 		List<BlockPos> starts = new ArrayList<>();
 		starts.add(BlockPos.ZERO);
@@ -87,6 +91,11 @@ public final class CairnDesign {
 			boolean main = i == 0;
 			int h = main ? height : Math.max(4, (int) (height * (0.4F + random.nextFloat() * 0.35F)));
 			glassUsed |= growTrunk(starts.get(i), h, main, pointer, !glassUsed);
+		}
+		if (pointerRod != null) {
+			// The pointer stays the tallest rod whatever the trunks did.
+			int top = pointerRod.getY();
+			blocks.entrySet().removeIf(e -> e.getValue().is(Blocks.END_ROD) && e.getKey().getY() >= top && !e.getKey().equals(pointerRod));
 		}
 		buildRim(footing);
 		buildOfferings(offerings, footing);
@@ -134,22 +143,24 @@ public final class CairnDesign {
 			if (!putIfFree(knuckle, Blocks.PURPUR_BLOCK.defaultBlockState())) {
 				return hungGlass;
 			}
-			if (y >= height - 1) {
+			Direction step = y >= height - 1 ? null : pickStep(knuckle, last, start);
+			if (step == null) {
 				if (main) {
 					// The tallest end rod, on its side at the very top: points toward the nearest stronghold.
-					putIfFree(knuckle.relative(pointer), Blocks.END_ROD.defaultBlockState().setValue(EndRodBlock.FACING, pointer));
+					rodCeiling = Math.min(rodCeiling, y - 1);
+					BlockState pointerRod = Blocks.END_ROD.defaultBlockState().setValue(EndRodBlock.FACING, pointer);
+					if (putIfFree(knuckle.relative(pointer), pointerRod)) {
+						this.pointerRod = knuckle.relative(pointer);
+					} else if (putIfFree(knuckle.above(), pointerRod)) {
+						this.pointerRod = knuckle.above();
+					}
 				} else {
-					putIfFree(knuckle.above(), Blocks.END_ROD.defaultBlockState());
+					rod(knuckle.above());
 				}
 				return hungGlass;
 			}
-			Direction step = pickStep(knuckle, last, start);
 			if (y > 2 && random.nextFloat() < 0.6F) {
 				hungGlass |= branch(knuckle, step, mayHangGlass && !hungGlass);
-			}
-			if (step == null) {
-				putIfFree(knuckle.above(), Blocks.END_ROD.defaultBlockState());
-				return hungGlass;
 			}
 			// The knuckle: stairs upside down beside the block, then the next run climbs from the stairs.
 			BlockPos next = knuckle.relative(step);
@@ -205,7 +216,7 @@ public final class CairnDesign {
 				top = top.above();
 				put(top, pillar(Direction.Axis.Y));
 			}
-			putIfFree(top.above(), Blocks.END_ROD.defaultBlockState());
+			rod(top.above());
 			if (mayHangGlass && random.nextFloat() < 0.5F && !blocks.containsKey(end.below())) {
 				put(end.below(), Blocks.STAINED_GLASS.magenta().defaultBlockState());
 				return true;
@@ -330,6 +341,13 @@ public final class CairnDesign {
 		put(base.above(), Blocks.CACTUS.defaultBlockState());
 		if (random.nextFloat() < 0.5F) {
 			put(base.above(2), Blocks.CACTUS_FLOWER.defaultBlockState());
+		}
+	}
+
+	/** An upright end-rod flower, unless it would top the stronghold pointer. */
+	private void rod(BlockPos pos) {
+		if (pos.getY() <= rodCeiling) {
+			putIfFree(pos, Blocks.END_ROD.defaultBlockState());
 		}
 	}
 

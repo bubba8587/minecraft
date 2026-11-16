@@ -10,7 +10,7 @@ import net.fabricmc.fabric.api.gametest.v1.GameTest;
  * main mechanic. Each one runs a test whose body lives with its siblings in a milestone class (the method there has no
  * {@code @GameTest} of its own, so the full suite runs it once); the annotation (environment, structure, ticks) is the
  * one it had there. Everything else in this source set is the milestone suite, registered only with -PmilestoneTests.
- * Objectives: specs/undead.md and specs/creepers.md, "Milestone test objectives".
+ * Objectives: specs/undead.md, specs/creepers.md and specs/endermen.md, "Milestone test objectives".
  */
 public class ReworkedMobsCoreGameTest {
 	@GameTest
@@ -88,5 +88,32 @@ public class ReworkedMobsCoreGameTest {
 	@GameTest(environment = "bubbas_reworked_mobs-test:creeper_charged", structure = CreeperGameTest.FIELD, maxTicks = 100)
 	public void chargedCreeperStaysVanilla(GameTestHelper helper) {
 		new CreeperGameTest().chargedCreeperStaysVanilla(helper);
+	}
+
+	// --- endermen (specs/endermen.md) ---
+
+	@GameTest(maxTicks = 40)
+	public void endermanTerrainOracleAnswersFlatLayersAndCairns(GameTestHelper helper) {
+		new EndermanGameTest().terrainOracleAnswersFlatLayersAndCairns(helper);
+	}
+
+	@GameTest
+	public void endermanCairnDesignsVaryAndUseOnlyEndBlocks(GameTestHelper helper) {
+		new EndermanGameTest().cairnDesignsVaryAndUseOnlyEndBlocks(helper);
+	}
+
+	@GameTest(environment = "bubbas_reworked_mobs-test:enderman_take", structure = EndermanGameTest.FIELD, maxTicks = 400)
+	public void endermanTakesStrayBlockAndFillsHole(GameTestHelper helper) {
+		new EndermanGameTest().endermanTakesStrayBlockAndFillsHole(helper);
+	}
+
+	@GameTest(environment = "bubbas_reworked_mobs-test:enderman_build", structure = EndermanGameTest.FIELD, maxTicks = 400)
+	public void endermanBuilderDeliversCairnBlock(GameTestHelper helper) {
+		new EndermanGameTest().builderEndermanDeliversCairnBlock(helper);
+	}
+
+	@GameTest(environment = "bubbas_reworked_mobs-test:enderman_stare", structure = EndermanGameTest.FIELD, maxTicks = 20)
+	public void endermanBusyIgnoresEyeContact(GameTestHelper helper) {
+		new EndermanGameTest().busyEndermanIgnoresEyeContact(helper);
 	}
 }
