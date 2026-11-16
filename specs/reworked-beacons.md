@@ -32,9 +32,24 @@ Reworked Beacons offers one hook: "this item in a beacon does X at power Y". Inf
 
 Warding is not a gem: it's an artifact, the **Totem of Warding**, a found item like the Grave Talisman, owned by Reworked Mobs (so it never goes on armor or weapons). In a reworked beacon it wards the beacon's area: no monster spawns, monsters avoid the area, sleepers stay asleep. Details are open in `docs/research/area-gems-and-warding.md`.
 
+## Standalone (Reworked Beacons without Infused Gems) (owner, 2026-11-16)
+
+Beacons keep vanilla's six powers, but the payment is a gem base item instead of iron, gold, emerald or diamond, and **the payment item is the power choice**, in the base gem order matched to vanilla's power order (which already follows vanilla's pyramid gating):
+
+| Payment | Power | Pyramid needed (vanilla) |
+|---|---|---|
+| Amethyst shard | Speed | 1 |
+| Quartz | Haste | 1 |
+| Ender pearl | Resistance | 2 |
+| Diamond | Jump Boost | 2 |
+| Prismarine shard | Strength | 3 |
+| Nether star | Regeneration | 4 |
+
+Emerald, iron and gold are no longer payments. (With Infused Gems installed, the slot takes gems instead; see above.)
+
 ## Open questions (owner)
 
-- Do vanilla payments (iron, gold, emerald, diamond and the six vanilla powers) still work when Reworked Beacons is installed without the other mods?
+- Standalone: does a 4-layer pyramid still offer vanilla's level-II of the chosen power (vanilla's secondary), and how (e.g. a second payment)?
 - Where the Totem of Warding is found, and what each pyramid size does for a ward (range only, or strength too).
 - Upside-down placement: how the player places one (e.g. clicking the underside of a block), and what the beam looks like between the pair.
 - Harmful gems in a beacon hit the owner too: any protection for the beacon's own builder? (Equality principle says no.)
