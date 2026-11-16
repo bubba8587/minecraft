@@ -1,0 +1,103 @@
+// dte:C1
+package io.github.bubba8587.bubbas_reworked_mobs.creeper;
+
+/**
+ * Numbers for the nervous-watcher creeper (specs/creepers.md). One place to tweak them. Every value here is a starting
+ * value picked by the builder (2026-11-16), owner to playtest and tune, unless it says "vanilla".
+ * Distances in blocks, speeds in blocks per tick (a player walks 0.216, sprints 0.28), times in ticks (20 a second).
+ */
+public final class CreeperTuning {
+	// --- the startle meter ---------------------------------------------------------------------
+	/** A full meter starts the hiss. */
+	public static final float METER_FULL = 100.0F;
+	/** Points lost per tick while nothing startles it (10 a second: one hit's worth calms in 4 s). */
+	public static final float METER_DECAY_PER_TICK = 0.5F;
+	/** One attack (any damage with an attacker behind it). Three sword hits in a row (0.6 s apart) set it off; one or two calm down. */
+	public static final float ATTACK_POINTS = 40.0F;
+	/** Each motion scan, per living thing within FAST_RANGE moving faster than FAST_SPEED. Sprinting circles fill it in about 3.3 s. */
+	public static final float FAST_MOVE_POINTS = 8.0F;
+	/** A projectile passing within NEAR_MISS_RADIUS (once per projectile). Four snowballs in a row set it off. */
+	public static final float NEAR_MISS_POINTS = 25.0F;
+	/** What the meter drops to when the hiss is defused: still jumpy, but it has to be startled again to re-light. */
+	public static final float DEFUSED_METER = 60.0F;
+
+	// --- motion senses -------------------------------------------------------------------------
+	/** Fast movement this close startles (owner: "about 6 blocks"). Needs line of sight, not the field of view. */
+	public static final double FAST_RANGE = 6.0;
+	/** "Faster than a walk": between a player's walk (0.216) and sprint (0.28). Averaged over one scan. */
+	public static final double FAST_SPEED = 0.24;
+	/** Vertical movement counts this much toward the speed (so jumping on the spot isn't a sprint, but a falling or launched body is). */
+	public static final double VERTICAL_SPEED_WEIGHT = 0.5;
+	/** Anything moving at least this fast (and in its field of view, in sight) can catch its eye. */
+	public static final double NOTICE_SPEED = 0.03;
+	/** It notices motion this far (vanilla's creeper follow range, the 16 blocks it "never stops watching" a player within). */
+	public static final double WATCH_RANGE = 16.0;
+	/** Half the field of view, degrees (120 degrees in all). */
+	public static final double FOV_HALF_ANGLE = 60.0;
+	/** Ticks between motion scans (one box query of WATCH_RANGE; speeds are measured across this gap). Creepers are spread over the phases. */
+	public static final int MOTION_SCAN_INTERVAL = 4;
+	/** Ticks between projectile scans (a small box query for moving projectiles). */
+	public static final int PROJECTILE_SCAN_INTERVAL = 2;
+	/** A projectile whose path comes this close to the creeper's middle is a near-miss. */
+	public static final double NEAR_MISS_RADIUS = 2.0;
+	/** Projectiles are looked for this far around (fast arrows cover ~3 blocks a tick). */
+	public static final double PROJECTILE_SCAN_RANGE = 8.0;
+	/** A non-player stays watched this long before the creeper looks for something else (players are watched while within WATCH_RANGE). */
+	public static final int NON_PLAYER_WATCH_TICKS = 300;
+	/** Creative players are watched and startle creepers like anyone (owner tests in creative). True would match vanilla targeting, which ignores them. */
+	public static final boolean IGNORE_CREATIVE_PLAYERS = false;
+
+	// --- the hiss (vanilla's swell, 30 ticks = 1.5 s) ------------------------------------------------
+	/** Defusing distance: vanilla's SwellGoal stops the swell past 7 blocks (its "trigger range"). */
+	public static final double DEFUSE_RANGE = 7.0;
+
+	// --- watching --------------------------------------------------------------------------------
+	/** "Uncomfortably close" (owner C5): just outside one sprint-and-hit (about 3 blocks of sprint + 3 of reach). */
+	public static final double COMFORT_DISTANCE = 6.5;
+	/** Closer than COMFORT_DISTANCE minus this and it backs up. */
+	public static final double BACKOFF_MARGIN = 1.0;
+	/** Backing up: speed modifier on its 0.25 base (vanilla flees cats at 1.2). */
+	public static final double BACKOFF_SPEED = 1.2;
+	/** Walking to a watch spot or toward its target. */
+	public static final double WATCH_SPEED = 1.0;
+	/** Peek spots (half behind cover) are picked this far from the target ... */
+	public static final double PEEK_MAX_DISTANCE = 13.0;
+	/** ... within this many blocks of the creeper (a 11 x 11 square, 5 heights). */
+	public static final int SPOT_SEARCH_RADIUS = 5;
+	/** At most this many candidate cells get the (raycast) cover test per search. */
+	public static final int SPOT_MAX_EVALUATIONS = 12;
+	/** Ticks between spot searches when it has none. */
+	public static final int SPOT_SEARCH_INTERVAL = 20;
+	/** Ticks between re-checks that its spot still half-hides it from the target (the target moves). */
+	public static final int SPOT_RECHECK_INTERVAL = 10;
+	/** Out of sight this long and it walks to see its target again. */
+	public static final int LOST_VIEW_TICKS = 20;
+	/** Half-hiding: the creeper's middle sits this far on the open side of the cover's edge (its eyes peek, about half its body is hidden). */
+	public static final double HALF_HIDE_INSET = 0.05;
+	/** Peekaboo: looked at, it slides this far past the edge into cover (body 0.6 wide: about 95 % hidden). */
+	public static final double HIDDEN_DEPTH = 0.27;
+	/** Sideways slide speed into and out of cover (blocks a tick). */
+	public static final double SLIDE_SPEED = 0.08;
+	/** Peekaboo: a player looking within this many degrees of the creeper is looking at it (a screen's half-width at FOV 70 is ~51). */
+	public static final double PLAYER_LOOK_HALF_ANGLE = 45.0;
+	/** A sneaking player closer than this and getting closer makes it back behind cover. */
+	public static final double SNEAK_NOTICE_RANGE = 12.0;
+
+	// --- spawning (owner: vanilla's random creeper spawns off; one watcher per player at night) -------
+	/** At most this many mod-natural watcher creepers per player (owner: per player). */
+	public static final int WATCHERS_PER_PLAYER = 1;
+	/** Ticks between spawn attempts per player. */
+	public static final int SPAWN_INTERVAL = 200;
+	/** Random spots tried per attempt. */
+	public static final int SPAWN_TRIES = 16;
+	/** Watching distance it spawns at (inside WATCH_RANGE so it keeps watching). */
+	public static final double SPAWN_MIN_DISTANCE = 10.0;
+	public static final double SPAWN_MAX_DISTANCE = 15.0;
+	/** It spawns outside this half-angle of the player's view (degrees), so never on screen. */
+	public static final double SPAWN_OUTSIDE_VIEW_HALF_ANGLE = 70.0;
+	/** A player's watcher this far away no longer counts as theirs (a new one may come). */
+	public static final double WATCHER_RELEASE_DISTANCE = 48.0;
+
+	private CreeperTuning() {
+	}
+}
