@@ -13,6 +13,7 @@ Parked ideas and open items, newest first within each project. Agents add to it 
 - **Endermen** (first build done, `specs/endermen.md`): owner to playtest and review the 12 builder's choices; still open: banners on cairns, more variety, Nether/End endermen, explosions breaking cairns not angering them. Try them in the test world's Cairns and endermen station (hub click sign).
 - **Flaky tests seen 2026-11-16** (pre-existing; `strongLightCalmsSleepers` and the night spawn tests fixed the same day): `BubbasReworkedMobsGameTest.sneakingNearbyDoesNotWakeSleeper` (once in 6 runs), `UndeadCombatGameTest.idleZombiesDriftTogether` (once in 6; idle wandering timing), `CreeperGameTest.oneWatcherSpawnsBehindCoverOutOfView`, `GrabLootGameTest.idleSkeletonTakesADisplayedSword`.
 - **Drowned** (designing, `specs/drowned.md`): fewer, much stronger lurkers that grab and drown you; open questions D1-D8.
+- **Mob factories** (designing, `specs/mob-factory.md`): underground nether/warped/bone ceiling growth drops mobs onto an ancient-city redstone platform; open questions F1-F6. Also structures for farming: crypts, war camps, bigger dungeons with spawners (owner, 2026-11-16).
 - **Slime merging** (owner: decent idea, not now): slimes that bump into each other merge.
 - Later parts: **monster camps and the blood moon** (structures with fixed rosters and key blocks, a 7-day blood moon that respawns uncleared structures, red-sky effects; owner's earlier idea with integration notes in `docs/research/camps-blood-moon-idea.md`).
 
