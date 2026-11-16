@@ -43,13 +43,13 @@ Beacons keep vanilla's six powers, but the payment is a gem base item instead of
 | Ender pearl | Resistance | 2 |
 | Diamond | Jump Boost | 2 |
 | Prismarine shard | Strength | 3 |
-| Nether star | Regeneration | 4 |
+| Nether star | Regeneration | 3 (owner: all six work at level I by 3 layers; vanilla needed 4) |
 
 Emerald, iron and gold are no longer payments. (With Infused Gems installed, the slot takes gems instead; see above.)
 
 ## Open questions (owner)
 
-- Standalone: does a 4-layer pyramid still offer vanilla's level-II of the chosen power (vanilla's secondary), and how (e.g. a second payment)?
+- (answered) Standalone 4-layer pyramid: **automatically upgrades the paid power to level II** and reaches the furthest range (50); no secondary slot (owner, 2026-11-16).
 - Where the Totem of Warding is found, and what each pyramid size does for a ward (range only, or strength too).
 - Upside-down placement: how the player places one (e.g. clicking the underside of a block), and what the beam looks like between the pair.
 - Harmful gems in a beacon hit the owner too: any protection for the beacon's own builder? (Equality principle says no.)
