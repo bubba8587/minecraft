@@ -9,3 +9,4 @@ function bubba_testworld:loot
 function bubba_testworld:graveyard
 function bubba_testworld:gems
 function bubba_testworld:grounds
+function bubba_testworld:cairn

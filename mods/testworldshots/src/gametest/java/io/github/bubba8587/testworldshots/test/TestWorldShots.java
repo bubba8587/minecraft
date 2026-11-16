@@ -84,6 +84,9 @@ public class TestWorldShots implements FabricClientGameTest {
 		shot("hub_signs_left", -3, -58.6, 6.2, -3, -59.5, 3.5);
 		shot("hub_signs_right", 4.5, -58.6, 6.2, 4.5, -59.5, 3.5);
 		shot("hub_fresh_copy_sign", 7.5, -58.6, 7.2, 7.5, -59.5, 5.5);
+		shot("cairn_front", 12.5, -57.5, 0.5, 12.5, -57.5, -6.5);
+		shot("cairn_angle", 6.5, -55.5, -1.5, 13, -57.5, -7);
+		shot("cairn_side", 20.5, -57, -7, 12.5, -57.5, -7);
 
 		// Graveyard: x -44..-14, z -44..-14. Rows: skeletons z -18, zombies z -24; sitting x -42..-33, lying -30..-21.
 		shot("graveyard_overview", -10, -46, -8, -29, -60, -29);
