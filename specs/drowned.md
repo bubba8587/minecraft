@@ -16,9 +16,9 @@ The next segment of Bubba's Reworked Mobs (C1), after creepers and endermen. Own
 
 ## Owner answers (2026-11-16)
 
-- **D1 Spawning: natural spawns** in water within range of a player, at the same low rate as other undead (the monster cap cut, `specs/undead.md`), plus **zombies that drown still turn into drowned** (we control zombie numbers already). A drowned doesn't have to spawn at its lurk spot: it can spawn deeper and **swim to a lurk spot**, a shallow spot near the shore where **a standing drowned's head just breaks the surface** (owner: "a 2*1-deep spot, or a spot 1*2 deep"; builder's reading: water 2 deep over a floor, by the shore; the owner may correct). There it **floats with just its head a little above the water**.
+- **D1 Spawning: natural spawns** in water within range of a player, at the same low rate as other undead (the monster cap cut, `specs/undead.md`), plus **zombies that drown still turn into drowned** (we control zombie numbers already). A drowned doesn't have to spawn at its lurk spot: it can spawn deeper and **swim to a lurk spot**, a shallow spot near the shore where **a standing drowned's head just breaks the surface** (water about 2 deep over a floor, by the shore: owner confirmed). There it **floats with just its head a little above the water**.
 - **D2 Staring:** if you stare at it, it **sinks right below the water** (the creeper peekaboo mechanic, in reverse: it hides by sinking). It waits for you to come close to the water and turn your back.
-- **On land:** a **sidewinding, staggered crawl** animation.
+- **Two poses (owner):** **lying down** while crawling on land (a **sidewinding, staggered crawl**) and while swimming; **upright** while lurking in a lurk spot and while drowning a grabbed player.
 - **The grab:** once it has you it **only moves backwards**, dragging you toward **the deepest water**. Now and then it hits you for a small amount of damage, and **that hit makes your breath drain faster**.
 - **D3 Breaking the grip:** a grip-break meter (like the creeper's startle meter, B19: no hidden timers). **Lots of fast hits, or hits with the right things, build it**: axes and Impaling big, Riptide yanks you free, Knockback helps; Respiration, Water Breathing and Conduit Power only buy time.
 - **D4 Who:** they grab **players and passive mobs**.
