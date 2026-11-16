@@ -11,6 +11,7 @@
 | `bubbas_reworked_mobs:monster_cap_percent` | 0 to 100 | 15 | How many monsters spawn naturally, as a percentage of normal. See [[Monster Spawning]]. |
 | `bubbas_reworked_mobs:cut_monster_spawns` | `true` or `false` | `true` | Set to `false` to turn the spawn cut off completely, for example when another mod controls spawning. |
 | `bubbas_reworked_mobs:watcher_creepers` | `true` or `false` | `true` | Each player has one watching creeper at night and random creeper spawns are off. Set to `false` for normal creeper spawning. See [[Creepers]]. |
+| `bubbas_reworked_mobs:show_meters` | `true` or `false` | `false` | Shows mob meters: a blue bar for a drowned's grip (above it, and under the crosshair while one holds you) and a red bar for how startled a creeper is. |
 | `bubbas_reworked_mobs:cairn_endermen` | `true` or `false` | `true` | Endermen spawn near enderman cairns. Set to `false` to stop that (the few ordinary endermen that spawn anywhere are unaffected). See [[Endermen]]. |
 
 Game rules are set with `/gamerule`, for example `/gamerule bubbas_reworked_mobs:monster_cap_percent 30`.

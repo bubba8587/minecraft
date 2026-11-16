@@ -25,9 +25,13 @@ A drowned swims to a shallow spot by the shore, about two blocks deep, and waits
 
 A drowned lunges out at a player, animal or villager near the water's edge with its back turned, up to a few blocks onto the bank, and grabs it by the ankles. It then drags its victim backwards, feet first, into the deepest water nearby. A held player cannot swim up or get free by sneaking. Now and then the drowned hits its victim, and each hit knocks out some of its breath. On land a drowned crawls, low and sideways.
 
-### Breaking free
+### Grip
 
-Hitting the drowned loosens its grip, faster when the hits come quickly. Axes and Impaling loosen it most, and Knockback helps. Other players' hits count too. A Riptide trident pulls its user free at once. Water Breathing, Respiration and Conduit Power only buy time.
+A drowned's grip starts half-tight and **tightens the longer it holds on**: it strikes more often and harder, knocks out more breath, and more bubbles stream off its victim. Every hit on it loosens the grip, and when the grip is gone it lets go. Hits count more when they come quickly; axes and Impaling loosen it most, and Knockback helps. A Riptide trident pulls its user free at once. Water Breathing, Respiration and Conduit Power only buy time. An unarmored player who doesn't fight back drowns in under ten seconds.
+
+### Others join in
+
+Other drowned nearby swim over and grab the victim's other leg, up to three at once. Each one holding on makes the grip tighten faster and blows count for less, so getting free from several takes help.
 
 ## Loot
 

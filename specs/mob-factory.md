@@ -26,6 +26,7 @@ Owner's idea (2026-11-16), to make mob farming possible again after the spawn cu
 
 - The warped growth should form more **alien "chains"/spurs** that **curve up around the cavern's walls, then curl in and bend toward the central drop spot**.
 - The **teleporter has a redstone-visible activation timer and particle effects even with no mob on it**, so a player could **hop on it to escape, with the right timing** (it sends a player up too).
+- The "timer" is **lamps that light up** in sequence, not an actual redstone clock (owner).
 - **Right before it fires, whatever is on the pad gets a bit of Levitation**, lifting slightly off the pad, then it teleports.
 
 ## Independence (first thoughts)

@@ -78,6 +78,59 @@ The next segment of Bubba's Reworked Mobs (C1), after creepers and endermen. Own
 - Lurking, only its eyes and the top of its head show; the waterline is just under the eyes. `LURK_EYES_ABOVE_SURFACE` 0.25 → **0.12** (entity eye height; the drawn eyes sit right at the surface, the scalp about 0.33 above it).
 
 
+**Danger rework (owner, 2026-11-16: drowned must be dangerous; grip meter visible).** The grip-break meter above is replaced by a **grip** meter.
+
+- **Grip, 0-100 (`DrownedMind.grip`).** It starts at **50** when a drowned grabs. It **rises 0.25 a tick** while it drags (5 a second: half to full in 10 s if nobody fights). **Hits loosen it** by the same points as before: 6 + 3 per point of damage before armor; axes x1.5 (was x2); +12 per level of Impaling, +10 per level of Knockback. A hit on any holder counts, and so does anyone's hit (B18). **At 0 you're free**: every holder lets go and recoils. Riptide still frees at once. There's no drain any more; the old meter's drain is now the grip's rise.
+- **The danger follows the grip (B19: the grip is the visible state; no drag timer).** At 50 or less its hits use the start values; at 100, the full values; in between, a straight line:
+
+| | grip 50 or less | grip 100 |
+|---|---|---|
+| Hit chance per tick | 1/50 (about every 2.5 s) | 1/10 (about every 0.5 s) |
+| Damage per hit | 2 | 4 |
+| Air knocked out per hit | 45 (1.5 bubbles) | 90 (3 bubbles) |
+
+  Respiration still divides the air loss by 1 + its oxygen bonus. Water Breathing, Conduit Power and Breath of the Nautilus still stop the air loss.
+- **What players see and hear as it tightens:** more and harder hits, with a squeeze sound (the drowned's water ambient) that gets louder and lower. Bubbles stream off a victim under water every 2 ticks: 1, rising to 7 at full grip. With the game rule on, the grip itself shows as a blue bar (below).
+- Numbers are in `DrownedTuning`: `GRIP_START`, `GRIP_RISE_PER_TICK`, `GRIP_RISE_PER_HELPER`, `HIT_CHANCE_PER_TICK`/`_FULL`, `HIT_DAMAGE`/`_FULL`, `HIT_AIR_LOSS`/`_FULL`, `ESCALATION_BUBBLES`. `GRIP_DECAY_PER_TICK` and `ESCALATE_TICKS` are gone.
+
+**Death times if the victim panics** (nobody hits back), from `tools/drowned-danger.py`, a Monte Carlo over vanilla's air, drowning, armor and hurt-time rules with the numbers above. Medians, with the middle 80 % in brackets:
+
+| Victim | 1 drowned | 2 drowned | 3 drowned |
+|---|---|---|---|
+| Unarmored | 8.5 s (7.2-9.8) | 6.0 s (5.2-6.9) | 4.9 s (4.2-5.5) |
+| Full iron | 12.7 s (11.6-14.1) | | |
+| Full diamond | 17.6 s (15.9-19.6) | | |
+| Unarmored, Respiration III | 8.9 s (7.5-11.0) | | |
+| Diamond, Respiration III | 24.3 s (21.4-27.5) | | |
+
+Before this change it was about 17 s unarmored. The model assumes the victim is under water from the start; in 2-deep shallows their head is above water for the first second or two.
+
+**Getting out (fresh grab, one drowned):** two iron axe hits (49.5 each) about a second apart; three or four iron sword hits (24 each, 1.6 a second) in about 2 s; fists (9 a hit, at most 2 a second through vanilla's hurt time) in about 4 s. All of these are well inside the 8.5 s.
+- With two holding: an axe takes about 4 hits (3.5 s), a sword about 3 s, and fists can't win alone.
+- With three holding: an axe takes about 5 s, against about 5 s to death. You need a friend.
+
+**Others join in (owner).**
+
+- A dragging drowned looks once a second (one box query, 16 blocks) for drowned that are already there and free: not vanilla, not riding, and idle, travelling or lurking. The nearest swim over (state JOIN: lying, swimming at 0.15 blocks a tick) and grab the other leg (state HELP). At most 2 extras, so 3 holders in all. No drowned are spawned for this. It works on any victim the same way (passive mobs too, B18).
+- **How it fits the riding hold (one vehicle):** the first drowned stays the vehicle and the only one that moves the victim. The extras aren't vehicles. Each one holds a grip point at the victim's feet from the side (90 degrees round from the first one's grip, one on each side), level with the first. A spring keeps it there, facing the victim, upright in water. It follows as the first one drags. If it's pulled more than 3 blocks off its point, it swims back.
+- **Effects of each extra holder:**
+  - The grip rises 50 % faster (+0.125 a tick per extra).
+  - Hits loosen it less: points are divided by 1 + 0.6 per extra (two holders: /1.6, three: /2.2).
+  - The drag is 35 % faster per extra.
+  - Each extra also rolls its own hits on the same grip value, so more hits land.
+- **How extras let go:** one meter, shared and held by the first drowned. When it reaches 0 (or Riptide fires, or the first one dies) everyone lets go and the extras recoil too. An extra lets go on its own if the first one stops dragging, the victim is gone, or it gives up swimming over (24 blocks away). Killing an extra removes it.
+- The `DRAG_SPEED_PER_HELPER`, `GRIP_EXTRA_HOLDER_DIVISOR` and `JOIN_*` numbers are in `DrownedTuning`.
+
+**Builder's choices in the danger rework.**
+
+1. **The danger starts counting at 50**, not 0, so a fresh grab has the old start values. Hitting it below 50 makes its hits no weaker than the start values, but brings it closer to letting go.
+2. **Extra holders make it harder both ways:** the grip rises faster and your hits count for less. The extras also add their own hits. Fists can't beat two holders alone.
+3. **Axes went from x2 to x1.5**, so a fresh grab still needs two axe hits (with x2, one axe hit from 50 would free you at once).
+4. **The extras hold the sides of the feet, not the vehicle slot:** the riding hold has room for one vehicle, so only the first drowned moves the victim; the extras follow it.
+5. **Meters show for creative players and spectators too** (it's a debug/playtest view behind a rule that's off by default).
+
+**Known look issue:** the drowned's above-head meter bar draws across the victim's body, since the drowned is now under its victim.
+
 ## Numbers (all in `DrownedTuning`; builder's starting values, owner to playtest)
 
 | | Value |

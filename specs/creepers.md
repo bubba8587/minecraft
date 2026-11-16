@@ -72,6 +72,8 @@ Charged creepers keep vanilla's current suicide-bomber behavior.
 
 **Cost.** Per creeper: one 16-block entity box query every 4 ticks, one 8-block projectile query every 2 ticks (class-filtered), line-of-sight checks only for things that move. Cover search: at most once a second while it has no spot, a few block lookups per cell plus at most ~120 short raycasts. Spawner: every 10 s per player without a watcher, at most 16 column probes and a few raycasts.
 
+**Visible meter (owner, 2026-11-16):** with the game rule `bubbas_reworked_mobs:show_meters` on (default off), the startle meter shows as a red 20-mark bar above the creeper (`meter/Meters`, shared with the drowned's grip bars; synced only while the rule is on and the value changes). See `specs/drowned.md`.
+
 ## Numbers (all in `CreeperTuning`; builder's starting values, owner to playtest)
 
 | | Value |
