@@ -50,7 +50,7 @@ Emerald, iron and gold are no longer payments. (With Infused Gems installed, the
 ## Open questions (owner)
 
 - (answered) Standalone 4-layer pyramid: **automatically upgrades the paid power to level II** and reaches the furthest range (50); no secondary slot (owner, 2026-11-16).
-- Where the Totem of Warding is found, and what each pyramid size does for a ward (range only, or strength too).
+- (answered) Totem of Warding: found in a mix of places, more common than the Totem of Undying; in a beacon: 1-3 layers stop spawns and keep monsters out, 4 layers also keep sleepers asleep; range as normal. Details in the Warding doc.
 - Upside-down placement: how the player places one (e.g. clicking the underside of a block), and what the beam looks like between the pair.
 - Harmful gems in a beacon hit the owner too: any protection for the beacon's own builder? (Equality principle says no.)
 
