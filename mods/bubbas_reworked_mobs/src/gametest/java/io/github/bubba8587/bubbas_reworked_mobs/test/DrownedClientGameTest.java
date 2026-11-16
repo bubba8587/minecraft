@@ -23,8 +23,9 @@ import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContex
  * Looks at the lurking drowned (specs/drowned.md; client part {@code drowned}). A stone block in the sky with a grass
  * shore, 2-deep shallows and a deep pit. Upright: drowned-lurk and drowned-lurk-low (head above the water),
  * drowned-sunk (a villager on the shore stares at it), drowned-grab (it has surged and grabbed a villager with its
- * back turned), drowned-drag-deep (upright, under water, holding it), drowned-held-player (the camera player held,
- * from the front). Lying: drowned-swim (swimming to its spot), drowned-crawl-side and drowned-crawl-front (crawling
+ * back turned), drowned-drag-deep (upright, under water, holding it), drowned-held-player (the camera player held
+ * by the ankles, from in front and below), drowned-lurk-bank (from the bank at water level: only its eyes and scalp show). Lying: drowned-grab-land
+ * (dragging a villager back to the water by the ankles), drowned-swim (swimming to its spot), drowned-crawl-side and drowned-crawl-front (crawling
  * on land).
  */
 @SuppressWarnings("UnstableApiUsage")
@@ -80,6 +81,9 @@ public class DrownedClientGameTest implements FabricClientGameTest {
 			context.waitTicks(15);
 			tp(context, server, x + 0.5, y + 0.4, z + 0.5, 0.0F, 20.0F);
 			context.takeScreenshot("drowned-lurk");
+			// From the bank, eyes just above the water (owner: only its eyes and the top of its head show).
+			tp(context, server, x + 0.5, y - 1.42, z + 2.4, 0.0F, 3.0F);
+			context.takeScreenshot("drowned-lurk-bank");
 			tp(context, server, x + 3.5, y - 0.05, z + 4.5, 90.0F, 2.0F);
 			context.takeScreenshot("drowned-lurk-low");
 
@@ -165,14 +169,33 @@ public class DrownedClientGameTest implements FabricClientGameTest {
 			}
 			context.takeScreenshot("drowned-crawl-front");
 			server.runCommand("kill @e[tag=%s]".formatted(TAG));
+			context.waitTicks(30);
+
+			// --- lying: a grab on land, dragging a villager back to the water by the ankles -------------------
+			server.runCommand("summon minecraft:drowned %d.5 %d %d.5 {PersistenceRequired:1b,Silent:1b,Rotation:[180f,0f],Tags:[\"%s\"]}".formatted(x + 4, y, z + 1, TAG));
+			server.runCommand("summon minecraft:villager %d.5 %d %d.5 {NoAI:1b,Silent:1b,Rotation:[180f,0f],Tags:[\"%s_v\"]}".formatted(x + 4, y, z - 1, TAG));
+			context.waitTicks(3);
+			onServer(server, level -> {
+				Drowned drowned = drowned(level);
+				drowned.setYRot(180.0F);
+				drowned.setYBodyRot(180.0F);
+				DrownedAccess.mind(drowned).grab(drowned, level, villager(level));
+				return null;
+			});
+			context.waitTicks(14);
+			double lz = onServer(server, level -> drowned(level).getZ());
+			tp(context, server, x + 7.5, y + 0.6, lz - 0.6, 90.0F, 12.0F);
+			context.takeScreenshot("drowned-grab-land");
+			server.runCommand("kill @e[tag=%s]".formatted(TAG));
+			server.runCommand("kill @e[tag=%s_v]".formatted(TAG));
 			server.runCommand("time set noon");
 			context.waitTicks(30);
 
 			// --- upright: holding the camera player (survival), from the front --------------------------
 			server.runCommand("gamemode survival @p");
 			server.runCommand("effect give @p minecraft:resistance infinite 4 true");
-			server.runCommand("tp @p %d.5 %d %d.5 90 10".formatted(x, y - 2, z + 6));
-			server.runCommand("summon minecraft:drowned %d.5 %d %d.5 {PersistenceRequired:1b,Silent:1b,Rotation:[180f,0f],Tags:[\"%s\"]}".formatted(x, y - 2, z + 7, TAG));
+			server.runCommand("tp @p %d.5 %d %d.5 120 35".formatted(x, y - 9, z + 11));
+			server.runCommand("summon minecraft:drowned %d.5 %d %d.5 {PersistenceRequired:1b,Silent:1b,Rotation:[180f,0f],Tags:[\"%s\"]}".formatted(x, y - 9, z + 12, TAG));
 			context.waitTicks(5);
 			onServer(server, level -> {
 				Drowned drowned = drowned(level);
@@ -181,9 +204,14 @@ public class DrownedClientGameTest implements FabricClientGameTest {
 				DrownedAccess.mind(drowned).grab(drowned, level, level.players().getFirst());
 				return null;
 			});
+			// From in front and below (the player looks down toward the camera; the drowned holds their ankles behind).
 			context.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_FRONT));
 			context.waitTicks(25);
+			context.takeScreenshot("drowned-held-player-hud");
+			context.runOnClient(mc -> mc.gui.hud.toggle());
+			context.waitTicks(2);
 			context.takeScreenshot("drowned-held-player");
+			context.runOnClient(mc -> mc.gui.hud.toggle());
 			context.runOnClient(mc -> mc.options.setCameraType(CameraType.FIRST_PERSON));
 			server.runCommand("kill @e[tag=%s]".formatted(TAG));
 			context.waitTicks(2);

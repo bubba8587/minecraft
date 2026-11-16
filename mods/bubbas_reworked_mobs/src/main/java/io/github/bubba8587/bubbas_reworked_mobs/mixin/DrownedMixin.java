@@ -178,11 +178,17 @@ abstract class DrownedMixin extends Zombie implements DrownedAccess {
 		return null;
 	}
 
-	/** The victim is held in front of it, feet level with its own (both sides compute this, so it needs no syncing). */
+	/**
+	 * The victim is held by the ankles (owner, 2026-11-16): upright, their soles at its outstretched hands, floating
+	 * above and in front of it; lying (crawling), their feet at its hands on the ground ahead of its head. Follows the
+	 * swim amount, which both sides tick, so client and server agree with no syncing.
+	 */
 	@Override
 	protected Vec3 getPassengerAttachmentPoint(Entity passenger, EntityDimensions dimensions, float scale) {
-		double up = passenger.getVehicleAttachmentPoint(this).y + DrownedTuning.HOLD_UP;
-		return new Vec3(0.0, up, DrownedTuning.HOLD_FORWARD).yRot(-getYRot() * ((float) Math.PI / 180.0F));
+		float lying = getSwimAmount(1.0F);
+		double forward = net.minecraft.util.Mth.lerp(lying, DrownedTuning.HOLD_FORWARD, DrownedTuning.HOLD_LYING_FORWARD);
+		double up = passenger.getVehicleAttachmentPoint(this).y + net.minecraft.util.Mth.lerp(lying, DrownedTuning.HOLD_UP, DrownedTuning.HOLD_LYING_UP);
+		return new Vec3(0.0, up, forward).yRot(-getYRot() * ((float) Math.PI / 180.0F));
 	}
 
 	/** Let go where they are (not on top of its head). */

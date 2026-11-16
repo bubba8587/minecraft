@@ -48,8 +48,8 @@ public final class DrownedTuning {
 	public static final double TRAVEL_SPEED = 1.2;
 
 	// --- lurking ----------------------------------------------------------------------------------
-	/** Lurking: its eyes this far above the water's surface (just the top of the head shows; it floats a little off the floor). */
-	public static final double LURK_EYES_ABOVE_SURFACE = 0.25;
+	/** Lurking: its eyes this far above the water's surface (owner: only the eyes and the top of the head show, the waterline just under the eyes; it floats a little off the floor). */
+	public static final double LURK_EYES_ABOVE_SURFACE = 0.12;
 	/** Sunk: the top of its head this far below the surface, or as low as the floor allows (in 2-deep water it stands on the floor and crouches). */
 	public static final double SUNK_HEAD_BELOW_SURFACE = 0.1;
 	/** How fast it rises and sinks (blocks a tick; the spring toward its height is capped at this). */
@@ -86,10 +86,17 @@ public final class DrownedTuning {
 	public static final double GRAB_REACH = 0.8;
 
 	// --- the grab ---------------------------------------------------------------------------------
-	/** The victim is held this far in front of it (centre to centre). */
-	public static final double HOLD_FORWARD = 0.62;
-	/** The victim's feet this far above its own (0: level; the floor stops anything lower). */
-	public static final double HOLD_UP = 0.0;
+	/**
+	 * Held by the ankles (owner, 2026-11-16): upright, the victim's soles sit at its outstretched hands (vanilla's
+	 * zombie arm pose, about 80 degrees forward from hanging), this far in front of it (centre to centre) ...
+	 */
+	public static final double HOLD_FORWARD = 0.72;
+	/** ... and this far above its own feet, so the victim floats above it and goes down feet first. */
+	public static final double HOLD_UP = 1.2;
+	/** Lying (crawling on land), its hands reach past its head along the ground: the victim's feet this far in front ... */
+	public static final double HOLD_LYING_FORWARD = 1.2;
+	/** ... at ground level. Between the two, the hold follows its swim amount (the posture easing in and out). */
+	public static final double HOLD_LYING_UP = 0.0;
 	/** Deep water is looked for this far around (a square, every DEEP_SEARCH_STEP columns). */
 	public static final int DEEP_SEARCH_RADIUS = 10;
 	public static final int DEEP_SEARCH_STEP = 2;
