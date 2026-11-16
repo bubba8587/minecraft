@@ -166,6 +166,10 @@ public class ModDataGenerator implements DataGeneratorEntrypoint {
 			builder.add(ModEntities.woken(UndeadVariant.ZOMBIE), "Zombie");
 			builder.add(ModItems.GRAVE_TALISMAN, "Grave Talisman");
 			builder.add(ModItems.TOTEM_OF_WARDING, "Totem of Warding");
+			// Shown on a Bubba's Reworked Beacons beacon screen (compat/WardingBeaconPayload).
+			builder.add("beacon.bubbas_reworked_mobs.ward", "No monsters spawn or enter");
+			builder.add("beacon.bubbas_reworked_mobs.ward_sleepers", "Sleeping undead stay asleep");
+			builder.add("beacon.bubbas_reworked_mobs.ward_sleepers_needs", "4 layers: sleeping undead stay asleep");
 			builder.add(ModCreativeTabs.MAIN_KEY, "Bubba's Reworked Mobs");
 			builder.add(ModBlocks.LOOT_DISPLAY, "Loot on Display");
 			builder.add(LootDisplays.BURIED_HINT, "It's buried. Dig it up with a shovel.");

@@ -3,8 +3,18 @@ plugins {
 }
 apply from: rootProject.file('gradle/fabric-mod.gradle')
 
+// Optional: Bubba's Reworked Beacons (specs/reworked-beacons.md, "Payload API"). Compiled against its API only; only
+// compat/WardingBeaconPayload touches it, and Fabric loads that entrypoint only when the mod is installed. Game tests
+// run without it by default (proving Reworked Mobs works alone); -PwithBeacons puts its jar on the game's classpath too.
+evaluationDependsOn(':bubbas_reworked_beacons')
+def beaconsJar = files(rootProject.project(':bubbas_reworked_beacons').tasks.named('jar').flatMap { it.archiveFile })
 dependencies {
 	// Extra mod dependencies go here; see docs/knowledge/libraries.md.
+	compileOnly project(':bubbas_reworked_beacons')
+	gametestCompileOnly project(':bubbas_reworked_beacons')
+	if (providers.gradleProperty('withBeacons').isPresent()) {
+		runtimeOnly beaconsJar
+	}
 }
 
 // Datagen: `./gradlew :bubbas_reworked_mobs:runDatagen` writes src/main/generated (committed, added to main resources).

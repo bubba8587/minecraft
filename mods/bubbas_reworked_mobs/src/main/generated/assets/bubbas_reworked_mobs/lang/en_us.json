@@ -1,4 +1,7 @@
 {
+  "beacon.bubbas_reworked_mobs.ward": "No monsters spawn or enter",
+  "beacon.bubbas_reworked_mobs.ward_sleepers": "Sleeping undead stay asleep",
+  "beacon.bubbas_reworked_mobs.ward_sleepers_needs": "4 layers: sleeping undead stay asleep",
   "block.bubbas_reworked_mobs.loot_display": "Loot on Display",
   "block.bubbas_reworked_mobs.loot_display.buried_hint": "It's buried. Dig it up with a shovel.",
   "block.bubbas_reworked_mobs.skeleton_sleeper": "Sleeping Skeleton",

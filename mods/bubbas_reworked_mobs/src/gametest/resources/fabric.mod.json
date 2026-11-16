@@ -16,7 +16,8 @@
 			"io.github.bubba8587.bubbas_reworked_mobs.test.ZombieGaitGameTest",
 			"io.github.bubba8587.bubbas_reworked_mobs.test.SleeperNoiseGameTest",
 			"io.github.bubba8587.bubbas_reworked_mobs.test.GraveTalismanGameTest",
-			"io.github.bubba8587.bubbas_reworked_mobs.test.WardingGameTest"
+			"io.github.bubba8587.bubbas_reworked_mobs.test.WardingGameTest",
+			"io.github.bubba8587.bubbas_reworked_mobs.test.WardingBeaconGameTest"
 		],
 		"fabric-client-gametest": [
 			"io.github.bubba8587.bubbas_reworked_mobs.test.BubbasReworkedMobsClientGameTest",
