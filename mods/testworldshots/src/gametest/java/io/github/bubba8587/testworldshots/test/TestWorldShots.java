@@ -92,6 +92,17 @@ public class TestWorldShots implements FabricClientGameTest {
 		shot("creepers_signs_south", 54.5, -58.6, -0.5, 54.5, -59.5, 3);
 		shot("creepers_grove", 54, -56.5, 1, 67, -59, -1);
 		shot("creepers_open", 70, -56.5, 13, 80.5, -59.5, 11.5);
+		// Cairns and endermen: x -132..-82, z -10..56, far west (hub click sign); yard x -130..-84, z -8..20.
+		shot("cairns_arrival", -106.5, -58.4, 26.5, -106.5, -58, 6);
+		shot("cairns_signs", -106.5, -58.6, 25, -106.5, -59.5, 22);
+		shot("cairns_row", -107, -54, 24, -107, -55, 42);
+		shot("cairns_close_11", -122, -54, 30, -122, -54, 42);
+		shot("cairns_close_33", -92, -54, 30, -92, -54, 42);
+		shot("cairns_unfinished", -112, -55, 18, -118, -58, 6);
+		shot("cairns_repair_before", -95, -54, 20, -95, -60, 6);
+		context.waitTicks(600); // 30 s of work: caretakers trample farmland, builders grow the unfinished cairn
+		shot("cairns_repair_after", -95, -54, 20, -95, -60, 6);
+		shot("cairns_unfinished_after", -112, -55, 18, -118, -58, 6);
 
 		// Graveyard: x -44..-14, z -44..-14. Rows: skeletons z -18, zombies z -24; sitting x -42..-33, lying -30..-21.
 		shot("graveyard_overview", -10, -46, -8, -29, -60, -29);

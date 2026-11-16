@@ -35,8 +35,9 @@ Puts an item on display. Requires operator permission; intended for building and
 
 Finds and builds enderman cairns. Requires operator permission; intended for building and testing.
 
-**Syntax:** `/bubbas_reworked_mobs cairn <locate|build|here> [<seed>]`
+**Syntax:** `/bubbas_reworked_mobs cairn <locate|build|builders|here> [<seed>]`
 
 - `locate` names the nearest cairn site within 1024 blocks, how complete it is and which way it points.
 - `build` finishes the nearest cairn within 128 blocks.
-- `here` adds a cairn site at the player's feet and builds it; a seed picks its design.
+- `builders` summons one enderman for each missing block of the nearest cairn within 64 blocks (at most 12), each carrying its block, and they build it.
+- `here` adds a cairn site at the player's feet and builds it; a seed picks its design. The site is saved with the world.

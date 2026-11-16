@@ -25,6 +25,8 @@ The world appears in the world list of the "mod testing" profile after an instal
 | Gem workshop | For [[Bubba's Infused Gems]]: potions in all three forms, every base gem, a brewing stand, an enchanting table with a full set of bookshelves, a smithing table, a grindstone, armor and weapons, and a pen of mobs that stand still to be hit. |
 | Gem testing grounds | South of the spawn point, behind the player: a wardrobe and a place to try every [[Gem Effects|gem effect]]. See below. |
 | Beacons and warding | For [[Bubba's Reworked Beacons]] and the [[Totem of Warding]] from [[Bubba's Totems & Artifacts]]: beacons on every pyramid size, a Poison trap, a warded room high in the sky, a bell and sleepers in light and dark. See below. |
+| Creeper grove | Far east, past the gem workshop: a clearing with trees and a wall, one [[Creepers|creeper]] peeking from cover and one on open ground. Signs give snowballs and a bow, switch game mode, and put the grove back after an explosion. |
+| Cairns and endermen | Far west; the **Cairns** sign at the spawn point teleports there. Three finished [[Endermen|enderman cairns]], and a fenced yard where builder endermen finish a cairn and caretakers jump farmland back to dirt, take down a dirt pillar and fill a pit. A sign puts the yard back, another brings new endermen. |
 
 ## Gem testing grounds
 

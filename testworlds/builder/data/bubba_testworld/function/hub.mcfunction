@@ -14,6 +14,7 @@ setblock 3 -60 3 minecraft:oak_sign[rotation=0]{is_waxed:1b,front_text:{messages
 setblock 5 -60 3 minecraft:oak_sign[rotation=0]{is_waxed:1b,front_text:{messages:[{text:"Glider Tower",bold:true,color:"dark_aqua"},"east ->","glider vs","elytra"]}}
 setblock 7 -60 3 minecraft:oak_sign[rotation=0]{is_waxed:1b,front_text:{messages:[{text:"Infused Gems",bold:true,color:"dark_purple"},"east, past the","tower: brew,","enchant, socket"]}}
 setblock -7 -60 3 minecraft:oak_sign[rotation=0]{is_waxed:1b,front_text:{messages:[{text:"Creepers",bold:true,color:"dark_green"},"far east, past","the gems: the","creeper grove"]}}
+setblock -7 -60 5 minecraft:oak_sign[rotation=0]{allow_op_features:1b,front_text:{messages:[{text:"Cairns",bold:true,color:"dark_purple",click_event:{action:"run_command",command:"tp @s -106.5 -60 26.5 180 0"}},{text:"and endermen,"},{text:"far west"},{text:"click to go",color:"gray"}]}}
 setblock 7 -60 5 minecraft:oak_sign[rotation=0]{is_waxed:1b,front_text:{messages:[{text:"Fresh copy?",bold:true,color:"gray"},"Run install-to-","modrinth with","-ResetWorld"]}}
 setblock -6 -56 2 minecraft:light[level=15]
 setblock -6 -56 8 minecraft:light[level=15]

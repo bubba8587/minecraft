@@ -127,11 +127,15 @@ Owner's design (2026-11-16), being worked out in conversation. Endermen are the 
 11. Breaking a cairn block in creative doesn't anger them (easier for the owner to build and test).
 12. Endermen are not saved with a job: after a reload each picks one again (vanilla saves the carried block).
 
-## Test world station idea
+## Test world station
 
-A "cairn" station replacing the hand-built preview: `/bubbas_reworked_mobs cairn here <seed>` for three seeds side by side on grass, plus a dug pit and a farmland patch with a few caretaker endermen behind glass (night locked, `spawn_mobs false`), so the owner can watch them fill the pit and trample the farmland.
+Built as "Cairns and endermen" (`specs/testworld.md`, Layout). Two code changes came with it:
+- **Hand-placed sites are saved** with the level: `cairn here` stores origin and seed in a persistent Fabric attachment on the `ServerLevel` (`bubbas_reworked_mobs:cairn_sites`), loaded the first time a level's sites are asked for. Without it a placed cairn is forgotten on reload and its blocks become stray unnatural blocks endermen slowly take. Game tests' `CairnSites.addSite` stays in memory only.
+- **`cairn builders`** (op): one persistent enderman per missing block of the nearest site within 64 (at most 12, in build order), each carrying its block. A carried block is only delivered to a spot that wants exactly that block and touches something already standing, so builders carrying later blocks wait until the lower ones are in. In the test world the trunk was finished within 40 s.
 
 ## Milestone test objectives
+
+- (not yet tested) A `cairn here` site is still a site after the level is saved and reloaded (the test world's verify step checks it with `cairn locate`); `cairn builders` builders complete a cut-down cairn.
 
 Core (every build, `ReworkedMobsCoreGameTest`): `endermanTerrainOracleAnswersFlatLayersAndCairns` (regenerated superflat column equals the generator's; a cairn's design is the target inside its site); `endermanCairnDesignsVaryAndUseOnlyEndBlocks` (108 designs: deterministic per seed, varied heights/sizes/trunk counts, only End blocks in the structure, none natural, never obsidian, every cairn has offerings and rods, the tallest rod is the pointer and faces the stronghold, TNT present but rare); `endermanTakesStrayBlockAndFillsHole` (cobblestone on open ground is taken and fills a stone hole as stone); `endermanBuilderDeliversCairnBlock` (a builder carrying a missing block completes the cairn); `endermanBusyIgnoresEyeContact`.
 

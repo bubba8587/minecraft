@@ -33,6 +33,7 @@ public final class Endermen {
 	}
 
 	public static void initialize() {
+		Object registerSavedSites = CairnSites.SAVED_SITES; // registers the attachment before any level loads
 		Registry.register(BuiltInRegistries.FEATURE_TYPE, BubbasReworkedMobs.id("cairn_footing"), CairnFootingFeature.CODEC);
 		BiomeModifications.addFeature(BiomeSelectors.foundInOverworld(), GenerationStep.Decoration.SURFACE_STRUCTURES, CAIRN_FOOTING);
 		ServerTickEvents.END_LEVEL_TICK.register(EndermanSpawning::tick);

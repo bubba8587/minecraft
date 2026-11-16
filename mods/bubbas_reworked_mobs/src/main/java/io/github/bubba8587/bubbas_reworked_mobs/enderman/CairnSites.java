@@ -11,7 +11,11 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.bubba8587.bubbas_reworked_mobs.BubbasReworkedMobs;
+import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
+import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -53,6 +57,17 @@ public final class CairnSites {
 	/** Sites placed by hand (tests, the build command in a world without natural sites), by level. */
 	private static final Map<ServerLevel, List<CairnSite>> EXTRA = new WeakHashMap<>();
 
+	/** A site placed with the {@code cairn here} command: saved with the level so it survives a reload (test world). */
+	private record SavedSite(BlockPos origin, long seed) {
+		static final Codec<SavedSite> CODEC = RecordCodecBuilder.create(i -> i.group(
+				BlockPos.CODEC.fieldOf("origin").forGetter(SavedSite::origin),
+				Codec.LONG.fieldOf("seed").forGetter(SavedSite::seed)).apply(i, SavedSite::new));
+	}
+
+	/** Hand-placed sites of a level, saved on the level itself (Fabric data attachment). */
+	public static final AttachmentType<List<SavedSite>> SAVED_SITES = AttachmentRegistry.createPersistent(
+			BubbasReworkedMobs.id("cairn_sites"), SavedSite.CODEC.listOf());
+
 	private CairnSites() {
 	}
 
@@ -77,7 +92,7 @@ public final class CairnSites {
 
 	/** The site whose design covers {@code pos}, or null. */
 	public static @Nullable CairnSite covering(ServerLevel level, BlockPos pos) {
-		List<CairnSite> extra = EXTRA.get(level);
+		List<CairnSite> extra = extra(level);
 		if (extra != null) {
 			for (CairnSite site : extra) {
 				if (site.box().isInside(pos)) {
@@ -92,7 +107,7 @@ public final class CairnSites {
 	/** Sites (worked out already) whose origin is within {@code radius} blocks (horizontally) of {@code pos}. */
 	public static List<CairnSite> near(ServerLevel level, BlockPos pos, int radius) {
 		List<CairnSite> found = new ArrayList<>();
-		List<CairnSite> extra = EXTRA.get(level);
+		List<CairnSite> extra = extra(level);
 		if (extra != null) {
 			for (CairnSite site : extra) {
 				if (horizontalDistSqr(site.origin(), pos) <= (double) radius * radius) {
@@ -140,18 +155,41 @@ public final class CairnSites {
 		return nearest(level, pos, radius);
 	}
 
-	/** Adds a site by hand at {@code origin} (on flat ground), for tests and the build command. */
+	/** Adds a site by hand at {@code origin} (on flat ground), for tests; forgotten when the server stops. */
 	public static CairnSite addSite(ServerLevel level, BlockPos origin, long seed) {
-		CairnSite site = design(level, origin, seed, level.getChunkSource().getGenerator(), level.getChunkSource().randomState(), (x, z) -> -1);
-		EXTRA.computeIfAbsent(level, l -> new ArrayList<>()).add(site);
+		CairnSite site = design(level, origin, seed);
+		extra(level).add(site);
 		return site;
 	}
 
-	public static void removeSite(ServerLevel level, CairnSite site) {
-		List<CairnSite> extra = EXTRA.get(level);
-		if (extra != null) {
-			extra.remove(site);
+	/** Adds a site by hand and saves it with the level (the {@code cairn here} command, the test world). */
+	public static CairnSite addSavedSite(ServerLevel level, BlockPos origin, long seed) {
+		CairnSite site = addSite(level, origin, seed);
+		List<SavedSite> saved = new ArrayList<>(level.getAttachedOrElse(SAVED_SITES, List.of()));
+		saved.add(new SavedSite(origin.immutable(), seed));
+		level.setAttached(SAVED_SITES, List.copyOf(saved));
+		return site;
+	}
+
+	/** This level's hand-placed sites, loading the saved ones the first time it's asked. */
+	private static List<CairnSite> extra(ServerLevel level) {
+		synchronized (EXTRA) {
+			return EXTRA.computeIfAbsent(level, l -> {
+				List<CairnSite> sites = new java.util.concurrent.CopyOnWriteArrayList<>();
+				for (SavedSite saved : l.getAttachedOrElse(SAVED_SITES, List.of())) {
+					sites.add(design(l, saved.origin(), saved.seed()));
+				}
+				return sites;
+			});
 		}
+	}
+
+	private static CairnSite design(ServerLevel level, BlockPos origin, long seed) {
+		return design(level, origin, seed, level.getChunkSource().getGenerator(), level.getChunkSource().randomState(), (x, z) -> -1);
+	}
+
+	public static void removeSite(ServerLevel level, CairnSite site) {
+		extra(level).remove(site);
 	}
 
 	private static double horizontalDistSqr(BlockPos a, BlockPos b) {

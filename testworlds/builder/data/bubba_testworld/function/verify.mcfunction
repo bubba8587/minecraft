@@ -2,6 +2,7 @@
 # command of the build is also checked automatically (the block and its state are there); these are the rest.
 forceload add -48 -48 47 95
 forceload add 48 -16 82 16
+forceload add -136 -12 -80 56
 scoreboard objectives add tw dummy
 # world rules
 execute store result score #r tw run gamerule advance_time
@@ -193,3 +194,9 @@ execute if entity @e[type=minecraft:creeper,tag=tw_creeper,x=64,y=-60,z=-7,dista
 execute if entity @e[type=minecraft:creeper,tag=tw_creeper,x=80,y=-60,z=11,distance=..10]
 execute if block 63 201 -6 minecraft:oak_log
 execute if block 66 201 -11 minecraft:cobblestone
+# cairns: four endermen in the yard, the backup copy, and the hand-placed sites saved with the world (locate from the
+# unfinished cairn must name it, not a natural superflat site)
+execute if entity @e[type=minecraft:enderman,tag=tw_enderman,x=-107,y=-60,z=6,distance=..30]
+execute if entity @e[type=minecraft:enderman,tag=!tw_enderman,x=-117,y=-60,z=8,distance=..30]
+execute if block -96 199 0 minecraft:dirt
+execute positioned -118 -60 6 run bubbas_reworked_mobs cairn locate
