@@ -358,13 +358,22 @@ ENDER_CHANCE_BEST = 1.0       # owner (2026-11-15: "projectile immunity isn't da
 ENDER_DIAMETER = (4.0, 16.0)  # ... how far, as chorus fruit's teleport diameter (weakest gem, the cap; chorus fruit 16)
 BREEZE_CHANCE_BEST = 1.0      # owner (2026-11-15): worn Breeze at the cap: chance to deflect an incoming projectile, as breezes do
 
+WIND_HIT_UP_MIN = 0.35        # owner (Q9): any Wind Burst hit throws the target at least this high (about half a block, like a jump)
+WIND_LAND_BOUNCE_MIN = 0.25   # owner (Q9): any worn Wind Burst landing bounce is at least a visible hop
+
+def wind_up(s):
+	return 0.0 if s <= 0 else max(WIND_HIT_UP_MIN, WIND_HIT_UP_BEST * rel(s))
+
+def wind_bounce(s):
+	return 0.0 if s <= 0 else max(WIND_LAND_BOUNCE_MIN, WIND_LAND_BOUNCE_BEST * rel(s))
+
 def rel(s):
 	return max(s, 0.0) / CAP
 
 effect("wind_charged", name="Wind Burst", potion="wind_charged", role="main", kind="action", variants={"normal": (3600, 0)},
 	anchor="Wind charge: a burst that throws what it hits up and away (from Wind Charged potions)",
-	value=lambda s: WIND_LAND_BOUNCE_BEST * rel(s),
-	show=lambda s: f"a fall's landing bounces the wearer {WIND_LAND_BOUNCE_BEST * rel(s):.2f} blocks/tick up with a small burst, fall damage {1 - rel(s):.0%} of normal",
+	value=lambda s: WIND_LAND_BOUNCE_BEST * rel(s),  # the strength curve; the bounce itself has a floor (wind_bounce)
+	show=lambda s: f"a fall's landing bounces the wearer {wind_bounce(s):.2f} blocks/tick up with a small burst, fall damage {1 - rel(s):.0%} of normal",
 	impl="Worn: when the wearer would take fall damage, it is x (1 - s/cap) and a small wind burst (sound and particles) bounces them up at WIND_LAND_BOUNCE_BEST x s/cap. Hit: the target is thrown up (WIND_HIT_UP_BEST x s/cap) and away from the attacker (WIND_HIT_PUSH_BEST x s/cap); on a mace with the Wind Burst enchantment, x WIND_MACE_BONUS past the cap (owner).",
 	src="WindChargedMobEffect, AbstractWindCharge, MaceItem")
 effect("weaving", name="Weaving", potion="weaving", role="main", kind="action", variants={"normal": (3600, 0)},
@@ -385,14 +394,14 @@ effect("silence", name="Silence", potion=None, role="main", variants={"normal": 
 	value=lambda s: rel(s), show=lambda s: f"{rel(s):.0%} of the wearer's movement vibrations are silenced",
 	impl="Movement game events (step, swim, splash, hit ground, flap, elytra glide) from the wearer are dropped before they reach any listener, each with chance s/cap (all at the cap): sculk sensors, wardens and other mods' hearing all use vanilla game events.",
 	src="Entity.gameEvent, GameEvent, VibrationSystem")
-effect("ender", name="Ender", potion=None, role="main", variants={"normal": None},
+effect("ender", name="Ender", potion=None, role="main", kind="action", variants={"normal": None},
 	source=("item", "chorus fruit"),
 	anchor="Chorus fruit: a random teleport up to 8 blocks away (diameter 16)",
 	value=lambda s: ENDER_CHANCE_BEST * rel(s),
 	show=lambda s: f"{ENDER_CHANCE_BEST * rel(s):.0%} chance a projectile that would hit blinks you away (up to {ENDER_DIAMETER[0] + (ENDER_DIAMETER[1] - ENDER_DIAMETER[0]) * rel(s):.0f}-block diameter)",
 	impl="When a projectile would actually hurt the wearer (damage above 0, not an explosion): with chance ENDER_CHANCE_BEST x s/cap, chorus fruit's random teleport instead (diameter from ENDER_DIAMETER by strength) and no damage.",
 	src="TeleportRandomlyConsumeEffect, EnderMan.hurtServer")
-effect("breeze", name="Breeze", potion=None, role="main", variants={"normal": None},
+effect("breeze", name="Breeze", potion=None, role="main", kind="control", variants={"normal": None},
 	source=("item", "breeze rod"),
 	anchor="Breeze: incoming projectiles bounce off",
 	value=lambda s: BREEZE_CHANCE_BEST * rel(s),
@@ -499,12 +508,12 @@ effect("hunger", name="Hunger", potion=None, role="harmful", kind="scaled", leve
 	src="HungerMobEffect, Consumables.PUFFERFISH / ROTTEN_FLESH")
 for key, name, src_item, ticks, is_hit, how, src in [
 		("glowing", "Glowing", "glowstone dust", 200, True, "Spectral arrow hit: Glowing for 10 s", "SpectralArrow"),
-		("levitation", "Levitation", "shulker shell", 200, True, "Shulker bullet hit: Levitation I for 10 s", "ShulkerBullet"),
+		("levitation", "Levitation", "shulker shell", 200, True, "Shulker bullet hit: Levitation I for 10 s (a hit: rise speed and time both scale, owner Q6)", "ShulkerBullet"),
 		("blindness", "Blindness", "suspicious stew of azure bluet or open eyeblossom (Fabric API's components ingredient)", 400, False,
 			"Illusioner's spell: Blindness for 20 s", "Illusioner, Blocks.AZURE_BLUET"),
 		("nausea", "Nausea", "pufferfish", 300, False, "Pufferfish: Nausea for 15 s", "Consumables.PUFFERFISH"),
 		("darkness", "Darkness", "sculk shrieker (ancient cities; owner, 2026-11-15)", 260, False, "Warden's pulse: Darkness for 13 s", "Warden")]:
-	effect(key, name=name, potion=None, role="harmful", kind="onoff", variants={"normal": None},
+	effect(key, name=name, potion=None, role="harmful", kind="control" if key == "levitation" else "onoff", variants={"normal": None},
 		source=("item", src_item), hit=hit_anchor(ticks, 0, is_hit), unit=None, unit_fmt=None,
 		anchor=how + " (on/off effect: the strength goes into duration)",
 		impl="The vanilla effect itself, for a duration scaled by s. Mostly felt by players (PvP, and gemmed mob gear hitting players).",
@@ -549,17 +558,55 @@ MAX_HIT_SECONDS = 8.0
 #   darkness: vanilla fades it in over 22 ticks, so a floor past that; nausea fades in over 150 ticks: a floor long
 #   enough for the spin to be well under way
 #   everything else: 2 s
+# Owner (2026-11-15, strength proposal Q1/Q2): one dial per effect. Potency hits (damage over time, stat debuffs) linger at
+# least HIT_FLOOR_POTENCY_SECONDS, rising to MAX_HIT_SECONDS at perfect; screen effects keep their strength in duration.
 HIT_FLOOR_SECONDS_DEFAULT = 2.0
-HIT_FLOOR_SECONDS = {"poison": 2.5, "wither": 2.5, "darkness": 3.0, "nausea": 5.0, "hunger": 4.0}  # hunger: owner
+HIT_FLOOR_POTENCY_SECONDS = 4.0
+HIT_FLOOR_SECONDS = {"darkness": 3.0}
 HIT_FLOOR_HEAL_HP = {"regeneration": 2.0}
 # Hunger on hit (owner, "bit of both"): twice Hunger III's drain while it lasts, at least 4 s, and every hit costs a player
 # target at least one food point's worth of exhaustion (4.0); whatever the effect won't drain in time is added at the hit.
 HIT_HUNGER_RATE = 2 * 0.015
 HIT_FLOOR_EXHAUSTION = {"hunger": 4.0}
 
+# Owner (strength proposal answers, 2026-11-15): effects whose dial is set per build, as (weak, mid, perfect) at the
+# reference weapon builds' strengths (HIT_REFS: the model's Early and Mid weapons, and the perfect weapon), straight lines
+# between, flat below the weak build. "seconds": how long one hit lasts; "value": the dial (Levitation's rise in blocks/s,
+# Weaving's and Ender's chance per hit, Breeze's spread multiplier on the target's own shots).
+HIT_CURVES = {
+	"nausea": {"seconds": (4.0, 6.0, 10.0)},                        # Q11
+	"glowing": {"seconds": (10.0, 30.0, 60.0)},                     # Q12
+	"levitation": {"seconds": (3.0, 4.0, 6.0), "value": (0.3, 0.6, 1.8)},  # Q6: rise speed and duration both scale
+	"weaving": {"value": (0.10, 0.25, 0.50)},                       # Q14: chance, no cooldown; perfect drops 2-3 webs
+	"ender": {"value": (0.10, 0.25, 0.40)},                         # Q18/Q19: chance of a chorus-fruit blink
+	"breeze": {"value": (3.0, 6.0, 12.0)},                          # Q22: the target's shots veer (spread multiplier)
+}
+WEAVING_PERFECT_WEBS = (2, 3)     # Q14: the perfect weapon drops vanilla Weaving's 2-3 webs around the target
+ENDER_HIT_DIAMETER = 16.0         # Q18: chorus fruit's own teleport (up to 8 blocks any way, lands on a floor)
+
+def hit_refs():
+	early = next(b for b in WEAPON_BUILDS if b[0] == "Early")
+	mid = next(b for b in WEAPON_BUILDS if b[0] == "Mid")
+	return (weapon_build_value("poison", early) / CAP, weapon_build_value("poison", mid) / CAP, 1.0)
+
+def hit_curve(key, which, s):
+	"""The (weak, mid, perfect) dial at weapon strength s: straight lines between the reference builds, flat below weak."""
+	pts = list(zip(hit_refs(), HIT_CURVES[key][which]))
+	r = min(1.0, max(s, 0.0) / CAP)
+	if r <= pts[0][0]:
+		return pts[0][1]
+	for (r0, v0), (r1, v1) in zip(pts, pts[1:]):
+		if r <= r1:
+			return v0 + (v1 - v0) * (r - r0) / (r1 - r0)
+	return pts[-1][1]
+
 def hit_floor(key, potency):
 	if key in HIT_FLOOR_HEAL_HP:
 		return HIT_FLOOR_HEAL_HP[key] / (HIT_UNIT[key] * potency)
+	if key in HIT_CURVES and "seconds" in HIT_CURVES[key]:
+		return HIT_CURVES[key]["seconds"][0]
+	if E[key]["kind"] == "scaled":
+		return HIT_FLOOR_POTENCY_SECONDS
 	return HIT_FLOOR_SECONDS.get(key, HIT_FLOOR_SECONDS_DEFAULT)
 
 def weapon_hit(key, s):
@@ -568,6 +615,11 @@ def weapon_hit(key, s):
 	if e["kind"] == "scaled":
 		p = (s / CAP) ** WEAPON_SPLIT  # owner (2026-11-15): the perfect weapon matches the strongest potion's level
 		return p, max(hit_floor(key, p), MAX_HIT_SECONDS * (s / CAP) ** (1 - WEAPON_SPLIT))
+	if key in HIT_CURVES and "seconds" in HIT_CURVES[key]:
+		return (min(1.0, s / CAP) if e["kind"] == "control" else 1.0), hit_curve(key, "seconds", s)
+	if e["kind"] == "control":
+		# Breeze (Q22): the effect lingers like a potency hit; its dial is the spread multiplier.
+		return min(1.0, s / CAP), max(HIT_FLOOR_POTENCY_SECONDS, MAX_HIT_SECONDS * (s / CAP) ** (1 - WEAPON_SPLIT))
 	if e["kind"] == "onoff":
 		return 1.0, max(hit_floor(key, 1.0), MAX_HIT_SECONDS * s / CAP)
 	return s, 0.0  # instant, action
@@ -589,13 +641,18 @@ def hit_show(key, s):
 		return f"{potency_text(key, p)} for {d:.1f} s"
 	if e["kind"] == "onoff":
 		return f"{e['name']} for {d:.1f} s"
+	if key == "levitation":
+		return f"rises {hit_curve(key, 'value', s):.2f} blocks/s for {d:.1f} s"
+	if key == "breeze":
+		return f"the target's own shots veer off (spread x{hit_curve(key, 'value', s):.1f}) for {d:.1f} s"
 	if e["kind"] == "action":
 		return ACTION_HIT[key](s)
 	return f"{e['unit_fmt'](max(HIT_STRIKE_FLOOR, p * e['unit']))} every hit"
 
 ACTION_HIT = {
-	"wind_charged": lambda s: f"throws the target {WIND_HIT_UP_BEST * rel(s):.2f} up and {WIND_HIT_PUSH_BEST * rel(s):.2f} away (blocks/tick)",
-	"weaving": lambda s: f"{WEAVING_WEB_CHANCE_BEST * rel(s):.0%} chance to web the target in place",
+	"wind_charged": lambda s: f"throws the target {wind_up(s):.2f} up and {WIND_HIT_PUSH_BEST * rel(s):.2f} away (blocks/tick)",
+	"weaving": lambda s: f"{hit_curve('weaving', 'value', s):.0%} chance to web the target in place" + (f" ({WEAVING_PERFECT_WEBS[0]}-{WEAVING_PERFECT_WEBS[1]} webs around it)" if s >= CAP - 1e-9 else ""),
+	"ender": lambda s: f"{hit_curve('ender', 'value', s):.0%} chance to blink the target away, as chorus fruit (up to {ENDER_HIT_DIAMETER / 2:.0f} blocks)",
 	"oozing": lambda s: f"a kill splits off {OOZING_SLIMES[0] if rel(s) < 0.5 else OOZING_SLIMES[1]} small neutral slime(s) of yours",
 }
 
@@ -1337,7 +1394,7 @@ def run_checks():
 			kind = E[k]["kind"]
 			# Regeneration's floor is a heal amount, so its floored duration shortens as the rate rises; the heal never drops.
 			grows = p * d >= p_prev * d_prev - 1e-12 if k in HIT_FLOOR_HEAL_HP else d >= d_prev - 1e-12
-			if (kind != "onoff" and not p > p_prev) or (kind not in ("instant", "action") and not grows):
+			if (kind not in ("onoff", "control") and not p > p_prev) or (kind == "control" and not p >= p_prev) or (kind not in ("instant", "action") and not grows):
 				errors.append(f"{k}: weapon potency not rising or duration falling")
 				break
 			if kind not in ("instant", "action") and d < hit_floor(k, p) - 1e-12:
@@ -1345,7 +1402,7 @@ def run_checks():
 				break
 			p_prev, d_prev = p, d
 		p, d = weapon_hit(k, CAP)
-		if E[k]["kind"] not in ("instant", "action") and abs(d - MAX_HIT_SECONDS) > 1e-9 and d > MAX_HIT_SECONDS:
+		if E[k]["kind"] not in ("instant", "action") and k not in HIT_CURVES and abs(d - MAX_HIT_SECONDS) > 1e-9 and d > MAX_HIT_SECONDS:
 			errors.append(f"{k}: the best weapon's hit lasts {d:.1f} s, past {MAX_HIT_SECONDS} s")
 		if E[k]["kind"] == "scaled" and abs(p - 1.0) > 1e-9:
 			errors.append(f"{k}: the best weapon gem's potency is {p:.3f}, not the strongest potion's level (owner)")
@@ -1785,11 +1842,11 @@ WORN = {
 	**{k: {"always_on": True} for k in sorted(ALWAYS_ON)},
 	**{k: {"screen": True} for k in sorted(SCREEN_EFFECTS)},
 	"levitation": {"rise_min": LEVITATION_MIN_RISE, "rise_best": LEVITATION_BEST_RISE},
-	"wind_charged": {"land_bounce": WIND_LAND_BOUNCE_BEST, "hit_up": WIND_HIT_UP_BEST, "hit_push": WIND_HIT_PUSH_BEST, "mace_bonus": WIND_MACE_BONUS},
-	"weaving": {"web_chance": WEAVING_WEB_CHANCE_BEST},
+	"wind_charged": {"land_bounce": WIND_LAND_BOUNCE_BEST, "land_bounce_min": WIND_LAND_BOUNCE_MIN, "hit_up_min": WIND_HIT_UP_MIN, "hit_up": WIND_HIT_UP_BEST, "hit_push": WIND_HIT_PUSH_BEST, "mace_bonus": WIND_MACE_BONUS},
+	"weaving": {"web_chance": WEAVING_WEB_CHANCE_BEST, "perfect_webs_min": WEAVING_PERFECT_WEBS[0], "perfect_webs_max": WEAVING_PERFECT_WEBS[1]},
 	"oozing": {"bounce": OOZING_BOUNCE_BEST, "slimes_min": OOZING_SLIMES[0], "slimes_max": OOZING_SLIMES[1], "slime_cap": OOZING_SLIME_CAP},
 	"silence": {"silence": 1.0},
-	"ender": {"chance": ENDER_CHANCE_BEST, "diameter_min": ENDER_DIAMETER[0], "diameter_max": ENDER_DIAMETER[1]},
+	"ender": {"hit_diameter": ENDER_HIT_DIAMETER, "chance": ENDER_CHANCE_BEST, "diameter_min": ENDER_DIAMETER[0], "diameter_max": ENDER_DIAMETER[1]},
 	"breeze": {"chance": BREEZE_CHANCE_BEST},
 	"infested": {"hurt_chance": 1.0},
 }
@@ -1842,7 +1899,7 @@ def export_data():
 				d["loot"] = src[1]
 			ticks, amp = arrow_anchor(k)
 			d["hit"] = {"ticks": round(MAX_HIT_SECONDS * T), "amplifier": amp,
-				"floor_ticks": round(HIT_FLOOR_SECONDS.get(k, HIT_FLOOR_SECONDS_DEFAULT) * T), "floor_heal_hp": HIT_FLOOR_HEAL_HP.get(k, 0.0),
+				"floor_ticks": round((HIT_FLOOR_SECONDS_DEFAULT if k in HIT_FLOOR_HEAL_HP else hit_floor(k, 1.0)) * T), "floor_heal_hp": HIT_FLOOR_HEAL_HP.get(k, 0.0),
 				"floor_exhaustion": HIT_FLOOR_EXHAUSTION.get(k, 0.0)}
 			d["other_pool"] = [] if k in OTHER_EXCLUDED else other_pool(k)
 			d["drawback_pool"] = drawback_pool(k)
@@ -1857,6 +1914,8 @@ def export_data():
 			d["worn"] = w
 		if k in HIT_UNIT:
 			d["hit_unit"] = HIT_UNIT[k]
+		if k in HIT_CURVES:
+			d["hit_curve"] = {which: [[r, v] for r, v in zip(hit_refs(), vals)] for which, vals in HIT_CURVES[k].items()}
 		d["worn_amplifier"] = worn_amplifier(k)
 		d["worn_cap"] = worn_cap(k) if k in E else CAP
 		d["id"] = effect_id(k)

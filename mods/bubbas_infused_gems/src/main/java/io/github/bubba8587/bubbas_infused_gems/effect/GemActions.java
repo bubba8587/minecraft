@@ -54,6 +54,7 @@ public final class GemActions {
 		switch (key) {
 			case "wind_charged" -> windHit(level, s, target, direct != null ? direct : attacker, weapon);
 			case "weaving" -> webHit(level, s, target);
+			case "ender" -> enderHit(level, s, target);
 			case "oozing" -> {
 				if (target.isDeadOrDying() && attacker instanceof LivingEntity owner) {
 					splitSlimes(level, s, target, owner);
@@ -76,7 +77,9 @@ public final class GemActions {
 	/** Wind Burst's launch at strength s: (up, away) in blocks/tick; a Wind Burst mace multiplies it past the cap. */
 	public static double[] windLaunch(double s, boolean mace) {
 		double r = rel(s) * (mace ? num("wind_charged", "mace_bonus", 1.6) : 1.0);
-		return new double[] {num("wind_charged", "hit_up", 0.9) * r, num("wind_charged", "hit_push", 0.6) * r};
+		// Owner (Q9): any hit throws the target at least hit_up_min up, a visible hop.
+		double up = s <= 0.0 ? 0.0 : Math.max(num("wind_charged", "hit_up_min", 0.35), num("wind_charged", "hit_up", 0.9) * r);
+		return new double[] {up, num("wind_charged", "hit_push", 0.6) * r};
 	}
 
 	private static void windHit(ServerLevel level, double s, LivingEntity target, @Nullable Entity from, ItemStack weapon) {
@@ -94,15 +97,67 @@ public final class GemActions {
 		level.playSound(null, at.getX(), at.getY(), at.getZ(), SoundEvents.WIND_CHARGE_BURST, SoundSource.PLAYERS, 0.6F, 1.0F);
 	}
 
+	/**
+	 * Weaving hit (owner, Q14): a chance per hit set per build (10 / 25 / 50 %), no cooldown. Below perfect, one web at the
+	 * target's feet; the perfect weapon drops vanilla Weaving's 2-3 webs around the target, by vanilla's own placement rule
+	 * (replaceable spots on a sturdy floor). Only into air or other replaceable blocks, never replacing a solid block (owner);
+	 * the webs are real and stay.
+	 */
 	private static void webHit(ServerLevel level, double s, LivingEntity target) {
-		if (target.getRandom().nextDouble() >= num("weaving", "web_chance", 0.35) * rel(s)) {
+		double r = Math.min(1.0, rel(s));
+		if (target.getRandom().nextDouble() >= Balance.get().hitCurve("weaving", "value", r)) {
 			return;
 		}
 		BlockPos pos = target.blockPosition();
-		// Only into air: never replaces a block (owner). The web is real and stays.
-		if (level.getBlockState(pos).isAir()) {
-			level.setBlockAndUpdate(pos, Blocks.COBWEB.defaultBlockState());
+		if (r < 1.0 - 1e-6) {
+			if (level.getBlockState(pos).isAir()) {
+				level.setBlockAndUpdate(pos, Blocks.COBWEB.defaultBlockState());
+				level.levelEvent(3018, pos, 0);
+			}
+			return;
 		}
+		int lo = (int) num("weaving", "perfect_webs_min", 2);
+		int count = lo + target.getRandom().nextInt((int) num("weaving", "perfect_webs_max", 3) - lo + 1);
+		java.util.Set<BlockPos> chosen = new java.util.HashSet<>();
+		for (BlockPos at : BlockPos.randomInCube(target.getRandom(), 15, pos, 1)) {
+			BlockPos below = at.below();
+			if (!chosen.contains(at) && level.getBlockState(at).isAir()
+					&& level.getBlockState(below).isFaceSturdy(level, below, net.minecraft.core.Direction.UP)) {
+				chosen.add(at.immutable());
+				if (chosen.size() >= count) {
+					break;
+				}
+			}
+		}
+		for (BlockPos at : chosen) {
+			level.setBlockAndUpdate(at, Blocks.COBWEB.defaultBlockState());
+			level.levelEvent(3018, at, 0);
+		}
+	}
+
+	/**
+	 * Ender hit (owner, Q18/Q19): a chance per hit set per build (10 / 25 / 40 %) to blink the target away with chorus
+	 * fruit's own teleport (vanilla's code: up to 8 blocks any way, landing on a floor, its sound and game event). Players
+	 * and mobs alike.
+	 */
+	private static void enderHit(ServerLevel level, double s, LivingEntity target) {
+		if (!target.isAlive() || target.getRandom().nextDouble() >= Balance.get().hitCurve("ender", "value", Math.min(1.0, rel(s)))) {
+			return;
+		}
+		new net.minecraft.world.item.consume_effects.TeleportRandomlyConsumeEffect((float) num("ender", "hit_diameter", 16.0), false)
+				.apply(level, ItemStack.EMPTY, target);
+	}
+
+	/**
+	 * Breeze hit (owner, Q22): while the target carries the Breeze gem effect, its own shots veer off: the spread of what it
+	 * fires is multiplied by the hit's dial (x3 / x6 / x12). Returns the multiplier, 1 when unaffected.
+	 */
+	public static double veer(@Nullable Entity shooter) {
+		if (!(shooter instanceof LivingEntity living)) {
+			return 1.0;
+		}
+		double p = GemValues.hit(living, "breeze");
+		return p <= 0.0 ? 1.0 : Balance.get().hitCurve("breeze", "value", p);
 	}
 
 	/** How near the owner an Oozing slime counts toward the cap (owner: left-behind slimes don't). */
@@ -188,7 +243,8 @@ public final class GemActions {
 		boolean hurts = fallDistance > entity.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.SAFE_FALL_DISTANCE);
 		double bounce = 0.0;
 		if (wind > 0.0 && hurts) {
-			bounce = Math.max(bounce, num("wind_charged", "land_bounce", 0.6) * rel(wind));
+			// Owner (Q9): any landing bounce is at least a visible hop.
+			bounce = Math.max(bounce, Math.max(num("wind_charged", "land_bounce_min", 0.25), num("wind_charged", "land_bounce", 0.6) * rel(wind)));
 			burst(level, entity);
 		}
 		if (ooze > 0.0 && !entity.isSuppressingBounce()) {
@@ -236,7 +292,7 @@ public final class GemActions {
 		if (!(direct instanceof Projectile projectile) || projectile.getOwner() == entity) {
 			return false;
 		}
-		double r = rel(GemValues.value(entity, "ender"));
+		double r = rel(GemValues.rawWorn(entity, "ender")); // worn only: an Ender hit blinks its target instead
 		if (r <= 0.0 || entity.getRandom().nextDouble() >= num("ender", "chance", 0.5) * r) {
 			return false;
 		}
@@ -264,7 +320,11 @@ public final class GemActions {
 		if (vanilla != ProjectileDeflection.NONE || projectile.getOwner() == entity || entity.level().isClientSide()) {
 			return vanilla;
 		}
-		double r = rel(GemValues.value(entity, "breeze"));
+		// Owner (Q17): wind charges pass, as they do through a real breeze (Breeze.deflection).
+		if (projectile.is(EntityTypes.BREEZE_WIND_CHARGE) || projectile.is(EntityTypes.WIND_CHARGE)) {
+			return vanilla;
+		}
+		double r = rel(GemValues.rawWorn(entity, "breeze")); // worn only: a Breeze hit makes the target's shots veer instead
 		if (r <= 0.0 || entity.getRandom().nextDouble() >= num("breeze", "chance", 0.5) * r) {
 			return vanilla;
 		}

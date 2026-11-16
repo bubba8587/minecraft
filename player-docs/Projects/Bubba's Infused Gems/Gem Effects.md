@@ -76,24 +76,31 @@ Some gems do what their source does, rather than apply its potion.
 
 | Gem | Source | In armor | In a weapon |
 |---|---|---|---|
-| Wind Burst | Wind Charged potion | A fall's landing bounces the wearer with a small burst of wind, and the fall hurts less (not at all with the best build) | Throws the target up and away, like a wind charge; on a mace with the Wind Burst enchantment, much further than any other weapon can |
+| Wind Burst | Wind Charged potion | A fall's landing bounces the wearer with a small burst of wind (always at least a visible hop), and the fall hurts less (not at all with the best build) | Throws the target up and away, like a wind charge; on a mace with the Wind Burst enchantment, much further than any other weapon can |
 | Weaving | Weaving potion | Walks through cobwebs faster; at the best build cobwebs don't hold the wearer at all: walking, sprinting, jumping and falling are as in open air | A chance to web the target in place with a real cobweb (only placed into empty space, never replacing a block) |
 | Oozing | Oozing potion | Bounces off landings like a slime block, and falls hurt less (not at all with the best build) | A kill splits off small slimes that belong to the wielder: they never attack anyone and drop nothing; at most 8 near the player at a time; they stay while the player is around, and slimes left behind dissolve when their area unloads |
 | Silence | Echo shard | The wearer's footsteps, swimming, landing and other movement make no vibrations (sculk sensors, wardens), some of the time with weak gems and always at the best build | Silences the target (pointless) |
 | Ender | Chorus fruit | A chance that a projectile about to hurt the wearer teleports them away instead (not harmless ones like snowballs, and never explosions), like chorus fruit; stronger gems teleport further, and the perfect set always tries, but a wearer boxed in with nowhere safe to go is hit. Other damage still hurts | Gives it to the target (pointless) |
-| Breeze | Breeze rod | A chance to deflect incoming projectiles, like a breeze: about half the time at 90% of the best, every time with the perfect set | Gives it to the target (pointless) |
+| Breeze | Breeze rod | A chance to deflect incoming projectiles, like a breeze: about half the time at 90% of the best, every time with the perfect set. Wind charges get through, as they do with a real breeze | Gives it to the target (pointless) |
 
 Gem effects look the same as the real effect: poisoned or withered hearts, the green food bar of Hunger, the healing heart wave of Regeneration, the effect's icon and particles.
 
 ## In weapons
 
-Each hit gives the target a partial effect for a few seconds, refreshed (never added up) by every hit. Its strength is measured against the strongest potion of the effect: the best weapon matches a Poison II or Slowness IV potion, but only for 8 seconds; weaker weapons give a weaker effect for a shorter time. Every hit lasts long enough to be noticed: Poison and Wither at least 2.5 seconds (enough for several damage ticks), Darkness 3 seconds, Hunger 4 seconds, Nausea 5 seconds, Regeneration long enough to heal a heart, everything else 2 seconds. The effect appears in the target's effects as a percentage, for example *Poison 46%*.
+Each hit gives the target an effect for a few seconds, refreshed (never added up) by every hit. Each effect has one thing that grows with the gem's strength. Damage and weakening effects (Poison, Wither, Slowness, Weakness, Mining Fatigue, Hunger) get **stronger**: the best weapon matches a Poison II or Slowness IV potion; they last 4 seconds with a weak gem up to 8 seconds with the best. Screen effects (Blindness, Darkness, Nausea, Glowing) last **longer**. Levitation lifts **faster and longer**. Weaving and Ender work by **chance**. The effect appears in the target's effects as a percentage, for example *Poison 46%*. Mobs and players are affected the same way.
 
 | Gem | Effect on the target |
 |---|---|
 | Poison, Wither, Slowness, Weakness, Mining Fatigue | The harmful effect, partial |
 | Hunger | Drains food twice as fast as Hunger III; every hit costs a player at least half a drumstick |
-| Glowing, Levitation, Blindness, Nausea, Darkness, Infested | The effect itself, for longer the stronger the gem |
+| Blindness, Darkness, Infested | The effect itself, for longer the stronger the gem (Blindness 2 to 8 seconds) |
+| Nausea | The effect itself: 4 seconds with a weak gem, 6 with a good one, 10 with the best |
+| Glowing | The effect itself: 10 seconds with a weak gem, 30 with a good one, 60 with the best |
+| Levitation | The target floats up: slowly for 3 seconds with a weak gem (0.3 blocks a second), faster and longer with stronger ones, up to 1.8 blocks a second for 6 seconds with the best (twice a shulker bullet's speed). Coming down hurts |
+| Wind Burst | Throws the target up and away like a wind charge; even a weak gem throws it about half a block |
+| Weaving | A chance to web the target with a real cobweb: 10% with a weak gem, 25% with a good one, 50% with the best, which drops 2 to 3 webs around it |
+| Ender | A chance to teleport the target away like chorus fruit (up to 8 blocks, onto a floor): 10% with a weak gem, 25% with a good one, 40% with the best. Works on players too |
+| Breeze | For a few seconds the target's own arrows, tridents and fireballs fly off course: a little with a weak gem, most of them miss with the best |
 | Harming | A little extra magic damage on every hit (up to 2.25) |
 | Healing | Heals the target a little on every hit (up to 1.8) |
 | Turtle Master | Its Resistance and Slowness together |
@@ -101,9 +108,9 @@ Each hit gives the target a partial effect for a few seconds, refreshed (never a
 
 | Weapon | Poison | Slowness |
 |---|---|---|
-| Wooden sword, one weak gem | 0.57 health per second for 2.9 s | 20% slower for 2.9 s |
-| Diamond sword, two good splash gems | 1.24 health per second for 6.3 s | 45% slower for 6.3 s |
-| Netherite sword, two perfect gems (the best) | 1.58 health per second for 8 s | 57% slower for 8 s |
+| Iron sword, one weak gem | 0.51 health per second for 4 s | 18% slower for 4 s |
+| Diamond sword, two good splash gems | 1.10 health per second for 5.3 s | 40% slower for 5.3 s |
+| Netherite sword, two perfect gems (the best) | 1.67 health per second for 8 s | 60% slower for 8 s |
 
 Swords, axes, spears, maces and tridents apply their gems on every hit, including sweeps and thrown tridents.
 

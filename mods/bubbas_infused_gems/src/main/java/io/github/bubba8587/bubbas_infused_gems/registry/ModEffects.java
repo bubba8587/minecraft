@@ -45,7 +45,7 @@ public final class ModEffects {
 		}
 		for (String key : b.effects.keySet().stream().sorted().toList()) {
 			Balance.EffectData e = b.effect(key);
-			if (!e.hitKind().equals("scaled") || !e.id().startsWith("minecraft:")) {
+			if (!(e.hitKind().equals("scaled") || e.hitKind().equals("control")) || !e.id().startsWith("minecraft:")) {
 				continue;
 			}
 			MobEffect vanilla = GemText.holder(key).value();

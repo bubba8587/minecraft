@@ -375,7 +375,7 @@
 			"hit": {
 				"ticks": 160,
 				"amplifier": 1,
-				"floor_ticks": 40,
+				"floor_ticks": 80,
 				"floor_heal_hp": 0.0,
 				"floor_exhaustion": 0.0
 			},
@@ -488,7 +488,7 @@
 			"hit": {
 				"ticks": 160,
 				"amplifier": 1,
-				"floor_ticks": 40,
+				"floor_ticks": 80,
 				"floor_heal_hp": 0.0,
 				"floor_exhaustion": 0.0
 			},
@@ -601,7 +601,7 @@
 			"hit": {
 				"ticks": 160,
 				"amplifier": 1,
-				"floor_ticks": 40,
+				"floor_ticks": 80,
 				"floor_heal_hp": 0.0,
 				"floor_exhaustion": 0.0
 			},
@@ -822,7 +822,7 @@
 			"hit": {
 				"ticks": 160,
 				"amplifier": 0,
-				"floor_ticks": 40,
+				"floor_ticks": 80,
 				"floor_heal_hp": 0.0,
 				"floor_exhaustion": 0.0
 			},
@@ -929,7 +929,7 @@
 			"hit": {
 				"ticks": 160,
 				"amplifier": 3,
-				"floor_ticks": 40,
+				"floor_ticks": 80,
 				"floor_heal_hp": 0.0,
 				"floor_exhaustion": 0.0
 			},
@@ -1043,7 +1043,7 @@
 			"hit": {
 				"ticks": 160,
 				"amplifier": 0,
-				"floor_ticks": 40,
+				"floor_ticks": 80,
 				"floor_heal_hp": 0.0,
 				"floor_exhaustion": 0.0
 			},
@@ -1154,7 +1154,7 @@
 			"hit": {
 				"ticks": 160,
 				"amplifier": 0,
-				"floor_ticks": 40,
+				"floor_ticks": 80,
 				"floor_heal_hp": 0.0,
 				"floor_exhaustion": 0.0
 			},
@@ -1264,7 +1264,7 @@
 			"hit": {
 				"ticks": 160,
 				"amplifier": 0,
-				"floor_ticks": 40,
+				"floor_ticks": 80,
 				"floor_heal_hp": 0.0,
 				"floor_exhaustion": 0.0
 			},
@@ -1369,7 +1369,7 @@
 			"hit": {
 				"ticks": 160,
 				"amplifier": 0,
-				"floor_ticks": 40,
+				"floor_ticks": 80,
 				"floor_heal_hp": 0.0,
 				"floor_exhaustion": 0.0
 			},
@@ -1482,7 +1482,7 @@
 			"hit": {
 				"ticks": 160,
 				"amplifier": 0,
-				"floor_ticks": 40,
+				"floor_ticks": 80,
 				"floor_heal_hp": 0.0,
 				"floor_exhaustion": 0.0
 			},
@@ -1595,7 +1595,7 @@
 			"hit": {
 				"ticks": 160,
 				"amplifier": 0,
-				"floor_ticks": 40,
+				"floor_ticks": 80,
 				"floor_heal_hp": 0.0,
 				"floor_exhaustion": 0.0
 			},
@@ -1765,7 +1765,7 @@
 			"hit": {
 				"ticks": 160,
 				"amplifier": 1,
-				"floor_ticks": 50,
+				"floor_ticks": 80,
 				"floor_heal_hp": 0.0,
 				"floor_exhaustion": 0.0
 			},
@@ -1795,7 +1795,6 @@
 				"slow_falling",
 				"luck",
 				"silence",
-				"ender",
 				"breeze",
 				"haste",
 				"absorption",
@@ -1817,7 +1816,6 @@
 				4,
 				2,
 				1,
-				2,
 				2,
 				2,
 				1,
@@ -1879,7 +1877,7 @@
 			"hit": {
 				"ticks": 160,
 				"amplifier": 3,
-				"floor_ticks": 40,
+				"floor_ticks": 80,
 				"floor_heal_hp": 0.0,
 				"floor_exhaustion": 0.0
 			},
@@ -1909,7 +1907,6 @@
 				"slow_falling",
 				"luck",
 				"silence",
-				"ender",
 				"breeze",
 				"haste",
 				"absorption",
@@ -1931,7 +1928,6 @@
 				4,
 				2,
 				1,
-				2,
 				2,
 				2,
 				1,
@@ -1994,7 +1990,7 @@
 			"hit": {
 				"ticks": 160,
 				"amplifier": 0,
-				"floor_ticks": 40,
+				"floor_ticks": 80,
 				"floor_heal_hp": 0.0,
 				"floor_exhaustion": 0.0
 			},
@@ -2024,7 +2020,6 @@
 				"slow_falling",
 				"luck",
 				"silence",
-				"ender",
 				"breeze",
 				"haste",
 				"absorption",
@@ -2046,7 +2041,6 @@
 				4,
 				2,
 				1,
-				2,
 				2,
 				2,
 				1,
@@ -2128,7 +2122,6 @@
 				"slow_falling",
 				"luck",
 				"silence",
-				"ender",
 				"breeze",
 				"haste",
 				"absorption",
@@ -2151,7 +2144,6 @@
 				4,
 				2,
 				1,
-				2,
 				2,
 				2,
 				1,
@@ -2267,6 +2259,8 @@
 			"rarity": "uncommon",
 			"worn": {
 				"land_bounce": 0.6,
+				"land_bounce_min": 0.25,
+				"hit_up_min": 0.35,
 				"hit_up": 0.9,
 				"hit_push": 0.6,
 				"mace_bonus": 1.6
@@ -2367,7 +2361,25 @@
 			],
 			"rarity": "uncommon",
 			"worn": {
-				"web_chance": 0.35
+				"web_chance": 0.35,
+				"perfect_webs_min": 2,
+				"perfect_webs_max": 3
+			},
+			"hit_curve": {
+				"value": [
+					[
+						0.09405405405405406,
+						0.1
+					],
+					[
+						0.43244999999999995,
+						0.25
+					],
+					[
+						1.0,
+						0.5
+					]
+				]
 			},
 			"worn_amplifier": 0,
 			"worn_cap": 0.9,
@@ -2493,7 +2505,7 @@
 			"hit": {
 				"ticks": 160,
 				"amplifier": 0,
-				"floor_ticks": 40,
+				"floor_ticks": 80,
 				"floor_heal_hp": 0.0,
 				"floor_exhaustion": 0.0
 			},
@@ -2580,7 +2592,7 @@
 			"name": "Ender",
 			"good": true,
 			"role": "main",
-			"hit_kind": "scaled",
+			"hit_kind": "action",
 			"level_one": 1.0,
 			"variants": {
 				"normal": {
@@ -2667,9 +2679,26 @@
 			],
 			"rarity": "uncommon",
 			"worn": {
+				"hit_diameter": 16.0,
 				"chance": 1.0,
 				"diameter_min": 4.0,
 				"diameter_max": 16.0
+			},
+			"hit_curve": {
+				"value": [
+					[
+						0.09405405405405406,
+						0.1
+					],
+					[
+						0.43244999999999995,
+						0.25
+					],
+					[
+						1.0,
+						0.4
+					]
+				]
 			},
 			"worn_amplifier": 0,
 			"worn_cap": 0.9,
@@ -2682,7 +2711,7 @@
 			"name": "Breeze",
 			"good": true,
 			"role": "main",
-			"hit_kind": "scaled",
+			"hit_kind": "control",
 			"level_one": 1.0,
 			"variants": {
 				"normal": {
@@ -2771,6 +2800,22 @@
 			"worn": {
 				"chance": 1.0
 			},
+			"hit_curve": {
+				"value": [
+					[
+						0.09405405405405406,
+						3.0
+					],
+					[
+						0.43244999999999995,
+						6.0
+					],
+					[
+						1.0,
+						12.0
+					]
+				]
+			},
 			"worn_amplifier": 0,
 			"worn_cap": 0.9,
 			"id": "bubbas_infused_gems:breeze",
@@ -2825,7 +2870,6 @@
 				"slow_falling",
 				"luck",
 				"silence",
-				"ender",
 				"breeze",
 				"haste",
 				"absorption",
@@ -2848,7 +2892,6 @@
 				4,
 				2,
 				1,
-				2,
 				2,
 				2,
 				1,
@@ -2903,7 +2946,7 @@
 			"hit": {
 				"ticks": 160,
 				"amplifier": 0,
-				"floor_ticks": 40,
+				"floor_ticks": 80,
 				"floor_heal_hp": 0.0,
 				"floor_exhaustion": 0.0
 			},
@@ -3020,7 +3063,7 @@
 			"hit": {
 				"ticks": 160,
 				"amplifier": 3,
-				"floor_ticks": 40,
+				"floor_ticks": 80,
 				"floor_heal_hp": 0.0,
 				"floor_exhaustion": 0.0
 			},
@@ -3129,7 +3172,7 @@
 			"hit": {
 				"ticks": 160,
 				"amplifier": 0,
-				"floor_ticks": 40,
+				"floor_ticks": 80,
 				"floor_heal_hp": 0.0,
 				"floor_exhaustion": 0.0
 			},
@@ -3235,7 +3278,7 @@
 			"hit": {
 				"ticks": 160,
 				"amplifier": 0,
-				"floor_ticks": 40,
+				"floor_ticks": 80,
 				"floor_heal_hp": 0.0,
 				"floor_exhaustion": 0.0
 			},
@@ -3334,7 +3377,7 @@
 			"hit": {
 				"ticks": 160,
 				"amplifier": 0,
-				"floor_ticks": 40,
+				"floor_ticks": 80,
 				"floor_heal_hp": 0.0,
 				"floor_exhaustion": 0.0
 			},
@@ -3436,7 +3479,7 @@
 			"hit": {
 				"ticks": 160,
 				"amplifier": 0,
-				"floor_ticks": 40,
+				"floor_ticks": 80,
 				"floor_heal_hp": 0.0,
 				"floor_exhaustion": 0.0
 			},
@@ -3553,7 +3596,7 @@
 			"hit": {
 				"ticks": 160,
 				"amplifier": 0,
-				"floor_ticks": 40,
+				"floor_ticks": 80,
 				"floor_heal_hp": 0.0,
 				"floor_exhaustion": 0.0
 			},
@@ -3604,7 +3647,7 @@
 			"hit": {
 				"ticks": 160,
 				"amplifier": 1,
-				"floor_ticks": 50,
+				"floor_ticks": 80,
 				"floor_heal_hp": 0.0,
 				"floor_exhaustion": 0.0
 			},
@@ -3634,7 +3677,6 @@
 				"slow_falling",
 				"luck",
 				"silence",
-				"ender",
 				"breeze",
 				"haste",
 				"absorption",
@@ -3656,7 +3698,6 @@
 				4,
 				2,
 				1,
-				2,
 				2,
 				2,
 				1,
@@ -3712,7 +3753,7 @@
 			"hit": {
 				"ticks": 160,
 				"amplifier": 2,
-				"floor_ticks": 40,
+				"floor_ticks": 80,
 				"floor_heal_hp": 0.0,
 				"floor_exhaustion": 0.0
 			},
@@ -3743,7 +3784,6 @@
 				"slow_falling",
 				"luck",
 				"silence",
-				"ender",
 				"breeze",
 				"absorption",
 				"health_boost",
@@ -3764,7 +3804,6 @@
 				4,
 				2,
 				1,
-				2,
 				2,
 				2,
 				4,
@@ -3860,7 +3899,6 @@
 				"slow_falling",
 				"luck",
 				"silence",
-				"ender",
 				"breeze",
 				"haste",
 				"absorption",
@@ -3882,7 +3920,6 @@
 				4,
 				2,
 				1,
-				2,
 				2,
 				2,
 				1,
@@ -3935,7 +3972,7 @@
 			"hit": {
 				"ticks": 160,
 				"amplifier": 0,
-				"floor_ticks": 40,
+				"floor_ticks": 200,
 				"floor_heal_hp": 0.0,
 				"floor_exhaustion": 0.0
 			},
@@ -3965,7 +4002,6 @@
 				"slow_falling",
 				"luck",
 				"silence",
-				"ender",
 				"breeze",
 				"haste",
 				"absorption",
@@ -3987,7 +4023,6 @@
 				4,
 				2,
 				1,
-				2,
 				2,
 				2,
 				1,
@@ -4015,6 +4050,22 @@
 			"worn": {
 				"always_on": true
 			},
+			"hit_curve": {
+				"seconds": [
+					[
+						0.09405405405405406,
+						10.0
+					],
+					[
+						0.43244999999999995,
+						30.0
+					],
+					[
+						1.0,
+						60.0
+					]
+				]
+			},
 			"worn_amplifier": 0,
 			"worn_cap": 0.9,
 			"id": "minecraft:glowing",
@@ -4027,7 +4078,7 @@
 			"name": "Levitation",
 			"good": false,
 			"role": "harmful",
-			"hit_kind": "onoff",
+			"hit_kind": "control",
 			"level_one": 1.0,
 			"variants": {
 				"normal": {
@@ -4040,7 +4091,7 @@
 			"hit": {
 				"ticks": 160,
 				"amplifier": 0,
-				"floor_ticks": 40,
+				"floor_ticks": 60,
 				"floor_heal_hp": 0.0,
 				"floor_exhaustion": 0.0
 			},
@@ -4070,7 +4121,6 @@
 				"invisibility",
 				"luck",
 				"silence",
-				"ender",
 				"breeze",
 				"haste",
 				"absorption",
@@ -4092,7 +4142,6 @@
 				4,
 				4,
 				1,
-				2,
 				2,
 				2,
 				1,
@@ -4120,6 +4169,36 @@
 			"worn": {
 				"rise_min": 0.008,
 				"rise_best": 0.0232
+			},
+			"hit_curve": {
+				"seconds": [
+					[
+						0.09405405405405406,
+						3.0
+					],
+					[
+						0.43244999999999995,
+						4.0
+					],
+					[
+						1.0,
+						6.0
+					]
+				],
+				"value": [
+					[
+						0.09405405405405406,
+						0.3
+					],
+					[
+						0.43244999999999995,
+						0.6
+					],
+					[
+						1.0,
+						1.8
+					]
+				]
 			},
 			"worn_amplifier": 0,
 			"worn_cap": 0.9,
@@ -4176,7 +4255,6 @@
 				"slow_falling",
 				"luck",
 				"silence",
-				"ender",
 				"breeze",
 				"haste",
 				"absorption",
@@ -4198,7 +4276,6 @@
 				4,
 				2,
 				1,
-				2,
 				2,
 				2,
 				1,
@@ -4251,7 +4328,7 @@
 			"hit": {
 				"ticks": 160,
 				"amplifier": 0,
-				"floor_ticks": 100,
+				"floor_ticks": 80,
 				"floor_heal_hp": 0.0,
 				"floor_exhaustion": 0.0
 			},
@@ -4282,7 +4359,6 @@
 				"slow_falling",
 				"luck",
 				"silence",
-				"ender",
 				"breeze",
 				"haste",
 				"absorption",
@@ -4305,7 +4381,6 @@
 				4,
 				2,
 				1,
-				2,
 				2,
 				2,
 				1,
@@ -4332,6 +4407,22 @@
 			"rarity": "common",
 			"worn": {
 				"screen": true
+			},
+			"hit_curve": {
+				"seconds": [
+					[
+						0.09405405405405406,
+						4.0
+					],
+					[
+						0.43244999999999995,
+						6.0
+					],
+					[
+						1.0,
+						10.0
+					]
+				]
 			},
 			"worn_amplifier": 0,
 			"worn_cap": 0.9,
@@ -4386,7 +4477,6 @@
 				"slow_falling",
 				"luck",
 				"silence",
-				"ender",
 				"breeze",
 				"haste",
 				"absorption",
@@ -4408,7 +4498,6 @@
 				4,
 				2,
 				1,
-				2,
 				2,
 				2,
 				1,

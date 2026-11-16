@@ -54,7 +54,7 @@ public class GemsClientGameTest implements FabricClientGameTest {
 
 	@Override
 	public void runTest(ClientGameTestContext context) {
-		if (!List.of("inventory", "colors", "enchanting", "smithing", "worn", "hits", "mobs", "screen", "levitation", "beyond", "jump", "weaving", "invisible", "looks").stream().anyMatch(ClientTests::run)) {
+		if (!List.of("inventory", "colors", "enchanting", "smithing", "worn", "hits", "mobs", "screen", "levitation", "beyond", "jump", "weaving", "invisible", "looks", "dials").stream().anyMatch(ClientTests::run)) {
 			return;
 		}
 		try (TestSingleplayerContext sp = context.worldBuilder()
@@ -108,6 +108,9 @@ public class GemsClientGameTest implements FabricClientGameTest {
 			}
 			if (ClientTests.run("looks")) {
 				looks(context, server);
+			}
+			if (ClientTests.run("dials")) {
+				dials(context, server);
 			}
 		}
 	}
@@ -822,6 +825,39 @@ public class GemsClientGameTest implements FabricClientGameTest {
 			p.removeAllEffects();
 			p.setItemSlot(EquipmentSlot.CHEST, ItemStack.EMPTY);
 			p.setHealth(p.getMaxHealth());
+		});
+	}
+
+	/** Owner's strength answers: a perfect Levitation hit lifting a pig (left on screen), a perfect Weaving hit's 2-3 webs around a pig (right). */
+	private static void dials(ClientGameTestContext context, TestServerContext server) {
+		server.runCommand("time set noon");
+		BlockPos at = stationPos(server).offset(0, 0, 5);
+		server.runOnServer(s -> {
+			ServerPlayer p = player(s);
+			p.teleportTo(at.getX() + 0.5, at.getY(), at.getZ() - 4.5);
+			var level = p.level();
+			net.minecraft.world.entity.animal.pig.Pig webbed = net.minecraft.world.entity.EntityTypes.PIG.create(level, net.minecraft.world.entity.EntitySpawnReason.COMMAND);
+			webbed.setPos(at.getX() - 1.5, at.getY(), at.getZ() + 0.5);
+			webbed.setNoAi(true);
+			level.addFreshEntity(webbed);
+			for (int i = 0; i < 40 && level.getBlockStates(webbed.getBoundingBox().inflate(1.5)).noneMatch(b -> b.is(net.minecraft.world.level.block.Blocks.COBWEB)); i++) {
+				io.github.bubba8587.bubbas_infused_gems.effect.GemHits.apply(level, webbed, p, p,
+						List.of(new io.github.bubba8587.bubbas_infused_gems.effect.GemHits.Entry("weaving", io.github.bubba8587.bubbas_infused_gems.balance.Balance.get().cap, false)));
+			}
+			net.minecraft.world.entity.animal.pig.Pig lifted = net.minecraft.world.entity.EntityTypes.PIG.create(level, net.minecraft.world.entity.EntitySpawnReason.COMMAND);
+			lifted.setPos(at.getX() + 2.5, at.getY(), at.getZ() + 0.5);
+			level.addFreshEntity(lifted);
+			io.github.bubba8587.bubbas_infused_gems.effect.GemHits.apply(level, lifted, p, p,
+					List.of(new io.github.bubba8587.bubbas_infused_gems.effect.GemHits.Entry("levitation", io.github.bubba8587.bubbas_infused_gems.balance.Balance.get().cap, false)));
+		});
+		context.waitTicks(30);
+		context.getInput().lookAt(at.above());
+		context.waitTicks(2);
+		context.takeScreenshot("gems-dials-levitation-hit-left-perfect-weaving-webs-right");
+		server.runOnServer(s -> {
+			for (var e : player(s).level().getEntitiesOfClass(net.minecraft.world.entity.animal.pig.Pig.class, new net.minecraft.world.phys.AABB(at).inflate(8, 20, 8))) {
+				e.discard();
+			}
 		});
 	}
 }

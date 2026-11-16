@@ -553,8 +553,8 @@ public class GemsEverywhereGameTest {
 		player.setItemSlot(EquipmentSlot.MAINHAND, GemKit.socketed(Items.NETHERITE_SWORD, GemKit.gem("turtle_master", 1.0)));
 		List<String> lines = ModCommands.lines(player).stream().map(Component::getString).toList();
 		String all = String.join("\n", lines);
-		check(helper, lines.stream().filter(l -> l.contains("Turtle Master (Resistance)")).count() == 2, "/gems Resistance part lines:\n" + all);
-		check(helper, lines.stream().filter(l -> l.contains("Turtle Master (Slowness)")).count() == 2, "/gems Slowness part lines:\n" + all);
+		// One line each, worn and on hit, with both parts (owner's short /gems text).
+		check(helper, lines.stream().filter(l -> l.contains("Turtle Master") && l.contains("damage") && l.contains("speed")).count() == 2, "/gems Turtle Master lines:\n" + all);
 		Mob pig = pig(helper, 2, 2);
 		GemHits.onWeaponHit(helper.getLevel(), player, player, pig, player.getMainHandItem());
 		MobEffectInstance tm = pig.getEffect(ModEffects.gem("turtle_master"));

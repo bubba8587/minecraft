@@ -326,6 +326,13 @@ public final class WornEffects {
 	 * never flight). Slow Falling gem: gravity while falling, 0.08 - 0.07 x s at vanilla gravity (scaled for other gravity).
 	 */
 	public static double gravity(LivingEntity entity, double gravity) {
+		double hitLev = GemValues.hit(entity, "levitation");
+		if (hitLev > 0.0 && !entity.hasEffect(MobEffects.LEVITATION) && !entity.isNoGravity()) {
+			// A Levitation hit (owner, Q6): vanilla's levitation step (move 0.2 of the way to the rise speed each tick), with
+			// the rise speed set by the hit's strength instead of the effect level. Mobs and players alike.
+			double rise = Balance.get().hitCurve("levitation", "value", hitLev) / 20.0;
+			return -(rise - entity.getDeltaMovement().y) * 0.2;
+		}
 		double lev = GemValues.rawWorn(entity, "levitation");
 		if (lev > 0.0 && !entity.hasEffect(MobEffects.LEVITATION) && !entity.isNoGravity() && !entity.isInLiquid() && !entity.isFallFlying()) {
 			double rise = levitationRise(lev);

@@ -106,6 +106,34 @@ public final class Balance {
 	public record Variant(String name, double factor, String potion, String item, int maxTier) {
 	}
 
+	/**
+	 * A hit's dial set per build (owner, strength proposal answers): straight lines between the (strength share, value)
+	 * points of the reference weak, mid and perfect weapons, flat below the weak one. NaN when the effect has none.
+	 */
+	public double hitCurve(String key, String which, double rel) {
+		JsonObject e = this.raw.getAsJsonObject("effects").getAsJsonObject(key);
+		if (e == null || !e.has("hit_curve") || !e.getAsJsonObject("hit_curve").has(which)) {
+			return Double.NaN;
+		}
+		var pts = e.getAsJsonObject("hit_curve").getAsJsonArray(which);
+		double r = Math.min(1.0, Math.max(0.0, rel));
+		double r0 = pts.get(0).getAsJsonArray().get(0).getAsDouble();
+		double v0 = pts.get(0).getAsJsonArray().get(1).getAsDouble();
+		if (r <= r0) {
+			return v0;
+		}
+		for (int i = 1; i < pts.size(); i++) {
+			double r1 = pts.get(i).getAsJsonArray().get(0).getAsDouble();
+			double v1 = pts.get(i).getAsJsonArray().get(1).getAsDouble();
+			if (r <= r1) {
+				return v0 + (v1 - v0) * (r - r0) / (r1 - r0);
+			}
+			r0 = r1;
+			v0 = v1;
+		}
+		return v0;
+	}
+
 	private Balance(JsonObject o) {
 		this.raw = o;
 		this.cap = o.get("cap").getAsDouble();

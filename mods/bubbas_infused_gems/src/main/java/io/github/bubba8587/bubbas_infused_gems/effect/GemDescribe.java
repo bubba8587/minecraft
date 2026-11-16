@@ -93,12 +93,18 @@ public final class GemDescribe {
 						double[] l = GemActions.windLaunch(entry.s(), false);
 						yield f("thrown %.2f up, %.2f away", l[0], l[1]);
 					}
-					case "weaving" -> f("%.0f%% web chance", 100 * e.wornNumber("web_chance", 0.35) * entry.s() / b.cap);
+					case "weaving" -> f("%.0f%% web chance%s", 100 * b.hitCurve("weaving", "value", entry.s() / b.cap),
+							entry.s() >= b.cap - 1e-6 ? ", 2-3 webs" : "");
+					case "ender" -> f("%.0f%% blink chance", 100 * b.hitCurve("ender", "value", entry.s() / b.cap));
 					default -> "kills split off your slimes";
 				};
 			}
 			if (e.hitKind().equals("onoff")) {
 				return f("for %.1f s", seconds);
+			}
+			if (e.hitKind().equals("control")) {
+				double v = b.hitCurve(key, "value", entry.s() / b.cap);
+				return key.equals("levitation") ? f("rises %.2f blocks/s for %.1f s", v, seconds) : f("shots veer x%.1f for %.1f s", v, seconds);
 			}
 		}
 		double p = GemHits.potency(entry);

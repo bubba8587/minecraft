@@ -39,6 +39,9 @@ public final class GemHits {
 	private GemHits() {
 	}
 
+	/** Potency hits linger at least 4 s (owner, strength proposal Q2; the model's HIT_FLOOR_POTENCY_SECONDS). */
+	public static final int POTENCY_FLOOR_TICKS = 80;
+
 	public static boolean isRanged(ItemStack weapon) {
 		return weapon.is(Items.BOW) || weapon.is(Items.CROSSBOW);
 	}
@@ -61,6 +64,8 @@ public final class GemHits {
 	public static double potency(Entry e) {
 		return switch (kind(e)) {
 			case "onoff" -> 1.0;
+			// Levitation and Breeze (owner): the dial is set per build from the strength share, carried as the potency.
+			case "control" -> Math.min(1.0, e.s() / Balance.get().cap);
 			case "instant" -> e.s();
 			default -> {
 				if (e.drawback()) {
@@ -86,6 +91,14 @@ public final class GemHits {
 		}
 		Balance.EffectData d = b.effect(e.key());
 		double rel = Math.min(1.0, e.s() / b.cap);
+		double curve = b.hitCurve(e.key(), "seconds", rel);
+		if (!Double.isNaN(curve)) {
+			return (int) Math.round(curve * 20.0); // Nausea, Glowing, Levitation (owner): seconds set per build
+		}
+		if (kind(e).equals("control")) {
+			// Breeze (owner): lingers like a potency hit, at least the potency floor.
+			return Math.max(POTENCY_FLOOR_TICKS, (int) Math.round(Math.pow(rel, 1.0 - b.weaponSplit) * d.hitTicks()));
+		}
 		double share = kind(e).equals("onoff") ? rel : Math.pow(rel, 1.0 - b.weaponSplit);
 		int floor = d.hitFloorTicks();
 		if (d.hitFloorHealHp() > 0.0) {
@@ -142,6 +155,7 @@ public final class GemHits {
 				}
 				continue;
 			}
+			// Scaled and control hits: the gem effect, at the hit's potency (control: the strength share).
 			Holder<MobEffect> effect = ModEffects.gem(e.key());
 			if (effect != null) {
 				target.addEffect(new MobEffectInstance(effect, duration(e), GemMobEffect.amplifier(potency(e))), attacker);

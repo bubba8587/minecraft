@@ -80,11 +80,15 @@ public class BeyondPotionsGameTest {
 		for (int t = 0; t < 60 && !webbed; t++) {
 			pig.damageCooldownTime = 0;
 			attacker.doHurtTarget(helper.getLevel(), pig);
-			webbed = helper.getLevel().getBlockState(pig.blockPosition()).is(Blocks.COBWEB);
+			// A perfect weapon (owner, Q14) drops vanilla Weaving's 2-3 webs around the target, not only at its feet.
+			for (BlockPos at : BlockPos.betweenClosed(pig.blockPosition().offset(-1, -1, -1), pig.blockPosition().offset(1, 1, 1))) {
+				webbed |= helper.getLevel().getBlockState(at).is(Blocks.COBWEB);
+			}
 		}
 		check(helper, webbed, "Weaving never webbed the target");
 		// Never replaces a block: a target standing in tall grass keeps it.
 		BlockPos grass = new BlockPos(1, 1, 4);
+		helper.setBlock(grass.below(), Blocks.GRASS_BLOCK); // so the grass survives the webs' block updates next to it
 		helper.setBlock(grass, Blocks.SHORT_GRASS);
 		Mob other = helper.spawnWithNoFreeWill(EntityTypes.PIG, grass);
 		other.getAttribute(Attributes.MAX_HEALTH).setBaseValue(500.0);
