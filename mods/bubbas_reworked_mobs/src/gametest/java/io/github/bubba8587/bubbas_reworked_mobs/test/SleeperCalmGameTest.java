@@ -44,7 +44,17 @@ public class SleeperCalmGameTest {
 		BlockPos pos = new BlockPos(4, 1, 4);
 		SleeperBlockEntity sleeper = sleeper(helper, pos);
 		helper.assertTrue(sleeper.effectiveSensitivity(helper.getLevel()) == 1.0F, "dark sleeper not at full sensitivity");
-		helper.setBlock(pos.east(), Blocks.GLOWSTONE);
+		// Place the lamp a second in: placed on tick 0 of a freshly generated test chunk, the light engine sometimes
+		// never lights it (block light 0 for the whole run; seen on the creepers-era base too). While light hasn't
+		// arrived, re-place it every second.
+		BlockPos lamp = helper.absolutePos(pos.east());
+		helper.onEachTick(() -> {
+			long t = helper.getTick();
+			if (t >= 20 && t % 20 == 0 && helper.getLevel().getBrightness(LightLayer.BLOCK, lamp) == 0) {
+				helper.setBlock(pos.east(), Blocks.AIR);
+				helper.setBlock(pos.east(), Blocks.GLOWSTONE);
+			}
+		});
 		helper.succeedWhen(() -> helper.assertTrue(
 				Math.abs(sleeper.effectiveSensitivity(helper.getLevel()) - UndeadTuning.LIGHT_CALM_FACTOR) < 1.0E-4F,
 				"lit sleeper sensitivity: " + sleeper.effectiveSensitivity(helper.getLevel()) + ", block light "

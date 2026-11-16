@@ -11,7 +11,7 @@ Parked ideas and open items, newest first within each project. Agents add to it 
 - Part 1 next pass: remaining undead variants, graves and crypts in worldgen (with Grave Talisman and Totem of Warding loot), hybrid rendering, real 16x/32x art.
 - **Creepers** (first build done): owner to playtest the numbers and review the 10 builder's choices in `specs/creepers.md`; try them in the test world's creeper grove.
 - **Endermen** (first build done, `specs/endermen.md`): owner to playtest and review the 12 builder's choices; still open: banners on cairns, more variety, Nether/End endermen, explosions breaking cairns not angering them, a test world cairn station replacing the hand-built preview.
-- **Flaky tests seen 2026-11-16** (pre-existing): `SleeperCalmGameTest.strongLightCalmsSleepers` (core), `CreeperGameTest.oneWatcherSpawnsBehindCoverOutOfView`, `GrabLootGameTest.idleSkeletonTakesADisplayedSword`.
+- **Flaky tests seen 2026-11-16** (pre-existing; `strongLightCalmsSleepers` fixed the same day): `CreeperGameTest.oneWatcherSpawnsBehindCoverOutOfView`, `GrabLootGameTest.idleSkeletonTakesADisplayedSword`.
 - Later parts: **monster camps and the blood moon** (structures with fixed rosters and key blocks, a 7-day blood moon that respawns uncleared structures, red-sky effects; owner's earlier idea with integration notes in `docs/research/camps-blood-moon-idea.md`).
 
 ## Bubba's Totems & Artifacts (C6)
