@@ -129,7 +129,7 @@ Before this change it was about 17 s unarmored. The model assumes the victim is 
 4. **The extras hold the sides of the feet, not the vehicle slot:** the riding hold has room for one vehicle, so only the first drowned moves the victim; the extras follow it.
 5. **Meters show for creative players and spectators too** (it's a debug/playtest view behind a rule that's off by default).
 
-**Known look issue:** the drowned's above-head meter bar draws across the victim's body, since the drowned is now under its victim.
+**Meter look (owner: like the XP bar).** Vanilla's boss-bar sprites, blue for the drowned grip and red for the creeper startle, with the 20-notch overlay: the XP bar's notched shape in vanilla colours, no new textures. HUD bar under the crosshair (drawn like the boss bar); above-head bars are small camera-facing quads (1 x 0.1 block, full-bright, within 32 blocks). A holding drowned's bar sits over its victim's head.
 
 ## Numbers (all in `DrownedTuning`; builder's starting values, owner to playtest)
 
