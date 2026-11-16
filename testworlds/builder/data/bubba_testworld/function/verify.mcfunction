@@ -114,7 +114,7 @@ execute if data block 16 -60 53 Items[{id:"minecraft:netherite_pickaxe",componen
 execute if data block 16 -60 53 Items[{Slot:20b,id:"minecraft:iron_axe"}]
 execute if block 10 -59 56 minecraft:dirt
 execute if block 24 -58 56 minecraft:oak_log
-# Infusion V twins (owner: test what the perfect set's extras add)
+# Gem Power V twins (owner: test what the perfect set's extras add)
 execute if block -3 -58 19 minecraft:birch_wall_sign
 execute if data block -3 -58 19 front_text.messages[1].click_event{command:"gems kit speed netherite 5"}
 execute if data block -3 -60 31 front_text.messages[1].click_event{command:"gems kit hero_of_the_village netherite 5"}
