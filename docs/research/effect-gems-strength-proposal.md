@@ -170,4 +170,23 @@ Strong combos the proposal makes, and what to watch:
 - Q2 potency hits linger 4 s at the weakest, 8 s at perfect: **yes**.
 - Q3 perfect Wither weapon past vanilla: **no** (owner: Wither is very strong; stays at the skull's level).
 - Q15 webs from hits fade: **no** (owner decided earlier: webs stay).
-- Next session: continue at Q4. Nothing is built from this proposal until the questions are answered.
+- Q4 Hunger hits on mobs: **no**, does nothing to mobs (as vanilla).
+- Q5 Mining Fatigue hits slow mob attacks: **no**, does nothing to mobs (as vanilla).
+- Q6 Levitation hits: **custom, scale BOTH rise speed and duration** with strength (owner: any levitation is very powerful since the mob can't reach you, and height means fall damage).
+- Q7 limit on time in the air: **no**; tune strength and duration instead.
+- Q8 Slow Falling on a hit target without fall protection: **no**; mobs and players get the same effect.
+- Q9 Wind Burst visible floor (hit launch and worn bounce): **yes**.
+- Q10 Blindness/Darkness shrink mob sight: **no** (principle below). Q11 Nausea: durations 4 / 6 / 10 s yes (screen effects scale duration, Q1); **no** mob-only unsteady walking.
+- Q12 Glowing hits: **yes, longer: 10 / 30 / 60 s**.
+- Q13 Infested silverfish: **vanilla behavior**, nothing special.
+- Q14 Weaving hits: **yes** 10 / 25 / 50 % chance, 2-3 webs at perfect, **no cooldown**.
+- Q16 Oozing slimes as decoys: **no** (absolutely not); they stay plain neutral slimes.
+- Q17 worn Breeze lets wind charges through: **yes**, match vanilla breezes.
+- Q18 Ender hit: **(a) random chorus-fruit blink** (vanilla's teleport: up to 8 blocks any direction incl. vertical, lands on a floor).
+- Q19 Ender weapons blink players too: **yes** (equality).
+- Q20/Q21 Silence hit (quiet kills, deafen): **backlogged**; Silence on a weapon unchanged for now.
+- Q22 Breeze hit makes the target's own projectiles veer off: **yes, build it**, and backlog revisiting it.
+
+**Owner principles from this review:**
+- **Mobs and players are affected by gems the same way, as close to vanilla as possible; no mob-only or player-only special cases.**
+- **No hidden cooldowns**: tune strength, chance and duration instead. (Existing timers to review with the owner: Absorption's 30 s refill after damage and its 30 s equip-fill throttle.)
