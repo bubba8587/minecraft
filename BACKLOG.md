@@ -24,7 +24,8 @@ Parked ideas and open items, newest first within each project. Agents add to it 
 - **Grave Talisman as loot:** found only (owner). Place it in grave/crypt loot when Reworked Mobs' worldgen builds them; maybe a rare find on sleepers.
 - Warding open question (builder): should mobs holding a Totem of Warding pulse, and may woken undead pick one up (built as yes). `specs/totems-artifacts.md`.
 - Person-made statue design and mod icon (placeholders now, `docs/art-todo.md`).
-- **Totems** (owner, 2026-11-16): artifact items for things potions and enchantments don't cover, like the Totem of Warding. Many can work both held (personal, small) and in a Reworked Beacons beacon (area). Liked:
+- **Totems built 2026-11-16** (Keeping, Gathering, Fortification, Growth, Seeking; `specs/totems-artifacts.md`): owner to review the builder's calls (Seeking signature blocks vs a picker screen, Gathering in a beacon, Growth strength and name, loot); statues for the new totems need the owner's designs; the Gathering texture reads like gingerbread (art row).
+- **Totems** (owner, 2026-11-16, original ideas): artifact items for things potions and enchantments don't cover, like the Totem of Warding. Many can work both held (personal, small) and in a Reworked Beacons beacon (area). Liked:
   - **Keeping**: used up on death; you keep your inventory that once (a Totem of Undying for your items).
   - **Gathering**: pulls nearby dropped items and XP to you; in a beacon, into a container under it.
   - **Fortification**: explosions in the area don't break blocks (creeper/ghast-proof). NOT via the mobGriefing rule (that also stops villager farming, endermen etc.): only explosion block damage.

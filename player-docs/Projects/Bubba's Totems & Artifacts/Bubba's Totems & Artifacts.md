@@ -35,6 +35,14 @@ A talisman whose gem glows brighter the closer undead are.
 
 A found item that makes nearby monsters run away while held, and in a beacon from [[Bubba's Reworked Beacons]] keeps an area free of monsters: none spawn there and none can get in.
 
+## More totems
+
+- [[Totem of Keeping]]: saves its holder's belongings once.
+- [[Totem of Gathering]]: pulls in dropped items.
+- [[Totem of Fortification]]: stops explosions from breaking blocks.
+- [[Totem of Growth]]: makes plants grow faster.
+- [[Totem of Seeking]]: points toward a chosen kind of structure.
+
 ## Totem statues
 
 *Main article: [[Totem Statue]]*
