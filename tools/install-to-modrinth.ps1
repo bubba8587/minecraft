@@ -12,7 +12,7 @@
 # JDK 25 for compiling by itself). Replaces older copies of our jars in the profile; leaves every other mod alone.
 param(
 	[string]$Profile = "mod testing",
-	[string[]]$Mods = @("bubbas_reworked_mobs", "bubbas_crafting_tweaks", "bubbas_infused_gems"),
+	[string[]]$Mods = @("bubbas_reworked_mobs", "bubbas_crafting_tweaks", "bubbas_infused_gems", "bubbas_reworked_beacons"),
 	[switch]$ResetWorld
 )
 $ErrorActionPreference = "Stop"

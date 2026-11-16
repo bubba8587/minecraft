@@ -88,4 +88,6 @@ Emerald, iron and gold are no longer payments. (With Infused Gems installed, the
 
 ## Milestone test objectives
 
-None yet (not built).
+Core suite (`ReworkedBeaconsCoreGameTest`, bodies in `BeaconGameTest`): an amethyst shard on a 1-layer sky beacon gives Speed I to a pig (real ticks); the standalone table, pyramid caps and a test payload (Gem Power V echo shard, registered through the entrypoint from the test mod) capped to III on 2 layers, with `BeaconAreas.isInside` true at 25 blocks and false at 35; a pair through glass gives the 3x-wide, height-limited box, its pulse reaches a pig, and stone in the beam turns it off; a beacon placed under a block hangs upside down, on top of one stands upright.
+
+Milestone objectives without code yet: 4 layers give level II; an ender pearl on 1 layer does nothing and the screen says "Needs a 2-layer pyramid"; the item survives save/reload and drops when the beacon breaks; two players with the screen open can't duplicate the item; a client without the mod is turned away. Client test part `beacons` (`BubbasReworkedBeaconsClientGameTest`): sky beam, sky screen with an amethyst shard, paired beam in a closed room, paired screen with a capped payload.
