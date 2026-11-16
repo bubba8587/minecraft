@@ -1,4 +1,6 @@
 <!-- dte:C4,C1,B9,B15 -->
+
+> **Owner's goal for Warding (2026-11-15):** let players build mob-free zones without spamming torches. Every option below is judged against that.
 # Area gems and Warding (design exploration)
 
 **Status:** exploration for the owner, 2026-11-15. Nothing is built or decided. It covers two of the owner's ideas from that day:
