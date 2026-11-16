@@ -47,5 +47,6 @@ public class BubbasReworkedMobs implements ModInitializer {
 		Creepers.initialize();
 		Endermen.initialize();
 		Drowneds.initialize();
+		io.github.bubba8587.bubbas_reworked_mobs.meter.Meters.initialize();
 	}
 }

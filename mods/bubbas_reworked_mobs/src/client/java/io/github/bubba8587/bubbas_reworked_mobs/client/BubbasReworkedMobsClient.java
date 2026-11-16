@@ -25,6 +25,7 @@ public class BubbasReworkedMobsClient implements ClientModInitializer {
 	@Override
 	@SuppressWarnings("unchecked")
 	public void onInitializeClient() {
+		io.github.bubba8587.bubbas_reworked_mobs.client.meter.MeterBars.initialize();
 		// 32x textures (Faithful style) as an optional built-in resource pack: specs/textures.md.
 		FabricLoader.getInstance().getModContainer(BubbasReworkedMobs.MOD_ID).ifPresent(mod ->
 			ResourceLoader.registerBuiltinPack(BubbasReworkedMobs.id(BubbasReworkedMobs.MOD_ID + "_32x"), mod,

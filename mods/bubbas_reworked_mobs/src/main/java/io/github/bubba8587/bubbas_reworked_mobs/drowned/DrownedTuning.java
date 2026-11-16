@@ -108,24 +108,62 @@ public final class DrownedTuning {
 	public static final double DRAG_LAND_SPEED = 0.06;
 	/** Within this of its deep-water spot it looks for deeper water again (and stays if there is none). */
 	public static final double DRAG_ARRIVE = 0.8;
-	/** Its small hits: a chance each tick (no fixed rhythm, B19). 1/50: about every 2.5 s. */
+	/*
+	 * The grip tightens the longer it drags you (owner, 2026-11-16: "make the drowned dangerous"). The hit numbers below
+	 * follow the grip meter (GRIP_START or less: start values; GRIP_FULL: full values, in a straight line between), so
+	 * the danger is the meter's own visible state (B19). It also shows as more and harder hits, a louder, lower squeeze
+	 * sound with each, and more bubbles streaming off the victim. Death times: tools/drowned-danger.py.
+	 */
+	/** Its hits: a chance each tick (no fixed rhythm, B19), from 1/50 (about every 2.5 s) ... */
 	public static final float HIT_CHANCE_PER_TICK = 1.0F / 50.0F;
-	/** Damage of one hit (vanilla drowned melee: 3 on normal). */
+	/** ... to 1/10 (about every half second). */
+	public static final float HIT_CHANCE_FULL = 1.0F / 10.0F;
+	/** Damage of one hit, from 2 (vanilla drowned melee: 3 on normal) ... */
 	public static final float HIT_DAMAGE = 2.0F;
-	/** Air knocked out by a hit (1.5 bubbles). Respiration (oxygen bonus) divides it by 1 + its value, as vanilla does for each tick's loss; Water Breathing and Conduit Power stop it (vanilla: no air is lost under them). */
+	/** ... to 4. */
+	public static final float HIT_DAMAGE_FULL = 4.0F;
+	/** Air knocked out by a hit, from 45 (1.5 bubbles) ... Respiration (oxygen bonus) divides it by 1 + its value, as vanilla does for each tick's loss; Water Breathing and Conduit Power stop it (vanilla: no air is lost under them). */
 	public static final int HIT_AIR_LOSS = 45;
+	/** ... to 90 (3 bubbles). */
+	public static final int HIT_AIR_LOSS_FULL = 90;
+	/** Bubbles streaming off the victim every 2 ticks: 1 at the start, up to 1 + this when the grip is at its tightest. */
+	public static final int ESCALATION_BUBBLES = 6;
 
-	// --- the grip-break meter (D3, B19: a meter, no hidden timer) --------------------------------------
-	/** A full meter breaks the grip. */
+	// --- others join in -----------------------------------------------------------------------------
+	/** Drowned already this close to one that drags someone swim over and grab the other leg (no new ones spawn). */
+	public static final double JOIN_RANGE = 16.0;
+	/** At most this many join (2: three holding in all). */
+	public static final int MAX_EXTRA_HOLDERS = 2;
+	/** Ticks between the dragging drowned's looks for helpers (one box query of JOIN_RANGE; a scan rate, not a gameplay cooldown). */
+	public static final int JOIN_SCAN_INTERVAL = 20;
+	/** Swimming over to the victim (blocks a tick). */
+	public static final double JOIN_SPEED = 0.15;
+	/** It takes hold within this of its grip point. */
+	public static final double JOIN_REACH = 1.0;
+	/** It gives up joining past this distance from the victim. */
+	public static final double JOIN_GIVE_UP = 24.0;
+	/** Each extra holder grips from the side: this many degrees round from the first one's grip. */
+	public static final float JOIN_SIDE_ANGLE = 90.0F;
+	/** Grip-break points per hit are divided by 1 + this per extra holder (two holding: /1.6; three: /2.2). Hits on any holder count. */
+	public static final float GRIP_EXTRA_HOLDER_DIVISOR = 0.6F;
+	/** Each extra holder makes the drag this much faster (+35 %). */
+	public static final double DRAG_SPEED_PER_HELPER = 0.35;
+
+	// --- the grip meter (D3, owner 2026-11-16; B19: a meter, no hidden timer) ----------------------------
+	/** The grip, 0 to this: at 0 you're free; at the top its hits are at their worst. */
 	public static final float GRIP_FULL = 100.0F;
-	/** Points lost per tick while nothing hits it (5 a second): fast hits build it, slow ones barely do. */
-	public static final float GRIP_DECAY_PER_TICK = 0.25F;
+	/** It starts here when a drowned grabs (half). */
+	public static final float GRIP_START = 50.0F;
+	/** It rises this much each tick it drags you (5 a second: from half to full in 10 s if nobody fights) ... */
+	public static final float GRIP_RISE_PER_TICK = 0.25F;
+	/** ... and this much faster per extra holder (+50 %: two holding, 7.5 a second; three, 10). */
+	public static final float GRIP_RISE_PER_HELPER = 0.5F;
 	/** Every hit with an attacker (anyone's: the victim, a friend, an arrow) ... */
 	public static final float GRIP_HIT_POINTS = 6.0F;
 	/** ... plus this per point of damage (before armor). An iron sword hit (6) is 24; fists (1, at most two a second through vanilla's hurt time) 9. */
 	public static final float GRIP_DAMAGE_POINTS = 3.0F;
-	/** Axes multiply the hit's points (an iron axe hit, 9 damage: 66). */
-	public static final float GRIP_AXE_MULTIPLIER = 2.0F;
+	/** Axes multiply the hit's points (an iron axe hit, 9 damage: 49.5; two fast ones free you from a fresh grab). */
+	public static final float GRIP_AXE_MULTIPLIER = 1.5F;
 	/** Per level of Impaling on the weapon (a thrown or stabbing trident). */
 	public static final float GRIP_IMPALING_POINTS_PER_LEVEL = 12.0F;
 	/** Per level of Knockback on the weapon. */

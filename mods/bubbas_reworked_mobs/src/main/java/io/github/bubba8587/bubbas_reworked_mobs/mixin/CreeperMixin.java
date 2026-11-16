@@ -117,5 +117,14 @@ abstract class CreeperMixin extends Monster implements CreeperAccess {
 		if (!this.level().isClientSide() && this.isAlive() && !brm$vanilla) {
 			brm$mind().tick((Creeper) (Object) this);
 		}
+		if (!this.level().isClientSide()) {
+			// Visible meter (game rule show_meters): its startle level, red above its head.
+			brm$sentStartle = io.github.bubba8587.bubbas_reworked_mobs.meter.Meters.sync(this, io.github.bubba8587.bubbas_reworked_mobs.meter.Meters.STARTLE,
+					this.isAlive() && !brm$vanilla ? brm$mind().meter() : 0.0F, brm$sentStartle,
+					io.github.bubba8587.bubbas_reworked_mobs.creeper.CreeperTuning.METER_FULL);
+		}
 	}
+
+	@Unique
+	private int brm$sentStartle;
 }

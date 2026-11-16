@@ -23,6 +23,10 @@ public final class ModGameRules {
 	public static final GameRule<Boolean> CAIRN_ENDERMEN = GameRuleBuilder.forBoolean(true)
 			.category(GameRuleCategory.SPAWNING).buildAndRegister(BubbasReworkedMobs.id("cairn_endermen"));
 
+	/** Visible meters: a drowned's grip (blue, also on the held player's screen) and a creeper's startle level (red) as bars above them (owner, 2026-11-16; off by default). */
+	public static final GameRule<Boolean> SHOW_METERS = GameRuleBuilder.forBoolean(false)
+			.category(GameRuleCategory.MOBS).buildAndRegister(BubbasReworkedMobs.id("show_meters"));
+
 	private ModGameRules() {
 	}
 

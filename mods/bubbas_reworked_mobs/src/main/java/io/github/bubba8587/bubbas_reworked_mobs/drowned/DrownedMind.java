@@ -1,11 +1,14 @@
 // dte:C1,B18,B19
 package io.github.bubba8587.bubbas_reworked_mobs.drowned;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import io.github.bubba8587.bubbas_reworked_mobs.BubbasReworkedMobs;
+import io.github.bubba8587.bubbas_reworked_mobs.meter.Meters;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
@@ -50,7 +53,11 @@ public final class DrownedMind {
 		/** Lunging at a victim at the edge. */
 		SURGE,
 		/** Holding a victim, moving backwards toward the deepest water. */
-		DRAG
+		DRAG,
+		/** Swimming over to grab the other leg of a victim another drowned drags. */
+		JOIN,
+		/** Holding a victim's other leg beside the one that drags it (not ridden: it follows the victim). */
+		HELP
 	}
 
 	private static final Identifier CRAWL_MODIFIER = BubbasReworkedMobs.id("drowned_land_crawl");
@@ -66,6 +73,13 @@ public final class DrownedMind {
 	private long lastSearch = Long.MIN_VALUE;
 	/** Keeps its spot with no player near (client test screenshots, a test world station). */
 	private boolean pinned;
+	/** Dragging: the drowned that joined in (JOIN or HELP). */
+	private final List<Drowned> helpers = new ArrayList<>();
+	/** Joining or helping: the drowned that drags the victim, and the angle round from its grip that this one holds from. */
+	private @Nullable Drowned leader;
+	private float sideAngle;
+	/** The grip value last sent to clients (show_meters). */
+	private int sentGrip;
 
 	public State state() {
 		return state;
@@ -89,7 +103,36 @@ public final class DrownedMind {
 	}
 
 	public @Nullable LivingEntity victim() {
-		return state == State.DRAG ? victim : null;
+		return state == State.DRAG || state == State.JOIN || state == State.HELP ? victim : null;
+	}
+
+	/** Dragging: how dangerous its hits are, from the grip: 0 at GRIP_START or less, 1 at GRIP_FULL. */
+	public float escalation() {
+		return Mth.clamp((grip - DrownedTuning.GRIP_START) / (DrownedTuning.GRIP_FULL - DrownedTuning.GRIP_START), 0.0F, 1.0F);
+	}
+
+	/** For tests and the client test: set the grip meter (dragging only). */
+	public void setGrip(float value) {
+		grip = Mth.clamp(value, 0.0F, DrownedTuning.GRIP_FULL);
+	}
+
+	/** Dragging: the extra drowned holding on now (HELP, not still swimming over). */
+	public int holdingHelpers() {
+		int n = 0;
+		for (Drowned helper : helpers) {
+			if (DrownedAccess.mind(helper).state == State.HELP) {
+				n++;
+			}
+		}
+		return n;
+	}
+
+	public List<Drowned> helpers() {
+		return List.copyOf(helpers);
+	}
+
+	public @Nullable Drowned leader() {
+		return state == State.JOIN || state == State.HELP ? leader : null;
 	}
 
 	/** Whether our goal holds the drowned's movement (anything but IDLE). */
@@ -99,7 +142,7 @@ public final class DrownedMind {
 
 	/** Vanilla's swim control should swim (not walk the floor) while it travels to its spot. */
 	public boolean wantsToSwim() {
-		return state == State.TRAVEL;
+		return state == State.TRAVEL || state == State.JOIN;
 	}
 
 	/** Lying down (swimming, crawling on land) or upright (lurking; dragging in water). Owner, 2026-11-16. */
@@ -107,7 +150,7 @@ public final class DrownedMind {
 		if (state == State.LURK) {
 			return false;
 		}
-		if (state == State.DRAG && drowned.isInWater()) {
+		if ((state == State.DRAG || state == State.HELP) && drowned.isInWater()) {
 			return false;
 		}
 		return true;
@@ -142,8 +185,9 @@ public final class DrownedMind {
 	public void tick(Drowned drowned) {
 		ServerLevel level = (ServerLevel) drowned.level();
 		long time = level.getGameTime();
-		grip = Math.max(0.0F, grip - DrownedTuning.GRIP_DECAY_PER_TICK);
 		updateCrawlSpeed(drowned);
+		// Visible meter (game rule show_meters): its grip, blue above its head and on the held player's screen.
+		sentGrip = Meters.sync(drowned, Meters.GRIP, state == State.DRAG ? grip : 0.0F, sentGrip, DrownedTuning.GRIP_FULL);
 		if (state != State.DRAG && drowned.isVehicle()) {
 			// A passenger we don't hold (loaded from a save): let go.
 			drowned.ejectPassengers();
@@ -156,6 +200,7 @@ public final class DrownedMind {
 			case LURK -> tickLurk(drowned, level, time);
 			case SURGE -> tickSurge(drowned, level);
 			case DRAG -> tickDrag(drowned, level);
+			case JOIN, HELP -> tickHelper(drowned, level);
 		}
 	}
 
@@ -217,6 +262,7 @@ public final class DrownedMind {
 	}
 
 	private void enterIdle(Drowned drowned) {
+		leader = null;
 		posture(drowned, Pose.STANDING);
 		state = State.IDLE;
 		spot = null;
@@ -395,7 +441,8 @@ public final class DrownedMind {
 		}
 		state = State.DRAG;
 		victim = target;
-		grip = 0.0F;
+		grip = DrownedTuning.GRIP_START;
+		helpers.clear();
 		sunk = false;
 		posture(drowned, Pose.STANDING);
 		stared = false;
@@ -411,8 +458,17 @@ public final class DrownedMind {
 		if (held == null || !held.isAlive() || held.getVehicle() != drowned) {
 			// Gone (died, ender pearl, a command): back to lurking somewhere.
 			victim = null;
+			releaseHelpers(drowned, false);
 			enterIdle(drowned);
 			return;
+		}
+		// The grip tightens while it drags (faster with others holding on), and with it its hits.
+		grip = Math.min(DrownedTuning.GRIP_FULL,
+				grip + DrownedTuning.GRIP_RISE_PER_TICK * (1.0F + DrownedTuning.GRIP_RISE_PER_HELPER * holdingHelpers()));
+		float tight = escalation();
+		helpers.removeIf(h -> !h.isAlive() || DrownedAccess.mind(h).leader != drowned);
+		if (helpers.size() < DrownedTuning.MAX_EXTRA_HOLDERS && (level.getGameTime() + drowned.getId()) % DrownedTuning.JOIN_SCAN_INTERVAL == 0) {
+			recruit(drowned, level, held);
 		}
 		// Toward the deepest water nearby, backwards (facing away from it, toward the victim and the shore).
 		if (deepTarget == null || horizontalDistance(drowned.position(), deepTarget) < DrownedTuning.DRAG_ARRIVE) {
@@ -433,7 +489,8 @@ public final class DrownedMind {
 			double dz = deepTarget.z - drowned.getZ();
 			double h = Math.sqrt(dx * dx + dz * dz);
 			if (h > 0.2) {
-				double speed = drowned.isInWater() ? DrownedTuning.DRAG_SPEED : DrownedTuning.DRAG_LAND_SPEED;
+				double speed = (drowned.isInWater() ? DrownedTuning.DRAG_SPEED : DrownedTuning.DRAG_LAND_SPEED)
+						* (1.0 + DrownedTuning.DRAG_SPEED_PER_HELPER * holdingHelpers());
 				vx = dx / h * Math.min(speed, h * 0.5);
 				vz = dz / h * Math.min(speed, h * 0.5);
 				face(drowned, (float) (Mth.atan2(-dz, -dx) * Mth.RAD_TO_DEG) - 90.0F);
@@ -446,10 +503,133 @@ public final class DrownedMind {
 			}
 		}
 		drowned.setDeltaMovement(vx, vy, vz);
-		// Now and then a small hit that knocks air out (a chance each tick, no fixed rhythm: B19).
-		if (drowned.getRandom().nextFloat() < DrownedTuning.HIT_CHANCE_PER_TICK) {
-			hit(drowned, level, held);
+		squeeze(drowned, level, held, tight);
+		// The tightening shows: more bubbles stream off the victim the longer it holds them.
+		if (held.isUnderWater() && level.getGameTime() % 2 == 0) {
+			level.sendParticles(ParticleTypes.BUBBLE, held.getX(), held.getY() + 0.3, held.getZ(),
+					1 + Math.round(tight * DrownedTuning.ESCALATION_BUBBLES), 0.25, 0.3, 0.25, 0.05);
 		}
+	}
+
+	/** Its hits (a chance each tick, no fixed rhythm: B19), more often and harder as the grip tightens. */
+	private static void squeeze(Drowned drowned, ServerLevel level, LivingEntity held, float tight) {
+		if (drowned.getRandom().nextFloat() < Mth.lerp(tight, DrownedTuning.HIT_CHANCE_PER_TICK, DrownedTuning.HIT_CHANCE_FULL)) {
+			hit(drowned, level, held, tight);
+		}
+	}
+
+	/** Drowned already near (not dragging, not vanilla) swim over to grab the other leg; no new ones spawn. */
+	private void recruit(Drowned drowned, ServerLevel level, LivingEntity held) {
+		AABB box = drowned.getBoundingBox().inflate(DrownedTuning.JOIN_RANGE);
+		List<Drowned> near = level.getEntitiesOfClass(Drowned.class, box, d -> d != drowned && d.isAlive() && !d.isNoAi() && !d.isVehicle()
+				&& !((DrownedAccess) d).brm$isVanilla() && available(DrownedAccess.mind(d).state));
+		near.sort(java.util.Comparator.comparingDouble(d -> d.distanceToSqr(held)));
+		for (Drowned d : near) {
+			if (helpers.size() >= DrownedTuning.MAX_EXTRA_HOLDERS) {
+				break;
+			}
+			float side = helpers.isEmpty() ? DrownedTuning.JOIN_SIDE_ANGLE : -DrownedTuning.JOIN_SIDE_ANGLE;
+			for (Drowned h : helpers) {
+				if (DrownedAccess.mind(h).sideAngle == side) {
+					side = -side;
+				}
+			}
+			DrownedAccess.mind(d).join(d, drowned, held, side);
+			helpers.add(d);
+		}
+	}
+
+	private static boolean available(State state) {
+		return state == State.IDLE || state == State.TRAVEL || state == State.LURK;
+	}
+
+	/** Called on a drowned that will swim over and grab the other leg of {@code held}, which {@code lead} drags. */
+	public void join(Drowned drowned, Drowned lead, LivingEntity held, float side) {
+		enterIdle(drowned);
+		state = State.JOIN;
+		leader = lead;
+		victim = held;
+		sideAngle = side;
+		drowned.getNavigation().stop();
+	}
+
+	/** Its grip point: at the victim's feet, from the side (SIDE degrees round from the dragging drowned's grip), level with it. */
+	private Vec3 gripPoint(Drowned lead, LivingEntity held) {
+		float yaw = (lead.getYRot() + 180.0F + sideAngle) * Mth.DEG_TO_RAD;
+		double fx = -Mth.sin(yaw);
+		double fz = Mth.cos(yaw);
+		return new Vec3(held.getX() + fx * DrownedTuning.HOLD_FORWARD, lead.getY(), held.getZ() + fz * DrownedTuning.HOLD_FORWARD);
+	}
+
+	private void tickHelper(Drowned drowned, ServerLevel level) {
+		Drowned lead = leader;
+		LivingEntity held = victim;
+		if (lead == null || held == null || !lead.isAlive() || !held.isAlive() || DrownedAccess.mind(lead).state != State.DRAG
+				|| DrownedAccess.mind(lead).victim != held) {
+			letGo(drowned, false);
+			return;
+		}
+		Vec3 target = gripPoint(lead, held);
+		Vec3 to = target.subtract(drowned.position());
+		double distance = to.length();
+		if (state == State.JOIN && distance > DrownedTuning.JOIN_GIVE_UP) {
+			letGo(drowned, false);
+			return;
+		}
+		drowned.setNoGravity(drowned.isInWater());
+		if (state == State.JOIN) {
+			if (distance <= DrownedTuning.JOIN_REACH) {
+				state = State.HELP;
+				drowned.swingForAttack(InteractionHand.MAIN_HAND);
+				level.playSound(null, drowned.getX(), drowned.getY(), drowned.getZ(), SoundEvents.PLAYER_SPLASH, drowned.getSoundSource(), 0.8F, 0.8F);
+			} else {
+				Vec3 v = to.scale(DrownedTuning.JOIN_SPEED / distance);
+				drowned.setDeltaMovement(v.x, drowned.isInWater() ? v.y : drowned.getDeltaMovement().y, v.z);
+				if (drowned.horizontalCollision && (drowned.onGround() || drowned.isInWater())) {
+					drowned.setDeltaMovement(v.x, 0.3, v.z);
+				}
+				face(drowned, (float) (Mth.atan2(to.z, to.x) * Mth.RAD_TO_DEG) - 90.0F);
+				return;
+			}
+		}
+		if (distance > DrownedTuning.JOIN_REACH * 3.0) {
+			// Shaken loose (pulled round a corner): swim back to it.
+			state = State.JOIN;
+			return;
+		}
+		// Holding on: a spring onto its grip point, facing the victim's feet.
+		double k = 0.5;
+		drowned.setDeltaMovement(Mth.clamp(to.x * k, -0.3, 0.3), drowned.isInWater() ? Mth.clamp(to.y * k, -0.3, 0.3) : drowned.getDeltaMovement().y,
+				Mth.clamp(to.z * k, -0.3, 0.3));
+		double dx = held.getX() - drowned.getX();
+		double dz = held.getZ() - drowned.getZ();
+		face(drowned, (float) (Mth.atan2(dz, dx) * Mth.RAD_TO_DEG) - 90.0F);
+		squeeze(drowned, level, held, DrownedAccess.mind(lead).escalation());
+	}
+
+	/** A helper lets go (the dragging one let go, or the victim is gone); with {@code recoil} it is pushed back too. */
+	private void letGo(Drowned drowned, boolean recoil) {
+		LivingEntity held = victim;
+		leader = null;
+		victim = null;
+		avoid = drowned.blockPosition();
+		enterIdle(drowned);
+		if (recoil && held != null) {
+			Vec3 away = drowned.position().subtract(held.position()).multiply(1.0, 0.0, 1.0);
+			away = away.lengthSqr() < 1.0E-6 ? Vec3.ZERO : away.normalize().scale(DrownedTuning.RECOIL_SPEED);
+			drowned.setDeltaMovement(away.x, 0.1, away.z);
+			drowned.needsSync = true;
+		}
+	}
+
+	private void releaseHelpers(Drowned drowned, boolean recoil) {
+		for (Drowned helper : helpers) {
+			DrownedMind mind = DrownedAccess.mind(helper);
+			if (mind.leader == drowned) {
+				mind.letGo(helper, recoil);
+			}
+		}
+		helpers.clear();
 	}
 
 	private static double horizontalDistance(Vec3 a, Vec3 b) {
@@ -482,26 +662,38 @@ public final class DrownedMind {
 
 	/** One small hit on the held victim: damage, and air knocked out unless it can't lose air (vanilla's Water Breathing, Conduit Power, creative). */
 	public static void hit(Drowned drowned, ServerLevel level, LivingEntity held) {
-		if (!held.hurtServer(level, level.damageSources().mobAttack(drowned), DrownedTuning.HIT_DAMAGE)) {
+		hit(drowned, level, held, 0.0F);
+	}
+
+	/** One hit with the grip {@code tight} (0 just grabbed, 1 at its tightest): harder, more air, a louder, lower squeeze. */
+	public static void hit(Drowned drowned, ServerLevel level, LivingEntity held, float tight) {
+		if (!held.hurtServer(level, level.damageSources().mobAttack(drowned), Mth.lerp(tight, DrownedTuning.HIT_DAMAGE, DrownedTuning.HIT_DAMAGE_FULL))) {
 			return;
 		}
 		drowned.swingForAttack(InteractionHand.MAIN_HAND);
+		level.playSound(null, drowned.getX(), drowned.getY(), drowned.getZ(), SoundEvents.DROWNED_AMBIENT_WATER, drowned.getSoundSource(),
+				0.6F + 0.6F * tight, 1.1F - 0.4F * tight);
 		if (held.canBreatheUnderwater() || MobEffectUtil.hasWaterBreathing(held)
 				|| held instanceof Player player && player.getAbilities().invulnerable) {
 			return;
 		}
 		double oxygen = held.getAttributeValue(Attributes.OXYGEN_BONUS);
-		int loss = (int) Math.round(DrownedTuning.HIT_AIR_LOSS / (1.0 + Math.max(0.0, oxygen)));
+		int loss = (int) Math.round(Mth.lerp(tight, DrownedTuning.HIT_AIR_LOSS, DrownedTuning.HIT_AIR_LOSS_FULL) / (1.0 + Math.max(0.0, oxygen)));
 		held.setAirSupply(Math.max(0, held.getAirSupply() - loss));
 	}
 
-	// --- the grip-break meter --------------------------------------------------------------------
+	// --- the grip meter -------------------------------------------------------------------------
 
 	/**
 	 * A hit on the drowned while it holds someone. Anyone's hit counts (the victim's, a friend's, an arrow: B18); fast
-	 * hits beat the drain, and axes, Impaling and Knockback count extra. Full: it lets go.
+	 * hits beat the tightening, and axes, Impaling and Knockback count extra. At 0 it lets go.
 	 */
 	public void hurt(Drowned drowned, ServerLevel level, Entity attacker, @Nullable Entity direct, @Nullable ItemStack weapon, float damage) {
+		if ((state == State.HELP || state == State.JOIN) && leader != null && leader.isAlive()) {
+			// A hit on a helper counts toward the grip it is part of.
+			DrownedAccess.mind(leader).addGrip(leader, gripPoints(level, weapon, damage));
+			return;
+		}
 		if (state != State.DRAG) {
 			if (state == State.LURK || state == State.TRAVEL) {
 				// Hit from the shore: find another spot (no free hits on a sitting target).
@@ -510,8 +702,16 @@ public final class DrownedMind {
 			}
 			return;
 		}
-		grip += gripPoints(level, weapon, damage);
-		if (grip >= DrownedTuning.GRIP_FULL) {
+		addGrip(drowned, gripPoints(level, weapon, damage));
+	}
+
+	/** A hit loosens the grip by its points, split among the holders (each extra one: GRIP_EXTRA_HOLDER_DIVISOR more). At 0 all let go. */
+	public void addGrip(Drowned drowned, float points) {
+		if (state != State.DRAG) {
+			return;
+		}
+		grip -= points / (1.0F + DrownedTuning.GRIP_EXTRA_HOLDER_DIVISOR * holdingHelpers());
+		if (grip <= 0.0F) {
 			release(drowned, true);
 		}
 	}
@@ -534,10 +734,15 @@ public final class DrownedMind {
 
 	/** Lets go of its victim; with {@code recoil} it is pushed back and the victim nudged up. It then finds a new spot. */
 	public void release(Drowned drowned, boolean recoil) {
+		if (state == State.JOIN || state == State.HELP) {
+			letGo(drowned, recoil);
+			return;
+		}
 		LivingEntity held = victim;
 		victim = null;
 		grip = 0.0F;
 		deepTarget = null;
+		releaseHelpers(drowned, recoil);
 		avoid = spot != null ? spot.floor() : drowned.blockPosition();
 		enterIdle(drowned);
 		if (held == null) {
