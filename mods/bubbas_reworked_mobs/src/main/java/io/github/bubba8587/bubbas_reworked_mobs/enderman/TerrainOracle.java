@@ -18,7 +18,9 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.NoiseColumn;
 import net.minecraft.world.level.StructureManager;
+import net.minecraft.core.QuartPos;
 import net.minecraft.world.level.biome.BiomeManager;
+import net.minecraft.world.level.biome.BiomeResolver;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
@@ -94,6 +96,8 @@ public final class TerrainOracle {
 	/** For the report and tests: chunks regenerated, and the total time spent on the worker. */
 	public static final AtomicLong CHUNKS_BUILT = new AtomicLong();
 	public static final AtomicLong NANOS_BUILDING = new AtomicLong();
+	/** Logs each chunk's phase times (set by tests). */
+	public static volatile boolean PROFILE = false;
 
 	private TerrainOracle() {
 	}
@@ -202,9 +206,24 @@ public final class TerrainOracle {
 		ProtoChunk chunk = new ProtoChunk(pos, UpgradeData.EMPTY, level, level.palettedContainerFactory(), null);
 		// Only the beardifier reads structures here (terrain raised or cut around villages and the like).
 		StructureManager structures = new KnownStarts(level, starts);
-		generator.createBiomes(randomState, Blender.empty(), structures, chunk).join();
-		BiomeManager biomes = new BiomeManager(generator.getBiomeSource().createUncachedResolver(randomState), BiomeManager.obfuscateSeed(seed));
+		long t0 = System.nanoTime();
+		// Biomes: filled straight from the biome source (what createBiomes does, without queueing on the worldgen pool).
+		BiomeResolver resolver = generator.getBiomeSource().createCachingResolver(randomState);
+		chunk.fillBiomesFromNoise(resolver);
+		chunk.setPersistedStatus(net.minecraft.world.level.chunk.status.ChunkStatus.BIOMES);
+		long t1 = System.nanoTime();
+		// Surface rules look biomes up per column: read this chunk's own biomes (as worldgen reads its region's), and
+		// the caching resolver only at its edges.
+		int minQx = QuartPos.fromBlock(pos.getMinBlockX());
+		int minQz = QuartPos.fromBlock(pos.getMinBlockZ());
+		BiomeResolver local = (qx, qy, qz) -> qx >= minQx && qx < minQx + 4 && qz >= minQz && qz < minQz + 4
+				? chunk.getNoiseBiome(qx, qy, qz) : resolver.getNoiseBiome(qx, qy, qz);
+		BiomeManager biomes = new BiomeManager(local, BiomeManager.obfuscateSeed(seed));
 		generator.buildTerrain(chunk, Blender.empty(), randomState, structures, biomes, null, null).join();
+		long t2 = System.nanoTime();
+		if (PROFILE) {
+			BubbasReworkedMobs.LOGGER.info("[target-world] chunk {}: biomes {} ms, terrain {} ms", pos, (t1 - t0) / 1000000, (t2 - t1) / 1000000);
+		}
 		int[] surface = new int[256];
 		BlockPos.MutableBlockPos at = new BlockPos.MutableBlockPos();
 		for (int x = 0; x < 16; x++) {

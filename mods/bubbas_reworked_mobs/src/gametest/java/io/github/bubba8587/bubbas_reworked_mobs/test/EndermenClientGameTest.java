@@ -81,14 +81,45 @@ public class EndermenClientGameTest implements FabricClientGameTest {
 				shootSite(context, sp, server, n, site);
 			}
 
-			// An enderman carrying a cairn block, beside the last cairn.
-			BlockPos o = visited.getLast();
-			server.runCommand("summon minecraft:enderman %d %d %d {NoAI:1b,PersistenceRequired:1b,Rotation:[180f,0f],carriedBlockState:{Name:\"minecraft:purpur_pillar\",Properties:{axis:\"y\"}}}"
-					.formatted(o.getX() + 4, groundY(server, o.getX() + 4, o.getZ()), o.getZ()));
-			int gy = groundY(server, o.getX() + 4, o.getZ() - 4);
-			tp(context, server, o.getX() + 4.5, gy + 2.0, o.getZ() - 4.5, 0.0F, 15.0F);
+			// An enderman carrying a cairn block, beside the first (open ground) cairn.
+			BlockPos o = visited.getFirst();
+			tp(context, server, o.getX() + 4.5, o.getY() + 6.0, o.getZ() + 1.5, 0.0F, 12.0F);
+			sp.getConnection().waitForChunksRender();
+			int ey = groundY(server, o.getX() + 4, o.getZ() + 5);
+			server.runOnServer(s -> {
+				net.minecraft.world.entity.monster.Enderman e = net.minecraft.world.entity.EntityTypes.ENDERMAN.create(s.overworld(),
+						net.minecraft.world.entity.EntitySpawnReason.COMMAND);
+				e.snapTo(o.getX() + 4.5, ey, o.getZ() + 5.5, 180.0F, 0.0F);
+				e.setYHeadRot(180.0F);
+				e.setYBodyRot(180.0F);
+				e.setNoAi(true);
+				e.setPersistenceRequired();
+				e.setCarriedBlock(Blocks.PURPUR_PILLAR.defaultBlockState());
+				s.overworld().addFreshEntity(e);
+			});
+			tp(context, server, o.getX() + 4.5, ey + 2.2, o.getZ() + 1.5, 0.0F, 12.0F);
 			context.waitTicks(10);
 			context.takeScreenshot("enderman-carrying");
+			System.out.println("[endermen] " + server.computeOnServer(s -> {
+				ServerLevel level = s.overworld();
+				TerrainOracle.clear(level);
+				TerrainOracle.PROFILE = true;
+				long before = TerrainOracle.NANOS_BUILDING.get();
+				long count = TerrainOracle.CHUNKS_BUILT.get();
+				long wall = System.nanoTime();
+				int n = 0;
+				for (int dx = -1; dx <= 1; dx++) {
+					for (int dz = -1; dz <= 1; dz++) {
+						if (level.hasChunk((o.getX() >> 4) + dx, (o.getZ() >> 4) + dz)) {
+							TerrainOracle.getNow(level, (o.getX() >> 4) + dx, (o.getZ() >> 4) + dz);
+							n++;
+						}
+					}
+				}
+				return "quiet regeneration: %d chunks, %.1f ms each (worker time), %.1f ms each (wall, one at a time)".formatted(n,
+						(TerrainOracle.NANOS_BUILDING.get() - before) / 1e6 / Math.max(1, TerrainOracle.CHUNKS_BUILT.get() - count),
+						(System.nanoTime() - wall) / 1e6 / Math.max(1, n));
+			}));
 		}
 	}
 
@@ -107,7 +138,7 @@ public class EndermenClientGameTest implements FabricClientGameTest {
 		});
 		context.waitTicks(5);
 		int height = site.box().maxY() - o.getY();
-		tp(context, server, o.getX() + 6.5, o.getY() + height * 0.45, o.getZ() + 6.5, 135.0F, 8.0F);
+		tp(context, server, o.getX() + 8.5, o.getY() + height * 0.45, o.getZ() + 8.5, 135.0F, 6.0F);
 		context.waitTicks(10);
 		context.takeScreenshot("cairn-" + n + "-close");
 		tp(context, server, o.getX() + 20.5, o.getY() + height * 0.6 + 4, o.getZ() - 14.5, 55.0F, 12.0F);

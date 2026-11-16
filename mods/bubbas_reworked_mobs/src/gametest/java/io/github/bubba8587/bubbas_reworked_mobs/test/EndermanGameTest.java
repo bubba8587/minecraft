@@ -293,8 +293,13 @@ public class EndermanGameTest {
 	// --- spawning (D2) -----------------------------------------------------------------------------
 
 	/** Vanilla overworld enderman spawns are blocked while the rule is on; a site spawns builders up to its cap. */
-	@GameTest(environment = "bubbas_reworked_mobs-test:enderman_spawn", structure = FIELD, maxTicks = 20)
+	@GameTest(environment = "bubbas_reworked_mobs-test:enderman_spawn", structure = FIELD, maxTicks = 40)
 	public void siteSpawnsBuildersUpToItsCap(GameTestHelper helper) {
+		// The environment's night takes effect on the level's next tick (sky darkness is updated per tick).
+		helper.runAtTickTime(5, () -> spawnsBuildersUpToItsCap(helper));
+	}
+
+	private void spawnsBuildersUpToItsCap(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
 		helper.assertTrue(EndermanSpawning.blocksVanillaSpawn(level, EntityTypes.ENDERMAN), "vanilla overworld enderman spawns should be blocked");
 		helper.assertFalse(EndermanSpawning.blocksVanillaSpawn(level, EntityTypes.ZOMBIE), "only endermen are blocked");
