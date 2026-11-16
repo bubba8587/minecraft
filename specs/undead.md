@@ -1,4 +1,4 @@
-<!-- dte:C1,B15,B17,B18,B19 -->
+<!-- dte:C1,B15,B17,B18,B19,D2 -->
 <!-- covers: docs/research/undead-*, docs/research/camps-*, mods/bubbas_reworked_mobs/* -->
 # Bubba's Reworked Mobs, part 1: undead (spec)
 

@@ -1,4 +1,4 @@
-<!-- dte:C1,B17,B18,B19 -->
+<!-- dte:C1,B17,B18,B19,D2 -->
 # Reworked Mobs: creepers (spec, design: not built yet)
 
 The next segment of Bubba's Reworked Mobs (C1), after the undead. Owner's design (2026-11-16), recorded as given.
