@@ -31,7 +31,7 @@ This repo keeps its decisions as a Decision Tree Engineering tree. Follow `vendo
 
 **Few new blocks (B15 fewNewBlocks):** build features from custom items, variants of existing blocks and deeper existing systems. Custom textures and models on existing blocks are fine. A new registered block needs a stated reason, given to the owner before building it. Techniques: `docs/knowledge/no-new-blocks.md`.
 
-**Art during development (owner, 2026-11-16):** agents may make any in-game art they need (scripted or AI-made), but every agent-made asset gets a row in `docs/art-todo.md` so the owner can redo or tweak it later. Mod icons and project page images still must never be AI-made (B14); they stay on that list until a person makes them.
+**Art during development (owner, 2026-11-16):** agents may make any in-game art they need (scripted or AI-made), and **give every texture and model their best shot** (owner's standing rule: real, vanilla-fitting art, not bare placeholders: shading, readable silhouettes, proper 3D models where a block or held item calls for one, checked in screenshots at 16x and 32x), but every agent-made asset gets a row in `docs/art-todo.md` so the owner can redo or tweak it later. Mod icons and project page images still must never be AI-made (B14); they stay on that list until a person makes them.
 
 **Textures at 16x and 32x (B16 textures16and32):** every custom texture ships at 16x in vanilla style and 32x in Faithful 32x style; the 32x set is a built-in resource pack in the jar. Layout, credit rules and the checker (`python3 tools/texcheck.py`) are in `specs/textures.md`; the scaffolder sets it up.
 
