@@ -1,5 +1,5 @@
 <!-- dte:C1,B17,B18,B19 -->
-# Reworked Mobs: drowned (spec, design: not built yet)
+# Reworked Mobs: drowned (spec, design agreed 2026-11-16: not built yet)
 
 The next segment of Bubba's Reworked Mobs (C1), after creepers and endermen. Owner's design (2026-11-16), recorded as given; open questions below.
 
@@ -14,18 +14,22 @@ The next segment of Bubba's Reworked Mobs (C1), after creepers and endermen. Own
 
 `tools/prior-art.py "drowned"` (2026-11-16): nothing does grab-and-drown. Existing drowned mods only change spawning (Conduits Prevent Drowned, No Drowned), trident drop rates, or give mobs armor (Armored Foes, on 26.3: check compatibility with stronger drowned before release).
 
-## Open questions (owner)
+## Owner answers (2026-11-16)
 
-Builder's suggestions in brackets; nothing below is decided.
+- **D1 Spawning: natural spawns** in water within range of a player, at the same low rate as other undead (the monster cap cut, `specs/undead.md`), plus **zombies that drown still turn into drowned** (we control zombie numbers already). A drowned doesn't have to spawn at its lurk spot: it can spawn deeper and **swim to a lurk spot**, a shallow spot near the shore where **a standing drowned's head just breaks the surface** (owner: "a 2*1-deep spot, or a spot 1*2 deep"; builder's reading: water 2 deep over a floor, by the shore; the owner may correct). There it **floats with just its head a little above the water**.
+- **D2 Staring:** if you stare at it, it **sinks right below the water** (the creeper peekaboo mechanic, in reverse: it hides by sinking). It waits for you to come close to the water and turn your back.
+- **On land:** a **sidewinding, staggered crawl** animation.
+- **The grab:** once it has you it **only moves backwards**, dragging you toward **the deepest water**. Now and then it hits you for a small amount of damage, and **that hit makes your breath drain faster**.
+- **D3 Breaking the grip:** a grip-break meter (like the creeper's startle meter, B19: no hidden timers). **Lots of fast hits, or hits with the right things, build it**: axes and Impaling big, Riptide yanks you free, Knockback helps; Respiration, Water Breathing and Conduit Power only buy time.
+- **D4 Who:** they grab **players and passive mobs**.
+- **D6 Tridents:** no trident throwing; **tridents move into buried treasure loot** as a rare item.
+- **D7 Vanilla:** zombie-to-drowned conversion stays; a low rate of random natural spawns stays (like the other undead).
+- **D8:** **no drowned sleepers** (dropped from the undead plan).
 
-- **D1 Where they come from** (the mod's direction: deliberate spawning, not random). [Suggestion: fixed lurk spots picked at worldgen, like cairn sites but much denser: shallow edges of rivers, lakes and beaches, a drowned waiting at each one at night. Alternatives: one per player at night near water, like watcher creepers; or vanilla's water spawns, just rarer.]
-- **D2 The wait and the grab.** [Suggestion: it stands still underwater, head just below the surface, facing the shore. When a player (or anything, B18) is within about 3 blocks of the water and looking away from it, it surges and grabs. If you're looking at it, it doesn't move, and it may turn its back on you (the inverse of creeper peekaboo). What should it do while you stare at it?]
-- **D3 The grip.** [Suggestion: a held player can't swim up and is pulled down and away from the shore, about a block a second; air runs out at the normal rate, then drowning damage. Breaking free uses a grip meter like the creeper's startle meter (B19: no hidden timers): damage to the drowned loosens it. Better at it: axes and Impaling (big), a Riptide trident (yanks you free outright), Knockback. Only buy time: Respiration, Water Breathing, Conduit Power.]
-- **D4 Same rule for everyone (B18).** Do they drag villagers, animals drinking at the shore, other mobs? [Suggestion: yes, anything that comes to the edge. A cow vanishing into the river is a good warning sign.]
-- **D5 Out of the water.** Do they ever come ashore? [Suggestion: never. Stay away from the edge and they can't touch you, but they follow along the shoreline underwater, keeping pace.]
-- **D6 Tridents.** Keep vanilla's trident throwing? [Suggestion: no ranged attacks; tridents become their rare drop, held but not thrown.]
-- **D7 Vanilla drowned spawns and conversion** (ocean and river spawns, zombies turning into drowned underwater). [Suggestion: off; a zombie that drowns just dies.]
-- **D8 Drowned sleepers.** `specs/undead.md` lists drowned as a planned sleeper variant. Keep that, or drop it now that drowned are their own thing?
+## Still open (builder decides, owner may change)
+
+- When a drowned leaves the water: [builder: only to reach something it's grabbing near the edge, a few blocks up the bank, then it crawls back dragging it].
+- How much stronger: health, armor, drag speed, the grip-break meter's numbers.
 
 ## Milestone test objectives
 

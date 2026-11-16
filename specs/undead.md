@@ -91,7 +91,7 @@ Using a sleeper with an empty hand takes one item: held weapon first (main hand,
 ## Scope and variants
 
 - Only this mod's undead change: our own entity types (woken sleepers and the rare natural spawns), tagged as undead. Vanilla zombies and skeletons elsewhere (other mods' spawners and structures) stay vanilla, and AI or animation mods that target vanilla classes don't override ours. Mob spawners will be tweaked as well (design to come).
-- Built: skeleton and zombie, each sitting and lying (`UndeadVariant`). Planned: stray, bogged, parched, wither skeleton; husk, drowned, zombie villager. Some variants may get unique behavior later. Not yet: zombified piglin, skeleton/zombie horses, camel husk, zombie nautilus.
+- Built: skeleton and zombie, each sitting and lying (`UndeadVariant`). Planned: stray, bogged, parched, wither skeleton; husk, zombie villager (no drowned sleepers: owner, 2026-11-16, drowned are their own segment, `specs/drowned.md`). Some variants may get unique behavior later. Not yet: zombified piglin, skeleton/zombie horses, camel husk, zombie nautilus.
 - One sleeper block per variant (or a variant property), each with its own 16x and 32x textures.
 
 ## Natural spawning
