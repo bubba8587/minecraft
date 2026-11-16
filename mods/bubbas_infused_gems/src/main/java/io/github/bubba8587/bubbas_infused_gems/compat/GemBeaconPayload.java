@@ -42,6 +42,12 @@ public final class GemBeaconPayload implements BeaconPayload {
 		return out;
 	}
 
+	/** Owner (2026-11-16): with Infused Gems installed, the standalone gem-base payments are off; only gems (and other mods' items) work. */
+	@Override
+	public boolean replacesStandalonePayments() {
+		return true;
+	}
+
 	@Override
 	public void apply(ServerLevel level, ItemStack stack, BeaconContext context) {
 		Gem gem = stack.get(ModComponents.GEM);

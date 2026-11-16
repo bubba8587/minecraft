@@ -29,6 +29,7 @@ Written by the gems builder under the owner's new policy (builders don't edit `p
 
 - A beacon and your own armor (or another beacon, or a potion) of the same effect don't add: the stronger one applies.
 - The effect lasts a little longer than the beacon's pulse (vanilla's time: 9 + 2 x layers seconds), so it fades soon after you leave the area.
+- With Infused Gems installed, the beacon's standalone payments (an amethyst shard, quartz... buying vanilla powers) are switched off: only finished gems, and other mods' beacon items such as the Totem of Warding, go in the slot (owner, 2026-11-16).
 - Without Reworked Beacons, Infused Gems works exactly as before.
 
 ### Spec facts
@@ -43,6 +44,7 @@ Written by the gems builder under the owner's new policy (builders don't edit `p
 ### Milestone test objectives
 
 - `GemBeaconGameTest` (passes at once without Reworked Beacons; run with `-PwithBeacons -PmilestoneTests`): a perfect Speed gem pulsed from a 4-layer sky beacon gives a pig and a player in range `0.5 x Speed's worn cap` and makes the pig faster; a 1-layer pyramid caps it to Gem Power I (`x 0.40`).
+- `GemBeaconGameTest` also checks the payload switches the standalone payments off (`replacesStandalonePayments()`). Objective without code yet: with both mods installed, an amethyst shard no longer fits the beacon slot.
 - Objectives without code yet: leaving the area ends the effect after the effect time; a beacon and armor of the same effect give the stronger, not the sum; a harmful gem beacon hurts its builder; the beacon screen shows the gem's tooltip lines and the cap line.
 
 ## 2. Breeze hit: every projectile-launching mob (owner, 2026-11-16)

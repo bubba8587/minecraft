@@ -27,6 +27,8 @@ public class GemBeaconGameTest {
 			helper.succeed();
 			return;
 		}
+		check(helper, new io.github.bubba8587.bubbas_infused_gems.compat.GemBeaconPayload().replacesStandalonePayments(),
+				"Infused Gems must switch the standalone gem-base payments off (owner)");
 		Mob pig = helper.spawnWithNoFreeWill(EntityTypes.PIG, new BlockPos(1, 1, 1));
 		ServerPlayer player = helper.makeMockServerPlayerInLevel();
 		player.setGameMode(GameType.SURVIVAL);
