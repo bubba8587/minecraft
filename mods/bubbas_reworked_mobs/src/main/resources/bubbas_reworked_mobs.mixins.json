@@ -5,8 +5,12 @@
 	"mixins": [
 		"BellBlockMixin",
 		"CreeperMixin",
+		"DrownedMixin",
 		"EndermanMixin",
-		"SpawnStateMixin"
+		"PlayerGripMixin",
+		"ProjectileUtilGripMixin",
+		"SpawnStateMixin",
+		"TridentRiptideMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1
