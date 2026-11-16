@@ -72,16 +72,17 @@ public class TotemOfWardingItem extends Item {
 		for (SleeperBlockEntity sleeper : SleeperFinder.within(level, centre, r)) {
 			sleeper.calm(now, WardingTuning.PULSE_CALM_POINTS);
 		}
-		// A ring of soul fire flying outward at waist height, and a low chime.
-		int count = 32;
-		double y = centre.y + holder.getBbHeight() * 0.5;
+		// A ring of soul fire flying outward low around the holder (below a player's eyes, so it doesn't fill the
+		// first-person view), and a low chime.
+		int count = 40;
+		double y = centre.y + 0.3;
 		for (int i = 0; i < count; i++) {
 			double angle = Math.PI * 2 * i / count;
 			double dx = Math.cos(angle);
 			double dz = Math.sin(angle);
-			level.sendParticles(ParticleTypes.SOUL_FIRE_FLAME, centre.x + dx * 0.6, y, centre.z + dz * 0.6, 0, dx, 0.0, dz, 0.18);
+			level.sendParticles(ParticleTypes.SOUL_FIRE_FLAME, centre.x + dx * 1.2, y, centre.z + dz * 1.2, 0, dx, 0.0, dz, 0.22);
 		}
-		level.sendParticles(ParticleTypes.SOUL, centre.x, y, centre.z, 6, 0.4, 0.3, 0.4, 0.02);
+		level.sendParticles(ParticleTypes.SOUL, centre.x, centre.y + holder.getBbHeight() * 0.5, centre.z, 6, 0.6, 0.4, 0.6, 0.02);
 		level.playSound(null, centre.x, centre.y, centre.z, SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.PLAYERS, 1.2F, 0.6F);
 	}
 
