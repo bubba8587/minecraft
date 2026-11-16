@@ -1,5 +1,5 @@
 <!-- dte:C1,B15,B17,B19 -->
-# Reworked Mobs: Ancient Fabricators (spec, design agreed 2026-11-16: visual pass done, mechanics next)
+# Reworked Mobs: Ancient Fabricators (spec, design agreed 2026-11-16: look approved by the owner, mechanics being built)
 
 **Name (owner): Ancient Fabricators. Placement (owner): one next to every ancient city.**
 
@@ -30,6 +30,7 @@ Owner's idea (2026-11-16), to make mob farming possible again after the spawn cu
 - The **teleporter has a redstone-visible activation timer and particle effects even with no mob on it**, so a player could **hop on it to escape, with the right timing** (it sends a player up too).
 - **Warped first (owner):** warped is the primary material, bone only a minor accent, **no dripstone**. **One central "dripper"** hangs precisely above the teleporter pad; any other drippers are much smaller. (The first look's warped character was better than the bone-and-spike second look, minus its shapeless blobs.)
 - **Owner on the built look (2026-11-16): "really close"**; add **streaks of crimson** through the warped, and **less sculk** (it's a bit heavy).
+- **Look approved (owner, 2026-11-16): "I like the look so far."** The floor beacon keeps its light; the face wall stays dark until you bring light.
 - **Dark like an ancient city (owner):** too much light in the first looks; the pad and dripper glow out of the gloom, you need a torch to explore.
 - **Sculk detailing follows real ancient cities** (owner): the same palette and patterns (patches with veins creeping up walls and edges, sparse catalysts and shriekers, sensors by walkways, cracking).
 - The "timer" is **lamps that light up** in sequence, not an actual redstone clock (owner).
