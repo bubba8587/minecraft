@@ -68,6 +68,12 @@ Creepers watch players from behind cover and explode only when startled repeated
 
 Endermen slowly put the overworld back the way it first generated and build twisting purpur cairns, which point toward strongholds. They spawn from cairn sites instead of anywhere.
 
+## Drowned
+
+*Main article: [[Drowned]]*
+
+Drowned are rare, tough lurkers that wait in shallow water, grab anyone who turns their back to the water, and drag them under to drown. Hard, fast hits break their grip.
+
 ## Monster spawning
 
 *Main article: [[Monster Spawning]]*
