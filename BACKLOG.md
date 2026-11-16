@@ -9,7 +9,9 @@ Parked ideas and open items, newest first within each project. Agents add to it 
 - Calming sleepers (owner, 2026-11-15): soul fire and a "lull" game event tag that calm sleepers (light calming and loud bells are built: `specs/undead.md`, Calming sleepers).
 - Mob spawner tweaks. `specs/undead.md`.
 - Part 1 next pass: remaining undead variants, graves and crypts in worldgen (with Grave Talisman and Totem of Warding loot), hybrid rendering, real 16x/32x art.
-- Later parts: creepers; **monster camps and the blood moon** (structures with fixed rosters and key blocks, a 7-day blood moon that respawns uncleared structures, red-sky effects; owner's earlier idea with integration notes in `docs/research/camps-blood-moon-idea.md`).
+- **Creepers** (first build done): owner to playtest the numbers and review the 10 builder's choices in `specs/creepers.md`; test world "creeper grove" station idea there.
+- **Endermen** (designed, `specs/endermen.md`): cairn variety and banner placement still to revisit.
+- Later parts: **monster camps and the blood moon** (structures with fixed rosters and key blocks, a 7-day blood moon that respawns uncleared structures, red-sky effects; owner's earlier idea with integration notes in `docs/research/camps-blood-moon-idea.md`).
 
 ## Bubba's Totems & Artifacts (C6)
 - Built (0.1.0, not released): Grave Talisman, Totem of Warding, totem statue. `specs/totems-artifacts.md`.
