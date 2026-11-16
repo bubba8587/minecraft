@@ -39,7 +39,7 @@ Sleeping undead hear a ringing bell as far as players do, 32 blocks. A ring is v
 
 ## Warding
 
-Each pulse of a held [[Totem of Warding]] settles sleeping undead within 8 blocks a little. Inside a ward made by a Totem of Warding in a beacon with a full 4-layer pyramid, sleeping undead never wake.
+With [[Bubba's Totems & Artifacts]] installed, each pulse of a held [[Totem of Warding]] settles sleeping undead within 8 blocks a little. Inside a ward made by a Totem of Warding in a beacon with a full 4-layer pyramid, sleeping undead never wake.
 
 ## Chain waking
 

@@ -41,7 +41,7 @@ The mod uses vanilla's beacon textures; an upside-down beacon is the normal beac
 Requires Fabric API. Two other mods supply beacon items when installed, and none of the three requires another:
 
 - [[Bubba's Infused Gems]]: Gems go in the slot and give their effects to everything in range (*see [[Gem Effects#In beacons]]*). With it installed, the plain base-gem payments no longer work.
-- [[Bubba's Reworked Mobs]]: the [[Totem of Warding]] goes in the slot and wards the area against monsters.
+- [[Bubba's Totems & Artifacts]]: the [[Totem of Warding]] goes in the slot and wards the area against monsters.
 
 ## History
 

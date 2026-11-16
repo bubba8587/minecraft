@@ -6,7 +6,7 @@ A separate mod that reworks vanilla beacons into a general "area" system. Built 
 
 ## Payload API (the hook other mods use)
 
-Other mods (Infused Gems, Reworked Mobs) supply beacon items **without depending on this mod and without this mod knowing them**. Everything public lives in the package `io.github.bubba8587.bubbas_reworked_beacons.api`; nothing outside it is API. Keep it small and stable: add methods only as `default` methods.
+Other mods (Infused Gems, Totems & Artifacts) supply beacon items **without depending on this mod and without this mod knowing them**. Everything public lives in the package `io.github.bubba8587.bubbas_reworked_beacons.api`; nothing outside it is API. Keep it small and stable: add methods only as `default` methods.
 
 **Registering.** Implement `BeaconPayload` (public no-argument constructor) and list it under the entrypoint key `"bubbas_reworked_beacons:payload"` in the supplying mod's `fabric.mod.json`:
 
@@ -36,16 +36,16 @@ Compile against this mod only (`compileOnly project(':bubbas_reworked_beacons')`
 
 ## Why its own mod (owner, 2026-11-16)
 
-Area effects are needed by two projects: Bubba's Infused Gems (gems broadcasting their effect) and Bubba's Reworked Mobs (Warding: mob-free zones without spamming torches). The owner split the beacon rework out so all three mods stay independent:
+Area effects are needed by two projects: Bubba's Infused Gems (gems broadcasting their effect) and Bubba's Reworked Mobs (Warding: mob-free zones without spamming torches; the Totem of Warding has since moved to Bubba's Totems & Artifacts). The owner split the beacon rework out so the mods stay independent:
 
 | Installed | Beacons |
 |---|---|
 | Reworked Beacons alone | the reworked beacon; gem-base payments buy vanilla's six powers (Standalone, below) |
 | + Infused Gems | gems go in the slot and broadcast their effect; the standalone payments are off (owner, 2026-11-16) |
-| + Reworked Mobs | the Totem of Warding goes in the slot and wards the area |
+| + Totems & Artifacts | the Totem of Warding goes in the slot and wards the area |
 | Gems or Mobs without Beacons | beacons stay vanilla; those mods work exactly as they do now |
 
-Reworked Beacons offers one hook: "this item in a beacon does X at power Y". Infused Gems and Reworked Mobs answer it only when Reworked Beacons is present (optional dependency), so none of the three depends on another.
+Reworked Beacons offers one hook: "this item in a beacon does X at power Y". Infused Gems and Totems & Artifacts answer it only when Reworked Beacons is present (optional dependency), so none of them depends on another.
 
 ## The beacon (owner decisions)
 
@@ -59,9 +59,9 @@ Reworked Beacons offers one hook: "this item in a beacon does X at power Y". Inf
 - **Sky beacons: vanilla's area exactly.** A square box out to the range (20 / 30 / 40 / 50 blocks for 1-4 layers) sideways and downward, extended up to the build limit (26.3 `BeaconBlockEntity`: `new AABB(pos).inflate(range).expandTowards(0, height, 0)`).
 - **Underground: paired beacons.** Beacons can be placed upside down (a new placement of the existing block, not a new block: B15). A beacon on the floor with its pyramid below pairs with an upside-down beacon directly above it, whose pyramid is built upside down above it; the space between must be clear or glass, like a beam. The upside-down beacon holds no item. The **smaller** pyramid sets the range: a square box **3x vanilla's range sideways** (60 / 90 / 120 / 150 blocks out) and vertically from **10 blocks below the floor pyramid to 10 blocks above the ceiling pyramid**. Paired beacons trade vanilla's full-height column for a wide, height-limited box that fits mines, bases and crypts.
 
-## Totem of Warding (Reworked Mobs side, for reference)
+## Totem of Warding (Totems & Artifacts side, for reference)
 
-Warding is not a gem: it's an artifact, the **Totem of Warding**, a found item like the Grave Talisman, owned by Reworked Mobs (so it never goes on armor or weapons). In a reworked beacon it wards the beacon's area: any pyramid stops natural monster spawns and keeps monsters out, 4 layers also keep sleepers asleep. Built: `specs/undead.md`, Warding.
+Warding is not a gem: it's an artifact, the **Totem of Warding**, a found item like the Grave Talisman, owned by Bubba's Totems & Artifacts (so it never goes on armor or weapons); its payload is that mod's `compat/WardingBeaconPayload`. In a reworked beacon it wards the beacon's area: any pyramid stops natural monster spawns and keeps monsters out, 4 layers also keep sleepers asleep. Built: `specs/totems-artifacts.md`, Totem of Warding. The sleepers line on the screen shows only when Reworked Mobs is installed.
 
 ## Standalone (Reworked Beacons without Infused Gems) (owner, 2026-11-16)
 
@@ -110,4 +110,4 @@ Technical choices, not leaves: change them when a better way turns up. No new bl
 
 Core suite (`ReworkedBeaconsCoreGameTest`, 4: standalone payment, pyramid cap, paired box, hanging beacon; bodies in `BeaconGameTest`, which has no tests of its own): an amethyst shard on a 1-layer sky beacon gives Speed I to a pig (real ticks); the standalone table, pyramid caps and a test payload (Gem Power V echo shard, registered through the entrypoint from the test mod) capped to III on 2 layers, with `BeaconAreas.isInside` true at 25 blocks and false at 35; a pair through glass gives the 3x-wide, height-limited box, its pulse reaches a pig, and stone in the beam turns it off; a beacon placed under a block hangs upside down, on top of one stands upright.
 
-Milestone objectives without code yet: 4 layers give level II; an ender pearl on 1 layer does nothing and the screen says "Needs a 2-layer pyramid"; the item survives save/reload and drops when the beacon breaks; two players with the screen open can't duplicate the item; a client without the mod is turned away. Client test part `beacons` (`BubbasReworkedBeaconsClientGameTest`, milestone): sky beam, sky screen with an amethyst shard, paired beam in a closed room, paired screen with a capped payload. The payload users' own objectives: `GemBeaconGameTest` (`specs/effect-gems.md`) and `WardingBeaconGameTest` (`specs/undead.md`).
+Milestone objectives without code yet: 4 layers give level II; an ender pearl on 1 layer does nothing and the screen says "Needs a 2-layer pyramid"; the item survives save/reload and drops when the beacon breaks; two players with the screen open can't duplicate the item; a client without the mod is turned away. Client test part `beacons` (`BubbasReworkedBeaconsClientGameTest`, milestone): sky beam, sky screen with an amethyst shard, paired beam in a closed room, paired screen with a capped payload. The payload users' own objectives: `GemBeaconGameTest` (`specs/effect-gems.md`) and `WardingBeaconGameTest` (`specs/totems-artifacts.md`).

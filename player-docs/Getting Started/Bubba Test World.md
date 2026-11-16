@@ -24,7 +24,7 @@ The world appears in the world list of the "mod testing" profile after an instal
 | Glider tower | A tall tower with Gliders, elytra and firework rockets at the top, for comparing [[The Glider]] with the elytra. |
 | Gem workshop | For [[Bubba's Infused Gems]]: potions in all three forms, every base gem, a brewing stand, an enchanting table with a full set of bookshelves, a smithing table, a grindstone, armor and weapons, and a pen of mobs that stand still to be hit. |
 | Gem testing grounds | South of the spawn point, behind the player: a wardrobe and a place to try every [[Gem Effects|gem effect]]. See below. |
-| Beacons and warding | For [[Bubba's Reworked Beacons]] and the [[Totem of Warding]]: beacons on every pyramid size, a Poison trap, a warded room high in the sky, a bell and sleepers in light and dark. See below. |
+| Beacons and warding | For [[Bubba's Reworked Beacons]] and the [[Totem of Warding]] from [[Bubba's Totems & Artifacts]]: beacons on every pyramid size, a Poison trap, a warded room high in the sky, a bell and sleepers in light and dark. See below. |
 
 ## Gem testing grounds
 

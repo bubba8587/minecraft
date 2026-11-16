@@ -57,7 +57,7 @@ Without other mods, the beacon takes six base-gem items, and the item chosen is 
 | Prismarine Shard | Strength | 3 | Strength II |
 | Nether Star | Regeneration | 3 | Regeneration II |
 
-Emeralds, iron, gold and netherite ingots are no longer accepted. With [[Bubba's Infused Gems]] installed these payments are switched off, and finished Gems go in the slot instead (*see [[Gem Effects#In beacons]]*). With [[Bubba's Reworked Mobs]], the [[Totem of Warding]] also fits.
+Emeralds, iron, gold and netherite ingots are no longer accepted. With [[Bubba's Infused Gems]] installed these payments are switched off, and finished Gems go in the slot instead (*see [[Gem Effects#In beacons]]*). With [[Bubba's Totems & Artifacts]], the [[Totem of Warding]] also fits.
 
 ## Range
 
