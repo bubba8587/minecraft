@@ -14,8 +14,9 @@ import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContex
 /**
  * The look of an Ancient Fabricator (mob factory) (specs/mob-factory.md; client part {@code factories}): builds factories with the op
  * command deep under a real (default-preset) world and photographs them. A zombie factory from many angles
- * (factory-overview, -overview-lit with night vision, -side, -ceiling, -ceiling-close, -platform, -face, -warden,
- * -beam, -tower), then one wall and overview per other mob (factory-face-creeper, ...). Run with
+ * (factory-overview, -side, the dripper from below, the side and the pad, -platform, sculk close-ups, -pad, -face,
+ * -warden, -office, -beam, -tower, -chains; all without night vision, as in play, except one labelled
+ * -overview-nightvision); it prints block light at a few spots ("[fabricator-light]"), then one wall and overview per other mob (factory-face-creeper, ...). Run with
  * {@code -PwithBeacons} to see the paired beam (Reworked Beacons on the classpath).
  */
 @SuppressWarnings("UnstableApiUsage")
@@ -71,7 +72,6 @@ public class FactoriesClientGameTest implements FabricClientGameTest {
 		shot(context, server, o, 0.5, 5.0, 12.5, 180.0F, 30.0F, "factory-platform");
 		shot(context, server, o, -3.5, 2.6, -3.5, 150.0F, 38.0F, "factory-sculk-deck");
 		shot(context, server, o, 6.5, 3.0, 11.5, -140.0F, 18.0F, "factory-sculk-stairs");
-		shot(context, server, o, -9.5, -2.0, 13.5, 140.0F, 25.0F, "factory-sculk-floor");
 		// The teleporter pad mid-count, its particles running (they run even with nothing on it: a player could ride it).
 		tp(context, server, o.getX() + 0.5, o.getY() + 3.5, o.getZ() + 9.5, 180.0F, 35.0F);
 		context.waitTicks(10);
@@ -87,11 +87,24 @@ public class FactoriesClientGameTest implements FabricClientGameTest {
 		shot(context, server, o, 15.3, 8.6, -2.6, -42.0F, 32.0F, "factory-office");
 		shot(context, server, o, 2.5, 3.0, 4.5, 122.0F, -35.0F, "factory-beam");
 		shot(context, server, o, -6.5, 8.0, 10.5, 240.0F, 10.0F, "factory-tower");
+		shot(context, server, o, 3.5, 3.0, 9.5, 130.0F, -28.0F, "factory-chains");
+		// Block light at a few spots (owner: dark like an ancient city), printed for the report.
+		System.out.println("[fabricator-light] " + server.computeOnServer(srv -> {
+			net.minecraft.server.level.ServerLevel level = srv.overworld();
+			StringBuilder out = new StringBuilder();
+			int[][] spots = { { 0, 0, 3 }, { 0, 0, 0 }, { -7, 0, -8 }, { 7, 0, 7 }, { 0, 0, 8 }, { 0, 8, -9 }, { -6, 1, -1 },
+					{ 16, 6, -1 }, { 12, 6, 0 }, { 0, 7, 3 }, { -15, -4, 6 }, { 15, -4, 12 }, { 0, 2, 20 } };
+			String[] names = { "pad middle", "deck centre", "deck back-left", "deck front-right", "deck front edge", "face wall middle",
+					"beside the floor beacon", "office", "window ledge", "under the dripper tip", "cavern floor west", "cavern floor east", "tunnel" };
+			for (int k = 0; k < spots.length; k++) {
+				BlockPos p = o.offset(spots[k][0], spots[k][1], spots[k][2]);
+				out.append(names[k]).append(' ').append(level.getBrightness(net.minecraft.world.level.LightLayer.BLOCK, p)).append("; ");
+			}
+			return out.toString();
+		}));
+		// One overview with night vision for detail (not how it looks in play).
 		server.runCommand("effect give @p minecraft:night_vision infinite 0 true");
-		shot(context, server, o, 0.5, 9.0, 18.5, 180.0F, 12.0F, "factory-overview-lit");
-		shot(context, server, o, 6.5, 6.0, 12.5, 150.0F, -8.0F, "factory-side-lit");
-		shot(context, server, o, 3.5, 3.0, 9.5, 130.0F, -28.0F, "factory-chains-lit");
-		shot(context, server, o, 8.5, 6.0, 8.5, 90.0F, -12.0F, "factory-chains-lit-2");
+		shot(context, server, o, 0.5, 9.0, 18.5, 180.0F, 12.0F, "factory-overview-nightvision");
 		server.runCommand("effect clear @p");
 	}
 

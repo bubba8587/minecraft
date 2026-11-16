@@ -336,7 +336,7 @@ public final class FactoryDesign {
 	private BlockState massBlock(int x, int y, int z) {
 		double h = hash(x, y, z, 5);
 		double n = noise(x * 0.22, y * 0.3, z * 0.22, 1);
-		if (h < 0.035) {
+		if (h < 0.003) {
 			return Blocks.SHROOMLIGHT.defaultBlockState();
 		}
 		if (crimsonStreak(x, y, z)) {
@@ -439,11 +439,11 @@ public final class FactoryDesign {
 					boolean outer = dist > radius - 1.0;
 					BlockState s;
 					if (t < 0.3 && outer) {
-						s = hash(x, y, z, 33) < 0.1 ? Blocks.SHROOMLIGHT.defaultBlockState() : Blocks.WARPED_WART_BLOCK.defaultBlockState();
+						s = Blocks.WARPED_WART_BLOCK.defaultBlockState();
 					} else if (!outer && dist < 0.5 && Math.floorMod(d, 4) == 2 && t > 0.2) {
 						s = Blocks.SHROOMLIGHT.defaultBlockState(); // a gland in the core
-					} else if (outer && t >= 0.3 && hash(x, y, z, 34) < 0.08) {
-						s = Blocks.SHROOMLIGHT.defaultBlockState(); // a gland on the skin
+					} else if (radius < 1.6 ? dist < 0.5 && Math.floorMod(d, 2) == 1 : outer && t >= 0.3 && Math.floorMod(d, 4) == 1 && hash(x, y, z, 34) < 0.4) {
+						s = Blocks.SHROOMLIGHT.defaultBlockState(); // glands: rings on the skin of the thick part, every other block down the thin spine; the dripper glows
 					} else if (outer && crimsonStreak(x, y, z)) {
 						s = crimson(x, y, z);
 					} else {
@@ -463,7 +463,7 @@ public final class FactoryDesign {
 			int len = 1 + (int) (hash(x, top, z, 35) * 2.99);
 			for (int k = 0; k < len; k++) {
 				if (isOpen(x, top - k, z)) {
-					solid(x, top - k, z, k == len - 1 && i % 2 == 0 ? Blocks.SHROOMLIGHT.defaultBlockState() : Blocks.WARPED_WART_BLOCK.defaultBlockState());
+					solid(x, top - k, z, Blocks.WARPED_WART_BLOCK.defaultBlockState());
 				}
 			}
 		}
@@ -493,7 +493,7 @@ public final class FactoryDesign {
 			}
 		}
 		if (!nearBeam(x0, z0, 1.5) && isOpen(x0, y, z0)) {
-			solid(x0, y, z0, hash(x0, y, z0, 36) < 0.45 ? Blocks.CRYING_OBSIDIAN.defaultBlockState() : Blocks.WARPED_WART_BLOCK.defaultBlockState());
+			solid(x0, y, z0, hash(x0, y, z0, 36) < 0.2 ? Blocks.CRYING_OBSIDIAN.defaultBlockState() : Blocks.WARPED_WART_BLOCK.defaultBlockState());
 		}
 	}
 
@@ -538,7 +538,7 @@ public final class FactoryDesign {
 					{ e - 1.5, -5.0 + this.random.nextDouble() * 2.0, 0.0 },
 					{ e - 2.0, 14.0, turn * 0.2 },
 					{ 9.0, 18.0, turn * 0.65 },
-					{ 1.6, endY, turn },
+					{ 2.6, endY, turn },
 			};
 			int step = 0;
 			int knots = 0;
@@ -571,7 +571,7 @@ public final class FactoryDesign {
 					for (int yy = (int) Math.floor(y) - reach; yy <= (int) Math.ceil(y) + reach; yy++) {
 						for (int z = (int) Math.floor(cz) - reach; z <= (int) Math.ceil(cz) + reach; z++) {
 							double d = Math.sqrt((x - cx) * (x - cx) + (yy - y) * (yy - y) + (z - cz) * (z - cz));
-							if (d > radius || nearBeam(x, z, 1.6) || inTower(x, z)
+							if (d > radius || nearBeam(x, z, 1.6) || inTower(x, z) || Math.hypot(x, z - DROP_Z) < 1.9 && yy < ceil(0, DROP_Z) - 4
 									|| yy <= 1 && Math.abs(x) <= PX + 1 && z >= PZ_BACK && z <= PZ_FRONT) {
 								continue;
 							}
@@ -581,7 +581,7 @@ public final class FactoryDesign {
 							} else if (crimsonStreak(x, yy, z)) {
 								s = crimson(x, yy, z);
 							} else {
-								s = hash(x, yy, z, 22) < 0.04 ? Blocks.SHROOMLIGHT.defaultBlockState() : Blocks.WARPED_WART_BLOCK.defaultBlockState();
+								s = Blocks.WARPED_WART_BLOCK.defaultBlockState();
 							}
 							solid(x, yy, z, s);
 						}
@@ -632,7 +632,7 @@ public final class FactoryDesign {
 					attach(x, f + 1, z, Blocks.SCULK_SENSOR.defaultBlockState());
 				} else if (h < 0.026) {
 					set(x, f, z, Blocks.SCULK_CATALYST.defaultBlockState());
-				} else if (underPlatform && h < 0.06) {
+				} else if (underPlatform && h < 0.045) {
 					// Soul fire smouldering in the pit under the platform.
 					set(x, f, z, Blocks.SOUL_SOIL.defaultBlockState());
 					attach(x, f + 1, z, Blocks.SOUL_FIRE.defaultBlockState());
@@ -707,11 +707,10 @@ public final class FactoryDesign {
 				}
 			}
 		}
-		// Lit redstone lamps set into the deck, each on a redstone block (their power), in two lines down the sides.
+		// Redstone lamps set into the deck in two lines down the sides, unlit: the pad's timer ring is the deck's light.
 		for (int z : new int[] { -8, -4, 4 }) {
 			for (int x : new int[] { -7, 7 }) {
-				solid(x, -1, z, Blocks.REDSTONE_LAMP.defaultBlockState().setValue(RedstoneLampBlock.LIT, true));
-				solid(x, -2, z, Blocks.REDSTONE_BLOCK.defaultBlockState());
+				solid(x, -1, z, Blocks.REDSTONE_LAMP.defaultBlockState());
 			}
 		}
 		// The teleporter pad: a lodestone ringed by crying obsidian, then the timer ring (owner, 2026-11-16: a
@@ -743,8 +742,8 @@ public final class FactoryDesign {
 		}
 		solid(BEAM_X, 0, BEAM_Z, Blocks.BEACON.defaultBlockState());
 		for (int dx : new int[] { -2, 2 }) {
-			for (int dz : new int[] { -2, 2 }) {
-				attach(BEAM_X + dx, 0, BEAM_Z + dz, candle(3 + (int) (hash(dx, 0, dz, 4) * 1.99)));
+			for (int dz : new int[] { -2 }) {
+				attach(BEAM_X + dx, 0, BEAM_Z + dz, candle(1 + (int) (hash(dx, 0, dz, 4) * 1.99)));
 			}
 		}
 		// Rim: low tile walls along the sides and front (a gap to the front and to the Warden's stairs).
@@ -761,12 +760,14 @@ public final class FactoryDesign {
 				attach(x, 0, PZ_FRONT, Blocks.DEEPSLATE_TILE_WALL.defaultBlockState());
 			}
 		}
-		// Corner posts with soul lanterns.
+		// Corner posts; soul lanterns on the front two only (owner: dark like an ancient city).
 		for (int x : new int[] { -PX, PX }) {
 			for (int z : new int[] { PZ_BACK, PZ_FRONT }) {
 				solid(x, 0, z, Blocks.POLISHED_DEEPSLATE.defaultBlockState());
 				solid(x, 1, z, Blocks.POLISHED_DEEPSLATE_WALL.defaultBlockState());
-				attach(x, 2, z, Blocks.SOUL_LANTERN.defaultBlockState());
+				if (z == PZ_FRONT) {
+					attach(x, 2, z, Blocks.SOUL_LANTERN.defaultBlockState());
+				}
 			}
 		}
 		// Front posts by the entrance gap.
@@ -780,8 +781,6 @@ public final class FactoryDesign {
 		attach(-7, 0, 6, Blocks.SCULK_SENSOR.defaultBlockState());
 		attach(7, 0, -6, Blocks.SCULK_SENSOR.defaultBlockState());
 		attach(4, 0, 6, Blocks.CALIBRATED_SCULK_SENSOR.defaultBlockState().setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.EAST));
-		attach(-5, 0, 7, candle(2));
-		attach(6, 0, 7, candle(3));
 	}
 
 	private BlockState deckTop(int x, int z) {
@@ -831,15 +830,13 @@ public final class FactoryDesign {
 				}
 			}
 		}
-		// Lit redstone lamps set into the frame (powered from behind) so the face reads in the dark.
+		// Redstone lamps set into the frame, unlit (owner: dark like an ancient city; you bring a torch).
 		for (int x : new int[] { -7, -3, 2, 6 }) {
-			solid(x, 17, WALL_Z, Blocks.REDSTONE_LAMP.defaultBlockState().setValue(RedstoneLampBlock.LIT, true));
-			solid(x, 17, WALL_Z - 1, Blocks.REDSTONE_BLOCK.defaultBlockState());
+			solid(x, 17, WALL_Z, Blocks.REDSTONE_LAMP.defaultBlockState());
 		}
 		for (int x : new int[] { -9, 8 }) {
 			for (int y : new int[] { 4, 9, 13 }) {
-				solid(x, y, WALL_Z, Blocks.REDSTONE_LAMP.defaultBlockState().setValue(RedstoneLampBlock.LIT, true));
-				solid(x, y, WALL_Z - 1, Blocks.REDSTONE_BLOCK.defaultBlockState());
+				solid(x, y, WALL_Z, Blocks.REDSTONE_LAMP.defaultBlockState());
 			}
 		}
 		// A shelf of tile slabs under the face, and soul lanterns hanging either side.
@@ -849,7 +846,7 @@ public final class FactoryDesign {
 		for (int x : new int[] { -10, 9 }) {
 			solid(x, 14, WALL_Z + 1, Blocks.DEEPSLATE_TILE_STAIRS.defaultBlockState().setValue(StairBlock.FACING, Direction.NORTH).setValue(StairBlock.HALF, Half.TOP));
 			attach(x, 13, WALL_Z + 1, Blocks.IRON_CHAIN.defaultBlockState());
-			attach(x, 12, WALL_Z + 1, Blocks.SOUL_LANTERN.defaultBlockState().setValue(LanternBlock.HANGING, true));
+
 		}
 	}
 
@@ -889,7 +886,6 @@ public final class FactoryDesign {
 		// the back wall, a desk (tile slab on a lectern-and-stair frame) and a jukebox playing an eerie disc
 		// (music disc 13, loaded when the factory is placed). A sculk catalyst in the corner, where it grew in.
 		attach(17, 10, -2, Blocks.SOUL_LANTERN.defaultBlockState().setValue(LanternBlock.HANGING, true));
-		attach(17, 10, 2, Blocks.SOUL_LANTERN.defaultBlockState().setValue(LanternBlock.HANGING, true));
 		for (int x = 15; x <= 19; x++) {
 			for (int z = -3; z <= 3; z++) {
 				solid(x, 5, z, Blocks.WOOL.gray().defaultBlockState());
@@ -930,11 +926,9 @@ public final class FactoryDesign {
 			}
 			attach(x, 6, -1, Blocks.DEEPSLATE_TILE_WALL.defaultBlockState());
 		}
-		attach(10, 7, -1, Blocks.SOUL_LANTERN.defaultBlockState());
 		attach(13, 7, -1, Blocks.SOUL_LANTERN.defaultBlockState());
 		// A lamp in the floor under the Warden, so it shows in its window.
-		solid(16, 5, 1, Blocks.REDSTONE_LAMP.defaultBlockState().setValue(RedstoneLampBlock.LIT, true));
-		solid(16, 4, 1, Blocks.REDSTONE_BLOCK.defaultBlockState());
+
 		// Stairs down from the ledge to a walkway beside the deck.
 		for (int k = 0; k <= 4; k++) {
 			int z = 2 + k;
