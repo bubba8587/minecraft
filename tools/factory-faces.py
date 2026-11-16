@@ -31,20 +31,23 @@ FACES = [
 
 # Blocks the face may use: earthy, stony and sculk-friendly blocks first, concrete and terracotta for strong colours.
 # Glowing blocks (shroomlight, redstone lamp, ochre froglight...) only for eye overlays (they're picked separately).
+# Flat-looking blocks only (no bricks or cobbles: their seams fight the pixel shapes), so each face reads as clean
+# areas of colour. Glowing blocks only for eye overlays (picked separately).
 PALETTE = [
-	'deepslate_tiles', 'polished_deepslate', 'deepslate_bricks', 'cobbled_deepslate', 'blackstone', 'polished_blackstone',
-	'basalt_side', 'tuff', 'polished_tuff', 'andesite', 'stone', 'smooth_stone', 'calcite', 'bone_block_side', 'diorite',
-	'white_concrete', 'light_gray_concrete', 'gray_concrete', 'black_concrete', 'black_wool',
-	'green_concrete', 'lime_concrete', 'lime_terracotta', 'green_terracotta', 'moss_block', 'green_wool', 'lime_wool',
-	'cyan_terracotta', 'cyan_concrete', 'light_blue_terracotta', 'warped_wart_block', 'warped_planks',
-	'dark_prismarine',
-	'brown_terracotta', 'brown_concrete', 'brown_mushroom_block', 'mud_bricks', 'packed_mud', 'dirt', 'coarse_dirt',
-	'terracotta', 'light_gray_terracotta', 'gray_terracotta', 'black_terracotta', 'white_terracotta',
-	'purple_concrete', 'magenta_concrete', 'purple_terracotta', 'crying_obsidian', 'obsidian',
-	'red_concrete', 'red_terracotta', 'nether_wart_block', 'red_nether_bricks', 'yellow_terracotta', 'orange_terracotta',
-	'sand', 'weathered_cut_copper', 'oxidized_cut_copper', 'green_concrete_powder', 'lime_concrete_powder', 'lime_terracotta',
-	'sculk', 'sculk_catalyst_side',
+	'polished_deepslate', 'polished_blackstone', 'smooth_stone', 'calcite', 'bone_block_side', 'polished_diorite',
+	'white_concrete', 'light_gray_concrete', 'gray_concrete', 'black_concrete',
+	'green_concrete', 'lime_concrete', 'lime_terracotta', 'green_terracotta', 'moss_block', 'lime_wool',
+	'cyan_terracotta', 'cyan_concrete', 'warped_wart_block', 'oxidized_cut_copper', 'weathered_cut_copper',
+	'terracotta', 'light_gray_terracotta', 'gray_terracotta',
+	'black_terracotta', 'white_terracotta', 'purple_concrete', 'purple_terracotta', 'obsidian',
+	'red_concrete', 'red_terracotta', 'nether_wart_block', 'yellow_terracotta', 'orange_terracotta',
 ]
+# Tones per face: few enough that the face reads as shapes, not noise.
+# Blocks a face is limited to, where the nearest colour reads wrong (the spider's warm grey came out brown).
+ONLY = {'spider': ['black_concrete', 'polished_blackstone', 'gray_concrete', 'polished_deepslate', 'smooth_stone']}
+# Eye blocks picked by hand where the nearest glowing block reads wrong (spider eyes must be red).
+EYES = {'spider': 'magma'}
+TONES = {'zombie': 4, 'skeleton': 3, 'creeper': 3, 'spider': 3, 'enderman': 2}
 GLOW = ['shroomlight', 'redstone_lamp_on', 'ochre_froglight_side', 'pearlescent_froglight_side', 'verdant_froglight_side',
 	'crying_obsidian', 'magma', 'sea_lantern', 'glowstone']
 
@@ -95,17 +98,38 @@ def main():
 	for mob, path, u, v, eyes in FACES:
 		face = Image.open(os.path.join(tex, 'entity', path)).convert('RGBA').crop((u, v, u + 8, v + 8))
 		eye = Image.open(os.path.join(tex, 'entity', eyes)).convert('RGBA').crop((u, v, u + 8, v + 8)) if eyes else None
+		# Posterize: k-means the face's (non-eye) texels into a few tones, stretch them apart in lightness for
+		# contrast, then give each tone its nearest block. Eyes (the glowing overlay) all take one glowing block.
+		pixels = {}
+		eye_rgb = None
+		for y in range(8):
+			for x in range(8):
+				if eye is not None and eye.getpixel((x, y))[3] > 0 and max(eye.getpixel((x, y))[:3]) > 40:
+					if eye_rgb is None or max(eye.getpixel((x, y))[:3]) > max(eye_rgb):
+						eye_rgb = eye.getpixel((x, y))[:3]
+				else:
+					pixels[(x, y)] = to_lab(face.getpixel((x, y))[:3])
+		k = TONES[mob]
+		labs = sorted(pixels.values())
+		centres = [labs[int((i + 0.5) * len(labs) / k)] for i in range(k)]
+		for _ in range(20):
+			groups = [[] for _ in centres]
+			for lab in pixels.values():
+				groups[min(range(k), key=lambda i: math.dist(lab, centres[i]))].append(lab)
+			centres = [tuple(sum(c[j] for c in g) / len(g) for j in range(3)) if g else centres[i] for i, g in enumerate(groups)]
+		mean_l = sum(c[0] for c in centres) / k
+		stretched = [(max(0.0, min(100.0, mean_l + (c[0] - mean_l) * 1.35)), c[1] * 1.15, c[2] * 1.15) for c in centres]
+		block_of_tone = [min([b for b in palette if mob not in ONLY or b[0] in ONLY[mob]], key=lambda b: math.dist(c, b[1]))[0] for c in stretched]
+		eye_block = EYES.get(mob) or (nearest(eye_rgb, glow) if eye_rgb else None)
 		rows = []
 		for y in range(8):
 			row = []
 			for x in range(8):
-				if eye is not None and eye.getpixel((x, y))[3] > 0 and max(eye.getpixel((x, y))[:3]) > 200:
-					row.append(nearest(eye.getpixel((x, y))[:3], glow))
-				elif eye is not None and eye.getpixel((x, y))[3] > 0 and max(eye.getpixel((x, y))[:3]) > 60:
-					row.append(nearest(eye.getpixel((x, y))[:3], palette))
+				if (x, y) not in pixels:
+					row.append(eye_block)
 				else:
-					p = face.getpixel((x, y))
-					row.append(nearest(p[:3], palette) if p[3] > 0 else 'black_concrete')
+					lab = pixels[(x, y)]
+					row.append(block_of_tone[min(range(k), key=lambda i: math.dist(lab, centres[i]))])
 			rows.append(row)
 		grids[mob] = rows
 		print(mob)

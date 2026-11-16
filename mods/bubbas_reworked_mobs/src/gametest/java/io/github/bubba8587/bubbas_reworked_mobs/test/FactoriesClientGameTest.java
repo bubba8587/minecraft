@@ -69,7 +69,8 @@ public class FactoriesClientGameTest implements FabricClientGameTest {
 		shot(context, server, o, 5.5, 9.0, 1.5, 150.0F, -35.0F, "factory-ceiling-close");
 		shot(context, server, o, 0.5, 5.0, 12.5, 180.0F, 30.0F, "factory-platform");
 		shot(context, server, o, 0.5, 8.0, 7.5, 180.0F, 0.0F, "factory-face");
-		shot(context, server, o, 4.5, 7.5, 0.5, -90.0F, 3.0F, "factory-warden");
+		shot(context, server, o, 8.5, 8.0, 0.5, -90.0F, 4.0F, "factory-warden");
+		shot(context, server, o, -3.5, 7.0, 7.5, -125.0F, 8.0F, "factory-warden-wide");
 		shot(context, server, o, 2.5, 3.0, 4.5, 122.0F, -35.0F, "factory-beam");
 		shot(context, server, o, -6.5, 8.0, 10.5, 240.0F, 10.0F, "factory-tower");
 		server.runCommand("effect give @p minecraft:night_vision infinite 0 true");

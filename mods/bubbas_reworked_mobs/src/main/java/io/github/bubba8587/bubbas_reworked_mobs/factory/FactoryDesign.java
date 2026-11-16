@@ -107,7 +107,7 @@ public final class FactoryDesign {
 	private BlockPos spawner;
 	private BlockPos floorBeacon;
 	private BlockPos ceilingBeacon;
-	private final BlockPos warden = new BlockPos(17, 6, 0);
+	private final BlockPos warden = new BlockPos(15, 6, 0);
 	private final int[] ceilCache = new int[SX * SZ];
 
 	private FactoryDesign(long seed, Mob mob) {
@@ -374,21 +374,22 @@ public final class FactoryDesign {
 				}
 			}
 		}
-		// The spikes, hanging from the mass: denser and longer over the platform.
+		// The spikes, hanging from the mass like dripstone: many, thin and tapering, densest and longest over the
+		// middle of the platform (the drop point), reaching down toward the deck; short ones at the edges.
 		List<int[]> spikes = new ArrayList<>();
-		int count = 42 + this.random.nextInt(8);
+		int count = 60 + this.random.nextInt(10);
 		int tries = 0;
-		while (spikes.size() < count && tries++ < 1200) {
+		while (spikes.size() < count && tries++ < 3000) {
 			double a = this.random.nextDouble() * Math.PI * 2.0;
-			double r = Math.sqrt(this.random.nextDouble()) * 14.5;
+			double r = Math.pow(this.random.nextDouble(), 0.75) * 15.0;
 			int x = (int) Math.round(Math.cos(a) * r);
-			int z = (int) Math.round(Math.sin(a) * r);
-			if (nearBeam(x, z, 3.2) || !inGrowth(x, z) || x >= 12) {
+			int z = (int) Math.round(Math.sin(a) * r) + 1;
+			if (nearBeam(x, z, 2.6) || !inGrowth(x, z) || x >= 12) {
 				continue;
 			}
 			boolean crowded = false;
 			for (int[] s : spikes) {
-				if (Math.hypot(s[0] - x, s[1] - z) < 2.6) {
+				if (Math.hypot(s[0] - x, s[1] - z) < 2.2) {
 					crowded = true;
 					break;
 				}
@@ -396,14 +397,16 @@ public final class FactoryDesign {
 			if (crowded) {
 				continue;
 			}
-			double centre = 1.0 - r / 15.0;
-			int length = 4 + (int) Math.round(centre * 9.0 + this.random.nextDouble() * 4.0);
-			double base = 0.7 + centre * 1.2 + this.random.nextDouble() * 0.6;
+			double centre = Math.max(0.0, 1.0 - Math.hypot(x, z - 1) / 15.0);
+			int length = 3 + (int) Math.round(centre * centre * 11.0 + this.random.nextDouble() * (3.0 + centre * 5.0));
+			double base = 0.55 + centre * 0.9 + this.random.nextDouble() * 0.5;
 			// Keep the view clear: short over the face wall and in the Warden's line of sight.
-			if (z < -3 || x > 4 && Math.abs(z) < 5) {
-				length = Math.min(length, 3 + this.random.nextInt(2));
-				base = Math.min(base, 1.0);
+			if (z < -4 || x > 4 && Math.abs(z) < 5) {
+				length = Math.min(length, 3 + this.random.nextInt(3));
+				base = Math.min(base, 0.9);
 			}
+			// Never into the deck: tips stay 4 above it.
+			length = Math.min(length, ceil(x, z) - 5);
 			spikes.add(new int[] { x, z, length, (int) Math.round(base * 100) });
 		}
 		int[] biggest = null;
@@ -412,6 +415,23 @@ public final class FactoryDesign {
 			if (biggest == null || s[2] * s[3] > biggest[2] * biggest[3]) {
 				biggest = s;
 			}
+		}
+		// Thin strands between the spikes: single bone-and-basalt drips ending in a dripstone point.
+		for (int i = 0; i < 40; i++) {
+			double a = this.random.nextDouble() * Math.PI * 2.0;
+			double r = Math.sqrt(this.random.nextDouble()) * 15.0;
+			int x = (int) Math.round(Math.cos(a) * r);
+			int z = (int) Math.round(Math.sin(a) * r);
+			if (nearBeam(x, z, 1.6) || !inGrowth(x, z) || !isOpen(x, ceil(x, z) - 1, z) || z < -4 && this.random.nextBoolean()) {
+				continue;
+			}
+			int c = ceil(x, z);
+			int length = 1 + this.random.nextInt(z < -4 ? 2 : 6);
+			int y = c - 1;
+			for (int d = 0; d < length && isOpen(x, y - 1, z); d++, y--) {
+				solid(x, y, z, d % 3 == 2 ? Blocks.BASALT.defaultBlockState() : Blocks.BONE_BLOCK.defaultBlockState());
+			}
+			drip(x, y, z, 1 + this.random.nextInt(3));
 		}
 		// The inert spawner, buried two blocks up inside the mass over the biggest spike, wrapped in bone.
 		int sx = biggest[0];
@@ -426,52 +446,73 @@ public final class FactoryDesign {
 
 	private void spike(int x0, int z0, int length, double base) {
 		int top = ceil(x0, z0);
-		double lean = (this.random.nextDouble() - 0.5) * 0.25;
-		double leanZ = (this.random.nextDouble() - 0.5) * 0.25;
-		boolean bulb = this.random.nextFloat() < 0.35F;
+		double lean = (this.random.nextDouble() - 0.5) * 0.2;
+		double leanZ = (this.random.nextDouble() - 0.5) * 0.2;
+		int tipX = x0;
+		int tipZ = z0;
+		int tipY = top - 1;
 		for (int d = 0; d < length; d++) {
 			double t = (double) d / length;
-			double radius = base * Math.pow(1.0 - t, 0.85) + 0.35;
+			// Sharper taper than a cone: a fat root, then a long thin drip.
+			double radius = base * Math.pow(1.0 - t, 1.6) + 0.3;
 			double cx = x0 + lean * d;
 			double cz = z0 + leanZ * d;
 			int y = top - 1 - d;
 			int reach = (int) Math.ceil(radius);
+			boolean any = false;
 			for (int x = (int) Math.floor(cx) - reach; x <= (int) Math.ceil(cx) + reach; x++) {
 				for (int z = (int) Math.floor(cz) - reach; z <= (int) Math.ceil(cz) + reach; z++) {
 					double dist = Math.hypot(x - cx, z - cz);
 					if (dist <= radius && !nearBeam(x, z, 1.5)) {
 						solid(x, y, z, spikeBlock(x, y, z, d, t, dist > radius - 0.9));
+						any = true;
 					}
 				}
 			}
-			// Mid-spike glow: a shroomlight knot in the bigger ones.
-			if (base > 1.8 && d == length / 2) {
+			if (!any) {
+				solid((int) Math.round(cx), y, (int) Math.round(cz), Blocks.BONE_BLOCK.defaultBlockState());
+			}
+			// A shroomlight knot glowing in the roots of the bigger ones.
+			if (base > 1.25 && d == 1) {
 				solid((int) Math.round(cx), y, (int) Math.round(cz), Blocks.SHROOMLIGHT.defaultBlockState());
 			}
+			tipX = (int) Math.round(cx);
+			tipZ = (int) Math.round(cz);
+			tipY = y;
 		}
-		int tipX = (int) Math.round(x0 + lean * length);
-		int tipZ = (int) Math.round(z0 + leanZ * length);
-		int tipY = top - 1 - length;
-		if (bulb) {
-			solid(tipX, tipY + 1, tipZ, Blocks.SHROOMLIGHT.defaultBlockState());
-		} else if (isOpen(tipX, tipY, tipZ)) {
-			// A thin bone point.
-			attach(tipX, tipY, tipZ, Blocks.POINTED_DRIPSTONE.defaultBlockState()
-					.setValue(BlockStateProperties.VERTICAL_DIRECTION, Direction.DOWN)
-					.setValue(BlockStateProperties.SPELEOTHEM_THICKNESS, net.minecraft.world.level.block.state.properties.SpeleothemThickness.TIP));
-		}
+		// The point: a dripstone drip 1-4 long under the last block.
+		drip(tipX, tipY, tipZ, 1 + this.random.nextInt(length > 8 ? 4 : 2));
 		// Weeping vines from the spike's shoulders.
 		int vines = this.random.nextInt(3);
 		for (int i = 0; i < vines; i++) {
 			int d = this.random.nextInt(Math.max(1, length / 2));
-			double radius = base * Math.pow(1.0 - (double) d / length, 0.85) + 0.35;
+			double radius = base * Math.pow(1.0 - (double) d / length, 1.6) + 0.3;
 			double a = this.random.nextDouble() * Math.PI * 2.0;
 			int vx = (int) Math.round(x0 + Math.cos(a) * (radius + 1.0));
 			int vz = (int) Math.round(z0 + Math.sin(a) * (radius + 1.0));
 			int vy = top - 1 - d;
 			if (isOpen(vx, vy, vz) && !isOpen(vx, vy + 1, vz) && !nearBeam(vx, vz, 1.5)) {
-				hangVines(vx, vy, vz, 2 + this.random.nextInt(5));
+				hangVines(vx, vy, vz, 2 + this.random.nextInt(6));
 			}
+		}
+	}
+
+	/** Hangs a pointed dripstone of {@code length} under the solid block at (x, y, z), shaped like vanilla's. */
+	private void drip(int x, int y, int z, int length) {
+		int n = 0;
+		while (n < length && isOpen(x, y - n - 1, z) && isOpen(x, y - n - 2, z) && !nearBeam(x, z, 1.5)) {
+			n++;
+		}
+		for (int i = 0; i < n; i++) {
+			int fromTip = n - 1 - i;
+			net.minecraft.world.level.block.state.properties.SpeleothemThickness thickness = fromTip == 0
+					? net.minecraft.world.level.block.state.properties.SpeleothemThickness.TIP
+					: fromTip == 1 ? net.minecraft.world.level.block.state.properties.SpeleothemThickness.FRUSTUM
+					: i == 0 ? net.minecraft.world.level.block.state.properties.SpeleothemThickness.BASE
+					: net.minecraft.world.level.block.state.properties.SpeleothemThickness.MIDDLE;
+			attach(x, y - 1 - i, z, Blocks.POINTED_DRIPSTONE.defaultBlockState()
+					.setValue(BlockStateProperties.VERTICAL_DIRECTION, Direction.DOWN)
+					.setValue(BlockStateProperties.SPELEOTHEM_THICKNESS, thickness));
 		}
 	}
 
@@ -737,7 +778,7 @@ public final class FactoryDesign {
 			for (int z = -4; z <= 4; z++) {
 				for (int y = floor(Math.min(x, 16), z) - 1; y <= 21; y++) {
 					boolean inside = x > x0 && x < x1 && Math.abs(z) < 4 && y >= 6 && y <= 10;
-					boolean window = x == x0 && Math.abs(z) <= 1 && y >= 6 && y <= 9;
+					boolean window = x == x0 && Math.abs(z) <= 2 && y >= 6 && y <= 10;
 					if (inside || window) {
 						solid(x, y, z, Blocks.AIR.defaultBlockState());
 						continue;
@@ -746,7 +787,7 @@ public final class FactoryDesign {
 					BlockState s;
 					if (corner) {
 						s = Blocks.POLISHED_DEEPSLATE.defaultBlockState();
-					} else if (x == x0 && Math.abs(z) <= 2 && (y == 5 || y == 10) || x == x0 && Math.abs(z) == 2 && y >= 5 && y <= 10) {
+					} else if (x == x0 && Math.abs(z) <= 3 && (y == 5 || y == 11) || x == x0 && Math.abs(z) == 3 && y >= 5 && y <= 11) {
 						s = Blocks.CHISELED_DEEPSLATE.defaultBlockState(); // window frame
 					} else if (y == 5 && x > x0 && x < x1) {
 						s = hash(x, y, z, 1) < 0.5 ? Blocks.SCULK.defaultBlockState() : Blocks.POLISHED_DEEPSLATE.defaultBlockState();
@@ -775,8 +816,8 @@ public final class FactoryDesign {
 		attach(10, 7, -1, Blocks.SOUL_LANTERN.defaultBlockState());
 		attach(13, 7, -1, Blocks.SOUL_LANTERN.defaultBlockState());
 		// A lamp in the floor under the Warden, so it shows in its window.
-		solid(16, 5, 0, Blocks.REDSTONE_LAMP.defaultBlockState().setValue(RedstoneLampBlock.LIT, true));
-		solid(16, 4, 0, Blocks.REDSTONE_BLOCK.defaultBlockState());
+		solid(16, 5, 1, Blocks.REDSTONE_LAMP.defaultBlockState().setValue(RedstoneLampBlock.LIT, true));
+		solid(16, 4, 1, Blocks.REDSTONE_BLOCK.defaultBlockState());
 		// Stairs down from the ledge to a walkway beside the deck.
 		for (int k = 0; k <= 4; k++) {
 			int z = 2 + k;
