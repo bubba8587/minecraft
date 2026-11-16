@@ -11,6 +11,7 @@
 | `bubbas_reworked_mobs:monster_cap_percent` | 0 to 100 | 15 | How many monsters spawn naturally, as a percentage of normal. See [[Monster Spawning]]. |
 | `bubbas_reworked_mobs:cut_monster_spawns` | `true` or `false` | `true` | Set to `false` to turn the spawn cut off completely, for example when another mod controls spawning. |
 | `bubbas_reworked_mobs:watcher_creepers` | `true` or `false` | `true` | Each player has one watching creeper at night and random creeper spawns are off. Set to `false` for normal creeper spawning. See [[Creepers]]. |
+| `bubbas_reworked_mobs:cairn_endermen` | `true` or `false` | `true` | Overworld endermen spawn only near enderman cairns. Set to `false` for normal enderman spawning. See [[Endermen]]. |
 
 Game rules are set with `/gamerule`, for example `/gamerule bubbas_reworked_mobs:monster_cap_percent 30`.
 
@@ -27,3 +28,15 @@ Puts an item on display. Requires operator permission; intended for building and
 - Without a position, the item goes where the player is looking (within 20 blocks), turned toward the player. `wall` hangs it on the side of the block the player is looking at.
 - With a position, and optionally a direction, it is placed exactly there.
 - The command fails if the spot is taken or has nothing to hold the item up.
+
+### cairn
+
+*Main article: [[Endermen]]*
+
+Finds and builds enderman cairns. Requires operator permission; intended for building and testing.
+
+**Syntax:** `/bubbas_reworked_mobs cairn <locate|build|here> [<seed>]`
+
+- `locate` names the nearest cairn site within 1024 blocks, how complete it is and which way it points.
+- `build` finishes the nearest cairn within 128 blocks.
+- `here` adds a cairn site at the player's feet and builds it; a seed picks its design.

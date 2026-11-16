@@ -48,6 +48,8 @@ Reworked Mobs no longer depends on Reworked Beacons at all (its `compileOnly` an
 - `void keepAsleep(ServerLevel, Object source, AABB area, int lifetimeTicks)` / `void release(ServerLevel, Object source)`: sleepers in the area never wake from noise; each source's area lapses unless refreshed. A full-pyramid ward. Backed by Reworked Mobs' `undead/sleeper/SleepAreas`.
 - `boolean isKeptAsleep(Level, BlockPos)`, `boolean isSleeper(Level, BlockPos)`, `double nearestSqr(Level, Vec3, double range)` (client or server; what the talisman senses).
 
+**The endermen hook (Reworked Mobs `api.Endermen`; stable: add, don't change):** `keepOut(ServerLevel, Object source, AABB area, int lifetimeTicks)` / `release(ServerLevel, Object source)` / `isKeptOut(Level, BlockPos)`. Every ward also keeps Reworked Mobs' endermen (their jobs and cairn spawning) out, through `SleeperHook.keepEndermenOut` / `releaseEndermen`.
+
 This mod reaches it only through `compat/SleeperHook`, picked once by `FabricLoader.isModLoaded("bubbas_reworked_mobs")`; only `compat/ReworkedMobsSleepers` names Reworked Mobs' classes, and it is created only when that mod is loaded. Without Reworked Mobs the talisman senses `#minecraft:undead` mobs only, and the totem still scares monsters, stops natural spawns in a ward, keeps monsters and happy ghasts out and pushes flyers out; it just has no sleepers to calm or keep asleep. On a beacon screen the "sleeping undead stay asleep" line shows only when Reworked Mobs is installed *(agent's choice: without it the line describes nothing)*.
 
 ### Saved worlds (old item ids)

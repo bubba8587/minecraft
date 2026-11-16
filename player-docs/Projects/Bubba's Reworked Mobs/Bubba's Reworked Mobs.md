@@ -18,7 +18,7 @@ side: client and server
 > | **Side** | Client and server |
 > | **Status** | Active |
 
-**Bubba's Reworked Mobs** is a Fabric mod that reworks Minecraft's mobs one family at a time. Part 1 covers the undead: skeletons and zombies lie dormant in the world as bodies that wake when players make noise near them, and far fewer monsters spawn on their own. Creepers are nervous watchers that explode only when startled.
+**Bubba's Reworked Mobs** is a Fabric mod that reworks Minecraft's mobs one family at a time. Part 1 covers the undead: skeletons and zombies lie dormant in the world as bodies that wake when players make noise near them, and far fewer monsters spawn on their own. Creepers are nervous watchers that explode only when startled, and endermen mend the land and build cairns.
 
 In this early test version, sleeping bodies use the normal skeleton and zombie look, and item icons are placeholders until the final art is drawn.
 
@@ -61,6 +61,12 @@ The [[Grave Talisman]] and the [[Totem of Warding]] are now part of [[Bubba's To
 *Main article: [[Creepers]]*
 
 Creepers watch players from behind cover and explode only when startled repeatedly; calm players are safe, and crouching during a hiss calms them. Each player has one watching creeper at night instead of random creeper spawns.
+
+## Endermen
+
+*Main article: [[Endermen]]*
+
+Endermen slowly put the overworld back the way it first generated and build twisting purpur cairns, which point toward strongholds. They spawn from cairn sites instead of anywhere.
 
 ## Monster spawning
 
