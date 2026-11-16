@@ -9,6 +9,7 @@
 		"BreezeVeerMixin",
 		"EnchantmentHelperMixin",
 		"EnchantmentMenuMixin",
+		"EnderConfusionMixin",
 		"EntityMixin",
 		"GrindstoneMenuAccessor",
 		"GrindstoneMenuMixin",

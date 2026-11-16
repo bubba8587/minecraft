@@ -17,6 +17,8 @@ public final class ModAttachments {
 	/** On a wearer: game time of the last Absorption equip-fill (saved, kept on death, so rejoining or respawning can't refill). */
 	public static final AttachmentType<Long> LAST_EQUIP_FILL = AttachmentRegistry.create(BubbasInfusedGems.id("last_equip_fill"),
 			builder -> builder.persistent(Codec.LONG).copyOnDeath());
+	/** On a mob an Ender hit blinked away: game time until which it takes no new target (owner); not saved. */
+	public static final AttachmentType<Long> ENDER_CONFUSED_UNTIL = AttachmentRegistry.create(BubbasInfusedGems.id("ender_confused_until"));
 
 
 	private ModAttachments() {

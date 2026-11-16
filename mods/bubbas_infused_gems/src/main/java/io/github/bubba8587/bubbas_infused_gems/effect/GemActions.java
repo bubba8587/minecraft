@@ -144,8 +144,21 @@ public final class GemActions {
 		if (!target.isAlive() || target.getRandom().nextDouble() >= Balance.get().hitCurve("ender", "value", Math.min(1.0, rel(s)))) {
 			return;
 		}
-		new net.minecraft.world.item.consume_effects.TeleportRandomlyConsumeEffect((float) num("ender", "hit_diameter", 16.0), false)
+		boolean blinked = new net.minecraft.world.item.consume_effects.TeleportRandomlyConsumeEffect((float) num("ender", "hit_diameter", 16.0), false)
 				.apply(level, ItemStack.EMPTY, target);
+		if (blinked && target instanceof net.minecraft.world.entity.Mob mob) {
+			// Owner: a blinked mob is briefly confused: it drops its target and takes none for ENDER_CONFUSED_TICKS (vanilla's
+			// own target slot and attack-target memory; Mob.setTarget is held off meanwhile). Players only teleport.
+			mob.setTarget(null);
+			mob.getBrain().eraseMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.ATTACK_TARGET);
+			mob.setAttached(ModAttachments.ENDER_CONFUSED_UNTIL, level.getGameTime() + (long) num("ender", "confused_ticks", 20));
+		}
+	}
+
+	/** Whether this mob is still confused after an Ender blink (it takes no new target). */
+	public static boolean enderConfused(net.minecraft.world.entity.Mob mob) {
+		Long until = mob.getAttached(ModAttachments.ENDER_CONFUSED_UNTIL);
+		return until != null && mob.level().getGameTime() < until;
 	}
 
 	/**

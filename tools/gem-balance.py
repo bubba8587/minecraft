@@ -583,6 +583,7 @@ HIT_CURVES = {
 }
 WEAVING_PERFECT_WEBS = (2, 3)     # Q14: the perfect weapon drops vanilla Weaving's 2-3 webs around the target
 ENDER_HIT_DIAMETER = 16.0         # Q18: chorus fruit's own teleport (up to 8 blocks any way, lands on a floor)
+ENDER_CONFUSED_TICKS = 20         # owner: a mob an Ender hit blinked drops its target and takes none for this long (1 s)
 
 def hit_refs():
 	early = next(b for b in WEAPON_BUILDS if b[0] == "Early")
@@ -652,7 +653,7 @@ def hit_show(key, s):
 ACTION_HIT = {
 	"wind_charged": lambda s: f"throws the target {wind_up(s):.2f} up and {WIND_HIT_PUSH_BEST * rel(s):.2f} away (blocks/tick)",
 	"weaving": lambda s: f"{hit_curve('weaving', 'value', s):.0%} chance to web the target in place" + (f" ({WEAVING_PERFECT_WEBS[0]}-{WEAVING_PERFECT_WEBS[1]} webs around it)" if s >= CAP - 1e-9 else ""),
-	"ender": lambda s: f"{hit_curve('ender', 'value', s):.0%} chance to blink the target away, as chorus fruit (up to {ENDER_HIT_DIAMETER / 2:.0f} blocks)",
+	"ender": lambda s: f"{hit_curve('ender', 'value', s):.0%} chance to blink the target away, as chorus fruit (up to {ENDER_HIT_DIAMETER / 2:.0f} blocks); a blinked mob loses its target for {ENDER_CONFUSED_TICKS / 20:g} s",
 	"oozing": lambda s: f"a kill splits off {OOZING_SLIMES[0] if rel(s) < 0.5 else OOZING_SLIMES[1]} small neutral slime(s) of yours",
 }
 
@@ -1846,7 +1847,7 @@ WORN = {
 	"weaving": {"web_chance": WEAVING_WEB_CHANCE_BEST, "perfect_webs_min": WEAVING_PERFECT_WEBS[0], "perfect_webs_max": WEAVING_PERFECT_WEBS[1]},
 	"oozing": {"bounce": OOZING_BOUNCE_BEST, "slimes_min": OOZING_SLIMES[0], "slimes_max": OOZING_SLIMES[1], "slime_cap": OOZING_SLIME_CAP},
 	"silence": {"silence": 1.0},
-	"ender": {"hit_diameter": ENDER_HIT_DIAMETER, "chance": ENDER_CHANCE_BEST, "diameter_min": ENDER_DIAMETER[0], "diameter_max": ENDER_DIAMETER[1]},
+	"ender": {"hit_diameter": ENDER_HIT_DIAMETER, "confused_ticks": ENDER_CONFUSED_TICKS, "chance": ENDER_CHANCE_BEST, "diameter_min": ENDER_DIAMETER[0], "diameter_max": ENDER_DIAMETER[1]},
 	"breeze": {"chance": BREEZE_CHANCE_BEST},
 	"infested": {"hurt_chance": 1.0},
 }

@@ -2680,6 +2680,7 @@
 			"rarity": "uncommon",
 			"worn": {
 				"hit_diameter": 16.0,
+				"confused_ticks": 20,
 				"chance": 1.0,
 				"diameter_min": 4.0,
 				"diameter_max": 16.0

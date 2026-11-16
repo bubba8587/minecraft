@@ -99,7 +99,7 @@ Each hit gives the target an effect for a few seconds, refreshed (never added up
 | Levitation | The target floats up: slowly for 3 seconds with a weak gem (0.3 blocks a second), faster and longer with stronger ones, up to 1.8 blocks a second for 6 seconds with the best (twice a shulker bullet's speed). Coming down hurts |
 | Wind Burst | Throws the target up and away like a wind charge; even a weak gem throws it about half a block |
 | Weaving | A chance to web the target with a real cobweb: 10% with a weak gem, 25% with a good one, 50% with the best, which drops 2 to 3 webs around it |
-| Ender | A chance to teleport the target away like chorus fruit (up to 8 blocks, onto a floor): 10% with a weak gem, 25% with a good one, 40% with the best. Works on players too |
+| Ender | A chance to teleport the target away like chorus fruit (up to 8 blocks, onto a floor): 10% with a weak gem, 25% with a good one, 40% with the best. A mob that gets teleported is confused for a second and forgets who it was fighting. Works on players too (they are only teleported) |
 | Breeze | For a few seconds the target's own arrows, tridents and fireballs fly off course: a little with a weak gem, most of them miss with the best |
 | Harming | A little extra magic damage on every hit (up to 2.25) |
 | Healing | Heals the target a little on every hit (up to 1.8) |
