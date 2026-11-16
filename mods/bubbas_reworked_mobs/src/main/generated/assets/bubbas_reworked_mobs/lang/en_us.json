@@ -1,7 +1,4 @@
 {
-  "beacon.bubbas_reworked_mobs.ward": "No monsters spawn or enter",
-  "beacon.bubbas_reworked_mobs.ward_sleepers": "Sleeping undead stay asleep",
-  "beacon.bubbas_reworked_mobs.ward_sleepers_needs": "4 layers: sleeping undead stay asleep",
   "block.bubbas_reworked_mobs.loot_display": "Loot on Display",
   "block.bubbas_reworked_mobs.loot_display.buried_hint": "It's buried. Dig it up with a shovel.",
   "block.bubbas_reworked_mobs.skeleton_sleeper": "Sleeping Skeleton",
@@ -15,7 +12,5 @@
   "entity.bubbas_reworked_mobs.woken_zombie": "Zombie",
   "gamerule.bubbas_reworked_mobs.cut_monster_spawns": "Cut natural monster spawns",
   "gamerule.bubbas_reworked_mobs.monster_cap_percent": "Natural monster cap (% of vanilla)",
-  "item.bubbas_reworked_mobs.grave_talisman": "Grave Talisman",
-  "item.bubbas_reworked_mobs.totem_of_warding": "Totem of Warding",
   "itemGroup.bubbas_reworked_mobs": "Bubba's Reworked Mobs"
 }

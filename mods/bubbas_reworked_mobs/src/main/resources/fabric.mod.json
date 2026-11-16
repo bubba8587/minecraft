@@ -17,9 +17,6 @@
 		"client": [
 			"io.github.bubba8587.bubbas_reworked_mobs.client.BubbasReworkedMobsClient"
 		],
-		"bubbas_reworked_beacons:payload": [
-			"io.github.bubba8587.bubbas_reworked_mobs.compat.WardingBeaconPayload"
-		],
 		"fabric-datagen": [
 			"io.github.bubba8587.bubbas_reworked_mobs.client.datagen.ModDataGenerator"
 		]
@@ -38,6 +35,6 @@
 		"fabric-api": "*"
 	},
 	"suggests": {
-		"bubbas_reworked_beacons": "*"
+		"bubbas_totems_artifacts": "*"
 	}
 }

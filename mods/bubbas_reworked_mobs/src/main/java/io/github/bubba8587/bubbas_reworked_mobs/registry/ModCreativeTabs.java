@@ -31,8 +31,6 @@ public final class ModCreativeTabs {
 								output.accept(withPose(new ItemStack(ModItems.sleeper(variant)), pose));
 							}
 						}
-						output.accept(ModItems.GRAVE_TALISMAN);
-						output.accept(ModItems.TOTEM_OF_WARDING);
 					})
 					.build());
 

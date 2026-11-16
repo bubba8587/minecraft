@@ -79,6 +79,18 @@ public final class UndeadTuning {
 	/** One awaken game event wakes at most this many sleepers (Lorespawn capped cascades at 4). */
 	public static final int AWAKEN_CAP = 4;
 
+	// --- light at a sleeper (specs/undead.md "Warding"; was WardingTuning before the Totem of Warding moved out) ---
+	/** Block light at the sleeper at or above this makes noise count less (monster spawners stop above 11). */
+	public static final int LIGHT_CALM_LEVEL = 12;
+	/** ... by this factor. */
+	public static final float LIGHT_CALM_FACTOR = 0.7F;
+
+	// --- bells -----------------------------------------------------------------------------------
+	/** A bell's ring at the bell, in disturbance points (wake 100). Falls off linearly to nothing at BELL_RANGE. */
+	public static final float BELL_POINTS = 250.0F;
+	/** Sleepers hear a bell this far, as far as players hear it (its sound plays at volume 2: 32 blocks). */
+	public static final double BELL_RANGE = 32.0;
+
 	private UndeadTuning() {
 	}
 

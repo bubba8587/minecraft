@@ -1,0 +1,41 @@
+{
+	"schemaVersion": 1,
+	"id": "${mod_id}",
+	"version": "${version}",
+	"name": "Bubba's Totems & Artifacts",
+	"description": "Found artifacts that do what potions and enchantments don't: the Grave Talisman and the Totem of Warding.",
+	"authors": [
+		"bubba8587"
+	],
+	"license": "MIT",
+	"icon": "assets/bubbas_totems_artifacts/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"io.github.bubba8587.bubbas_totems_artifacts.BubbasTotemsArtifacts"
+		],
+		"client": [
+			"io.github.bubba8587.bubbas_totems_artifacts.client.BubbasTotemsArtifactsClient"
+		],
+		"bubbas_reworked_beacons:payload": [
+			"io.github.bubba8587.bubbas_totems_artifacts.compat.WardingBeaconPayload"
+		]
+	},
+	"mixins": [
+		"bubbas_totems_artifacts.mixins.json",
+		{
+			"config": "bubbas_totems_artifacts.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=${loader_version}",
+		"minecraft": "~${minecraft_version}",
+		"java": ">=${java_version}",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"bubbas_reworked_mobs": "*",
+		"bubbas_reworked_beacons": "*"
+	}
+}

@@ -4,7 +4,6 @@ package io.github.bubba8587.bubbas_reworked_mobs.client.datagen;
 import java.util.concurrent.CompletableFuture;
 
 import io.github.bubba8587.bubbas_reworked_mobs.BubbasReworkedMobs;
-import io.github.bubba8587.bubbas_reworked_mobs.client.undead.GraveTalismanGlow;
 import io.github.bubba8587.bubbas_reworked_mobs.display.LootDisplays;
 import io.github.bubba8587.bubbas_reworked_mobs.registry.ModBlocks;
 import io.github.bubba8587.bubbas_reworked_mobs.registry.ModCreativeTabs;
@@ -18,11 +17,8 @@ import io.github.bubba8587.bubbas_reworked_mobs.undead.sleeper.SleeperBlock;
 import net.minecraft.advancements.predicates.ItemPredicate;
 import net.minecraft.client.data.models.BlockModelGenerators;
 import net.minecraft.client.data.models.ItemModelGenerators;
-import net.minecraft.client.data.models.model.ItemModelUtils;
 import net.minecraft.client.data.models.model.ModelTemplates;
 import net.minecraft.client.data.models.model.TextureMapping;
-import net.minecraft.client.renderer.item.ItemModel;
-import net.minecraft.client.renderer.item.RangeSelectItemModel;
 import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
@@ -164,12 +160,6 @@ public class ModDataGenerator implements DataGeneratorEntrypoint {
 			builder.add(ModItems.sleeper(UndeadVariant.ZOMBIE), "Sleeping Zombie");
 			builder.add(ModEntities.woken(UndeadVariant.SKELETON), "Skeleton");
 			builder.add(ModEntities.woken(UndeadVariant.ZOMBIE), "Zombie");
-			builder.add(ModItems.GRAVE_TALISMAN, "Grave Talisman");
-			builder.add(ModItems.TOTEM_OF_WARDING, "Totem of Warding");
-			// Shown on a Bubba's Reworked Beacons beacon screen (compat/WardingBeaconPayload).
-			builder.add("beacon.bubbas_reworked_mobs.ward", "No monsters spawn or enter");
-			builder.add("beacon.bubbas_reworked_mobs.ward_sleepers", "Sleeping undead stay asleep");
-			builder.add("beacon.bubbas_reworked_mobs.ward_sleepers_needs", "4 layers: sleeping undead stay asleep");
 			builder.add(ModCreativeTabs.MAIN_KEY, "Bubba's Reworked Mobs");
 			builder.add(ModBlocks.LOOT_DISPLAY, "Loot on Display");
 			builder.add(LootDisplays.BURIED_HINT, "It's buried. Dig it up with a shovel.");
@@ -208,18 +198,6 @@ public class ModDataGenerator implements DataGeneratorEntrypoint {
 			for (UndeadVariant variant : UndeadVariant.values()) {
 				gen.generateFlatItem(ModItems.sleeper(variant), ModelTemplates.FLAT_ITEM);
 			}
-			gen.generateFlatItem(ModItems.TOTEM_OF_WARDING, ModelTemplates.FLAT_ITEM);
-			// Grave Talisman: the flat item, plus a lit gem by glow level. The models are hand-written in src/main/resources
-			// (they share a held pose, item/grave_talisman_held, and the gem cuboids give off light).
-			GraveTalismanGlow.registerProperty();
-			ItemModel.Unbaked flat = ItemModelUtils.plainModel(BubbasReworkedMobs.id("item/grave_talisman"));
-			gen.itemModelOutput.accept(ModItems.GRAVE_TALISMAN, ItemModelUtils.rangeSelect(new GraveTalismanGlow.Property(), flat,
-					glow(flat, 1), glow(flat, 2), glow(flat, 3)));
-		}
-
-		private static RangeSelectItemModel.Entry glow(ItemModel.Unbaked flat, int level) {
-			return ItemModelUtils.override(ItemModelUtils.composite(flat,
-					ItemModelUtils.plainModel(BubbasReworkedMobs.id("item/grave_talisman_glow_" + level))), level);
 		}
 	}
 }

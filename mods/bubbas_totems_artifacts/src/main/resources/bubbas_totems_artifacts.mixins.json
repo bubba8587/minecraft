@@ -1,0 +1,16 @@
+{
+	"required": true,
+	"package": "io.github.bubba8587.bubbas_totems_artifacts.mixin",
+	"compatibilityLevel": "JAVA_25",
+	"mixins": [
+		"MobAccessor",
+		"MobTickMixin",
+		"PhantomSpawnerMixin",
+		"SwimNodeEvaluatorMixin",
+		"WalkNodeEvaluatorMixin",
+		"WardSpawnStateMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

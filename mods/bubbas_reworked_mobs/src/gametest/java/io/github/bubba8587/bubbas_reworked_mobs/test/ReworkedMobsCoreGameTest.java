@@ -48,33 +48,18 @@ public class ReworkedMobsCoreGameTest {
 		new UndeadCombatGameTest().zombieHeadshotsHurtMore(helper);
 	}
 
-	@GameTest(environment = "bubbas_reworked_mobs-test:talisman", structure = "bubbas_reworked_mobs-test:drift_lane", maxTicks = 40)
-	public void sensesSleepersAndUndead(GameTestHelper helper) {
-		new GraveTalismanGameTest().sensesSleepersAndUndead(helper);
-	}
-
-	@GameTest(environment = "bubbas_reworked_mobs-test:warding_pulse", structure = "bubbas_reworked_mobs-test:hearing_field", maxTicks = 60)
-	public void heldTotemPulsesScaresMonstersAndCalmsSleepers(GameTestHelper helper) {
-		new WardingGameTest().heldTotemPulsesScaresMonstersAndCalmsSleepers(helper);
-	}
-
 	@GameTest(environment = "bubbas_reworked_mobs-test:warding_light", structure = "bubbas_reworked_mobs-test:hearing_field", maxTicks = 600)
 	public void strongLightCalmsSleepers(GameTestHelper helper) {
-		new WardingGameTest().strongLightCalmsSleepers(helper);
+		new SleeperCalmGameTest().strongLightCalmsSleepers(helper);
 	}
 
 	@GameTest(environment = "bubbas_reworked_mobs-test:warding_bell", structure = "bubbas_reworked_mobs-test:hearing_field", maxTicks = 20)
 	public void bellsAreLoudToSleepers(GameTestHelper helper) {
-		new WardingGameTest().bellsAreLoudToSleepers(helper);
+		new SleeperCalmGameTest().bellsAreLoudToSleepers(helper);
 	}
 
-	@GameTest(environment = "bubbas_reworked_mobs-test:warding_ward", structure = "bubbas_reworked_mobs-test:hearing_field", maxTicks = 300)
-	public void wardStopsSpawnsKeepsSleepersAndSendsMonstersOut(GameTestHelper helper) {
-		new WardingGameTest().wardStopsSpawnsKeepsSleepersAndSendsMonstersOut(helper);
-	}
-
-	@GameTest(environment = "bubbas_reworked_mobs-test:warding_barrier", structure = "bubbas_reworked_mobs-test:hearing_field", maxTicks = 300)
-	public void wardPushesBackMobsThatDoNotPath(GameTestHelper helper) {
-		new WardingGameTest().wardPushesBackMobsThatDoNotPath(helper);
+	@GameTest(environment = "bubbas_reworked_mobs-test:warding_bell", structure = "bubbas_reworked_mobs-test:hearing_field", maxTicks = 20)
+	public void apiCalmsSensesAndKeepsSleepersAsleep(GameTestHelper helper) {
+		new SleeperCalmGameTest().apiCalmsSensesAndKeepsSleepersAsleep(helper);
 	}
 }

@@ -4,12 +4,7 @@
 	"compatibilityLevel": "JAVA_25",
 	"mixins": [
 		"BellBlockMixin",
-		"MobAccessor",
-		"PhantomSpawnerMixin",
-		"MobTickMixin",
-		"SpawnStateMixin",
-		"SwimNodeEvaluatorMixin",
-		"WalkNodeEvaluatorMixin"
+		"SpawnStateMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1
