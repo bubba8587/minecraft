@@ -9,7 +9,7 @@ setblock 14 -60 -5 minecraft:air
 setblock 11 -60 -9 minecraft:end_stone_bricks
 setblock 13 -60 -5 minecraft:end_stone_bricks
 setblock 10 -60 -7 minecraft:end_stone_bricks
-setblock 14 -60 -6 minecraft:obsidian
+setblock 14 -60 -6 minecraft:purpur_block
 # Second course (y -59): 3x3 with a purpur heart.
 fill 11 -59 -8 13 -59 -6 minecraft:end_stone_bricks
 setblock 12 -59 -7 minecraft:purpur_block
@@ -23,7 +23,7 @@ setblock 12 -58 -8 minecraft:end_stone_brick_stairs[facing=south]
 setblock 12 -58 -6 minecraft:end_stone_brick_stairs[facing=north]
 # Column (y -57, -56).
 setblock 12 -57 -7 minecraft:purpur_pillar
-setblock 12 -56 -7 minecraft:obsidian
+setblock 12 -56 -7 minecraft:end_stone_bricks
 # Leaning top stone, offset one block east (the pointer), with an end rod.
 setblock 13 -55 -7 minecraft:end_stone
 setblock 13 -54 -7 minecraft:end_rod[facing=up]
