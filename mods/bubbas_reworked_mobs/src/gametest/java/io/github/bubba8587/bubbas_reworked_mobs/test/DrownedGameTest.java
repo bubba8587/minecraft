@@ -89,6 +89,8 @@ public class DrownedGameTest {
 	public void grabsAndDragsToDeepWater(GameTestHelper helper) {
 		Drowned drowned = lurker(helper);
 		ServerPlayer player = playerOnLand(helper, 5.5, 8.5, 90.0F, 0.0F);
+		// The tightening grip would kill a test player before the drag is done (it doesn't tick its own air or regen).
+		player.addEffect(new MobEffectInstance(MobEffects.RESISTANCE, 600, 4));
 		double startY = player.getY();
 		boolean[] grabbed = {false};
 		int[] tick = {0};

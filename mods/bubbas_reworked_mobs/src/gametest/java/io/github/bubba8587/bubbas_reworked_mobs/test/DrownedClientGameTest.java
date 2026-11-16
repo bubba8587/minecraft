@@ -26,7 +26,9 @@ import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContex
  * back turned), drowned-drag-deep (upright, under water, holding it), drowned-held-player (the camera player held
  * by the ankles, from in front and below), drowned-lurk-bank (from the bank at water level: only its eyes and scalp show). Lying: drowned-grab-land
  * (dragging a villager back to the water by the ankles), drowned-swim (swimming to its spot), drowned-crawl-side and drowned-crawl-front (crawling
- * on land).
+ * on land). With the show_meters game rule on: the grip bar shows blue above the grabbing drowned (drowned-grab),
+ * drowned-two-holders (a second drowned from the pit joined in and holds the other leg), creeper-startle-bar (a
+ * startled creeper's red meter), drowned-held-player-hud (the held player's blue grip bar under the crosshair).
  */
 @SuppressWarnings("UnstableApiUsage")
 public class DrownedClientGameTest implements FabricClientGameTest {
@@ -48,6 +50,7 @@ public class DrownedClientGameTest implements FabricClientGameTest {
 			int z = base.getZ();
 			server.runCommand("gamerule send_command_feedback false");
 			server.runCommand("gamerule spawn_mobs false");
+			server.runCommand("gamerule bubbas_reworked_mobs:show_meters true");
 			server.runCommand("time set noon");
 			server.runCommand("weather clear");
 			server.runCommand("gamemode spectator @p");
@@ -106,15 +109,22 @@ public class DrownedClientGameTest implements FabricClientGameTest {
 				return null;
 			});
 			waitFor(context, server, "grab", level -> DrownedAccess.mind(drowned(level)).state() == DrownedMind.State.DRAG);
+			server.runCommand("effect give @e[tag=%s_v] minecraft:resistance infinite 4 true".formatted(TAG));
+			server.runCommand("effect give @e[tag=%s_v] minecraft:water_breathing infinite 0 true".formatted(TAG));
+			server.runCommand("summon minecraft:drowned %d.5 %d %d.5 {PersistenceRequired:1b,Silent:1b,Tags:[\"%s_h\"]}".formatted(x + 4, y - 9, z + 13, TAG));
 			context.waitTicks(6);
 			tp(context, server, x + 4.5, y + 0.6, z + 3.5, 90.0F, 15.0F);
 			context.takeScreenshot("drowned-grab");
-			waitFor(context, server, "dragged deep", level -> drowned(level).getZ() > z + 9.0 && drowned(level).getY() < y - 8.5);
+			waitFor(context, server, "dragged deep, second drowned holding", level -> drowned(level).getZ() > z + 9.0 && drowned(level).getY() < y - 8.5
+					&& DrownedAccess.mind(drowned(level)).holdingHelpers() == 1);
 			context.waitTicks(5);
 			double dz = onServer(server, level -> drowned(level).getZ());
 			double dy = onServer(server, level -> drowned(level).getY());
-			tp(context, server, x + 4.0, dy + 1.0, dz, 90.0F, 5.0F);
+			tp(context, server, x + 4.5, dy + 1.4, dz - 1.0, 70.0F, 10.0F);
 			context.takeScreenshot("drowned-drag-deep");
+			tp(context, server, x + 0.5, dy + 1.2, dz - 4.0, 0.0F, 10.0F);
+			context.takeScreenshot("drowned-two-holders");
+			server.runCommand("kill @e[tag=%s_h]".formatted(TAG));
 			server.runCommand("kill @e[tag=%s]".formatted(TAG));
 			server.runCommand("kill @e[tag=%s_v]".formatted(TAG));
 			context.waitTicks(30);
@@ -190,6 +200,32 @@ public class DrownedClientGameTest implements FabricClientGameTest {
 			server.runCommand("kill @e[tag=%s_v]".formatted(TAG));
 			server.runCommand("time set noon");
 			context.waitTicks(30);
+
+			// --- a creeper's startle meter, red above its head (show_meters) -----------------------------
+			server.runCommand("summon minecraft:creeper %d.5 %d %d.5 {PersistenceRequired:1b,Silent:1b,Rotation:[0f,0f],Tags:[\"%s_c\"]}".formatted(x - 4, y, z - 6, TAG));
+			context.waitTicks(3);
+			onServer(server, level -> {
+				for (Entity e : level.getAllEntities()) {
+					if (e instanceof net.minecraft.world.entity.monster.Creeper c && e.entityTags().contains(TAG + "_c")) {
+						c.hurtServer(level, level.damageSources().playerAttack(level.players().getFirst()), 0.1F);
+					}
+				}
+				return null;
+			});
+			context.waitTicks(12);
+			onServer(server, level -> {
+				for (Entity e : level.getAllEntities()) {
+					if (e instanceof net.minecraft.world.entity.monster.Creeper c && e.entityTags().contains(TAG + "_c")) {
+						c.hurtServer(level, level.damageSources().playerAttack(level.players().getFirst()), 0.1F);
+					}
+				}
+				return null;
+			});
+			context.waitTicks(3);
+			tp(context, server, x - 3.5, y + 0.4, z - 2.0, 160.0F, 5.0F);
+			context.takeScreenshot("creeper-startle-bar");
+			server.runCommand("kill @e[tag=%s_c]".formatted(TAG));
+			context.waitTicks(10);
 
 			// --- upright: holding the camera player (survival), from the front --------------------------
 			server.runCommand("gamemode survival @p");
