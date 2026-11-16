@@ -10,6 +10,7 @@ import io.github.bubba8587.bubbas_reworked_mobs.registry.ModGameEvents;
 import io.github.bubba8587.bubbas_reworked_mobs.registry.ModGameRules;
 import io.github.bubba8587.bubbas_reworked_mobs.registry.ModItems;
 import io.github.bubba8587.bubbas_reworked_mobs.creeper.Creepers;
+import io.github.bubba8587.bubbas_reworked_mobs.drowned.Drowneds;
 import io.github.bubba8587.bubbas_reworked_mobs.enderman.Endermen;
 import io.github.bubba8587.bubbas_reworked_mobs.undead.UndeadCombat;
 import net.minecraft.resources.Identifier;
@@ -45,5 +46,6 @@ public class BubbasReworkedMobs implements ModInitializer {
 		UndeadCombat.initialize();
 		Creepers.initialize();
 		Endermen.initialize();
+		Drowneds.initialize();
 	}
 }

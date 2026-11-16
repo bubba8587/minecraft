@@ -17,7 +17,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 /**
  * Which reworked mobs stay vanilla (owner, 2026-11-16): endermen from vanilla's random natural spawning
  * (specs/endermen.md; cairn spawns are marked by EndermanSpawning), and creepers and endermen from spawners and trial
- * spawners ("spawners should spawn vanilla mobs, for now"). Spawn eggs and commands give reworked ones.
+ * spawners ("spawners should spawn vanilla mobs, for now"). Spawn eggs and commands give reworked ones. Drowned do the
+ * same in their own finalizeSpawn hook (DrownedMixin), which must run before vanilla picks their gear.
  */
 @Mixin(Mob.class)
 abstract class MobFinalizeSpawnMixin {

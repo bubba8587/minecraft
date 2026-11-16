@@ -3,7 +3,11 @@
 	"package": "io.github.bubba8587.bubbas_reworked_mobs.client.mixin",
 	"compatibilityLevel": "JAVA_25",
 	"client": [
-		"EntityRenderDispatcherAccessor"
+		"DrownedModelMixin",
+		"DrownedRendererMixin",
+		"EntityRenderDispatcherAccessor",
+		"GrabbedHintMixin",
+		"HeldVictimPoseMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

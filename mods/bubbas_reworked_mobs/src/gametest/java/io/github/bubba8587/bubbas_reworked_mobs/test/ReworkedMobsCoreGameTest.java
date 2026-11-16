@@ -11,7 +11,7 @@ import net.fabricmc.fabric.api.gametest.v1.GameTest;
  * main mechanic. Each one runs a test whose body lives with its siblings in a milestone class (the method there has no
  * {@code @GameTest} of its own, so the full suite runs it once); the annotation (environment, structure, ticks) is the
  * one it had there. Everything else in this source set is the milestone suite, registered only with -PmilestoneTests.
- * Objectives: specs/undead.md, specs/creepers.md and specs/endermen.md, "Milestone test objectives".
+ * Objectives: specs/undead.md, specs/creepers.md, specs/endermen.md and specs/drowned.md, "Milestone test objectives".
  */
 public class ReworkedMobsCoreGameTest {
 	@GameTest
@@ -123,5 +123,22 @@ public class ReworkedMobsCoreGameTest {
 	@GameTest(environment = "bubbas_reworked_mobs-test:enderman_stare", structure = EndermanGameTest.FIELD, maxTicks = 20)
 	public void endermanBusyIgnoresEyeContact(GameTestHelper helper) {
 		new EndermanGameTest().busyEndermanIgnoresEyeContact(helper);
+	}
+
+	// --- drowned (specs/drowned.md) ---
+
+	@GameTest(environment = "bubbas_reworked_mobs-test:drowned_grab", structure = DrownedGameTest.FIELD, maxTicks = 300)
+	public void drownedGrabsAndDragsToDeepWater(GameTestHelper helper) {
+		new DrownedGameTest().grabsAndDragsToDeepWater(helper);
+	}
+
+	@GameTest(environment = "bubbas_reworked_mobs-test:drowned_grip", structure = DrownedGameTest.FIELD, maxTicks = 100)
+	public void drownedGripBreakMeterBreaksTheHold(GameTestHelper helper) {
+		new DrownedGameTest().gripBreakMeterBreaksTheHold(helper);
+	}
+
+	@GameTest(environment = "bubbas_reworked_mobs-test:drowned_stare", structure = DrownedGameTest.FIELD, maxTicks = 120)
+	public void drownedStaredAtItSinks(GameTestHelper helper) {
+		new DrownedGameTest().staredAtItSinks(helper);
 	}
 }
