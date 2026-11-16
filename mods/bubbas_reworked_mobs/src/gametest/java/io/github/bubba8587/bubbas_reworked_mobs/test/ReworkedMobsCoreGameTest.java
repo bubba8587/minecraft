@@ -133,8 +133,13 @@ public class ReworkedMobsCoreGameTest {
 	}
 
 	@GameTest(environment = "bubbas_reworked_mobs-test:drowned_grip", structure = DrownedGameTest.FIELD, maxTicks = 100)
-	public void drownedGripBreakMeterBreaksTheHold(GameTestHelper helper) {
-		new DrownedGameTest().gripBreakMeterBreaksTheHold(helper);
+	public void drownedGripLoosensWithHitsAndTightensWhileDragging(GameTestHelper helper) {
+		new DrownedGameTest().gripLoosensWithHitsAndTightensWhileDragging(helper);
+	}
+
+	@GameTest(environment = "bubbas_reworked_mobs-test:drowned_join", structure = DrownedGameTest.FIELD, maxTicks = 300)
+	public void drownedSecondDrownedJoinsAndHoldsHarder(GameTestHelper helper) {
+		new DrownedGameTest().secondDrownedJoinsAndHoldsHarder(helper);
 	}
 
 	@GameTest(environment = "bubbas_reworked_mobs-test:drowned_stare", structure = DrownedGameTest.FIELD, maxTicks = 120)

@@ -118,34 +118,112 @@ public class DrownedGameTest {
 		});
 	}
 
-	/** Fast hard hits (an axe) fill the grip-break meter and it lets go; one weak hit doesn't; the meter drains. */
-	public void gripBreakMeterBreaksTheHold(GameTestHelper helper) {
+	/**
+	 * The grip starts at half, tightens while it drags, and hits loosen it: a fist hit a little, two fast axe hits all
+	 * the way (at 0 it lets go).
+	 */
+	public void gripLoosensWithHitsAndTightensWhileDragging(GameTestHelper helper) {
 		Drowned drowned = drowned(helper, 9.5, 7.0, 8.5);
 		Villager villager = helper.spawn(EntityTypes.VILLAGER, new Vec3(9.5, 7.0, 9.5));
 		ServerPlayer friend = playerOnLand(helper, 5.5, 8.5, -90.0F, 0.0F);
 		ServerLevel level = helper.getLevel();
+		float[] before = {0.0F};
 		helper.runAtTickTime(2, () -> {
 			mind(drowned).grab(drowned, level, villager);
 			helper.assertTrue(villager.getVehicle() == drowned, "the villager should be held");
+			helper.assertTrue(mind(drowned).grip() == DrownedTuning.GRIP_START, "the grip should start at half, " + mind(drowned).grip());
 		});
 		helper.runAtTickTime(4, () -> {
+			before[0] = mind(drowned).grip();
 			drowned.hurtServer(level, level.damageSources().playerAttack(friend), 1.0F);
-			float grip = mind(drowned).grip();
-			helper.assertTrue(grip > 5 && grip < 15 && villager.getVehicle() == drowned, "a fist hit should add a little, grip " + grip);
+			float drop = before[0] - mind(drowned).grip();
+			helper.assertTrue(drop > 7 && drop < 11 && villager.getVehicle() == drowned, "a fist hit should loosen it a little, by " + drop);
+			before[0] = mind(drowned).grip();
 		});
-		helper.runAtTickTime(60, () -> {
-			helper.assertTrue(mind(drowned).grip() == 0.0F, "the meter should drain, grip " + mind(drowned).grip());
+		helper.runAtTickTime(44, () -> {
+			float rise = mind(drowned).grip() - before[0];
+			helper.assertTrue(Math.abs(rise - 40 * DrownedTuning.GRIP_RISE_PER_TICK) < 0.6, "it should tighten while it drags, by " + rise);
 			friend.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_AXE));
 			drowned.hurtServer(level, level.damageSources().playerAttack(friend), 9.0F);
 			helper.assertTrue(villager.getVehicle() == drowned, "one axe hit shouldn't free it yet, grip " + mind(drowned).grip());
 		});
-		helper.runAtTickTime(72, () -> {
+		helper.runAtTickTime(56, () -> {
 			drowned.hurtServer(level, level.damageSources().playerAttack(friend), 9.0F);
-			helper.assertTrue(villager.getVehicle() == null, "two fast axe hits should break the grip, grip " + mind(drowned).grip());
+			helper.assertTrue(villager.getVehicle() == null, "two fast axe hits should loosen it to nothing, grip " + mind(drowned).grip());
 			helper.assertTrue(mind(drowned).state() != DrownedMind.State.DRAG, "it should have let go");
 			drowned.discard();
 			villager.discard();
 			CreeperGameTest.remove(helper, friend);
+			helper.succeed();
+		});
+	}
+
+	/**
+	 * Another drowned nearby swims over and grabs the other leg: the grip then tightens faster, hits loosen it less, and
+	 * when the grip breaks both let go.
+	 */
+	public void secondDrownedJoinsAndHoldsHarder(GameTestHelper helper) {
+		Drowned drowned = drowned(helper, 9.5, 7.0, 8.5);
+		Drowned other = drowned(helper, 15.5, 1.0, 6.5);
+		Villager villager = helper.spawn(EntityTypes.VILLAGER, new Vec3(9.5, 7.0, 9.5));
+		ServerPlayer friend = playerOnLand(helper, 5.5, 8.5, -90.0F, 0.0F);
+		ServerLevel level = helper.getLevel();
+		helper.runAtTickTime(2, () -> mind(drowned).grab(drowned, level, villager));
+		float[] at = {-1.0F, 0.0F};
+		helper.onEachTick(() -> {
+			if (at[0] < 0 && mind(other).state() == DrownedMind.State.HELP) {
+				helper.assertTrue(mind(other).leader() == drowned && mind(drowned).holdingHelpers() == 1, "it should hold on beside the first");
+				helper.assertTrue(other.distanceTo(villager) < 2.0, "it should be at the victim's feet, " + other.distanceTo(villager));
+				mind(drowned).setGrip(60.0F);
+				at[0] = helper.getTick();
+			} else if (at[0] > 0 && helper.getTick() == at[0] + 20) {
+				float rise = mind(drowned).grip() - 60.0F;
+				float expected = 20 * DrownedTuning.GRIP_RISE_PER_TICK * (1.0F + DrownedTuning.GRIP_RISE_PER_HELPER);
+				helper.assertTrue(Math.abs(rise - expected) < 0.6, "with two holding it should tighten faster: " + rise + " (want " + expected + ")");
+				at[1] = mind(drowned).grip();
+				other.hurtServer(level, level.damageSources().playerAttack(friend), 1.0F);
+				float drop = at[1] - mind(drowned).grip();
+				float single = DrownedMind.gripPoints(level, ItemStack.EMPTY, 1.0F);
+				helper.assertTrue(Math.abs(drop - single / (1.0F + DrownedTuning.GRIP_EXTRA_HOLDER_DIVISOR)) < 0.3,
+						"a hit on the helper should loosen the shared grip, less: " + drop);
+				mind(drowned).setGrip(1.0F);
+				drowned.hurtServer(level, level.damageSources().playerAttack(friend), 1.0F);
+				helper.assertTrue(villager.getVehicle() == null, "at 0 the grip breaks");
+				helper.assertTrue(mind(other).state() != DrownedMind.State.HELP && mind(other).leader() == null, "the helper lets go too, " + mind(other).state());
+				drowned.discard();
+				other.discard();
+				villager.discard();
+				CreeperGameTest.remove(helper, friend);
+				helper.succeed();
+			}
+		});
+	}
+
+	/** At full grip (after 10 s of dragging) its hits are at their worst: 4 damage, 3 bubbles of air. */
+	@GameTest(environment = "bubbas_reworked_mobs-test:drowned_tight", structure = FIELD, maxTicks = 260)
+	public void gripTightensToFullAndHitsHarder(GameTestHelper helper) {
+		Drowned drowned = drowned(helper, 9.5, 7.0, 8.5);
+		Villager villager = helper.spawn(EntityTypes.VILLAGER, new Vec3(9.5, 7.0, 9.5));
+		Villager fresh = helper.spawn(EntityTypes.VILLAGER, new Vec3(3.5, 9.0, 12.5));
+		ServerLevel level = helper.getLevel();
+		villager.addEffect(new MobEffectInstance(MobEffects.RESISTANCE, 600, 4));
+		villager.addEffect(new MobEffectInstance(MobEffects.WATER_BREATHING, 600));
+		helper.runAtTickTime(2, () -> {
+			mind(drowned).grab(drowned, level, villager);
+			helper.assertTrue(mind(drowned).escalation() == 0.0F, "a fresh grab is at the start values");
+		});
+		helper.runAtTickTime(2 + 205, () -> {
+			helper.assertTrue(mind(drowned).grip() == DrownedTuning.GRIP_FULL && mind(drowned).escalation() == 1.0F,
+					"after 10 s the grip should be full, " + mind(drowned).grip());
+			fresh.setAirSupply(300);
+			float health = fresh.getHealth();
+			DrownedMind.hit(drowned, level, fresh, mind(drowned).escalation());
+			helper.assertTrue(fresh.getAirSupply() == 300 - DrownedTuning.HIT_AIR_LOSS_FULL, "a full-grip hit takes 3 bubbles, air " + fresh.getAirSupply());
+			helper.assertTrue(health - fresh.getHealth() == DrownedTuning.HIT_DAMAGE_FULL, "a full-grip hit does 4, did " + (health - fresh.getHealth()));
+			mind(drowned).release(drowned, false);
+			drowned.discard();
+			villager.discard();
+			fresh.discard();
 			helper.succeed();
 		});
 	}
@@ -259,7 +337,7 @@ public class DrownedGameTest {
 		});
 	}
 
-	/** Axes, Impaling and Knockback count extra on the grip-break meter. */
+	/** Axes, Impaling and Knockback count extra against the grip. */
 	@GameTest(maxTicks = 5)
 	public void gripPointsFavourAxesImpalingKnockback(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
