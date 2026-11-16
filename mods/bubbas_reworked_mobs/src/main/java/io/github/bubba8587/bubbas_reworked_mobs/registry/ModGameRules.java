@@ -19,6 +19,10 @@ public final class ModGameRules {
 	public static final GameRule<Boolean> WATCHER_CREEPERS = GameRuleBuilder.forBoolean(true)
 			.category(GameRuleCategory.SPAWNING).buildAndRegister(BubbasReworkedMobs.id("watcher_creepers"));
 
+	/** Overworld endermen spawn at cairn sites instead of vanilla's random natural spawns (specs/endermen.md, D2). */
+	public static final GameRule<Boolean> CAIRN_ENDERMEN = GameRuleBuilder.forBoolean(true)
+			.category(GameRuleCategory.SPAWNING).buildAndRegister(BubbasReworkedMobs.id("cairn_endermen"));
+
 	private ModGameRules() {
 	}
 

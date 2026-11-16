@@ -1,6 +1,7 @@
 // dte:C6
 package io.github.bubba8587.bubbas_totems_artifacts.compat;
 
+import io.github.bubba8587.bubbas_reworked_mobs.api.Endermen;
 import io.github.bubba8587.bubbas_reworked_mobs.api.Sleepers;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
@@ -25,6 +26,24 @@ final class ReworkedMobsSleepers implements SleeperHook {
 	@Override
 	public void release(ServerLevel level, Object source) {
 		Sleepers.release(level, source);
+	}
+
+	@Override
+	public void keepEndermenOut(ServerLevel level, Object source, AABB area, int lifetimeTicks) {
+		try {
+			Endermen.keepOut(level, source, area, lifetimeTicks);
+		} catch (LinkageError e) {
+			// An older Reworked Mobs without api/Endermen: nothing to keep out.
+		}
+	}
+
+	@Override
+	public void releaseEndermen(ServerLevel level, Object source) {
+		try {
+			Endermen.release(level, source);
+		} catch (LinkageError e) {
+			// As above.
+		}
 	}
 
 	@Override

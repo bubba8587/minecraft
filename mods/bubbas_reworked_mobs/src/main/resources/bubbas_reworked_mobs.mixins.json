@@ -5,6 +5,7 @@
 	"mixins": [
 		"BellBlockMixin",
 		"CreeperMixin",
+		"EndermanMixin",
 		"SpawnStateMixin"
 	],
 	"injectors": {

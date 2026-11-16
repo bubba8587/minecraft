@@ -9,7 +9,7 @@ import net.minecraft.world.phys.Vec3;
 import net.fabricmc.loader.api.FabricLoader;
 
 /**
- * Sleepers (dormant undead) belong to Bubba's Reworked Mobs, an optional mod (specs/totems-artifacts.md,
+ * Sleepers (dormant undead) and caretaker endermen belong to Bubba's Reworked Mobs, an optional mod (specs/totems-artifacts.md,
  * "Independence"). Everything here that touches them goes through this hook: with Reworked Mobs installed it calls that
  * mod's api/Sleepers ({@link ReworkedMobsSleepers}, the only class that names it, loaded only then); without it there
  * are no sleepers and every call does nothing.
@@ -34,6 +34,14 @@ public interface SleeperHook {
 
 	/** Ends {@code source}'s keep-asleep area. */
 	default void release(ServerLevel level, Object source) {
+	}
+
+	/** Reworked Mobs' endermen do no work inside {@code area} (any ward) for {@code lifetimeTicks}; refresh to keep it. */
+	default void keepEndermenOut(ServerLevel level, Object source, AABB area, int lifetimeTicks) {
+	}
+
+	/** Ends {@code source}'s keep-endermen-out area. */
+	default void releaseEndermen(ServerLevel level, Object source) {
 	}
 
 	/** Squared distance to the nearest sleeper within {@code range} (client or server), or {@code Double.MAX_VALUE}. */
