@@ -1,4 +1,5 @@
 <!-- dte:C6,B17,B18,B19 -->
+<!-- covers: mods/bubbas_totems_artifacts/* -->
 # Bubba's Totems & Artifacts (spec, planned: not built as its own mod yet)
 
 A separate mod for **artifacts**: found items that do things potions and enchantments don't. Planned mod id `bubbas_totems_artifacts`. Owner's call (2026-11-16): "this could be its own mod, Bubba's Totems & Artifacts. Grave Talisman and all totems go in here."
