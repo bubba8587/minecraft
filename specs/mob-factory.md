@@ -16,7 +16,7 @@ Owner's idea (2026-11-16), to make mob farming possible again after the spawn cu
 - **F3:** **one mob type** per factory, with **a wall behind it showing that mob's face** in block art.
 - **F4:** mobs vanish: they are really **teleported somewhere much farther up** (typically). They need **particles at their destination too**, where they then **"wake up"**.
 - **F5:** rate needs playtesting.
-- **F6:** taking it over, yes. A **hidden, inert spawner buried in the machinery** is what ultimately stops it: break that and the factory is done.
+- **F6:** taking it over, yes. A **hidden, inert spawner buried in the upper section** (the dripping ceiling growth) is what ultimately stops it: break that and the factory is done.
 - F7, F8: not answered; the builder's suggestions stand (debuffs from a hidden core without Reworked Beacons, a real paired beacon with it; one vanilla Warden that's passive at its window until it hears you, no respawn).
 
 ## Still open (owner)
