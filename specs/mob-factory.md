@@ -3,10 +3,6 @@
 
 Owner's idea (2026-11-16), to make mob farming possible again after the spawn cut, creeper watchers and cairn endermen: an **underground factory**. A drippy, spiky growth on the ceiling, mixing **nether, warped and bone** elements (like dripstone made of bone blocks, warped wart, basalt), **spits out mobs** onto a platform below built in an **ancient city + redstone** style; mobs that aren't dealt with are **teleported away after some time**. Earlier the owner mentioned doing "something really awesome with huge underground areas with our double paired beacons": the ceiling growth and the platform are natural halves of a paired beacon.
 
-## Independence
-
-Lives in Reworked Mobs, built from vanilla blocks (B15). With Bubba's Reworked Beacons installed its two halves could also be a real paired beacon (to be designed); without it, the factory still works.
-
 ## Owner's design, round 2 (2026-11-16)
 
 - **Mobs come out "deactivated":** they drop onto the platform limp, looking down, doing nothing, and then get **teleported away**. The factory is making mobs for something else; players farm it by killing them before they're sent off.
