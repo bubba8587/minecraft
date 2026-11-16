@@ -67,6 +67,14 @@ public final class EndermanTuning {
 	/** A builder whose block can't go in yet waits within this distance of its cairn (teleports back if farther). */
 	public static final int WAIT_RADIUS = 8;
 
+	// --- particles on complete cairns (owner) -------------------------------------------------
+	/** Ticks between puffs (a few portal particles and one end rod sparkle per complete cairn). */
+	public static final int GLOW_TICKS = 4;
+	/** Ticks between checks that a cairn is still complete. */
+	public static final int GLOW_CHECK_TICKS = 40;
+	/** Cairns within this distance of a player glow (the end rod sparkle is sent long-distance). */
+	public static final int GLOW_RANGE = 96;
+
 	// --- spawning (D2) -------------------------------------------------------------------------
 	/** Ticks between spawn checks. */
 	public static final int SPAWN_INTERVAL = 100;

@@ -37,6 +37,7 @@ public final class Endermen {
 		Registry.register(BuiltInRegistries.FEATURE_TYPE, BubbasReworkedMobs.id("cairn_footing"), CairnFootingFeature.CODEC);
 		BiomeModifications.addFeature(BiomeSelectors.foundInOverworld(), GenerationStep.Decoration.SURFACE_STRUCTURES, CAIRN_FOOTING);
 		ServerTickEvents.END_LEVEL_TICK.register(EndermanSpawning::tick);
+		ServerTickEvents.END_LEVEL_TICK.register(CairnGlow::tick);
 		PlayerBlockBreakEvents.AFTER.register((level, player, pos, state, blockEntity) -> {
 			if (level instanceof ServerLevel server && isStandingCairnBlock(server, pos, state)) {
 				anger(server, pos, player);

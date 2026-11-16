@@ -33,9 +33,9 @@ An **enderman cairn** is a twisting spire of purpur on a footing of end stone br
 
 The tallest end rod of every cairn lies on its side and points toward the nearest stronghold.
 
-### Vigil
+### Finished cairns
 
-Endermen at a finished cairn with nothing to do stand in a ring around it, staring at it. The ring grows as more arrive.
+A finished cairn shimmers with purple portal particles, and sparkles drift up from its top, visible from far away at night. Endermen at a finished cairn with nothing to do stand in a ring around it, staring at it. The ring grows as more arrive.
 
 ### Hostility
 
