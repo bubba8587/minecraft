@@ -87,6 +87,11 @@ public class TestWorldShots implements FabricClientGameTest {
 		shot("cairn_front", 12.5, -53, 5.5, 12.5, -53.5, -7);
 		shot("cairn_angle", 3.5, -51.5, 1, 12.5, -54, -7);
 		shot("cairn_side", 24, -51.5, -12, 12.5, -54, -7);
+		// Creeper grove: x 52..82, z -14..16, east of the gems station; signs on the viewing strip x 52..56.
+		shot("creepers_signs_north", 54, -58.6, 0.5, 54, -59.5, -3);
+		shot("creepers_signs_south", 54.5, -58.6, -0.5, 54.5, -59.5, 3);
+		shot("creepers_grove", 54, -56.5, 1, 67, -59, -1);
+		shot("creepers_open", 70, -56.5, 13, 80.5, -59.5, 11.5);
 
 		// Graveyard: x -44..-14, z -44..-14. Rows: skeletons z -18, zombies z -24; sitting x -42..-33, lying -30..-21.
 		shot("graveyard_overview", -10, -46, -8, -29, -60, -29);

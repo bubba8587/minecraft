@@ -9,7 +9,7 @@ Parked ideas and open items, newest first within each project. Agents add to it 
 - Calming sleepers (owner, 2026-11-15): soul fire and a "lull" game event tag that calm sleepers (light calming and loud bells are built: `specs/undead.md`, Calming sleepers).
 - Mob spawner tweaks. `specs/undead.md`.
 - Part 1 next pass: remaining undead variants, graves and crypts in worldgen (with Grave Talisman and Totem of Warding loot), hybrid rendering, real 16x/32x art.
-- **Creepers** (first build done): owner to playtest the numbers and review the 10 builder's choices in `specs/creepers.md`; test world "creeper grove" station idea there.
+- **Creepers** (first build done): owner to playtest the numbers and review the 10 builder's choices in `specs/creepers.md`; try them in the test world's creeper grove.
 - **Endermen** (designed, `specs/endermen.md`): cairn variety and banner placement still to revisit.
 - Later parts: **monster camps and the blood moon** (structures with fixed rosters and key blocks, a 7-day blood moon that respawns uncleared structures, red-sky effects; owner's earlier idea with integration notes in `docs/research/camps-blood-moon-idea.md`).
 
@@ -52,6 +52,5 @@ Parked ideas and open items, newest first within each project. Agents add to it 
 
 ## Repo
 - Test world stations for Warding and Reworked Beacons (a Totem of Warding, a bell near sleepers, lit vs dark sleepers, sky vs paired beacons), when the owner wants to playtest them (`specs/testworld.md`).
-- Test world: 7 signs in `testworlds/builder/` (`grounds_wardrobe`, `grounds_pool`, `grounds_lava`) still read "Inf. V 88% +"; rename them (e.g. "GP V 88% +", 15 characters max) and rebuild the world.
 - Owner to read and ratify (or rewrite) the goal drafts A1-A4 (`python3 tools/dte.py unratified`).
 - A future mod drastically reducing unenchanted mining speed.

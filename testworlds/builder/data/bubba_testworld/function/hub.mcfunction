@@ -13,6 +13,7 @@ setblock 1 -60 3 minecraft:oak_sign[rotation=0]{is_waxed:1b,front_text:{messages
 setblock 3 -60 3 minecraft:oak_sign[rotation=0]{is_waxed:1b,front_text:{messages:[{text:"Combat Arena",bold:true,color:"dark_red"},"north-east:","Smite, arrows,","armor shred"]}}
 setblock 5 -60 3 minecraft:oak_sign[rotation=0]{is_waxed:1b,front_text:{messages:[{text:"Glider Tower",bold:true,color:"dark_aqua"},"east ->","glider vs","elytra"]}}
 setblock 7 -60 3 minecraft:oak_sign[rotation=0]{is_waxed:1b,front_text:{messages:[{text:"Infused Gems",bold:true,color:"dark_purple"},"east, past the","tower: brew,","enchant, socket"]}}
+setblock -7 -60 3 minecraft:oak_sign[rotation=0]{is_waxed:1b,front_text:{messages:[{text:"Creepers",bold:true,color:"dark_green"},"far east, past","the gems: the","creeper grove"]}}
 setblock 7 -60 5 minecraft:oak_sign[rotation=0]{is_waxed:1b,front_text:{messages:[{text:"Fresh copy?",bold:true,color:"gray"},"Run install-to-","modrinth with","-ResetWorld"]}}
 setblock -6 -56 2 minecraft:light[level=15]
 setblock -6 -56 8 minecraft:light[level=15]

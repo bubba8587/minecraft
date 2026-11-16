@@ -104,9 +104,9 @@ Charged creepers keep vanilla's current suicide-bomber behavior.
 9. Sneaking means holding sneak (`isShiftKeyDown`), checked every tick during the hiss.
 10. Spawn only at night (`isDarkOutside`), above ground or in caves, as long as vanilla's darkness rule passes at the spot; every 10 s.
 
-## Test world station idea
+## Test world station
 
-A "creeper grove" station: a flat grass clearing with three or four one-log trees (crowns 3 blocks up) and a stone wall segment, a creeper behind one trunk, spawn platform 11 blocks away, night vision, time locked at night with `spawn_mobs false` (so only the placed creeper is there). Signs: "Walk around: it peeks out. Look at it: it hides. Sprint past it: it hisses. Crouch: it calms." Add a lever-controlled dispenser of snowballs aimed past it for near-misses, and a second creeper on open ground for the "uncomfortably close" behavior.
+Built as the creeper grove (`specs/testworld.md`, Layout).
 
 ## Milestone test objectives
 
