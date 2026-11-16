@@ -9,6 +9,7 @@ Owner's design (2026-11-16), being worked out in conversation. Endermen are the 
    - Example (owner): they intentionally jump on and break **farmland back to dirt** if the original block there was dirt.
 2. **Build:** they complete **enderman cairns**: strange structures whose full design is fixed when the world generates (deterministic templates), so endermen always know what to build. They bring in **End blocks** for them (end stone, purpur, etc.).
    - Endermen choose between the two jobs.
+   - **Look (owner):** strange, twisty, **chorus-plant-like** spires rather than stacked stones: purpur pillar trunks that step sideways as they climb, branches ending in end-rod 'flowers', on an end stone brick footing (preview in the test world east of the hub).
    - **Cairns point to the stronghold** (owner): a few blocks in each cairn's design, not too obvious (e.g. a leaning top stone, a line of end stone along the base), point toward the nearest stronghold. Observant players can follow cairns there.
 
 ## Cairns as their home (D2: deliberate spawning)
