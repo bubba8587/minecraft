@@ -17,7 +17,9 @@ public final class Creepers {
 		// a fall or a cactus doesn't startle it (vanilla's fall-swell still happens).
 		ServerLivingEntityEvents.AFTER_DAMAGE.register((entity, source, baseTaken, taken, blocked) -> {
 			if (entity instanceof Creeper creeper && source.getEntity() != null && CreeperMind.active(creeper)) {
-				CreeperAccess.mind(creeper).attacked(source.getEntity(), creeper.level().getGameTime());
+				if (!((CreeperAccess) creeper).brm$isVanilla()) {
+					CreeperAccess.mind(creeper).attacked(source.getEntity(), creeper.level().getGameTime());
+				}
 			}
 		});
 		ServerTickEvents.END_LEVEL_TICK.register(WatcherSpawning::tick);

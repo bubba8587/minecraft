@@ -15,7 +15,7 @@ A **creeper** in [[Bubba's Reworked Mobs]] is a nervous watcher rather than a hu
 
 Creepers no longer spawn randomly. At night, each player has one creeper of their own somewhere nearby: it appears 10 to 15 blocks away, behind cover and out of the player's view, and watches them. A player who turns around quickly can catch it half behind a tree or a wall, looking at them.
 
-Creepers from spawners, structures, spawn eggs and commands are unchanged.
+Creepers from spawners and trial spawners are ordinary creepers: they hunt players and explode next to them.
 
 ## Behavior
 

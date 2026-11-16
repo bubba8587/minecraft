@@ -314,6 +314,16 @@ public class EndermanGameTest {
 		natural.finalizeSpawn(level, level.getCurrentDifficultyAt(natural.blockPosition()), net.minecraft.world.entity.EntitySpawnReason.NATURAL, null);
 		helper.assertTrue(EndermanMind.of(natural) == null, "a random natural spawn should stay a vanilla enderman");
 		natural.discard();
+		// Spawners give vanilla mobs for now (owner): endermen and creepers alike.
+		Enderman fromSpawner = EntityTypes.ENDERMAN.create(level, net.minecraft.world.entity.EntitySpawnReason.SPAWNER);
+		fromSpawner.finalizeSpawn(level, level.getCurrentDifficultyAt(fromSpawner.blockPosition()), net.minecraft.world.entity.EntitySpawnReason.SPAWNER, null);
+		helper.assertTrue(EndermanMind.of(fromSpawner) == null, "a spawner enderman should be vanilla");
+		fromSpawner.discard();
+		net.minecraft.world.entity.monster.Creeper spawnerCreeper = EntityTypes.CREEPER.create(level, net.minecraft.world.entity.EntitySpawnReason.SPAWNER);
+		spawnerCreeper.finalizeSpawn(level, level.getCurrentDifficultyAt(spawnerCreeper.blockPosition()), net.minecraft.world.entity.EntitySpawnReason.SPAWNER, null);
+		helper.assertTrue(((io.github.bubba8587.bubbas_reworked_mobs.creeper.CreeperAccess) spawnerCreeper).brm$isVanilla(),
+				"a spawner creeper should be vanilla");
+		spawnerCreeper.discard();
 		Enderman fromCairn = EntityTypes.ENDERMAN.create(level, net.minecraft.world.entity.EntitySpawnReason.NATURAL);
 		((io.github.bubba8587.bubbas_reworked_mobs.enderman.EndermanAccess) fromCairn).brm$markCairnSpawn();
 		fromCairn.finalizeSpawn(level, level.getCurrentDifficultyAt(fromCairn.blockPosition()), net.minecraft.world.entity.EntitySpawnReason.NATURAL, null);

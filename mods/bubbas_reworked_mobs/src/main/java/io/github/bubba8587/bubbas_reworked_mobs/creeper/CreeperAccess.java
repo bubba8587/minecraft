@@ -7,6 +7,11 @@ import net.minecraft.world.entity.monster.Creeper;
 public interface CreeperAccess {
 	CreeperMind brm$mind();
 
+	/** Gives this creeper back vanilla's hunting goals and drops the watcher's (spawner creepers; saved). */
+	void brm$makeVanilla();
+
+	boolean brm$isVanilla();
+
 	static CreeperMind mind(Creeper creeper) {
 		return ((CreeperAccess) creeper).brm$mind();
 	}
