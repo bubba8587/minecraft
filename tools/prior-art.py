@@ -8,6 +8,11 @@ Prints the most relevant projects with downloads, whether they have a build for 
 Minecraft version, license and source link. Projects with source code are the ones to
 study or depend on. Standard library only.
 """
+import sys as _sys
+try:  # Windows consoles default to a legacy code page; mod descriptions contain emoji
+    _sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+except AttributeError:
+    pass
 import json, sys, urllib.parse, urllib.request
 from pathlib import Path
 
