@@ -1,0 +1,24 @@
+<!-- dte:C1,B17,B18,B19,D2 -->
+# Reworked Mobs: endermen (spec, design: not built yet)
+
+Owner's design (2026-11-16), being worked out in conversation. Endermen are the world's **caretakers and builders**.
+
+## Two jobs
+
+1. **Repair:** they pick up and put back blocks so the land drifts back toward how it was first generated. The game can work out, from the world seed, what block originally generated at any position, so endermen know what "right" looks like without tracking every block anyone placed.
+   - Example (owner): they intentionally jump on and break **farmland back to dirt** if the original block there was dirt.
+2. **Build:** they complete **enderman cairns**: strange structures whose full design is fixed when the world generates (deterministic templates), so endermen always know what to build. They bring in **End blocks** for them (end stone, purpur, etc.).
+   - Endermen choose between the two jobs.
+
+## Cairns as their home (D2: deliberate spawning)
+
+- Endermen spawn near cairns and tend to stand on top of completed ones, instead of spawning randomly.
+- **Left alone, they snowball:** more endermen spawn, faster, and they finish their work faster. Interfering (killing them, taking the cairns apart) slows or stops it.
+
+## Open questions (owner)
+
+- See the conversation; answers land here.
+
+## Milestone test objectives
+
+None yet (not built).
