@@ -186,6 +186,8 @@ Worldgen placement (sites from the seed, the feature that builds a factory chunk
 
 A zombie Ancient Fabricator built with `ancient_fabricator build` under the hub (deck at y -38), reached by a ladder shaft with a sign; the tour photographs the overview and the face wall.
 
+**Spare parts (owner, 2026-11-16):** the office chests have a chance of the gems that power the debuff beacon. With Infused Gems installed, the paired beacon runs on a real harmful gem (Mining Fatigue first; taking it out ends that debuff); without it, a hidden core does the debuffs and there are no gems.
+
 **Loot (owner, 2026-11-16): fine as built** (18 iron blocks and 2 beacons per Fabricator).
 
 ## Parked
