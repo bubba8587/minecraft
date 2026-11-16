@@ -10,7 +10,7 @@ A separate mod for **artifacts**: found items that do things potions and enchant
 |---|---|
 | Grave Talisman | built (moved from Reworked Mobs) |
 | Totem of Warding | built (moved from Reworked Mobs), plus its totem statue |
-| Totem of Keeping, Gathering, Fortification, Growth (name TBD), Seeking | ideas, `BACKLOG.md` "Bubba's Totems & Artifacts" |
+| Totem of Keeping, Gathering, Fortification, Growth, Seeking | designed 2026-11-16 (below), being built |
 
 What stays in Reworked Mobs (`specs/undead.md`): sleepers, the hearing/disturbance meter, light calming sleepers, bells being loud to sleepers, loot displays, combat, the monster cap, and the `api.Sleepers` hook below.
 
@@ -19,6 +19,17 @@ What stays in Reworked Mobs (`specs/undead.md`): sleepers, the hearing/disturban
 - Many totems work both **held** (personal, small) and **in a beacon** (area).
 - Any rhythm (e.g. a held pulse) shows with vanilla's item cooldown sweep (B19 noHiddenCooldowns); vanilla mechanics first (B17); mobs and players treated the same (B18).
 - Fortification must stop explosion block damage only, never via the mobGriefing rule (that would also stop villager farming).
+
+## The five new totems (design agreed with the owner, 2026-11-16)
+
+Owner's ideas (BACKLOG) plus the orchestrator's detail calls, accepted by the owner ("yes, start the totems builder"). Each works held (personal, small) and, where it makes sense, in a Reworked Beacons beacon (area) through the payload API, like Warding.
+
+- **Keeping:** held only; used up on death, and you keep your whole inventory that once (a Totem of Undying for your items). Nothing in a beacon.
+- **Gathering:** held, pulls dropped items and XP within ~8 blocks to you; in a beacon, pulls them into the nearest chest or barrel under the beacon.
+- **Fortification:** held, explosions near you don't break blocks; in a beacon, no explosion block damage in its area. Only explosion block damage, never through the mobGriefing rule (owner).
+- **Growth** (working name; owner wanted a verb-like word, still open): faster crop and sapling growth (random tick boost) within ~8 blocks held, across the area in a beacon.
+- **Seeking:** held, points like a compass to the nearest structure of one chosen type (like an explorer map); the type is chosen by using it on a structure's signature block (builder to propose the block list; owner may prefer another way); in a beacon, it points every compass held in its area.
+- Found, not crafted, like the other artifacts (loot placement to be proposed). B19: any rhythm shows with the item cooldown sweep.
 
 ## As built (0.1.0)
 
