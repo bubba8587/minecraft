@@ -59,6 +59,36 @@ Each station below also has signs for the gems it tests. The armor stands past t
 
 Survival and Creative signs at the stations switch the game mode, since damage, hunger and archers only matter in survival.
 
+## Boss arena
+
+The **boss arena** is a walled arena south of the dark room and the food bench, entered through a gate in its north wall. Each boss is a tough mob in gem gear built around a combination of [[Gem Effects|gem effects]]. The signs on the outside of the north wall summon one boss at a time (summoning another removes the first); bosses only fight back against a player in survival.
+
+| Boss | Mob | Gem combination |
+|---|---|---|
+| Webmaster | Zombie | Weaving armor and a Weaving sword: webs the player in place and walks through webs freely |
+| Puppeteer | Vindicator | Axe with Levitation and Slow Falling: lifts the player and keeps them hanging |
+| Blinker | Skeleton with a bow | Perfect Ender armor: teleports away from arrows unless boxed in |
+| Juggernaut | Zombie | Turtle Master, Absorption and Regeneration armor |
+| Gale | Piglin brute | Wind Burst mace: throws the player around |
+| Plague | Wither skeleton | Sword with Poison and Hunger, on top of the wither skeleton's own Wither |
+| Phantom | Zombie | Perfect Invisibility armor and a Darkness sword |
+| Stalker | Husk | Silence and Invisibility armor, next to two sleeping skeletons it does not wake |
+
+The Counter kits signs beside them give the player a set built against each boss:
+
+| Kit | Against | Contents |
+|---|---|---|
+| Web Walker | Webmaster | Weaving set and sword, shears |
+| Crowd Ctrl | Puppeteer | Sword with Levitation and Slow Falling, bow with Levitation and Slowness, arrows |
+| Deflector | Blinker | Perfect Breeze set, cobblestone to box the Blinker in |
+| Siege | Juggernaut | Strength set, axe with Wither and Harming |
+| Anchor | Gale | Wind Burst set (soft landings), Slow Falling sword |
+| Attrition | Plague | Regeneration set, milk, golden apples |
+| Lantern | Phantom | Night Vision set, Glowing sword |
+| Hunter | Stalker | Silence set, sword with Glowing and Slowness |
+
+A Clear arena sign removes the boss and everything it dropped.
+
 ## See also
 
 - [[Installing Fabric Mods]]

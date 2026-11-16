@@ -220,6 +220,15 @@ public class TestWorldShots implements FabricClientGameTest {
 		shot("food_bench", 4.5, -58, 49.5, 4.5, -59.5, 54);
 		shot("mining_wall", 17, -56.4, 47, 17, -59, 55);
 		chest("mining_tools_chest", 16, -60, 53);
+
+		// Boss arena x -16..16, z 66..92; boss signs (x 0..12) and counter kits (x -15..-6) on the north wall at z 65.
+		shot("bossarena_overview", 0.5, -40, 56, 0.5, -60, 80);
+		shot("bossarena_boss_signs", 6.5, -58.4, 61.8, 6.5, -59, 65.5);
+		shot("bossarena_counter_signs", -10.5, -58.4, 61.8, -10.5, -59, 65.5);
+		clickSign(4, -59, 65);
+		context.waitTicks(10);
+		shot("bossarena_juggernaut", 0.5, -57.8, 75.5, 0.5, -59, 80.5);
+		world.getServer().runCommand("kill @e[tag=tw_boss]");
 	}
 
 	/**

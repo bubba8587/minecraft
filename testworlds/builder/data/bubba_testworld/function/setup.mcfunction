@@ -1,5 +1,5 @@
 # World rules and the area the stations use (tools/build-testworld.py waits after forceload add).
-forceload add -48 -48 47 63
+forceload add -48 -48 47 95
 gamerule spawn_mobs false
 gamerule spawn_phantoms false
 gamerule spawn_patrols false
