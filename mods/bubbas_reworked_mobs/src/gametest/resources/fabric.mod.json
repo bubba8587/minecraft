@@ -24,7 +24,8 @@
 			"io.github.bubba8587.bubbas_reworked_mobs.test.UndeadGaitClientGameTest",
 			"io.github.bubba8587.bubbas_reworked_mobs.test.CreeperClientGameTest",
 			"io.github.bubba8587.bubbas_reworked_mobs.test.EndermenClientGameTest",
-			"io.github.bubba8587.bubbas_reworked_mobs.test.CairnSimClientGameTest"
+			"io.github.bubba8587.bubbas_reworked_mobs.test.CairnSimClientGameTest",
+			"io.github.bubba8587.bubbas_reworked_mobs.test.DrownedClientGameTest"
 		]
 	},
 	"mixins": [

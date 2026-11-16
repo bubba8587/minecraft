@@ -8,6 +8,7 @@ import io.github.bubba8587.bubbas_reworked_mobs.drowned.DrownedAccess;
 import io.github.bubba8587.bubbas_reworked_mobs.drowned.DrownedLurkGoal;
 import io.github.bubba8587.bubbas_reworked_mobs.drowned.DrownedMind;
 import io.github.bubba8587.bubbas_reworked_mobs.drowned.DrownedTuning;
+import io.github.bubba8587.bubbas_reworked_mobs.drowned.VanillaOnlyGoal;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.entity.Entity;
@@ -47,6 +48,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 abstract class DrownedMixin extends Zombie implements DrownedAccess {
 	@Unique
 	private @Nullable DrownedMind brm$mind;
+	@Unique
+	private boolean brm$vanilla;
+	@Unique
+	private static final String BRM_VANILLA_KEY = "bubbas_reworked_mobs:vanilla";
 
 	protected DrownedMixin(EntityType<? extends Zombie> type, Level level) {
 		super(type, level);
@@ -59,6 +64,51 @@ abstract class DrownedMixin extends Zombie implements DrownedAccess {
 			brm$mind = new DrownedMind();
 		}
 		return brm$mind;
+	}
+
+	@Override
+	public void brm$makeVanilla() {
+		if (brm$vanilla) {
+			return;
+		}
+		brm$vanilla = true;
+		brm$mind().release((Drowned) (Object) this, false);
+		// Vanilla's numbers (Zombie.createAttributes: health 20, armor 2, no knockback resistance, speed 0.23).
+		getAttribute(Attributes.MAX_HEALTH).setBaseValue(20.0);
+		getAttribute(Attributes.ARMOR).setBaseValue(2.0);
+		getAttribute(Attributes.KNOCKBACK_RESISTANCE).setBaseValue(0.0);
+		getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0.23F);
+		setHealth(Math.min(getHealth(), getMaxHealth()));
+	}
+
+	@Override
+	public boolean brm$isVanilla() {
+		return brm$vanilla;
+	}
+
+	/** Spawners and trial spawners keep vanilla drowned (owner, 2026-11-16). Before vanilla's own setup, so it picks vanilla gear (tridents included). */
+	@Inject(method = "finalizeSpawn", at = @At("HEAD"))
+	private void brm$spawnerStaysVanilla(net.minecraft.world.level.ServerLevelAccessor level, DifficultyInstance difficulty,
+			net.minecraft.world.entity.EntitySpawnReason reason, net.minecraft.world.entity.@Nullable SpawnGroupData groupData,
+			CallbackInfoReturnable<net.minecraft.world.entity.SpawnGroupData> cir) {
+		if (net.minecraft.world.entity.EntitySpawnReason.isSpawner(reason)) {
+			brm$makeVanilla();
+		}
+	}
+
+	@Override
+	protected void addAdditionalSaveData(net.minecraft.world.level.storage.ValueOutput output) {
+		super.addAdditionalSaveData(output);
+		if (brm$vanilla) {
+			output.putBoolean(BRM_VANILLA_KEY, true);
+		}
+	}
+
+	@Override
+	protected void readAdditionalSaveData(net.minecraft.world.level.storage.ValueInput input) {
+		super.readAdditionalSaveData(input);
+		// The saved attributes are already vanilla's; only the flag is needed.
+		brm$vanilla = input.getBooleanOr(BRM_VANILLA_KEY, false);
 	}
 
 	@Inject(method = "createAttributes", at = @At("RETURN"))
@@ -80,23 +130,27 @@ abstract class DrownedMixin extends Zombie implements DrownedAccess {
 			if (goal instanceof RangedAttackGoal || goal instanceof ZombieAttackGoal
 					|| goal instanceof MoveToBlockGoal && !(goal instanceof RemoveBlockGoal)) {
 				goalSelector.removeGoal(goal);
+				goalSelector.addGoal(wrapped.getPriority(), new VanillaOnlyGoal(goal, this::brm$isVanilla));
 			}
 		}
-		// It doesn't hunt by target: it lurks and grabs.
-		targetSelector.removeAllGoals(goal -> true);
+		// It doesn't hunt by target: it lurks and grabs (a vanilla drowned keeps vanilla's targeting).
+		for (WrappedGoal wrapped : new ArrayList<>(targetSelector.getAvailableGoals())) {
+			targetSelector.removeGoal(wrapped.getGoal());
+			targetSelector.addGoal(wrapped.getPriority(), new VanillaOnlyGoal(wrapped.getGoal(), this::brm$isVanilla));
+		}
 		goalSelector.addGoal(0, new DrownedLurkGoal((Drowned) (Object) this));
 	}
 
 	@Inject(method = "populateDefaultEquipmentSlots", at = @At("TAIL"))
 	private void brm$noTridents(RandomSource random, DifficultyInstance difficulty, CallbackInfo ci) {
-		if (getMainHandItem().is(Items.TRIDENT)) {
+		if (!brm$vanilla && getMainHandItem().is(Items.TRIDENT)) {
 			setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
 		}
 	}
 
 	@Inject(method = "wantsToSwim", at = @At("HEAD"), cancellable = true)
 	private void brm$wantsToSwim(CallbackInfoReturnable<Boolean> cir) {
-		if (!level().isClientSide() && brm$mind().wantsToSwim()) {
+		if (!level().isClientSide() && !brm$vanilla && brm$mind().wantsToSwim()) {
 			cir.setReturnValue(true);
 		}
 	}
@@ -104,7 +158,7 @@ abstract class DrownedMixin extends Zombie implements DrownedAccess {
 	/** Upright or lying (the synced swimming flag, which the client draws): lying swimming and crawling, upright lurking and dragging in water. */
 	@Inject(method = "updateSwimming", at = @At("HEAD"), cancellable = true)
 	private void brm$posture(CallbackInfo ci) {
-		if (!level().isClientSide()) {
+		if (!level().isClientSide() && !brm$vanilla) {
 			setSwimming(brm$mind().lying((Drowned) (Object) this));
 			ci.cancel();
 		}
@@ -112,7 +166,7 @@ abstract class DrownedMixin extends Zombie implements DrownedAccess {
 
 	@Override
 	public void tick() {
-		if (!level().isClientSide() && isAlive()) {
+		if (!level().isClientSide() && isAlive() && !brm$vanilla) {
 			brm$mind().tick((Drowned) (Object) this);
 		}
 		super.tick();

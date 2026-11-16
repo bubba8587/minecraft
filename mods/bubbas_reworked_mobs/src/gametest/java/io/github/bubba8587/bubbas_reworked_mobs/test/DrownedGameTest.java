@@ -330,6 +330,33 @@ public class DrownedGameTest {
 		helper.succeed();
 	}
 
+	/** Spawner and trial spawner drowned stay vanilla (owner, 2026-11-16): vanilla health, tridents possible, the flag survives a save. */
+	@GameTest(maxTicks = 5)
+	public void spawnerDrownedStayVanilla(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		int tridents = 0;
+		for (int i = 0; i < 200; i++) {
+			Drowned drowned = EntityTypes.DROWNED.create(level, EntitySpawnReason.SPAWNER);
+			drowned.finalizeSpawn(level, level.getCurrentDifficultyAt(helper.absolutePos(BlockPos.ZERO)), i % 2 == 0 ? EntitySpawnReason.SPAWNER : EntitySpawnReason.TRIAL_SPAWNER, null);
+			helper.assertTrue(((DrownedAccess) drowned).brm$isVanilla(), "a spawner drowned should be vanilla");
+			helper.assertTrue(drowned.getMaxHealth() == 20.0F && drowned.getHealth() == 20.0F, "vanilla health, got " + drowned.getMaxHealth());
+			if (drowned.getMainHandItem().is(Items.TRIDENT)) {
+				tridents++;
+			}
+			if (i == 0) {
+				var output = net.minecraft.world.level.storage.TagValueOutput.createWithoutContext(net.minecraft.util.ProblemReporter.DISCARDING);
+				drowned.saveWithoutId(output);
+				Drowned loaded = EntityTypes.DROWNED.create(level, EntitySpawnReason.LOAD);
+				loaded.load(net.minecraft.world.level.storage.TagValueInput.create(net.minecraft.util.ProblemReporter.DISCARDING, level.registryAccess(), output.buildResult()));
+				helper.assertTrue(((DrownedAccess) loaded).brm$isVanilla() && loaded.getMaxHealth() == 20.0F, "the vanilla flag should survive a save");
+				loaded.discard();
+			}
+			drowned.discard();
+		}
+		helper.assertTrue(tridents > 0, "vanilla drowned can still spawn with tridents");
+		helper.succeed();
+	}
+
 	/** Buried treasure can hold a trident (rare). */
 	@GameTest(maxTicks = 5)
 	public void buriedTreasureCanHoldATrident(GameTestHelper helper) {

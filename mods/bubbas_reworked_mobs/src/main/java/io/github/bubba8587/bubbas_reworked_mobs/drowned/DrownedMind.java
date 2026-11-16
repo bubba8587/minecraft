@@ -63,6 +63,8 @@ public final class DrownedMind {
 	private boolean sunk;
 	private float grip;
 	private long lastSearch = Long.MIN_VALUE;
+	/** Keeps its spot with no player near (client test screenshots, a test world station). */
+	private boolean pinned;
 
 	public State state() {
 		return state;
@@ -174,16 +176,16 @@ public final class DrownedMind {
 	private void tickSeeking(Drowned drowned, ServerLevel level, long time) {
 		Player player = level.getNearestPlayer(drowned.getX(), drowned.getY(), drowned.getZ(), DrownedTuning.ACTIVATE_RANGE,
 				e -> !e.isSpectator());
-		if (player == null) {
+		if (player == null && !(pinned && spot != null)) {
 			if (state != State.IDLE) {
 				enterIdle(drowned);
 			}
 			return;
 		}
-		if (spot != null && spot.horizontalDistanceSqr(player) > DrownedTuning.SPOT_RELEASE_DISTANCE * DrownedTuning.SPOT_RELEASE_DISTANCE) {
+		if (player != null && !pinned && spot != null && spot.horizontalDistanceSqr(player) > DrownedTuning.SPOT_RELEASE_DISTANCE * DrownedTuning.SPOT_RELEASE_DISTANCE) {
 			spot = null;
 		}
-		if (spot == null && (time + drowned.getId()) % DrownedTuning.SPOT_SEARCH_INTERVAL == 0 && time != lastSearch) {
+		if (spot == null && player != null && (time + drowned.getId()) % DrownedTuning.SPOT_SEARCH_INTERVAL == 0 && time != lastSearch) {
 			lastSearch = time;
 			spot = LurkSpots.find(level, drowned, player, avoid, drowned.getRandom());
 		}
@@ -252,7 +254,7 @@ public final class DrownedMind {
 
 	/** One senses scan while lurking: is it stared at, and is someone at the edge with their back turned? */
 	private @Nullable LivingEntity scan(Drowned drowned, ServerLevel level, LurkSpots.Spot s) {
-		if (level.getNearestPlayer(drowned.getX(), drowned.getY(), drowned.getZ(), DrownedTuning.ACTIVATE_RANGE, e -> !e.isSpectator()) == null) {
+		if (!pinned && level.getNearestPlayer(drowned.getX(), drowned.getY(), drowned.getZ(), DrownedTuning.ACTIVATE_RANGE, e -> !e.isSpectator()) == null) {
 			enterIdle(drowned);
 			return null;
 		}
@@ -554,5 +556,12 @@ public final class DrownedMind {
 		state = State.LURK;
 		drowned.getNavigation().stop();
 		drowned.setNoGravity(true);
+	}
+
+	/** For the client test and a test world station: swim to {@code spot} and lurk there whether or not a player is near. */
+	public void pinTo(Drowned drowned, LurkSpots.Spot spot) {
+		this.spot = spot;
+		pinned = true;
+		state = State.TRAVEL;
 	}
 }
