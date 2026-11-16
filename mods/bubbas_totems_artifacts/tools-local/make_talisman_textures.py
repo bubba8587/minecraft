@@ -1,114 +1,73 @@
-# dte:B16
-"""Writes the Grave Talisman's PLACEHOLDER textures (16x and their 32x twins) from simple shapes, until people draw
-the real ones. Never replace these with AI art (specs/textures.md). Needs Pillow.
+#!/usr/bin/env python3
+# dte:B16,C6
+"""The Grave Talisman's item textures, 16x and their Faithful-style 32x twins (agent-made, listed in docs/art-todo.md
+for the owner to redo or tweak; never AI-generated). Needs Pillow.
 
-  python mods/bubbas_reworked_mobs/tools-local/make_talisman_textures.py
+  python mods/bubbas_totems_artifacts/tools-local/make_talisman_textures.py
 
-grave_talisman.png is the item (stone tablet on a cord, dark gem). grave_talisman_glow_<1..3>.png are the same picture
-with the gem lit; the glow models (models/item/grave_talisman_glow_*.json) show only their gem square (pixels 5..10,
-rows 8..13) on a small cuboid that gives off light.
+A little gravestone on a leather cord: an arched slab of weathered stone with a touch of moss at its foot, a gem set in
+its face. grave_talisman.png is the item with the gem unlit. grave_talisman_glow_<1..3>.png are the same picture with
+the gem lit brighter at each level; the glow models (models/item/grave_talisman_glow_*.json) show only the gem and its
+setting (pixels 5..10, rows 8..13, the same place at 32x) on a small cuboid that gives off light, so the gem must stay
+in that square. The 16x grid is hand-placed; the 32x twins come from tools/pixelart.py.
 """
+import sys
 from pathlib import Path
 
-from PIL import Image
+HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(HERE.parent.parent.parent / "tools"))
+from pixelart import check, render, render32  # noqa: E402
 
-RES = Path(__file__).resolve().parent.parent / "src/main/resources"
+RES = HERE.parent / "src/main/resources"
 MOD = "bubbas_totems_artifacts"
 
-CORD_DARK = (58, 38, 24, 255)
-CORD_LIGHT = (104, 72, 44, 255)
-OUTLINE = (44, 44, 48, 255)
-STONE_LIGHT = (150, 148, 140, 255)
-STONE = (118, 116, 110, 255)
-STONE_DARK = (88, 86, 82, 255)
-RIM = (36, 36, 40, 255)
-# Gem colours per glow level: (body, highlight). Level 0 is the unlit gem.
+# o..5: weathered stone, outline to lightest. k/K/L: the leather cord. m/M: moss.
+# R: the gem's setting. x/g/G/h/w: the gem, darkest to its highlight (per level, below).
+BASE = {"o": (40, 40, 44), "1": (70, 70, 72), "2": (94, 94, 94), "3": (118, 118, 116), "4": (142, 142, 138),
+	"5": (168, 168, 162), "k": (52, 34, 22), "K": (88, 60, 37), "L": (124, 88, 55), "m": (60, 82, 38),
+	"M": (92, 120, 52)}
+# Per glow level (0 = unlit): setting, then the gem from darkest to highlight.
 GEMS = [
-    ((40, 58, 54, 255), (62, 84, 78, 255)),
-    ((64, 128, 106, 255), (104, 170, 146, 255)),
-    ((110, 210, 168, 255), (170, 240, 210, 255)),
-    ((190, 255, 226, 255), (248, 255, 252, 255)),
+	{"R": (48, 52, 54), "x": (20, 32, 30), "g": (30, 48, 44), "G": (42, 66, 60), "h": (60, 88, 80), "w": (84, 114, 104)},
+	{"R": (44, 72, 64), "x": (22, 70, 58), "g": (36, 102, 84), "G": (56, 138, 112), "h": (94, 178, 146), "w": (150, 214, 186)},
+	{"R": (66, 118, 98), "x": (38, 138, 108), "g": (62, 184, 144), "G": (102, 220, 176), "h": (162, 244, 210), "w": (220, 255, 240)},
+	{"R": (116, 188, 158), "x": (96, 208, 168), "g": (146, 238, 204), "G": (194, 255, 230), "h": (232, 255, 246), "w": (255, 255, 255)},
 ]
-# Rim tint per level (the stone around the gem catches the light).
-RIMS = [RIM, (40, 64, 58, 255), (70, 120, 100, 255), (120, 190, 160, 255)]
+MATERIAL = {**{k: "stone" for k in "12345"}, **{k: "cord" for k in "kKL"}, **{k: "moss" for k in "mM"},
+	**{k: "gem" for k in "xgGhw"}}
 
-
-def draw16(level):
-    img = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
-    px = img.load()
-    # Cord: a loop over the top.
-    for x, y in [(6, 0), (9, 0), (5, 1), (10, 1), (4, 2), (11, 2), (4, 3), (11, 3), (5, 4), (10, 4), (6, 5), (9, 5)]:
-        px[x, y] = CORD_DARK
-    for x, y in [(7, 0), (8, 0), (7, 5), (8, 5)]:
-        px[x, y] = CORD_LIGHT
-    # Tablet: rounded rectangle x 3..12, y 6..15.
-    for y in range(6, 16):
-        for x in range(3, 13):
-            corner = (x in (3, 12)) and (y in (6, 15))
-            if corner:
-                continue
-            edge = x in (3, 12) or y in (6, 15) or ((x in (4, 11)) and (y in (6, 15)))
-            if edge:
-                px[x, y] = OUTLINE
-            elif x + y < 14:
-                px[x, y] = STONE_LIGHT
-            elif x + y > 20:
-                px[x, y] = STONE_DARK
-            else:
-                px[x, y] = STONE
-    # Small carved marks above and below the gem.
-    for x in (6, 9):
-        px[x, 7] = STONE_DARK
-    px[7, 14] = STONE_DARK
-    px[8, 14] = STONE_DARK
-    # Gem setting: rim x 5..10, y 8..13; gem x 6..9, y 9..12.
-    body, highlight = GEMS[level]
-    for y in range(8, 14):
-        for x in range(5, 11):
-            if x in (5, 10) or y in (8, 13):
-                px[x, y] = RIMS[level]
-            else:
-                px[x, y] = body
-    px[6, 9] = highlight
-    px[7, 9] = highlight
-    px[6, 10] = highlight
-    return img
-
-
-def draw32(level):
-    """Twice the size, with a softer bevel on the stone and a facet in the gem (Faithful-style detail)."""
-    small = draw16(level)
-    img = small.resize((32, 32), Image.NEAREST)
-    px = img.load()
-    for y in range(32):
-        for x in range(32):
-            r, g, b, a = px[x, y]
-            if a == 0:
-                continue
-            sx, sy = x // 2, y // 2
-            if small.getpixel((sx, sy)) in (STONE_LIGHT, STONE, STONE_DARK):
-                # Speckle: every other sub-pixel a touch darker, so the stone reads as stone at 32x.
-                if (x * 7 + y * 3) % 5 == 0:
-                    px[x, y] = (max(r - 10, 0), max(g - 10, 0), max(b - 10, 0), a)
-    body, highlight = GEMS[level]
-    # Facet line across the gem.
-    for i in range(6):  # the gem spans x 12..19, y 18..25 at 32x
-        px[13 + i, 24 - i] = tuple(min(c + 14, 255) for c in body[:3]) + (255,)
-    px[13, 19] = (255, 255, 255, 255) if level == 3 else highlight
-    return img
+TALISMAN = check([
+	"......kLLk......",
+	".....kL..Lk.....",
+	".....K....K.....",
+	"......K..K......",
+	"......oLKo......",
+	".....oooooo.....",
+	"....o555443o....",
+	"...o55444332o...",
+	"...o54RRRR32o...",
+	"...o4RhwGGR2o...",
+	"...o4RwGGgR2o...",
+	"...o3RGGggR1o...",
+	"...o3RGgxxR1o...",
+	"...o32RRRR21o...",
+	"...o3211112mo...",
+	"....oooooMmo....",
+])
 
 
 def main():
-    out16 = RES / f"assets/{MOD}/textures/item"
-    out32 = RES / f"resourcepacks/{MOD}_32x/assets/{MOD}/textures/item"
-    out16.mkdir(parents=True, exist_ok=True)
-    out32.mkdir(parents=True, exist_ok=True)
-    for level in range(4):
-        name = "grave_talisman" if level == 0 else f"grave_talisman_glow_{level}"
-        draw16(level).save(out16 / f"{name}.png")
-        draw32(level).save(out32 / f"{name}.png")
-        print(name)
+	out16 = RES / f"assets/{MOD}/textures/item"
+	out32 = RES / f"resourcepacks/{MOD}_32x/assets/{MOD}/textures/item"
+	out16.mkdir(parents=True, exist_ok=True)
+	out32.mkdir(parents=True, exist_ok=True)
+	for level, gem in enumerate(GEMS):
+		name = "grave_talisman" if level == 0 else f"grave_talisman_glow_{level}"
+		pal = {**BASE, **gem}
+		render(TALISMAN, pal).save(out16 / f"{name}.png")
+		render32(TALISMAN, pal, MATERIAL, inner={"o": "1"}, grain=("stone",), seed=11).save(out32 / f"{name}.png")
+		print(name)
 
 
 if __name__ == "__main__":
-    main()
+	main()
