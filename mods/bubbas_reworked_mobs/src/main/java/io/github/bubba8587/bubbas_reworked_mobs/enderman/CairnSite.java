@@ -122,24 +122,15 @@ public final class CairnSite {
 		return Math.max(Math.max(origin.getX() - box.minX(), box.maxX() - origin.getX()), Math.max(origin.getZ() - box.minZ(), box.maxZ() - origin.getZ()));
 	}
 
-	/** Plain ground a builder takes out as it sets a cairn block in its place (it then carries it off). */
-	public static boolean swapsOut(BlockState here) {
-		return TerrainKinds.family(here) != null && !here.hasBlockEntity();
-	}
-
 	/** Complete = every block matches its design (E3: a repaired cairn counts as complete again). */
 	public boolean complete(ServerLevel level) {
 		return standing(level) == order.size();
 	}
 
-	/**
-	 * Whether the designed block could go into {@code pos} now: the spot is free (or holds plain ground, which the
-	 * builder swaps out: the footing sinks into grass and dirt) and something holds it up.
-	 */
+	/** Whether the designed block could go into {@code pos} now: the spot is free and something holds it up. */
 	public static boolean canPlace(Level level, BlockPos pos, BlockState state) {
 		BlockState here = level.getBlockState(pos);
-		boolean free = here.isAir() || here.canBeReplaced() || swapsOut(here);
-		if (!free || !here.getFluidState().isEmpty() || !state.canSurvive(level, pos)) {
+		if (!(here.isAir() || here.canBeReplaced()) || !here.getFluidState().isEmpty() || !state.canSurvive(level, pos)) {
 			return false;
 		}
 		for (Direction d : Direction.values()) {

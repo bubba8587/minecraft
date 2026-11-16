@@ -277,13 +277,10 @@ public final class EndermanJobGoal extends Goal {
 			nextSearch = enderman.tickCount + 5;
 			return;
 		}
-		// Setting a footing block into the ground: it takes the grass or dirt out and carries that off instead.
-		BlockState before = level.getBlockState(pos);
-		BlockState swapped = CairnSite.swapsOut(before) && CairnSites.covering(level, pos) != null ? before : null;
 		placed = Block.updateFromNeighbourShapes(placed, level, pos);
 		level.setBlockAndUpdate(pos, placed);
 		level.gameEvent(GameEvent.BLOCK_PLACE, pos, GameEvent.Context.of(enderman, placed));
-		enderman.setCarriedBlock(swapped);
+		enderman.setCarriedBlock(null);
 		mind.clear();
 	}
 
