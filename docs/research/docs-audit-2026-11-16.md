@@ -1,3 +1,4 @@
+<!-- dte:C1,C2,C4,C5,B11 -->
 # Docs consistency audit (2026-11-16)
 
 Read-only audit of specs, player docs, the decision tree and BACKLOG.md against what is on disk. Other agents were editing at the time (Infused Gems had uncommitted changes to `balance.json`, `GemTotals`, `WornEffects` and others; Reworked Mobs to its sleeper blockstates), so re-check the Infused Gems numbers once that work lands. Numbers for Infused Gems were checked against `tools/gem-balance.py` and `balance.json` (`--check` passes, the export is up to date).

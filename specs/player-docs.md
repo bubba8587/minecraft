@@ -6,7 +6,9 @@
 
 Every project players can get has a **folder** in `player-docs/Projects/` named after it (owner, 2026-11-14): an **overview page** with the project's name (started from the matching template in `player-docs/Templates/`, with frontmatter `type`, `minecraft`, `status` (`active` or `paused`) and `modrinth`) that links every page in the folder, plus **one page per topic** (a feature, a mechanic, commands and settings). Page names are unique across the whole vault so `[[links]]` resolve; topic pages start with the hatnote `*Part of [[<project>]].*` Internal projects (`refmod`, `refpack`) get no pages.
 
-A change that alters what players see (a feature, a command, a keybind, a config option, a dependency, the supported Minecraft version) updates the project's pages in the same change.
+A change that alters what players see (a feature, a command, a keybind, a config option, a dependency, the supported Minecraft version) ends up on the project's pages: builders note it in `docs/reports/`, and the orchestrator or a docs agent merges it.
+
+**Docs reports (owner: builders build; docs are merged separately).** A builder agent doesn't edit `player-docs/` or spec prose. It writes what the docs need (player-facing changes, spec facts, numbers, owner decisions, its own choices marked as such, questions for the owner) into `docs/reports/<project>-docs-<date>.md` and commits it. The orchestrator or a docs agent merges reports into `specs/` and `player-docs/`, checking numbers against the code (the code wins), then deletes each merged report. Builders still write API contracts other builders need, `covers:` lines and generated data or reports themselves.
 
 `Version Status.md` names the current Minecraft version and lists every project that is paused on it, with a plain reason (B10 alwaysLatest).
 

@@ -3,7 +3,7 @@
 > **Owner's goal for Warding (2026-11-15):** let players build mob-free zones without spamming torches. Every option below is judged against that.
 # Area gems and Warding (design exploration)
 
-**Status:** exploration for the owner, 2026-11-15. Nothing is built or decided. It covers two of the owner's ideas from that day:
+**Status:** exploration for the owner, 2026-11-15; owner decisions at the end (2026-11-16). Built in Bubba's Reworked Mobs (`specs/undead.md`, Warding) and Bubba's Reworked Beacons (`specs/reworked-beacons.md`). It covers two of the owner's ideas from that day:
 
 1. **Warding** for Bubba's Reworked Mobs: one thing that does all three of *keep sleepers asleep*, *stop monsters spawning nearby* and *make mobs avoid the area*. Gems could carry it, but vanilla has no Warding effect. Light is the natural vanilla hook (light means no spawns).
 2. **Area-of-effect gems:** instead of light that follows the player (the owner isn't sure that's good), a gem is **mounted** somewhere and makes an area. Maybe there is one single way of mounting gems, maybe it ties in with beacons. Reuse vanilla mechanics where possible, and look at mounts other than the beacon. **Owner addition: bells** (ringing a bell already "wards" in vanilla).

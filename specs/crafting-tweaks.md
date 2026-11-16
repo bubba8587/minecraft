@@ -10,13 +10,13 @@ The core recipe datapack. Owner-authored recipe set (originally for 26.1), porte
 - Custom names and lore on results (`minecraft:item_name`, `minecraft:lore`) are plain-string text components.
 - pack.mcmeta targets data pack format 121 (26.3). Bump with each Minecraft release.
 - Tests: loads clean in `tools/packload.py`; each recipe is looked up, matched and assembled in `mods/packcheck` game tests, with a client screenshot of the results (`specs/pack-testing.md`).
-- Player page: `player-docs/Projects/Bubba's Crafting Tweaks.md`, updated whenever a recipe changes.
+- Player pages: `player-docs/Projects/Bubba's Crafting Tweaks/` (overview, Crafting Tweaks Recipes, The Glider, Synthetic Diamond Ore, Crafting Tweaks Companion Mod), updated whenever a recipe changes.
 
 ## Owner's review (2026-11-14)
 
 - Bamboo Paper: keeps its name, light green tint (done).
 - Charcoal Block: keeps its name.
-- Stone → quartz (blasting): normal 200-tick cook time (was 100).
+- Andesite/diorite/granite → quartz (blasting): normal 200-tick cook time (was 100).
 - Rotten flesh → leather (smoker): 0.1 XP (was 1.0); lore kept.
 - Trident recipe: kept as is (tridents are too rare otherwise).
 - Organic Glowstone Dust, black dye, sand, gravel, iron nugget: unchanged.
