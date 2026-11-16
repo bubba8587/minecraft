@@ -1,18 +1,17 @@
+// dte:C5
 package io.github.bubba8587.bubbas_reworked_beacons.client;
 
-import io.github.bubba8587.bubbas_reworked_beacons.BubbasReworkedBeacons;
+import io.github.bubba8587.bubbas_reworked_beacons.menu.ModMenus;
+import io.github.bubba8587.bubbas_reworked_beacons.network.ExtraStatesHandshake;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
-import net.fabricmc.fabric.api.resource.v1.pack.PackActivationType;
-import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.network.chat.Component;
+import net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationNetworking;
+import net.minecraft.client.gui.screens.MenuScreens;
 
 public class BubbasReworkedBeaconsClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
-		// 32x textures (Faithful style) as an optional built-in resource pack: specs/textures.md.
-		FabricLoader.getInstance().getModContainer(BubbasReworkedBeacons.MOD_ID).ifPresent(mod ->
-			ResourceLoader.registerBuiltinPack(BubbasReworkedBeacons.id(BubbasReworkedBeacons.MOD_ID + "_32x"), mod,
-				Component.literal("Bubba's Reworked Beacons 32x (Faithful style)"), PackActivationType.NORMAL));
+		// The upside-down beacon adds a block state: tell the server this client has it, or it turns the client away.
+		ClientConfigurationNetworking.registerGlobalReceiver(ExtraStatesHandshake.TYPE, (payload, context) -> { });
+		MenuScreens.register(ModMenus.BEACON, BeaconItemScreen::new);
 	}
 }

@@ -1,10 +1,15 @@
+// dte:C5
 package io.github.bubba8587.bubbas_reworked_beacons;
 
-import net.fabricmc.api.ModInitializer;
+import io.github.bubba8587.bubbas_reworked_beacons.menu.ModMenus;
+import io.github.bubba8587.bubbas_reworked_beacons.network.ExtraStatesHandshake;
 import net.minecraft.resources.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import net.fabricmc.api.ModInitializer;
+
+/** Bubba's Reworked Beacons (specs/reworked-beacons.md, leaf C5). */
 public class BubbasReworkedBeacons implements ModInitializer {
 	public static final String MOD_ID = "bubbas_reworked_beacons";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
@@ -15,5 +20,7 @@ public class BubbasReworkedBeacons implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
+		ModMenus.initialize();
+		ExtraStatesHandshake.initialize();
 	}
 }

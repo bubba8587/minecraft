@@ -1,0 +1,6 @@
+{
+  "variants": {
+    "upside_down=false": { "model": "minecraft:block/beacon" },
+    "upside_down=true": { "model": "minecraft:block/beacon", "x": 180 }
+  }
+}

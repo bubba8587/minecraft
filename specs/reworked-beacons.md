@@ -1,4 +1,5 @@
 <!-- dte:C5 -->
+<!-- covers: mods/bubbas_reworked_beacons/* -->
 # Bubba's Reworked Beacons (spec)
 
 A separate mod that reworks vanilla beacons into a general "area" system. Mod id `bubbas_reworked_beacons`, code in `mods/bubbas_reworked_beacons/`, Java package `io.github.bubba8587.bubbas_reworked_beacons`. Design history and the options considered: `docs/research/area-gems-and-warding.md`.

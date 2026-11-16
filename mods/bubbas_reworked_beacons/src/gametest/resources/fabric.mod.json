@@ -6,11 +6,14 @@
 	"environment": "*",
 	"entrypoints": {
 		"fabric-gametest": [
-			"io.github.bubba8587.bubbas_reworked_beacons.test.BubbasReworkedBeaconsCoreGameTest"
+			"io.github.bubba8587.bubbas_reworked_beacons.test.ReworkedBeaconsCoreGameTest"
 		],
 		"bubba-milestone-gametest": [],
 		"fabric-client-gametest": [
 			"io.github.bubba8587.bubbas_reworked_beacons.test.BubbasReworkedBeaconsClientGameTest"
+		],
+		"bubbas_reworked_beacons:payload": [
+			"io.github.bubba8587.bubbas_reworked_beacons.test.TestPayload"
 		]
 	}
 }

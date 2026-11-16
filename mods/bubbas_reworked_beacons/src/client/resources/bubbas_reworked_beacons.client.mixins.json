@@ -1,9 +1,9 @@
 {
 	"required": true,
+	"minVersion": "0.8",
 	"package": "io.github.bubba8587.bubbas_reworked_beacons.client.mixin",
 	"compatibilityLevel": "JAVA_25",
-	"client": [],
-	"injectors": {
-		"defaultRequire": 1
-	}
+	"client": ["BeaconRendererMixin", "BeaconRenderStateMixin"],
+	"injectors": { "defaultRequire": 1 },
+	"mixinextras": { "minVersion": "0.5.0" }
 }

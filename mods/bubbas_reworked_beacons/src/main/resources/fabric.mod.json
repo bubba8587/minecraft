@@ -8,7 +8,6 @@
 		"bubba8587"
 	],
 	"license": "MIT",
-	"icon": "assets/bubbas_reworked_beacons/icon.png",
 	"environment": "*",
 	"entrypoints": {
 		"main": [
@@ -16,6 +15,9 @@
 		],
 		"client": [
 			"io.github.bubba8587.bubbas_reworked_beacons.client.BubbasReworkedBeaconsClient"
+		],
+		"bubbas_reworked_beacons:payload": [
+			"io.github.bubba8587.bubbas_reworked_beacons.beacon.StandalonePayload"
 		]
 	},
 	"mixins": [
