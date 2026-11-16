@@ -1,7 +1,7 @@
 // dte:C1
 package io.github.bubba8587.bubbas_reworked_mobs.undead.sleeper;
 
-import io.github.bubba8587.bubbas_reworked_mobs.warding.WardingTuning;
+import io.github.bubba8587.bubbas_reworked_mobs.undead.UndeadTuning;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
@@ -18,9 +18,9 @@ public final class SleeperBells {
 	private SleeperBells() {
 	}
 
-	/** Points a bell's ring is worth {@code distance} blocks away: {@link WardingTuning#BELL_POINTS}, falling off linearly. */
+	/** Points a bell's ring is worth {@code distance} blocks away: {@link UndeadTuning#BELL_POINTS}, falling off linearly. */
 	public static float loudness(double distance) {
-		return (float) (WardingTuning.BELL_POINTS * Math.max(0.0, 1.0 - distance / WardingTuning.BELL_RANGE));
+		return (float) (UndeadTuning.BELL_POINTS * Math.max(0.0, 1.0 - distance / UndeadTuning.BELL_RANGE));
 	}
 
 	public static void rang(ServerLevel level, BlockPos bell, @Nullable Entity ringer) {
@@ -28,7 +28,7 @@ public final class SleeperBells {
 			return;
 		}
 		Vec3 from = Vec3.atCenterOf(bell);
-		for (SleeperBlockEntity sleeper : SleeperFinder.within(level, from, WardingTuning.BELL_RANGE)) {
+		for (SleeperBlockEntity sleeper : SleeperFinder.within(level, from, UndeadTuning.BELL_RANGE)) {
 			if (!sleeper.isHearing()) {
 				continue;
 			}

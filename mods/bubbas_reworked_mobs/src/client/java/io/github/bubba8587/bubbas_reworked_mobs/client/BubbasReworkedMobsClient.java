@@ -3,7 +3,6 @@ package io.github.bubba8587.bubbas_reworked_mobs.client;
 
 import io.github.bubba8587.bubbas_reworked_mobs.BubbasReworkedMobs;
 import io.github.bubba8587.bubbas_reworked_mobs.client.display.LootDisplayRenderer;
-import io.github.bubba8587.bubbas_reworked_mobs.client.undead.GraveTalismanGlow;
 import io.github.bubba8587.bubbas_reworked_mobs.client.undead.SleeperRenderer;
 import io.github.bubba8587.bubbas_reworked_mobs.client.undead.WokenSkeletonRenderer;
 import io.github.bubba8587.bubbas_reworked_mobs.client.undead.WokenZombieRenderer;
@@ -35,9 +34,6 @@ public class BubbasReworkedMobsClient implements ClientModInitializer {
 		BlockEntityRenderers.register(ModBlockEntities.SLEEPER, SleeperRenderer::new);
 		EntityRenderers.register((EntityType<? extends Skeleton>) ModEntities.woken(UndeadVariant.SKELETON), WokenSkeletonRenderer::new);
 		EntityRenderers.register((EntityType<? extends Zombie>) ModEntities.woken(UndeadVariant.ZOMBIE), WokenZombieRenderer::new);
-
-		// Grave Talisman: glow level worked out on the client, read by the item model.
-		GraveTalismanGlow.initialize();
 
 		// Loot on display: the item's own model, posed per placement.
 		BlockEntityRenderers.register(ModBlockEntities.LOOT_DISPLAY, LootDisplayRenderer::new);

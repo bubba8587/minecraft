@@ -15,9 +15,9 @@ from pathlib import Path
 from PIL import Image
 
 ROOT = Path(__file__).resolve().parent.parent
-RES = ROOT / "mods" / "bubbas_reworked_mobs" / "src" / "main" / "resources"
-OUT = {16: RES / "assets" / "bubbas_reworked_mobs" / "textures" / "item",
-	32: RES / "resourcepacks" / "bubbas_reworked_mobs_32x" / "assets" / "bubbas_reworked_mobs" / "textures" / "item"}
+RES = ROOT / "mods" / "bubbas_totems_artifacts" / "src" / "main" / "resources"
+OUT = {16: RES / "assets" / "bubbas_totems_artifacts" / "textures" / "item",
+	32: RES / "resourcepacks" / "bubbas_totems_artifacts_32x" / "assets" / "bubbas_totems_artifacts" / "textures" / "item"}
 
 STONE = [(28, 33, 46), (46, 55, 74), (66, 78, 102), (88, 104, 130), (112, 130, 156), (140, 158, 182)]
 FLAME = [(20, 90, 110), (40, 160, 175), (95, 215, 220), (190, 250, 245)]

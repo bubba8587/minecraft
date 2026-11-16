@@ -289,7 +289,7 @@ sign(3, -59, 28, wall("west"), [("Empty bag", "black", True, "clear @s"), "clear
 sign(3, -59, 29, wall("west"), [("No effects", "black", True, "effect clear @s"), "clears potion", "effects (gems", "stay on)"])
 sign(3, -59, 30, wall("west"), [("Survival", "dark_blue", True, "gamemode survival @s"), "click to", "switch"])
 sign(3, -59, 31, wall("west"), [("Creative", "dark_blue", True, "gamemode creative @s"), "click to", "switch"])
-sign(3, -60, 27, wall("west"), [("Totem of", "dark_aqua", True, "give @s bubbas_reworked_mobs:totem_of_warding"),
+sign(3, -60, 27, wall("west"), [("Totem of", "dark_aqua", True, "give @s bubbas_totems_artifacts:totem_of_warding"),
                                  ("Warding", "dark_aqua", True), "held: scares", "monsters away"])
 info(-3, -60, 18, stand(8), "Wardrobe", "dark_purple", "oak: perfect", TWIN_KEY_1, TWIN_KEY_2)
 info(3, -60, 18, stand(8), "Wardrobe", "dark_purple", "right: helpful", "left: harmful,", "materials,tools")
@@ -832,7 +832,7 @@ for i in range(4):
     r = i + 1
     c(f"fill {-r} {31 + i} {79 - r} {r} {31 + i} {79 + r} minecraft:gold_block")
 c("setblock 0 30 79 minecraft:beacon[upside_down=true]")
-c('setblock -5 24 73 minecraft:chest[facing=south]{CustomName:"Totems of Warding",Items:[{Slot:0b,id:"bubbas_reworked_mobs:totem_of_warding",count:1},{Slot:1b,id:"bubbas_reworked_mobs:totem_of_warding",count:1},{Slot:2b,id:"bubbas_reworked_mobs:totem_of_warding",count:1}]}')
+c('setblock -5 24 73 minecraft:chest[facing=south]{CustomName:"Totems of Warding",Items:[{Slot:0b,id:"bubbas_totems_artifacts:totem_of_warding",count:1},{Slot:1b,id:"bubbas_totems_artifacts:totem_of_warding",count:1},{Slot:2b,id:"bubbas_totems_artifacts:totem_of_warding",count:1}]}')
 PAIR_SLEEPERS = ["setblock -6 24 85 bubbas_reworked_mobs:zombie_sleeper[facing=north,pose=lying]",
                  "setblock -3 24 86 bubbas_reworked_mobs:skeleton_sleeper[facing=north,pose=sitting]",
                  "setblock 6 24 85 bubbas_reworked_mobs:zombie_sleeper[facing=north,pose=lying]"]

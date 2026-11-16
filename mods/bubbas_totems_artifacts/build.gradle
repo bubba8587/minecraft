@@ -1,0 +1,27 @@
+plugins {
+	id 'net.fabricmc.fabric-loom'
+}
+apply from: rootProject.file('gradle/fabric-mod.gradle')
+
+// Optional, both (specs/totems-artifacts.md, "Independence"): Bubba's Reworked Mobs (its api/Sleepers; only
+// compat/ReworkedMobsSleepers touches it, created only when the mod is loaded) and Bubba's Reworked Beacons (its payload
+// API; only compat/WardingBeaconPayload touches it, loaded through that mod's entrypoint). Compiled against them only.
+// Game tests run without either by default (proving this mod works alone); -PwithMobs and -PwithBeacons put their
+// jars on the game's classpath too, and the tests that need them run for real.
+evaluationDependsOn(':bubbas_reworked_mobs')
+evaluationDependsOn(':bubbas_reworked_beacons')
+def mobsJar = files(rootProject.project(':bubbas_reworked_mobs').tasks.named('jar').flatMap { it.archiveFile })
+def beaconsJar = files(rootProject.project(':bubbas_reworked_beacons').tasks.named('jar').flatMap { it.archiveFile })
+dependencies {
+	// Extra mod dependencies go here; see docs/knowledge/libraries.md.
+	compileOnly project(':bubbas_reworked_mobs')
+	compileOnly project(':bubbas_reworked_beacons')
+	gametestCompileOnly project(':bubbas_reworked_mobs')
+	gametestCompileOnly project(':bubbas_reworked_beacons')
+	if (providers.gradleProperty('withMobs').isPresent()) {
+		runtimeOnly mobsJar
+	}
+	if (providers.gradleProperty('withBeacons').isPresent()) {
+		runtimeOnly beaconsJar
+	}
+}

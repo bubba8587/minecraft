@@ -1,0 +1,9 @@
+{
+  "beacon.bubbas_totems_artifacts.ward": "No monsters spawn or enter",
+  "beacon.bubbas_totems_artifacts.ward_sleepers": "Sleeping undead stay asleep",
+  "beacon.bubbas_totems_artifacts.ward_sleepers_needs": "4 layers: sleeping undead stay asleep",
+  "block.bubbas_totems_artifacts.totem_statue": "Totem Statue",
+  "item.bubbas_totems_artifacts.grave_talisman": "Grave Talisman",
+  "item.bubbas_totems_artifacts.totem_of_warding": "Totem of Warding",
+  "itemGroup.bubbas_totems_artifacts": "Bubba's Totems & Artifacts"
+}
