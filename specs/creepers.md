@@ -22,7 +22,7 @@ A creeper is a **nervous watcher**, not a hunter:
 ## Spawning (owner, 2026-11-16)
 
 - **Direction for the whole mobs mod:** almost eliminate random spawning; mobs come from deliberate placement (sleepers, structures, camps), not vanilla's random spawns.
-- **Creepers:** vanilla's random natural creeper spawns are off. The mod spawns its own 'natural' creepers at night, **behind cover just outside your view**, at a watching distance; **at most one at a time** (per player or per world: open question). At any point at night you could turn around fast and see one, half behind a tree in the distance, looking at you. Creepers from spawners, structures and commands are unaffected.
+- **Creepers:** vanilla's random natural creeper spawns are off. The mod spawns its own 'natural' creepers at night, **behind cover just outside your view**, at a watching distance; **at most one at a time per player** (owner: each player gets their own watcher). At any point at night you could turn around fast and see one, half behind a tree in the distance, looking at you. Creepers from spawners, structures and commands are unaffected.
 - **Peekaboo:** a creeper in half-hiding that you look at moves about **95% behind its cover** until you look away, then eases back out and keeps watching.
 
 ## Blindness
