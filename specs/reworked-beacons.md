@@ -53,7 +53,7 @@ Emerald, iron and gold are no longer payments. (With Infused Gems installed, the
 - (answered) Totem of Warding: found in a mix of places, more common than the Totem of Undying; in a beacon: 1-3 layers stop spawns and keep monsters out, 4 layers also keep sleepers asleep; range as normal. Details in the Warding doc.
 - (answered) Upside-down placement: placing a beacon against the underside of a block hangs it upside down, like a hanging lantern. An upside-down beacon does nothing on its own: it only closes a pair (owner, 2026-11-16).
 - (answered) A pair shows a beam connecting the two beacons, floor to ceiling, as its status light: blocked beam = ward off (owner).
-- Harmful gems in a beacon hit the owner too: any protection for the beacon's own builder? (Equality principle says no.)
+- (answered) Harmful gems in a beacon hit everyone, the builder included: **no protection** (owner). Players can counter with gems (e.g. matching resistances), and it enables designed AoE debuff environments (e.g. hostile structures, boss arenas).
 
 ## Milestone test objectives
 
