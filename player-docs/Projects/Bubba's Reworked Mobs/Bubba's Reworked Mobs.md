@@ -62,7 +62,7 @@ A talisman whose gem glows brighter the closer undead are.
 
 *Main article: [[Totem of Warding]]*
 
-A found item that makes nearby monsters run away while held, and in a beacon from [[Bubba's Reworked Beacons]] keeps an area free of monster spawns.
+A found item that makes nearby monsters run away while held, and in a beacon from [[Bubba's Reworked Beacons]] keeps an area free of monsters: none spawn there and none can get in.
 
 ## Monster spawning
 

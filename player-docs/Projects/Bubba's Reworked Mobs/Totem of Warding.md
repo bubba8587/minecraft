@@ -50,10 +50,14 @@ With [[Bubba's Reworked Beacons]] installed, a Totem of Warding placed in a beac
 
 | Pyramid | Effect in the warded area |
 |---|---|
-| Any (1 to 4 layers) | No monsters spawn naturally, phantoms included. Monsters do not walk in: a monster chasing a player stops at the edge, and monsters already inside walk out. |
+| Any (1 to 4 layers) | No monsters spawn naturally, phantoms included. No monster gets in: a monster chasing a player stops at the edge, and monsters already inside leave. |
 | 4 layers | Also: sleeping undead inside never wake, whatever the noise. |
 
-Spawners, trial spawners, raids, bosses and commands still spawn monsters as normal, but those monsters do not walk into the ward either. Monsters outside can still shoot in. Slimes, ghasts, phantoms and vexes are not kept out. The ward ends about 5 seconds after the beacon stops working.
+The edge of a ward works like an invisible wall for every monster, including those that do not walk in on foot: phantoms, ghasts, vexes, slimes, magma cubes, blazes, endermen teleporting and monsters knocked toward it all stop at the edge and can slide along it. The wall does no damage. Any monster already inside, such as one there when the ward went up or one from a spawner, drifts out through the nearest side.
+
+Happy ghasts are kept out too, whether wild or ridden. A happy ghast that a player steers into the ward is pushed back outside the edge; the rider can get off and walk in. On a slow connection the rider may see the ghast jump back slightly at the edge.
+
+Spawners, trial spawners, raids, bosses and commands still spawn monsters as normal, but those monsters do not stay in the ward either. Monsters outside can still shoot in. The ward ends about 5 seconds after the beacon stops working.
 
 ## History
 

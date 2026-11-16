@@ -24,6 +24,7 @@ The world appears in the world list of the "mod testing" profile after an instal
 | Glider tower | A tall tower with Gliders, elytra and firework rockets at the top, for comparing [[The Glider]] with the elytra. |
 | Gem workshop | For [[Bubba's Infused Gems]]: potions in all three forms, every base gem, a brewing stand, an enchanting table with a full set of bookshelves, a smithing table, a grindstone, armor and weapons, and a pen of mobs that stand still to be hit. |
 | Gem testing grounds | South of the spawn point, behind the player: a wardrobe and a place to try every [[Gem Effects|gem effect]]. See below. |
+| Beacons and warding | For [[Bubba's Reworked Beacons]] and the [[Totem of Warding]]: beacons on every pyramid size, a Poison trap, a warded room high in the sky, a bell and sleepers in light and dark. See below. |
 
 ## Gem testing grounds
 
@@ -88,6 +89,20 @@ The Counter kits signs beside them give the player a set built against each boss
 | Hunter | Stalker | Silence set, sword with Glowing and Slowness |
 
 A Clear arena sign removes the boss and everything it dropped.
+
+## Beacons and warding
+
+The **beacons and warding** stations are for trying [[Beacon|beacons]] from [[Bubba's Reworked Beacons]] and the [[Totem of Warding]]. They lie east and west of the boss arena, with one room high above it.
+
+| Station | What to try |
+|---|---|
+| Beacon yard | Four beacons open to the sky on pyramids of 1, 2, 3 and 4 layers, each with a sign and a chest. A gem from the chest goes into the beacon: the pyramid caps its Gem Power (I, III, V or VI) and sets the range (20 to 50 blocks). Each chest holds perfect and Gem Power V gems, plus the old payment items, which are not accepted while [[Bubba's Infused Gems]] is installed. |
+| Poison trap | A beacon west of the boss arena holding a Poison gem poisons everything around it, the player included. A pig and a cow in a pen show it; the zombie beside them is undead and immune. Signs mark the edge. |
+| Paired beacons | A sign south of the mining wall teleports the player up to a closed room with a beacon in the floor and an upside-down beacon above it. A Totem of Warding from the chest goes into the floor beacon: the area 150 blocks around is warded at that height, and with the 4-layer pyramids the sleepers in the room stay asleep even when the bell rings. A sign on the wall leads back down. |
+| Spawn test | Two dark boxes near the paired beacons room, one inside the ward and one above it. The Spawns on sign turns natural spawning on for the whole world; after a while on the ground, the Count spawns sign tells how many mobs are in each box. The Spawns off sign turns spawning off again, and Clear boxes empties them. |
+| Bell | A bell beside three sleeping zombies 3, 9 and 15 blocks away. Ringing it wakes all three. A sign puts them back. |
+| Light rings | A ring of sleeping skeletons lit by torches beside a ring in the dark. Sleepers in strong light are harder to wake than the same sleepers in the dark. A sign puts the dark ring back. |
+| Totem of Warding | A sign in the wardrobe gives one. Held, it scares monsters away every 10 seconds. |
 
 ## See also
 
