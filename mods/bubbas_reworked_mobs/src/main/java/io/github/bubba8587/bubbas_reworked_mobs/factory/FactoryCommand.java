@@ -22,8 +22,8 @@ import net.minecraft.world.entity.monster.warden.Warden;
 import net.minecraft.world.level.block.Rotation;
 
 /**
- * {@code /bubbas_reworked_mobs factory here <mob> [seed]} and {@code factory build <pos> <mob> <seed> <turns>}
- * (ops only): puts up a whole mob factory (specs/mob-factory.md) with its platform's middle at the position, for
+ * {@code /bubbas_reworked_mobs ancient_fabricator here <mob> [seed]} and {@code ancient_fabricator build <pos> <mob> <seed> <turns>}
+ * (ops only): puts up a whole Ancient Fabricator, the mob factory of specs/mob-factory.md (owner named them 2026-11-16), with its platform's middle at the position, for
  * previews. Look only for now (owner, 2026-11-16: the look is reviewed before mechanics): the Warden stands in its
  * window without AI and nothing runs.
  */
@@ -32,7 +32,7 @@ public final class FactoryCommand {
 	}
 
 	public static LiteralArgumentBuilder<CommandSourceStack> build() {
-		return Commands.literal("factory")
+		return Commands.literal("ancient_fabricator")
 				.then(Commands.literal("here")
 						.then(Commands.argument("mob", StringArgumentType.word()).suggests(FactoryCommand::mobs)
 								.executes(c -> place(c, BlockPos.containing(c.getSource().getPosition()), c.getSource().getLevel().getRandom().nextLong(), 0))
@@ -57,7 +57,7 @@ public final class FactoryCommand {
 		try {
 			mob = FactoryDesign.Mob.byId(StringArgumentType.getString(c, "mob"));
 		} catch (IllegalArgumentException e) {
-			c.getSource().sendFailure(Component.literal("No factory mob " + StringArgumentType.getString(c, "mob")));
+			c.getSource().sendFailure(Component.literal("No Ancient Fabricator mob " + StringArgumentType.getString(c, "mob")));
 			return 0;
 		}
 		ServerLevel level = c.getSource().getLevel();
@@ -66,7 +66,7 @@ public final class FactoryCommand {
 		design.place(level, origin, rotation);
 		spawnWarden(level, design, origin, rotation);
 		BlockPos spawner = FactoryDesign.toWorld(origin, design.spawner(), rotation);
-		c.getSource().sendSuccess(() -> Component.literal("Built a %s factory (seed %d, %d blocks); spawner buried at %d %d %d".formatted(
+		c.getSource().sendSuccess(() -> Component.literal("Built an Ancient Fabricator making %s (seed %d, %d blocks); spawner buried at %d %d %d".formatted(
 				mob.id(), seed, design.size(), spawner.getX(), spawner.getY(), spawner.getZ())), true);
 		return 1;
 	}

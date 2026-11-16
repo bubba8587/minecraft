@@ -35,7 +35,7 @@ import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.block.state.properties.SlabType;
 
 /**
- * A mob factory's whole build (specs/mob-factory.md), worked out from a seed and the factory's mob: a pure function,
+ * An Ancient Fabricator's whole build (the mob factory of specs/mob-factory.md; owner's name, 2026-11-16), worked out from a seed and the factory's mob: a pure function,
  * so worldgen can later place it chunk by chunk. Local coordinates: the origin is the first air block above the
  * middle of the platform; +z is the front (the entrance tunnel), -z the back (the face wall), +x the Warden's tower.
  *
@@ -111,6 +111,9 @@ public final class FactoryDesign {
 	private BlockPos ceilingBeacon;
 	private final BlockPos warden = new BlockPos(15, 6, 0);
 	private BlockPos jukebox;
+	/** Where vanilla's ancient-city sculk patches are grown once the build stands (air above a surface). */
+	private final List<BlockPos> sculkSeeds = new ArrayList<>();
+	private int dripperBottom;
 	private final int[] ceilCache = new int[SX * SZ];
 
 	private FactoryDesign(long seed, Mob mob) {
@@ -134,6 +137,7 @@ public final class FactoryDesign {
 		d.faceWall();
 		d.tower();
 		d.beams();
+		d.sculkSeeds();
 		return d;
 	}
 
@@ -302,7 +306,7 @@ public final class FactoryDesign {
 	private BlockState surface(int x, int y, int z) {
 		boolean floorFace = isOpen(x, y + 1, z);
 		double n = noise(x * 0.18, y * 0.18, z * 0.18, 0);
-		if (floorFace && n > -0.35 || !floorFace && !isOpen(x, y - 1, z) && n > 0.15) {
+		if (floorFace && n > 0.1 || !floorFace && !isOpen(x, y - 1, z) && n > 0.5) {
 			return Blocks.SCULK.defaultBlockState();
 		}
 		return rock(x, y, z);
@@ -325,42 +329,27 @@ public final class FactoryDesign {
 		return Math.hypot(x, z) < 15.5 + wobble(Math.atan2(z, x)) * 0.5;
 	}
 
-	/** The ceiling mass: mostly basalt, bone and blackstone, with warped wart spreading over it in patches. */
+	/**
+	 * The ceiling mass (owner, 2026-11-16: warped first, bone only a minor accent): warped wart with teal stripped
+	 * hyphae veins through it, dark basalt seams, shroomlight accents, the odd bone knot.
+	 */
 	private BlockState massBlock(int x, int y, int z) {
 		double h = hash(x, y, z, 5);
 		double n = noise(x * 0.22, y * 0.3, z * 0.22, 1);
-		if (n > 0.3) {
-			return h < 0.85 ? Blocks.WARPED_WART_BLOCK.defaultBlockState() : Blocks.SHROOMLIGHT.defaultBlockState();
+		if (h < 0.035) {
+			return Blocks.SHROOMLIGHT.defaultBlockState();
 		}
-		if (n < -0.45) {
-			return h < 0.5 ? Blocks.BONE_BLOCK.defaultBlockState() : Blocks.BASALT.defaultBlockState();
+		if (n < -0.55) {
+			return h < 0.12 ? Blocks.BONE_BLOCK.defaultBlockState() : Blocks.BASALT.defaultBlockState();
 		}
-		if (h < 0.04) {
-			return Blocks.NETHER_WART_BLOCK.defaultBlockState();
+		if (n < -0.35) {
+			return Blocks.STRIPPED_WARPED_HYPHAE.defaultBlockState();
 		}
-		return h < 0.55 ? Blocks.BASALT.defaultBlockState() : h < 0.8 ? Blocks.POLISHED_BASALT.defaultBlockState() : Blocks.BONE_BLOCK.defaultBlockState();
-	}
-
-	/**
-	 * A spike block, like a dripstone of bone: a bone core banded by dark basalt rings (vertebrae), wrapped near the
-	 * top in warped wart that drapes down the outside; bone all the way at the tip.
-	 */
-	private BlockState spikeBlock(int x, int y, int z, int d, double t, boolean outer) {
-		double h = hash(x, y, z, 5);
-		if (t > 0.7) {
-			return Blocks.BONE_BLOCK.defaultBlockState();
-		}
-		if (outer && t < 0.25 + 0.35 * (noise(x * 0.5, y * 0.2, z * 0.5, 6) + 1.0) / 2.0) {
-			return h < 0.92 ? Blocks.WARPED_WART_BLOCK.defaultBlockState() : Blocks.NETHER_WART_BLOCK.defaultBlockState();
-		}
-		if (Math.floorMod(d, 4) == 3) {
-			return Blocks.BASALT.defaultBlockState();
-		}
-		return Blocks.BONE_BLOCK.defaultBlockState();
+		return Blocks.WARPED_WART_BLOCK.defaultBlockState();
 	}
 
 	private void growth() {
-		// The mass: the ceiling and 5 blocks into it.
+		// The mass: the ceiling and 4-6 blocks into it, with a gently lumpy underside.
 		for (int x = -18; x <= 18; x++) {
 			for (int z = -18; z <= 18; z++) {
 				if (!inGrowth(x, z)) {
@@ -374,8 +363,7 @@ public final class FactoryDesign {
 				for (int y = c; y <= c + thick; y++) {
 					set(x, y, z, massBlock(x, y, z));
 				}
-				// Lumpy underside: a block or two hanging here and there.
-				int lump = (int) Math.round(1.4 * noise(x * 0.35, 3.0, z * 0.35, 3) - 0.4);
+				int lump = (int) Math.round(1.2 * noise(x * 0.35, 3.0, z * 0.35, 3) - 0.5);
 				for (int d = 1; d <= lump; d++) {
 					if (!nearBeam(x, z, 2.0)) {
 						solid(x, c - d, z, massBlock(x, c - d, z));
@@ -383,22 +371,22 @@ public final class FactoryDesign {
 				}
 			}
 		}
-		// The spikes, hanging from the mass like dripstone: many, thin and tapering, densest and longest over the
-		// middle of the platform (the drop point), reaching down toward the deck; short ones at the edges.
-		List<int[]> spikes = new ArrayList<>();
-		int count = 60 + this.random.nextInt(10);
+		centralDripper();
+		// Small drippers (owner: any others much smaller): short warped teats, 2-5 long, spread over the ceiling,
+		// none within 6 of the central one.
+		List<int[]> drippers = new ArrayList<>();
 		int tries = 0;
-		while (spikes.size() < count && tries++ < 3000) {
+		while (drippers.size() < 34 && tries++ < 2000) {
 			double a = this.random.nextDouble() * Math.PI * 2.0;
-			double r = Math.pow(this.random.nextDouble(), 0.75) * 15.0;
+			double r = Math.sqrt(this.random.nextDouble()) * 15.0;
 			int x = (int) Math.round(Math.cos(a) * r);
-			int z = (int) Math.round(Math.sin(a) * r) + DROP_Z;
-			if (nearBeam(x, z, 2.6) || !inGrowth(x, z) || x >= 12) {
+			int z = (int) Math.round(Math.sin(a) * r);
+			if (nearBeam(x, z, 2.6) || !inGrowth(x, z) || x >= 12 || Math.hypot(x, z - DROP_Z) < 5.5) {
 				continue;
 			}
 			boolean crowded = false;
-			for (int[] s : spikes) {
-				if (Math.hypot(s[0] - x, s[1] - z) < 2.2) {
+			for (int[] s : drippers) {
+				if (Math.hypot(s[0] - x, s[1] - z) < 2.8) {
 					crowded = true;
 					break;
 				}
@@ -406,122 +394,101 @@ public final class FactoryDesign {
 			if (crowded) {
 				continue;
 			}
-			double centre = Math.max(0.0, 1.0 - Math.hypot(x, z - DROP_Z) / 15.0);
-			int length = 3 + (int) Math.round(centre * centre * 11.0 + this.random.nextDouble() * (3.0 + centre * 5.0));
-			double base = 0.55 + centre * 0.9 + this.random.nextDouble() * 0.5;
-			// Keep the view clear: short over the face wall and in the Warden's line of sight.
-			if (z < 0 || x > 4 && Math.abs(z) < 5) {
-				length = Math.min(length, 3 + this.random.nextInt(3));
-				base = Math.min(base, 0.9);
-			}
-			// Never into the deck: tips stay 4 above it.
-			length = Math.min(length, ceil(x, z) - 5);
-			spikes.add(new int[] { x, z, length, (int) Math.round(base * 100) });
+			int length = 2 + this.random.nextInt(z < 0 || x > 4 && Math.abs(z) < 5 ? 2 : 4);
+			double base = 0.6 + this.random.nextDouble() * 0.5;
+			drippers.add(new int[] { x, z });
+			smallDripper(x, z, length, base);
 		}
-		int[] biggest = null;
-		for (int[] s : spikes) {
-			spike(s[0], s[1], s[2], s[3] / 100.0);
-			if (biggest == null || s[2] * s[3] > biggest[2] * biggest[3]) {
-				biggest = s;
-			}
-		}
-		// Thin strands between the spikes: single bone-and-basalt drips ending in a dripstone point.
-		for (int i = 0; i < 40; i++) {
-			double a = this.random.nextDouble() * Math.PI * 2.0;
-			double r = Math.sqrt(this.random.nextDouble()) * 15.0;
-			int x = (int) Math.round(Math.cos(a) * r);
-			int z = (int) Math.round(Math.sin(a) * r);
-			if (nearBeam(x, z, 1.6) || !inGrowth(x, z) || !isOpen(x, ceil(x, z) - 1, z) || z < 0 && this.random.nextBoolean()) {
-				continue;
-			}
-			int c = ceil(x, z);
-			int length = 1 + this.random.nextInt(z < 0 ? 2 : 6);
-			int y = c - 1;
-			for (int d = 0; d < length && isOpen(x, y - 1, z); d++, y--) {
-				solid(x, y, z, d % 3 == 2 ? Blocks.BASALT.defaultBlockState() : Blocks.BONE_BLOCK.defaultBlockState());
-			}
-			drip(x, y, z, 1 + this.random.nextInt(3));
-		}
-		// The inert spawner, buried two blocks up inside the mass over the biggest spike, wrapped in bone.
-		int sx = biggest[0];
-		int sz = biggest[1];
+		// The inert spawner, buried in the mass right above the central dripper's root, wrapped in hyphae.
+		int sx = 0;
+		int sz = DROP_Z;
 		int sy = ceil(sx, sz) + 2;
 		for (Direction dir : Direction.values()) {
-			set(sx + dir.getStepX(), sy + dir.getStepY(), sz + dir.getStepZ(), Blocks.BONE_BLOCK.defaultBlockState());
+			set(sx + dir.getStepX(), sy + dir.getStepY(), sz + dir.getStepZ(), Blocks.STRIPPED_WARPED_HYPHAE.defaultBlockState());
 		}
 		set(sx, sy, sz, Blocks.SPAWNER.defaultBlockState());
 		this.spawner = new BlockPos(sx, sy, sz);
 	}
 
-	private void spike(int x0, int z0, int length, double base) {
-		int top = ceil(x0, z0);
-		double lean = (this.random.nextDouble() - 0.5) * 0.2;
-		double leanZ = (this.random.nextDouble() - 0.5) * 0.2;
-		int tipX = x0;
-		int tipZ = z0;
-		int tipY = top - 1;
+	/**
+	 * The dripper (owner, 2026-11-16: the roof is the Fabricator, a living warped growth that makes the mobs; the
+	 * ancient teleporter below harvests its drip). One dominant stalk hangs precisely over the teleporter pad: a
+	 * collar of warped wart where it leaves the mass, then a stalk of stripped warped hyphae (the teal flesh inside a
+	 * warped stem) tapering down, shroomlight glands set in it, ending in a single crying obsidian tip 8 above the
+	 * deck. Crying obsidian drips purple tears from its underside on its own, so the drip is real and lands on the
+	 * pad. Strands of wart hang round the tip like a membrane.
+	 */
+	private void centralDripper() {
+		int c = ceil(0, DROP_Z);
+		int tip = 8;
+		int length = c - 1 - tip; // stalk blocks above the tip
 		for (int d = 0; d < length; d++) {
+			double t = (double) d / Math.max(1, length - 1);
+			double radius = 3.4 * Math.pow(1.0 - t, 1.4) + 0.35;
+			int y = c - 1 - d;
+			int reach = (int) Math.ceil(radius);
+			for (int x = -reach; x <= reach; x++) {
+				for (int z = DROP_Z - reach; z <= DROP_Z + reach; z++) {
+					double dist = Math.hypot(x, z - DROP_Z);
+					if (dist > radius) {
+						continue;
+					}
+					boolean outer = dist > radius - 1.0;
+					BlockState s;
+					if (t < 0.3 && outer) {
+						s = hash(x, y, z, 33) < 0.1 ? Blocks.SHROOMLIGHT.defaultBlockState() : Blocks.WARPED_WART_BLOCK.defaultBlockState();
+					} else if (!outer && dist < 0.5 && Math.floorMod(d, 4) == 2 && t > 0.2) {
+						s = Blocks.SHROOMLIGHT.defaultBlockState(); // a gland in the core
+					} else if (outer && t >= 0.3 && hash(x, y, z, 34) < 0.08) {
+						s = Blocks.SHROOMLIGHT.defaultBlockState(); // a gland on the skin
+					} else {
+						s = Blocks.STRIPPED_WARPED_HYPHAE.defaultBlockState();
+					}
+					solid(x, y, z, s);
+				}
+			}
+		}
+		solid(0, tip, DROP_Z, Blocks.CRYING_OBSIDIAN.defaultBlockState());
+		// The membrane: short wart strands hanging round the lower stalk.
+		int[][] around = { { 1, 1 }, { -1, -1 }, { 1, -1 }, { -1, 1 }, { 2, 0 }, { -2, 0 }, { 0, 2 }, { 0, -2 } };
+		for (int i = 0; i < around.length; i++) {
+			int x = around[i][0];
+			int z = DROP_Z + around[i][1];
+			int top = tip + 3 + (i % 3);
+			int len = 1 + (int) (hash(x, top, z, 35) * 2.99);
+			for (int k = 0; k < len; k++) {
+				if (isOpen(x, top - k, z)) {
+					solid(x, top - k, z, k == len - 1 && i % 2 == 0 ? Blocks.SHROOMLIGHT.defaultBlockState() : Blocks.WARPED_WART_BLOCK.defaultBlockState());
+				}
+			}
+		}
+		this.dripperBottom = tip;
+	}
+
+	/** A small dripper: the same anatomy far smaller: a wart collar, a short teal stalk, now and then a crying obsidian tip. */
+	private void smallDripper(int x0, int z0, int length, double base) {
+		int top = ceil(x0, z0);
+		int y = top - 1;
+		for (int d = 0; d < length; d++, y--) {
 			double t = (double) d / length;
-			// Sharper taper than a cone: a fat root, then a long thin drip.
-			double radius = base * Math.pow(1.0 - t, 1.6) + 0.3;
-			double cx = x0 + lean * d;
-			double cz = z0 + leanZ * d;
-			int y = top - 1 - d;
+			double radius = base * (1.0 - t) + 0.3;
 			int reach = (int) Math.ceil(radius);
 			boolean any = false;
-			for (int x = (int) Math.floor(cx) - reach; x <= (int) Math.ceil(cx) + reach; x++) {
-				for (int z = (int) Math.floor(cz) - reach; z <= (int) Math.ceil(cz) + reach; z++) {
-					double dist = Math.hypot(x - cx, z - cz);
+			for (int x = x0 - reach; x <= x0 + reach; x++) {
+				for (int z = z0 - reach; z <= z0 + reach; z++) {
+					double dist = Math.hypot(x - x0, z - z0);
 					if (dist <= radius && !nearBeam(x, z, 1.5)) {
-						solid(x, y, z, spikeBlock(x, y, z, d, t, dist > radius - 0.9));
+						solid(x, y, z, d == 0 && dist > 0.5 ? Blocks.WARPED_WART_BLOCK.defaultBlockState() : Blocks.STRIPPED_WARPED_HYPHAE.defaultBlockState());
 						any = true;
 					}
 				}
 			}
 			if (!any) {
-				solid((int) Math.round(cx), y, (int) Math.round(cz), Blocks.BONE_BLOCK.defaultBlockState());
-			}
-			// A shroomlight knot glowing in the roots of the bigger ones.
-			if (base > 1.25 && d == 1) {
-				solid((int) Math.round(cx), y, (int) Math.round(cz), Blocks.SHROOMLIGHT.defaultBlockState());
-			}
-			tipX = (int) Math.round(cx);
-			tipZ = (int) Math.round(cz);
-			tipY = y;
-		}
-		// The point: a dripstone drip 1-4 long under the last block.
-		drip(tipX, tipY, tipZ, 1 + this.random.nextInt(length > 8 ? 4 : 2));
-		// Weeping vines from the spike's shoulders.
-		int vines = this.random.nextInt(3);
-		for (int i = 0; i < vines; i++) {
-			int d = this.random.nextInt(Math.max(1, length / 2));
-			double radius = base * Math.pow(1.0 - (double) d / length, 1.6) + 0.3;
-			double a = this.random.nextDouble() * Math.PI * 2.0;
-			int vx = (int) Math.round(x0 + Math.cos(a) * (radius + 1.0));
-			int vz = (int) Math.round(z0 + Math.sin(a) * (radius + 1.0));
-			int vy = top - 1 - d;
-			if (isOpen(vx, vy, vz) && !isOpen(vx, vy + 1, vz) && !nearBeam(vx, vz, 1.5)) {
-				hangVines(vx, vy, vz, 2 + this.random.nextInt(6));
+				solid(x0, y, z0, Blocks.STRIPPED_WARPED_HYPHAE.defaultBlockState());
 			}
 		}
-	}
-
-	/** Hangs a pointed dripstone of {@code length} under the solid block at (x, y, z), shaped like vanilla's. */
-	private void drip(int x, int y, int z, int length) {
-		int n = 0;
-		while (n < length && isOpen(x, y - n - 1, z) && isOpen(x, y - n - 2, z) && !nearBeam(x, z, 1.5)) {
-			n++;
-		}
-		for (int i = 0; i < n; i++) {
-			int fromTip = n - 1 - i;
-			net.minecraft.world.level.block.state.properties.SpeleothemThickness thickness = fromTip == 0
-					? net.minecraft.world.level.block.state.properties.SpeleothemThickness.TIP
-					: fromTip == 1 ? net.minecraft.world.level.block.state.properties.SpeleothemThickness.FRUSTUM
-					: i == 0 ? net.minecraft.world.level.block.state.properties.SpeleothemThickness.BASE
-					: net.minecraft.world.level.block.state.properties.SpeleothemThickness.MIDDLE;
-			attach(x, y - 1 - i, z, Blocks.POINTED_DRIPSTONE.defaultBlockState()
-					.setValue(BlockStateProperties.VERTICAL_DIRECTION, Direction.DOWN)
-					.setValue(BlockStateProperties.SPELEOTHEM_THICKNESS, thickness));
+		if (!nearBeam(x0, z0, 1.5) && isOpen(x0, y, z0)) {
+			solid(x0, y, z0, hash(x0, y, z0, 36) < 0.45 ? Blocks.CRYING_OBSIDIAN.defaultBlockState() : Blocks.WARPED_WART_BLOCK.defaultBlockState());
 		}
 	}
 
@@ -600,12 +567,12 @@ public final class FactoryDesign {
 								continue;
 							}
 							if (d <= radius) {
-								BlockState flesh = hash(x, yy, z, 21) < 0.12 ? Blocks.NETHER_WART_BLOCK.defaultBlockState()
+								BlockState flesh = hash(x, yy, z, 21) < 0.03 ? Blocks.NETHER_WART_BLOCK.defaultBlockState()
 										: hash(x, yy, z, 22) < 0.06 ? Blocks.SHROOMLIGHT.defaultBlockState()
 										: Blocks.WARPED_WART_BLOCK.defaultBlockState();
 								solid(x, yy, z, flesh);
 							} else if (rib && d <= radius + 0.8) {
-								solid(x, yy, z, Blocks.BONE_BLOCK.defaultBlockState());
+								solid(x, yy, z, Blocks.STRIPPED_WARPED_HYPHAE.defaultBlockState());
 							}
 						}
 					}
@@ -619,10 +586,7 @@ public final class FactoryDesign {
 					int len = 1 + this.random.nextInt(3);
 					int k = 0;
 					for (; k < len && isOpen(sx, sy - k, sz) && !nearBeam(sx, sz, 1.6); k++) {
-						solid(sx, sy - k, sz, Blocks.BONE_BLOCK.defaultBlockState());
-					}
-					if (k > 0) {
-						drip(sx, sy - k + 1, sz, 1 + this.random.nextInt(2));
+						solid(sx, sy - k, sz, k == len - 1 ? Blocks.WARPED_WART_BLOCK.defaultBlockState() : Blocks.WARPED_STEM.defaultBlockState());
 					}
 				}
 				lastX = cx;
@@ -633,8 +597,7 @@ public final class FactoryDesign {
 			int ez = (int) Math.round(Math.sin(endAng) * ctrl[3][0] + DROP_Z);
 			int ey = (int) Math.round(Math.min(ctrl[3][1], ceil(ex, ez) - 0.5));
 			if (!nearBeam(ex, ez, 1.6)) {
-				solid(ex, ey - 1, ez, Blocks.BONE_BLOCK.defaultBlockState());
-				drip(ex, ey - 1, ez, 2 + this.random.nextInt(3));
+				solid(ex, ey - 1, ez, Blocks.WARPED_HYPHAE.defaultBlockState());
 			}
 		}
 	}
@@ -660,9 +623,7 @@ public final class FactoryDesign {
 				}
 				if (h < 0.022) {
 					attach(x, f + 1, z, Blocks.SCULK_SENSOR.defaultBlockState());
-				} else if (h < 0.03) {
-					attach(x, f + 1, z, Blocks.SCULK_SHRIEKER.defaultBlockState());
-				} else if (h < 0.034) {
+				} else if (h < 0.026) {
 					set(x, f, z, Blocks.SCULK_CATALYST.defaultBlockState());
 				} else if (underPlatform && h < 0.06) {
 					// Soul fire smouldering in the pit under the platform.
@@ -684,7 +645,7 @@ public final class FactoryDesign {
 			int h = 2 + this.random.nextInt(4);
 			for (int d = 1; d <= h; d++) {
 				double t = (double) d / h;
-				solid(x, f + d, z, t > 0.7 ? Blocks.BONE_BLOCK.defaultBlockState() : Blocks.BASALT.defaultBlockState());
+				solid(x, f + d, z, t > 0.7 ? Blocks.WARPED_WART_BLOCK.defaultBlockState() : Blocks.BASALT.defaultBlockState());
 				if (d <= h / 2) {
 					for (Direction dir : Direction.Plane.HORIZONTAL) {
 						if (hash(x, f + d, z, dir.ordinal()) < 0.55) {
@@ -708,7 +669,7 @@ public final class FactoryDesign {
 					int z = p[1] + dz;
 					for (int y = floor(x, z); y <= -3; y++) {
 						BlockState s = y == -3 ? Blocks.CHISELED_DEEPSLATE.defaultBlockState()
-								: hash(x, y, z, 9) < 0.2 ? Blocks.CRACKED_DEEPSLATE_BRICKS.defaultBlockState() : Blocks.DEEPSLATE_BRICKS.defaultBlockState();
+								: hash(x, y, z, 9) < 0.3 ? Blocks.CRACKED_DEEPSLATE_BRICKS.defaultBlockState() : Blocks.DEEPSLATE_BRICKS.defaultBlockState();
 						solid(x, y, z, s);
 					}
 				}
@@ -820,15 +781,11 @@ public final class FactoryDesign {
 		if (Math.abs(x) == PX || z == PZ_BACK || z == PZ_FRONT) {
 			return Blocks.POLISHED_DEEPSLATE.defaultBlockState();
 		}
-		double n = noise(x * 0.25, 0.0, z * 0.25, 4);
-		if (n > 0.38 && Math.hypot(x - BEAM_X, z - BEAM_Z) > 2.5) {
-			return Blocks.SCULK.defaultBlockState();
-		}
 		if (Math.floorMod(x, 4) == 2 && Math.floorMod(z, 4) == 2) {
 			return Blocks.CHISELED_DEEPSLATE.defaultBlockState();
 		}
 		double h = hash(x, -1, z, 8);
-		return h < 0.18 ? Blocks.CRACKED_DEEPSLATE_TILES.defaultBlockState() : Blocks.DEEPSLATE_TILES.defaultBlockState();
+		return h < 0.3 ? Blocks.CRACKED_DEEPSLATE_TILES.defaultBlockState() : Blocks.DEEPSLATE_TILES.defaultBlockState();
 	}
 
 	private static BlockState candle(int count) {
@@ -851,7 +808,7 @@ public final class FactoryDesign {
 					} else if (z == WALL_Z && (x == -10 || x == 9 || x == -11 || x == 10)) {
 						s = Blocks.DEEPSLATE_TILES.defaultBlockState();
 					} else {
-						s = hash(x, y, z, 6) < 0.15 ? Blocks.CRACKED_DEEPSLATE_BRICKS.defaultBlockState() : Blocks.DEEPSLATE_BRICKS.defaultBlockState();
+						s = hash(x, y, z, 6) < 0.3 ? Blocks.CRACKED_DEEPSLATE_BRICKS.defaultBlockState() : Blocks.DEEPSLATE_BRICKS.defaultBlockState();
 					}
 					solid(x, y, z, s);
 				}
@@ -914,7 +871,7 @@ public final class FactoryDesign {
 					} else if (y == 11 || y == 2 || y == 14) {
 						s = Blocks.DEEPSLATE_TILES.defaultBlockState(); // bands
 					} else {
-						s = hash(x, y, z, 12) < 0.18 ? Blocks.CRACKED_DEEPSLATE_BRICKS.defaultBlockState() : Blocks.DEEPSLATE_BRICKS.defaultBlockState();
+						s = hash(x, y, z, 12) < 0.3 ? Blocks.CRACKED_DEEPSLATE_BRICKS.defaultBlockState() : Blocks.DEEPSLATE_BRICKS.defaultBlockState();
 					}
 					solid(x, y, z, s);
 				}
@@ -1012,6 +969,48 @@ public final class FactoryDesign {
 		}
 	}
 
+	// ---- Sculk, grown the way ancient cities get theirs ----
+
+	/**
+	 * Owner (2026-11-16): sculk should look like it grew there, as in ancient cities. Vanilla's city pieces hold no
+	 * sculk at all: it comes from the {@code sculk_patch_ancient_city} feature run over the city afterwards (the real
+	 * sculk spreader: 10 charges of 32 creeping over surfaces and leaving veins at the edges, a catalyst at half of
+	 * them, 1-3 shriekers), on pieces already degraded (30 % cracked bricks and tiles). So the build is placed clean
+	 * and then that same feature is grown from these spots: on the deck, by the face wall, at the tower foot and
+	 * stairs, on the window ledge, in the tunnel and over the cavern floor.
+	 */
+	private void sculkSeeds() {
+		int[][] deck = { { -6, -8 }, { 5, -7 }, { -7, 5 }, { 7, 0 }, { -3, 8 } };
+		for (int[] p : deck) {
+			this.sculkSeeds.add(new BlockPos(p[0], 0, p[1]));
+		}
+		this.sculkSeeds.add(new BlockPos(11, 0, 8));
+		this.sculkSeeds.add(new BlockPos(12, 6, 0));
+		for (int i = 0; i < 9; i++) {
+			double a = this.random.nextDouble() * Math.PI * 2.0;
+			double r = 12.0 + this.random.nextDouble() * 6.0;
+			int x = (int) Math.round(Math.cos(a) * r);
+			int z = (int) Math.round(Math.sin(a) * r);
+			if (inTower(x, z)) {
+				continue;
+			}
+			int f = floor(x, z);
+			if (isOpen(x, f + 1, z)) {
+				this.sculkSeeds.add(new BlockPos(x, f + 1, z));
+			}
+		}
+		for (int z : new int[] { 24, 34 }) {
+			double cx = 3.0 * Math.sin(z * 0.13 + this.phase[7]);
+			double cy = 1.0 + (z - 18) * 0.35;
+			int x = (int) Math.round(cx);
+			int y = (int) Math.round(cy - 2.2) + 1;
+			while (y > cy - 4 && isOpen(x, y - 1, z)) {
+				y--;
+			}
+			this.sculkSeeds.add(new BlockPos(x, y, z));
+		}
+	}
+
 	// ---- Placing ----
 
 	/** Builds the whole factory in the world: origin is the platform's middle (first air above the deck). */
@@ -1025,6 +1024,35 @@ public final class FactoryDesign {
 					state = state.setValue(upsideDown, true);
 				}
 				level.setBlock(origin.offset(e.getKey().rotate(rotation)), state.rotate(rotation), flags);
+			}
+		}
+		// Sculk grown with vanilla's own ancient-city patch feature, then its shriekers made unable to summon (one
+		// Warden per factory).
+		net.minecraft.world.level.levelgen.feature.Feature patch = level.registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.FEATURE)
+				.getValueOrThrow(net.minecraft.data.worldgen.features.CaveFeatures.SCULK_PATCH_ANCIENT_CITY);
+		RandomSource sculkRandom = RandomSource.create(this.seed ^ 0x5C01C0DEL);
+		for (BlockPos seedPos : this.sculkSeeds) {
+			patch.place(level, level.getChunkSource().getGenerator(), sculkRandom, toWorld(origin, seedPos, rotation));
+		}
+		// Keep the machine readable: the teleporter pad and every lamp stay clear of sculk (the ancient builders'
+		// working parts; the growth creeps round them).
+		for (Map.Entry<BlockPos, BlockState> e : this.blocks.entrySet()) {
+			BlockPos local = e.getKey();
+			boolean pad = Math.abs(local.getX()) <= 2 && Math.abs(local.getZ() - DROP_Z) <= 2 && local.getY() == -1;
+			if (pad || e.getValue().is(Blocks.REDSTONE_LAMP)) {
+				BlockPos pos = toWorld(origin, local, rotation);
+				level.setBlock(pos, e.getValue().rotate(rotation), flags);
+				if (level.getBlockState(pos.above()).is(Blocks.SCULK_VEIN)) {
+					level.setBlock(pos.above(), Blocks.AIR.defaultBlockState(), flags);
+				}
+			}
+		}
+		BlockPos a = toWorld(origin, new BlockPos(MIN_X, MIN_Y, MIN_Z), rotation);
+		BlockPos b = toWorld(origin, new BlockPos(MAX_X, MAX_Y, MAX_Z), rotation);
+		for (BlockPos pos : BlockPos.betweenClosed(a, b)) {
+			BlockState state = level.getBlockState(pos);
+			if (state.is(Blocks.SCULK_SHRIEKER) && state.getValue(SculkShriekerBlock.CAN_SUMMON)) {
+				level.setBlock(pos, state.setValue(SculkShriekerBlock.CAN_SUMMON, false), flags);
 			}
 		}
 		// The office jukebox plays music disc 13 (eerie; owner: "a weird music disc that's always playing").

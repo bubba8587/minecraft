@@ -12,7 +12,7 @@ import net.fabricmc.fabric.api.client.gametest.v1.context.TestServerContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext;
 
 /**
- * The look of a mob factory (specs/mob-factory.md; client part {@code factories}): builds factories with the op
+ * The look of an Ancient Fabricator (mob factory) (specs/mob-factory.md; client part {@code factories}): builds factories with the op
  * command deep under a real (default-preset) world and photographs them. A zombie factory from many angles
  * (factory-overview, -overview-lit with night vision, -side, -ceiling, -ceiling-close, -platform, -face, -warden,
  * -beam, -tower), then one wall and overview per other mob (factory-face-creeper, ...). Run with
@@ -48,7 +48,7 @@ public class FactoriesClientGameTest implements FabricClientGameTest {
 			for (int i = 0; i < mobs.length; i++) {
 				BlockPos o = new BlockPos(spawn.getX() + i * 160, DEPTH_Y, spawn.getZ());
 				tp(context, server, o.getX() + 0.5, o.getY() + 6, o.getZ() + 16.5, 180.0F, 8.0F);
-				server.runCommand("bubbas_reworked_mobs factory build %d %d %d %s %d 0".formatted(o.getX(), o.getY(), o.getZ(), mobs[i], 1000L + i));
+				server.runCommand("bubbas_reworked_mobs ancient_fabricator build %d %d %d %s %d 0".formatted(o.getX(), o.getY(), o.getZ(), mobs[i], 1000L + i));
 				context.waitTicks(30);
 				sp.getConnection().waitForChunksRender();
 				context.waitTicks(20);
@@ -65,9 +65,13 @@ public class FactoriesClientGameTest implements FabricClientGameTest {
 	private static void fullTour(ClientGameTestContext context, TestSingleplayerContext sp, TestServerContext server, BlockPos o) {
 		shot(context, server, o, 0.5, 9.0, 18.5, 180.0F, 12.0F, "factory-overview");
 		shot(context, server, o, 6.5, 6.0, 12.5, 150.0F, -8.0F, "factory-side");
-		shot(context, server, o, 2.5, 2.0, 6.5, 180.0F, -55.0F, "factory-ceiling");
-		shot(context, server, o, 5.5, 9.0, 1.5, 150.0F, -35.0F, "factory-ceiling-close");
+		shot(context, server, o, 0.5, 1.8, 3.5, 180.0F, -89.0F, "factory-dripper-below");
+		shot(context, server, o, -13.5, 9.0, 3.5, -90.0F, -6.0F, "factory-dripper-side");
+		shot(context, server, o, 0.5, 1.5, 10.5, 180.0F, -38.0F, "factory-dripper-pad");
 		shot(context, server, o, 0.5, 5.0, 12.5, 180.0F, 30.0F, "factory-platform");
+		shot(context, server, o, -3.5, 2.6, -3.5, 150.0F, 38.0F, "factory-sculk-deck");
+		shot(context, server, o, 6.5, 3.0, 11.5, -140.0F, 18.0F, "factory-sculk-stairs");
+		shot(context, server, o, -9.5, -2.0, 13.5, 140.0F, 25.0F, "factory-sculk-floor");
 		// The teleporter pad mid-count, its particles running (they run even with nothing on it: a player could ride it).
 		tp(context, server, o.getX() + 0.5, o.getY() + 3.5, o.getZ() + 9.5, 180.0F, 35.0F);
 		context.waitTicks(10);
