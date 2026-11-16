@@ -306,7 +306,7 @@ public final class FactoryDesign {
 	private BlockState surface(int x, int y, int z) {
 		boolean floorFace = isOpen(x, y + 1, z);
 		double n = noise(x * 0.18, y * 0.18, z * 0.18, 0);
-		if (floorFace && n > 0.1 || !floorFace && !isOpen(x, y - 1, z) && n > 0.5) {
+		if (floorFace && n > 0.35 || !floorFace && !isOpen(x, y - 1, z) && n > 0.62) {
 			return Blocks.SCULK.defaultBlockState();
 		}
 		return rock(x, y, z);
@@ -338,6 +338,9 @@ public final class FactoryDesign {
 		double n = noise(x * 0.22, y * 0.3, z * 0.22, 1);
 		if (h < 0.035) {
 			return Blocks.SHROOMLIGHT.defaultBlockState();
+		}
+		if (crimsonStreak(x, y, z)) {
+			return crimson(x, y, z);
 		}
 		if (n < -0.55) {
 			return h < 0.12 ? Blocks.BONE_BLOCK.defaultBlockState() : Blocks.BASALT.defaultBlockState();
@@ -441,6 +444,8 @@ public final class FactoryDesign {
 						s = Blocks.SHROOMLIGHT.defaultBlockState(); // a gland in the core
 					} else if (outer && t >= 0.3 && hash(x, y, z, 34) < 0.08) {
 						s = Blocks.SHROOMLIGHT.defaultBlockState(); // a gland on the skin
+					} else if (outer && crimsonStreak(x, y, z)) {
+						s = crimson(x, y, z);
 					} else {
 						s = Blocks.STRIPPED_WARPED_HYPHAE.defaultBlockState();
 					}
@@ -506,20 +511,20 @@ public final class FactoryDesign {
 		return Math.hypot(x - BEAM_X, z - BEAM_Z) < r;
 	}
 
-	// ---- The chains: alien spurs climbing the walls and curling in to the drop point ----
+	// ---- The chains: alien chains climbing the walls and curling in to the dripper ----
 
 	/**
-	 * Owner (2026-11-16): the warped growth forms alien "chains"/spurs that curve up around the cavern's walls, then
-	 * curl in and bend toward the central drop spot. Each is a tapering tube along a cubic curve: from low on the wall,
-	 * up it, along the ceiling (twisting as it goes, so they spiral in), and down to a point hanging over the deck's
-	 * middle. Warped wart flesh with bone vertebrae every few blocks and bone spurs with dripstone points sticking
-	 * out and down. None start on the face wall, the Warden's tower or the entrance.
+	 * Owner (2026-11-16): the warped growth forms alien "chains" that curve up around the cavern's walls, then curl in
+	 * and bend toward the central dripper. Each is a thin strand (about one block thick) of warped wart along a cubic
+	 * curve, threaded with knots of stripped warped hyphae every ~3 blocks so it reads as links: from low on the wall,
+	 * up it, then sagging free under the roof, twisting as it goes (so they spiral in), to the dripper's stalk. Every
+	 * few knots is crimson (the owner's crimson streaks). None start on the face wall, the tower or the tunnel mouth.
 	 */
 	private void tendrils() {
-		int count = 9 + this.random.nextInt(3);
+		int count = 11 + this.random.nextInt(3);
 		double start = this.random.nextDouble() * Math.PI * 2.0;
 		for (int i = 0; i < count; i++) {
-			double a = start + i * Math.PI * 2.0 / count + (this.random.nextDouble() - 0.5) * 0.35;
+			double a = start + i * Math.PI * 2.0 / count + (this.random.nextDouble() - 0.5) * 0.3;
 			double ca = Math.cos(a);
 			double sa = Math.sin(a);
 			// Skip the face wall (behind, -z), the tower (+x) and the tunnel mouth (+z, middle).
@@ -527,17 +532,17 @@ public final class FactoryDesign {
 				continue;
 			}
 			double e = RADIUS + wobble(a);
-			double turn = (this.random.nextBoolean() ? 1 : -1) * (0.5 + this.random.nextDouble() * 0.4);
+			double turn = (this.random.nextBoolean() ? 1 : -1) * (0.6 + this.random.nextDouble() * 0.5);
+			double endY = 10.0 + this.random.nextDouble() * 6.0;
 			double[][] ctrl = {
-					{ e - 2.5, -3.0 + this.random.nextDouble() * 3.0, 0.0 },
-					{ e - 4.0, 11.0, turn * 0.15 },
-					{ 10.0, 19.0, turn * 0.6 },
-					{ 2.5 + this.random.nextDouble() * 1.5, 11.0 + this.random.nextDouble() * 3.0, turn },
+					{ e - 1.5, -5.0 + this.random.nextDouble() * 2.0, 0.0 },
+					{ e - 2.0, 14.0, turn * 0.2 },
+					{ 9.0, 18.0, turn * 0.65 },
+					{ 1.6, endY, turn },
 			};
-			double base = 0.95 + this.random.nextDouble() * 0.4;
-			double lastX = Double.NaN;
 			int step = 0;
-			for (double t = 0.0; t <= 1.0; t += 0.012, step++) {
+			int knots = 0;
+			for (double t = 0.0; t <= 1.0; t += 0.008, step++) {
 				double u = 1.0 - t;
 				double[] b = { u * u * u, 3 * u * u * t, 3 * u * t * t, t * t * t };
 				double r = 0;
@@ -551,55 +556,57 @@ public final class FactoryDesign {
 				double ang = a + tw;
 				double cx = Math.cos(ang) * r;
 				double cz = Math.sin(ang) * r + t * t * DROP_Z;
-				// Never poke through the ceiling growth's top or below the deck's middle.
+				// Hang free under the roof: at least 1.5 below the ceiling, sagging between wall and dripper.
 				int ceilHere = ceil((int) Math.round(cx), (int) Math.round(cz));
 				if (ceilHere != Integer.MIN_VALUE) {
-					y = Math.min(y, ceilHere - 0.5);
+					y = Math.min(y, ceilHere - 1.5 - 2.5 * Math.sin(Math.PI * Math.max(0.0, (t - 0.35) / 0.65)));
 				}
-				double radius = base * (1.0 - 0.75 * t) + 0.25;
-				boolean rib = step % 7 == 0;
-				int reach = (int) Math.ceil(radius + (rib ? 0.8 : 0));
+				boolean knot = step % 7 == 0 && t > 0.03;
+				if (knot) {
+					knots++;
+				}
+				double radius = knot ? 1.2 : 0.62;
+				int reach = (int) Math.ceil(radius);
 				for (int x = (int) Math.floor(cx) - reach; x <= (int) Math.ceil(cx) + reach; x++) {
 					for (int yy = (int) Math.floor(y) - reach; yy <= (int) Math.ceil(y) + reach; yy++) {
 						for (int z = (int) Math.floor(cz) - reach; z <= (int) Math.ceil(cz) + reach; z++) {
 							double d = Math.sqrt((x - cx) * (x - cx) + (yy - y) * (yy - y) + (z - cz) * (z - cz));
-							if (nearBeam(x, z, 1.6) || inTower(x, z) || yy <= 1 && Math.abs(x) <= PX + 1 && z >= PZ_BACK && z <= PZ_FRONT) {
+							if (d > radius || nearBeam(x, z, 1.6) || inTower(x, z)
+									|| yy <= 1 && Math.abs(x) <= PX + 1 && z >= PZ_BACK && z <= PZ_FRONT) {
 								continue;
 							}
-							if (d <= radius) {
-								BlockState flesh = hash(x, yy, z, 21) < 0.03 ? Blocks.NETHER_WART_BLOCK.defaultBlockState()
-										: hash(x, yy, z, 22) < 0.06 ? Blocks.SHROOMLIGHT.defaultBlockState()
-										: Blocks.WARPED_WART_BLOCK.defaultBlockState();
-								solid(x, yy, z, flesh);
-							} else if (rib && d <= radius + 0.8) {
-								solid(x, yy, z, Blocks.STRIPPED_WARPED_HYPHAE.defaultBlockState());
+							BlockState s;
+							if (knot) {
+								s = knots % 4 == 0 ? crimson(x, yy, z) : Blocks.STRIPPED_WARPED_HYPHAE.defaultBlockState();
+							} else if (crimsonStreak(x, yy, z)) {
+								s = crimson(x, yy, z);
+							} else {
+								s = hash(x, yy, z, 22) < 0.04 ? Blocks.SHROOMLIGHT.defaultBlockState() : Blocks.WARPED_WART_BLOCK.defaultBlockState();
 							}
+							solid(x, yy, z, s);
 						}
 					}
 				}
-				// Spurs: a bone thorn sticking out and down every so often, tipped with dripstone.
-				if (step % 14 == 7 && t > 0.25 && t < 0.9) {
-					double out = this.random.nextDouble() * Math.PI * 2.0;
-					int sx = (int) Math.round(cx + Math.cos(out) * (radius + 0.8));
-					int sz = (int) Math.round(cz + Math.sin(out) * (radius + 0.8));
-					int sy = (int) Math.round(y - radius * 0.5);
-					int len = 1 + this.random.nextInt(3);
-					int k = 0;
-					for (; k < len && isOpen(sx, sy - k, sz) && !nearBeam(sx, sz, 1.6); k++) {
-						solid(sx, sy - k, sz, k == len - 1 ? Blocks.WARPED_WART_BLOCK.defaultBlockState() : Blocks.WARPED_STEM.defaultBlockState());
-					}
-				}
-				lastX = cx;
-			}
-			// The end hangs over the drop point: a bone tip and a long dripstone point.
-			double endAng = a + ctrl[3][2];
-			int ex = (int) Math.round(Math.cos(endAng) * ctrl[3][0]);
-			int ez = (int) Math.round(Math.sin(endAng) * ctrl[3][0] + DROP_Z);
-			int ey = (int) Math.round(Math.min(ctrl[3][1], ceil(ex, ez) - 0.5));
-			if (!nearBeam(ex, ez, 1.6)) {
-				solid(ex, ey - 1, ez, Blocks.WARPED_HYPHAE.defaultBlockState());
 			}
 		}
+	}
+
+	/**
+	 * The owner's crimson streaks (2026-11-16): thin wandering sheets through the warped growth (where two seeded
+	 * waves cross zero together), about one block in twenty, so crimson shows as veins and streaks, never patches.
+	 */
+	private boolean crimsonStreak(int x, int y, int z) {
+		// Two wavy sheets; where both are near zero they cross in a line, so crimson runs as streaks.
+		double v = Math.sin(x * 0.21 + y * 0.55 + 0.6 * Math.sin(z * 0.19 + this.phase[10]) + this.phase[8]);
+		double w = Math.sin(z * 0.23 - y * 0.43 + 0.6 * Math.sin(x * 0.17 + this.phase[11]) + this.phase[9]);
+		return Math.abs(v) < 0.3 && Math.abs(w) < 0.45;
+	}
+
+	/** A crimson streak block: nether wart, stripped crimson hyphae (the red flesh), crimson hyphae. */
+	private BlockState crimson(int x, int y, int z) {
+		double h = hash(x, y, z, 41);
+		return h < 0.5 ? Blocks.NETHER_WART_BLOCK.defaultBlockState()
+				: h < 0.85 ? Blocks.STRIPPED_CRIMSON_HYPHAE.defaultBlockState() : Blocks.CRIMSON_HYPHAE.defaultBlockState();
 	}
 
 	private static boolean inTower(int x, int z) {
@@ -980,13 +987,11 @@ public final class FactoryDesign {
 	 * stairs, on the window ledge, in the tunnel and over the cavern floor.
 	 */
 	private void sculkSeeds() {
-		int[][] deck = { { -6, -8 }, { 5, -7 }, { -7, 5 }, { 7, 0 }, { -3, 8 } };
+		int[][] deck = { { -6, -8 }, { 6, 6 } };
 		for (int[] p : deck) {
 			this.sculkSeeds.add(new BlockPos(p[0], 0, p[1]));
 		}
-		this.sculkSeeds.add(new BlockPos(11, 0, 8));
-		this.sculkSeeds.add(new BlockPos(12, 6, 0));
-		for (int i = 0; i < 9; i++) {
+		for (int i = 0; i < 4; i++) {
 			double a = this.random.nextDouble() * Math.PI * 2.0;
 			double r = 12.0 + this.random.nextDouble() * 6.0;
 			int x = (int) Math.round(Math.cos(a) * r);
@@ -999,7 +1004,7 @@ public final class FactoryDesign {
 				this.sculkSeeds.add(new BlockPos(x, f + 1, z));
 			}
 		}
-		for (int z : new int[] { 24, 34 }) {
+		for (int z : new int[] { 30 }) {
 			double cx = 3.0 * Math.sin(z * 0.13 + this.phase[7]);
 			double cy = 1.0 + (z - 18) * 0.35;
 			int x = (int) Math.round(cx);
