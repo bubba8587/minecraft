@@ -38,6 +38,7 @@ public final class Endermen {
 		BiomeModifications.addFeature(BiomeSelectors.foundInOverworld(), GenerationStep.Decoration.SURFACE_STRUCTURES, CAIRN_FOOTING);
 		ServerTickEvents.END_LEVEL_TICK.register(EndermanSpawning::tick);
 		ServerTickEvents.END_LEVEL_TICK.register(CairnGlow::tick);
+		ServerTickEvents.END_LEVEL_TICK.register(EndermanHoles::tick);
 		PlayerBlockBreakEvents.AFTER.register((level, player, pos, state, blockEntity) -> {
 			if (level instanceof ServerLevel server) {
 				if (isStandingCairnBlock(server, pos, state)) {
