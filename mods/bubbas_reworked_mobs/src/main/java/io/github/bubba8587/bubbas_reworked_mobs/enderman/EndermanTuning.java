@@ -120,6 +120,16 @@ public final class EndermanTuning {
 	public static final int CAP_EMPTY = 2;
 	public static final int CAP_ALMOST = 8;
 	public static final int CAP_COMPLETE = 8;
+	/**
+	 * Fillers (owner, 2026-11-16: endermen should arrive already carrying what's missing round about, not only for
+	 * cairns): natural ground broken within HOLE_RANGE of a site is remembered (at most HOLE_LIST_CAP per level). While a
+	 * hole waits near a site, a newcomer there arrives carrying its block (at a finished cairn too), the site's spawn
+	 * chance is at least HOLE_SPAWN_CHANCE, and it may spawn up to HOLE_EXTRA past its cap for them.
+	 */
+	public static final int HOLE_RANGE = 48;
+	public static final int HOLE_LIST_CAP = 512;
+	public static final float HOLE_SPAWN_CHANCE = 0.35F;
+	public static final int HOLE_EXTRA = 4;
 	/** At an unfinished site, the share of new endermen that arrive carrying one of its blocks: rising with growth. */
 	public static final float BUILDER_SHARE_EMPTY = 0.5F;
 	public static final float BUILDER_SHARE_ALMOST = 0.9F;

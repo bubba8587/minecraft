@@ -81,6 +81,10 @@ Owner's design (2026-11-16), being worked out in conversation. Endermen are the 
 
 **Waiting builders (audit 2026-11-16).** A builder whose block can't go in yet takes its place in the ring round its cairn (the vigil's place) and stands there facing it (job WAIT), checking every second whether its block can go in, and plans afresh every 20 s. Before, it had no job: vanilla's stroll walked it off and it teleported back, over and over.
 
+**Cairn blocks are left alone (audit 2026-11-16).** Judging a block inside a cairn's design, an enderman takes it only if it isn't the designed block. Before, a finished cairn's own offerings (moss, podzol, pumpkins, flowers: natural blocks endermen can carry) looked like rubbish to clear, so they were taken and put back over and over and the cairn never stayed complete (no vigil). Where hand-placed cairns' boxes overlap, the cairn with a design block at that spot answers what belongs there (`CairnSites.covering`).
+
+**Fillers bring what's missing (owner, 2026-11-16: "more endermen to spawn naturally already having missing-from-natural-generation blocks, predetermined by what's missing, not just for cairns but for more of the surrounding area").** Natural ground a player breaks within 48 blocks of a cairn site is remembered (`EndermanHoles`, up to 512 per level, not saved). While one waits near a site: a newcomer there arrives carrying that hole's original block and heads for it (finished cairns too, before standing vigil; at unfinished ones after the builder roll); the site's spawn chance is at least 35 %; and it may spawn up to 4 past its cap for them. Holes fill bottom up (an upper one waits for its floor). An enderman carrying a block it picked up also goes to a remembered hole within 32 blocks that its block fills before searching at random.
+
 **Errands (owner, 2026-11-16: "should endermen occasionally pick up a new task? I think yes").** An empty-handed caretaker with nothing to do near it (including one whose vigil just ended) has a 1-in-4 chance per look round to check round a random spot 12-40 blocks off for something to take or farmland to trample, and goes there if it finds any. It never roams without a job.
 
 **Vigil (owner, 2026-11-16; replaces the earlier "perch on top").** An enderman with nothing to do near a complete cairn walks to its place in a ring around it (3 blocks outside the footprint, at an angle fixed by its id so the ring spreads out) and stands there staring at the cairn's middle, for a minute at a time, then looks for work and most likely takes its place again. Newcomers at a complete cairn arrive empty-handed, so a finished cairn gathers a growing ring of silent watchers. A vigil isn't work: eye contact still angers them. If the cairn is damaged the vigil breaks up (and the site spawns builders again).
@@ -127,6 +131,7 @@ Owner's design (2026-11-16), being worked out in conversation. Endermen are the 
 | Waiting builder | in the ring, checks each second, replans after 20 s |
 | Errand | 25 % per idle look round, 12-40 blocks off, only if there is work there |
 | Leaves by day | 1 in 400 a tick under open sky (~20 s); name tags keep one |
+| Fillers | broken ground within 48 of a site remembered (cap 512); while one waits: chance at least 35 %, up to 4 past the cap |
 | Pace (model) | 30 End blocks ~14 nights, 45 ~22, 60 ~30, with a player nearby; 1-2 blocks a night for the first week or so |
 | Spawn ring | 12-28 blocks out, within 6 up/down of site ground, no player within 24 |
 | Builders among newcomers (unfinished) | 50 % rising to 90 % with growth |

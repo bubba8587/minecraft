@@ -39,8 +39,11 @@ public final class Endermen {
 		ServerTickEvents.END_LEVEL_TICK.register(EndermanSpawning::tick);
 		ServerTickEvents.END_LEVEL_TICK.register(CairnGlow::tick);
 		PlayerBlockBreakEvents.AFTER.register((level, player, pos, state, blockEntity) -> {
-			if (level instanceof ServerLevel server && isStandingCairnBlock(server, pos, state)) {
-				anger(server, pos, player);
+			if (level instanceof ServerLevel server) {
+				if (isStandingCairnBlock(server, pos, state)) {
+					anger(server, pos, player);
+				}
+				EndermanHoles.broken(server, pos);
 			}
 		});
 		ServerLivingEntityEvents.AFTER_DAMAGE.register((entity, source, baseTaken, taken, blocked) -> {

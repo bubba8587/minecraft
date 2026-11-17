@@ -103,7 +103,12 @@ public final class EndermanWork {
 		}
 		CairnSite site = CairnSites.covering(level, pos);
 		if (site != null && site.at(pos) != null) {
-			// In the way of the cairn's design (grass where its footing goes, a block a player put in it): clear it.
+			// Part of the cairn's design: leave it if it is the designed block (its offerings are natural blocks endermen
+			// can carry: they used to take a finished cairn's own offerings, so it never stayed complete and lost its
+			// vigil; audit 2026-11-16). Something else in the way (grass where its footing goes, a player's block): clear it.
+			if (TerrainKinds.matches(real, site.at(pos))) {
+				return null;
+			}
 			return TerrainKinds.liftable(level, pos, real) ? Kind.TAKE : null;
 		}
 		if (real.is(Blocks.FARMLAND)) {
@@ -164,6 +169,11 @@ public final class EndermanWork {
 	public static @Nullable BlockPos hole(ServerLevel level, BlockPos around, BlockState carried, RandomSource random) {
 		if (TerrainKinds.family(carried) == null) {
 			return null;
+		}
+		// Ground a player broke nearby that this block fills (EndermanHoles), before a random look round.
+		BlockPos known = EndermanHoles.claimFor(level, around, EndermanTuning.FILL_RADIUS * 2, carried);
+		if (known != null) {
+			return known;
 		}
 		BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
 		int near = NEAR.size();

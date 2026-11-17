@@ -90,18 +90,30 @@ public final class CairnSites {
 		return site == null ? null : site.orElse(null);
 	}
 
-	/** The site whose design covers {@code pos}, or null. */
+	/**
+	 * The site whose design covers {@code pos}, or null. Where boxes overlap (hand-placed cairns close together), the
+	 * one with a design block at {@code pos} wins, so the right cairn says what belongs there.
+	 */
 	public static @Nullable CairnSite covering(ServerLevel level, BlockPos pos) {
+		CairnSite boxOnly = null;
 		List<CairnSite> extra = extra(level);
 		if (extra != null) {
 			for (CairnSite site : extra) {
 				if (site.box().isInside(pos)) {
-					return site;
+					if (site.at(pos) != null) {
+						return site;
+					}
+					if (boxOnly == null) {
+						boxOnly = site;
+					}
 				}
 			}
 		}
 		CairnSite site = regionSite(level, pos.getX(), pos.getZ());
-		return site != null && site.box().isInside(pos) ? site : null;
+		if (site != null && site.box().isInside(pos) && (site.at(pos) != null || boxOnly == null)) {
+			return site;
+		}
+		return boxOnly;
 	}
 
 	/** Sites (worked out already) whose origin is within {@code radius} blocks (horizontally) of {@code pos}. */

@@ -134,22 +134,33 @@ public final class EndermanSpawning {
 		List<Enderman> own = ownEndermen(level, site);
 		int present = own.size();
 		boolean bottleneck = false;
+		// Ground missing round about (EndermanHoles): newcomers bring it, so a site with holes waiting spawns more.
+		boolean holes = EndermanHoles.waiting(level, site);
+		boolean fillerOnly = false;
 		if (present >= cap(complete, growth)) {
-			// At the cap, an unfinished cairn still calls one builder when all its endermen are builders whose blocks wait
-			// (the blocks under them are missing) and the block that could go in next is carried by nobody (its holder
-			// died or despawned): otherwise the build stalls for good. Once that builder is there it can work, so at
-			// most one extra.
-			if (complete || own.stream().anyMatch(e -> e.getCarriedBlock() == null || site.spotFor(level, e.getCarriedBlock()) != null)) {
-				return null;
+			if (holes && present < cap(complete, growth) + EndermanTuning.HOLE_EXTRA) {
+				fillerOnly = true;
+			} else {
+				// At the cap, an unfinished cairn still calls one builder when all its endermen are builders whose blocks wait
+				// (the blocks under them are missing) and the block that could go in next is carried by nobody (its holder
+				// died or despawned): otherwise the build stalls for good. Once that builder is there it can work, so at
+				// most one extra.
+				if (complete || own.stream().anyMatch(e -> e.getCarriedBlock() == null || site.spotFor(level, e.getCarriedBlock()) != null)) {
+					return null;
+				}
+				BlockPos next = site.nextUnclaimed(level, own);
+				if (next == null || !CairnSite.canPlace(level, next, site.at(next))) {
+					return null;
+				}
+				bottleneck = true;
 			}
-			BlockPos next = site.nextUnclaimed(level, own);
-			if (next == null || !CairnSite.canPlace(level, next, site.at(next))) {
-				return null;
-			}
-			bottleneck = true;
 		}
 		RandomSource random = level.getRandom();
-		if (!force && random.nextFloat() >= chance(complete, growth, present)) {
+		float chance = chance(complete, growth, present);
+		if (holes) {
+			chance = Math.max(chance, EndermanTuning.HOLE_SPAWN_CHANCE);
+		}
+		if (!force && random.nextFloat() >= chance) {
 			return null;
 		}
 		for (int i = 0; i < EndermanTuning.SPAWN_TRIES; i++) {
@@ -177,7 +188,13 @@ public final class EndermanSpawning {
 			((EndermanAccess) enderman).brm$markCairnSpawn();
 			((EndermanAccess) enderman).brm$setHome(site.origin());
 			enderman.finalizeSpawn(level, level.getCurrentDifficultyAt(cell), EntitySpawnReason.NATURAL, null);
-			giveJob(level, enderman, site, complete, bottleneck, random);
+			if (fillerOnly) {
+				if (!giveHole(level, enderman, site)) {
+					return null;
+				}
+			} else {
+				giveJob(level, enderman, site, complete, bottleneck, random);
+			}
 			return level.tryAddFreshEntityWithPassengers(enderman) ? enderman : null;
 		}
 		return null;
@@ -206,6 +223,25 @@ public final class EndermanSpawning {
 		giveJob(level, enderman, site, complete, false, random);
 	}
 
+	/**
+	 * A filler for a remembered hole near the site (EndermanHoles): it arrives carrying the block that belongs there and
+	 * heads for it. False when no hole waits.
+	 */
+	static boolean giveHole(ServerLevel level, Enderman enderman, CairnSite site) {
+		EndermanMind mind = EndermanMind.of(enderman);
+		if (mind == null || !level.getGameRules().get(GameRules.MOB_GRIEFING)) {
+			return false;
+		}
+		BlockPos hole = EndermanHoles.claim(level, site);
+		BlockState target = hole == null ? null : TargetWorld.target(level, hole);
+		if (target == null) {
+			return false;
+		}
+		enderman.setCarriedBlock(target);
+		mind.set(EndermanMind.Job.DELIVER, hole, level.getGameTime());
+		return true;
+	}
+
 	/** As above; {@code builder} makes it a builder for sure (the cap's bottleneck spawn). */
 	public static void giveJob(ServerLevel level, Enderman enderman, CairnSite site, boolean complete, boolean builder, RandomSource random) {
 		EndermanMind mind = EndermanMind.of(enderman);
@@ -213,6 +249,8 @@ public final class EndermanSpawning {
 			return;
 		}
 		if (complete) {
+			// A finished cairn's newcomers bring what's missing round about, if anything is; else they stand vigil.
+			giveHole(level, enderman, site);
 			return;
 		}
 		if (builder || random.nextFloat() < builderShare(site.growth(level))) {
@@ -226,6 +264,9 @@ public final class EndermanSpawning {
 				}
 				return;
 			}
+		}
+		if (giveHole(level, enderman, site)) {
+			return;
 		}
 		// Empty-handed at an unfinished cairn: it knows one thing in the cairn's way and comes to clear it (owner: "if the
 		// cairn site calls for removal of dirt/trees/etc, then a block-less enderman can remove one").
