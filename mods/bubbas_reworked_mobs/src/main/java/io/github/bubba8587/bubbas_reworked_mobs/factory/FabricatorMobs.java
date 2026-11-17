@@ -102,8 +102,11 @@ public final class FabricatorMobs {
 		if (state.stage() == ARRIVED && mob.level() instanceof ServerLevel level) {
 			if (level.getGameTime() >= state.wakeAt()) {
 				wake(mob);
-			} else if (mob.tickCount % 4 == 0) {
-				level.sendParticles(ParticleTypes.REVERSE_PORTAL, mob.getX(), mob.getY() + mob.getBbHeight() * 0.5, mob.getZ(), 6, 0.4, 0.6, 0.4, 0.02);
+			} else if (mob.tickCount % 2 == 0) {
+				// It lies in a column of portal light until it wakes: seen from a distance at night.
+				level.sendParticles(ParticleTypes.REVERSE_PORTAL, mob.getX(), mob.getY() + 0.3, mob.getZ(), 14, 0.5, 1.2, 0.5, 0.03);
+				level.sendParticles(ParticleTypes.PORTAL, mob.getX(), mob.getY() + mob.getBbHeight() * 0.5, mob.getZ(), 10, 0.6, 0.6, 0.6, 0.5);
+				level.sendParticles(ParticleTypes.SCULK_SOUL, mob.getX(), mob.getY() + 0.2, mob.getZ(), 2, 0.4, 0.2, 0.4, 0.03);
 			}
 		}
 	}

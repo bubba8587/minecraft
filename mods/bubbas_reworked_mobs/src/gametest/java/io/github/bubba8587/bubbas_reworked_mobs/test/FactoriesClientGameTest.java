@@ -33,6 +33,7 @@ public class FactoriesClientGameTest implements FabricClientGameTest {
 					s.setWorldType(new WorldCreationUiState.WorldTypeEntry(
 							s.getSettings().worldgenLoadContext().lookupOrThrow(Registries.WORLD_PRESET).getOrThrow(WorldPresets.NORMAL)));
 					s.setSeed("20261116");
+					s.setGenerateStructures(true);
 					s.setGameMode(WorldCreationUiState.SelectedGameMode.CREATIVE);
 				})
 				.create()) {
@@ -60,7 +61,182 @@ public class FactoriesClientGameTest implements FabricClientGameTest {
 					shot(context, server, o, 0.5, 9.0, 18.5, 180.0F, 12.0F, "factory-overview-" + mobs[i]);
 				}
 			}
+			mechanics(context, sp, server, new BlockPos(spawn.getX(), DEPTH_Y, spawn.getZ()));
+			worldgen(context, sp, server, spawn);
 		}
+	}
+
+	/**
+	 * The zombie Fabricator at work, seen by a creative player on the deck (a player near makes it run; creative ones
+	 * don't anger the Warden): a deactivated mob on the pad mid-count (factory-countdown), the lift (factory-lift) and
+	 * the mob arriving on the surface in particles (factory-arrival).
+	 */
+	private static void mechanics(ClientGameTestContext context, TestSingleplayerContext sp, TestServerContext server, BlockPos o) {
+		server.runCommand("gamerule spawn_mobs true");
+		server.runCommand("difficulty normal");
+		server.runCommand("gamemode creative @p");
+		context.runOnClient(mc -> {
+			mc.player.getAbilities().flying = true;
+			mc.player.onUpdateAbilities();
+		});
+		tp(context, server, o.getX() + 0.5, o.getY() + 3.5, o.getZ() + 10.5, 180.0F, 30.0F);
+		sp.getConnection().waitForChunksRender();
+		boolean shot = false;
+		for (int i = 0; i < 900 && !shot; i++) {
+			context.waitTick();
+			shot = server.computeOnServer(s -> {
+				var level = s.overworld();
+				var site = io.github.bubba8587.bubbas_reworked_mobs.factory.FabricatorSites.nearest(level, o, 8);
+				var running = site == null ? null : io.github.bubba8587.bubbas_reworked_mobs.factory.Fabricators.running(level, site);
+				return running != null && running.step() >= 5 && !level.getEntitiesOfClass(net.minecraft.world.entity.Mob.class, site.padArea(),
+						io.github.bubba8587.bubbas_reworked_mobs.factory.FabricatorMobs::isDeactivated).isEmpty();
+			});
+		}
+		System.out.println("[fabricator] countdown " + shot);
+		hudlessShot(context, server, "factory-countdown");
+		for (int i = 0; i < 400; i++) {
+			context.waitTick();
+			boolean lifting = server.computeOnServer(s -> {
+				var level = s.overworld();
+				var site = io.github.bubba8587.bubbas_reworked_mobs.factory.FabricatorSites.nearest(level, o, 8);
+				var running = site == null ? null : io.github.bubba8587.bubbas_reworked_mobs.factory.Fabricators.running(level, site);
+				return running != null && running.lifting();
+			});
+			if (lifting) {
+				break;
+			}
+		}
+		context.waitTicks(12);
+		hudlessShot(context, server, "factory-lift");
+		// Find the mob that went up, while it lies limp in its particles.
+		net.minecraft.world.phys.Vec3 arrived = null;
+		for (int i = 0; i < 1200 && arrived == null; i++) {
+			context.waitTick();
+			arrived = server.computeOnServer(s -> {
+				var level = s.overworld();
+				for (var e : level.getEntitiesOfClass(net.minecraft.world.entity.Mob.class, new net.minecraft.world.phys.AABB(o).inflate(110, 200, 110))) {
+					var state = e.getAttached(io.github.bubba8587.bubbas_reworked_mobs.factory.FabricatorMobs.DEACTIVATED);
+					if (state != null && state.stage() == io.github.bubba8587.bubbas_reworked_mobs.factory.FabricatorMobs.ARRIVED) {
+						return e.position();
+					}
+				}
+				return null;
+			});
+		}
+		System.out.println("[fabricator] arrival " + arrived);
+		if (arrived != null) {
+			server.runCommand("gamemode spectator @p");
+			// A camera spot with a clear line of sight to it (destinations are random, often among trees).
+			net.minecraft.world.phys.Vec3 at = arrived;
+			double[] cam = server.computeOnServer(s -> {
+				var level = s.overworld();
+				net.minecraft.world.phys.Vec3 eye = at.add(0, 0.8, 0);
+				for (double r : new double[] { 4.0, 3.0, 5.5 }) {
+					for (int k = 0; k < 16; k++) {
+						double a = Math.PI * 2.0 * k / 16.0;
+						net.minecraft.world.phys.Vec3 c = at.add(Math.cos(a) * r, 2.2, Math.sin(a) * r);
+						if (level.getBlockState(BlockPos.containing(c)).isAir() && level.clip(new net.minecraft.world.level.ClipContext(c, eye,
+								net.minecraft.world.level.ClipContext.Block.VISUAL, net.minecraft.world.level.ClipContext.Fluid.NONE,
+								net.minecraft.world.phys.shapes.CollisionContext.empty())).getType() == net.minecraft.world.phys.HitResult.Type.MISS) {
+							double dx = eye.x - c.x;
+							double dz = eye.z - c.z;
+							float yaw = (float) (Math.atan2(-dx, dz) * 180.0 / Math.PI);
+							float pitch = (float) (Math.atan2(c.y - eye.y, Math.hypot(dx, dz)) * 180.0 / Math.PI);
+							return new double[] { c.x, c.y, c.z, yaw, pitch };
+						}
+					}
+				}
+				return new double[] { at.x + 0.5, at.y + 3.0, at.z + 4.0, 180.0, 32.0 };
+			});
+			tp(context, server, cam[0], cam[1], cam[2], (float) cam[3], (float) cam[4]);
+			context.waitTicks(8);
+			context.takeScreenshot("factory-arrival");
+		}
+		server.runCommand("gamerule spawn_mobs false");
+		server.runCommand("gamemode spectator @p");
+	}
+
+	/** A shot without the hotbar: spectator for a moment (the Fabricator keeps running that long), then creative again. */
+	private static void hudlessShot(ClientGameTestContext context, TestServerContext server, String name) {
+		server.runCommand("gamemode spectator @p");
+		context.waitTicks(2);
+		context.takeScreenshot(name);
+		server.runCommand("gamemode creative @p");
+		context.runOnClient(mc -> {
+			mc.player.getAbilities().flying = true;
+			mc.player.onUpdateAbilities();
+		});
+	}
+
+	/**
+	 * A Fabricator built by worldgen beside a real ancient city (the one nearest spawn): its overview and the doorway
+	 * where its tunnel meets the city (factory-worldgen, factory-city-door).
+	 */
+	private static void worldgen(ClientGameTestContext context, TestSingleplayerContext sp, TestServerContext server, BlockPos spawn) {
+		System.out.println("[fabricator] " + server.computeOnServer(s -> {
+			var level = s.overworld();
+			var holder = level.registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.STRUCTURE)
+					.getOrThrow(net.minecraft.world.level.levelgen.structure.BuiltinStructures.ANCIENT_CITY);
+			var found = level.getChunkSource().getGenerator().findNearestMapStructure(level, net.minecraft.core.HolderSet.direct(holder), spawn, 100, false);
+			if (found == null) {
+				return "vanilla locate: no ancient city";
+			}
+			BlockPos c = found.getFirst();
+			int[] cell = io.github.bubba8587.bubbas_reworked_mobs.factory.FabricatorSites.cellOf(level, c.getX(), c.getZ());
+			var site = io.github.bubba8587.bubbas_reworked_mobs.factory.FabricatorSites.cellSite(level, cell[0], cell[1]);
+			return "natural " + io.github.bubba8587.bubbas_reworked_mobs.factory.FabricatorSites.naturalSites(level) + " structures " + level.getServer().getWorldGenSettings().options().generateStructures() + "; vanilla locate: ancient city at " + c.toShortString() + ", cell " + cell[0] + "," + cell[1] + ", our site " + site
+					+ (site == null ? "" : " city " + site.world(site.cityLocal()).toShortString());
+		}));
+		double[] view = server.computeOnServer(s -> {
+			var level = s.overworld();
+			io.github.bubba8587.bubbas_reworked_mobs.factory.FabricatorSite site = null;
+			for (var s2 : io.github.bubba8587.bubbas_reworked_mobs.factory.FabricatorSites.near(level, spawn.atY(0), 4000)) {
+				if (s2.cityLocal() != null && (site == null || s2.origin().distSqr(spawn) < site.origin().distSqr(spawn))) {
+					site = s2;
+				}
+			}
+			if (site == null) {
+				return null;
+			}
+			BlockPos over = site.world(new BlockPos(0, 9, 18));
+			float yaw = 180.0F + 90.0F * site.rotation().ordinal();
+			BlockPos city = site.world(site.cityLocal());
+			double sx = site.world(new BlockPos(0, 1, 12)).getX();
+			double sz = site.world(new BlockPos(0, 1, 12)).getZ();
+			double dx = city.getX() - sx;
+			double dz = city.getZ() - sz;
+			double len = Math.hypot(dx, dz);
+			double door = len - 96 - 6;
+			double cx = sx + dx / len * door;
+			double cz = sz + dz / len * door;
+			float doorYaw = (float) (Math.atan2(-dx, dz) * 180.0 / Math.PI);
+			level.getChunk(city);
+			var cityStructure = level.registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.STRUCTURE)
+					.getValueOrThrow(net.minecraft.world.level.levelgen.structure.BuiltinStructures.ANCIENT_CITY);
+			boolean real = level.structureManager().getStructureAt(city.atY(-30), cityStructure).isValid()
+					|| level.structureManager().getStructureAt(city.atY(-45), cityStructure).isValid();
+			System.out.println("[fabricator] nearest natural " + site + " city " + city.toShortString() + " pad " + site.pad().toShortString()
+					+ "; a real ancient city there: " + real);
+			return new double[] { over.getX() + 0.5, over.getY(), over.getZ() + 0.5, yaw, cx, site.origin().getY() + 1.5, cz, doorYaw };
+		});
+		if (view == null) {
+			System.out.println("[fabricator] no natural Fabricator within 4000 blocks");
+			return;
+		}
+		tp(context, server, view[0], view[1], view[2], (float) view[3], 12.0F);
+		for (int i = 0; i < 6; i++) {
+			sp.getConnection().waitForChunksRender();
+			context.waitTicks(40);
+		}
+		context.takeScreenshot("factory-worldgen");
+		tp(context, server, view[4], view[5], view[6], (float) view[7], 5.0F);
+		sp.getConnection().waitForChunksRender();
+		context.waitTicks(40);
+		context.takeScreenshot("factory-city-door");
+		server.runCommand("effect give @p minecraft:night_vision infinite 0 true");
+		context.waitTicks(4);
+		context.takeScreenshot("factory-city-door-nightvision");
+		server.runCommand("effect clear @p");
 	}
 
 	private static void fullTour(ClientGameTestContext context, TestSingleplayerContext sp, TestServerContext server, BlockPos o) {
