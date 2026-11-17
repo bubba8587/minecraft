@@ -4,7 +4,7 @@
 # Reached by click signs at the hub and back. Row of three finished cairns (seeds 11, 22, 33) at z 42, south of the arrival spot; a yard
 # (unfenced: roaming endermen would hop any fence) with an unfinished cairn and builders, and a repair corner with a dirt pillar, a
 # cobblestone heap, a pit and farmland for the caretakers. Sites from `cairn here` are saved with the world.
-# Endermen are persistent; Reset removes every enderman in the yard. A backup of the yard's ground (y -63..-56) sits at y 198..205 for
+# Vigil endermen and caretakers despawn like natural ones and leave by day (cairns respawn them at night); the builders from `cairn builders` are persistent. Reset removes every enderman in the yard. A backup of the yard's ground (y -63..-56) sits at y 198..205 for
 # the Reset sign.
 forceload add -236 -12 -180 56
 # Three finished cairns.
@@ -41,7 +41,7 @@ setblock -211 -60 22 minecraft:oak_sign[rotation=0]{is_waxed:1b,front_text:{mess
 setblock -210 -60 22 minecraft:oak_sign[rotation=0]{is_waxed:1b,front_text:{messages:[{text:"Builders",bold:true,color:"dark_purple"},"west: each","brings a block","the cairn lacks"]}}
 setblock -209 -60 22 minecraft:oak_sign[rotation=0]{is_waxed:1b,front_text:{messages:[{text:"Caretakers",bold:true,color:"dark_purple"},"east: pillar,","heap, pit and","farmland"]}}
 setblock -205 -60 22 minecraft:oak_sign[rotation=0]{allow_op_features:1b,front_text:{messages:[{text:"Reset yard",bold:true,color:"dark_blue",click_event:{action:"run_command",command:"clone -232 198 -10 -182 205 22 -232 -63 -10"}},{text:"puts it back,",click_event:{action:"run_command",command:"fill -229 -55 -7 -185 -30 19 minecraft:air"}},{text:"no endermen",click_event:{action:"run_command",command:"kill @e[type=minecraft:enderman,x=-232,y=-64,z=-10,dx=50,dy=60,dz=32]"}},{text:"click",color:"gray",click_event:{action:"run_command",command:"kill @e[type=minecraft:item,x=-232,y=-64,z=-10,dx=50,dy=40,dz=32]"}}]}}
-setblock -204 -60 22 minecraft:oak_sign[rotation=0]{allow_op_features:1b,front_text:{messages:[{text:"Endermen",bold:true,color:"dark_blue",click_event:{action:"run_command",command:"execute positioned -215.5 -60 16.5 run bubbas_reworked_mobs cairn builders"}},{text:"builders and",click_event:{action:"run_command",command:"summon minecraft:enderman -197.5 -60 5.5 {Tags:[\"tw_enderman\"],PersistenceRequired:1b}"}},{text:"2 caretakers",click_event:{action:"run_command",command:"summon minecraft:enderman -189.5 -60 4.5 {Tags:[\"tw_enderman\"],PersistenceRequired:1b}"}},{text:"click",color:"gray"}]}}
+setblock -204 -60 22 minecraft:oak_sign[rotation=0]{allow_op_features:1b,front_text:{messages:[{text:"Endermen",bold:true,color:"dark_blue",click_event:{action:"run_command",command:"execute positioned -215.5 -60 16.5 run bubbas_reworked_mobs cairn builders"}},{text:"builders and",click_event:{action:"run_command",command:"summon minecraft:enderman -197.5 -60 5.5 {Tags:[\"tw_enderman\"]}"}},{text:"2 caretakers",click_event:{action:"run_command",command:"summon minecraft:enderman -189.5 -60 4.5 {Tags:[\"tw_enderman\"]}"}},{text:"click",color:"gray"}]}}
 setblock -203 -60 22 minecraft:oak_sign[rotation=0]{allow_op_features:1b,front_text:{messages:[{text:"Survival",bold:true,color:"dark_blue",click_event:{action:"run_command",command:"gamemode survival @s"}},{text:"stare at one:"},{text:"idle ones get"},{text:"angry"}]}}
 setblock -202 -60 22 minecraft:oak_sign[rotation=0]{allow_op_features:1b,front_text:{messages:[{text:"Creative",bold:true,color:"dark_blue",click_event:{action:"run_command",command:"gamemode creative @s"}},{text:"click to stop"},{text:"taking damage"},{text:""}]}}
 setblock -201 -60 22 minecraft:oak_sign[rotation=0]{allow_op_features:1b,front_text:{messages:[{text:"Back to hub",bold:true,color:"dark_blue",click_event:{action:"run_command",command:"tp @s 0.5 -60 7.5 180 0"}},{text:"click to go"},{text:""},{text:""}]}}
@@ -49,11 +49,11 @@ setblock -201 -60 22 minecraft:oak_sign[rotation=0]{allow_op_features:1b,front_t
 clone -232 -63 -10 -182 -56 22 -232 198 -10
 execute positioned -215.5 -60 16.5 run bubbas_reworked_mobs cairn builders
 # Vigil (owner): endermen with nothing to do at a complete cairn stand in a ring around it, staring at it.
-summon minecraft:enderman -207.5 -60 52.5 {Tags:["tw_vigil"],PersistenceRequired:1b}
-summon minecraft:enderman -200.5 -60 47.5 {Tags:["tw_vigil"],PersistenceRequired:1b}
-summon minecraft:enderman -214.5 -60 47.5 {Tags:["tw_vigil"],PersistenceRequired:1b}
-summon minecraft:enderman -203.5 -60 36.5 {Tags:["tw_vigil"],PersistenceRequired:1b}
-summon minecraft:enderman -211.5 -60 36.5 {Tags:["tw_vigil"],PersistenceRequired:1b}
-summon minecraft:enderman -197.5 -60 5.5 {Tags:["tw_enderman"],PersistenceRequired:1b}
-summon minecraft:enderman -189.5 -60 4.5 {Tags:["tw_enderman"],PersistenceRequired:1b}
+summon minecraft:enderman -207.5 -60 52.5 {Tags:["tw_vigil"]}
+summon minecraft:enderman -200.5 -60 47.5 {Tags:["tw_vigil"]}
+summon minecraft:enderman -214.5 -60 47.5 {Tags:["tw_vigil"]}
+summon minecraft:enderman -203.5 -60 36.5 {Tags:["tw_vigil"]}
+summon minecraft:enderman -211.5 -60 36.5 {Tags:["tw_vigil"]}
+summon minecraft:enderman -197.5 -60 5.5 {Tags:["tw_enderman"]}
+summon minecraft:enderman -189.5 -60 4.5 {Tags:["tw_enderman"]}
 execute positioned -206 -60 26 run bubbas_reworked_mobs cairn locate

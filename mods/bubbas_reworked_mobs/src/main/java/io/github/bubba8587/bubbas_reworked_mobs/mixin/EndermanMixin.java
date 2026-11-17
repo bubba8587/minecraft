@@ -7,6 +7,10 @@ import java.util.List;
 import io.github.bubba8587.bubbas_reworked_mobs.enderman.EndermanAccess;
 import io.github.bubba8587.bubbas_reworked_mobs.enderman.EndermanJobGoal;
 import io.github.bubba8587.bubbas_reworked_mobs.enderman.EndermanMind;
+import io.github.bubba8587.bubbas_reworked_mobs.enderman.EndermanTuning;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.goal.WrappedGoal;
 import net.minecraft.world.entity.monster.Enderman;
@@ -121,6 +125,25 @@ abstract class EndermanMixin extends Monster implements EndermanAccess {
 		if (brm$mind != null && brm$mind.busy()) {
 			cir.setReturnValue(false);
 		}
+	}
+
+	/**
+	 * By day a caretaker out under the sky leaves (owner, 2026-11-16: they shouldn't hang around a cairn in daylight,
+	 * teleporting in and out of the vigil): it vanishes in a puff of portal particles, any block it carries with it.
+	 * Persistent ones (name tag, PersistenceRequired), angry ones and ridden or leashed ones stay.
+	 */
+	@Inject(method = "customServerAiStep", at = @At("HEAD"), cancellable = true)
+	private void brm$leaveByDay(ServerLevel level, CallbackInfo ci) {
+		if (brm$mind == null || this.isPersistenceRequired() || this.isPassenger() || this.isLeashed() || this.getTarget() != null
+				|| !level.isBrightOutside() || !level.canSeeSky(this.blockPosition())
+				|| this.random.nextInt(EndermanTuning.DAY_LEAVE_ONE_IN) != 0) {
+			return;
+		}
+		level.sendParticles(ParticleTypes.PORTAL, this.getX(), this.getY() + this.getBbHeight() * 0.5, this.getZ(), 48,
+				this.getBbWidth() * 0.5, this.getBbHeight() * 0.25, this.getBbWidth() * 0.5, 0.6);
+		level.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENDERMAN_TELEPORT, this.getSoundSource(), 1.0F, 1.0F);
+		this.discard();
+		ci.cancel();
 	}
 
 	@Inject(method = "requiresCustomPersistence", at = @At("HEAD"), cancellable = true)

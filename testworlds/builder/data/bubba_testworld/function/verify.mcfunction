@@ -189,9 +189,8 @@ execute if block 0 15 79 minecraft:deepslate_tiles
 execute if data block 3 -60 27 front_text.messages[0].click_event{command:"give @s bubbas_totems_artifacts:totem_of_warding"}
 execute if data block 14 -60 62 front_text.messages[0].click_event{command:"gamerule spawn_mobs true"}
 execute unless entity @e[type=bubbas_reworked_mobs:woken_skeleton,x=43,y=-60,z=85,distance=..16]
-# creeper grove: two placed creepers and the backup copy for the Reset sign
-execute if entity @e[type=minecraft:creeper,tag=tw_creeper,x=64,y=-60,z=-7,distance=..10]
-execute if entity @e[type=minecraft:creeper,tag=tw_creeper,x=80,y=-60,z=11,distance=..10]
+# creeper grove: placed creepers (they wander, so anywhere in the grove) and the backup copy for the Reset sign
+execute if entity @e[type=minecraft:creeper,tag=tw_creeper,x=56,y=-62,z=-14,dx=26,dy=10,dz=30]
 execute if block 63 201 -6 minecraft:oak_log
 execute if block 66 201 -11 minecraft:cobblestone
 # cairns: four endermen in the yard, the backup copy, and the hand-placed sites saved with the world (locate from the

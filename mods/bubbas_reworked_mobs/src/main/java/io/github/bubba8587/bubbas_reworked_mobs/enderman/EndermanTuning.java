@@ -64,6 +64,8 @@ public final class EndermanTuning {
 	public static final int VIGIL_GAP = 3;
 	/** A vigil lasts this long, then it looks around for work (and most likely takes up its place again). */
 	public static final int VIGIL_TICKS = 1200;
+	/** By day a caretaker under open sky leaves with a 1-in-this chance each tick (about 20 s on average; owner, 2026-11-16). */
+	public static final int DAY_LEAVE_ONE_IN = 400;
 	/** A builder whose block can't go in yet waits within this distance of its cairn (teleports back if farther). */
 	public static final int WAIT_RADIUS = 8;
 

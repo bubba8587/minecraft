@@ -35,7 +35,7 @@ import org.jspecify.annotations.Nullable;
  * cairn's missing blocks that no enderman there carries yet (builders; one that can't go in yet waits by the cairn), carrying the original block for a hole nearby, or empty-handed (repairers).
  *
  * <p>Vanilla's spawn rules still apply to each spot: the biome must list endermen, the spot must pass the enderman's
- * spawn placement and darkness rules, and spawn_mobs / spawn_monsters and peaceful turn it off. Everything follows
+ * spawn placement and darkness rules, and spawn_monsters and peaceful turn it off (spawn_mobs doesn't). Everything follows
  * the game rule {@code bubbas_reworked_mobs:cairn_endermen} (off: cairns spawn nothing). Vanilla's random overworld
  * enderman spawns stay, at the monster cap cut every monster gets (owner, 2026-11-16: a small natural rate); those
  * arrive empty-handed and tend the land around where they show up.
@@ -66,7 +66,9 @@ public final class EndermanSpawning {
 	}
 
 	static boolean spawningAllowed(ServerLevel level) {
-		return level.getGameRules().get(ModGameRules.CAIRN_ENDERMEN) && level.getGameRules().get(GameRules.SPAWN_MOBS)
+		// Not spawn_mobs: its own rule stands in for it, so a world can keep vanilla's random spawns off and cairns on
+		// (the test world does; 2026-11-16). spawn_monsters and Peaceful still stop it.
+		return level.getGameRules().get(ModGameRules.CAIRN_ENDERMEN)
 				&& level.getGameRules().get(GameRules.SPAWN_MONSTERS) && level.getDifficulty() != Difficulty.PEACEFUL;
 	}
 

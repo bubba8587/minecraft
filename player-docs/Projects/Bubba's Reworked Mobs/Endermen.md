@@ -13,7 +13,7 @@ An **enderman** in [[Bubba's Reworked Mobs]] is a caretaker of the overworld. It
 
 ## Spawning
 
-Most overworld endermen come from cairn sites, at night. A few still appear anywhere, as rarely as other monsters; those are ordinary endermen that only pick up and drop blocks at random, as are endermen from spawners. A fresh cairn draws one only now and then and grows by a block or two a night; once its spire is clearly rising, more and more come, and the last part goes up quickly. A finished cairn draws the most, and the more endermen are already around a site, the faster more arrive. Killing them slows this down but never stops it. Tearing a cairn down drops it back to the lower rate until it is rebuilt.
+Most overworld endermen come from cairn sites, at night. A few still appear anywhere, as rarely as other monsters; those are ordinary endermen that only pick up and drop blocks at random, as are endermen from spawners. A fresh cairn draws one only now and then and grows by a block or two a night; once its spire is clearly rising, more and more come, and the last part goes up quickly. A finished cairn draws the most, and the more endermen are already around a site, the faster more arrive. Killing them slows this down but never stops it. Tearing a cairn down drops it back to the lower rate until it is rebuilt. By day, cairn endermen out under the sky leave, vanishing in a puff of purple, along with any block they carry; a name-tagged one stays.
 
 Endermen in the Nether and the End are unchanged.
 
