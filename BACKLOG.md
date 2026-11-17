@@ -13,7 +13,7 @@ Parked ideas and open items, newest first within each project. Agents add to it 
 - **Endermen** (first build done, `specs/endermen.md`): owner to playtest and review the 12 builder's choices; still open: banners on cairns, more variety, Nether/End endermen, explosions breaking cairns not angering them. Try them in the test world's Cairns and endermen station (hub click sign).
 - **Flaky tests seen 2026-11-16** (pre-existing; `strongLightCalmsSleepers` and the night spawn tests fixed the same day): `BubbasReworkedMobsGameTest.sneakingNearbyDoesNotWakeSleeper` (once in 6 runs), `UndeadCombatGameTest.idleZombiesDriftTogether` (once in 6; idle wandering timing), `CreeperGameTest.oneWatcherSpawnsBehindCoverOutOfView`, `GrabLootGameTest.idleSkeletonTakesADisplayedSword`.
 - **Drowned** (first build done, `specs/drowned.md`): owner to playtest numbers and review the builder's choices; test world "drowned shore" station idea there; grab by the feet (owner, in progress).
-- **Ancient Fabricators** (look built; owner to review, then mechanics; `specs/mob-factory.md`; one beside every ancient city): underground nether/warped/bone ceiling growth drops mobs onto an ancient-city redstone platform; open questions F1-F6. Also structures for farming: crypts, war camps, bigger dungeons with spawners (owner, 2026-11-16).
+- **Ancient Fabricators** (built 2026-11-17: owner to playtest the rate, the doorway spot and the Warden; test world station still to add; `specs/mob-factory.md`; one beside every ancient city): underground nether/warped/bone ceiling growth drops mobs onto an ancient-city redstone platform; open questions F1-F6. Also structures for farming: crypts, war camps, bigger dungeons with spawners (owner, 2026-11-16).
 - **Infinite jukebox** (owner, 2026-11-16): in current snapshots; when we move to that release, make the Ancient Fabricator office jukebox loop with it.
 - **Slime merging** (owner: decent idea, not now): slimes that bump into each other merge.
 - **Blood moon** (owner, 2026-11-16): on hold, no change.
@@ -24,7 +24,8 @@ Parked ideas and open items, newest first within each project. Agents add to it 
 - **Grave Talisman as loot:** found only (owner). Place it in grave/crypt loot when Reworked Mobs' worldgen builds them; maybe a rare find on sleepers.
 - Warding open question (builder): should mobs holding a Totem of Warding pulse, and may woken undead pick one up (built as yes). `specs/totems-artifacts.md`.
 - Person-made statue design and mod icon (placeholders now, `docs/art-todo.md`).
-- **Totems** (owner, 2026-11-16): artifact items for things potions and enchantments don't cover, like the Totem of Warding. Many can work both held (personal, small) and in a Reworked Beacons beacon (area). Liked:
+- **Totems built 2026-11-16** (Keeping, Gathering, Fortification, Growth, Seeking; `specs/totems-artifacts.md`): owner to review the builder's calls (Seeking signature blocks vs a picker screen, Gathering in a beacon, Growth strength and name, loot); statues for the new totems need the owner's designs; the Gathering texture reads like gingerbread (art row).
+- **Totems** (owner, 2026-11-16, original ideas): artifact items for things potions and enchantments don't cover, like the Totem of Warding. Many can work both held (personal, small) and in a Reworked Beacons beacon (area). Liked:
   - **Keeping**: used up on death; you keep your inventory that once (a Totem of Undying for your items).
   - **Gathering**: pulls nearby dropped items and XP to you; in a beacon, into a container under it.
   - **Fortification**: explosions in the area don't break blocks (creeper/ghast-proof). NOT via the mobGriefing rule (that also stops villager farming, endermen etc.): only explosion block damage.

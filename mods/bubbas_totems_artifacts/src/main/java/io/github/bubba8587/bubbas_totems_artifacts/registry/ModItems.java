@@ -4,6 +4,9 @@ package io.github.bubba8587.bubbas_totems_artifacts.registry;
 import java.util.function.Function;
 
 import io.github.bubba8587.bubbas_totems_artifacts.BubbasTotemsArtifacts;
+import io.github.bubba8587.bubbas_totems_artifacts.gathering.TotemOfGatheringItem;
+import io.github.bubba8587.bubbas_totems_artifacts.growth.TotemOfGrowthItem;
+import io.github.bubba8587.bubbas_totems_artifacts.seeking.TotemOfSeekingItem;
 import io.github.bubba8587.bubbas_totems_artifacts.warding.TotemOfWardingItem;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -24,6 +27,24 @@ public final class ModItems {
 	public static final Item TOTEM_OF_WARDING = register("totem_of_warding",
 			TotemOfWardingItem::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
 
+	// The five totems of 2026-11-16 (specs/totems-artifacts.md, "The five new totems"): artifacts, found only, uncommon,
+	// one per stack like the Totem of Undying. New ids, so no old-id alias.
+
+	/** Totem of Keeping (keeping/Keeping): carried, used up on death to keep everything. */
+	public static final Item TOTEM_OF_KEEPING = registerNew("totem_of_keeping", Item::new, totem());
+
+	/** Totem of Gathering (gathering/Gathering): held, pulls dropped items; in a beacon, into a chest below. */
+	public static final Item TOTEM_OF_GATHERING = registerNew("totem_of_gathering", TotemOfGatheringItem::new, totem());
+
+	/** Totem of Fortification (fortification/Fortification): held or in a beacon, explosions break no blocks. */
+	public static final Item TOTEM_OF_FORTIFICATION = registerNew("totem_of_fortification", Item::new, totem());
+
+	/** Totem of Growth, working name (growth/Growth): held or in a beacon, plants grow faster. */
+	public static final Item TOTEM_OF_GROWTH = registerNew("totem_of_growth", TotemOfGrowthItem::new, totem());
+
+	/** Totem of Seeking (seeking/TotemOfSeekingItem): points to the nearest structure of a chosen type. */
+	public static final Item TOTEM_OF_SEEKING = registerNew("totem_of_seeking", TotemOfSeekingItem::new, totem());
+
 	private ModItems() {
 	}
 
@@ -34,6 +55,15 @@ public final class ModItems {
 		// lookup of an id that isn't registered falls back to its alias). Whether or not Reworked Mobs is installed.
 		BuiltInRegistries.ITEM.addAlias(Identifier.fromNamespaceAndPath(OLD_NAMESPACE, name), key.identifier());
 		return item;
+	}
+
+	private static Item.Properties totem() {
+		return new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON);
+	}
+
+	private static Item registerNew(String name, Function<Item.Properties, Item> factory, Item.Properties properties) {
+		ResourceKey<Item> key = ResourceKey.create(Registries.ITEM, BubbasTotemsArtifacts.id(name));
+		return Registry.register(BuiltInRegistries.ITEM, key, factory.apply(properties.setId(key)));
 	}
 
 	public static void initialize() {

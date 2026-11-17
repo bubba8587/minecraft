@@ -5,12 +5,16 @@ apply from: rootProject.file('gradle/fabric-mod.gradle')
 
 // No dependency on Bubba's Totems & Artifacts in either direction at build time: it reaches sleepers through this
 // mod's api/Sleepers (specs/totems-artifacts.md, "Independence"), and this mod never touches it.
-// -PwithBeacons puts Bubba's Reworked Beacons on the game's classpath (no compile link), so a mob factory's paired
-// beacons hang upside down and show their beam in the `factories` client test (specs/mob-factory.md).
+// Optional link to Bubba's Reworked Beacons (like Totems & Artifacts): compiled against it only; its payload
+// entrypoint loads compat/FabricatorBeaconPayload when it's installed (specs/mob-factory.md, debuffs).
+// -PwithBeacons also puts its jar on the game's classpath, so a Fabricator's paired beacons hang upside down, show
+// their beam and run the heart in the `factories` client test and the game tests.
 evaluationDependsOn(':bubbas_reworked_beacons')
 def beaconsJar = files(rootProject.project(':bubbas_reworked_beacons').tasks.named('jar').flatMap { it.archiveFile })
 dependencies {
 	// Extra mod dependencies go here; see docs/knowledge/libraries.md.
+	compileOnly project(':bubbas_reworked_beacons')
+	gametestCompileOnly project(':bubbas_reworked_beacons')
 	if (providers.gradleProperty('withBeacons').isPresent()) {
 		runtimeOnly beaconsJar
 	}

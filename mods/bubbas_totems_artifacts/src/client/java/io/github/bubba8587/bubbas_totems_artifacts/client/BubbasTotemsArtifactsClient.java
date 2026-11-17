@@ -2,6 +2,7 @@
 package io.github.bubba8587.bubbas_totems_artifacts.client;
 
 import io.github.bubba8587.bubbas_totems_artifacts.BubbasTotemsArtifacts;
+import io.github.bubba8587.bubbas_totems_artifacts.client.keeping.KeepingEffect;
 import io.github.bubba8587.bubbas_totems_artifacts.client.talisman.GraveTalismanGlow;
 import net.minecraft.network.chat.Component;
 
@@ -20,5 +21,8 @@ public class BubbasTotemsArtifactsClient implements ClientModInitializer {
 
 		// Grave Talisman: glow level worked out on the client, read by the item model.
 		GraveTalismanGlow.initialize();
+
+		// Totem of Keeping: the totem animation on respawn after a kept death.
+		KeepingEffect.initialize();
 	}
 }

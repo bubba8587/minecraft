@@ -11,6 +11,9 @@
 	"icon": "assets/bubbas_reworked_mobs/icon.png",
 	"environment": "*",
 	"entrypoints": {
+		"bubbas_reworked_beacons:payload": [
+			"io.github.bubba8587.bubbas_reworked_mobs.compat.FabricatorBeaconPayload"
+		],
 		"main": [
 			"io.github.bubba8587.bubbas_reworked_mobs.BubbasReworkedMobs"
 		],
@@ -35,6 +38,7 @@
 		"fabric-api": "*"
 	},
 	"suggests": {
-		"bubbas_totems_artifacts": "*"
+		"bubbas_totems_artifacts": "*",
+		"bubbas_reworked_beacons": "*"
 	}
 }

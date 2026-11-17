@@ -1,0 +1,16 @@
+{
+  "values": [
+    "#minecraft:bee_growables",
+    "#minecraft:saplings",
+    "minecraft:sugar_cane",
+    "minecraft:cactus",
+    "minecraft:bamboo",
+    "minecraft:bamboo_sapling",
+    "minecraft:cocoa",
+    "minecraft:nether_wart",
+    "minecraft:kelp",
+    "minecraft:twisting_vines",
+    "minecraft:weeping_vines",
+    "minecraft:chorus_flower"
+  ]
+}

@@ -21,6 +21,11 @@ public final class ModCreativeTabs {
 					.displayItems((params, output) -> {
 						output.accept(ModItems.GRAVE_TALISMAN);
 						output.accept(ModItems.TOTEM_OF_WARDING);
+						output.accept(ModItems.TOTEM_OF_KEEPING);
+						output.accept(ModItems.TOTEM_OF_GATHERING);
+						output.accept(ModItems.TOTEM_OF_FORTIFICATION);
+						output.accept(ModItems.TOTEM_OF_GROWTH);
+						output.accept(ModItems.TOTEM_OF_SEEKING);
 					})
 					.build());
 
