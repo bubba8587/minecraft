@@ -74,6 +74,12 @@ Endermen slowly put the overworld back the way it first generated and build twis
 
 Drowned are rare, tough lurkers that wait in shallow water, grab anyone who turns their back to the water, and drag them under to drown. Hard, fast hits break their grip.
 
+## Ancient Fabricators
+
+*Main article: [[Ancient Fabricators]]*
+
+Beside every ancient city, an Ancient Fabricator drips monsters onto a teleporter that sends them to the surface. Players can farm them on the teleporter, stop it with redstone, or break its hidden spawner, past a Warden.
+
 ## Monster spawning
 
 *Main article: [[Monster Spawning]]*
