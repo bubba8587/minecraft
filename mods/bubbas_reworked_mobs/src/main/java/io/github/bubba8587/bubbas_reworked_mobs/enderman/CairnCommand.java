@@ -86,6 +86,7 @@ public final class CairnCommand {
 			enderman.snapTo(at.x + Math.cos(angle) * 1.5, at.y, at.z + Math.sin(angle) * 1.5, level.getRandom().nextFloat() * 360.0F, 0.0F);
 			enderman.setCarriedBlock(want);
 			enderman.setPersistenceRequired();
+			((EndermanAccess) enderman).brm$setHome(site.origin());
 			level.addFreshEntity(enderman);
 			summoned++;
 		}

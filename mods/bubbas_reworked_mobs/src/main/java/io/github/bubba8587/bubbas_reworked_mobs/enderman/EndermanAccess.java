@@ -1,6 +1,7 @@
 // dte:C1
 package io.github.bubba8587.bubbas_reworked_mobs.enderman;
 
+import net.minecraft.core.BlockPos;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -17,4 +18,9 @@ public interface EndermanAccess {
 	void brm$markCairnSpawn();
 
 	boolean brm$isCairnSpawn();
+
+	/** The origin of the cairn site it belongs to (spawned there or summoned as its builder), or null; saved. */
+	@Nullable BlockPos brm$home();
+
+	void brm$setHome(@Nullable BlockPos home);
 }

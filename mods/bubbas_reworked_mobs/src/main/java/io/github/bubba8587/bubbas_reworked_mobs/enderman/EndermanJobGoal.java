@@ -76,11 +76,15 @@ public final class EndermanJobGoal extends Goal {
 				mind.set(EndermanMind.Job.DELIVER, spot, now);
 				return true;
 			}
-			// A builder whose block can't go in yet (the blocks under it are still missing) waits by its cairn.
+			// A builder whose block can't go in yet (the blocks under it are still missing) waits by its cairn: it takes a
+			// place in the ring and stands there, looking for its spot again every WAIT_TICKS. (It used to have no job, so
+			// vanilla's stroll walked it off and it teleported back again and again: 2026-11-16 audit.)
 			CairnSite waitingFor = siteWanting(level, here, carried);
 			if (waitingFor != null) {
-				if (Math.sqrt(horizontalDistSqr(here, waitingFor.origin())) > EndermanTuning.WAIT_RADIUS) {
-					teleportNear(level, waitingFor.origin().above(2));
+				BlockPos place = ringPlace(level, waitingFor);
+				if (place != null) {
+					mind.set(EndermanMind.Job.WAIT, place, now);
+					return true;
 				}
 				return false;
 			}
@@ -90,11 +94,19 @@ public final class EndermanJobGoal extends Goal {
 				mind.set(found.kind() == EndermanWork.Kind.TRAMPLE ? EndermanMind.Job.TRAMPLE : EndermanMind.Job.TAKE, found.pos(), now);
 				return true;
 			}
+			// Now and then it goes farther afield for something to do (owner, 2026-11-16: "should endermen occasionally
+			// pick up a new task? I think yes"): a look round a random spot ERRAND_MIN-ERRAND_MAX blocks off.
+			if (enderman.getRandom().nextFloat() < EndermanTuning.ERRAND_CHANCE && errand(level, here, now)) {
+				return true;
+			}
 		}
-		// Nothing to do near it: at a complete cairn it stands vigil in the ring around it, staring at it (owner).
-		CairnSite site = CairnSites.nearest(level, here, EndermanTuning.SITE_RADIUS);
+		// Nothing to do near it: at a complete cairn (its home first) it stands vigil in the ring around it (owner).
+		CairnSite site = homeSite(level);
+		if (site == null || !site.complete(level)) {
+			site = CairnSites.nearest(level, here, EndermanTuning.SITE_RADIUS);
+		}
 		if (site != null && site.complete(level)) {
-			BlockPos place = vigilPlace(level, site);
+			BlockPos place = ringPlace(level, site);
 			if (place != null) {
 				mind.set(EndermanMind.Job.VIGIL, place, now);
 				return true;
@@ -103,10 +115,38 @@ public final class EndermanJobGoal extends Goal {
 		return false;
 	}
 
+	/** Its home site, if it has one and it is loaded. */
+	private @Nullable CairnSite homeSite(ServerLevel level) {
+		BlockPos home = enderman instanceof EndermanAccess access ? access.brm$home() : null;
+		return home == null || !level.isLoaded(home) ? null : CairnSites.covering(level, home);
+	}
+
+	/** Looks for a block to take or farmland to trample round a random spot a way off; true when it found one. */
+	private boolean errand(ServerLevel level, BlockPos here, long now) {
+		double angle = enderman.getRandom().nextDouble() * Math.PI * 2.0;
+		double distance = Mth.lerp(enderman.getRandom().nextDouble(), EndermanTuning.ERRAND_MIN, EndermanTuning.ERRAND_MAX);
+		int x = Mth.floor(here.getX() + Math.cos(angle) * distance);
+		int z = Mth.floor(here.getZ() + Math.sin(angle) * distance);
+		if (!level.hasChunk(x >> 4, z >> 4)) {
+			return false;
+		}
+		BlockPos there = new BlockPos(x, level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z), z);
+		EndermanWork.Found found = EndermanWork.findWork(level, there, enderman.getRandom(), EndermanWork.wanted(level, there));
+		if (found == null) {
+			return false;
+		}
+		mind.set(found.kind() == EndermanWork.Kind.TRAMPLE ? EndermanMind.Job.TRAMPLE : EndermanMind.Job.TAKE, found.pos(), now);
+		return true;
+	}
+
 	@Override
 	public boolean canContinueToUse() {
 		return mind.job() != null && enderman.level() instanceof ServerLevel level && allowed(level)
-				&& level.getGameTime() - mind.started() < (mind.job() == EndermanMind.Job.VIGIL ? EndermanTuning.VIGIL_TICKS : EndermanTuning.JOB_TIMEOUT);
+				&& level.getGameTime() - mind.started() < switch (mind.job()) {
+					case VIGIL -> EndermanTuning.VIGIL_TICKS;
+					case WAIT -> EndermanTuning.WAIT_TICKS;
+					default -> EndermanTuning.JOB_TIMEOUT;
+				};
 	}
 
 	@Override
@@ -165,12 +205,19 @@ public final class EndermanJobGoal extends Goal {
 					approach(level, target.above(), on);
 				}
 			}
-			case VIGIL -> {
+			case VIGIL, WAIT -> {
 				Vec3 at = Vec3.atBottomCenterOf(target);
 				CairnSite site = CairnSites.covering(level, vigilCentre);
-				if (site == null || !site.complete(level)) {
+				if (site == null || (mind.job() == EndermanMind.Job.VIGIL && !site.complete(level))) {
 					// Its cairn was damaged or is gone: look for work instead.
 					mind.clear();
+					return;
+				}
+				if (mind.job() == EndermanMind.Job.WAIT && enderman.getCarriedBlock() != null
+						&& (level.getGameTime() - mind.started()) % 20 == 0 && EndermanWork.destination(level, enderman.blockPosition(), enderman.getCarriedBlock(), enderman.getRandom()) != null) {
+					// Its block can go in now: stop waiting (it plans the delivery at once).
+					mind.clear();
+					nextSearch = enderman.tickCount;
 					return;
 				}
 				if (enderman.position().distanceToSqr(at) > 1.0) {
@@ -301,11 +348,11 @@ public final class EndermanJobGoal extends Goal {
 	}
 
 	/**
-	 * Its place in the ring around a complete cairn: VIGIL_GAP outside the footprint, at an angle fixed by its id (so
+	 * Its place in the ring around a cairn (a vigil, or a builder waiting): VIGIL_GAP outside the footprint, at an angle fixed by its id (so
 	 * the ring spreads out and each keeps its place), on the ground there. Also sets what it stares at (the cairn's
 	 * middle). Null when no standable spot is found near that angle.
 	 */
-	private @Nullable BlockPos vigilPlace(ServerLevel level, CairnSite site) {
+	private @Nullable BlockPos ringPlace(ServerLevel level, CairnSite site) {
 		double radius = site.radius() + EndermanTuning.VIGIL_GAP + 0.5;
 		double base = enderman.getId() * 2.399963; // golden angle: neighbours' ids land far apart on the ring
 		for (int i = 0; i < 6; i++) {

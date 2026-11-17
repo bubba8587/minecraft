@@ -8,6 +8,7 @@ import io.github.bubba8587.bubbas_reworked_mobs.enderman.EndermanAccess;
 import io.github.bubba8587.bubbas_reworked_mobs.enderman.EndermanJobGoal;
 import io.github.bubba8587.bubbas_reworked_mobs.enderman.EndermanMind;
 import io.github.bubba8587.bubbas_reworked_mobs.enderman.EndermanTuning;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -47,6 +48,8 @@ abstract class EndermanMixin extends Monster implements EndermanAccess {
 	private boolean brm$vanilla;
 	@Unique
 	private boolean brm$cairnSpawn;
+	@Unique
+	private @Nullable BlockPos brm$home;
 
 	protected EndermanMixin(EntityType<? extends Monster> type, Level level) {
 		super(type, level);
@@ -106,10 +109,23 @@ abstract class EndermanMixin extends Monster implements EndermanAccess {
 		return brm$cairnSpawn;
 	}
 
+	@Override
+	public @Nullable BlockPos brm$home() {
+		return brm$home;
+	}
+
+	@Override
+	public void brm$setHome(@Nullable BlockPos home) {
+		brm$home = home;
+	}
+
 	@Inject(method = "addAdditionalSaveData", at = @At("TAIL"))
 	private void brm$saveVanilla(ValueOutput output, CallbackInfo ci) {
 		if (brm$vanilla) {
 			output.putBoolean("bubbas_reworked_mobs:vanilla", true);
+		}
+		if (brm$home != null) {
+			output.putLong("bubbas_reworked_mobs:cairn_home", brm$home.asLong());
 		}
 	}
 
@@ -118,6 +134,7 @@ abstract class EndermanMixin extends Monster implements EndermanAccess {
 		if (input.getBooleanOr("bubbas_reworked_mobs:vanilla", false)) {
 			brm$makeVanilla();
 		}
+		input.getLong("bubbas_reworked_mobs:cairn_home").ifPresent(l -> brm$home = BlockPos.of(l));
 	}
 
 	@Inject(method = "isBeingStaredBy", at = @At("HEAD"), cancellable = true)
@@ -130,11 +147,14 @@ abstract class EndermanMixin extends Monster implements EndermanAccess {
 	/**
 	 * By day a caretaker out under the sky leaves (owner, 2026-11-16: they shouldn't hang around a cairn in daylight,
 	 * teleporting in and out of the vigil): it vanishes in a puff of portal particles, any block it carries with it.
-	 * Persistent ones (name tag, PersistenceRequired), angry ones and ridden or leashed ones stay.
+	 * Name-tagged ones (the player's choice), angry ones and ridden or leashed ones stay. Persistence alone doesn't keep
+	 * one: the builders that `cairn builders` summons are persistent (so they don't vanish at a distance) and were the
+	 * ones that never left (2026-11-16 audit). Off on the game test server (tests run at any time of day).
 	 */
 	@Inject(method = "customServerAiStep", at = @At("HEAD"), cancellable = true)
 	private void brm$leaveByDay(ServerLevel level, CallbackInfo ci) {
-		if (brm$mind == null || this.isPersistenceRequired() || this.isPassenger() || this.isLeashed() || this.getTarget() != null
+		if (brm$mind == null || this.hasCustomName() || this.isPassenger() || this.isLeashed() || this.getTarget() != null
+				|| level.getServer() instanceof net.minecraft.gametest.framework.GameTestServer
 				|| !level.isBrightOutside() || !level.canSeeSky(this.blockPosition())
 				|| this.random.nextInt(EndermanTuning.DAY_LEAVE_ONE_IN) != 0) {
 			return;

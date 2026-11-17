@@ -72,9 +72,31 @@ public final class EndermanSpawning {
 				&& level.getGameRules().get(GameRules.SPAWN_MONSTERS) && level.getDifficulty() != Difficulty.PEACEFUL;
 	}
 
-	/** Endermen near a site (its own). */
+	/** Endermen near a site (any: used for which of its blocks are already being carried). */
 	public static List<Enderman> endermenAt(ServerLevel level, CairnSite site) {
 		return level.getEntitiesOfClass(Enderman.class, new AABB(site.origin()).inflate(EndermanTuning.SITE_RADIUS), Enderman::isAlive);
+	}
+
+	/**
+	 * A site's own endermen (its cap and snowball count these): the ones whose home it is (spawned there, or summoned as
+	 * its builders), plus homeless caretakers near it whose nearest site it is. Counting everything within SITE_RADIUS
+	 * made sites close together (the test world's row: 15 blocks apart) count each other's endermen, so all of them sat
+	 * at their cap and none spawned (2026-11-16 audit).
+	 */
+	public static List<Enderman> ownEndermen(ServerLevel level, CairnSite site) {
+		return endermenAt(level, site).stream().filter(e -> belongsTo(level, e, site)).toList();
+	}
+
+	private static boolean belongsTo(ServerLevel level, Enderman enderman, CairnSite site) {
+		if (!(enderman instanceof EndermanAccess access) || EndermanMind.of(enderman) == null) {
+			return false; // vanilla endermen aren't anyone's
+		}
+		BlockPos home = access.brm$home();
+		if (home != null) {
+			return home.equals(site.origin());
+		}
+		CairnSite nearest = CairnSites.nearest(level, enderman.blockPosition(), EndermanTuning.SITE_RADIUS);
+		return nearest != null && nearest.origin().equals(site.origin());
 	}
 
 	/** This check's spawn chance for a site whose spire has grown {@code growth} (0-1), with {@code present} of its endermen about. */
@@ -109,7 +131,7 @@ public final class EndermanSpawning {
 		}
 		boolean complete = site.complete(level);
 		float growth = complete ? 1.0F : site.growth(level);
-		List<Enderman> own = endermenAt(level, site);
+		List<Enderman> own = ownEndermen(level, site);
 		int present = own.size();
 		boolean bottleneck = false;
 		if (present >= cap(complete, growth)) {
@@ -153,6 +175,7 @@ public final class EndermanSpawning {
 				continue;
 			}
 			((EndermanAccess) enderman).brm$markCairnSpawn();
+			((EndermanAccess) enderman).brm$setHome(site.origin());
 			enderman.finalizeSpawn(level, level.getCurrentDifficultyAt(cell), EntitySpawnReason.NATURAL, null);
 			giveJob(level, enderman, site, complete, bottleneck, random);
 			return level.tryAddFreshEntityWithPassengers(enderman) ? enderman : null;
