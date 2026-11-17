@@ -131,8 +131,10 @@ public final class EndermanSpawning {
 		for (int i = 0; i < EndermanTuning.SPAWN_TRIES; i++) {
 			double angle = random.nextDouble() * Math.PI * 2.0;
 			double distance = Mth.lerp(random.nextDouble(), minDistance, maxDistance);
-			int x = Mth.floor(site.origin().getX() + Math.cos(angle) * distance);
-			int z = Mth.floor(site.origin().getZ() + Math.sin(angle) * distance);
+			// From the centre of the origin block: from its corner the ring sat half a block off toward -x/-z and a
+			// spawn could land 8+ blocks out (bug found by the flaky spawn test, 2026-11-16).
+			int x = Mth.floor(site.origin().getX() + 0.5 + Math.cos(angle) * distance);
+			int z = Mth.floor(site.origin().getZ() + 0.5 + Math.sin(angle) * distance);
 			if (!level.hasChunk(x >> 4, z >> 4)) {
 				continue;
 			}

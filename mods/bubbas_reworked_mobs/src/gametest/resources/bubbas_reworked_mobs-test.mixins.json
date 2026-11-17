@@ -5,7 +5,11 @@
 	"mixins": [
 		"CreeperAccessor",
 		"EndermanAccessor",
-		"RefuseSpawnMixin"
+		"RefuseSpawnMixin",
+		"FailureContextMixin",
+		"TestAreaCleanupMixin",
+		"MobAccessor",
+		"FrozenClockMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

@@ -345,7 +345,7 @@ public class EndermanGameTest {
 					|| spawned.size() == EndermanSpawning.cap(false, site.growth(level)) + 1 && spawned.get(spawned.size() - 1).getCarriedBlock() != null, "an unfinished site should spawn up to its cap, got " + spawned.size() + " (nearest player " + level.getNearestPlayer(site.origin().getX(), site.origin().getY(), site.origin().getZ(), 40.0, false) + ", light " + level.getMaxLocalRawBrightness(site.origin().east(5)) + ", sky " + level.getSkyDarken() + ")");
 			for (Enderman e : spawned) {
 				double d = Math.sqrt(e.blockPosition().distSqr(site.origin().atY(e.getBlockY())));
-				helper.assertTrue(d >= 3.0 && d <= 8.0, "spawned " + d + " blocks out");
+				helper.assertTrue(d >= 3.0 && d <= 8.0, "spawned " + d + " blocks out, at " + e.blockPosition().subtract(site.origin()).toShortString() + " from the site");
 			}
 			// Jobs for newcomers: most carry one of the unfinished cairn's missing blocks (going in now when it can).
 			int builders = 0;

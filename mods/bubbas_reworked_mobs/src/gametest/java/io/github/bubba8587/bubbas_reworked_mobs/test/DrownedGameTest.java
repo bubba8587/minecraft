@@ -275,10 +275,26 @@ public class DrownedGameTest {
 	public void swimsToALurkSpotNearThePlayer(GameTestHelper helper) {
 		Drowned drowned = drowned(helper, 16.5, 1.0, 8.5);
 		ServerPlayer player = playerOnLand(helper, 2.5, 8.5, 90.0F, 0.0F);
+		StringBuilder trace = new StringBuilder();
+		helper.onEachTick(() -> {
+			if (helper.getTick() % 20 == 0) {
+				net.minecraft.world.level.pathfinder.Path p = drowned.getNavigation().getPath();
+				trace.append(" t").append(helper.getTick()).append(String.format("(%.2f,%.2f,%.2f)", helper.relativeVec(drowned.position()).x, helper.relativeVec(drowned.position()).y, helper.relativeVec(drowned.position()).z))
+						.append(mind(drowned).state()).append(" spot=").append(mind(drowned).spot() == null ? null : helper.relativePos(mind(drowned).spot().floor()))
+						.append(" nav=").append(drowned.getNavigation().getClass().getSimpleName()).append(p == null ? " nopath" : " path " + p.getNextNodeIndex() + "/" + p.getNodeCount() + " end " + helper.relativePos(p.getTarget()))
+						.append(" wanted=").append(drowned.getMoveControl().hasWanted() ? String.format("%.2f,%.2f,%.2f", drowned.getMoveControl().getWantedX() - helper.absoluteVec(Vec3.ZERO).x, drowned.getMoveControl().getWantedY() - helper.absoluteVec(Vec3.ZERO).y, drowned.getMoveControl().getWantedZ() - helper.absoluteVec(Vec3.ZERO).z) : "none")
+						.append(" speed=").append(String.format("%.3f", drowned.getSpeed())).append(" noGrav=").append(drowned.isNoGravity()).append(" hcol=").append(drowned.horizontalCollision).append(" vcol=").append(drowned.verticalCollision).append(" ai=").append(drowned.isEffectiveAi())
+						.append(p == null || helper.getTick() != 40 ? "" : " nodes=" + java.util.stream.IntStream.range(0, p.getNodeCount()).mapToObj(i -> helper.relativePos(p.getNodePos(i)).toShortString()).toList())
+						.append(" age=").append(drowned.tickCount).append(" removed=").append(drowned.getRemovalReason()).append(" alive=").append(drowned.isAlive())
+						.append(" entTicking=").append(helper.getLevel().getChunkSource().chunkMap.getDistanceManager().inEntityTickingRange(drowned.chunkPosition().pack()))
+						.append(" passenger=").append(drowned.isPassenger()).append(" vehicle=").append(drowned.getVehicle())
+						.append(" swim=").append(drowned.isSwimming()).append(" under=").append(drowned.isUnderWater()).append(" v=").append(String.format("%.3f,%.3f,%.3f", drowned.getDeltaMovement().x, drowned.getDeltaMovement().y, drowned.getDeltaMovement().z));
+			}
+		});
 		helper.succeedWhen(() -> {
 			face(player, 90.0F, 0.0F);
 			DrownedMind mind = mind(drowned);
-			helper.assertTrue(mind.state() == DrownedMind.State.LURK, "should reach a lurk spot, state " + mind.state());
+			helper.assertTrue(mind.state() == DrownedMind.State.LURK, "should reach a lurk spot, state " + mind.state() + (helper.getTick() > 395 ? " TRACE" + trace : ""));
 			Vec3 rel = helper.relativeVec(drowned.position());
 			// Any 2-deep column within 3 blocks of land is a spot: by the bank (facing -x) or by the pool's side walls,
 			// which are 1-block piers you can stand on (facing +z or -z). Flaky until 2026-11-16: this asserted the bank.

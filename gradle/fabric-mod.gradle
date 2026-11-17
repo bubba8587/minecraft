@@ -128,7 +128,13 @@ tasks.matching { it.name == 'runGameTest' }.configureEach { t ->
 	// reset, so it grew by tens of MB a run (293 MB seen). Start each run from a fresh world.
 	def gametestWorld = file('build/run/gameTest/world')
 	t.doFirst { gametestWorld.deleteDir() }
+	// Speed: -PgametestFilter=<selector> runs only the matching tests (vanilla's selector, wildcards allowed, e.g.
+	// "bubbas_reworked_mobs-test:grab_loot_game_test_*"), for chasing one test. A filtered pass is no full pass, so it
+	// records no marker.
+	def gametestFilter = providers.gradleProperty('gametestFilter')
+	if (gametestFilter.isPresent()) t.systemProperty('fabric-api.gametest.filter', gametestFilter.get())
 	t.doLast {
+		if (gametestFilter.isPresent()) return
 		def m = gametestMarker.get().asFile
 		m.parentFile.mkdirs()
 		m.text = fingerprintOf(gametestFingerprintFiles) + ' ' + suite + '\n'

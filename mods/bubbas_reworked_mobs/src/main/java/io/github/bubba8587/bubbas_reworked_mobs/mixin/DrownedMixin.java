@@ -155,6 +155,25 @@ abstract class DrownedMixin extends Zombie implements DrownedAccess {
 		}
 	}
 
+	/**
+	 * Swimming to its spot, a drowned rises over a ledge it swims into. The move control steers it to the next path
+	 * node's height, which at a pit's lip is exactly the ledge's top, so it eased toward that height from below and
+	 * hovered for good with its feet a hair under the lip, pressed against it (seen as a flaky test, 2026-11-16).
+	 * Vanilla's own fix (LivingEntity#jumpOutOfFluid) only fires with open air above, and vanilla drowned skip it while
+	 * swimming anyway. So: blocked sideways, heading level or up, room above: drift up a little.
+	 */
+	@Inject(method = "travelInWater", at = @At("TAIL"))
+	private void brm$climbLedges(Vec3 input, double baseGravity, boolean isFalling, double oldY, CallbackInfo ci) {
+		if (level().isClientSide() || brm$vanilla || !brm$mind().wantsToSwim() || !horizontalCollision || !isUnderWater()
+				|| !getMoveControl().hasWanted() || getMoveControl().getWantedY() < getY() - 0.1) {
+			return;
+		}
+		Vec3 movement = getDeltaMovement();
+		if (movement.y < DrownedTuning.LEDGE_RISE_SPEED && level().noCollision(this, getBoundingBox().move(0.0, 0.6, 0.0))) {
+			setDeltaMovement(movement.x, DrownedTuning.LEDGE_RISE_SPEED, movement.z);
+		}
+	}
+
 	/** Upright or lying (the synced swimming flag, which the client draws): lying swimming and crawling, upright lurking and dragging in water. */
 	@Inject(method = "updateSwimming", at = @At("HEAD"), cancellable = true)
 	private void brm$posture(CallbackInfo ci) {

@@ -99,6 +99,23 @@ public class BubbasReworkedMobsGameTest {
 		}
 	}
 
+	/**
+	 * Records what first woke {@code sleeper} (where the noise came from, and who made it), so a test that fails
+	 * because a sleeper woke says why.
+	 */
+	private static String[] watchWake(GameTestHelper helper, SleeperBlockEntity sleeper) {
+		String[] cause = {"nothing"};
+		helper.onEachTick(() -> {
+			if (cause[0].equals("nothing") && sleeper.isWakePending()) {
+				Vec3 from = sleeper.getWakeSource();
+				net.minecraft.world.entity.Entity who = sleeper.getWaker() == null ? null : helper.getLevel().getEntity(sleeper.getWaker());
+				cause[0] = "noise from " + (from == null ? "?" : helper.relativeVec(from)) + " by " + (who == null ? sleeper.getWaker() : who.getType().toShortString())
+						+ " on tick " + helper.getTick();
+			}
+		});
+		return cause;
+	}
+
 	private static void remove(GameTestHelper helper, ServerPlayer player) {
 		helper.getLevel().getServer().getPlayerList().remove(player);
 	}
@@ -182,10 +199,11 @@ public class BubbasReworkedMobsGameTest {
 	public void sneakingNearbyDoesNotWakeSleeper(GameTestHelper helper) {
 		floor(helper);
 		ServerPlayer player = standingPlayer(helper, new BlockPos(4, 1, 1), true);
-		placeSleeper(helper, UndeadVariant.SKELETON, SLEEPER, SleeperPose.SITTING, ALWAYS);
+		String[] woke = watchWake(helper, placeSleeper(helper, UndeadVariant.SKELETON, SLEEPER, SleeperPose.SITTING, ALWAYS));
 		walk(player, 12);
 		helper.assertTrue(player.isSteppingCarefully(), "player not sneaking");
 		helper.runAfterDelay(40, () -> {
+			helper.assertTrue(woke[0].equals("nothing"), "the sleeper woke: " + woke[0]);
 			helper.assertBlockPresent(ModBlocks.sleeper(UndeadVariant.SKELETON), SLEEPER);
 			helper.assertFalse(helper.getBlockEntity(SLEEPER, SleeperBlockEntity.class).isWakePending(), "sneaking woke the sleeper");
 			// The same player stops sneaking: now it hears them (so the test above can't pass by accident).
@@ -206,9 +224,10 @@ public class BubbasReworkedMobsGameTest {
 			}
 		}
 		ServerPlayer player = standingPlayer(helper, new BlockPos(5, 1, 1), false);
-		placeSleeper(helper, UndeadVariant.ZOMBIE, SLEEPER, SleeperPose.LYING, ALWAYS);
+		String[] woke = watchWake(helper, placeSleeper(helper, UndeadVariant.ZOMBIE, SLEEPER, SleeperPose.LYING, ALWAYS));
 		walk(player, 16);
 		helper.runAfterDelay(20, () -> {
+			helper.assertTrue(woke[0].equals("nothing"), "the sleeper woke: " + woke[0]);
 			helper.assertBlockPresent(ModBlocks.sleeper(UndeadVariant.ZOMBIE), SLEEPER);
 			helper.assertFalse(helper.getBlockEntity(SLEEPER, SleeperBlockEntity.class).isWakePending(), "heard through wool");
 			remove(helper, player);

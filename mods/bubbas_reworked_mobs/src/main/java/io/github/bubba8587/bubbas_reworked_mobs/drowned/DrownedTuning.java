@@ -46,6 +46,8 @@ public final class DrownedTuning {
 	public static final double ARRIVE_DISTANCE = 1.5;
 	/** Swimming to its spot: speed modifier for vanilla's drowned swim control. */
 	public static final double TRAVEL_SPEED = 1.2;
+	/** Swimming into a ledge it's heading over: rises at this speed (blocks a tick; with water drag about 0.4 block in all). */
+	public static final double LEDGE_RISE_SPEED = 0.04;
 
 	// --- lurking ----------------------------------------------------------------------------------
 	/** Lurking: its eyes this far above the water's surface (owner: only the eyes and the top of the head show, the waterline just under the eyes; it floats a little off the floor). */

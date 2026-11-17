@@ -36,16 +36,13 @@ public class SleeperCalmGameTest {
 		return helper.getLevel().getGameTime();
 	}
 
-	/**
-	 * Core. A sleeper in the dark takes noise in full; with a glowstone block next to it (light 14) it takes x0.7.
-	 * The test server's light engine catches up slowly (light was still 0 after 40 ticks), hence the long timeout.
-	 */
 	/** Core part: a sleeper in the dark takes noise in full (reads the real light; 0 is the light engine's default). */
 	public void darkSleeperAtFullSensitivity(GameTestHelper helper) {
 		SleeperBlockEntity sleeper = sleeper(helper, new BlockPos(4, 1, 4));
 		helper.assertTrue(sleeper.effectiveSensitivity(helper.getLevel()) == 1.0F, "dark sleeper not at full sensitivity");
 	}
 
+	/** Milestone: with a glowstone block next to it (light 14) a sleeper takes noise x0.7, through the real light engine. */
 	public void strongLightCalmsSleepers(GameTestHelper helper) {
 		BlockPos pos = new BlockPos(4, 1, 4);
 		SleeperBlockEntity sleeper = sleeper(helper, pos);
@@ -64,7 +61,37 @@ public class SleeperCalmGameTest {
 		helper.succeedWhen(() -> helper.assertTrue(
 				Math.abs(sleeper.effectiveSensitivity(helper.getLevel()) - UndeadTuning.LIGHT_CALM_FACTOR) < 1.0E-4F,
 				"lit sleeper sensitivity: " + sleeper.effectiveSensitivity(helper.getLevel()) + ", block light "
-						+ helper.getLevel().getBrightness(LightLayer.BLOCK, helper.absolutePos(pos))));
+						+ helper.getLevel().getBrightness(LightLayer.BLOCK, helper.absolutePos(pos)) + ", at the lamp "
+						+ helper.getLevel().getBrightness(LightLayer.BLOCK, lamp) + (helper.getTick() >= 598 ? lightEngineState(helper) : "")));
+	}
+
+	/**
+	 * Why light never arrived, for the failure message: the light engine's own queue. Seen 2026-11-16 (before the test
+	 * server's clock was frozen, not since): an update scheduled but never run, so the whole level's light stood still.
+	 * Also dumps the worker threads to the log, to see what holds the light executor if it happens again.
+	 */
+	private static String lightEngineState(GameTestHelper helper) {
+		StringBuilder threads = new StringBuilder();
+		Thread.getAllStackTraces().forEach((thread, stack) -> {
+			if (thread.getName().startsWith("Worker") || java.util.Arrays.stream(stack).anyMatch(f -> f.getClassName().contains("Light"))) {
+				threads.append("\n THREAD ").append(thread.getName()).append(' ').append(thread.getState());
+				for (int i = 0; i < Math.min(30, stack.length); i++) {
+					threads.append("\n   at ").append(stack[i]);
+				}
+			}
+		});
+		System.out.println("LIGHT ENGINE THREADS" + threads);
+		try {
+			Object engine = helper.getLevel().getChunkSource().getLightEngine();
+			java.lang.reflect.Field scheduled = net.minecraft.server.level.ThreadedLevelLightEngine.class.getDeclaredField("scheduled");
+			scheduled.setAccessible(true);
+			java.lang.reflect.Field tasks = net.minecraft.server.level.ThreadedLevelLightEngine.class.getDeclaredField("lightTasks");
+			tasks.setAccessible(true);
+			return "; light engine: update scheduled " + scheduled.get(engine) + ", queued tasks " + ((java.util.List<?>) tasks.get(engine)).size()
+					+ " (threads in the log)";
+		} catch (ReflectiveOperationException e) {
+			return "; light engine: " + e;
+		}
 	}
 
 	/**
