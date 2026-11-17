@@ -296,6 +296,7 @@ The Warden and the debuffs carry on.
 - **Client part `factories`:** the look shots plus:
   - `factory-countdown`: a deactivated zombie on the pad mid-count;
   - `factory-lift`: all lamps lit, lifted;
+  - `factory-burst`: the moment it fires, the departure burst over the pad (preview `docs/previews/factories/fabricator-burst.png`);
   - `factory-arrival`: the zombie limp on the surface at night in its particles;
   - `factory-worldgen` and `factory-city-door(-nightvision)`: the natural Fabricator nearest spawn and its doorway, with the "real ancient city there: true" check printed.
 - `MobFactoryGameTest.officeGemsCarryTheirEffect` (milestone): with Infused Gems, office-chest gems carry their effect component (bug 2026-11-16: the gem entries used the pre-26.x `functions` key, which 26.3 ignores, so they came out blank).

@@ -115,6 +115,9 @@ public class FactoriesClientGameTest implements FabricClientGameTest {
 		}
 		context.waitTicks(12);
 		hudlessShot(context, server, "factory-lift");
+		// The moment it fires: the departure burst over the pad (it fires 20 ticks into the lift).
+		context.waitTicks(9);
+		hudlessShot(context, server, "factory-burst");
 		// Find the mob that went up, while it lies limp in its particles.
 		net.minecraft.world.phys.Vec3 arrived = null;
 		for (int i = 0; i < 1200 && arrived == null; i++) {
