@@ -55,10 +55,10 @@ Charged creepers keep vanilla's current suicide-bomber behavior.
 
 **Watching (`CreeperWatchGoal`, `CoverFinder`).**
 - *Peek spots, "halfway behind a wall":* worked out from the watched entity's eyes. A spot is a floor cell where, sliding sideways across the line of sight, the view of the creeper's eyes goes from clear to blocked by any collision shape (trunks, walls, boulders; leaves count, like vanilla line of sight). Half-hidden: its middle 0.05 blocks on the open side of that edge (eyes peek, about half the body is behind cover). Hidden: 0.27 past the edge (body 0.6 wide: about 95 % behind).
-- Search: cells within 5 blocks (11 x 11, 5 heights) that are 6.5-13 blocks from the target and have something solid at head height within 2 cells on the target's side; best 12 by "distance near 7.5, short walk" get the raycast test (7 + 3 rays each). At most once a second, only while it has no spot. A held spot is re-checked every 10 ticks (the target moves).
-- *Peekaboo (owner, 2026-11-16):* while it sits at its spot and the watched player is looking within 45 degrees of it, it slides into the hidden place; when they look away it eases back out to half. Slides are 0.08 blocks a tick, sideways, still staring.
-- *Open ground (C5):* no cover in reach: it walks up to 6.5 blocks ("uncomfortably close", just outside a sprint-and-hit) and stares. Closer than 5.5 and it backs away (speed x1.2), so dashing at it makes it back up. Out of sight for 1 s (and no spot), it walks toward the target to see it again.
-- *Sneaking up:* a sneaking player within 12 blocks who is getting closer makes it look for cover farther away (1.5-8 blocks beyond its current distance) and sit hidden there, staring; with no cover it backs away.
+- Search (owner, 2026-11-16: they seek out walls much farther off and stay farther away): every cell within 5 blocks (11 x 11), plus 72 random cells, half within 14 blocks of the creeper and half on its side of the ring of wanted distances round the target (within 75 degrees of its bearing, so it never crosses in front), at most 22 blocks' walk; cells 10-22 blocks from the target with something solid at head height within 2 cells on the target's side; best 16 by "distance near 15, then a short walk (x0.3)" get the raycast test (7 + 3 rays each). At most once a second, only while it has no spot. A held spot is re-checked every 10 ticks (the target moves). Its navigation plans paths up to 32 blocks (`setRequiredPathLength`; vanilla: its 16-block follow range; targeting range unchanged).
+- *Peekaboo (owner, 2026-11-16):* while it sits at its spot and the watched player is looking within 45 degrees of any of five points on its body or on its half-hidden place (`sense/Gaze`: a cone round several points, not one line to its eyes; no sight check, so tucked away it stays hidden while you look its way), it slides into the hidden place; when they look away it eases back out to half. Slides are 0.08 blocks a tick, sideways, still staring.
+- *Open ground (C5, distances reworked by the owner 2026-11-16: "far too close"):* no cover in reach: it holds about 12 blocks off and stares. Looked at (the cone above) within 16 blocks, it edges away. Closer than 10 and it backs away (speed x1.2), so dashing at it makes it back up. Out of sight for 1 s (and no spot), it walks toward the target to see it again.
+- *Sneaking up:* a sneaking player within 18 blocks who is getting closer makes it look for cover farther away (1.5-8 blocks beyond its current distance) and sit hidden there, staring; with no cover it backs away.
 
 **Blindness:** a creeper with the vanilla Blindness effect senses nothing: meter only drains, watches nothing, ignores hits, and a hiss in progress defuses. Infused Gems' Blindness gems reach it only when they apply the vanilla effect (no gem-specific code; nothing to do when the mod is absent).
 
@@ -66,7 +66,7 @@ Charged creepers keep vanilla's current suicide-bomber behavior.
 
 **Spawning (owner, 2026-11-16).**
 - Vanilla's random natural creeper spawns are blocked (`SpawnStateMixin`, same hook as the monster cap cut). Creepers from a structure's own spawn list, spawners, trial spawners, eggs and commands are untouched.
-- Instead each player gets **one** "natural" watcher (per player, owner's answer): every 10 s at night (`isDarkOutside`), per player (not spectators) with no watcher of their own within 48 blocks, up to 16 random tries for a spot 10-15 blocks away, outside 70 degrees of where they're looking, that passes vanilla's own rules (the biome's natural monster list includes creepers, the creeper's spawn placement and light/darkness rule) and is a peek spot from the player's eyes whose hidden place is out of their sight. It spawns there hidden, already watching the player, then eases out to half-hidden. Turn round fast and you can catch it half behind the tree; it ducks back when you look at it.
+- Instead each player gets **one** "natural" watcher (per player, owner's answer): every 10 s at night (`isDarkOutside`), per player (not spectators) with no watcher of their own within 48 blocks, up to 16 random tries for a spot 15-21 blocks away, outside 70 degrees of where they're looking, that passes vanilla's own rules (the biome's natural monster list includes creepers, the creeper's spawn placement and light/darkness rule) and is a peek spot from the player's eyes whose hidden place is out of their sight. It spawns there hidden, already watching the player, then eases out to half-hidden. Turn round fast and you can catch it half behind the tree; it ducks back when you look at it.
 - A watcher remembers whose it is (persistent attachment `bubbas_reworked_mobs:watcher_for`), so reloads keep the one-per-player count; one more than 48 blocks from its player no longer counts as theirs. Watchers despawn like any vanilla creeper (not persistent).
 - Vanilla's `spawn_mobs` and `spawn_monsters` rules and Peaceful turn it off. New game rule `bubbas_reworked_mobs:watcher_creepers` (default true, "Creepers spawn as watchers"): false brings vanilla's random spawns back and stops ours (for spawn-control mods). Off on the game test server (tests call the spawner directly).
 
@@ -84,14 +84,14 @@ Charged creepers keep vanilla's current suicide-bomber behavior.
 | Near-miss | path within 2 blocks, +25 once per projectile (four snowballs) |
 | After defusing | meter 60 |
 | Defuse range | 7 blocks (vanilla) |
-| Field of view / notice speed / watch range | 120 degrees / 0.03 blocks/tick / 16 blocks (vanilla follow range) |
+| Field of view / notice speed / watch range | 120 degrees / 0.03 blocks/tick / 24 blocks (paths up to 32) |
 | Non-player watched for | 15 s |
-| Uncomfortably close / backs off under | 6.5 / 5.5 blocks |
-| Peek spots | 6.5-13 blocks from target, within 5 of the creeper |
-| Peekaboo look cone | 45 degrees |
+| Open ground: holds / backs off under / edges back to when looked at | 12 / 10 / 16 blocks |
+| Peek spots | 10-22 blocks from target (best 15); every cell within 5 of the creeper plus 72 random ones up to 22 blocks' walk |
+| Peekaboo look cone | 45 degrees round any of 5 body points |
 | Slide speed | 0.08 blocks a tick |
-| Sneak notice | 12 blocks |
-| Watcher spawning | 1 per player, every 10 s at night, 10-15 blocks, outside 70 degrees of view, released beyond 48 blocks |
+| Sneak notice | 18 blocks |
+| Watcher spawning | 1 per player, every 10 s at night, 15-21 blocks, outside 70 degrees of view, released beyond 48 blocks |
 
 ## Builder's choices (the owner may want to change these)
 
@@ -118,4 +118,4 @@ Core (every build, `ReworkedMobsCoreGameTest`): `creeperHitsFillTheMeterAndItDra
 
 `CreeperClientGameTest` (client part `creepers`): screenshots `creeper-peek` (from the watched armor stand: half behind a one-log tree), `creeper-peek-side`, `creeper-hidden` (player looking at it), `creeper-caught` (looked away, then straight back).
 
-Not yet tested (objectives): riders and mounts counted once; knockback toward it startles; a sneaking player closing in makes it back behind cover; it repositions when the target leaves its view; it backs off when dashed at in the open; gliding with elytra startles; the game rule off brings vanilla spawns back.
+Not yet tested (objectives): with cover 18 blocks off and none nearer, it walks there (far cover); in the open it holds 12 and edges back while looked at; peekaboo triggers when the player looks within 45 degrees of its edge, not only its eyes; riders and mounts counted once; knockback toward it startles; a sneaking player closing in makes it back behind cover; it repositions when the target leaves its view; it backs off when dashed at in the open; gliding with elytra startles; the game rule off brings vanilla spawns back.

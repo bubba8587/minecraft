@@ -131,16 +131,40 @@ public final class FabricatorMobs {
 		arriveParticles(level, Vec3.atBottomCenterOf(to));
 	}
 
+	/** Leaving the pad (owner, 2026-11-16: it was underwhelming): a burst over the body, a ring blown outward, streaks shot upward. */
 	public static void departParticles(ServerLevel level, Vec3 at) {
-		level.sendParticles(ParticleTypes.REVERSE_PORTAL, at.x, at.y + 1.0, at.z, 40, 0.5, 1.0, 0.5, 0.05);
-		level.playSound(null, at.x, at.y, at.z, SoundEvents.ENDERMAN_TELEPORT, SoundSource.HOSTILE, 1.0F, 0.6F);
+		burst(level, at);
+		// Streaks shooting straight up toward the dripper (count 0: the offsets are a velocity).
+		for (int i = 0; i < 24; i++) {
+			double x = at.x + (level.getRandom().nextDouble() - 0.5) * 1.2;
+			double z = at.z + (level.getRandom().nextDouble() - 0.5) * 1.2;
+			level.sendParticles(ParticleTypes.END_ROD, x, at.y + level.getRandom().nextDouble() * 2.0, z, 0, 0.0, 1.0, 0.0, 0.6 + level.getRandom().nextDouble() * 0.6);
+		}
+		level.playSound(null, at.x, at.y, at.z, SoundEvents.ENDERMAN_TELEPORT, SoundSource.HOSTILE, 1.6F, 0.5F);
+		level.playSound(null, at.x, at.y, at.z, SoundEvents.BEACON_DEACTIVATE, SoundSource.BLOCKS, 1.2F, 1.4F);
 	}
 
+	/** Arriving on the surface: the same burst, streaks falling in, and the sound. */
 	public static void arriveParticles(ServerLevel level, Vec3 at) {
-		level.sendParticles(ParticleTypes.REVERSE_PORTAL, at.x, at.y + 1.0, at.z, 80, 0.6, 1.2, 0.6, 0.08);
-		level.sendParticles(ParticleTypes.PORTAL, at.x, at.y + 0.5, at.z, 60, 0.8, 0.4, 0.8, 0.6);
-		level.sendParticles(ParticleTypes.SCULK_SOUL, at.x, at.y + 0.5, at.z, 10, 0.5, 0.5, 0.5, 0.03);
-		level.playSound(null, at.x, at.y, at.z, SoundEvents.ENDERMAN_TELEPORT, SoundSource.HOSTILE, 1.4F, 0.5F);
+		burst(level, at);
+		for (int i = 0; i < 16; i++) {
+			double x = at.x + (level.getRandom().nextDouble() - 0.5) * 1.2;
+			double z = at.z + (level.getRandom().nextDouble() - 0.5) * 1.2;
+			level.sendParticles(ParticleTypes.END_ROD, x, at.y + 3.0 + level.getRandom().nextDouble() * 2.0, z, 0, 0.0, -1.0, 0.0, 0.4 + level.getRandom().nextDouble() * 0.4);
+		}
+		level.playSound(null, at.x, at.y, at.z, SoundEvents.ENDERMAN_TELEPORT, SoundSource.HOSTILE, 1.6F, 0.5F);
+	}
+
+	/** A dense cloud over a mob's body and a ring of portal particles blown out along the ground. */
+	private static void burst(ServerLevel level, Vec3 at) {
+		level.sendParticles(ParticleTypes.REVERSE_PORTAL, at.x, at.y + 1.0, at.z, 120, 0.5, 1.0, 0.5, 0.1);
+		level.sendParticles(ParticleTypes.PORTAL, at.x, at.y + 0.5, at.z, 90, 0.8, 0.6, 0.8, 0.8);
+		level.sendParticles(ParticleTypes.SCULK_SOUL, at.x, at.y + 0.8, at.z, 16, 0.5, 0.7, 0.5, 0.05);
+		level.sendParticles(ParticleTypes.WITCH, at.x, at.y + 1.0, at.z, 30, 0.4, 0.8, 0.4, 0.2);
+		for (int i = 0; i < 32; i++) {
+			double angle = i * Math.PI * 2.0 / 32;
+			level.sendParticles(ParticleTypes.REVERSE_PORTAL, at.x, at.y + 0.2, at.z, 0, Math.cos(angle), 0.05, Math.sin(angle), 0.45);
+		}
 	}
 
 	/**

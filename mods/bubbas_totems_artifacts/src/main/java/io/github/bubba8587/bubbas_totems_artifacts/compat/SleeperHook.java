@@ -2,6 +2,7 @@
 package io.github.bubba8587.bubbas_totems_artifacts.compat;
 
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -42,6 +43,11 @@ public interface SleeperHook {
 
 	/** Ends {@code source}'s keep-endermen-out area. */
 	default void releaseEndermen(ServerLevel level, Object source) {
+	}
+
+	/** A ward leaves this mob alone: a Reworked Mobs Fabricator mob still deactivated (limp, waiting to be teleported). */
+	default boolean wardIgnores(Entity entity) {
+		return false;
 	}
 
 	/** Squared distance to the nearest sleeper within {@code range} (client or server), or {@code Double.MAX_VALUE}. */

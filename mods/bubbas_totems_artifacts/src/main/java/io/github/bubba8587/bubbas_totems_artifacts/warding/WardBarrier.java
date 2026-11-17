@@ -4,6 +4,7 @@ package io.github.bubba8587.bubbas_totems_artifacts.warding;
 import java.util.Map;
 import java.util.WeakHashMap;
 
+import io.github.bubba8587.bubbas_totems_artifacts.compat.SleeperHook;
 import net.minecraft.network.protocol.game.ClientboundMoveVehiclePacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -44,9 +45,12 @@ final class WardBarrier {
 	private WardBarrier() {
 	}
 
-	/** Monsters (all treated the same) and happy ghasts are kept out of wards. */
+	/**
+	 * Monsters (all treated the same) and happy ghasts are kept out of wards; not a Reworked Mobs Fabricator's limp,
+	 * deactivated mobs (owner, 2026-11-16: a ward stops a Fabricator's spawning, not its teleporter).
+	 */
 	static boolean keptOut(Entity entity) {
-		return entity instanceof Enemy || entity.getType() == EntityTypes.HAPPY_GHAST;
+		return (entity instanceof Enemy || entity.getType() == EntityTypes.HAPPY_GHAST) && !SleeperHook.get().wardIgnores(entity);
 	}
 
 	/** After a kept-out mob's own tick (it has moved): hold it at the edge of {@code area}. */

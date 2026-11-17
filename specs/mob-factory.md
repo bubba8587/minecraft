@@ -214,7 +214,8 @@ A zombie Ancient Fabricator built with `ancient_fabricator build` under the hub 
 - *Command:* `ancient_fabricator locate` names the nearest one (natural or hand-placed) within 3000 blocks, its mob, and whether it still runs. Hand-placed ones (`here`/`build`) are **saved with the world** (`bubbas_reworked_mobs:fabricator_sites`) and run like natural ones. Per-site state (prepared, Warden spawned, beacon loaded, broken) is in `bubbas_reworked_mobs:fabricator_states`.
 
 **Running** (while a non-spectator player is within 64 of the pad; checked every second; a site stops 2 s after its last player leaves). One count:
-1. At the start of each count the dripper drops its mob. Particles (purple tears, sculk soul) and a bloom sound mark the tip.
+0. **It rests between counts** (owner, 2026-11-16: "a much longer cooldown, not a constant stream, so people don't immediately know what it does"): lamps dark, a faint shimmer over the pad, nothing drops. Each second it wakes with a 1-in-60 chance (about a minute on average; B19: a chance, not a fixed cooldown). A site starts resting when a player arrives, and rests again after every firing. Forced sites (game tests, client shots) never rest.
+1. At the start of each count the dripper drops its mob. A ward over the drop point (a Totem of Warding, e.g. in the floor beacon) stops the drops; the teleporter keeps running, and wards leave deactivated mobs alone (owner, 2026-11-16: "shut down spawn, not teleporter"; Totems & Artifacts asks `api/Fabricators.isDeactivated`). Particles (purple tears, sculk soul) and a bloom sound mark the tip.
 2. The mob appears just under the crying obsidian tip, head clear of it, and falls about 7 blocks onto the pad, **deactivated**:
    - its whole server AI step is skipped: no goals, brain, navigation or look/move/jump control;
    - silent, head hanging (pitch 60), never hurt by the fall;
@@ -227,12 +228,13 @@ A zombie Ancient Fabricator built with `ancient_fabricator build` under the hub 
    - Arrived, it lies limp **2 s** in a column of portal particles (plus a burst and the enderman-teleport sound), then **wakes**.
    - It was made with the `TRIGGERED` spawn reason, so `MobFinalizeSpawnMixin` leaves it reworked (watcher creeper, caretaker enderman, reworked undead); the game test checks a creeper wakes as a watcher.
    - A **player** (or any other living thing) who hopped on rides it up to a surface spot with standing room, any time of day, in the same particles.
-6. **Rate:** one mob per count, 17 s, so about 3.5 a minute while a player is near.
+6. **Rate:** about one mob per 77 s (a minute's rest on average plus the 17 s count) while a player is near.
+   Leaving and arriving (owner: "underwhelming"): a dense portal cloud over the body, a ring of reverse-portal particles blown out along the ground, witch sparkle and sculk souls, 24 end-rod streaks shooting up toward the dripper (16 falling in on arrival), the enderman teleport sound low and a high beacon-off sound.
 7. Peaceful stops drops, and so does the `spawn_monsters` rule (except on the game test server).
 
 **Redstone (F2): powered = stopped**, like a locked hopper.
 - The control is the pad's **lodestone**: power it (a lever, a torch beside it, a redstone block under it). The count doesn't run and the lamps stay dark.
-- The dripper keeps dropping one mob per 17 s, so they **pile up deactivated on the deck, up to 12** (the cap applies always).
+- The dripper keeps dropping at the resting chance (1 in 60 a second), so they **pile up deactivated on the deck, up to 12** (the cap applies always).
 - Deactivated mobs are **persistent** while deactivated (a pile stays when you step away) and lose that when they wake.
 
 **The hidden spawner (F6).** Checked every half second while the site runs. When it's gone:
@@ -271,7 +273,7 @@ The Warden and the debuffs carry on.
 ### Builder's choices (mechanics)
 
 1. **Powered stops the teleporter** (like a hopper). The lodestone is the input.
-2. **Starting rate:** one mob per 17 s count, pile cap 12, 2 s wake, 96-block reach.
+2. **Starting rate:** a rest of about a minute (1 in 60 a second) then a 17 s count, pile cap 12, 2 s wake, 96-block reach.
 3. **Placement:** 150 blocks from the city, deck at -50. The tunnel cuts into the city's outer ring; the doorway 96 from its centre is a guess at where the city's edge is. The first real one looks right in screenshots (a deepslate city wall beside the door), but the owner should walk one.
 4. **Two-layer pyramids** so an Infused Gems beacon gem isn't stuck at Gem Power I: 68 iron blocks per Fabricator.
 5. **Dropped mobs keep sculk quiet?** No: falls are vibrations, so deck sensors twitch. Shriekers only answer players; the passive Warden hears nothing.
@@ -296,7 +298,9 @@ The Warden and the debuffs carry on.
   - `factory-lift`: all lamps lit, lifted;
   - `factory-arrival`: the zombie limp on the surface at night in its particles;
   - `factory-worldgen` and `factory-city-door(-nightvision)`: the natural Fabricator nearest spawn and its doorway, with the "real ancient city there: true" check printed.
+- `MobFactoryGameTest.officeGemsCarryTheirEffect` (milestone): with Infused Gems, office-chest gems carry their effect component (bug 2026-11-16: the gem entries used the pre-26.x `functions` key, which 26.3 ignores, so they came out blank).
 - **Not yet tested (objectives):**
+  - a natural (unforced) site rests before its first drop and between counts; a ward over the drop point stops drops while a deactivated mob already on the pad is still lifted and sent (needs Totems & Artifacts + Reworked Beacons in the test run, or a stand-in ward through `api/Endermen.keepOut`);
   - a player riding the pad lands on the surface;
   - the Warden ignores its jukebox after waking;
   - a woken Warden never digs;

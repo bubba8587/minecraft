@@ -2,6 +2,8 @@
 package io.github.bubba8587.bubbas_totems_artifacts.compat;
 
 import io.github.bubba8587.bubbas_reworked_mobs.api.Endermen;
+import io.github.bubba8587.bubbas_reworked_mobs.api.Fabricators;
+import net.minecraft.world.entity.Entity;
 import io.github.bubba8587.bubbas_reworked_mobs.api.Sleepers;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
@@ -43,6 +45,16 @@ final class ReworkedMobsSleepers implements SleeperHook {
 			Endermen.release(level, source);
 		} catch (LinkageError e) {
 			// As above.
+		}
+	}
+
+	@Override
+	public boolean wardIgnores(Entity entity) {
+		try {
+			return Fabricators.isDeactivated(entity);
+		} catch (LinkageError e) {
+			// An older Reworked Mobs without api/Fabricators: no Fabricator mobs.
+			return false;
 		}
 	}
 

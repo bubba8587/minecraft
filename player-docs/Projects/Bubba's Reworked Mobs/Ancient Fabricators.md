@@ -18,11 +18,12 @@ Every ancient city has a Fabricator next to it, reached through a tunnel cut thr
 
 ## Behavior
 
-While a player is nearby, the roof drops a monster onto the teleporter every few seconds. It lands limp and still. Eight lamps around the teleporter light one by one; when all are lit, whatever stands on the teleporter is lifted a little and sent up to the surface, where monsters wake on dark ground at night. A monster appearing in a burst of portal light is a sign a Fabricator lies beneath. In daylight the teleporter waits until night.
+While a player is nearby, the Fabricator rests in the dark for a while, often a minute or more, then the roof drops a monster onto the teleporter. It lands limp and still. Eight lamps around the teleporter light one by one; when all are lit, whatever stands on the teleporter is lifted a little and sent up to the surface in a burst of light, where monsters wake on dark ground at night. A monster appearing in a burst of portal light is a sign a Fabricator lies beneath. In daylight the teleporter waits until night.
 
 - Monsters can be killed on the teleporter before they are sent.
 - Powering the lodestone at the centre of the teleporter with redstone stops it, and monsters pile up on the deck.
 - A player who steps on the teleporter is sent up to the surface too.
+- A [[Totem of Warding]] warding the Fabricator (for example in its own beacon) stops the roof dropping monsters. The teleporter keeps working, and limp monsters already on the deck are left where they are.
 - A spawner hidden in the roof is what keeps the Fabricator running. Breaking it stops the Fabricator for good.
 
 ## The Warden

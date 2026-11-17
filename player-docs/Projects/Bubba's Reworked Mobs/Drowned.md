@@ -19,7 +19,7 @@ Drowned spawn in water as before, at the reduced rate of all monsters (see [[Mon
 
 ### Lurking
 
-A drowned swims to a shallow spot by the shore, about two blocks deep, and waits there with only its eyes and the top of its head above the water, facing the land. A drowned that someone is looking at sinks out of sight and rises again when they look away. While anyone watches it, it grabs no one.
+A drowned swims to a shallow spot by the shore, about two blocks deep, and waits there with only its eyes and the top of its head above the water, facing the land. A drowned that someone is looking toward sinks out of sight and rises again when they look away. While anyone watches it, it grabs no one. It is never quite still: it drifts a little, and now and then dips under for a moment. When nobody is looking its way it may move to another shallow spot, and it follows a player who walks along the shore, so a drowned that was there a moment ago may be somewhere else when you look back.
 
 ### The grab
 

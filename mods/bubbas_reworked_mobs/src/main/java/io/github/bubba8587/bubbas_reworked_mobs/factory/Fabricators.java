@@ -309,6 +309,11 @@ public final class Fabricators {
 		if (level.getDifficulty() == Difficulty.PEACEFUL || !level.isSpawningMonsters() && !(level.getServer() instanceof net.minecraft.gametest.framework.GameTestServer)) {
 			return;
 		}
+		// A ward over the dripper (a Totem of Warding, e.g. in the Fabricator's own beacon) stops its spawning, not its
+		// teleporter (owner, 2026-11-16). Every ward reaches us through api/Endermen.keepOut.
+		if (io.github.bubba8587.bubbas_reworked_mobs.enderman.EndermanWards.isWarded(level, site.dropPoint())) {
+			return;
+		}
 		int pile = level.getEntitiesOfClass(Mob.class, site.deckArea(), FabricatorMobs::isDeactivated).size();
 		if (pile < FabricatorTuning.PILE_CAP) {
 			FabricatorMobs.drop(level, site);

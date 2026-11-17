@@ -60,6 +60,8 @@ Happy ghasts are kept out too, whether wild or ridden. A happy ghast that a play
 
 Spawners, trial spawners, raids, bosses and commands still spawn monsters as normal, but those monsters do not stay in the ward either. Monsters outside can still shoot in. The ward ends about 5 seconds after the beacon stops working.
 
+With [[Bubba's Reworked Mobs]] installed, a ward over an Ancient Fabricator stops it dropping new monsters, but leaves the limp monsters it already made alone, and its teleporter still sends them up.
+
 ### As a statue
 
 *Main article: [[Totem Statue]]*
