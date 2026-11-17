@@ -4,6 +4,8 @@
 Parked ideas and open items, newest first within each project. Agents add to it when the owner parks something; details live in the linked spec.
 
 ## Bubba's Reworked Mobs
+- **Why challenge a Fabricator? (owner raised 2026-11-16, then skipped the options for now).** Today: two beacons, iron pyramids, office loot, the perfect gem in the floor beacon, farming limp mobs. Options offered: it feeds its region's surface spawns of its mob type (break it, that mob gets rare round there; recommended), capture it as a farm (powered lodestone), a prize found only there (at the intake chamber), office paperwork leading to the next Fabricator. Builder's reject-pit/intake loot is provisional until this is decided. `specs/mob-factory.md`.
+- **Fabricator teleporter test possibly flaky** (`fabricatorSendsItUpAndItWakesReworked`, failed 1 in 3 runs on 2026-11-16, passed on reruns).
 - **Bury-break system:** how buried loot comes out (shovel-only vs breaking by hand, noise, tools). Today: shovel digs it out loudly; breaking by hand also works, slowly like packed dirt. `specs/undead.md`, Loot on display.
 - **Survival players placing items on display** (decor). Owner: "will need care and consideration." Ops-only command for now. `specs/undead.md`, Loot on display.
 - Calming sleepers (owner, 2026-11-15): soul fire and a "lull" game event tag that calm sleepers (light calming and loud bells are built: `specs/undead.md`, Calming sleepers).
