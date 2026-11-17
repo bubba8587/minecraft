@@ -20,6 +20,11 @@ public final class DrownedTuning {
 	/** On land it crawls: its speed is multiplied by 1 + this (vanilla walks upright at full speed). */
 	public static final double LAND_CRAWL_SPEED_BONUS = -0.4;
 
+	// --- natural spawning (owner, 2026-11-16: "a handful of them if you're travelling near the ocean") ---------
+	/** Past the cut monster cap, a natural drowned may still spawn while fewer than this many are within NATURAL_NEAR_RANGE (vanilla's own water, depth and darkness rules still apply). */
+	public static final int NATURAL_NEAR_CAP = 5;
+	public static final double NATURAL_NEAR_RANGE = 48.0;
+
 	// --- waking up: lurk spots near players ------------------------------------------------------
 	/** A drowned with a player this close (any mode but spectator) goes looking for a lurk spot; farther, it is vanilla (wanders). */
 	public static final double ACTIVATE_RANGE = 32.0;

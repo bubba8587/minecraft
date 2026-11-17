@@ -9,11 +9,11 @@
 > | **Health** | Three times normal, heavy armor |
 > | **Tridents** | Not thrown; found in buried treasure |
 
-A **drowned** in [[Bubba's Reworked Mobs]] is a rare, tough lurker. Instead of hitting players, it waits in shallow water by the shore, grabs anyone who turns their back to the water, and drags them into deep water to drown.
+A **drowned** in [[Bubba's Reworked Mobs]] is a tough lurker. Instead of hitting players, it waits in shallow water by the shore, grabs anyone who turns their back to the water, and drags them into deep water to drown.
 
 ## Spawning
 
-Drowned spawn in water as before, at the reduced rate of all monsters (see [[Monster Spawning]]), and zombies that drown still turn into drowned. Drowned from spawners and trial spawners behave as normal drowned.
+Drowned spawn in water as before. They are not held back by the reduced monster rate (see [[Monster Spawning]]) as much as other monsters: travelling along a coast or river you can expect a handful nearby, up to about five in one stretch of water. Zombies that drown still turn into drowned. Drowned from spawners and trial spawners behave as normal drowned.
 
 ## Behavior
 

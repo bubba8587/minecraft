@@ -4,7 +4,11 @@ package io.github.bubba8587.bubbas_reworked_mobs.spawn;
 import io.github.bubba8587.bubbas_reworked_mobs.registry.ModGameRules;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import io.github.bubba8587.bubbas_reworked_mobs.drowned.DrownedTuning;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.monster.zombie.Drowned;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.NaturalSpawner;
 import net.minecraft.world.attribute.EnvironmentAttributes;
@@ -35,6 +39,12 @@ public final class MonsterCap {
 	public static boolean allows(ServerLevel level, EntityType<?> type, BlockPos pos, int monsters, int spawnableChunks) {
 		if (type.getCategory() != MobCategory.MONSTER || monsters < scaledGlobalCap(level, spawnableChunks)) {
 			return true;
+		}
+		if (type == EntityTypes.DROWNED) {
+			// Drowned have their own allowance past the cut (owner, 2026-11-16: "a handful if you're travelling near the
+			// ocean"; land monsters otherwise fill the cut cap at night): fewer than NATURAL_NEAR_CAP within range.
+			AABB box = new AABB(pos).inflate(DrownedTuning.NATURAL_NEAR_RANGE);
+			return level.getEntitiesOfClass(Drowned.class, box, d -> d.isAlive()).size() < DrownedTuning.NATURAL_NEAR_CAP;
 		}
 		return isStructureSpawn(level, pos);
 	}
