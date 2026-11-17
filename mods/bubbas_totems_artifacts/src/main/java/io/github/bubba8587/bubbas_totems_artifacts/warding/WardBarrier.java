@@ -11,6 +11,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -86,8 +87,8 @@ final class WardBarrier {
 				Vec3 at = mob.position().add(normal.scale(depth(area, mob.position(), normal) + 0.01));
 				mob.setPos(at.x, at.y, at.z);
 				LAST_OUTSIDE.put(mob, new Seen(at, now));
-			} else {
-				motion = motion.add(normal.scale(NUDGE)); // already inside: drift out
+			} else if (!(mob instanceof PathfinderMob walker && WardFleeGoal.isTrapped(walker))) {
+				motion = motion.add(normal.scale(NUDGE)); // already inside: drift out (not one with no way out: it would only press into a wall)
 			}
 		}
 		mob.setDeltaMovement(motion);

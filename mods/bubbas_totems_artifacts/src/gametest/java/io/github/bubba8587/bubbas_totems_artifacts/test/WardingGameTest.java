@@ -269,4 +269,45 @@ public class WardingGameTest {
 		helper.assertTrue(fromEvokers > 25 && fromEvokers < 80, "evokers dropping a Totem of Warding: " + fromEvokers + " of 1000");
 		helper.succeed();
 	}
+
+	/**
+	 * Milestone (bug 2026-11-16, owner: a skeleton in an enclosed beacon ward was "stuck running/jittering"). A skeleton
+	 * and a player shut in a stone room under a ward: with no way out, the skeleton counts as trapped, stops trying to
+	 * leave and isn't pushed into the wall, so it fights (its bow goal runs).
+	 */
+	@GameTest(structure = FIELD, maxTicks = 200)
+	public void trappedInAnEnclosedWardItStillFights(GameTestHelper helper) {
+		// Room inside x 6..14, z 4..12, y 1..3; stone walls and roof round it.
+		for (int x = 5; x <= 15; x++) {
+			for (int z = 3; z <= 13; z++) {
+				for (int y = 1; y <= 4; y++) {
+					boolean wall = x == 5 || x == 15 || z == 3 || z == 13 || y == 4;
+					helper.setBlock(new BlockPos(x, y, z), wall ? net.minecraft.world.level.block.Blocks.STONE.defaultBlockState()
+							: net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
+				}
+			}
+		}
+		ServerLevel level = helper.getLevel();
+		ServerPlayer player = TestSupport.survivalPlayer(helper);
+		Vec3 at = helper.absoluteVec(new Vec3(13.5, 1.0, 8.5));
+		player.snapTo(at.x, at.y, at.z, 90.0F, 0.0F);
+		Vec3 lo = helper.absoluteVec(new Vec3(6, 1, 4));
+		Vec3 hi = helper.absoluteVec(new Vec3(15, 4, 13));
+		AABB room = new AABB(Math.min(lo.x, hi.x), lo.y, Math.min(lo.z, hi.z), Math.max(lo.x, hi.x), hi.y, Math.max(lo.z, hi.z));
+		Object key = new Object();
+		Wards.put(level, key, room, false, 400);
+		var skeleton = helper.spawn(EntityTypes.SKELETON, new BlockPos(7, 1, 8));
+		skeleton.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(net.minecraft.world.item.Items.BOW));
+		skeleton.setPersistenceRequired();
+		helper.runAfterDelay(120, () -> {
+			var running = ((io.github.bubba8587.bubbas_totems_artifacts.mixin.MobAccessor) skeleton).bta$goalSelector().getAvailableGoals().stream()
+					.filter(g -> g.isRunning()).map(g -> g.getGoal().getClass().getSimpleName()).toList();
+			Wards.remove(level, key);
+			level.getServer().getPlayerList().remove(player);
+			helper.assertTrue(WardFleeGoal.isTrapped(skeleton), "with no way out it should count as trapped; running " + running);
+			helper.assertFalse(running.contains("WardFleeGoal"), "still trying to leave: " + running);
+			helper.assertTrue(running.contains("RangedBowAttackGoal"), "it should be fighting: " + running + ", target " + skeleton.getTarget());
+			helper.succeed();
+		});
+	}
 }

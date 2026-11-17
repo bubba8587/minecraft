@@ -27,6 +27,8 @@ public final class WardingTuning {
 	// --- wards (a Totem of Warding in a beacon) --------------------------------------------------
 	/** Every this many ticks, monsters found inside a ward are sent out of it. */
 	public static final int WARD_SWEEP_TICKS = 20;
+	/** A monster inside a ward with no way out (an enclosed room) stops trying to leave, and isn't pushed, for this long, then looks again (10 s). */
+	public static final int TRAPPED_RECHECK_TICKS = 200;
 	/**
 	 * A ward lasts this long after its source last refreshed it, so a ward whose beacon was unloaded or broken lapses.
 	 * One beacon pulse (80 ticks) plus a second of slack.

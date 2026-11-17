@@ -54,7 +54,7 @@ With [[Bubba's Reworked Beacons]] installed, a Totem of Warding placed in a beac
 | Any (1 to 4 layers) | No monsters spawn naturally, phantoms included. No monster gets in: a monster chasing a player stops at the edge, and monsters already inside leave. |
 | 4 layers | Also, with [[Bubba's Reworked Mobs]] installed: sleeping undead inside never wake, whatever the noise. The beacon screen shows this line only when that mod is installed. |
 
-The edge of a ward works like an invisible wall for every monster, including those that do not walk in on foot: phantoms, ghasts, vexes, slimes, magma cubes, blazes, endermen teleporting and monsters knocked toward it all stop at the edge and can slide along it. The wall does no damage. Any monster already inside, such as one there when the ward went up or one from a spawner, drifts out through the nearest side.
+The edge of a ward works like an invisible wall for every monster, including those that do not walk in on foot: phantoms, ghasts, vexes, slimes, magma cubes, blazes, endermen teleporting and monsters knocked toward it all stop at the edge and can slide along it. The wall does no damage. Any monster already inside, such as one there when the ward went up or one from a spawner, drifts out through the nearest side. One shut in with no way out, such as in a walled room under a beacon, gives up trying to leave and fights as normal, checking for a way out every 10 seconds.
 
 Happy ghasts are kept out too, whether wild or ridden. A happy ghast that a player steers into the ward is pushed back outside the edge; the rider can get off and walk in. On a slow connection the rider may see the ghast jump back slightly at the edge.
 

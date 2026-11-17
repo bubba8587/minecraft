@@ -10,6 +10,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.util.DefaultRandomPos;
+import net.minecraft.world.level.pathfinder.Node;
 import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -33,6 +34,7 @@ public final class WardFleeGoal extends Goal {
 	private long scaredUntil;
 	private @Nullable AABB ward;
 	private long leaveUntil;
+	private long trappedUntil;
 	private @Nullable Path path;
 
 	private WardFleeGoal(PathfinderMob mob) {
@@ -85,7 +87,18 @@ public final class WardFleeGoal extends Goal {
 	}
 
 	private boolean leaving() {
-		return ward != null && now() < leaveUntil && ward.contains(mob.position());
+		return ward != null && now() < leaveUntil && now() >= trappedUntil && ward.contains(mob.position());
+	}
+
+	/**
+	 * Inside a ward with no way out (an enclosed room under a beacon pair): it stops trying to leave, and the ward stops
+	 * pushing it, for TRAPPED_RECHECK_TICKS, then looks for a way out again. Before (2026-11-16, owner: "stuck
+	 * running/jittering" in an enclosed beacon ward) it walked to one spot after another inside the room, pressed into
+	 * the wall by the ward's push, and never fought.
+	 */
+	public static boolean isTrapped(PathfinderMob mob) {
+		WardFleeGoal goal = GOALS.get(mob);
+		return goal != null && mob.level().getGameTime() < goal.trappedUntil;
 	}
 
 	@Override
@@ -99,6 +112,15 @@ public final class WardFleeGoal extends Goal {
 		}
 		if (pos == null && leaving()) {
 			pos = DefaultRandomPos.getPosTowards(mob, 16, 7, exitPoint(ward, mob.position()), Math.PI / 2);
+			Path out = pos == null ? null : mob.getNavigation().createPath(pos.x, pos.y, pos.z, 0);
+			Node end = out == null ? null : out.getEndNode();
+			if (end == null || ward.contains(end.x + 0.5, end.y + 0.5, end.z + 0.5)) {
+				// No walk that ends outside the ward: trapped.
+				trappedUntil = now() + WardingTuning.TRAPPED_RECHECK_TICKS;
+				return false;
+			}
+			path = out;
+			return true;
 		}
 		if (pos == null) {
 			return false;
