@@ -240,6 +240,36 @@ public class MobFactoryGameTest {
 		});
 	}
 
+	/**
+	 * With Infused Gems, the office chests' spare gems carry their effect (bug 2026-11-16: the entries used the old
+	 * "functions" key, which 26.3 ignores, so they came out blank). Rolls the table until a few gems turn up.
+	 */
+	@GameTest
+	public void officeGemsCarryTheirEffect(GameTestHelper helper) {
+		if (!io.github.bubba8587.bubbas_reworked_mobs.factory.FabricatorLink.gemsLoaded()) {
+			helper.succeed();
+			return;
+		}
+		ServerLevel level = helper.getLevel();
+		var table = level.getServer().reloadableRegistries().getLootTable(io.github.bubba8587.bubbas_reworked_mobs.factory.FabricatorLoot.OFFICE_WITH_GEMS);
+		var params = new net.minecraft.world.level.storage.loot.LootParams.Builder(level)
+				.withParameter(net.minecraft.world.level.storage.loot.parameters.LootContextParams.ORIGIN, net.minecraft.world.phys.Vec3.ZERO)
+				.create(net.minecraft.world.level.storage.loot.parameters.LootContextParamSets.CHEST);
+		var gemItem = net.minecraft.core.registries.BuiltInRegistries.ITEM.getValue(net.minecraft.resources.Identifier.parse("bubbas_infused_gems:gem"));
+		var gemComponent = net.minecraft.core.registries.BuiltInRegistries.DATA_COMPONENT_TYPE.getValue(net.minecraft.resources.Identifier.parse("bubbas_infused_gems:gem"));
+		int gems = 0;
+		for (int i = 0; i < 300 && gems < 5; i++) {
+			for (var stack : table.getRandomItems(params)) {
+				if (stack.is(gemItem)) {
+					gems++;
+					helper.assertTrue(gemComponent != null && stack.has(gemComponent), "an office gem without its effect: " + stack.getComponents());
+				}
+			}
+		}
+		helper.assertTrue(gems >= 5, "office chests should hold spare gems (" + gems + " in 300 rolls)");
+		helper.succeed();
+	}
+
 	/** Without a beacon mod, the floor beacon's core gives players in the area Mining Fatigue III, Weakness, Slowness. */
 	@GameTest(maxTicks = SETTLE + 120)
 	public void debuffsWithoutReworkedBeacons(GameTestHelper helper) {

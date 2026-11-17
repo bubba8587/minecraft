@@ -60,8 +60,26 @@ public final class DrownedTuning {
 	public static final int SCAN_INTERVAL = 4;
 	/** Things that could look at it or be grabbed are noticed this far (one box query). */
 	public static final double SENSE_RANGE = 16.0;
-	/** Stared at: something within SENSE_RANGE looking within this many degrees of its head, with a clear line of sight. */
-	public static final double STARE_HALF_ANGLE = 30.0;
+	/** Stared at: something within SENSE_RANGE looking within this many degrees of any point of its head or the water round it, with a clear line of sight to that point (Gaze: a cone, not a direct line; owner, 2026-11-16; was 30 to a single point). */
+	public static final double STARE_HALF_ANGLE = 40.0;
+	/** It only moves (changes spot) while nobody looks within this many degrees of it: about the edge of the screen. */
+	public static final double UNSEEN_HALF_ANGLE = 70.0;
+
+	// --- restless lurking (owner, 2026-11-16: not parked in one spot forever) ------------------------
+	/** Unseen, it moves to another lurk spot with a 1-in-this chance a tick (about every 40 s) ... */
+	public static final int SHIFT_ONE_IN = 800;
+	/** ... or 1 in this (about every 4 s) once its nearest player is farther than SHIFT_FOLLOW_DISTANCE from its spot: it keeps up with you along the shore. */
+	public static final int SHIFT_FOLLOW_ONE_IN = 80;
+	public static final double SHIFT_FOLLOW_DISTANCE = 10.0;
+	/** A new spot is at most this far from the drowned (it swims there under the surface). */
+	public static final double SHIFT_MAX_DISTANCE = 16.0;
+	/** Lurking, it drifts this far round its spot's centre, slowly (it isn't a statue). */
+	public static final double SWAY = 0.15;
+	/** Now and then it dips under for a moment: 1 in this a tick (about every 30 s) ... */
+	public static final int DIP_ONE_IN = 600;
+	/** ... for this many ticks plus up to DIP_TICKS_EXTRA more. */
+	public static final int DIP_TICKS = 20;
+	public static final int DIP_TICKS_EXTRA = 40;
 	/** Creative players' stares count (so the owner can try the sinking); creative players are never grabbed (they can't drown). */
 	public static final boolean GRAB_CREATIVE_PLAYERS = false;
 

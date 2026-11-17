@@ -129,7 +129,12 @@ public final class Fabricators {
 				}
 			}
 			for (FabricatorSite site : FORCED.getOrDefault(level, java.util.Set.of())) {
-				running.computeIfAbsent(site, Running::new).seen = time;
+				Running r = running.computeIfAbsent(site, Running::new);
+				r.seen = time;
+				if (!r.forced) {
+					r.forced = true;
+					r.resting = false;
+				}
 			}
 			running.entrySet().removeIf(e -> {
 				if (time - e.getValue().seen > 40) {
@@ -157,11 +162,18 @@ public final class Fabricators {
 		int step;
 		int ticks;
 		int lift = -1;
-		int dropTimer;
 		boolean wasPowered;
+		/** Between counts it rests (dark, nothing drops) until a chance wakes it; it starts resting, so arriving players see nothing at first. */
+		boolean resting = true;
+		/** Forced on (game tests): never rests, so a test sees a count at once. */
+		boolean forced;
 
 		Running(FabricatorSite site) {
 			this.site = site;
+		}
+
+		public boolean resting() {
+			return this.resting;
 		}
 
 		public int step() {
@@ -200,17 +212,30 @@ public final class Fabricators {
 					lamps(level, 0);
 				}
 				this.wasPowered = true;
-				// Stopped: mobs still drop and pile up.
-				if (++this.dropTimer >= FabricatorTuning.DROP_EVERY_TICKS) {
-					this.dropTimer = 0;
+				// Stopped: mobs still drop and pile up, at the same chance as a resting machine wakes.
+				// (Forced on, in tests: once per count's length instead.)
+				if (this.forced ? time % FabricatorTuning.COUNT_TICKS == 0 : time % 20 == 0 && level.getRandom().nextInt(FabricatorTuning.REST_ONE_IN) == 0) {
 					tryDrop(level, this.site);
 				}
 				return;
 			}
 			this.wasPowered = false;
+			if (this.resting) {
+				// Resting (owner, 2026-11-16: not a constant stream, so it isn't obvious what it does): lamps dark, a
+				// faint shimmer over the pad; each second a chance to wake (B19: a chance, no fixed cooldown).
+				if (time % 20 == 0) {
+					BlockPos pad = this.site.pad();
+					level.sendParticles(ParticleTypes.REVERSE_PORTAL, pad.getX() + 0.5, pad.getY() + 0.3, pad.getZ() + 0.5, 1, 0.9, 0.2, 0.9, 0.01);
+					if (level.getRandom().nextInt(FabricatorTuning.REST_ONE_IN) == 0) {
+						this.resting = false;
+					}
+				}
+				if (this.resting) {
+					return;
+				}
+			}
 			if (this.step == 0 && this.ticks == 0 && this.lift < 0) {
 				tryDrop(level, this.site);
-				this.dropTimer = 0;
 			}
 			particles(level);
 			if (this.lift >= 0) {
@@ -227,6 +252,7 @@ public final class Fabricators {
 					this.step = 0;
 					this.ticks = 0;
 					lamps(level, 0);
+					this.resting = !this.forced;
 				}
 				return;
 			}

@@ -162,9 +162,8 @@
           "type": "minecraft:item",
           "name": "bubbas_infused_gems:gem",
           "weight": 3,
-          "functions": [
-            {
-              "function": "minecraft:set_components",
+          "modifier": {
+            "type": "minecraft:set_components",
               "components": {
                 "bubbas_infused_gems:gem": {
                   "effect": "minecraft:mining_fatigue",
@@ -173,16 +172,14 @@
                   "main": 0.8
                 }
               }
-            }
-          ]
+          }
         },
         {
           "type": "minecraft:item",
           "name": "bubbas_infused_gems:gem",
           "weight": 2,
-          "functions": [
-            {
-              "function": "minecraft:set_components",
+          "modifier": {
+            "type": "minecraft:set_components",
               "components": {
                 "bubbas_infused_gems:gem": {
                   "effect": "minecraft:slowness",
@@ -191,16 +188,14 @@
                   "main": 0.8
                 }
               }
-            }
-          ]
+          }
         },
         {
           "type": "minecraft:item",
           "name": "bubbas_infused_gems:gem",
           "weight": 2,
-          "functions": [
-            {
-              "function": "minecraft:set_components",
+          "modifier": {
+            "type": "minecraft:set_components",
               "components": {
                 "bubbas_infused_gems:gem": {
                   "effect": "minecraft:weakness",
@@ -209,16 +204,14 @@
                   "main": 0.8
                 }
               }
-            }
-          ]
+          }
         },
         {
           "type": "minecraft:item",
           "name": "bubbas_infused_gems:gem",
           "weight": 1,
-          "functions": [
-            {
-              "function": "minecraft:set_components",
+          "modifier": {
+            "type": "minecraft:set_components",
               "components": {
                 "bubbas_infused_gems:gem": {
                   "effect": "minecraft:mining_fatigue",
@@ -231,8 +224,7 @@
                   }
                 }
               }
-            }
-          ]
+          }
         }
       ],
       "conditions": [

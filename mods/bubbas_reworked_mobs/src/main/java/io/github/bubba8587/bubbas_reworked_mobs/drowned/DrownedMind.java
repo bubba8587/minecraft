@@ -6,6 +6,7 @@ import java.util.List;
 
 import io.github.bubba8587.bubbas_reworked_mobs.BubbasReworkedMobs;
 import io.github.bubba8587.bubbas_reworked_mobs.meter.Meters;
+import io.github.bubba8587.bubbas_reworked_mobs.sense.Gaze;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ParticleTypes;
@@ -31,9 +32,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
-import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 
@@ -68,7 +67,13 @@ public final class DrownedMind {
 	private @Nullable LivingEntity victim;
 	private @Nullable Vec3 deepTarget;
 	private boolean stared;
+	/** Something looks roughly its way (UNSEEN_HALF_ANGLE): it doesn't move spots while seen. */
+	private boolean seen;
 	private boolean sunk;
+	/** Ticks left of a moment's dip under the surface. */
+	private int dip;
+	/** Holds its spot exactly (tests: no shifting, swaying or dipping). */
+	private boolean still;
 	private float grip;
 	private long lastSearch = Long.MIN_VALUE;
 	/** Keeps its spot with no player near (client test screenshots, a test world station). */
@@ -268,6 +273,8 @@ public final class DrownedMind {
 		spot = null;
 		sunk = false;
 		stared = false;
+		seen = false;
+		dip = 0;
 		drowned.setNoGravity(false);
 	}
 
@@ -285,7 +292,15 @@ public final class DrownedMind {
 				return;
 			}
 		}
-		sunk = stared;
+		if (surgeAt == null && !still && !pinned && shift(drowned, level, s)) {
+			return;
+		}
+		if (dip > 0) {
+			dip--;
+		} else if (!still && drowned.getRandom().nextInt(DrownedTuning.DIP_ONE_IN) == 0) {
+			dip = DrownedTuning.DIP_TICKS + drowned.getRandom().nextInt(DrownedTuning.DIP_TICKS_EXTRA + 1);
+		}
+		sunk = stared || dip > 0;
 		// Sunk: it also crouches (the synced vanilla pose; the model drops its head about a quarter block), since in
 		// 2-deep water the floor stops a standing drowned with the top of its head level with the surface.
 		posture(drowned, sunk ? Pose.CROUCHING : Pose.STANDING);
@@ -298,6 +313,11 @@ public final class DrownedMind {
 				? Math.max(s.floorTop(), s.surfaceY() - drowned.getBbHeight() - DrownedTuning.SUNK_HEAD_BELOW_SURFACE)
 				: Math.max(s.floorTop(), s.surfaceY() - drowned.getEyeHeight() + DrownedTuning.LURK_EYES_ABOVE_SURFACE);
 		Vec3 c = s.centre();
+		if (!still) {
+			// A slow drift round the centre (two unrelated slow waves, phase from its id).
+			double t = time * 0.02 + drowned.getId();
+			c = c.add(Math.sin(t) * DrownedTuning.SWAY, 0.0, Math.cos(t * 0.73) * DrownedTuning.SWAY);
+		}
 		double vx = Mth.clamp((c.x - drowned.getX()) * 0.2, -0.05, 0.05);
 		double vz = Mth.clamp((c.z - drowned.getZ()) * 0.2, -0.05, 0.05);
 		double vy = Mth.clamp((targetFeet - drowned.getY()) * 0.25, -DrownedTuning.BOB_SPEED, DrownedTuning.BOB_SPEED);
@@ -307,6 +327,40 @@ public final class DrownedMind {
 		if (nearest != null) {
 			drowned.getLookControl().setLookAt(nearest, 30.0F, 30.0F);
 		}
+	}
+
+	/**
+	 * Restless (owner, 2026-11-16): unseen, it now and then moves to another lurk spot, much more often once its player
+	 * has walked off along the shore, so it keeps up with them. It goes under, swims there lying down and comes up again,
+	 * so you only notice it has moved when you look back. Returns true when it set off.
+	 */
+	private boolean shift(Drowned drowned, ServerLevel level, LurkSpots.Spot s) {
+		if (seen || stared) {
+			return false;
+		}
+		Player player = level.getNearestPlayer(drowned.getX(), drowned.getY(), drowned.getZ(), DrownedTuning.ACTIVATE_RANGE, e -> !e.isSpectator());
+		if (player == null) {
+			return false;
+		}
+		boolean behind = s.horizontalDistanceSqr(player) > DrownedTuning.SHIFT_FOLLOW_DISTANCE * DrownedTuning.SHIFT_FOLLOW_DISTANCE;
+		if (drowned.getRandom().nextInt(behind ? DrownedTuning.SHIFT_FOLLOW_ONE_IN : DrownedTuning.SHIFT_ONE_IN) != 0) {
+			return false;
+		}
+		LurkSpots.Spot next = LurkSpots.find(level, drowned, player, s.floor(), drowned.getRandom());
+		if (next == null || next.centre().distanceToSqr(drowned.position()) > DrownedTuning.SHIFT_MAX_DISTANCE * DrownedTuning.SHIFT_MAX_DISTANCE) {
+			return false;
+		}
+		avoid = s.floor();
+		spot = next;
+		state = State.TRAVEL;
+		sunk = false;
+		dip = 0;
+		posture(drowned, Pose.STANDING);
+		drowned.setNoGravity(false);
+		drowned.setDeltaMovement(drowned.getDeltaMovement().add(0.0, -0.08, 0.0));
+		Vec3 c = next.centre();
+		drowned.getNavigation().moveTo(c.x, c.y, c.z, DrownedTuning.TRAVEL_SPEED);
+		return true;
 	}
 
 	/** One senses scan while lurking: is it stared at, and is someone at the edge with their back turned? */
@@ -320,8 +374,10 @@ public final class DrownedMind {
 		// Where its head shows when lurking: looking there is staring at it, sunk or not (so it doesn't bob in and
 		// out of a watcher's sight at the edge of the bank).
 		Vec3 head = lurkPoint(s);
-		double cone = Math.cos(Math.toRadians(DrownedTuning.STARE_HALF_ANGLE));
+		// A cone round several points (its head, the top of it, the water either side), not one direct line (Gaze).
+		Vec3[] points = {head, head.add(0.0, 0.4, 0.0), head.add(0.3, 0.0, 0.0), head.add(-0.3, 0.0, 0.0), head.add(0.0, 0.0, 0.3), head.add(0.0, 0.0, -0.3)};
 		boolean anyStare = false;
+		boolean anySeen = false;
 		LivingEntity best = null;
 		double bestDistance = Double.MAX_VALUE;
 		double surgeSqr = DrownedTuning.SURGE_RANGE * DrownedTuning.SURGE_RANGE;
@@ -332,8 +388,11 @@ public final class DrownedMind {
 			if (length < 1.0E-4) {
 				continue;
 			}
-			if (!anyStare && e.getViewVector(1.0F).dot(to) / length >= cone && clearSight(level, e, eye, head)) {
+			if (!anyStare && Gaze.looksAt(level, e, DrownedTuning.STARE_HALF_ANGLE, true, points)) {
 				anyStare = true;
+			}
+			if (!anySeen && (anyStare || Gaze.looksAt(level, e, DrownedTuning.UNSEEN_HALF_ANGLE, true, points))) {
+				anySeen = true;
 			}
 			if (!grabbable(e)) {
 				continue;
@@ -354,6 +413,7 @@ public final class DrownedMind {
 			bestDistance = horizontal;
 		}
 		stared = anyStare;
+		seen = anySeen;
 		if (anyStare && DrownedTuning.WATCHED_BLOCKS_SURGE) {
 			return null;
 		}
@@ -364,10 +424,6 @@ public final class DrownedMind {
 	public static Vec3 lurkPoint(LurkSpots.Spot s) {
 		Vec3 c = s.centre();
 		return new Vec3(c.x, s.surfaceY() + 0.1, c.z);
-	}
-
-	private static boolean clearSight(ServerLevel level, Entity watcher, Vec3 from, Vec3 to) {
-		return level.clip(new ClipContext(from, to, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, watcher)).getType() == HitResult.Type.MISS;
 	}
 
 	/** The drowned is more than BACK_TURNED_ANGLE degrees (horizontally) from where {@code e} faces. */
@@ -771,6 +827,7 @@ public final class DrownedMind {
 	/** For tests and the client test: put it straight into lurking at {@code spot}. */
 	public void lurkAt(Drowned drowned, LurkSpots.Spot spot) {
 		this.spot = spot;
+		still = true;
 		state = State.LURK;
 		drowned.getNavigation().stop();
 		drowned.setNoGravity(true);

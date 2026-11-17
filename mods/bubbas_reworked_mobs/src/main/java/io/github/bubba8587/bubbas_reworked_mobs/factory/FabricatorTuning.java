@@ -11,8 +11,14 @@ public final class FabricatorTuning {
 	public static final int TIMER_LAMPS = 8;
 	/** Levitation before it fires: whatever is on the pad rises a little. */
 	public static final int LIFT_TICKS = 20;
-	/** The dripper drops one mob at the start of each count (so one per 17 s while running). */
-	public static final int DROP_EVERY_TICKS = STEP_TICKS * TIMER_LAMPS + LIFT_TICKS;
+	/**
+	 * Between counts it rests, dark, and wakes with a 1-in-this chance each second (about a minute on average, owner
+	 * 2026-11-16: a long gap, not a constant stream). Waking, the dripper drops one mob and the count starts. Stopped by
+	 * redstone, it drops at the same chance and they pile up. So about one mob per 77 s while a player is near.
+	 */
+	public static final int REST_ONE_IN = 60;
+	/** One count, lamps and lift (17 s). */
+	public static final int COUNT_TICKS = STEP_TICKS * TIMER_LAMPS + LIFT_TICKS;
 	/** Deactivated mobs on the deck before the dripper stops dropping (they pile up while the teleporter is stopped). */
 	public static final int PILE_CAP = 12;
 	/** Teleport destinations: within this sideways of the pad, on the surface (natural-spawn rules for mobs). */

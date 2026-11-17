@@ -299,17 +299,17 @@ public class CreeperGameTest {
 	 */
 	@GameTest(environment = "bubbas_reworked_mobs-test:creeper_peek", structure = FIELD, maxTicks = 200)
 	public void peeksHalfBehindCover(GameTestHelper helper) {
-		// A 3-wide, 3-high wall across the field at z = 8, x = 11..13.
-		for (int x = 11; x <= 13; x++) {
+		// Along the field's long side (creepers keep 10-22 blocks off): a wall at x = 15, z = 7..9.
+		for (int z = 7; z <= 9; z++) {
 			for (int y = 1; y <= 3; y++) {
-				helper.setBlock(new BlockPos(x, y, 8), Blocks.STONE);
+				helper.setBlock(new BlockPos(15, y, z), Blocks.STONE);
 			}
 		}
-		Creeper creeper = creeper(helper, 12.5, 11.5, true);
-		ServerPlayer player = player(helper, 12.5, 2.5);
-		// The player looks away (south is +z; yaw 180 faces north, away from the wall).
-		player.setYRot(180.0F);
-		player.setYHeadRot(180.0F);
+		Creeper creeper = creeper(helper, 18.5, 8.5, true);
+		ServerPlayer player = player(helper, 1.5, 8.5);
+		// The player looks away (yaw 90 faces -x, away from the wall).
+		player.setYRot(90.0F);
+		player.setYHeadRot(90.0F);
 		CreeperMind mind = mind(creeper);
 		helper.runAtTickTime(2, () -> mind.watch(player, helper.getLevel().getGameTime()));
 		helper.succeedWhen(() -> {
@@ -327,15 +327,16 @@ public class CreeperGameTest {
 	/** Peekaboo: looked at, it slides about 95 % behind the cover; looked away from, it eases back out. */
 	@GameTest(environment = "bubbas_reworked_mobs-test:creeper_peekaboo", structure = FIELD, maxTicks = 300)
 	public void hidesWhenLookedAt(GameTestHelper helper) {
-		for (int x = 11; x <= 13; x++) {
+		// Along the field's long side (creepers keep 10-22 blocks off): a wall at x = 15, z = 7..9.
+		for (int z = 7; z <= 9; z++) {
 			for (int y = 1; y <= 3; y++) {
-				helper.setBlock(new BlockPos(x, y, 8), Blocks.STONE);
+				helper.setBlock(new BlockPos(15, y, z), Blocks.STONE);
 			}
 		}
-		Creeper creeper = creeper(helper, 12.5, 11.5, true);
-		ServerPlayer player = player(helper, 12.5, 2.5);
-		player.setYRot(180.0F);
-		player.setYHeadRot(180.0F);
+		Creeper creeper = creeper(helper, 18.5, 8.5, true);
+		ServerPlayer player = player(helper, 1.5, 8.5);
+		player.setYRot(90.0F);
+		player.setYHeadRot(90.0F);
 		CreeperMind mind = mind(creeper);
 		helper.runAtTickTime(2, () -> mind.watch(player, helper.getLevel().getGameTime()));
 		int[] stage = {0};
@@ -351,8 +352,8 @@ public class CreeperGameTest {
 				stage[0] = 1;
 			} else if (stage[0] == 1 && spot != null && creeper.position().distanceTo(spot.hidden()) < 0.1) {
 				helper.assertTrue(!CoverFinder.clear(helper.getLevel(), player.getEyePosition(), creeper.getEyePosition()), "hidden: its eyes are behind the wall");
-				player.setYRot(180.0F);
-				player.setYHeadRot(180.0F);
+				player.setYRot(90.0F);
+				player.setYHeadRot(90.0F);
 				stage[0] = 2;
 			} else if (stage[0] == 2 && spot != null && creeper.position().distanceTo(spot.half()) < 0.1) {
 				creeper.discard();

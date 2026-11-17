@@ -81,6 +81,13 @@ public class FactoriesClientGameTest implements FabricClientGameTest {
 		});
 		tp(context, server, o.getX() + 0.5, o.getY() + 3.5, o.getZ() + 10.5, 180.0F, 30.0F);
 		sp.getConnection().waitForChunksRender();
+		// Forced on, it skips the rest between counts (about a minute in play), so the shots don't wait.
+		server.runOnServer(s -> {
+			var site = io.github.bubba8587.bubbas_reworked_mobs.factory.FabricatorSites.nearest(s.overworld(), o, 8);
+			if (site != null) {
+				io.github.bubba8587.bubbas_reworked_mobs.factory.Fabricators.force(s.overworld(), site, true);
+			}
+		});
 		boolean shot = false;
 		for (int i = 0; i < 900 && !shot; i++) {
 			context.waitTick();

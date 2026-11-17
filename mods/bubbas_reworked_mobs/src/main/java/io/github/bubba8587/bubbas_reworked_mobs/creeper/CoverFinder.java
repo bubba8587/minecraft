@@ -5,7 +5,11 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
+import it.unimi.dsi.fastutil.longs.LongSet;
 import net.minecraft.core.BlockPos;
+import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
@@ -160,23 +164,50 @@ public final class CoverFinder {
 			double minDistance, double maxDistance, double preferred) {
 		record Candidate(BlockPos cell, double score) {
 		}
+		// Random cells (owner, 2026-11-16: creepers seek out walls much farther off; a full grid that wide costs too
+		// much): half within SPOT_SEARCH_RADIUS of the creeper, half on its side of the ring of wanted distances round
+		// the viewer (within 75 degrees of the creeper's bearing, so it never crosses in front of what it watches).
 		List<Candidate> candidates = new ArrayList<>();
+		LongSet tried = new LongOpenHashSet();
+		RandomSource random = level.getRandom();
 		int r = CreeperTuning.SPOT_SEARCH_RADIUS;
-		for (int dx = -r; dx <= r; dx++) {
-			for (int dz = -r; dz <= r; dz++) {
-				double cx = around.getX() + dx + 0.5 - viewer.x;
-				double cz = around.getZ() + dz + 0.5 - viewer.z;
-				double toViewer = Math.sqrt(cx * cx + cz * cz);
-				if (toViewer < minDistance || toViewer > maxDistance) {
-					continue;
-				}
-				BlockPos cell = standableIn(level, around.getX() + dx, around.getY(), around.getZ() + dz, 2, 2);
-				if (cell == null || !coverNextTo(level, cell, viewer)) {
-					continue;
-				}
-				double walk = Math.sqrt(dx * dx + dz * dz);
-				candidates.add(new Candidate(cell, Math.abs(toViewer - preferred) + 0.5 * walk));
+		double bearing = Math.atan2(around.getZ() + 0.5 - viewer.z, around.getX() + 0.5 - viewer.x);
+		double maxWalkSqr = CreeperTuning.SPOT_MAX_WALK * CreeperTuning.SPOT_MAX_WALK;
+		int g = CreeperTuning.SPOT_NEAR_GRID;
+		int grid = (2 * g + 1) * (2 * g + 1);
+		for (int i = 0; i < grid + CreeperTuning.SPOT_SEARCH_SAMPLES; i++) {
+			int x;
+			int z;
+			if (i < grid) {
+				// Every cell close by first (a small tree beside it is never missed).
+				x = around.getX() + i % (2 * g + 1) - g;
+				z = around.getZ() + i / (2 * g + 1) - g;
+			} else if (i % 2 == 0) {
+				x = around.getX() + random.nextInt(2 * r + 1) - r;
+				z = around.getZ() + random.nextInt(2 * r + 1) - r;
+			} else {
+				double angle = bearing + Math.toRadians((random.nextDouble() * 2.0 - 1.0) * 75.0);
+				double distance = minDistance + random.nextDouble() * (maxDistance - minDistance);
+				x = Mth.floor(viewer.x + Math.cos(angle) * distance);
+				z = Mth.floor(viewer.z + Math.sin(angle) * distance);
 			}
+			if (!tried.add(BlockPos.asLong(x, 0, z))) {
+				continue;
+			}
+			double dx = x - around.getX();
+			double dz = z - around.getZ();
+			double walkSqr = dx * dx + dz * dz;
+			double cx = x + 0.5 - viewer.x;
+			double cz = z + 0.5 - viewer.z;
+			double toViewer = Math.sqrt(cx * cx + cz * cz);
+			if (toViewer < minDistance || toViewer > maxDistance || walkSqr > maxWalkSqr || !level.hasChunk(x >> 4, z >> 4)) {
+				continue;
+			}
+			BlockPos cell = standableIn(level, x, around.getY(), z, 3, 3);
+			if (cell == null || !coverNextTo(level, cell, viewer)) {
+				continue;
+			}
+			candidates.add(new Candidate(cell, Math.abs(toViewer - preferred) + 0.3 * Math.sqrt(walkSqr)));
 		}
 		candidates.sort(Comparator.comparingDouble(Candidate::score));
 		int evaluated = 0;

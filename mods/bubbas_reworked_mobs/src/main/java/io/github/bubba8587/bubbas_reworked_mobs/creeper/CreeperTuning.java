@@ -30,8 +30,10 @@ public final class CreeperTuning {
 	public static final double VERTICAL_SPEED_WEIGHT = 0.5;
 	/** Anything moving at least this fast (and in its field of view, in sight) can catch its eye. */
 	public static final double NOTICE_SPEED = 0.03;
-	/** It notices motion this far (vanilla's creeper follow range, the 16 blocks it "never stops watching" a player within). */
-	public static final double WATCH_RANGE = 16.0;
+	/** It notices motion and keeps watching a player this far (owner, 2026-11-16: they stay farther away; was vanilla's 16). */
+	public static final double WATCH_RANGE = 24.0;
+	/** Its navigation may plan paths this long (vanilla: its follow range, 16), so it can reach cover far off. Targeting range is unchanged. */
+	public static final float WATCH_PATH_LENGTH = 32.0F;
 	/** Half the field of view, degrees (120 degrees in all). */
 	public static final double FOV_HALF_ANGLE = 60.0;
 	/** Ticks between motion scans (one box query of WATCH_RANGE; speeds are measured across this gap). Creepers are spread over the phases. */
@@ -52,20 +54,30 @@ public final class CreeperTuning {
 	public static final double DEFUSE_RANGE = 7.0;
 
 	// --- watching --------------------------------------------------------------------------------
-	/** "Uncomfortably close" (owner C5): just outside one sprint-and-hit (about 3 blocks of sprint + 3 of reach). */
-	public static final double COMFORT_DISTANCE = 6.5;
+	/** Open ground, no cover: it holds this far off (owner, 2026-11-16: 6.5 was far too close; they keep their distance). */
+	public static final double COMFORT_DISTANCE = 12.0;
 	/** Closer than COMFORT_DISTANCE minus this and it backs up. */
-	public static final double BACKOFF_MARGIN = 1.0;
+	public static final double BACKOFF_MARGIN = 2.0;
+	/** Open ground: looked at, it edges back to COMFORT_DISTANCE plus this. */
+	public static final double OPEN_LOOKED_AT_EXTRA = 4.0;
 	/** Backing up: speed modifier on its 0.25 base (vanilla flees cats at 1.2). */
 	public static final double BACKOFF_SPEED = 1.2;
 	/** Walking to a watch spot or toward its target. */
 	public static final double WATCH_SPEED = 1.0;
-	/** Peek spots (half behind cover) are picked this far from the target ... */
-	public static final double PEEK_MAX_DISTANCE = 13.0;
-	/** ... within this many blocks of the creeper (a 11 x 11 square, 5 heights). */
-	public static final int SPOT_SEARCH_RADIUS = 5;
+	/** Peek spots (half behind cover) are picked between these distances from the target, best near the preferred one ... */
+	public static final double PEEK_MIN_DISTANCE = 10.0;
+	public static final double PEEK_PREFERRED_DISTANCE = 15.0;
+	public static final double PEEK_MAX_DISTANCE = 22.0;
+	/** ... from cells sampled within this many blocks of the creeper and on its side of a ring round the target (owner: it seeks walls much farther off) ... */
+	public static final int SPOT_SEARCH_RADIUS = 14;
+	/** ... every cell within this many blocks of it (an 11 x 11 square), plus ... */
+	public static final int SPOT_NEAR_GRID = 5;
+	/** ... this many random cells per search (half round the creeper, half on the ring) ... */
+	public static final int SPOT_SEARCH_SAMPLES = 72;
+	/** ... no farther than this from the creeper (it walks there). */
+	public static final double SPOT_MAX_WALK = 22.0;
 	/** At most this many candidate cells get the (raycast) cover test per search. */
-	public static final int SPOT_MAX_EVALUATIONS = 12;
+	public static final int SPOT_MAX_EVALUATIONS = 16;
 	/** Ticks between spot searches when it has none. */
 	public static final int SPOT_SEARCH_INTERVAL = 20;
 	/** Ticks between re-checks that its spot still half-hides it from the target (the target moves). */
@@ -81,7 +93,7 @@ public final class CreeperTuning {
 	/** Peekaboo: a player looking within this many degrees of the creeper is looking at it (a screen's half-width at FOV 70 is ~51). */
 	public static final double PLAYER_LOOK_HALF_ANGLE = 45.0;
 	/** A sneaking player closer than this and getting closer makes it back behind cover. */
-	public static final double SNEAK_NOTICE_RANGE = 12.0;
+	public static final double SNEAK_NOTICE_RANGE = 18.0;
 
 	// --- spawning (owner: vanilla's random creeper spawns off; one watcher per player at night) -------
 	/** At most this many mod-natural watcher creepers per player (owner: per player). */
@@ -91,8 +103,8 @@ public final class CreeperTuning {
 	/** Random spots tried per attempt. */
 	public static final int SPAWN_TRIES = 16;
 	/** Watching distance it spawns at (inside WATCH_RANGE so it keeps watching). */
-	public static final double SPAWN_MIN_DISTANCE = 10.0;
-	public static final double SPAWN_MAX_DISTANCE = 15.0;
+	public static final double SPAWN_MIN_DISTANCE = 15.0;
+	public static final double SPAWN_MAX_DISTANCE = 21.0;
 	/** It spawns outside this half-angle of the player's view (degrees), so never on screen. */
 	public static final double SPAWN_OUTSIDE_VIEW_HALF_ANGLE = 70.0;
 	/** A player's watcher this far away no longer counts as theirs (a new one may come). */

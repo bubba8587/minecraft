@@ -3,6 +3,7 @@ package io.github.bubba8587.bubbas_reworked_mobs.creeper;
 
 import java.util.EnumSet;
 
+import io.github.bubba8587.bubbas_reworked_mobs.sense.Gaze;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -32,6 +33,8 @@ public final class CreeperWatchGoal extends Goal {
 	public CreeperWatchGoal(Creeper creeper) {
 		this.creeper = creeper;
 		this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
+		// Far cover and a 24-block watch need paths longer than its 16-block follow range (targeting is unchanged).
+		creeper.getNavigation().setRequiredPathLength(CreeperTuning.WATCH_PATH_LENGTH);
 	}
 
 	private CreeperMind mind() {
@@ -132,6 +135,14 @@ public final class CreeperWatchGoal extends Goal {
 					creeper.getNavigation().moveTo(away.x, away.y, away.z, CreeperTuning.WATCH_SPEED);
 				}
 			}
+		} else if (sees && distance < CreeperTuning.COMFORT_DISTANCE + CreeperTuning.OPEN_LOOKED_AT_EXTRA && lookedAtBy(target)) {
+			// In the open and looked at, it edges away (it has nothing to hide behind).
+			if (creeper.getNavigation().isDone()) {
+				Vec3 away = DefaultRandomPos.getPosAway(creeper, 5, 2, target.position());
+				if (away != null) {
+					creeper.getNavigation().moveTo(away.x, away.y, away.z, CreeperTuning.WATCH_SPEED);
+				}
+			}
 		} else if (ticks - lastSeen > CreeperTuning.LOST_VIEW_TICKS || distance > CreeperTuning.COMFORT_DISTANCE + 1.5) {
 			// Out of sight (reposition) or far: creep closer, up to the uncomfortable distance.
 			if (creeper.getNavigation().isDone() || ticks % 20 == 0) {
@@ -149,7 +160,7 @@ public final class CreeperWatchGoal extends Goal {
 					distance + 1.5, distance + 8.0, distance + 4.0);
 		}
 		return CoverFinder.find(creeper.level(), creeper.getType().getDimensions(), creeper.blockPosition(), eye,
-				CreeperTuning.COMFORT_DISTANCE, CreeperTuning.PEEK_MAX_DISTANCE, CreeperTuning.COMFORT_DISTANCE + 1.0);
+				CreeperTuning.PEEK_MIN_DISTANCE, CreeperTuning.PEEK_MAX_DISTANCE, CreeperTuning.PEEK_PREFERRED_DISTANCE);
 	}
 
 	private void tickSpot(CreeperMind mind, CoverFinder.PeekSpot spot, LivingEntity target, double distance) {
@@ -169,7 +180,7 @@ public final class CreeperWatchGoal extends Goal {
 		}
 		// The target moves: re-check the spot still half-hides us from it.
 		if (ticks % CreeperTuning.SPOT_RECHECK_INTERVAL == 0) {
-			boolean inRange = hiding || (distance >= CreeperTuning.COMFORT_DISTANCE - CreeperTuning.BACKOFF_MARGIN
+			boolean inRange = hiding || (distance >= CreeperTuning.PEEK_MIN_DISTANCE - CreeperTuning.BACKOFF_MARGIN
 					&& distance <= CreeperTuning.PEEK_MAX_DISTANCE + 2.0);
 			CoverFinder.PeekSpot fresh = inRange ? CoverFinder.evaluate(creeper.level(), creeper.getType().getDimensions(), spot.cell(), target.getEyePosition()) : null;
 			if (fresh == null) {
@@ -188,17 +199,23 @@ public final class CreeperWatchGoal extends Goal {
 		}
 	}
 
-	/** Peekaboo: the watched player is looking toward the creeper (within the look cone). */
+	/**
+	 * The watched player is looking toward the creeper: within the look cone of any point of its body, or of where it
+	 * peeks from (Gaze; owner: a cone, not a direct line). No sight check: tucked behind its cover it stays hidden while
+	 * you look its way.
+	 */
 	private boolean lookedAtBy(LivingEntity target) {
 		if (!(target instanceof Player)) {
 			return false;
 		}
-		Vec3 to = creeper.getEyePosition().subtract(target.getEyePosition());
-		double length = to.length();
-		if (length < 1.0E-3) {
+		Vec3 from = target.getEyePosition();
+		float width = creeper.getBbWidth();
+		float height = creeper.getBbHeight();
+		double eye = creeper.getEyeHeight();
+		if (Gaze.looksAt(creeper.level(), target, CreeperTuning.PLAYER_LOOK_HALF_ANGLE, false, Gaze.bodyPoints(creeper.position(), width, height, eye, from))) {
 			return true;
 		}
-		double cos = target.getViewVector(1.0F).dot(to) / length;
-		return cos >= Math.cos(Math.toRadians(CreeperTuning.PLAYER_LOOK_HALF_ANGLE));
+		CoverFinder.PeekSpot spot = mind().spot();
+		return spot != null && Gaze.looksAt(creeper.level(), target, CreeperTuning.PLAYER_LOOK_HALF_ANGLE, false, Gaze.bodyPoints(spot.half(), width, height, eye, from));
 	}
 }
