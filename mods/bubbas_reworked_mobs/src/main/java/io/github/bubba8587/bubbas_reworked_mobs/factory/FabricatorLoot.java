@@ -19,6 +19,10 @@ import net.minecraft.world.level.storage.loot.LootTable;
 public final class FabricatorLoot {
 	public static final ResourceKey<LootTable> OFFICE = ResourceKey.create(Registries.LOOT_TABLE, BubbasReworkedMobs.id("chests/fabricator_office"));
 	public static final ResourceKey<LootTable> OFFICE_WITH_GEMS = ResourceKey.create(Registries.LOOT_TABLE, BubbasReworkedMobs.id("chests/fabricator_office_with_gems"));
+	/** The reject vault under the deck (provisional: the owner is still deciding what a Fabricator rewards). */
+	public static final ResourceKey<LootTable> REJECTS = ResourceKey.create(Registries.LOOT_TABLE, BubbasReworkedMobs.id("chests/fabricator_rejects"));
+	/** The chests sunk in the lower city's floors (provisional, as above). */
+	public static final ResourceKey<LootTable> BURIED = ResourceKey.create(Registries.LOOT_TABLE, BubbasReworkedMobs.id("chests/fabricator_buried"));
 
 	private FabricatorLoot() {
 	}

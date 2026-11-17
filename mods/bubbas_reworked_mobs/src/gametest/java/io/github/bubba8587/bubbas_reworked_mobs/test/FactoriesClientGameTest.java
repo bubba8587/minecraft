@@ -289,6 +289,81 @@ public class FactoriesClientGameTest implements FabricClientGameTest {
 		server.runCommand("effect give @p minecraft:night_vision infinite 0 true");
 		shot(context, server, o, 0.5, 9.0, 18.5, 180.0F, 12.0F, "factory-overview-nightvision");
 		server.runCommand("effect clear @p");
+		secrets(context, server, o);
+	}
+
+	/**
+	 * The generated area's secrets and the lower city (built with turns 0, so local = world - o): the reject vault's
+	 * tell in the deck, then opened, and the heap inside; the intake chamber and its throat of vines; the lower city
+	 * from the front, the west terrace, the hut, behind the face wall and in the pit. Detail shots carry -nightvision.
+	 */
+	private static void secrets(ClientGameTestContext context, TestServerContext server, BlockPos o) {
+		BlockPos[] at = server.computeOnServer(s -> {
+			var site = io.github.bubba8587.bubbas_reworked_mobs.factory.FabricatorSites.nearest(s.overworld(), o, 8);
+			var d = site.design();
+			System.out.println("[fabricator] design blocks " + d.size() + ", throat " + d.throat() + ", intake " + d.intakeFloor() + ", hut " + d.hut()
+					+ ", buried chests " + d.buriedChests() + ", light: intake " + s.overworld().getBrightness(net.minecraft.world.level.LightLayer.BLOCK, site.world(d.intakeFloor()).above())
+					+ ", terrace " + s.overworld().getBrightness(net.minecraft.world.level.LightLayer.BLOCK, o.offset(-16, -4, 0))
+					+ ", causeway " + s.overworld().getBrightness(net.minecraft.world.level.LightLayer.BLOCK, o.offset(0, 0, 14)));
+			return new BlockPos[] { d.rejectTell(), d.intakeFloor(), d.throat(), d.hut() };
+		});
+		BlockPos tell = o.offset(at[0]);
+		server.runCommand("effect give @p minecraft:night_vision infinite 0 true");
+		look(context, server, tell.getX() + 0.5, tell.getY() + 2.6, tell.getZ() + 3.0, tell.getX() + 0.5, tell.getY() + 1.0, tell.getZ() + 0.5, "factory-reject-tell-nightvision");
+		server.runCommand("setblock %d %d %d air".formatted(tell.getX(), tell.getY(), tell.getZ()));
+		context.waitTicks(4);
+		look(context, server, tell.getX() + 0.5, tell.getY() + 2.6, tell.getZ() + 3.0, tell.getX() + 0.5, tell.getY() + 0.5, tell.getZ() + 0.5, "factory-reject-open-nightvision");
+		context.runOnClient(mc -> mc.options.fov().set(95));
+		look(context, server, o.getX() + 3.5, o.getY() - 4.2, o.getZ() - 2.8, o.getX() + 6.5, o.getY() - 5.8, o.getZ() - 6.5, "factory-reject-pit-nightvision");
+		look(context, server, o.getX() - 2.5, o.getY() - 4.0, o.getZ() - 3.0, o.getX() + 2.5, o.getY() - 5.0, o.getZ() - 4.5, "factory-reject-door-nightvision");
+		server.runCommand("effect clear @p");
+		BlockPos in = o.offset(at[1]);
+		look(context, server, in.getX() + 4.5, in.getY() + 1.5, in.getZ() + 0.5, in.getX() + 0.5, in.getY() + 0.3, in.getZ() + 0.5, "factory-intake");
+		server.runCommand("effect give @p minecraft:night_vision infinite 0 true");
+		look(context, server, in.getX() + 4.5, in.getY() + 1.5, in.getZ() + 0.5, in.getX() + 0.5, in.getY() + 0.3, in.getZ() + 0.5, "factory-intake-nightvision");
+		look(context, server, in.getX() - 1.5, in.getY() + 3.6, in.getZ() + 2.5, in.getX() + 1.0, in.getY() - 0.5, in.getZ() - 0.5, "factory-intake2-nightvision");
+		if (at[2] != null) {
+			BlockPos th = o.offset(at[2]);
+			look(context, server, th.getX() + 3.5, th.getY() + 0.5, th.getZ() + 3.5, th.getX() + 0.5, th.getY() + 3.0, th.getZ() + 0.5, "factory-throat-nightvision");
+		}
+		// The office: the main floor toward the archive and loft, from the loft out of the window, the archive's nooks.
+		look(context, server, o.getX() + 17.5, o.getY() + 7.6, o.getZ() + 2.5, o.getX() + 19.5, o.getY() + 9.5, o.getZ() - 2.5, "factory-office-split-nightvision");
+		look(context, server, o.getX() + 21.5, o.getY() + 11.6, o.getZ() + 1.5, o.getX() + 14.5, o.getY() + 7.0, o.getZ() - 0.5, "factory-office-loft-nightvision");
+		look(context, server, o.getX() + 18.5, o.getY() + 7.4, o.getZ() + 1.5, o.getX() + 23.5, o.getY() + 5.5, o.getZ() - 0.5, "factory-office-archive-nightvision");
+		server.runCommand("effect clear @p");
+		look(context, server, o.getX() + 15.5, o.getY() + 7.6, o.getZ() + 2.5, o.getX() + 21.5, o.getY() + 8.0, o.getZ() - 1.5, "factory-office-split");
+		context.runOnClient(mc -> mc.options.fov().set(70));
+		look(context, server, o.getX() + 0.5, o.getY() + 4.0, o.getZ() + 18.5, o.getX() + 0.5, o.getY() - 2.0, o.getZ() + 4.5, "factory-lower-front");
+		server.runCommand("effect give @p minecraft:night_vision infinite 0 true");
+		context.runOnClient(mc -> mc.options.fov().set(90));
+		look(context, server, o.getX() + 0.5, o.getY() + 4.0, o.getZ() + 18.5, o.getX() + 0.5, o.getY() - 2.0, o.getZ() + 4.5, "factory-lower-front-nightvision");
+		look(context, server, o.getX() - 6.5, o.getY() - 1.0, o.getZ() + 12.5, o.getX() - 16.5, o.getY() - 4.0, o.getZ() + 0.5, "factory-lower-west-nightvision");
+		look(context, server, o.getX() - 11.5, o.getY() - 2.0, o.getZ() + 6.5, o.getX() - 17.5, o.getY() - 4.0, o.getZ() - 4.5, "factory-lower-terrace-nightvision");
+		if (at[3] != null) {
+			BlockPos h = o.offset(at[3]);
+			double sx = h.getX() > 0 ? -7.0 : 7.0;
+			look(context, server, h.getX() + sx + 0.5, h.getY() + 4.0, h.getZ() - 4.0, h.getX() + 0.5, h.getY(), h.getZ() + 0.5, "factory-lower-hut-nightvision");
+		}
+		look(context, server, o.getX() + 5.5, o.getY() - 2.0, o.getZ() - 15.0, o.getX() - 3.0, o.getY() - 5.0, o.getZ() - 16.5, "factory-lower-back-nightvision");
+		look(context, server, o.getX() + 11.5, o.getY() + 1.6, o.getZ() - 5.0, o.getX() + 16.5, o.getY() - 6.0, o.getZ() - 9.0, "factory-flight-east-nightvision");
+		look(context, server, o.getX() - 8.5, o.getY() + 1.6, o.getZ() - 5.5, o.getX() - 15.5, o.getY() - 6.0, o.getZ() - 9.0, "factory-flight-west-nightvision");
+		look(context, server, o.getX() + 0.5, o.getY() + 2.0, o.getZ() + 18.0, o.getX() - 6.5, o.getY() - 6.0, o.getZ() + 13.0, "factory-flight-causeway-nightvision");
+		look(context, server, o.getX() + 0.5, o.getY() + 6.0, o.getZ() + 17.5, o.getX() - 9.0, o.getY() - 6.0, o.getZ() + 0.5, "factory-lower-overview-nightvision");
+		look(context, server, o.getX() + 0.5, o.getY() + 6.0, o.getZ() + 17.5, o.getX() + 10.0, o.getY() - 6.0, o.getZ() + 2.5, "factory-lower-overview2-nightvision");
+		context.runOnClient(mc -> mc.options.fov().set(70));
+		server.runCommand("effect clear @p");
+	}
+
+	/** A shot from eye position (x, y, z) looking at a point. */
+	private static void look(ClientGameTestContext context, TestServerContext server, double x, double y, double z, double tx, double ty, double tz, String name) {
+		double dx = tx - x;
+		double dy = ty - y;
+		double dz = tz - z;
+		float yaw = (float) (Math.atan2(-dx, dz) * 180.0 / Math.PI);
+		float pitch = (float) (-Math.atan2(dy, Math.hypot(dx, dz)) * 180.0 / Math.PI);
+		tp(context, server, x, y - 1.62, z, yaw, pitch);
+		context.waitTicks(10);
+		context.takeScreenshot(name);
 	}
 
 	private static void shot(ClientGameTestContext context, TestServerContext server, BlockPos o, double x, double y, double z, float yaw,

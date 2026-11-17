@@ -270,6 +270,57 @@ public class MobFactoryGameTest {
 		helper.succeed();
 	}
 
+	/**
+	 * The generated area's secrets stand as built (specs/mob-factory.md): the reject vault's tell over a ladder, its
+	 * chest and the buried chests with their tables, the intake's throat of twisting vines from a chain, and the
+	 * spawner still hidden on all six sides. The two new tables roll items (and the armor comes out damaged: the 26.3
+	 * "modifier" key works).
+	 */
+	@GameTest(maxTicks = SETTLE + 40)
+	public void secretsAreBuilt(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		run(helper, FactoryDesign.Mob.ZOMBIE, (site, t) -> {
+			if (t != 1) {
+				return;
+			}
+			FactoryDesign d = site.design();
+			helper.assertTrue(d.rejectTell() != null && level.getBlockState(site.world(d.rejectTell())).is(Blocks.CHISELED_DEEPSLATE), "the vault's tell is chiseled");
+			helper.assertTrue(level.getBlockState(site.world(d.rejectTell()).below()).is(Blocks.LADDER), "a ladder under the tell");
+			helper.assertTrue(!d.rejectChests().isEmpty() && d.buriedChests().size() >= 2, "a reject chest and buried chests, got " + d.buriedChests().size());
+			for (BlockPos p : d.rejectChests()) {
+				helper.assertTrue(level.getBlockEntity(site.world(p)) instanceof net.minecraft.world.level.block.entity.ChestBlockEntity c
+						&& io.github.bubba8587.bubbas_reworked_mobs.factory.FabricatorLoot.REJECTS.equals(c.getLootTable()), "reject chest table at " + p);
+			}
+			for (BlockPos p : d.buriedChests()) {
+				helper.assertTrue(level.getBlockEntity(site.world(p)) instanceof net.minecraft.world.level.block.entity.ChestBlockEntity c
+						&& io.github.bubba8587.bubbas_reworked_mobs.factory.FabricatorLoot.BURIED.equals(c.getLootTable()), "buried chest table at " + p);
+				helper.assertFalse(level.getBlockState(site.world(p).above()).isRedstoneConductor(level, site.world(p).above()), "a buried chest opens at " + p);
+			}
+			helper.assertTrue(d.throat() != null, "the intake has a throat");
+			helper.assertTrue(level.getBlockState(site.world(d.throat())).is(Blocks.TWISTING_VINES_PLANT), "twisting vines climb the throat");
+			helper.assertTrue(level.getBlockState(site.world(d.intakeFloor()).above()).isAir(), "the intake chamber is open");
+			BlockPos spawner = site.spawner();
+			helper.assertTrue(level.getBlockState(spawner).is(Blocks.SPAWNER), "the spawner is where the design says");
+			for (net.minecraft.core.Direction dir : net.minecraft.core.Direction.values()) {
+				helper.assertFalse(level.getBlockState(spawner.relative(dir)).isAir(), "the spawner stays hidden (" + dir + ")");
+			}
+			var params = new net.minecraft.world.level.storage.loot.LootParams.Builder(level)
+					.withParameter(net.minecraft.world.level.storage.loot.parameters.LootContextParams.ORIGIN, net.minecraft.world.phys.Vec3.ZERO)
+					.create(net.minecraft.world.level.storage.loot.parameters.LootContextParamSets.CHEST);
+			boolean damaged = false;
+			for (int i = 0; i < 20; i++) {
+				var rejects = level.getServer().reloadableRegistries().getLootTable(io.github.bubba8587.bubbas_reworked_mobs.factory.FabricatorLoot.REJECTS).getRandomItems(params);
+				var buried = level.getServer().reloadableRegistries().getLootTable(io.github.bubba8587.bubbas_reworked_mobs.factory.FabricatorLoot.BURIED).getRandomItems(params);
+				helper.assertTrue(!rejects.isEmpty() && !buried.isEmpty(), "both tables roll items");
+				for (var stack : rejects) {
+					damaged |= stack.isDamageableItem() && stack.getDamageValue() > 0;
+				}
+			}
+			helper.assertTrue(damaged, "reject armor and weapons come out damaged");
+			done(helper, site);
+		});
+	}
+
 	/** Without a beacon mod, the floor beacon's core gives players in the area Mining Fatigue III, Weakness, Slowness. */
 	@GameTest(maxTicks = SETTLE + 120)
 	public void debuffsWithoutReworkedBeacons(GameTestHelper helper) {
