@@ -26,6 +26,14 @@ While a player is nearby, the Fabricator rests in the dark for a while, often a 
 - A [[Totem of Warding]] warding the Fabricator (for example in its own beacon) stops the roof dropping monsters. The teleporter keeps working, and limp monsters already on the deck are left where they are.
 - A spawner hidden in the roof is what keeps the Fabricator running. Breaking it stops the Fabricator for good.
 
+## Secrets
+
+A Fabricator hides more than its machine:
+
+- One tile in the deck looks a little wrong. Under it, a ladder leads down into a sealed pit of failed products, with a chest of rejects.
+- Up inside the roof, over the great dripper, is the chamber that feeds the machine, full of soul soil, bone and sculk. Twisting vines grow up into it from one of the chains. Climbing up there is loud work near the Warden.
+- Below the deck lie terraces, ruined arches, a small hut, stairs going down every way, and chests buried in the rubble.
+- The Warden's office has a sunken archive and a loft.
 ## The Warden
 
 A Warden watches from its office window. It stays still until it hears a player going for the roof or the beacons, or is hit, and then it hunts like any Warden.
