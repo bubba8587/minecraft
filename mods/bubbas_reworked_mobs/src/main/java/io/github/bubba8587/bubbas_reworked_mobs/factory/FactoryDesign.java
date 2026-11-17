@@ -33,6 +33,7 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.Half;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.block.state.properties.SlabType;
+import org.jspecify.annotations.Nullable;
 
 /**
  * An Ancient Fabricator's whole build (the mob factory of specs/mob-factory.md; owner's name, 2026-11-16), worked out from a seed and the factory's mob: a pure function,
@@ -115,19 +116,40 @@ public final class FactoryDesign {
 	private final List<BlockPos> sculkSeeds = new ArrayList<>();
 	private int dripperBottom;
 	private final int[] ceilCache = new int[SX * SZ];
+	/** Local position of the ancient city's centre this Fabricator stands beside, or null (a hand-placed one). */
+	private final @Nullable BlockPos city;
+	/** Office chests (loot tables are set when they're placed). */
+	private final List<BlockPos> chests = new ArrayList<>();
+	/** The lamp ring round the pad, in the order they light. */
+	private final List<BlockPos> timerLamps = new ArrayList<>();
+	private int minX = Integer.MAX_VALUE;
+	private int minY = Integer.MAX_VALUE;
+	private int minZ = Integer.MAX_VALUE;
+	private int maxX = Integer.MIN_VALUE;
+	private int maxY = Integer.MIN_VALUE;
+	private int maxZ = Integer.MIN_VALUE;
 
-	private FactoryDesign(long seed, Mob mob) {
+	private FactoryDesign(long seed, Mob mob, @Nullable BlockPos city) {
 		this.seed = seed;
 		this.mob = mob;
+		this.city = city;
 		this.random = RandomSource.create(seed);
 		for (int i = 0; i < this.phase.length; i++) {
 			this.phase[i] = this.random.nextDouble() * Math.PI * 2.0;
 		}
 	}
 
-	/** The design for this seed and mob (deterministic). */
+	/** The design for this seed and mob (deterministic), with the old winding tunnel out of the front. */
 	public static FactoryDesign design(long seed, Mob mob) {
-		FactoryDesign d = new FactoryDesign(seed, mob);
+		return design(seed, mob, null);
+	}
+
+	/**
+	 * The design for this seed and mob, its entrance tunnel running to an ancient city whose centre is at {@code city}
+	 * (local coordinates; null for the plain winding tunnel). Deterministic.
+	 */
+	public static FactoryDesign design(long seed, Mob mob, @Nullable BlockPos city) {
+		FactoryDesign d = new FactoryDesign(seed, mob, city);
 		d.carve();
 		d.shell();
 		d.growth();
@@ -138,7 +160,56 @@ public final class FactoryDesign {
 		d.tower();
 		d.beams();
 		d.sculkSeeds();
+		d.cityTunnel();
+		d.bounds();
 		return d;
+	}
+
+	private void bounds() {
+		for (Map<BlockPos, BlockState> pass : List.of(this.blocks, this.attached)) {
+			for (BlockPos p : pass.keySet()) {
+				this.minX = Math.min(this.minX, p.getX());
+				this.minY = Math.min(this.minY, p.getY());
+				this.minZ = Math.min(this.minZ, p.getZ());
+				this.maxX = Math.max(this.maxX, p.getX());
+				this.maxY = Math.max(this.maxY, p.getY());
+				this.maxZ = Math.max(this.maxZ, p.getZ());
+			}
+		}
+	}
+
+	/** The world box the build covers. */
+	public net.minecraft.world.level.levelgen.structure.BoundingBox box(BlockPos origin, Rotation rotation) {
+		return net.minecraft.world.level.levelgen.structure.BoundingBox.fromCorners(
+				toWorld(origin, new BlockPos(this.minX, this.minY, this.minZ), rotation), toWorld(origin, new BlockPos(this.maxX, this.maxY, this.maxZ), rotation));
+	}
+
+	/** Local: the middle of the teleporter pad, first air above it. */
+	public BlockPos pad() {
+		return new BlockPos(0, 0, DROP_Z);
+	}
+
+	/** Local: the pad's lodestone, the teleporter's redstone control (powered: stopped). */
+	public BlockPos control() {
+		return new BlockPos(0, -1, DROP_Z);
+	}
+
+	/** Local: where a dropped mob appears, just under the dripper's crying obsidian tip. */
+	public BlockPos dropPoint() {
+		return new BlockPos(0, this.dripperBottom - 1, DROP_Z);
+	}
+
+	/** Local: the dripper's tip. */
+	public BlockPos dripperTip() {
+		return new BlockPos(0, this.dripperBottom, DROP_Z);
+	}
+
+	public List<BlockPos> timerLamps() {
+		return this.timerLamps;
+	}
+
+	public List<BlockPos> chests() {
+		return this.chests;
 	}
 
 	public Mob mob() {
@@ -218,8 +289,9 @@ public final class FactoryDesign {
 				}
 			}
 		}
-		// The entrance tunnel, winding out of the front and climbing.
-		for (int z = 12; z <= MAX_Z - 4; z++) {
+		// The entrance tunnel, winding out of the front and climbing (a Fabricator beside a city gets its own,
+		// cityTunnel).
+		for (int z = 12; z <= MAX_Z - 4 && this.city == null; z++) {
 			double cx = 3.0 * Math.sin(z * 0.13 + this.phase[7]);
 			double cy = z < 18 ? 1.0 : 1.0 + (z - 18) * 0.35;
 			for (int x = (int) cx - 4; x <= (int) cx + 4; x++) {
@@ -728,7 +800,8 @@ public final class FactoryDesign {
 			}
 		}
 		for (int i = 0; i < timer.length; i++) {
-			boolean lit = i < 5;
+			boolean lit = false;
+			this.timerLamps.add(new BlockPos(timer[i][0], -1, pz + timer[i][1]));
 			solid(timer[i][0], -1, pz + timer[i][1], Blocks.REDSTONE_LAMP.defaultBlockState().setValue(RedstoneLampBlock.LIT, lit));
 			solid(timer[i][0], -2, pz + timer[i][1], lit ? Blocks.REDSTONE_BLOCK.defaultBlockState() : Blocks.POLISHED_DEEPSLATE.defaultBlockState());
 		}
@@ -738,6 +811,8 @@ public final class FactoryDesign {
 			for (int dz = -2; dz <= 2; dz++) {
 				boolean inner = Math.abs(dx) <= 1 && Math.abs(dz) <= 1;
 				solid(BEAM_X + dx, -1, BEAM_Z + dz, inner ? Blocks.IRON_BLOCK.defaultBlockState() : Blocks.POLISHED_BLACKSTONE_BRICKS.defaultBlockState());
+				// A second pyramid layer, hidden in the deck: 2 layers let a beacon gem through at up to Gem Power III.
+				solid(BEAM_X + dx, -2, BEAM_Z + dz, Blocks.IRON_BLOCK.defaultBlockState());
 			}
 		}
 		solid(BEAM_X, 0, BEAM_Z, Blocks.BEACON.defaultBlockState());
@@ -899,6 +974,7 @@ public final class FactoryDesign {
 		// Filing: three chests against the back wall, facing into the room, a candle on one.
 		for (int z : new int[] { -2, -1, 0 }) {
 			solid(19, 6, z, Blocks.CHEST.defaultBlockState().setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.WEST));
+			this.chests.add(new BlockPos(19, 6, z));
 			this.attached.remove(new BlockPos(19, 6, z));
 		}
 		attach(19, 7, -1, candle(2));
@@ -968,6 +1044,12 @@ public final class FactoryDesign {
 				}
 			}
 		}
+		// Its second pyramid layer, 5 x 5 above that (2 layers: a beacon gem works at up to Gem Power III).
+		for (int dx = -2; dx <= 2; dx++) {
+			for (int dz = -2; dz <= 2; dz++) {
+				set(BEAM_X + dx, c + 2, BEAM_Z + dz, Blocks.IRON_BLOCK.defaultBlockState());
+			}
+		}
 	}
 
 	// ---- Sculk, grown the way ancient cities get theirs ----
@@ -1010,37 +1092,191 @@ public final class FactoryDesign {
 		}
 	}
 
-	// ---- Placing ----
+	// ---- The tunnel to the ancient city ----
 
-	/** Builds the whole factory in the world: origin is the platform's middle (first air above the deck). */
-	public void place(ServerLevel level, BlockPos origin, Rotation rotation) {
-		int flags = Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE;
-		BooleanProperty upsideDown = upsideDownProperty();
-		for (Map<BlockPos, BlockState> pass : List.of(this.blocks, this.attached)) {
-			for (Map.Entry<BlockPos, BlockState> e : pass.entrySet()) {
-				BlockState state = e.getValue();
-				if (e.getKey().equals(this.ceilingBeacon) && upsideDown != null) {
-					state = state.setValue(upsideDown, true);
+	/** How far from the city's centre the tunnel runs (into the city's outer ring). */
+	static final int CITY_TUNNEL_END = 70;
+	/** Where the doorway stands, measured from the city's centre. */
+	static final int CITY_DOOR = 96;
+
+	/**
+	 * Owner (2026-11-16): one Fabricator beside every ancient city, reached from it. The tunnel leaves the cavern's
+	 * front and runs straight (with a slight wander) toward the city's centre at the deck's level, easing to the city's
+	 * floor, until it is {@link #CITY_TUNNEL_END} from it: it cuts its own gap through whatever of the city's outer
+	 * ring is in the way (it is placed after the city). A doorway of polished and chiseled deepslate frames the
+	 * passage {@link #CITY_DOOR} from the city's centre. Its floor is cracked deepslate tiles; the rock round it is only
+	 * touched where it is liquid (sealed with deepslate), so lava and water don't pour in.
+	 */
+	private void cityTunnel() {
+		if (this.city == null) {
+			return;
+		}
+		double sx = 0.0;
+		double sz = 12.0;
+		double dx = this.city.getX() - sx;
+		double dz = this.city.getZ() - sz;
+		double len = Math.hypot(dx, dz);
+		double ux = dx / len;
+		double uz = dz / len;
+		double run = Math.max(8.0, len - CITY_TUNNEL_END);
+		double door = Math.max(4.0, len - CITY_DOOR);
+		double endY = Math.max(-6.0, Math.min(6.0, this.city.getY()));
+		java.util.Set<BlockPos> carved = new java.util.HashSet<>();
+		for (double t = 0.0; t <= run; t += 0.5) {
+			double wob = 1.5 * Math.sin(t * 0.11 + this.phase[12]);
+			double cx = sx + ux * t - uz * wob;
+			double cz = sz + uz * t + ux * wob;
+			double cy = 1.0 + (endY - 1.0) * Math.min(1.0, t / run);
+			for (int x = (int) Math.floor(cx) - 3; x <= (int) Math.ceil(cx) + 3; x++) {
+				for (int z = (int) Math.floor(cz) - 3; z <= (int) Math.ceil(cz) + 3; z++) {
+					double side = (x - cx) * -uz + (z - cz) * ux;
+					double along = (x - cx) * ux + (z - cz) * uz;
+					if (Math.abs(along) > 0.6) {
+						continue;
+					}
+					for (int y = (int) Math.floor(cy) - 1; y <= (int) Math.ceil(cy) + 3; y++) {
+						double ex = side / 2.4;
+						double ey = (y - cy - 1.0) / 2.2;
+						if (ex * ex + ey * ey <= 1.0) {
+							carved.add(new BlockPos(x, y, z));
+						}
+					}
 				}
-				level.setBlock(origin.offset(e.getKey().rotate(rotation)), state.rotate(rotation), flags);
+			}
+			// The doorway: a frame across the passage.
+			if (Math.abs(t - door) < 0.25) {
+				for (int k = -4; k <= 4; k++) {
+					for (int y = (int) Math.floor(cy) - 2; y <= (int) Math.ceil(cy) + 5; y++) {
+						int x = (int) Math.round(cx - uz * k);
+						int z = (int) Math.round(cz + ux * k);
+						double ex = k / 2.4;
+						double ey = (y - cy - 1.0) / 2.2;
+						if (ex * ex + ey * ey > 1.0 && ex * ex + ey * ey <= 2.4) {
+							boolean edge = Math.abs(k) == 3 && y == (int) Math.ceil(cy) + 3;
+							this.doorway.put(new BlockPos(x, y, z), edge ? Blocks.CHISELED_DEEPSLATE.defaultBlockState()
+									: Blocks.POLISHED_DEEPSLATE.defaultBlockState());
+						}
+					}
+				}
 			}
 		}
-		// Sculk grown with vanilla's own ancient-city patch feature, then its shriekers made unable to summon (one
-		// Warden per factory).
+		for (BlockPos p : carved) {
+			if (inGrid(p.getX(), p.getY(), p.getZ()) && isOpen(p.getX(), p.getY(), p.getZ())) {
+				continue;
+			}
+			BlockPos below = p.below();
+			if (!carved.contains(below)) {
+				set(below.getX(), below.getY(), below.getZ(), hash(below.getX(), below.getY(), below.getZ(), 51) < 0.3
+						? Blocks.CRACKED_DEEPSLATE_TILES.defaultBlockState() : Blocks.DEEPSLATE_TILES.defaultBlockState());
+			}
+			set(p.getX(), p.getY(), p.getZ(), Blocks.AIR.defaultBlockState());
+			this.attached.remove(p);
+			for (Direction dir : Direction.values()) {
+				BlockPos n = p.relative(dir);
+				if (dir != Direction.DOWN && !carved.contains(n) && !this.blocks.containsKey(n)) {
+					this.blocks.put(n, SEAL);
+				}
+			}
+		}
+		for (Map.Entry<BlockPos, BlockState> e : this.doorway.entrySet()) {
+			this.blocks.remove(e.getKey());
+			this.blocks.put(e.getKey(), e.getValue());
+		}
+	}
+
+	private final Map<BlockPos, BlockState> doorway = new LinkedHashMap<>();
+	/** Placement marker: deepslate only where the world holds a liquid there (the tunnel's sealed sides). */
+	private static final BlockState SEAL = Blocks.STRUCTURE_VOID.defaultBlockState();
+
+	// ---- Placing ----
+
+	/**
+	 * Builds the whole Fabricator at once (the op command, tests): origin is the platform's middle (first air above the
+	 * deck), then does what worldgen leaves to the first time a player comes near ({@link #prepare}).
+	 */
+	public void place(ServerLevel level, BlockPos origin, Rotation rotation) {
+		placeIn(level, level.getChunkSource().getGenerator(), origin, rotation, null, RandomSource.create(this.seed));
+		prepare(level, origin, rotation);
+	}
+
+	/**
+	 * Places the part of the build inside {@code box} (a chunk during worldgen; null for all of it). Works on a
+	 * worldgen region: block states, the upside-down beacon, chest loot tables, wall connections, and vanilla's
+	 * ancient-city sculk patches grown from seeds inside the box.
+	 */
+	public void placeIn(net.minecraft.world.level.WorldGenLevel level, net.minecraft.world.level.chunk.ChunkGenerator generator, BlockPos origin,
+			Rotation rotation, net.minecraft.world.level.levelgen.structure.@Nullable BoundingBox box, RandomSource random) {
+		int flags = Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE;
+		BooleanProperty upsideDown = upsideDownProperty();
+		BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
+		for (Map<BlockPos, BlockState> pass : List.of(this.blocks, this.attached)) {
+			for (Map.Entry<BlockPos, BlockState> e : pass.entrySet()) {
+				BlockPos local = e.getKey();
+				BlockPos r = local.rotate(rotation);
+				pos.set(origin.getX() + r.getX(), origin.getY() + r.getY(), origin.getZ() + r.getZ());
+				if (box != null && !box.isInside(pos) || level.isOutsideBuildHeight(pos)) {
+					continue;
+				}
+				BlockState state = e.getValue();
+				if (state == SEAL) {
+					if (!level.getFluidState(pos).isEmpty()) {
+						level.setBlock(pos, Blocks.DEEPSLATE.defaultBlockState(), flags);
+					}
+					continue;
+				}
+				if (local.equals(this.ceilingBeacon) && upsideDown != null) {
+					state = state.setValue(upsideDown, true);
+				}
+				level.setBlock(pos, state.rotate(rotation), flags);
+			}
+		}
+		for (BlockPos chest : this.chests) {
+			BlockPos at = toWorld(origin, chest, rotation);
+			if ((box == null || box.isInside(at)) && level.getBlockEntity(at) instanceof net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity c) {
+				c.setLootTable(FabricatorLoot.office());
+				c.setLootTableSeed(random.nextLong());
+			}
+		}
+		// Walls settle their connections.
+		for (Map<BlockPos, BlockState> pass : List.of(this.blocks, this.attached)) {
+			for (Map.Entry<BlockPos, BlockState> e : pass.entrySet()) {
+				if (e.getValue().getBlock() instanceof WallBlock || e.getValue().getBlock() instanceof IronBarsBlock) {
+					BlockPos at = toWorld(origin, e.getKey(), rotation);
+					if (box == null || box.isInside(at)) {
+						level.setBlock(at, Block.updateFromNeighbourShapes(level.getBlockState(at), level, at), flags);
+					}
+				}
+			}
+		}
+		// Sculk grown with vanilla's own ancient-city patch feature (as the cities get theirs), each patch in the
+		// chunk its seed is in.
 		net.minecraft.world.level.levelgen.feature.Feature patch = level.registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.FEATURE)
 				.getValueOrThrow(net.minecraft.data.worldgen.features.CaveFeatures.SCULK_PATCH_ANCIENT_CITY);
 		RandomSource sculkRandom = RandomSource.create(this.seed ^ 0x5C01C0DEL);
 		for (BlockPos seedPos : this.sculkSeeds) {
-			patch.place(level, level.getChunkSource().getGenerator(), sculkRandom, toWorld(origin, seedPos, rotation));
+			BlockPos at = toWorld(origin, seedPos, rotation);
+			RandomSource r = RandomSource.create(sculkRandom.nextLong());
+			if (box == null || box.isInside(at)) {
+				patch.place(level, generator, r, at);
+			}
 		}
-		// Keep the machine readable: the teleporter pad and every lamp stay clear of sculk (the ancient builders'
-		// working parts; the growth creeps round them).
+	}
+
+	/**
+	 * What waits for the first time a player comes near (worldgen can't do it): the sculk patches' shriekers made
+	 * unable to summon (one Warden per Fabricator), the pad and its lamps cleared of sculk, the office jukebox loaded
+	 * with music disc 13 and playing.
+	 */
+	public void prepare(ServerLevel level, BlockPos origin, Rotation rotation) {
+		int flags = Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE;
 		for (Map.Entry<BlockPos, BlockState> e : this.blocks.entrySet()) {
 			BlockPos local = e.getKey();
 			boolean pad = Math.abs(local.getX()) <= 2 && Math.abs(local.getZ() - DROP_Z) <= 2 && local.getY() == -1;
 			if (pad || e.getValue().is(Blocks.REDSTONE_LAMP)) {
 				BlockPos pos = toWorld(origin, local, rotation);
-				level.setBlock(pos, e.getValue().rotate(rotation), flags);
+				if (!level.getBlockState(pos).is(e.getValue().getBlock())) {
+					level.setBlock(pos, e.getValue().rotate(rotation), flags);
+				}
 				if (level.getBlockState(pos.above()).is(Blocks.SCULK_VEIN)) {
 					level.setBlock(pos.above(), Blocks.AIR.defaultBlockState(), flags);
 				}
@@ -1054,18 +1290,11 @@ public final class FactoryDesign {
 				level.setBlock(pos, state.setValue(SculkShriekerBlock.CAN_SUMMON, false), flags);
 			}
 		}
-		// The office jukebox plays music disc 13 (eerie; owner: "a weird music disc that's always playing").
-		if (level.getBlockEntity(toWorld(origin, this.jukebox, rotation)) instanceof net.minecraft.world.level.block.entity.JukeboxBlockEntity box) {
+		// The office jukebox plays music disc 13 (eerie; owner: "a weird music disc that's always playing"; vanilla's
+		// infinite jukebox, coming in current snapshots, will keep it going).
+		if (level.getBlockEntity(toWorld(origin, this.jukebox, rotation)) instanceof net.minecraft.world.level.block.entity.JukeboxBlockEntity box
+				&& box.getTheItem().isEmpty()) {
 			box.setTheItem(new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.MUSIC_DISC_13));
-		}
-		// Walls, bars and chains settle their connections now that everything stands.
-		for (Map<BlockPos, BlockState> pass : List.of(this.blocks, this.attached)) {
-			for (Map.Entry<BlockPos, BlockState> e : pass.entrySet()) {
-				if (e.getValue().getBlock() instanceof WallBlock || e.getValue().getBlock() instanceof IronBarsBlock) {
-					BlockPos pos = origin.offset(e.getKey().rotate(rotation));
-					level.setBlock(pos, Block.updateFromNeighbourShapes(level.getBlockState(pos), level, pos), flags);
-				}
-			}
 		}
 	}
 
