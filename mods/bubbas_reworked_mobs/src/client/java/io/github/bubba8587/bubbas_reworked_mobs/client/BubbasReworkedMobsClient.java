@@ -38,5 +38,8 @@ public class BubbasReworkedMobsClient implements ClientModInitializer {
 
 		// Loot on display: the item's own model, posed per placement.
 		BlockEntityRenderers.register(ModBlockEntities.LOOT_DISPLAY, LootDisplayRenderer::new);
+		// Gravestones: vanilla's sign text renderer, placed on the stone's face (the stone is a block model).
+		BlockEntityRenderers.register(ModBlockEntities.GRAVESTONE,
+				(net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider) io.github.bubba8587.bubbas_reworked_mobs.client.grave.GravestoneRenderer::new);
 	}
 }

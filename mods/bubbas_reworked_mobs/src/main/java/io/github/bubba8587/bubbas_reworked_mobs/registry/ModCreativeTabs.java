@@ -31,6 +31,7 @@ public final class ModCreativeTabs {
 								output.accept(withPose(new ItemStack(ModItems.sleeper(variant)), pose));
 							}
 						}
+						output.accept(ModItems.GRAVESTONE);
 					})
 					.build());
 

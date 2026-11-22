@@ -1,0 +1,64 @@
+{
+  "variants": {
+    "rotation=0": {
+      "model": "bubbas_reworked_mobs:block/gravestone_rot_0"
+    },
+    "rotation=1": {
+      "model": "bubbas_reworked_mobs:block/gravestone_rot_1"
+    },
+    "rotation=10": {
+      "model": "bubbas_reworked_mobs:block/gravestone_rot_2",
+      "y": 180
+    },
+    "rotation=11": {
+      "model": "bubbas_reworked_mobs:block/gravestone_rot_3",
+      "y": 180
+    },
+    "rotation=12": {
+      "model": "bubbas_reworked_mobs:block/gravestone_rot_0",
+      "y": 270
+    },
+    "rotation=13": {
+      "model": "bubbas_reworked_mobs:block/gravestone_rot_1",
+      "y": 270
+    },
+    "rotation=14": {
+      "model": "bubbas_reworked_mobs:block/gravestone_rot_2",
+      "y": 270
+    },
+    "rotation=15": {
+      "model": "bubbas_reworked_mobs:block/gravestone_rot_3",
+      "y": 270
+    },
+    "rotation=2": {
+      "model": "bubbas_reworked_mobs:block/gravestone_rot_2"
+    },
+    "rotation=3": {
+      "model": "bubbas_reworked_mobs:block/gravestone_rot_3"
+    },
+    "rotation=4": {
+      "model": "bubbas_reworked_mobs:block/gravestone_rot_0",
+      "y": 90
+    },
+    "rotation=5": {
+      "model": "bubbas_reworked_mobs:block/gravestone_rot_1",
+      "y": 90
+    },
+    "rotation=6": {
+      "model": "bubbas_reworked_mobs:block/gravestone_rot_2",
+      "y": 90
+    },
+    "rotation=7": {
+      "model": "bubbas_reworked_mobs:block/gravestone_rot_3",
+      "y": 90
+    },
+    "rotation=8": {
+      "model": "bubbas_reworked_mobs:block/gravestone_rot_0",
+      "y": 180
+    },
+    "rotation=9": {
+      "model": "bubbas_reworked_mobs:block/gravestone_rot_1",
+      "y": 180
+    }
+  }
+}

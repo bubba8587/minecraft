@@ -21,6 +21,10 @@ public final class ModBlockEntities {
 	public static final BlockEntityType<LootDisplayBlockEntity> LOOT_DISPLAY = Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE,
 			BubbasReworkedMobs.id("loot_display"), FabricBlockEntityTypeBuilder.create(LootDisplayBlockEntity::new, ModBlocks.LOOT_DISPLAY).build());
 
+	public static final BlockEntityType<io.github.bubba8587.bubbas_reworked_mobs.grave.GravestoneBlockEntity> GRAVESTONE = Registry.register(
+			BuiltInRegistries.BLOCK_ENTITY_TYPE, BubbasReworkedMobs.id("gravestone"),
+			FabricBlockEntityTypeBuilder.create(io.github.bubba8587.bubbas_reworked_mobs.grave.GravestoneBlockEntity::new, ModBlocks.GRAVESTONE).build());
+
 	private ModBlockEntities() {
 	}
 
