@@ -146,7 +146,7 @@ public final class WornEffects {
 			if (e.wornAttributes().isEmpty()) {
 				continue;
 			}
-			boolean wet = e.wornFlag("wet_only");
+			boolean wet = e.wornFlag("wet_only") || e.wornFlag("sneak_only");
 			double s = GemValues.rawWorn(entity, e.key());
 			// A vanilla effect or a gem effect from a hit (they never coexist): the worn part only tops up above it.
 			double f = Math.max(GemValues.vanillaFraction(entity, e.key()), GemValues.hit(entity, e.key()));
@@ -196,6 +196,47 @@ public final class WornEffects {
 		}
 	}
 
+	/** Last tick each wearer was sneaking (Turtle Master's shell lingers a moment after). Server thread only. */
+	private static final java.util.Map<LivingEntity, Integer> LAST_SNEAK = new java.util.WeakHashMap<>();
+
+	/**
+	 * Turtle Master worn (owner, 2026-11-22: "shell up"): its Resistance and Slowness apply only while the wearer sneaks,
+	 * and for {@code shell_linger_ticks} (half a second) after it stops, so tapping sneak can't flick the shell on and
+	 * off. Mobs don't sneak, so a mob in Turtle Master armor never shells up.
+	 */
+	public static boolean shelled(LivingEntity entity) {
+		if (entity.isShiftKeyDown()) {
+			return true;
+		}
+		Integer last = LAST_SNEAK.get(entity);
+		int linger = (int) Balance.get().effect("turtle_master").wornNumber("shell_linger_ticks", 10);
+		return last != null && entity.tickCount - last <= linger && entity.tickCount >= last;
+	}
+
+	/** Every tick for a Turtle Master wearer: its Slowness on while shelled, off otherwise. */
+	public static void shellTick(LivingEntity entity) {
+		if (entity.isShiftKeyDown()) {
+			LAST_SNEAK.put(entity, entity.tickCount);
+		}
+		Balance.EffectData e = Balance.get().effect("turtle_master");
+		double s = GemValues.rawWorn(entity, "turtle_master");
+		double f = Math.max(GemValues.vanillaFraction(entity, "turtle_master"), GemValues.hit(entity, "turtle_master"));
+		boolean on = s > 0.0 && shelled(entity);
+		for (int i = 0; i < e.wornAttributes().size(); i++) {
+			Balance.Attr a = e.wornAttributes().get(i);
+			AttributeInstance inst = attribute(entity, a.attribute());
+			if (inst == null) {
+				continue;
+			}
+			double amount = combinedAmount(a, s, f);
+			if (on && amount != 0.0) {
+				inst.addOrUpdateTransientModifier(new AttributeModifier(wetId("turtle_master", i), amount, operation(a.operation())));
+			} else {
+				inst.removeModifier(wetId("turtle_master", i));
+			}
+		}
+	}
+
 	/** Server tick of a wearer with gems: health over time, hunger, absorption refill, Conduit Power, pulsed effects. */
 	public static void tick(ServerLevel level, LivingEntity entity, GemTotals t) {
 		GemBeacons.expire(entity);
@@ -235,6 +276,9 @@ public final class WornEffects {
 		if (t.has("conduit_power")) {
 			wetTick(entity);
 		}
+		if (t.has("turtle_master")) {
+			shellTick(entity);
+		}
 		// Harmful on/off gems that can't be partial (Glowing, Blindness, Nausea, Darkness): always on (owner), the vanilla
 		// effect kept topped up; Invisibility likewise, but only at the perfect complete set (owner, Q33). Levitation is a
 		// slow drift instead (gravity hook).
@@ -256,7 +300,8 @@ public final class WornEffects {
 		Balance b = Balance.get();
 		double gem = 0.0;
 		for (String key : new String[] {"resistance", "turtle_master"}) {
-			double s = Math.max(GemValues.rawWorn(entity, key), GemValues.hit(entity, key));
+			double worn = b.effect(key).wornFlag("sneak_only") && !shelled(entity) ? 0.0 : GemValues.rawWorn(entity, key);
+			double s = Math.max(worn, GemValues.hit(entity, key));
 			gem = Math.max(gem, b.effect(key).wornNumber("damage_reduction", 0.4) * s);
 		}
 		if (gem <= 0.0) {

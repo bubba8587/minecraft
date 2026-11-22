@@ -40,7 +40,7 @@ Values are for the best build (the perfect set); weaker builds give less.
 | Haste | Faster mining and attacks: the best build mines twice as fast and attacks 50% faster, well beyond the beacon's Haste II (found gems only) |
 | Regeneration | Healing when hurt (the best build heals like Regeneration II, all the time) |
 | Resistance | Less damage taken (up to 40% less, the beacon's Resistance II; found gems only) |
-| Turtle Master | Much less damage taken (up to 80% less) and much slower movement (up to 90% slower), together, like the strong potion |
+| Turtle Master | Shell up: only while you sneak (and for half a second after you stop), much less damage taken (up to 80% less) and much slower movement (up to 90% slower), together, like the strong potion. Walking normally, it does nothing. Mobs don't sneak, so it never helps them. |
 | Fire Resistance | Less fire and lava damage, and fire goes out sooner; the perfect set gives real Fire Resistance |
 | Water Breathing | Air lasts longer underwater; the perfect set gives real Water Breathing |
 | Night Vision | The world is partly lit in the dark (fully at the best build) |

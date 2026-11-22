@@ -1010,7 +1010,9 @@
 						"curve": "linear"
 					}
 				],
-				"damage_reduction": 0.8
+				"damage_reduction": 0.8,
+				"sneak_only": true,
+				"shell_linger_ticks": 10
 			},
 			"hit_unit": 0.8,
 			"worn_amplifier": 3,

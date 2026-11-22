@@ -110,7 +110,7 @@ public class GemsEverywhereGameTest {
 			wear(pig, key);
 			Balance.EffectData e = b.effect(key);
 			s = e.wornCap(); // owner: mobility effects have a raised worn cap
-			if (!e.wornAttributes().isEmpty() && !e.wornFlag("wet_only")) {
+			if (!e.wornAttributes().isEmpty() && !e.wornFlag("wet_only") && !e.wornFlag("sneak_only")) {
 				for (int i = 0; i < e.wornAttributes().size(); i++) {
 					if (BuiltInRegistries.ATTRIBUTE.get(Identifier.parse(e.wornAttributes().get(i).attribute())).map(pig::getAttribute).orElse(null) == null) {
 						continue; // pigs have no attack damage or speed: checked on a player below
@@ -130,8 +130,23 @@ public class GemsEverywhereGameTest {
 				}
 				case "resistance" -> close(WornEffects.modifyDamage(pig, pig.damageSources().generic(), 10F), 10 * (1 - 0.4 * s), 1e-4, helper, key);
 				case "turtle_master" -> {
-					close(WornEffects.modifyDamage(pig, pig.damageSources().generic(), 10F), 10 * (1 - 0.8 * s), 1e-4, helper, "Turtle Master resistance");
-					close(modifier(pig, "minecraft:movement_speed", "worn/turtle_master/0"), -0.9 * s, 1e-6, helper, "Turtle Master slowness");
+					// Shell up (owner, 2026-11-22): nothing while walking; both parts while sneaking and half a second after.
+					var speed = pig.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED);
+					Identifier slow = WornEffects.wetId("turtle_master", 0);
+					WornEffects.shellTick(pig);
+					close(WornEffects.modifyDamage(pig, pig.damageSources().generic(), 10F), 10, 1e-4, helper, "Turtle Master off while not sneaking");
+					check(helper, speed.getModifier(slow) == null, "Turtle Master slowness while not sneaking");
+					pig.setShiftKeyDown(true);
+					WornEffects.shellTick(pig);
+					close(WornEffects.modifyDamage(pig, pig.damageSources().generic(), 10F), 10 * (1 - 0.8 * s), 1e-4, helper, "Turtle Master resistance while sneaking");
+					close(speed.getModifier(slow).amount(), -0.9 * s, 1e-6, helper, "Turtle Master slowness while sneaking");
+					pig.setShiftKeyDown(false);
+					pig.tickCount += 10;
+					WornEffects.shellTick(pig);
+					check(helper, speed.getModifier(slow) != null, "the shell lingers half a second after sneaking");
+					pig.tickCount += 1;
+					WornEffects.shellTick(pig);
+					check(helper, speed.getModifier(slow) == null, "the shell drops after half a second");
 				}
 				case "fire_resistance" -> close(WornEffects.modifyDamage(pig, pig.damageSources().inFire(), 10F), 10 * (1 - s), 1e-4, helper, key);
 				case "night_vision", "hero_of_the_village" -> close(GemValues.value(pig, key), s, 1e-6, helper, key + " value for its hook");

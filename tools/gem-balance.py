@@ -1831,7 +1831,9 @@ WORN = {
 	"health_boost": {"attributes": [("minecraft:max_health", 8.0, "add_value")]},
 	"regeneration": {"heal_per_second": 0.8},
 	"resistance": {"damage_reduction": 0.4},
-	"turtle_master": {"attributes": [("minecraft:movement_speed", -0.9, "add_multiplied_total")], "damage_reduction": 0.8},
+	"turtle_master": {"attributes": [("minecraft:movement_speed", -0.9, "add_multiplied_total")], "damage_reduction": 0.8,
+                      # Shell up (owner, 2026-11-22): worn, both parts only while sneaking and for shell_linger_ticks after.
+                      "sneak_only": True, "shell_linger_ticks": 10},
 	"night_vision": {"intensity": 1.0},
 	"instant_health": {"heal_curve": True},
 	"instant_damage": {"harm_curve": True},
