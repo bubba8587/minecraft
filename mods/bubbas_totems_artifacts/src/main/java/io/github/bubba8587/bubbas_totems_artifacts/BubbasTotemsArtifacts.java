@@ -1,6 +1,8 @@
 // dte:C6
 package io.github.bubba8587.bubbas_totems_artifacts;
 
+import io.github.bubba8587.bubbas_totems_artifacts.compat.SleeperHook;
+import io.github.bubba8587.bubbas_totems_artifacts.end.TotemOfTheEndItem;
 import io.github.bubba8587.bubbas_totems_artifacts.growth.Growth;
 import io.github.bubba8587.bubbas_totems_artifacts.keeping.Keeping;
 import io.github.bubba8587.bubbas_totems_artifacts.registry.ModBlocks;
@@ -12,6 +14,7 @@ import io.github.bubba8587.bubbas_totems_artifacts.totems.TotemsLoot;
 import io.github.bubba8587.bubbas_totems_artifacts.warding.WardingLoot;
 import io.github.bubba8587.bubbas_totems_artifacts.warding.Wards;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.ItemStack;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,5 +46,8 @@ public class BubbasTotemsArtifacts implements ModInitializer {
 		Growth.initialize();
 		StructureSeeker.initialize();
 		TotemsLoot.initialize();
+		// The Totems of the Beginning and the End: Reworked Mobs' cairns give them, and its endermen know the End's holder.
+		SleeperHook.get().setUpEndermen(() -> new ItemStack(ModItems.TOTEM_OF_THE_BEGINNING), () -> new ItemStack(ModItems.TOTEM_OF_THE_END),
+				TotemOfTheEndItem::held);
 	}
 }

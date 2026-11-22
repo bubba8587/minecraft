@@ -201,7 +201,7 @@ public final class EndermanSpawning {
 	}
 
 	/** The highest spot in this column within SPAWN_HEIGHT of the site's ground with a floor and room for an enderman. */
-	private static @Nullable BlockPos spawnCell(ServerLevel level, int x, int y, int z) {
+	static @Nullable BlockPos spawnCell(ServerLevel level, int x, int y, int z) {
 		BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
 		for (int dy = EndermanTuning.SPAWN_HEIGHT; dy >= -EndermanTuning.SPAWN_HEIGHT; dy--) {
 			pos.set(x, y + dy, z);
@@ -299,7 +299,7 @@ public final class EndermanSpawning {
 	}
 
 	/** Vanilla's rules for a natural enderman here: the biome lists endermen, and its spawn placement and light rules pass. */
-	private static boolean allowedHere(ServerLevel level, BlockPos cell, RandomSource random) {
+	static boolean allowedHere(ServerLevel level, BlockPos cell, RandomSource random) {
 		boolean listed = level.environmentAttributes().getValue(EnvironmentAttributes.NATURAL_MOB_SPAWNS, cell)
 				.getMobsToSpawn(MobCategory.MONSTER).unwrap().stream().anyMatch(w -> w.value().type() == EntityTypes.ENDERMAN);
 		return listed && SpawnPlacements.isSpawnPositionOk(EntityTypes.ENDERMAN, level, cell)

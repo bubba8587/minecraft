@@ -38,5 +38,8 @@
   "seeking.bubbas_totems_artifacts.trail_ruins": "Trail Ruins",
   "seeking.bubbas_totems_artifacts.trial_chambers": "Trial Chambers",
   "seeking.bubbas_totems_artifacts.village": "Village",
-  "seeking.bubbas_totems_artifacts.woodland_mansion": "Woodland Mansion"
+  "seeking.bubbas_totems_artifacts.woodland_mansion": "Woodland Mansion",
+  "item.bubbas_totems_artifacts.totem_of_the_beginning": "Totem of the Beginning",
+  "item.bubbas_totems_artifacts.totem_of_the_end": "Totem of the End",
+  "beacon.bubbas_totems_artifacts.beginning": "Endermen come to tend the ground"
 }
