@@ -11,6 +11,7 @@ A separate mod for **artifacts**: found items that do things potions and enchant
 | Grave Talisman | built (moved from Reworked Mobs) |
 | Totem of Warding | built (moved from Reworked Mobs), plus its totem statue |
 | Totem of Keeping, Gathering, Fortification, Growth, Seeking | built 2026-11-16 (below; unreleased) |
+| Totem of the Beginning, Totem of the End | built 2026-11-22 (below; unreleased) |
 
 What stays in Reworked Mobs (`specs/undead.md`): sleepers, the hearing/disturbance meter, light calming sleepers, bells being loud to sleepers, loot displays, combat, the monster cap, and the `api.Sleepers` hook below.
 
@@ -149,6 +150,73 @@ Milestone (`TotemsBeaconGameTest`, real only with `-PwithBeacons`): Gathering fi
 
 Client part `totems` (`TotemsClientGameTest`): the five (and Warding) in the hotbar at 16x and 32x; Gathering before/pulling/after; Seeking held facing the found village (needle up) and turned 90 degrees (needle to the side), 16x and 32x; the seek result checked against vanilla /locate in that world.
 
+
+## Totems of the Beginning and the End (built 2026-11-22)
+
+Owner-approved design, handed over by the orchestrator. Player-facing description: `player-docs/Projects/Bubba's Totems & Artifacts/Totem of the Beginning.md` and `Totem of the End.md`. The cairn side (ripple, offerings, completion gift, beacon nexus) lives in Reworked Mobs: `specs/endermen.md`, "Cairn gifts, the ripple and the nexus".
+
+- **Totem of the Beginning:** used up on use; the ground within 24 blocks ripples back, outward, to how it generated (Reworked Mobs' target world), never harming builds. Without Reworked Mobs or outside the overworld it does nothing and isn't used up. In a beacon the area draws caretaker endermen like a cairn nexus. Found only as a once-ever offering at some complete cairns. Never crafted.
+- **Totem of the End:** held (either hand), endermen treat you as kin (eye contact, and Reworked Mobs' cairn anger). Used, it teleports to the aimed block within range by the owner's landing rules (top face: stand on it; side face: on top if the 2 above are open, else down to the nearest safe footing; bottom face: down), with a cooldown sweep; no hit, no cooldown. Found rarely in End city chests and, with Reworked Mobs, once per cairn to the player who places its completing block.
+
+### As built
+
+**Totems & Artifacts** (`mods/bubbas_totems_artifacts`)
+- Items `bubbas_totems_artifacts:totem_of_the_beginning` (`beginning/TotemOfTheBeginningItem`) and `:totem_of_the_end` (`end/TotemOfTheEndItem`), `stacksTo(1)`, `Rarity.RARE`, in the creative tab after Seeking. No new blocks (B15). No statue (only Warding has one so far; spec says statues come with the owner's designs).
+- `end/EndTeleport`: aim = `level.clip` from the eyes, `ClipContext.Block.COLLIDER` (aims through grass and flowers) and `Fluid.NONE` (through water). Landing uses vanilla's `noCollision` for the entity's box (as `randomTeleport` does). Teleport like the ender pearl: `stopRiding`, `ServerPlayer.teleport(TeleportTransition(..., Vec3.ZERO, Relative.ROTATION, DO_NOTHING))`, `resetFallDistance`, `resetCurrentImpulseContext`, `GameEvent.TELEPORT`; sound `ENDERMAN_TELEPORT` and `PORTAL` particles at both ends; cooldown via `ItemCooldowns.addCooldown` (B19).
+- `mixin/EndermanKinMixin`: HEAD of `Enderman.isBeingStaredBy` returns false when the player holds the totem in either hand (vanilla's own disguise check is the carved pumpkin on the head; this is the same check for the hand).
+- `compat/BeginningBeaconPayload` (entrypoint `bubbas_reworked_beacons:payload`): accepts the totem only when Reworked Mobs is installed; power 1, 1 layer; refreshes the area each pulse for `AREA_LIFETIME_TICKS` (100).
+- `compat/SleeperHook` gained `restoreAround`, `drawEndermen`, `setUpEndermen(offering, completionGift, kin)`; `ReworkedMobsSleepers` calls the new api methods and ignores a `LinkageError` from an older Reworked Mobs. `BubbasTotemsArtifacts.onInitialize` calls `setUpEndermen` once.
+- Loot: `TotemsTuning.END_LOOT` joins `TotemsLoot` (same additive-pool pattern).
+- Textures: `tools/totems-textures.py` (two new grids), rows in `docs/art-todo.md`.
+
+#### Numbers (builder's starting values, owner to playtest)
+
+| | Value | Where |
+|---|---|---|
+| Beginning ripple radius | 24 blocks, a cylinder 24 up and 24 down from your feet | `TotemsTuning.BEGINNING_RADIUS` |
+| Beginning ripple speed | 1 block every 2 ticks (about 2.4 s to the edge) | `TotemsTuning.BEGINNING_TICKS_PER_BLOCK` |
+| Build protection | a column is skipped if it or any column within 2 holds a built/placed block | `EndermanTuning.RIPPLE_PROTECT_RADIUS` |
+| Waiting for generated terrain | a column not worked out yet is retried for up to 30 s | `EndermanTuning.RIPPLE_PENDING_TICKS` |
+| End teleport range | 32 blocks | `TotemsTuning.END_RANGE` |
+| End cooldown | 80 ticks (4 s) | `TotemsTuning.END_COOLDOWN_TICKS` |
+| End in End city treasure | 5 % per chest | `TotemsTuning.END_LOOT` |
+| Cairns that leave an offering | 1 in 2 (picked from each site's seed) | `EndermanTuning.OFFERING_SHARE` |
+| Offering timing | checked every 5 s while a player is within 96; 1 in 12 per check (about a minute) once complete with one of its endermen within 16 of the centre | `OFFERING_CHECK_TICKS`, `OFFERING_ONE_IN`, `OFFERING_WITNESS_RANGE` |
+| Offering spot | 2 blocks outside the cairn's footprint, side picked by the seed | `OFFERING_GAP` |
+| Beacon area draw | 35 % per 5 s, up to 6 caretakers in the area (+8 round it), never within 16 of a player | `NEXUS_SPAWN_CHANCE`, `NEXUS_CAP`, `NEXUS_MARGIN`, `NEXUS_PLAYER_DISTANCE` |
+
+#### Builder's choices (owner may change)
+
+1. **Ripple radius 24 and speed 2 ticks a block** (about 2.4 s). A cylinder 24 up and down, not a sphere, so each column is done in one go (fills bottom up, so sand and gravel always land on a floor).
+2. **Build protection is per column, radius 2, the whole cylinder's height.** Safe rather than thorough: a torch at the bottom of a mine keeps the crater above it too. A mine with rails or torches is only partly filled (pockets round each torch).
+3. **Cobblestone, mossy cobblestone, cobbled deepslate, smooth stone and dirt paths count as built** (terrain generation never makes them on its own), so cobblestone houses are safe. Dirt and plain stone builds are *not* recognised: a pure dirt hut standing on the ground can be taken away like a dirt pillar. Say if that should change.
+4. **Geodes' insides are left alone** (their shell protects the column), and so are lava pools.
+5. **Water and lava are never filled over or put back**; a crater that flooded stays a pond.
+6. **A strip mine you're standing in fills round you but not where you stand**, so you can end up in a 1x2 pocket of stone. No block goes where a mob or player is.
+7. **The top-layer swap only happens away from water** (like the endermen), so natural sand and gravel by rivers and lakes stay.
+8. **The Beginning is used up only when the ripple starts**; the client shows the use animation only in the overworld with Reworked Mobs installed. No message when it does nothing.
+9. **Beacon: the totem isn't accepted without Reworked Mobs** (there are no caretakers to draw), rather than taking it and doing nothing.
+10. **Beacon area spawns** follow the cairn rules (night, game rule, Peaceful...) but keep only 16 blocks from players, not 24 (beacon areas are often small).
+11. **Offerings: 1 in 2 cairns, about a minute after completion with one of its endermen present.** The offering appears with an enderman's teleport sound and portal particles; no enderman walks over and sets it down.
+12. **Completion gift when endermen finished the cairn**: the first player to put back a broken block gets it (it's per site, once).
+13. **Totem of the End landing:** top face with no room or unsafe → nothing (no fallback downward). Aims through grass, flowers and water (lands on a lake bed, as an ender pearl can). Fire, campfire, powder snow, magma, cactus, berry bush, wither rose and lava count as unsafe. Range 32, cooldown 4 s.
+14. **Kin covers eye contact for every enderman** (vanilla, Nether and End too), and Reworked Mobs' cairn anger. Hitting an enderman still makes that one fight you (vanilla); the others near a cairn stay calm.
+15. **Rarity RARE** (aqua name), one step above the other totems' UNCOMMON, since one is a once-ever cairn gift and the other is single-use terrain repair.
+16. **End city chance 5 %** (the Totem of Keeping is 8 % in the same table).
+17. **No totem statue** for either (only Warding has one; the spec waits for the owner's statue designs).
+
+#### Tests and milestone objectives
+
+- Reworked Mobs core `ReworkedMobsCoreGameTest.endermanRippleRestoresGroundButNotBuilds` (body in `EndermanTotemsGameTest`): a hole fills with grass on stone, a dirt pillar goes, sand on the top layer turns to grass, a 3x3 pit with a plank floor keeps its air.
+- Reworked Mobs milestone `EndermanTotemsGameTest`: `completionGiftOncePerCairn` (placing through `ItemStack.useOn`, the real path: an unfinished cairn gives nothing; completing gives one; breaking and rebuilding gives no second; the site is marked), `offeringLaidOncePerCairn` (laid once on display; a player takes it with an empty hand; never laid again, also after it's taken).
+- Totems core `BubbasTotemsArtifactsCoreGameTest.endLandingRules` (body in `BeginningEndGameTest`): top face, side with room, side without room → floor in front, slab top, fire on top → nowhere, bottom face → floor under it, miss → nowhere.
+- Totems milestone `BeginningEndGameTest`: `endTeleportsWhereAimedWithCooldown` (real use: unsafe aim → FAIL, no cooldown, no move; aim at a block 10 away → there, cooldown on, not used up), `endHeldMakesEyeContactHarmless` (vanilla `isBeingStaredBy`: true without, false with the totem in the off hand), `beginningUsedOnlyWithReworkedMobs` (used up with `-PwithMobs`, PASS and kept without), `endFoundInEndCitiesAndSingleStack`.
+- Reworked Mobs client part `endermen` (real default-preset world, seed 20261116): a ripple dry run (`Ripples.dryRun`, changes nothing) at spawn and 40 blocks east of each of the three nearest cairns, radius 24: **0 changes on untouched ground at all four**. Control: after digging a 3x3x3 hole and stacking a 3-high dirt pillar at spawn it finds exactly 30 (9 air→grass, 18 air→dirt, 3 dirt→air). Printed as `[endermen] ripple dry run ...`.
+- Client part `totems`: both in the hotbar and held in first person, 16x and 32x (`totems-hotbar`, `totems-held-beginning`, `totems-held-end`, and their `-32x`).
+
+Milestone test objectives not yet written as tests:
+- A beacon with the Totem of the Beginning draws caretakers into its area at night and they repair a hole there (needs `-PwithMobs -PwithBeacons`).
+- With Reworked Mobs, a player holding the Totem of the End breaks a cairn block and no enderman turns on them.
 
 ## As built (0.1.0)
 

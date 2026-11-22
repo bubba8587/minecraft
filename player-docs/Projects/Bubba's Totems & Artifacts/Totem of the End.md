@@ -1,0 +1,46 @@
+# Totem of the End
+
+*Part of [[Bubba's Totems & Artifacts]].*
+
+> [!infobox] Totem of the End
+> | | |
+> |---|---|
+> | **Type** | Artifact (item) |
+> | **Rarity** | Rare |
+> | **Stackable** | No |
+> | **Obtained** | End city chests; completing an enderman cairn |
+> | **Teleport range** | 32 blocks |
+> | **Cooldown** | 4 seconds |
+
+The **Totem of the End** is a reusable artifact that makes endermen treat its holder as one of their own and teleports its user to the block they aim at.
+
+## Obtaining
+
+- End city treasure chests (5 % per chest).
+- With [[Bubba's Reworked Mobs]]: the player who places the last missing block of an [[Endermen|enderman cairn]] receives one. Each cairn gives one only once, ever; breaking and rebuilding it gives no more. If the endermen finished the cairn themselves, the first player to break one of its blocks and put it back receives it.
+
+It cannot be crafted.
+
+## Usage
+
+### Held
+
+While a player holds the totem in either hand, endermen treat them as one of their own: looking an enderman in the eye does not anger it. This applies to every enderman, in every dimension. With [[Bubba's Reworked Mobs]], breaking a cairn or fighting near one also does not turn the cairn's endermen against the holder. An enderman that is hit still fights back.
+
+### Teleporting
+
+Using the totem teleports the player to the block they are aiming at, up to 32 blocks away. The totem is not used up; a 4-second cooldown follows each teleport. Aiming at nothing, or at a place with nowhere safe to land, does nothing and starts no cooldown.
+
+| Aimed at | Landing |
+|---|---|
+| The top of a block | On that block. |
+| The side of a block | On top of that block if there is room; otherwise straight down from in front of it, onto the nearest safe ground below. |
+| The underside of a block | Straight down from under it, onto the nearest safe ground below. |
+
+A landing spot is safe when the player fits there and it has no lava, fire, campfire, powder snow, magma block, cactus, sweet berry bush or wither rose in or under it. The void is never a landing spot. Water is allowed, and the aim passes through grass, flowers and water.
+
+The player is taken off any mount first, keeps facing the same way and takes no fall damage from the jump. An enderman's teleport sound and portal particles mark both ends.
+
+## Textures
+
+An end stone figure with a purpur crown, an enderman's dark face and magenta eyes, and an ender pearl on its chest. Placeholder art in this early version.

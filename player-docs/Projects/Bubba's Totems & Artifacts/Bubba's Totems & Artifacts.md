@@ -42,6 +42,8 @@ A found item that makes nearby monsters run away while held, and in a beacon fro
 - [[Totem of Fortification]]: stops explosions from breaking blocks.
 - [[Totem of Growth]]: makes plants grow faster.
 - [[Totem of Seeking]]: points toward a chosen kind of structure.
+- [[Totem of the Beginning]]: returns the ground around its user to how it was first generated (single use; needs Bubba's Reworked Mobs).
+- [[Totem of the End]]: endermen treat its holder as one of their own; teleports its user to the block they aim at.
 
 ## Totem statues
 
@@ -69,8 +71,8 @@ The mod requires Fabric API and works on its own. Two of Bubba's mods add to it 
 
 | Installed with | Adds |
 |---|---|
-| [[Bubba's Reworked Mobs]] | The Grave Talisman also senses [[Sleeping Undead|sleeping undead]]; the Totem of Warding calms sleeping undead, and a full ward keeps them asleep. |
-| [[Bubba's Reworked Beacons]] | The Totem of Warding fits in a [[Beacon|beacon]] and wards its area. |
+| [[Bubba's Reworked Mobs]] | The Grave Talisman also senses [[Sleeping Undead|sleeping undead]]; the Totem of Warding calms sleeping undead, and a full ward keeps them asleep. [[Endermen|Enderman cairns]] give the [[Totem of the Beginning]] (as an offering) and the [[Totem of the End]] (for completing one), and the Totem of the Beginning works only with this mod. |
+| [[Bubba's Reworked Beacons]] | The Totem of Warding fits in a [[Beacon|beacon]] and wards its area. The Totem of the Beginning in a beacon draws endermen to tend its area (with Bubba's Reworked Mobs). |
 
 ## History
 
