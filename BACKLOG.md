@@ -63,4 +63,6 @@ Parked ideas and open items, newest first within each project. Agents add to it 
 ## Repo
 - Test world stations for Warding and Reworked Beacons (a Totem of Warding, a bell near sleepers, lit vs dark sleepers, sky vs paired beacons), when the owner wants to playtest them (`specs/testworld.md`).
 - Owner to read and ratify (or rewrite) the goal drafts A1-A4 (`python3 tools/dte.py unratified`).
-- A future mod drastically reducing unenchanted mining speed.
+
+## Bubba's Reworked Mining (C7)
+- **Designed 2026-11-22, not built** (`specs/reworked-mining.md`): harsh bare tools, deepslate very hard below iron, stronger Efficiency and Unbreaking, rare nuggets and gems from natural stone, True Unbreaking as a rare loot book. Open: axes and shovels, Fortune on finds, exact numbers.
