@@ -11,7 +11,7 @@
 > | **Side** | Client and server |
 > | **Includes** | The datapack's recipes and resource pack |
 
-The **Extra Recipes Companion Mod** is the Fabric mod version of [[Bubba's Extra Recipes]]. It already contains the [[Extra Recipes Recipes|recipes]] and the resource pack, so only one file (plus Fabric API) is installed.
+The **Extra Recipes Companion Mod** is the Fabric mod version of [[Bubba's Extra Recipes]]. It already contains the [[Recipe List|recipes]] and the resource pack, so only one file (plus Fabric API) is installed.
 
 ## Installation
 

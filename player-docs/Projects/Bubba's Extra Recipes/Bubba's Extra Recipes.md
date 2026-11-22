@@ -20,7 +20,7 @@ modrinth:
 
 ## Recipes
 
-*Main article: [[Extra Recipes Recipes]]*
+*Main article: [[Recipe List]]*
 
 The pack adds recipes for the crafting table, blast furnace and smoker. No vanilla recipe is replaced. New recipes appear in the recipe book once the player has picked up one of their ingredients.
 

@@ -10,7 +10,7 @@ The core recipe datapack. Owner-authored recipe set (originally for 26.1), porte
 - Custom names and lore on results (`minecraft:item_name`, `minecraft:lore`) are plain-string text components.
 - pack.mcmeta targets data pack format 121 (26.3). Bump with each Minecraft release.
 - Tests: loads clean in `tools/packload.py`; each recipe is looked up, matched and assembled in `mods/packcheck` game tests, with a client screenshot of the results (`specs/pack-testing.md`).
-- Player pages: `player-docs/Projects/Bubba's Extra Recipes/` (overview, Extra Recipes Recipes, The Glider, Synthetic Diamond Ore, Extra Recipes Companion Mod), updated whenever a recipe changes.
+- Player pages: `player-docs/Projects/Bubba's Extra Recipes/` (overview, Recipe List, The Glider, Synthetic Diamond Ore, Extra Recipes Companion Mod), updated whenever a recipe changes.
 
 ## Owner's review (2026-11-14)
 

@@ -1,4 +1,4 @@
-# Extra Recipes Recipes
+# Recipe List
 
 *Part of [[Bubba's Extra Recipes]].*
 

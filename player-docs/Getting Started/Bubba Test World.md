@@ -20,7 +20,7 @@ The world appears in the world list of the "mod testing" profile after an instal
 | Graveyard | Rows of [[Sleeping Undead|sleeping undead]] in every pose and facing, with and without gear; a wool-walled pen for testing [[Noise and Waking|noise]]; a crypt packed with sleepers for chain wake-ups. |
 | Loot on display | [[Loot on Display|Displayed items]] in every placement, and an unarmed sleeper next to an axe. |
 | Combat arena | Chests of weapons (including Smite V swords) and armor, and sleepers to wake. See [[Fighting the Undead]]. |
-| Extra Recipes | Every [[Extra Recipes Recipes|Extra Recipes recipe]]'s ingredients with a crafting table, blast furnace and smoker; [[Synthetic Diamond Ore]] next to natural ore. |
+| Extra Recipes | Every [[Recipe List|Extra Recipes recipe]]'s ingredients with a crafting table, blast furnace and smoker; [[Synthetic Diamond Ore]] next to natural ore. |
 | Glider tower | A tall tower with Gliders, elytra and firework rockets at the top, for comparing [[The Glider]] with the elytra. |
 | Gem workshop | For [[Bubba's Infused Gems]]: potions in all three forms, every base gem, a brewing stand, an enchanting table with a full set of bookshelves, a smithing table, a grindstone, armor and weapons, and a pen of mobs that stand still to be hit. |
 | Gem testing grounds | South of the spawn point, behind the player: a wardrobe and a place to try every [[Gem Effects|gem effect]]. See below. |

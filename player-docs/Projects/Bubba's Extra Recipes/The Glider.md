@@ -51,5 +51,5 @@ The item and its wings use placeholder textures in this version.
 
 ## See also
 
-- [[Extra Recipes Recipes]]
+- [[Recipe List]]
 - [[Bubba Test World]], which has a tower for comparing the Glider with the elytra.

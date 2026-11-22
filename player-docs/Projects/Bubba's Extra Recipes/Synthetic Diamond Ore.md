@@ -16,7 +16,7 @@
 
 ## Obtaining
 
-*Main article: [[Extra Recipes Recipes]]*
+*Main article: [[Recipe List]]*
 
 | Ingredient | Result | Time | Experience |
 |---|---|---|---|
