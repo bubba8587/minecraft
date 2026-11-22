@@ -28,7 +28,7 @@ import net.fabricmc.fabric.api.gametest.v1.GameTest;
 
 /**
  * The Totems of the Beginning and the End (specs/totems-artifacts.md). The landing rules are core (through
- * BubbasTotemsArtifactsCoreGameTest); the rest is milestone. The cairn side (offering, completion gift, the ripple
+ * BubbasTotemsArtifactsCoreGameTest); the rest is milestone. The cairn side (offering, the ripple
  * itself) is tested in Reworked Mobs' EndermanTotemsGameTest.
  */
 public class BeginningEndGameTest {

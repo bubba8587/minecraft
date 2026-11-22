@@ -71,7 +71,7 @@ The mod requires Fabric API and works on its own. Two of Bubba's mods add to it 
 
 | Installed with | Adds |
 |---|---|
-| [[Bubba's Reworked Mobs]] | The Grave Talisman also senses [[Sleeping Undead|sleeping undead]]; the Totem of Warding calms sleeping undead, and a full ward keeps them asleep. [[Endermen|Enderman cairns]] give the [[Totem of the Beginning]] (as an offering) and the [[Totem of the End]] (for completing one), and the Totem of the Beginning works only with this mod. |
+| [[Bubba's Reworked Mobs]] | The Grave Talisman also senses [[Sleeping Undead|sleeping undead]]; the Totem of Warding calms sleeping undead, and a full ward keeps them asleep. [[Endermen|Enderman cairns]] sometimes offer the [[Totem of the Beginning]], and the Totem of the Beginning works only with this mod. |
 | [[Bubba's Reworked Beacons]] | The Totem of Warding fits in a [[Beacon|beacon]] and wards its area. The Totem of the Beginning in a beacon draws endermen to tend its area (with Bubba's Reworked Mobs). |
 
 ## History

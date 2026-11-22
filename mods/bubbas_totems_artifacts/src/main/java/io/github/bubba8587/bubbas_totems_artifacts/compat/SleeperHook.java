@@ -69,10 +69,10 @@ public interface SleeperHook {
 	}
 
 	/**
-	 * Tells Reworked Mobs what its cairns give ({@code offering}: laid at some complete cairns; {@code completionGift}:
-	 * to the player who completes one) and which players its endermen treat as kin.
+	 * Tells Reworked Mobs what its cairns give ({@code offering}: laid at some complete cairns) and which players its
+	 * endermen treat as kin.
 	 */
-	default void setUpEndermen(Supplier<ItemStack> offering, Supplier<ItemStack> completionGift, Predicate<Player> kin) {
+	default void setUpEndermen(Supplier<ItemStack> offering, Predicate<Player> kin) {
 	}
 
 	/** Squared distance to the nearest sleeper within {@code range} (client or server), or {@code Double.MAX_VALUE}. */

@@ -16,7 +16,7 @@ The **Totem of the Beginning** is a single-use artifact that returns the ground 
 
 ## Obtaining
 
-The Totem of the Beginning is found only at [[Endermen|enderman cairns]]. Once some cairns are finished, their endermen leave one lying at the cairn's foot as an offering, which a player takes with an empty hand. Each such cairn leaves one only once, ever: rebuilding or finishing the cairn again does not bring another. It cannot be crafted.
+The Totem of the Beginning is found only at [[Endermen|enderman cairns]]. Once a cairn is finished, its endermen sometimes (at about one cairn in seven) leave one lying at the cairn's foot as an offering, which a player takes with an empty hand. Each such cairn leaves one only once, ever: rebuilding or finishing the cairn again does not bring another. It cannot be crafted.
 
 ## Usage
 

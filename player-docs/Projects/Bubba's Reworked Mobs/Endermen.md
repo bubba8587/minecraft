@@ -37,9 +37,7 @@ The tallest end rod of every cairn lies on its side and points toward the neares
 
 A finished cairn shimmers with purple portal particles, and sparkles drift up from its top, visible from far away at night. Endermen at a finished cairn with nothing to do stand in a ring around it, staring at it. The ring grows as more arrive.
 
-With [[Bubba's Totems & Artifacts]] installed, cairns give two artifacts, each only once per cairn, ever:
-- The endermen of some finished cairns (about half) leave a [[Totem of the Beginning]] lying at the cairn's foot as an offering, about a minute after it is finished while one of them is there. A player takes it with an empty hand.
-- The player who places the last missing block of a cairn receives a [[Totem of the End]].
+With [[Bubba's Totems & Artifacts]] installed, the endermen of some finished cairns (about one in seven) leave a [[Totem of the Beginning]] lying at the cairn's foot as an offering, about a minute after it is finished while one of them is there. A player takes it with an empty hand. Each cairn does this only once, ever. Finishing a cairn yourself earns nothing.
 
 ### Hostility
 

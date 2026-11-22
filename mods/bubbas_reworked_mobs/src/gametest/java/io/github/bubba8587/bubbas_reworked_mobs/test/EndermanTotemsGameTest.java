@@ -30,7 +30,7 @@ import net.fabricmc.fabric.api.gametest.v1.GameTest;
 
 /**
  * What Reworked Mobs does for Bubba's Totems & Artifacts' Totems of the Beginning and the End, through api/Endermen
- * (specs/endermen.md): the ripple back to generated ground, the once-ever completion gift and the once-ever offering.
+ * (specs/endermen.md): the ripple back to generated ground and the once-ever offering (no reward for completing a cairn, owner 2026-11-22).
  * Gifts are stood in by vanilla items here, so this runs without that mod.
  */
 public class EndermanTotemsGameTest {
@@ -96,56 +96,13 @@ public class EndermanTotemsGameTest {
 	}
 
 	/**
-	 * The player whose placed block completes a cairn gets its gift, once ever: breaking that block and putting it back
-	 * gives nothing more. An unfinished cairn gives nothing.
-	 */
-	@GameTest(structure = FIELD, maxTicks = 20)
-	public void completionGiftOncePerCairn(GameTestHelper helper) {
-		ServerLevel level = helper.getLevel();
-		CairnGifts.set(null, () -> new ItemStack(Items.NETHER_STAR));
-		CairnSite site = CairnSites.addSite(level, helper.absolutePos(new BlockPos(16, 1, 8)), 1234L);
-		site.buildAll(level);
-		ServerPlayer player = CreeperGameTest.player(helper, 12.5, 4.5);
-		try {
-			// The footing's first block: a plain block (no facing) on the ground.
-			BlockPos last = site.order().get(0);
-			BlockState want = site.at(last);
-			helper.assertTrue(want.getBlock().defaultBlockState() == want, "expected a plain footing block, got " + want);
-			level.setBlock(last, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
-			// An unfinished cairn: another block missing, placing this one completes nothing.
-			BlockPos other = site.order().get(1);
-			BlockState otherWant = site.at(other);
-			level.setBlock(other, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
-			place(helper, player, last, want);
-			helper.assertTrue(count(player, Items.NETHER_STAR) == 0, "an unfinished cairn gave its gift");
-			level.setBlock(other, otherWant, Block.UPDATE_ALL);
-			level.setBlock(last, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
-
-			place(helper, player, last, want);
-			helper.assertTrue(site.complete(level), "the cairn isn't complete after the last block");
-			helper.assertTrue(count(player, Items.NETHER_STAR) == 1, "completing the cairn didn't give its gift");
-			helper.assertTrue(CairnGifts.granted(level, site), "the site isn't marked as given");
-
-			level.setBlock(last, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
-			place(helper, player, last, want);
-			helper.assertTrue(site.complete(level), "the rebuilt cairn isn't complete");
-			helper.assertTrue(count(player, Items.NETHER_STAR) == 1, "rebuilding the cairn gave its gift again");
-		} finally {
-			CairnGifts.set(null, null);
-			CreeperGameTest.remove(helper, player);
-			EndermanGameTest.removeBuilt(level, site);
-		}
-		helper.succeed();
-	}
-
-	/**
 	 * A complete cairn picked for an offering, with one of its endermen at it, lays the offering once; a player takes it
 	 * with an empty hand; it is never laid again.
 	 */
 	@GameTest(structure = FIELD, maxTicks = 20)
 	public void offeringLaidOncePerCairn(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
-		CairnGifts.set(() -> new ItemStack(Items.HEART_OF_THE_SEA), null);
+		CairnGifts.set(() -> new ItemStack(Items.HEART_OF_THE_SEA));
 		BlockPos origin = helper.absolutePos(new BlockPos(16, 1, 8));
 		CairnSite site = null;
 		for (long seed = 1; site == null; seed++) {
@@ -170,7 +127,7 @@ public class EndermanTotemsGameTest {
 			helper.assertTrue(count(player, Items.HEART_OF_THE_SEA) == 1, "the player didn't get the offering");
 			helper.assertTrue(CairnGifts.tryOffering(level, site, true) == null, "the offering was laid again after it was taken");
 		} finally {
-			CairnGifts.set(null, null);
+			CairnGifts.set(null);
 			CreeperGameTest.remove(helper, player);
 			witness.discard();
 			if (spot != null) {

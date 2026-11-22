@@ -21,12 +21,10 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.util.Prediction;
 import net.minecraft.world.entity.monster.Enderman;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockState;
 import org.jspecify.annotations.Nullable;
 
 import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
@@ -34,19 +32,18 @@ import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
 
 /**
  * What a cairn gives, once ever per site (items from another mod, set through api/Endermen: Bubba's Totems &
- * Artifacts' Totem of the Beginning and Totem of the End). Without a supplier nothing is given and nothing is marked, so
+ * Artifacts' Totem of the Beginning). Without a supplier nothing is given and nothing is marked, so
  * installing that mod later still finds every gift waiting.
  * <ul>
  * <li><b>Offering:</b> the endermen of a complete cairn picked from its seed ({@link EndermanTuning#OFFERING_SHARE})
  * leave one item lying at its foot, on Reworked Mobs' loot display (a player takes it with an empty hand). Once
  * ever: the site is marked when it's laid, so breaking, rebuilding or completing the cairn again never lays another,
  * and the item isn't part of the target world (endermen neither re-place nor take it: a display has a block entity).</li>
- * <li><b>Completion gift:</b> the player whose placed block completes a cairn gets one, once ever per site.</li>
  * </ul>
- * Both marks are saved with the level ({@link #GIFTS}, by site origin).
+ * No reward for completing a cairn (owner, 2026-11-22). The mark is saved with the level ({@link #GIFTS}, by site origin).
  */
 public final class CairnGifts {
-	/** Sites whose offering was laid and whose completion gift was given, by origin. */
+	/** Sites whose offering was laid, by origin ({@code granted}: the removed completion gift, still read from old saves). */
 	public record Given(List<Long> offered, List<Long> granted) {
 		static final Codec<Given> CODEC = RecordCodecBuilder.create(i -> i.group(
 				Codec.LONG.listOf().optionalFieldOf("offered", List.of()).forGetter(Given::offered),
@@ -60,15 +57,13 @@ public final class CairnGifts {
 	private static final long OFFERING_SALT = 0x0FFE_2161_1BE6_1A11L;
 
 	private static @Nullable Supplier<ItemStack> offering;
-	private static @Nullable Supplier<ItemStack> completionGift;
 
 	private CairnGifts() {
 	}
 
 	/** Sets the items (null for none). */
-	public static void set(@Nullable Supplier<ItemStack> offeringItem, @Nullable Supplier<ItemStack> completionItem) {
+	public static void set(@Nullable Supplier<ItemStack> offeringItem) {
 		offering = offeringItem;
-		completionGift = completionItem;
 	}
 
 	/** Whether this site is one whose endermen leave an offering: fixed by its seed. */
@@ -80,16 +75,11 @@ public final class CairnGifts {
 		return level.getAttachedOrElse(GIFTS, Given.NONE).offered().contains(site.origin().asLong());
 	}
 
-	public static boolean granted(ServerLevel level, CairnSite site) {
-		return level.getAttachedOrElse(GIFTS, Given.NONE).granted().contains(site.origin().asLong());
-	}
-
-	private static void mark(ServerLevel level, CairnSite site, boolean offeredMark) {
+	private static void mark(ServerLevel level, CairnSite site) {
 		Given given = level.getAttachedOrElse(GIFTS, Given.NONE);
 		List<Long> offered = new ArrayList<>(given.offered());
-		List<Long> granted = new ArrayList<>(given.granted());
-		(offeredMark ? offered : granted).add(site.origin().asLong());
-		level.setAttached(GIFTS, new Given(List.copyOf(offered), List.copyOf(granted)));
+		offered.add(site.origin().asLong());
+		level.setAttached(GIFTS, new Given(List.copyOf(offered), given.granted()));
 	}
 
 	static void tick(ServerLevel level) {
@@ -143,7 +133,7 @@ public final class CairnGifts {
 			return null;
 		}
 		// Marked first: whatever happens next, this site never lays another.
-		mark(level, site, true);
+		mark(level, site);
 		Direction facing = Direction.getApproximateNearest(site.origin().getX() - spot.getX(), 0, site.origin().getZ() - spot.getZ());
 		LootDisplays.place(level, spot, DisplayPlacement.GROUND, facing, stack);
 		level.sendParticles(ParticleTypes.PORTAL, spot.getX() + 0.5, spot.getY() + 0.4, spot.getZ() + 0.5, 40, 0.4, 0.4, 0.4, 0.3);
@@ -176,30 +166,5 @@ public final class CairnGifts {
 			}
 		}
 		return null;
-	}
-
-	/**
-	 * A player just placed {@code pos}: if that completes a cairn whose gift hasn't been given, the player gets it
-	 * (Totem of the End). Once ever per site.
-	 */
-	public static boolean placedBy(ServerLevel level, BlockPos pos, ServerPlayer player) {
-		Supplier<ItemStack> item = completionGift;
-		if (item == null || player.isSpectator()) {
-			return false;
-		}
-		CairnSite site = CairnSites.covering(level, pos);
-		BlockState want = site == null ? null : site.at(pos);
-		if (want == null || !TerrainKinds.matches(level.getBlockState(pos), want) || granted(level, site) || !site.complete(level)) {
-			return false;
-		}
-		ItemStack stack = item.get();
-		if (stack.isEmpty()) {
-			return false;
-		}
-		mark(level, site, false);
-		player.getInventory().placeItemBackInInventory(stack, Prediction.SERVER_ONLY);
-		level.sendParticles(ParticleTypes.PORTAL, player.getX(), player.getY() + 1.0, player.getZ(), 60, 0.5, 1.0, 0.5, 0.4);
-		level.playSound(null, player.blockPosition(), SoundEvents.END_PORTAL_FRAME_FILL, SoundSource.PLAYERS, 1.0F, 1.0F);
-		return true;
 	}
 }

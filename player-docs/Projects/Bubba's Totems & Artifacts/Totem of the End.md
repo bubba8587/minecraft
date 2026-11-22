@@ -8,7 +8,7 @@
 > | **Type** | Artifact (item) |
 > | **Rarity** | Rare |
 > | **Stackable** | No |
-> | **Obtained** | End city chests; completing an enderman cairn |
+> | **Obtained** | End city chests |
 > | **Teleport range** | 32 blocks |
 > | **Cooldown** | 4 seconds |
 
@@ -17,7 +17,6 @@ The **Totem of the End** is a reusable artifact that makes endermen treat its ho
 ## Obtaining
 
 - End city treasure chests (5 % per chest).
-- With [[Bubba's Reworked Mobs]]: the player who places the last missing block of an [[Endermen|enderman cairn]] receives one. Each cairn gives one only once, ever; breaking and rebuilding it gives no more. If the endermen finished the cairn themselves, the first player to break one of its blocks and put it back receives it.
 
 It cannot be crafted.
 

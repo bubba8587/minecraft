@@ -84,9 +84,9 @@ final class ReworkedMobsSleepers implements SleeperHook {
 	}
 
 	@Override
-	public void setUpEndermen(Supplier<ItemStack> offering, Supplier<ItemStack> completionGift, Predicate<Player> kin) {
+	public void setUpEndermen(Supplier<ItemStack> offering, Predicate<Player> kin) {
 		try {
-			Endermen.setCairnGifts(offering, completionGift);
+			Endermen.setCairnGifts(offering);
 			Endermen.setKin(kin);
 		} catch (LinkageError e) {
 			// As above: an older Reworked Mobs has no cairn gifts.

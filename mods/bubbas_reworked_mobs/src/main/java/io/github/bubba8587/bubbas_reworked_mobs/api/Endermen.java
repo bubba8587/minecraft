@@ -89,10 +89,10 @@ public final class Endermen {
 
 	/**
 	 * What cairns give, once ever per site and saved with the world: {@code offering} is laid at the foot of some
-	 * complete cairns (picked from each site's seed) by their endermen; {@code completionGift} goes to the player whose
-	 * placed block completes a cairn. Either may be null (none). Nothing is marked while a supplier is null.
+	 * complete cairns (picked from each site's seed) by their endermen. May be null (none); nothing is marked while it
+	 * is. No reward for completing a cairn (owner, 2026-11-22).
 	 */
-	public static void setCairnGifts(@Nullable Supplier<ItemStack> offering, @Nullable Supplier<ItemStack> completionGift) {
-		CairnGifts.set(offering, completionGift);
+	public static void setCairnGifts(@Nullable Supplier<ItemStack> offering) {
+		CairnGifts.set(offering);
 	}
 }
