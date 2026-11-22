@@ -44,4 +44,6 @@ The Fabricator's beacons weaken everyone nearby with Mining Fatigue, Weakness an
 
 ## Loot
 
-The Warden's office holds chests with paper, books, echo shards, disc fragments and sometimes a music disc or a Swift Sneak book; with [[Bubba's Infused Gems]], sometimes a spare gem.
+Getting past the Warden pays. Each of the three chests in its office holds paperwork, valuables (diamonds, emeralds, gold, iron, echo shards, bottles o' enchanting) and always one treasure: a Swift Sneak book, a high-level enchanted book or diamond tool or armor piece, an enchanted golden apple, a totem of undying, a netherite upgrade template, a recovery compass, a ward or silence armor trim, or a music disc. With [[Bubba's Infused Gems]], sometimes a spare gem as well.
+
+The chests hidden elsewhere around a Fabricator (in the reject pit and buried in the city below) are smaller, but they hold diamonds, emeralds, golden apples and enchanted gear too.

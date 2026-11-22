@@ -317,6 +317,19 @@ public class MobFactoryGameTest {
 				}
 			}
 			helper.assertTrue(damaged, "reject armor and weapons come out damaged");
+			// Office chests are the Warden's hoard (owner, 2026-11-22: "it should be rewarding"): every one holds valuables
+			// and a treasure (an enchanted book or diamond gear, a template, a totem, a god apple, a compass or a disc).
+			for (int i = 0; i < 20; i++) {
+				var office = level.getServer().reloadableRegistries().getLootTable(io.github.bubba8587.bubbas_reworked_mobs.factory.FabricatorLoot.OFFICE).getRandomItems(params);
+				helper.assertTrue(office.stream().anyMatch(s -> s.isEnchanted() || s.has(net.minecraft.core.component.DataComponents.STORED_ENCHANTMENTS)
+						|| s.has(net.minecraft.core.component.DataComponents.JUKEBOX_PLAYABLE) || s.is(net.minecraft.world.item.Items.TOTEM_OF_UNDYING)
+						|| s.is(net.minecraft.world.item.Items.ENCHANTED_GOLDEN_APPLE) || s.is(net.minecraft.world.item.Items.RECOVERY_COMPASS)
+						|| s.is(net.minecraft.world.item.Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE) || s.is(net.minecraft.world.item.Items.WARD_ARMOR_TRIM_SMITHING_TEMPLATE)
+						|| s.is(net.minecraft.world.item.Items.SILENCE_ARMOR_TRIM_SMITHING_TEMPLATE)), "every office chest holds a treasure: " + office);
+				helper.assertTrue(office.stream().anyMatch(s -> s.is(net.minecraft.world.item.Items.DIAMOND) || s.is(net.minecraft.world.item.Items.EMERALD)
+						|| s.is(net.minecraft.world.item.Items.GOLD_INGOT) || s.is(net.minecraft.world.item.Items.IRON_INGOT)
+						|| s.is(net.minecraft.world.item.Items.ECHO_SHARD) || s.is(net.minecraft.world.item.Items.EXPERIENCE_BOTTLE)), "and valuables: " + office);
+			}
 			done(helper, site);
 		});
 	}

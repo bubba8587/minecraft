@@ -7,9 +7,11 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.storage.loot.LootTable;
 
 /**
- * The Warden's office chests (specs/mob-factory.md): "the factory's paperwork". 3-6 rolls of paper, books, a book
- * and quill, echo shards, disc fragments, gray candles, iron, redstone and sculk; then one roll: nothing (12),
- * music disc 13 (2), music disc 11 (1) or a Swift Sneak book (3). Data: {@code loot_table/chests/fabricator_office.json}.
+ * Fabricator chest loot (specs/mob-factory.md, "Loot"; owner, 2026-11-22: there's a whole Warden, it should be
+ * rewarding). The Warden's office chests: "the factory's paperwork" (3-5 rolls), valuables (2-4 rolls of diamonds,
+ * emeralds, gold, iron, echo shards, experience bottles) and one guaranteed treasure (Swift Sneak or a 30-39 level
+ * book or diamond piece, god apple, totem, netherite template, recovery compass, ward/silence trim, a disc). Data:
+ * {@code loot_table/chests/fabricator_office.json}.
  *
  * <p>Spare parts (owner, 2026-11-16): with Bubba's Infused Gems installed the chests use
  * {@code fabricator_office_with_gems} instead: the same, plus a 1-in-3 chance of a harmful gem that would power the
@@ -19,9 +21,9 @@ import net.minecraft.world.level.storage.loot.LootTable;
 public final class FabricatorLoot {
 	public static final ResourceKey<LootTable> OFFICE = ResourceKey.create(Registries.LOOT_TABLE, BubbasReworkedMobs.id("chests/fabricator_office"));
 	public static final ResourceKey<LootTable> OFFICE_WITH_GEMS = ResourceKey.create(Registries.LOOT_TABLE, BubbasReworkedMobs.id("chests/fabricator_office_with_gems"));
-	/** The reject vault under the deck (provisional: the owner is still deciding what a Fabricator rewards). */
+	/** The reject vault under the deck (with a rare-pool roll of enchanted iron, gold apples, diamonds). */
 	public static final ResourceKey<LootTable> REJECTS = ResourceKey.create(Registries.LOOT_TABLE, BubbasReworkedMobs.id("chests/fabricator_rejects"));
-	/** The chests sunk in the lower city's floors (provisional, as above). */
+	/** The chests sunk in the lower city's floors (with diamonds, emeralds and a mostly-full rare pool). */
 	public static final ResourceKey<LootTable> BURIED = ResourceKey.create(Registries.LOOT_TABLE, BubbasReworkedMobs.id("chests/fabricator_buried"));
 
 	private FabricatorLoot() {
