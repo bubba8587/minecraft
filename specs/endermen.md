@@ -21,7 +21,7 @@ Owner's design (2026-11-16), being worked out in conversation. Endermen are the 
 ## Cairn look, details (owner ideas, 2026-11-16)
 
 - **Overworld meets End:** the twisting purpur spire with end-city touches (purpur stairs/slabs as branch knuckles, magenta stained glass, a magenta banner), plus **offerings** at its foot from what endermen carry in vanilla (#minecraft:enderman_holdable: small flowers, dirt, grass, moss, mud, sand, red sand, gravel, clay, mushrooms, pumpkins, melons, cactus and its flower, crimson/warped fungus, roots and nylium, TNT), varying by biome. Rare **TNT** offerings are allowed (owner: yes).
-- **Variety (owner, to pick up later):** cairns must be somewhat random overall, not all the same: various shapes, sizes and branch layouts (still deterministic from the seed). The preview's banner placement is bad; revisit where banners hang.
+- **Variety (owner, 2026-11-22: "sure add as much variety as you like"):** cairns must vary a lot: shapes, sizes, branch layouts and more, as much as the builder likes, all still deterministic from the seed. **No banners** (owner, 2026-11-22: skip them).
 - **Stronghold pointer simplified:** the **tallest end rod tilts toward the nearest stronghold**; the other pointer bits are dropped.
 
 ## Cairns as their home (D2: deliberate spawning)
@@ -192,3 +192,10 @@ Core (every build, `ReworkedMobsCoreGameTest`): `endermanTerrainOracleAnswersFla
 `EndermenClientGameTest` (client part `endermen`, a default-preset world, seed 20261116): prints the oracle's accuracy and timing and the "untouched world" repair counts; screenshots of the three sites nearest spawn as generated (stub) and built (close, far, top), and an enderman carrying a purpur pillar.
 
 Not yet tested (objectives): a high cairn block is reached by teleporting onto the cairn; a stray flower is fetched for an offering; an unnatural block is taken only sometimes; a torn-down cairn drops back to the unfinished rate and a repaired one returns to the high rate (spawning numbers checked as functions only); the vigil ring forms around a complete cairn and breaks up when it's damaged (checked in the test world tour, `cairns_vigil`); the footing feature places only End blocks up to one above the ground; endermen keep out of a ward placed by Totems & Artifacts (needs both mods; `WardingGameTest` could call `api/Endermen.isKeptOut`).
+
+## Owner answers, 2026-11-22
+
+- **Explosions breaking a cairn don't anger endermen** (owner: no). Only a player breaking one or attacking nearby does (E4).
+- **Banners:** skipped.
+- **Variety:** as much as the builder likes (above).
+- **Nether and End endermen** stay vanilla for now.
