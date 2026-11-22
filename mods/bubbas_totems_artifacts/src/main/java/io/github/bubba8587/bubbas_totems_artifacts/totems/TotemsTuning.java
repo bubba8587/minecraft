@@ -54,6 +54,18 @@ public final class TotemsTuning {
 	/** Cached results kept (oldest dropped first). */
 	public static final int SEEK_CACHE_SIZE = 512;
 
+	// --- Beginning (2026-11-22) ------------------------------------------------------------------------
+	/** Used: the ground within this many blocks (a cylinder, as far up and down) goes back to how it generated. */
+	public static final int BEGINNING_RADIUS = 24;
+	/** Used: the ripple spreads one block every this many ticks (24 blocks in about 2.4 s). */
+	public static final int BEGINNING_TICKS_PER_BLOCK = 2;
+
+	// --- End (2026-11-22) ------------------------------------------------------------------------------
+	/** Used: teleports to the block aimed at within this many blocks of the eyes. */
+	public static final double END_RANGE = 32.0;
+	/** Used: the cooldown after a teleport (ticks; 4 s), shown with the item cooldown sweep. */
+	public static final int END_COOLDOWN_TICKS = 80;
+
 	// --- beacons ---------------------------------------------------------------------------------------
 	/** A beacon's Fortification or Growth area lasts this long after its last pulse (one pulse, 80, plus a second). */
 	public static final int AREA_LIFETIME_TICKS = 100;
@@ -88,6 +100,12 @@ public final class TotemsTuning {
 			BuiltInLootTables.BURIED_TREASURE, 0.10F,
 			BuiltInLootTables.UNDERWATER_RUIN_BIG, 0.08F,
 			BuiltInLootTables.VILLAGE_CARTOGRAPHER, 0.10F);
+	/**
+	 * Totem of the End: rare in End city chests. (With Reworked Mobs a cairn also gives one, once ever, to the player
+	 * who completes it; the Totem of the Beginning is found only as a cairn's offering.)
+	 */
+	public static final Map<ResourceKey<LootTable>, Float> END_LOOT = Map.of(
+			BuiltInLootTables.END_CITY_TREASURE, 0.05F);
 
 	private TotemsTuning() {
 	}

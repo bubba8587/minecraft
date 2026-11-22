@@ -26,6 +26,8 @@ public final class ModCreativeTabs {
 						output.accept(ModItems.TOTEM_OF_FORTIFICATION);
 						output.accept(ModItems.TOTEM_OF_GROWTH);
 						output.accept(ModItems.TOTEM_OF_SEEKING);
+						output.accept(ModItems.TOTEM_OF_THE_BEGINNING);
+						output.accept(ModItems.TOTEM_OF_THE_END);
 					})
 					.build());
 

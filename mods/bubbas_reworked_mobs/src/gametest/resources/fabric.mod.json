@@ -17,6 +17,7 @@
 			"io.github.bubba8587.bubbas_reworked_mobs.test.SleeperNoiseGameTest",
 			"io.github.bubba8587.bubbas_reworked_mobs.test.CreeperGameTest",
 			"io.github.bubba8587.bubbas_reworked_mobs.test.EndermanGameTest",
+			"io.github.bubba8587.bubbas_reworked_mobs.test.EndermanTotemsGameTest",
 			"io.github.bubba8587.bubbas_reworked_mobs.test.MobFactoryGameTest",
 			"io.github.bubba8587.bubbas_reworked_mobs.test.DrownedGameTest"
 		],

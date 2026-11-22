@@ -39,6 +39,10 @@ public final class Endermen {
 		ServerTickEvents.END_LEVEL_TICK.register(EndermanSpawning::tick);
 		ServerTickEvents.END_LEVEL_TICK.register(CairnGlow::tick);
 		ServerTickEvents.END_LEVEL_TICK.register(EndermanHoles::tick);
+		Object registerGifts = CairnGifts.GIFTS; // registers the attachment before any level loads
+		ServerTickEvents.END_LEVEL_TICK.register(CairnGifts::tick);
+		ServerTickEvents.END_LEVEL_TICK.register(EndermanNexus::tick);
+		ServerTickEvents.END_LEVEL_TICK.register(Ripples::tick);
 		PlayerBlockBreakEvents.AFTER.register((level, player, pos, state, blockEntity) -> {
 			if (level instanceof ServerLevel server) {
 				if (isStandingCairnBlock(server, pos, state)) {
@@ -63,9 +67,23 @@ public final class Endermen {
 		return want != null && TerrainKinds.matches(state, want);
 	}
 
+	/**
+	 * Players endermen count as their own (set by another mod through api/Endermen: Bubba's Totems & Artifacts, a held
+	 * Totem of the End): breaking a cairn or hitting an enderman near one doesn't anger the others at them.
+	 */
+	private static java.util.function.Predicate<Player> kin = player -> false;
+
+	public static void setKin(java.util.function.Predicate<Player> predicate) {
+		kin = predicate == null ? player -> false : predicate;
+	}
+
+	public static boolean isKin(Player player) {
+		return kin.test(player);
+	}
+
 	/** Every caretaker enderman within ANGER_RADIUS of {@code pos} turns on {@code player} (vanilla's anger timer). */
 	public static int anger(ServerLevel level, BlockPos pos, Player player) {
-		if (player.isCreative() || player.isSpectator()) {
+		if (player.isCreative() || player.isSpectator() || isKin(player)) {
 			return 0;
 		}
 		int count = 0;

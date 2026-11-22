@@ -125,6 +125,11 @@ public class ReworkedMobsCoreGameTest {
 		new EndermanGameTest().busyEndermanIgnoresEyeContact(helper);
 	}
 
+	@GameTest(structure = EndermanGameTest.FIELD, maxTicks = 100)
+	public void endermanRippleRestoresGroundButNotBuilds(GameTestHelper helper) {
+		new EndermanTotemsGameTest().rippleRestoresGroundButNotBuilds(helper);
+	}
+
 	// --- drowned (specs/drowned.md) ---
 
 	@GameTest(environment = "bubbas_reworked_mobs-test:drowned_grab", structure = DrownedGameTest.FIELD, maxTicks = 300)

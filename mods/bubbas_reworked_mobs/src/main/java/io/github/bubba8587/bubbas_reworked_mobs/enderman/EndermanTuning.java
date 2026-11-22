@@ -138,6 +138,37 @@ public final class EndermanTuning {
 	/** Breaking a cairn block, or hitting an enderman near a site, angers endermen within this distance. */
 	public static final double ANGER_RADIUS = 24.0;
 
+	// --- cairn gifts (Totems & Artifacts' Totems of the Beginning and the End, through api/Endermen) ------------
+	/** The share of cairns (picked from each site's seed) whose endermen leave an offering once it is complete. */
+	public static final float OFFERING_SHARE = 0.5F;
+	/** How often (ticks) complete cairns near players are checked for their offering. */
+	public static final int OFFERING_CHECK_TICKS = 100;
+	/** Each check, a chosen complete cairn with one of its endermen at it leaves its offering with 1 in this chance (~1 min). */
+	public static final int OFFERING_ONE_IN = 12;
+	/** One of the site's own endermen must be within this many blocks of its centre to leave the offering. */
+	public static final int OFFERING_WITNESS_RANGE = 16;
+	/** The offering lies this many blocks outside the cairn's footprint. */
+	public static final int OFFERING_GAP = 2;
+
+	// --- a nexus area (a Totem of the Beginning in a beacon) -----------------------------------------------
+	/** Each spawn check (SPAWN_INTERVAL), an area draws an enderman with this chance (a complete cairn's). */
+	public static final float NEXUS_SPAWN_CHANCE = 0.35F;
+	/** At most this many caretakers in an area (plus NEXUS_MARGIN round it) before it draws more. */
+	public static final int NEXUS_CAP = 6;
+	public static final int NEXUS_MARGIN = 8;
+	/** An area's newcomers never appear within this many blocks of a player (a cairn's ring keeps 24). */
+	public static final int NEXUS_PLAYER_DISTANCE = 16;
+	/** Spawn spot tries per check. */
+	public static final int NEXUS_TRIES = 8;
+
+	// --- the ripple (a used Totem of the Beginning) -------------------------------------------------------
+	/** Columns whose generated terrain isn't worked out yet are retried for this long, then skipped. */
+	public static final int RIPPLE_PENDING_TICKS = 600;
+	/** A column is left alone when any column this close (horizontally) holds a built or placed-looking block. */
+	public static final int RIPPLE_PROTECT_RADIUS = 2;
+	/** At most this many particles a tick (one per changed block, at most). */
+	public static final int RIPPLE_PARTICLES_PER_TICK = 48;
+
 	private EndermanTuning() {
 	}
 }

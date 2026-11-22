@@ -60,6 +60,20 @@ public class EndermenClientGameTest implements FabricClientGameTest {
 			server.runCommand("gamemode spectator @p");
 
 			System.out.println("[endermen] " + server.computeOnServer(s -> oracleReport(s.overworld())));
+			System.out.println("[endermen] " + server.computeOnServer(s -> rippleReport(s.overworld(), s.overworld().getRespawnData().pos(), "spawn")));
+			// Control: a 3x3x3 hole and a 3-high dirt pillar near spawn must show up (27 fills and 3 removals).
+			System.out.println("[endermen] " + server.computeOnServer(s -> {
+				ServerLevel level = s.overworld();
+				BlockPos top = level.getHeightmapPos(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, new BlockPos(8, 0, 8)).below();
+				for (BlockPos p : BlockPos.betweenClosed(top.offset(-1, -2, -1), top.offset(1, 0, 1))) {
+					level.setBlock(p, Blocks.AIR.defaultBlockState(), 2);
+				}
+				BlockPos pillar = level.getHeightmapPos(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, new BlockPos(-8, 0, -8));
+				for (int y = 0; y < 3; y++) {
+					level.setBlock(pillar.above(y), Blocks.DIRT.defaultBlockState(), 2);
+				}
+				return rippleReport(level, level.getRespawnData().pos(), "spawn after digging a hole and stacking a pillar");
+			}));
 
 			// The three sites nearest spawn (working out every region within 1500 blocks first).
 			List<CairnSite> sites = server.computeOnServer(s -> {
@@ -79,6 +93,8 @@ public class EndermenClientGameTest implements FabricClientGameTest {
 				CairnSite site = sites.get(n - 1);
 				visited.add(site.origin());
 				shootSite(context, sp, server, n, site);
+				BlockPos beside = site.origin().offset(40, 0, 0);
+				System.out.println("[endermen] " + server.computeOnServer(s -> rippleReport(s.overworld(), beside, "40 east of site " + site.origin().toShortString())));
 			}
 
 			// An enderman carrying a cairn block, beside the first (open ground) cairn.
@@ -228,5 +244,22 @@ public class EndermenClientGameTest implements FabricClientGameTest {
 	@SuppressWarnings("unused")
 	private static boolean isCairnBlock(BlockState state) {
 		return state.is(Blocks.PURPUR_BLOCK) || state.is(Blocks.PURPUR_PILLAR) || state.is(Blocks.END_ROD);
+	}
+
+	/**
+	 * The Totem of the Beginning's ripple on untouched ground (a dry run: nothing changes): what it would change round
+	 * {@code centre}, radius 24. On a world nobody has touched it should be close to nothing.
+	 */
+	static String rippleReport(ServerLevel level, BlockPos centre, String where) {
+		BlockPos at = level.getHeightmapPos(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, centre);
+		java.util.Map<BlockPos, net.minecraft.world.level.block.state.BlockState> changes = io.github.bubba8587.bubbas_reworked_mobs.enderman.Ripples.dryRun(level, at, 24);
+		java.util.Map<String, Integer> kinds = new java.util.TreeMap<>();
+		for (var e : changes.entrySet()) {
+			String from = net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(level.getBlockState(e.getKey()).getBlock()).getPath();
+			String to = net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(e.getValue().getBlock()).getPath();
+			kinds.merge(from + "->" + to, 1, Integer::sum);
+		}
+		return "ripple dry run at " + where + " (" + at.toShortString() + "): " + changes.size() + " changes " + kinds
+				+ (changes.isEmpty() ? "" : ", first: " + changes.keySet().stream().limit(8).map(BlockPos::toShortString).toList());
 	}
 }

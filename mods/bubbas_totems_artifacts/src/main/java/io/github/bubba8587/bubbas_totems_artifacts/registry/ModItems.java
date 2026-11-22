@@ -4,6 +4,8 @@ package io.github.bubba8587.bubbas_totems_artifacts.registry;
 import java.util.function.Function;
 
 import io.github.bubba8587.bubbas_totems_artifacts.BubbasTotemsArtifacts;
+import io.github.bubba8587.bubbas_totems_artifacts.beginning.TotemOfTheBeginningItem;
+import io.github.bubba8587.bubbas_totems_artifacts.end.TotemOfTheEndItem;
 import io.github.bubba8587.bubbas_totems_artifacts.gathering.TotemOfGatheringItem;
 import io.github.bubba8587.bubbas_totems_artifacts.growth.TotemOfGrowthItem;
 import io.github.bubba8587.bubbas_totems_artifacts.seeking.TotemOfSeekingItem;
@@ -44,6 +46,16 @@ public final class ModItems {
 
 	/** Totem of Seeking (seeking/TotemOfSeekingItem): points to the nearest structure of a chosen type. */
 	public static final Item TOTEM_OF_SEEKING = registerNew("totem_of_seeking", TotemOfSeekingItem::new, totem());
+
+	// The Totems of the Beginning and the End (2026-11-22; specs/totems-artifacts.md).
+
+	/** Totem of the Beginning (beginning/TotemOfTheBeginningItem): used up, the ground round you goes back to how it generated. */
+	public static final Item TOTEM_OF_THE_BEGINNING = registerNew("totem_of_the_beginning", TotemOfTheBeginningItem::new,
+			new Item.Properties().stacksTo(1).rarity(Rarity.RARE));
+
+	/** Totem of the End (end/TotemOfTheEndItem): held, endermen treat you as kin; used, teleports you where you aim. */
+	public static final Item TOTEM_OF_THE_END = registerNew("totem_of_the_end", TotemOfTheEndItem::new,
+			new Item.Properties().stacksTo(1).rarity(Rarity.RARE));
 
 	private ModItems() {
 	}

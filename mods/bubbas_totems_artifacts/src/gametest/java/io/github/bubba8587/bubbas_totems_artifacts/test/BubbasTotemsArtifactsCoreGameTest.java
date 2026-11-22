@@ -112,4 +112,9 @@ public class BubbasTotemsArtifactsCoreGameTest {
 	public void seekingChoosesAndPoints(GameTestHelper helper) {
 		new TotemsGameTest().seekingChoosesAndPoints(helper);
 	}
+
+	@GameTest(structure = TestSupport.FIELD, maxTicks = 20)
+	public void endLandingRules(GameTestHelper helper) {
+		new BeginningEndGameTest().endLandingRules(helper);
+	}
 }

@@ -1,7 +1,13 @@
 // dte:C6
 package io.github.bubba8587.bubbas_totems_artifacts.compat;
 
+import java.util.function.Predicate;
+import java.util.function.Supplier;
+
 import io.github.bubba8587.bubbas_reworked_mobs.api.Endermen;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import io.github.bubba8587.bubbas_reworked_mobs.api.Fabricators;
 import net.minecraft.world.entity.Entity;
 import io.github.bubba8587.bubbas_reworked_mobs.api.Sleepers;
@@ -55,6 +61,35 @@ final class ReworkedMobsSleepers implements SleeperHook {
 		} catch (LinkageError e) {
 			// An older Reworked Mobs without api/Fabricators: no Fabricator mobs.
 			return false;
+		}
+	}
+
+	@Override
+	public boolean restoreAround(ServerLevel level, BlockPos centre, int radius, int ticksPerBlock) {
+		try {
+			return Endermen.restoreAround(level, centre, radius, ticksPerBlock);
+		} catch (LinkageError e) {
+			// An older Reworked Mobs without the ripple: nothing happens (the totem isn't used up).
+			return false;
+		}
+	}
+
+	@Override
+	public void drawEndermen(ServerLevel level, Object source, AABB area, int lifetimeTicks) {
+		try {
+			Endermen.drawIn(level, source, area, lifetimeTicks);
+		} catch (LinkageError e) {
+			// As above.
+		}
+	}
+
+	@Override
+	public void setUpEndermen(Supplier<ItemStack> offering, Supplier<ItemStack> completionGift, Predicate<Player> kin) {
+		try {
+			Endermen.setCairnGifts(offering, completionGift);
+			Endermen.setKin(kin);
+		} catch (LinkageError e) {
+			// As above: an older Reworked Mobs has no cairn gifts.
 		}
 	}
 

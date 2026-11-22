@@ -33,6 +33,7 @@ public final class TotemsLoot {
 		all.put(ModItems.TOTEM_OF_FORTIFICATION, TotemsTuning.FORTIFICATION_LOOT);
 		all.put(ModItems.TOTEM_OF_GROWTH, TotemsTuning.GROWTH_LOOT);
 		all.put(ModItems.TOTEM_OF_SEEKING, TotemsTuning.SEEKING_LOOT);
+		all.put(ModItems.TOTEM_OF_THE_END, TotemsTuning.END_LOOT);
 		return all;
 	}
 

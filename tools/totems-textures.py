@@ -13,6 +13,8 @@ Warding (tools/warding-textures.py): same body and pose, its own material, head 
   Gathering      copper with green patina, arms ending in upturned hands, a patina ring (a pull) on the chest
   Fortification  iron, a flat-topped helm with a glowing visor slit, an obsidian shield on the chest
   Growth         oak wood, a leafy crown with a pink blossom, a green sprout on the chest
+  Beginning      weathered stone wearing a grass cap, purple ender eyes, a strata emblem (grass, dirt, stone)
+  End            end stone with a purpur crown, an enderman's black face and magenta eyes, an ender pearl on the chest
   Seeking        lapis stone, a gold-rimmed hood, a compass dial on the chest; 16 needle frames
                  (totem_of_seeking_00..15, frame i = needle turned i/16 clockwise from up, as the item model's
                  minecraft:compass dispatch expects). At 32x the needle is drawn at 32x, not scaled up.
@@ -156,6 +158,53 @@ SEEK_MAT = {**{k: "stone" for k in "123456"}, **{k: "gold" for k in "abc"}, "y":
 NEEDLE_RED = (214, 36, 36)
 NEEDLE_DARK = (70, 70, 78)
 
+# --- Beginning: weathered stone, a grass cap, strata on the chest (2026-11-22) ------------------------
+BEGIN_PAL = {**shades((24, 24, 26), (52, 52, 56), (78, 78, 82), (104, 104, 108), (128, 128, 132), (152, 152, 156), (182, 182, 186)),
+	"g": (52, 98, 28), "h": (86, 140, 44), "H": (124, 180, 66), "d": (100, 68, 40), "D": (134, 96, 60), "e": (200, 90, 230)}
+BEGINNING = check([
+	"................",
+	"......hHHh......",
+	"....ghHhhHhg....",
+	"...oghgghgggo...",
+	"...o5g544g43o...",
+	"...o54e44e32o...",
+	"...o54433332o...",
+	"....o443321o....",
+	".oooo5HhhH1oooo.",
+	"o56655hggh22221o",
+	"o54544dDDd32211o",
+	".oooo4d43d1oooo.",
+	"...o54433221o...",
+	"....o543321o....",
+	"...o65544321o...",
+	"...oooooooooo...",
+])
+BEGIN_MAT = {**{k: "stone" for k in "123456"}, **{k: "grass" for k in "ghH"}, **{k: "dirt" for k in "dD"}, "e": "eye"}
+
+# --- End: end stone, purpur crown, an enderman's face, an ender pearl (2026-11-22) -------------------
+END_PAL = {**shades((40, 38, 24), (110, 108, 70), (150, 148, 100), (190, 188, 136), (214, 212, 160), (228, 228, 176), (244, 244, 200)),
+	"p": (122, 74, 122), "q": (170, 124, 170), "k": (18, 10, 24), "m": (204, 0, 250), "M": (250, 150, 255),
+	"t": (18, 80, 72), "T": (40, 160, 140), "w": (180, 250, 230)}
+END = check([
+	"................",
+	"....p.pqqp.p....",
+	"....pqqqqqqp....",
+	"....okkkkkko....",
+	"...okkkkkkkko...",
+	"...okmMkkmMko...",
+	"...okkkkkkkko...",
+	"....o443321o....",
+	".oooo5tTTt1oooo.",
+	"o56655TwTt22221o",
+	"o54544tTTt32211o",
+	".oooo4tttt1oooo.",
+	"...o54433221o...",
+	"....o543321o....",
+	"...o65544321o...",
+	"...oooooooooo...",
+])
+END_MAT = {**{k: "stone" for k in "123456"}, **{k: "purpur" for k in "pq"}, "k": "face", "m": "eye", "M": "eye", **{k: "pearl" for k in "tTw"}}
+
 
 def dial_centre(grid):
 	"""Centre of the dial face (the 'y' pixels), in 16x pixel units (edges, so 8.0 is between pixels 7 and 8)."""
@@ -198,6 +247,8 @@ def main():
 		("totem_of_gathering", GATHERING, GATHERING_PAL, GATHERING_MAT, ("metal",), 12),
 		("totem_of_fortification", FORTIFICATION, FORT_PAL, FORT_MAT, ("metal",), 13),
 		("totem_of_growth", GROWTH, GROWTH_PAL, GROWTH_MAT, ("wood", "leaf"), 14),
+		("totem_of_the_beginning", BEGINNING, BEGIN_PAL, BEGIN_MAT, ("stone", "grass"), 16),
+		("totem_of_the_end", END, END_PAL, END_MAT, ("stone",), 17),
 	]
 	for name, grid, pal, mat, grain, seed in plain:
 		write(name, render(grid, pal), render32(grid, pal, mat, inner={"o": "1"}, grain=grain, seed=seed))

@@ -24,7 +24,7 @@ import net.fabricmc.fabric.api.client.gametest.v1.context.TestServerContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext;
 
 /**
- * The five totems of 2026-11-16 by eye (client test part {@code totems}): all five in the hotbar at 16x and 32x; the
+ * The totems by eye (client test part {@code totems}): all of them in the hotbar at 16x and 32x, the Beginning and the End held; the
  * Totem of Gathering pulling dropped items in; the Totem of Seeking held, its needle pointing at the nearest structure
  * (straight ahead, then to the side when the player turns). In a normally generated world, the seeker's answer is
  * checked against vanilla's /locate search. Screenshots in build/run/clientGameTest/screenshots/.
@@ -60,7 +60,7 @@ public class TotemsClientGameTest implements FabricClientGameTest {
 
 			// --- all five in the hotbar (slot 1 selected and empty) -------------------------------------------
 			Item[] totems = {ModItems.TOTEM_OF_KEEPING, ModItems.TOTEM_OF_GATHERING, ModItems.TOTEM_OF_FORTIFICATION, ModItems.TOTEM_OF_GROWTH,
-					ModItems.TOTEM_OF_SEEKING, ModItems.TOTEM_OF_WARDING};
+					ModItems.TOTEM_OF_SEEKING, ModItems.TOTEM_OF_WARDING, ModItems.TOTEM_OF_THE_BEGINNING, ModItems.TOTEM_OF_THE_END};
 			context.runOnClient(mc -> mc.player.getInventory().setSelectedSlot(0));
 			server.runOnServer(s -> {
 				ServerPlayer p = s.getPlayerList().getPlayers().getFirst();
@@ -70,7 +70,20 @@ public class TotemsClientGameTest implements FabricClientGameTest {
 			});
 			context.waitTicks(10);
 			context.takeScreenshot("totems-hotbar");
+			// The Totems of the Beginning and the End (2026-11-22) held in first person, 16x then 32x.
+			context.runOnClient(mc -> mc.player.getInventory().setSelectedSlot(7));
+			context.waitTicks(10);
+			context.takeScreenshot("totems-held-beginning");
+			context.runOnClient(mc -> mc.player.getInventory().setSelectedSlot(8));
+			context.waitTicks(10);
+			context.takeScreenshot("totems-held-end");
 			setPack(context, true);
+			context.takeScreenshot("totems-held-end-32x");
+			context.runOnClient(mc -> mc.player.getInventory().setSelectedSlot(7));
+			context.waitTicks(10);
+			context.takeScreenshot("totems-held-beginning-32x");
+			context.runOnClient(mc -> mc.player.getInventory().setSelectedSlot(0));
+			context.waitTicks(10);
 			context.takeScreenshot("totems-hotbar-32x");
 			setPack(context, false);
 

@@ -1,7 +1,13 @@
 // dte:C6
 package io.github.bubba8587.bubbas_totems_artifacts.compat;
 
+import java.util.function.Predicate;
+import java.util.function.Supplier;
+
+import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
@@ -48,6 +54,25 @@ public interface SleeperHook {
 	/** A ward leaves this mob alone: a Reworked Mobs Fabricator mob still deactivated (limp, waiting to be teleported). */
 	default boolean wardIgnores(Entity entity) {
 		return false;
+	}
+
+	/**
+	 * Starts the Totem of the Beginning's ripple: the ground round {@code centre} goes back to how it generated (Reworked
+	 * Mobs' endermen's target world). False when it can't (no Reworked Mobs, or no generated terrain here).
+	 */
+	default boolean restoreAround(ServerLevel level, BlockPos centre, int radius, int ticksPerBlock) {
+		return false;
+	}
+
+	/** {@code area} draws Reworked Mobs' caretaker endermen like a cairn for {@code lifetimeTicks}; refresh to keep it. */
+	default void drawEndermen(ServerLevel level, Object source, AABB area, int lifetimeTicks) {
+	}
+
+	/**
+	 * Tells Reworked Mobs what its cairns give ({@code offering}: laid at some complete cairns; {@code completionGift}:
+	 * to the player who completes one) and which players its endermen treat as kin.
+	 */
+	default void setUpEndermen(Supplier<ItemStack> offering, Supplier<ItemStack> completionGift, Predicate<Player> kin) {
 	}
 
 	/** Squared distance to the nearest sleeper within {@code range} (client or server), or {@code Double.MAX_VALUE}. */
