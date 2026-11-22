@@ -38,6 +38,16 @@ Speeds and wear compared to vanilla:
 - Works on anything with durability (tools, weapons, armor, elytra, the Glider, shields). Applied at an anvil.
 - Incompatible with Mending (pointless together). Plain Unbreaking stays, stronger, as the everyday route.
 
+## Quartz tools and armor (owner, 2026-11-22)
+
+- A full quartz set: pickaxe, axe, shovel, hoe, sword and armor, "for use in the nether".
+- **Roughly iron/copper level** in durability, damage and protection, on the curve above. They count as iron-level for what they can harvest, so they mine deepslate like iron does.
+- **Faster on all Nether blocks** (owner): netherrack, nether bricks, basalt, blackstone, soul sand and soil, nylium, magma, wart blocks, nether quartz and gold ore, and the rest of the Nether's natural blocks (a block tag the builder fills). Builder's call to raise with the owner: **ancient debris** stays diamond-only, so quartz doesn't skip netherite progression.
+- **Look (owner): "a sick white look"**: bright quartz white with subtle veining, vanilla-styled, at 16x and 32x (B16). Agent-made until a person redoes it (`docs/art-todo.md`).
+- Made from nether quartz (recipe: builder's proposal, probably quartz blocks like iron ingots, on a crafting table).
+- Prior art: Quartz Tools (fatlard1993, MIT, on 26.3, 611 downloads) has smooth-quartz tools but no armor and no Nether bonus. We build our own, since quartz has to sit on this mod's curve. Its code can be read, and reused with credit since it's MIT.
+- These are new items (B15 only limits new blocks).
+
 ## Open
 
 - Exact numbers (above are targets; the owner tunes after playing).

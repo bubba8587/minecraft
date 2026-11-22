@@ -65,4 +65,4 @@ Parked ideas and open items, newest first within each project. Agents add to it 
 - Owner to read and ratify (or rewrite) the goal drafts A1-A4 (`python3 tools/dte.py unratified`).
 
 ## Bubba's Reworked Mining (C7)
-- **Designed 2026-11-22, not built** (`specs/reworked-mining.md`): harsh bare tools, deepslate very hard below iron, stronger Efficiency and Unbreaking, rare nuggets and gems from natural stone, True Unbreaking as a rare loot book. Open: axes and shovels, Fortune on finds, exact numbers.
+- **Designed 2026-11-22, not built** (`specs/reworked-mining.md`): harsh bare tools, deepslate very hard below iron, stronger Efficiency and Unbreaking, rare nuggets and gems from natural stone, True Unbreaking as a rare loot book, quartz tools and armor for the Nether (iron-level, faster on Nether blocks, white). Open: axes and shovels, Fortune on finds, exact numbers.
