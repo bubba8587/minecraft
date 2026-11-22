@@ -8,7 +8,7 @@ All projects target the latest full release of Minecraft. *See also: [[Version S
 
 | Project | Type | Summary |
 |---|---|---|
-| [[Bubba's Crafting Tweaks]] | Datapack (optional Fabric mod) | Extra recipes for awkward or grindy items, plus the Glider and Synthetic Diamond Ore in the mod. |
+| [[Bubba's Extra Recipes]] | Datapack (optional Fabric mod) | Extra recipes for awkward or grindy items, plus the Glider and Synthetic Diamond Ore in the mod. |
 | [[Bubba's Reworked Mobs]] | Fabric mod | Undead that lie dormant until noise wakes them, and far fewer natural monster spawns. |
 | [[Bubba's Infused Gems]] | Fabric mod | Potions brewed into gems, enchanted and socketed into armor and weapons for permanent effects. |
 | [[Bubba's Reworked Beacons]] | Fabric mod | Beacons with one item slot instead of fixed powers, and paired beacons that work underground. |

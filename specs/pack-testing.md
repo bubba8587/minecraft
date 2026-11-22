@@ -20,16 +20,16 @@ timeout 540 xvfb-run -a -s "-screen 0 1280x720x24 +extension GLX +render -norese
 
 Every pack in `datapacks/` is loaded together, including the internal `refpack`. A test that asks "what else matches this input?" therefore looks only at `minecraft:` and the pack's own namespace. Players won't run refpack alongside a real pack.
 
-## What the tests check (bubbas_crafting_tweaks)
+## What the tests check (bubbas_extra_recipes)
 
-`src/gametest/.../PackcheckGameTest.java` has one table, `CRAFTING_TWEAKS`, with **one row per recipe file**:
+`src/gametest/.../PackcheckGameTest.java` has one table, `EXTRA_RECIPES`, with **one row per recipe file**:
 
 - `crafting(id, resultItem, count, itemName|null, lore, grid(key, row1, row2, row3)...)`: each grid is a full 3x3 crafting-table layout. Spaces are empty slots, and `CraftingInput.of` trims the grid the way the table does. Give several grids to prove placement freedom or alternative ingredients.
 - `cooking(RecipeType.BLASTING|SMOKING, id, resultItem, itemName|null, lore, cookingTime, experience, inputItem...)`: one `SingleRecipeInput` per accepted ingredient.
 
 Each row has a one-line `@GameTest` method calling `check(helper, id)`. For every input, `check` does five things:
 
-- It looks up `bubbas_crafting_tweaks:<id>` with `serverLevel.recipeAccess().byKey(ResourceKey.create(Registries.RECIPE, id))` and checks the recipe type.
+- It looks up `bubbas_extra_recipes:<id>` with `serverLevel.recipeAccess().byKey(ResourceKey.create(Registries.RECIPE, id))` and checks the recipe type.
 - It checks `recipe.matches(input, level)`.
 - It checks that no other vanilla or pack recipe of that type matches the same input, so it catches a recipe that never wins.
 - It runs `recipe.assemble(input)` (26.x: no registry argument) and asserts the item and count. It asserts the `item_name` and the shown name when the row sets a name, and it asserts the lore lines. A row with no name or lore must give a result with an empty component patch.
@@ -50,8 +50,8 @@ The client test (`PackcheckClientGameTest`) gives a survival player the assemble
 - **Disabled packs** (`DISABLED` file) are not bundled. Their tests must be skipped or removed in the same change.
 - Gotcha: a test table that is built when the class loads must not create `ItemStack`s. Item components aren't bound until the world loads, and creating one throws `Components not bound yet`. That's why grids and cooking inputs are suppliers.
 
-## Item-keyed block drops (refpack, bubbas_crafting_tweaks)
+## Item-keyed block drops (refpack, bubbas_extra_recipes)
 
-`ItemKeyedDropsGameTest` places blocks as a survival mock player (`ServerPlayerGameMode#useItemOn`) and mines them (`ServerPlayerGameMode#destroyBlock`), the path a player's packets take, then reads the item entities. It proves refpack's barrel loot override (a marked barrel's own drop, vanilla drops otherwise, and that `location_check` sees air on a player break) and that bubbas_crafting_tweaks' "Synthetic Diamond Ore" places plain ore that mines like natural ore, also when the item carries `block_state {synthetic:"true"}` without the mod. Background: `docs/knowledge/item-keyed-block-drops.md`.
+`ItemKeyedDropsGameTest` places blocks as a survival mock player (`ServerPlayerGameMode#useItemOn`) and mines them (`ServerPlayerGameMode#destroyBlock`), the path a player's packets take, then reads the item entities. It proves refpack's barrel loot override (a marked barrel's own drop, vanilla drops otherwise, and that `location_check` sees air on a player break) and that bubbas_extra_recipes' "Synthetic Diamond Ore" places plain ore that mines like natural ore, also when the item carries `block_state {synthetic:"true"}` without the mod. Background: `docs/knowledge/item-keyed-block-drops.md`.
 
 PackTest functions in each pack (`data/<ns>/test/`) are still the pack's own behaviour tests for CI (`specs/quality.md`). Packcheck adds the Java-level and visual checks on top.

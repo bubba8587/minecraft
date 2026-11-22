@@ -156,7 +156,7 @@ public class TestWorldShots implements FabricClientGameTest {
 			shot("arena_unarmed_sleepers", 27.5, -56.3, -23.5, 27.5, -60, -30);
 		}
 		if (part("crafting")) {
-			// Crafting Tweaks: x -30..-14, z -4..12; stations along x -20 face east, ores at x -26, frames at x -27.
+			// Extra Recipes: x -30..-14, z -4..12; stations along x -20 face east, ores at x -26, frames at x -27.
 			shot("crafting_overview", -9, -52, 4, -22, -60, 4);
 			shot("crafting_station_crafting", -16, -58.2, -3, -20, -59.6, -3);
 			shot("crafting_station_blast_furnace", -16, -58.2, 1, -20, -59.6, 1);

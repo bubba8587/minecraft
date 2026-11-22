@@ -12,7 +12,7 @@ import net.fabricmc.fabric.api.networking.v1.ServerConfigurationConnectionEvents
 import net.fabricmc.fabric.api.networking.v1.ServerConfigurationNetworking;
 
 /**
- * Turns away clients without the mod (as Crafting Tweaks does, docs/knowledge/item-keyed-block-drops.md). The
+ * Turns away clients without the mod (as Extra Recipes does, docs/knowledge/item-keyed-block-drops.md). The
  * upside-down state shifts every block state id after the beacon, and Fabric's registry sync sends nothing for
  * state-only changes, so a client without the mod would decode chunks wrongly. The menu type is a modded
  * registry entry, which registry sync already checks; this keeps the rule explicit.

@@ -15,7 +15,7 @@
 		"java": ">=${java_version}",
 		"fabric-api": "*",
 		"bubbas_reworked_mobs": "*",
-		"bubbas_crafting_tweaks": "*",
+		"bubbas_extra_recipes": "*",
 		"bubbas_infused_gems": "*"
 	}
 }

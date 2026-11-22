@@ -1,4 +1,4 @@
-# Crafting Tweaks: x -30..-14, z -4..12 (oak floor).
+# Extra Recipes: x -30..-14, z -4..12 (oak floor).
 fill -30 -61 -4 -14 -61 12 minecraft:oak_planks
 setblock -15 -60 3 minecraft:oak_sign[rotation=12]{is_waxed:1b,front_text:{messages:[{text:"Crafting",bold:true,color:"dark_green"},"Every recipe's","ingredients are","in the chests"]}}
 setblock -20 -60 -4 minecraft:oak_sign[rotation=12]{is_waxed:1b,front_text:{messages:[{text:"Crafting",bold:true,color:"dark_green"},"glider, trident","dye, paper,","charcoal block"]}}

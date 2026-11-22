@@ -35,7 +35,7 @@ execute if data block 6 -60 -22 Items[{id:"minecraft:iron_axe"}]
 execute if data block 24 -60 -12 Items[{id:"minecraft:diamond_sword",components:{"minecraft:enchantments":{"minecraft:smite":5}}}]
 execute if data block 30 -60 -12 Items[{id:"minecraft:netherite_chestplate"}]
 execute if block 14 -60 -30 minecraft:oak_fence
-# crafting tweaks
+# extra recipes
 execute if block -26 -60 2 minecraft:deepslate_diamond_ore[synthetic=true]
 execute if block -26 -58 2 minecraft:deepslate_diamond_ore[synthetic=true]
 execute if block -26 -60 5 minecraft:deepslate_diamond_ore[synthetic=false]
@@ -46,7 +46,7 @@ execute if entity @e[type=minecraft:item_frame,x=-26,y=-59,z=8,distance=..1]
 execute if entity @e[type=minecraft:item_frame,x=-26,y=-59,z=10,distance=..1]
 # glider tower
 execute if block 23 -30 6 minecraft:ladder[facing=west]
-execute if data block 21 0 6 Items[{id:"bubbas_crafting_tweaks:glider"}]
+execute if data block 21 0 6 Items[{id:"bubbas_extra_recipes:glider"}]
 execute if data block 21 0 6 Items[{id:"minecraft:elytra"}]
 # infused gems station
 execute if block 36 -60 6 minecraft:brewing_stand

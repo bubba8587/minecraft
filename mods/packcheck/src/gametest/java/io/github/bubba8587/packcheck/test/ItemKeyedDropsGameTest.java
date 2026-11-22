@@ -138,13 +138,13 @@ public class ItemKeyedDropsGameTest {
 	}
 
 	/**
-	 * Approach B (no block entity): bubbas_crafting_tweaks' "Synthetic Diamond Ore" (blast2diamond, an item_name)
+	 * Approach B (no block entity): bubbas_extra_recipes' "Synthetic Diamond Ore" (blast2diamond, an item_name)
 	 * places plain deepslate diamond ore. The name has nowhere to live, so the placed block mines like natural ore.
 	 */
 	@GameTest
 	public void syntheticOreFromBlastingPlacesPlainOre(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
-		ResourceKey<Recipe<?>> key = ResourceKey.create(Registries.RECIPE, Identifier.fromNamespaceAndPath("bubbas_crafting_tweaks", "blast2diamond"));
+		ResourceKey<Recipe<?>> key = ResourceKey.create(Registries.RECIPE, Identifier.fromNamespaceAndPath("bubbas_extra_recipes", "blast2diamond"));
 		SingleRecipeInput input = new SingleRecipeInput(new ItemStack(Items.COAL_BLOCK));
 		@SuppressWarnings("unchecked")
 		Recipe<SingleRecipeInput> recipe = (Recipe<SingleRecipeInput>) level.recipeAccess().byKey(key).orElseThrow().value();

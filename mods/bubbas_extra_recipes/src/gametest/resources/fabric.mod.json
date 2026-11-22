@@ -1,0 +1,20 @@
+{
+	"schemaVersion": 1,
+	"id": "bubbas_extra_recipes-test",
+	"version": "1.0.0",
+	"name": "Bubba's Extra Recipes Tests",
+	"environment": "*",
+	"entrypoints": {
+		"fabric-gametest": [
+			"io.github.bubba8587.bubbas_extra_recipes.test.ExtraRecipesCoreGameTest"
+		],
+		"bubba-milestone-gametest": [
+			"io.github.bubba8587.bubbas_extra_recipes.test.BundledPacksGameTest",
+			"io.github.bubba8587.bubbas_extra_recipes.test.GliderGameTest",
+			"io.github.bubba8587.bubbas_extra_recipes.test.SyntheticOreGameTest"
+		],
+		"fabric-client-gametest": [
+			"io.github.bubba8587.bubbas_extra_recipes.test.BubbasExtraRecipesClientGameTest"
+		]
+	}
+}

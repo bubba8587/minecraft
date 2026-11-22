@@ -1,0 +1,26 @@
+// dte:C3,B16
+plugins {
+	id 'net.fabricmc.fabric-loom'
+}
+apply from: rootProject.file('gradle/fabric-mod.gradle')
+
+dependencies {
+	// Extra mod dependencies go here; see docs/knowledge/libraries.md.
+}
+
+// The repo's datapack and resource pack ship inside the jar as built-in packs (specs/extra-recipes-mod.md).
+// They are copied at build time from datapacks/bubbas_extra_recipes and resourcepacks/bubbas_extra_recipes,
+// never duplicated in this mod's source. BubbasExtraRecipes#registerBundledPacks registers them.
+def bundlePacks = tasks.register('bundlePacks', Sync) {
+	description = 'Copies the Extra Recipes datapack and resource pack into the jar as built-in packs.'
+	into layout.buildDirectory.dir('generated/bundled-packs')
+	from(rootProject.file('datapacks/bubbas_extra_recipes')) {
+		into 'bundled/datapack'
+		exclude 'VERSION', 'packtest.commands', 'DISABLED', 'data/*/test/**'
+	}
+	from(rootProject.file('resourcepacks/bubbas_extra_recipes')) {
+		into 'bundled/resourcepack'
+		exclude 'VERSION', 'DISABLED'
+	}
+}
+sourceSets.main.resources.srcDir(bundlePacks)

@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "bubbas_extra_recipes:item/glider"
+  }
+}

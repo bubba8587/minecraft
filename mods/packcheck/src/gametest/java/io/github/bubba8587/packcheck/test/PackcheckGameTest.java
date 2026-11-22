@@ -38,18 +38,18 @@ import net.fabricmc.fabric.api.gametest.v1.GameTest;
 /**
  * Server game tests for the datapacks bundled by packcheck (specs/pack-testing.md).
  *
- * <p>bubbas_crafting_tweaks: one {@link RecipeCase} per recipe in {@link #CRAFTING_TWEAKS}. Each case is checked
+ * <p>bubbas_extra_recipes: one {@link RecipeCase} per recipe in {@link #EXTRA_RECIPES}. Each case is checked
  * the same way: the recipe is looked up by id, every listed input matches it, no other recipe of that type matches the
  * same input, and the assembled result has the expected item, count, name, lore (and cooking time/experience).
  * To change a recipe, edit its row; to add one, add a row and a one-line {@code @GameTest} method.
  * {@link #everyPackRecipeHasATestCase} fails when the pack and the table disagree.
  */
 public class PackcheckGameTest {
-	private static final String TWEAKS = "bubbas_crafting_tweaks";
+	private static final String TWEAKS = "bubbas_extra_recipes";
 
-	// --- The table: one row per recipe in datapacks/bubbas_crafting_tweaks/data/bubbas_crafting_tweaks/recipe/ ---
+	// --- The table: one row per recipe in datapacks/bubbas_extra_recipes/data/bubbas_extra_recipes/recipe/ ---
 
-	private static final List<RecipeCase> CRAFTING_TWEAKS = List.of(
+	private static final List<RecipeCase> EXTRA_RECIPES = List.of(
 		crafting("bamboo_paper", Items.PAPER, 2, "Bamboo Paper", List.of(),
 			grid(Map.of('L', Items.BAMBOO), "LLL", "   ", "   "),
 			grid(Map.of('L', Items.BAMBOO), "   ", "   ", "LLL")),
@@ -61,7 +61,7 @@ public class PackcheckGameTest {
 		crafting("trident", Items.TRIDENT, 1, null, List.of(),
 			grid(Map.of('#', Items.PRISMARINE_SHARD, 'P', Items.PRISMARINE_CRYSTALS, '/', Items.STICK),
 				"###", "P/P", "P/P")),
-		// block_state {synthetic:"true"}: read by the companion mod (specs/crafting-tweaks-mod.md); ignored without it.
+		// block_state {synthetic:"true"}: read by the companion mod (specs/extra-recipes-mod.md); ignored without it.
 		cooking(RecipeType.BLASTING, "blast2diamond", Items.DEEPSLATE_DIAMOND_ORE, "Synthetic Diamond Ore", List.of(), 4000, 5.0F,
 			Items.COAL_BLOCK).withBlockState(Map.of("synthetic", "true")),
 		cooking(RecipeType.BLASTING, "blast2sand", Items.SAND, null, List.of(), 200, 0.0F,
@@ -116,8 +116,8 @@ public class PackcheckGameTest {
 			.map(h -> h.id().identifier())
 			.filter(id -> id.getNamespace().equals(TWEAKS))
 			.map(Identifier::getPath).sorted().toList();
-		List<String> inTable = CRAFTING_TWEAKS.stream().map(RecipeCase::id).sorted().toList();
-		helper.assertValueEqual(inPack, inTable, "recipes in the pack vs. rows in PackcheckGameTest.CRAFTING_TWEAKS");
+		List<String> inTable = EXTRA_RECIPES.stream().map(RecipeCase::id).sorted().toList();
+		helper.assertValueEqual(inPack, inTable, "recipes in the pack vs. rows in PackcheckGameTest.EXTRA_RECIPES");
 		helper.succeed();
 	}
 
@@ -158,7 +158,7 @@ public class PackcheckGameTest {
 	// --- The shared check ---
 
 	private static void check(GameTestHelper helper, String id) {
-		RecipeCase c = CRAFTING_TWEAKS.stream().filter(r -> r.id.equals(id)).findFirst()
+		RecipeCase c = EXTRA_RECIPES.stream().filter(r -> r.id.equals(id)).findFirst()
 			.orElseThrow(() -> new IllegalArgumentException("no table row for " + id));
 		ServerLevel level = helper.getLevel();
 		RecipeManager recipes = recipes(level);
@@ -303,13 +303,13 @@ public class PackcheckGameTest {
 	}
 
 	static int recipeCaseCount() {
-		return CRAFTING_TWEAKS.size();
+		return EXTRA_RECIPES.size();
 	}
 
 	/** Assembled result of every row's first input, for the client screenshot test. */
 	static List<ItemStack> assembledResults(ServerLevel level) {
 		List<ItemStack> out = new ArrayList<>();
-		for (RecipeCase c : CRAFTING_TWEAKS) {
+		for (RecipeCase c : EXTRA_RECIPES) {
 			recipes(level).byKey(key(TWEAKS, c.id)).ifPresent(h -> out.add(assemble(h, c.inputs().getFirst())));
 		}
 		return out;

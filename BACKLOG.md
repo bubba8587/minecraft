@@ -36,7 +36,7 @@ Parked ideas and open items, newest first within each project. Agents add to it 
   - **Seeking**: points toward the nearest structure of a chosen type, like an explorer map.
   - Dropped: Fold (animal breeding), Stillness (no despawning).
 
-## Bubba's Crafting Tweaks
+## Bubba's Extra Recipes
 - Person-made mod icon (none yet).
 - Real Glider art (16x and 32x, made by a person).
 
@@ -58,7 +58,7 @@ Parked ideas and open items, newest first within each project. Agents add to it 
 - Player docs: a gem-in-beacon screen screenshot (client test) once the beacon screen is final.
 
 - **Compatibility tests before releases** (prior-art research, docs/research/prior-art-all-projects-2026-11-16.md): Reworked Beacons vs Beyond Basic Beacons / Potion Beacons (likely mark incompatible) and Underground Beacons / Extended Beacon Range (test); Warding pathing vs Lithium; Infused Gems' enchanting hooks vs Easy Magic; Glider turning vs Do a Barrel Roll; Totem of Keeping vs grave mods (dupes/loss).
-- **Name clash: 'Crafting Tweaks'** is also a 10.7M-download mod and a 26.3 datapack; consider renaming Bubba's Crafting Tweaks before its first release (owner's call).
+- **Renamed** (owner, 2026-11-22): Bubba's Crafting Tweaks is now **Bubba's Extra Recipes** (mod id `bubbas_extra_recipes`), clear of the 10.7M-download Crafting Tweaks mod.
 
 ## Repo
 - Test world stations for Warding and Reworked Beacons (a Totem of Warding, a bell near sleepers, lit vs dark sleepers, sky vs paired beacons), when the owner wants to playtest them (`specs/testworld.md`).

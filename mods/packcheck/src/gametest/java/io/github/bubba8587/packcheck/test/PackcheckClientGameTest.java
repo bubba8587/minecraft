@@ -19,7 +19,7 @@ import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContex
 
 /**
  * Client game test (./gradlew :packcheck:runClientGameTest): puts the assembled result of every
- * bubbas_crafting_tweaks recipe in a survival player's inventory, opens the inventory, and screenshots it once
+ * bubbas_extra_recipes recipe in a survival player's inventory, opens the inventory, and screenshots it once
  * as an overview and once hovering each item with a custom name or lore, so the tooltip shows.
  * Screenshots: build/run/clientGameTest/screenshots/. specs/pack-testing.md.
  */
@@ -58,7 +58,7 @@ public class PackcheckClientGameTest implements FabricClientGameTest {
 			context.waitTicks(2);
 			context.getInput().setCursorPos(5, 5);
 			context.waitTick();
-			context.takeScreenshot("packcheck_crafting_tweaks_inventory");
+			context.takeScreenshot("packcheck_extra_recipes_inventory");
 
 			for (Object[] hover : HOVERS) {
 				String name = (String) hover[0];

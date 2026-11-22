@@ -7,7 +7,7 @@
 #
 # Source: the most recently saved options.txt among .minecraft and the other Modrinth profiles (or -From).
 # Everything is copied except the resource pack lists, which stay the test profile's own (so its bundled packs,
-# e.g. Bubba's Crafting Tweaks', stay on). The source's "version:" line is kept so the game upgrades older settings.
+# e.g. Bubba's Extra Recipes', stay on). The source's "version:" line is kept so the game upgrades older settings.
 # A few owner overrides ($overrides below, e.g. GUI scale 3) are applied on top. Re-copied on every run (the owner's main settings win over anything the game wrote in the test profile); refuses
 # to run while Minecraft is running on the profile, because the game saves its settings back on exit.
 param(

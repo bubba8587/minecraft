@@ -1,0 +1,33 @@
+{
+	"schemaVersion": 1,
+	"id": "${mod_id}",
+	"version": "${version}",
+	"name": "Bubba's Extra Recipes",
+	"description": "Companion mod for the Bubba's Extra Recipes datapack: the Glider and Synthetic Diamond Ore.",
+	"authors": [
+		"bubba8587"
+	],
+	"license": "MIT",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"io.github.bubba8587.bubbas_extra_recipes.BubbasExtraRecipes"
+		],
+		"client": [
+			"io.github.bubba8587.bubbas_extra_recipes.client.BubbasExtraRecipesClient"
+		]
+	},
+	"mixins": [
+		"bubbas_extra_recipes.mixins.json",
+		{
+			"config": "bubbas_extra_recipes.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=${loader_version}",
+		"minecraft": "~${minecraft_version}",
+		"java": ">=${java_version}",
+		"fabric-api": "*"
+	}
+}

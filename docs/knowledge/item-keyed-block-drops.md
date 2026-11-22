@@ -18,7 +18,7 @@ Scope: making a **placed vanilla block** use its own drops depending on the **it
 
 ---
 
-**Reopen if** (owner, 2026-11-14): Minecraft adds more data-driven blocks, or lets blocks without a block entity carry data from their item. Then every use of approach C (an added property on a vanilla block) should move to the pure-data version, merging back toward vanilla, and the tiny mod parts and their mod-required-on-both-sides cost go away. Current uses: Synthetic Diamond Ore (`specs/crafting-tweaks-mod.md`). Check on every Minecraft release (CLAUDE.md, New Minecraft release).
+**Reopen if** (owner, 2026-11-14): Minecraft adds more data-driven blocks, or lets blocks without a block entity carry data from their item. Then every use of approach C (an added property on a vanilla block) should move to the pure-data version, merging back toward vanilla, and the tiny mod parts and their mod-required-on-both-sides cost go away. Current uses: Synthetic Diamond Ore (`specs/extra-recipes-mod.md`). Check on every Minecraft release (CLAUDE.md, New Minecraft release).
 
 ## A. Blocks with a block entity: pure datapack (works)
 
@@ -74,7 +74,7 @@ From `BlockEntityTypes` (src: common `world/level/block/entity/BlockEntityTypes.
 
 - An ore keeps nothing of the item but its block state. The only placement component that reaches a plain block is `minecraft:block_state`, and `BlockItemStateProperties#apply` silently **skips property names the block doesn't have** (src: common `world/item/component/BlockItemStateProperties.java:48-63`). Deepslate diamond ore has no properties, so there is nothing to set.
 - No loot condition can see where the item came from: `match_block` sees the state (and block entity, none here); `location_check` sees air (A above).
-- Tested (packcheck `ItemKeyedDropsGameTest.syntheticOreFromBlastingPlacesPlainOre`): bubbas_crafting_tweaks' `blast2diamond` result ("Synthetic Diamond Ore", an `item_name`) placed by a survival player and mined with an iron pickaxe drops one diamond, like natural ore. The same with `block_state {synthetic:"true"}` added (no mod loaded) also drops a diamond.
+- Tested (packcheck `ItemKeyedDropsGameTest.syntheticOreFromBlastingPlacesPlainOre`): bubbas_extra_recipes' `blast2diamond` result ("Synthetic Diamond Ore", an `item_name`) placed by a survival player and mined with an iron pickaxe drops one diamond, like natural ore. The same with `block_state {synthetic:"true"}` added (no mod loaded) also drops a diamond.
 - The only data-only workaround would be a hack: a `placed_block` advancement trigger on the named item, a function that finds the placed position and summons a marker entity there, and a tick function that deletes diamonds dropped next to a marker whose block is gone. It misses pistons, explosions and many edge cases, costs a tick function, and was not tried. Not recommended (UNVERIFIED).
 
 ---
@@ -224,15 +224,15 @@ Store "synthetic" per position in a chunk attachment when the item is placed (`n
 
 ---
 
-## Exact files for bubbas_crafting_tweaks
+## Exact files for bubbas_extra_recipes
 
-Applied 2026-11-14, with one change: the loot override and synthetic table live in the companion mod's own data (`mods/bubbas_crafting_tweaks/src/main/resources/data/`), not the datapack, and the synthetic table drops one diamond 25 % of the time (as built: `specs/crafting-tweaks-mod.md`). The plan as first written:
+Applied 2026-11-14, with one change: the loot override and synthetic table live in the companion mod's own data (`mods/bubbas_extra_recipes/src/main/resources/data/`), not the datapack, and the synthetic table drops one diamond 25 % of the time (as built: `specs/extra-recipes-mod.md`). The plan as first written:
 
 
 With approach C the datapack needs only these (the property itself comes from the mod; without it the pack behaves as today):
-1. `data/bubbas_crafting_tweaks/recipe/blast2diamond.json`: add `"minecraft:block_state": { "synthetic": "true" }` to `result.components` (keep the `item_name`).
-2. `data/minecraft/loot_table/blocks/deepslate_diamond_ore.json`: the C loot table above with `"value": "bubbas_crafting_tweaks:blocks/synthetic_diamond_ore"`.
-3. `data/bubbas_crafting_tweaks/loot_table/blocks/synthetic_diamond_ore.json`: the C synthetic table above with `"random_sequence": "bubbas_crafting_tweaks:blocks/synthetic_diamond_ore"` (or an empty `"pools": []` for "always nothing").
+1. `data/bubbas_extra_recipes/recipe/blast2diamond.json`: add `"minecraft:block_state": { "synthetic": "true" }` to `result.components` (keep the `item_name`).
+2. `data/minecraft/loot_table/blocks/deepslate_diamond_ore.json`: the C loot table above with `"value": "bubbas_extra_recipes:blocks/synthetic_diamond_ore"`.
+3. `data/bubbas_extra_recipes/loot_table/blocks/synthetic_diamond_ore.json`: the C synthetic table above with `"random_sequence": "bubbas_extra_recipes:blocks/synthetic_diamond_ore"` (or an empty `"pools": []` for "always nothing").
 4. A mod (new, or inside an existing one of the owner's) carrying the three mixins and the handshake above, required on server and client.
 5. Tests: packcheck's `syntheticDiamondOre` row then expects the `block_state` component too; `ItemKeyedDropsGameTest.syntheticOreFromBlastingPlacesPlainOre` keeps passing without the mod (it proves the fallback); the mod's own game tests take over refmod's `SyntheticOreGameTest`. Update the player docs page for the pack (B11 playerVault).
 
