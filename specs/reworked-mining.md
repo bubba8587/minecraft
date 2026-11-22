@@ -22,7 +22,7 @@ Speeds and wear compared to vanilla:
 - **Efficiency is stronger** (owner): a steeper per-level curve. Target: Efficiency V iron mines deepslate about like bare diamond; Efficiency V diamond is the "machine".
 - **Unbreaking is stronger** (owner): target: Unbreaking III cancels most of the extra deepslate wear, so an enchanted iron pick is a real midgame tool.
 - **Haste gems** (Bubba's Infused Gems) stack on top as the next step. No hard dependency.
-- Scope of "tools": pickaxes for stone and deepslate first. Whether shovels and axes get a matching curve is open (builder proposes).
+- **Axes, shovels, hoes and swords (owner, 2026-11-22): the same idea, gentler.** Bare wood and stone tools feel weak on everything, and Efficiency matters on every tool, but chopping wood and digging dirt slow down far less than stone and deepslate (target: wood/stone tools ~1.3-1.5x slower on their blocks, iron and up about vanilla).
 
 ## Rare finds in plain stone (owner, 2026-11-22)
 
@@ -51,7 +51,6 @@ Speeds and wear compared to vanilla:
 ## Open
 
 - Exact numbers (above are targets; the owner tunes after playing).
-- Whether axes and shovels get the same treatment.
 - Fortune and the rare finds.
 - How each step shows to the player (tooltips stay minimal, per the owner).
 
