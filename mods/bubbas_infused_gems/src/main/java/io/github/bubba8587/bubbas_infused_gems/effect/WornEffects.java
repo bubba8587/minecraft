@@ -96,6 +96,7 @@ public final class WornEffects {
 				entity.setAttached(io.github.bubba8587.bubbas_infused_gems.registry.ModAttachments.LAST_EQUIP_FILL, now);
 			} else {
 				g.bubbas$setLastHurtTick(entity.tickCount);
+				AbsorptionCooldown.start(entity, refill);
 			}
 		}
 	}
@@ -292,6 +293,7 @@ public final class WornEffects {
 	/** After a hit lands: the Healing gem gives back a share of a survived attack or fall; Infested gems may hatch. */
 	public static void afterDamage(LivingEntity entity, DamageSource source, float taken) {
 		((GemEntity) entity).bubbas$setLastHurtTick(entity.tickCount);
+		AbsorptionCooldown.start(entity, (int) Balance.get().effect("absorption").wornNumber("refill_ticks", 600));
 		if (of(entity).isEmpty()) {
 			return;
 		}

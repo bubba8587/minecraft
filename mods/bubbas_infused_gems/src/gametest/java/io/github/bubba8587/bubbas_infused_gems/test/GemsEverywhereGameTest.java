@@ -433,6 +433,23 @@ public class GemsEverywhereGameTest {
 		helper.succeed();
 	}
 
+	/** B19 (owner, 2026-11-22): the shield's refill wait shows as vanilla's item cooldown sweep on Absorption armor only. */
+	@GameTest
+	public void absorptionRefillWaitShowsAsItemCooldown(GameTestHelper helper) {
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		wear(player, "absorption");
+		ItemStack chest = player.getItemBySlot(EquipmentSlot.CHEST);
+		check(helper, !player.getCooldowns().isOnCooldown(chest), "a fresh shield shows no wait");
+		// A mock player is invulnerable (its client never loads), so call the after-damage hook directly.
+		WornEffects.afterDamage(player, player.damageSources().generic(), 1.0F);
+		check(helper, player.getCooldowns().isOnCooldown(chest), "after damage the Absorption armor shows the refill wait");
+		check(helper, player.getCooldowns().isOnCooldown(player.getItemBySlot(EquipmentSlot.FEET)), "every Absorption piece shares the wait");
+		check(helper, !player.getCooldowns().isOnCooldown(GemKit.socketed(BalanceGameTest.armor("netherite", PIECES[1]), GemKit.gem("speed", 1.0))),
+				"armor with other gems shows no wait");
+		check(helper, !player.getCooldowns().isOnCooldown(new ItemStack(Items.NETHERITE_CHESTPLATE)), "plain armor shows no wait");
+		helper.succeed();
+	}
+
 	@GameTest
 	public void absorptionDoesNotRefillOnReequip(GameTestHelper helper) {
 		Mob pig = pig(helper, 1, 1);

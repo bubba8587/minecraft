@@ -18,6 +18,7 @@
 		"HiddenArmorItemEntityMixin",
 		"HiddenArmorMixins",
 		"HiddenArmorResultMixin",
+		"ItemCooldownsMixin",
 		"LivingEntityAccessor",
 		"LivingEntityMixin",
 		"MobMixin",
