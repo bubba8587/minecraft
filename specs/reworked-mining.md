@@ -29,7 +29,7 @@ Speeds and wear compared to vanilla:
 - Mining plain natural **stone** (and its natural variants: builder lists them) sometimes drops a find at very low odds: iron or gold nuggets most of the time, very rarely lapis or an emerald.
 - **Deepslate:** slightly better odds, with a tiny chance of a diamond.
 - Only from natural blocks: blocks placed by players never drop finds (or the rate would be farmable by place-and-mine). How to tell natural from placed is a technical choice (see `docs/knowledge/item-keyed-block-drops.md` and Reworked Mobs' `TerrainOracle`).
-- Silk Touch gives the block, no find. Fortune: builder proposes (probably raises the odds a little).
+- Silk Touch gives the block, no find. **Fortune raises the odds gently** (owner, 2026-11-22): each level roughly doubles the chance (vanilla's `table_bonus` loot condition, as gravel's flint uses), so Fortune III makes finds noticeable but still rare.
 
 ## True Unbreaking (owner, 2026-11-22)
 
@@ -51,7 +51,6 @@ Speeds and wear compared to vanilla:
 ## Open
 
 - Exact numbers (above are targets; the owner tunes after playing).
-- Fortune and the rare finds.
 - How each step shows to the player (tooltips stay minimal, per the owner).
 
 ## Milestone test objectives
