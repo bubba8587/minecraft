@@ -1,0 +1,36 @@
+// dte:A3
+// Internal harness (never published): a live client on a copy of the natural test world that runs scene scripts
+// dropped into a queue folder and screenshots them, for posters and other promo images. specs/posters.md.
+//   ./gradlew :postershots:runClientGameTest -PclientTests=posters   (queue: build/run/posters/queue/)
+plugins {
+	id 'net.fabricmc.fabric-loom'
+}
+apply from: rootProject.file('gradle/fabric-mod.gradle')
+apply from: rootProject.file('gradle/stormies-spiders.gradle')
+
+// The mods in the shots, as their built jars (the same set and snapshot trick as testworldshots).
+def modsUnderTest = ['bubbas_reworked_mobs', 'bubbas_extra_recipes', 'bubbas_infused_gems', 'bubbas_reworked_beacons', 'bubbas_totems_artifacts', 'bubbas_reworked_mining', 'bubbas_world_tweaks']
+modsUnderTest.each { evaluationDependsOn(":${it}") }
+def modJars = files(modsUnderTest.collect { m -> rootProject.project(":${m}").tasks.named('jar').flatMap { it.archiveFile } })
+def snapshotDir = layout.buildDirectory.dir('modsUnderTest')
+def snapshotJars = tasks.register('snapshotModJars', Sync) {
+	from modJars
+	into snapshotDir
+}
+dependencies {
+	runtimeOnly files(snapshotDir.map { d -> d.asFileTree }) {
+		builtBy snapshotJars
+	}
+}
+
+// Runs only when asked for by name (-PclientTests=posters), never in milestone or CI runs: it needs the gitignored
+// natural world and waits for scene scripts.
+def wanted = providers.gradleProperty('clientTests').map { it.split(',')*.trim().contains('posters') }.orElse(false)
+def world = rootProject.file('testworlds/bubba-natural-world')
+def queue = layout.buildDirectory.dir('run/posters').get().asFile
+tasks.matching { it.name == 'runClientGameTest' }.configureEach { t ->
+	t.onlyIf('poster shots run only with -PclientTests=posters') { wanted.get() }
+	t.jvmArgs("-Dbubba.posters.world=${world.absolutePath}", "-Dbubba.posters.dir=${queue.absolutePath}", "-Dbubba.posters.gl=true")
+	t.outputs.upToDateWhen { false }
+}
+tasks.matching { it.name == 'runGameTest' }.configureEach { enabled = false }

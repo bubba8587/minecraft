@@ -1,0 +1,18 @@
+{
+	"schemaVersion": 1,
+	"id": "postershots-test",
+	"version": "1.0.0",
+	"name": "Poster Shots (client test)",
+	"environment": "*",
+	"entrypoints": {
+		"fabric-client-gametest": [
+			"io.github.bubba8587.postershots.test.PosterShots"
+		]
+	},
+	"mixins": [
+		{
+			"config": "postershots-test.client.mixins.json",
+			"environment": "client"
+		}
+	]
+}

@@ -1,0 +1,11 @@
+{
+	"required": true,
+	"package": "io.github.bubba8587.postershots.test.mixin",
+	"compatibilityLevel": "JAVA_25",
+	"client": [
+		"GlBackendMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}
