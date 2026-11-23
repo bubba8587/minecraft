@@ -168,3 +168,6 @@ Player-facing: `player-docs/Projects/Bubba's Reworked Mobs/Crypt Yards.md`. A sl
 - Client part `yards` (new, `YardKindsClientGameTest`): every state, a lone plot, and pauper/family/noble yards on sky platforms: `yard-<kind>-above`, `yard-<kind>-gate`, `crypt-<wealth>` (night vision), `crypt-<wealth>-dark`, `crypt-noble-hall`. Looked at: kept, collapsed, nearly-gone (above), collapsed and noble (gate), pauper, noble and noble-hall crypts.
 - Not yet tested (objectives): each wealth's chest rolls its own table in generated worlds (checked by eye); natural generation picks every state and size (shares are code, not measured).
 
+## Desert and snowy yards (2026-11-22, agent 2)
+
+Crypt yards take a climate from the biome at their centre (`YardKinds.Climate`: TEMPERATE, DESERT for desert and badlands, SNOWY for base temperature under 0.15). Desert yards have sand plots, crypts of 70 % husks (30 % skeletons) buried under sand in the niches, and resting husks in the graves; snowy yards have snow plots, crypts of 70 % strays (30 % zombies) frozen in clear ice, and resting strays. Saved in the piece tag as `Climate`. Builder's call: resting dead follow the climate (the owner said "the skeleton kind"; flip with `Climate.resting()`). Details in `specs/undead.md` "Undead variants".

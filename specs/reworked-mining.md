@@ -177,3 +177,7 @@ What that means in seconds (on the ground, no Haste): iron on deepslate is about
 - Efficiency and Unbreaking levels give the stronger values.
 - Finds drop from stone and deepslate (placed or natural) at the tuned odds, never with Silk Touch; explosions give them only at no-Fortune odds.
 - True Unbreaking stops all durability loss, isn't offered by the enchanting table or villagers, and can't combine with Mending.
+
+## Quartz tool textures fixed (2026-11-22, agent 3)
+
+The tool heads read mid-grey because vanilla's iron heads are half near-black outline and dark inner edge. `tools-local/make_quartz_textures.py` now maps them, for the tools only, to a soft warm grey outline (132,122,121) and the quartz shadow tone (190,179,174) at 16x and 32x. Checked in client part `quartz`: the heads read white beside iron's.

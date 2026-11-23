@@ -28,6 +28,13 @@ Each yard is in one state:
 
 Every grave in a yard holds a skeleton that **never wakes**, whatever the noise, a bell, or robbing it. Most are dressed in leather dyed in muted burial colours. Take their gear and dig them up freely: mined with a Silk Touch pickaxe, one stays asleep wherever it is placed, so it works as decoration. Now and then a weapon or tool is half-buried in a plot; dig it out with a shovel (see [[Loot on Display]]). The stones never carry names, only a few enchanting-table letters or nothing.
 
+## Desert and snowy yards
+
+- **Deserts and badlands:** the plots are sand, the crypts hold mostly husks buried in sand, and the graves hold resting husks.
+- **Snowy places:** the plots are snow, the crypts hold mostly strays frozen in clear ice, and the graves hold resting strays.
+
+See [[Sleeping Undead]].
+
 ## Crypts
 
 Many yards have stairs at the far end leading down to a crypt. Bigger yards have richer crypts. Unlike the yard's dead, the [[Sleeping Undead|sleepers]] down here **do wake**.
@@ -45,7 +52,7 @@ Crypt yards are about one per 36 by 36 chunks, on fairly flat, dry ground, never
 
 | Version | Changes |
 |---|---|
-| 0.1.0 | Added: crypt yards in five states of decay and four sizes; the resting dead; the pauper's ossuary, family vault and noble crypt. |
+| 0.1.0 | Added: crypt yards in five states of decay and four sizes; the resting dead; the pauper's ossuary, family vault and noble crypt; desert and snowy yards. |
 
 ## See also
 

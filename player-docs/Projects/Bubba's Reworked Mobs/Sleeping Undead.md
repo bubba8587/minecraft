@@ -5,7 +5,7 @@
 > [!infobox] Sleeping undead
 > | | |
 > |---|---|
-> | **Variants** | Sleeping Skeleton, Sleeping Zombie |
+> | **Variants** | Sleeping Skeleton, Sleeping Zombie, Sleeping Husk, Sleeping Stray |
 > | **Poses** | Sitting slumped, or lying on its back (both variants) |
 > | **Behavior** | Motionless until woken |
 > | **Gear** | Often a weapon and armor |
@@ -13,6 +13,13 @@
 > | **Wakes into** | [[Woken Undead\|Woken undead]] |
 
 A **sleeping undead** is a dormant skeleton or zombie that lies motionless in the world until noise wakes it. Both skeletons and zombies sit slumped or lie on their backs. They often hold a weapon and wear armor, and they neither move nor attack while asleep.
+
+## Husks and strays
+
+In deserts and snowy places the sleepers are husks and strays.
+
+- A **sleeping husk** lies buried in sand. When it wakes, the sand bursts in a cloud that **blinds** anyone within a few blocks for 2 seconds. Woken husks don't burn by day, and their hits make you hungry.
+- A **sleeping stray** lies frozen in ice. When something wakes it, the ice **cracks first** with a glassy sound and shards. You have about a second and a half before it breaks free. Woken strays shoot Slowness arrows.
 
 ## Behavior
 
@@ -46,13 +53,13 @@ A sleeping-undead item can be placed again; it turns to face the player who plac
 
 ## Obtaining
 
-In this test version sleeping undead do not generate in the world yet. Sleeping Skeleton and Sleeping Zombie (sitting and lying) are in the creative inventory under the **Bubba's Reworked Mobs** tab.
+Sleeping undead lie in the crypts under [[Crypt Yards]]: husks in desert yards, strays in snowy ones. All four kinds, sitting and lying, are in the creative inventory under the **Bubba's Reworked Mobs** tab.
 
 ## History
 
 | Version | Changes |
 |---|---|
-| 0.1.0 | Added. |
+| 0.1.0 | Added. Husk and stray sleepers. |
 
 ## See also
 

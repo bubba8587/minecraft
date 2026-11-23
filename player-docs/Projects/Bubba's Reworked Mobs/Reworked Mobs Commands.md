@@ -42,3 +42,23 @@ Finds and builds enderman cairns. Requires operator permission; intended for bui
 - `build` finishes the nearest cairn within 128 blocks.
 - `builders` summons one enderman for each missing block of the nearest cairn within 64 blocks (at most 12), each carrying its block, and they build it.
 - `here` adds a cairn site at the player's feet and builds it; a seed picks its design. The site is saved with the world.
+
+### graveyard
+
+*Main article: [[Crypt Yards]]*
+
+Builds a crypt yard. Requires operator permission.
+
+**Syntax:** `/bubbas_reworked_mobs graveyard build <lone|small|medium|large> <kept|overgrown|sunken|collapsed|nearly_gone> <none|pauper|family|noble>`
+
+The yard is built with its gate at your feet.
+
+### camp
+
+*Main article: [[Monster Camps]]*
+
+Requires operator permission; intended for building and testing.
+
+- `camp build <kind> <size> [<seed>]` builds a camp here.
+- `camp reset` runs the daily refill check now, even with players near.
+- `camp list` lists known camps.

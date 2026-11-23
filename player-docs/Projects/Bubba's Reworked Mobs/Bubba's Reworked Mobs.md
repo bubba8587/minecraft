@@ -3,7 +3,7 @@ type: mod
 minecraft: "26.3"
 status: active
 modrinth:
-requires: [Fabric API]
+requires: [Fabric API, Stormie's Spiders]
 side: client and server
 ---
 # Bubba's Reworked Mobs
@@ -14,7 +14,7 @@ side: client and server
 > | **Type** | Fabric mod |
 > | **Minecraft** | 26.3 |
 > | **Version** | 0.1.0 (early test) |
-> | **Requires** | Fabric API |
+> | **Requires** | Fabric API, Stormie's Spiders |
 > | **Side** | Client and server |
 > | **Status** | Active |
 
@@ -84,7 +84,19 @@ Fenced graveyards in every state of decay stand on dry, flat ground, their grave
 
 *Main article: [[Spiders]]*
 
-Cobweb nests cling to the ceilings of tall cave rooms, with spiders sleeping upside down in them. Walk underneath and one drops on a thread; if it bites, it latches on and reels you up into the nest.
+Spiders climb walls and ceilings. Cobweb nests cling to the ceilings of tall cave rooms. Walk underneath and a spider drops on a thread; if it lands, it reels you up and cocoons you. Giant spiders roam old-growth taiga, webbing the trees and snatching livestock.
+
+## Monster camps
+
+*Main article: [[Monster Camps]]*
+
+Dark camps of skeletons, zombies, husks, strays or bogged, each with a leader. Break every banner to clear a camp for good, leave one to let it refill, or light a fire to quiet it. Pillager outposts stop spawning when their banners are gone.
+
+## Bogged
+
+*Main article: [[Bogged]]*
+
+Bogged hide in swamp water and mud and ambush you when you turn your back.
 
 ## Ancient Fabricators
 
@@ -116,7 +128,7 @@ The mod comes with vanilla-style 16x textures. A higher-resolution set, **Bubba'
 
 ## Compatibility
 
-The mod requires Fabric API. Only this mod's own undead are changed: normal zombies and skeletons from spawners and other mods behave as usual.
+The mod requires Fabric API and [Stormie's Spiders](https://modrinth.com/mod/stormies-spiders), which makes spiders climb walls. Only this mod's own undead are changed: normal zombies and skeletons from spawners and other mods behave as usual.
 
 Optional: [[Bubba's Totems & Artifacts]], whose [[Grave Talisman]] and [[Totem of Warding]] sense and calm this mod's sleeping undead. Everything here works the same without it.
 

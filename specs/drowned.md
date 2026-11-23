@@ -192,3 +192,7 @@ Core (every build, `ReworkedMobsCoreGameTest`): `drownedGrabsAndDragsToDeepWater
 `DrownedClientGameTest` (client part `drowned`): screenshots drowned-lurk, drowned-lurk-low (upright, head above water), drowned-sunk (a villager stares: under the surface), drowned-grab (surged at a villager with its back turned), drowned-drag-deep (upright under water holding it), drowned-swim (lying, swimming to its spot), drowned-crawl-side, drowned-crawl-front (lying, crawling on land, at night), drowned-held-player (the camera player held, third person, with the grabbed hint). Previews kept in `docs/previews/drowned/`.
 
 Not yet tested (objectives): Riptide frees a held player and launches them; Knockback/Impaling hits in a live grab; a held player can target the drowned with the crosshair (client); it crawls back down the bank dragging a victim; it abandons a spot when hit from the shore; a reloaded drowned throws off a saved passenger; the "held" player isn't drawn sitting.
+
+## Bogged (2026-11-22)
+
+Bogged lurk and ambush like the drowned, in swamp water and mud by reeds, but never grab: `bogged/BoggedLurk`. Spec and numbers in `specs/undead.md` "Undead variants".
