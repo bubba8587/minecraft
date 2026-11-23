@@ -133,5 +133,6 @@ Releases go out from CI on a tag `<project>/v<version>`, made on `main` after me
 
 ## Style
 
+- **Code comments are labels only (owner, DTE B38):** a comment says WHAT a section or block is, in a few words. Reasons (WHY, owner decisions, history) go in the decision leaf or the spec; explanations of HOW a system works go in the spec. No dated "(owner, 2026-…)" notes, design rationale or tuning history in javadoc.
 - Java: tabs, Mojang names, one class per registered concept group (`ModItems`, `ModBlocks`...). Mod id lowercase with underscores; author `bubba8587`, Java packages `io.github.bubba8587.<modid>` (`specs/build.md`); license MIT (B12 mitLicense).
 - **On the owner's PC: commit locally as you go, but push only after the builds and the relevant tests pass** (owner's instruction), in verified batches; subagents never push, the orchestrator does after checking. In cloud sessions, commit and push as you go on `develop` (see Branch model). Messages say what changed and which leaf governs it. A snapshot commit of unfinished work (an agent mid-task) ends its message with the skip-CI marker (`[skip ci]`; never write that text in other commit messages, or GitHub skips CI for them), so half-written code doesn't turn CI red; finished work never skips CI.
