@@ -1,19 +1,19 @@
 # Cairns and endermen (specs/endermen.md, Reworked Mobs), far west of everything (x -232..-182): endermen roam up to
 # 64 blocks around a cairn and fix any stray dirt, gravel or path within ~16 of where they stand, so every other
 # station is kept more than 80 blocks from these cairns.
-# Reached by click signs at the hub and back. Row of three finished cairns (seeds 11, 22, 33) at z 42, south of the arrival spot; a yard
+# Reached by click signs at the hub and back. Row of three finished cairns (seeds 7349201, 91827364, 5550123) at z 42, south of the arrival spot; a yard
 # (unfenced: roaming endermen would hop any fence) with an unfinished cairn and builders, and a repair corner with a dirt pillar, a
 # cobblestone heap, a pit and farmland for the caretakers. Sites from `cairn here` are saved with the world.
 # Vigil endermen and caretakers despawn like natural ones and leave by day (cairns respawn them at night); the builders from `cairn builders` are persistent. Reset removes every enderman in the yard. A backup of the yard's ground (y -63..-56) sits at y 198..205 for
 # the Reset sign.
 forceload add -236 -12 -180 56
 # Three finished cairns.
-execute positioned -222 -60 42 run bubbas_reworked_mobs cairn here 11
-execute positioned -207 -60 42 run bubbas_reworked_mobs cairn here 22
-execute positioned -192 -60 42 run bubbas_reworked_mobs cairn here 33
-setblock -222 -60 32 minecraft:oak_sign[rotation=8]{is_waxed:1b,front_text:{messages:[{text:"Cairn",bold:true,color:"dark_purple"},"seed 11","top rod points","to a stronghold"]}}
-setblock -207 -60 32 minecraft:oak_sign[rotation=8]{is_waxed:1b,front_text:{messages:[{text:"Cairn",bold:true,color:"dark_purple"},"seed 22","each design is","fixed by seed"]}}
-setblock -192 -60 32 minecraft:oak_sign[rotation=8]{is_waxed:1b,front_text:{messages:[{text:"Cairn",bold:true,color:"dark_purple"},"seed 33","offerings vary","by biome"]}}
+execute positioned -222 -60 42 run bubbas_reworked_mobs cairn here 7349201
+execute positioned -207 -60 42 run bubbas_reworked_mobs cairn here 91827364
+execute positioned -192 -60 42 run bubbas_reworked_mobs cairn here 5550123
+setblock -222 -60 32 minecraft:oak_sign[rotation=8]{is_waxed:1b,front_text:{messages:[{text:"Cairn",bold:true,color:"dark_purple"},"seed 7349201","top rod points","to a stronghold"]}}
+setblock -207 -60 32 minecraft:oak_sign[rotation=8]{is_waxed:1b,front_text:{messages:[{text:"Cairn",bold:true,color:"dark_purple"},"seed 91827364","each design is","fixed by seed"]}}
+setblock -192 -60 32 minecraft:oak_sign[rotation=8]{is_waxed:1b,front_text:{messages:[{text:"Cairn",bold:true,color:"dark_purple"},"seed 5550123","offerings vary","by biome"]}}
 setblock -199 -60 32 minecraft:oak_sign[rotation=8]{is_waxed:1b,front_text:{messages:[{text:"Vigil",bold:true,color:"dark_purple"},"at a finished","cairn they","stand and stare"]}}
 # Unfinished cairn (seed 44): built whole, then everything above its footing and first trunk blocks taken off.
 # Its builders come from `cairn builders` (one enderman per missing block, each carrying it).
