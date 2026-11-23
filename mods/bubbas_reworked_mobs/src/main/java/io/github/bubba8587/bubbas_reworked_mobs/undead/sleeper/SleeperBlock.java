@@ -128,7 +128,7 @@ public class SleeperBlock extends BaseEntityBlock implements SimpleWaterloggedBl
 		if (includeData && level.getBlockEntity(pos) instanceof SleeperBlockEntity sleeper) {
 			stack.applyComponents(sleeper.collectComponents());
 		}
-		stack.set(DataComponents.BLOCK_STATE, BlockItemStateProperties.EMPTY.with(POSE, state.getValue(POSE)));
+		stack.set(DataComponents.BLOCK_STATE, BlockItemStateProperties.EMPTY.with(POSE, state).with(RESTING, state));
 		return stack;
 	}
 
