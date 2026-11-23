@@ -286,20 +286,21 @@ The Warden and the debuffs carry on.
 
 ## Milestone test objectives (mechanics)
 
-- **Core** (`ReworkedMobsCoreGameTest`, 4; bodies in `MobFactoryGameTest`, each building a whole Fabricator 8000 blocks out with forced chunks and running it without a player):
-  - `fabricatorDropsDeactivatedMob`: limp, looking down, unhurt, silent, no target;
-  - `fabricatorSendsItUpAndItWakesReworked`: lamps count, lift, sent up, wakes a watcher creeper;
-  - `fabricatorRedstoneStopsTheTeleporter`: count never starts, lamps dark, mob stays, nothing sent;
-  - `fabricatorBreakingTheSpawnerStopsIt`: broken saved, deck mob wakes, no more drops.
+- Each test builds a whole Fabricator far from the test grid with forced chunks and runs it without a player. Since 2026-11-22 (the flaky Fabricator tests): every site has its own absolute spot (x 30000 + n x 256), forced chunks are counted per chunk, and the site, chunks, entities and players are cleaned up when the test is done, pass or fail (`TestCleanup`, `TestAreaCleanupMixin`).
+- **Core** (`ReworkedMobsCoreGameTest`, body in `MobFactoryGameTest`): `fabricatorSendsItUpAndItWakesReworked`: the drop lands limp on the pad (looking down, unhurt, silent, no target), lamps count, lift, sent up, wakes a watcher creeper.
 - **Milestone** (`MobFactoryGameTest`):
+  - `redstoneStopsTheTeleporter`: count never starts, lamps dark, mob stays, nothing sent;
+  - `breakingTheHiddenSpawnerStopsItForGood`: once a mob has dropped, the spawner is broken; broken saved, deck mob wakes, no more drops;
   - `wardenWakesWhenItHearsAPlayerAtTheMachine`: one Warden, passive and persistent, wakes angry at a survival player at the floor beacon;
-  - `debuffsWithoutReworkedBeacons`: Mining Fatigue III, Weakness, Slowness.
+  - `debuffsWithoutReworkedBeacons`: Mining Fatigue III, Weakness, Slowness; its Fabricator also carries the secrets check (below);
+  - `chestTablesRollTheirLoot` (no Fabricator built): reject and buried tables roll items, reject gear comes out damaged, every office chest holds valuables and a treasure.
 - **Client part `factories`:** the look shots plus:
   - `factory-countdown`: a deactivated zombie on the pad mid-count;
   - `factory-lift`: all lamps lit, lifted;
   - `factory-burst`: the moment it fires, the departure burst over the pad (preview `docs/previews/factories/fabricator-burst.png`);
   - `factory-arrival`: the zombie limp on the surface at night in its particles;
-  - `factory-worldgen` and `factory-city-door(-nightvision)`: the natural Fabricator nearest spawn and its doorway, with the "real ancient city there: true" check printed.
+  - `factory-worldgen` and `factory-city-door-nightvision`: the natural Fabricator nearest spawn and its doorway, with the "real ancient city there: true" check printed.
+  - One shot per camera (2026-11-22): the overview, intake and lower-front shots are taken as in play only; the city door with night vision only.
 - `MobFactoryGameTest.officeGemsCarryTheirEffect` (milestone): with Infused Gems, office-chest gems carry their effect component (bug 2026-11-16: the gem entries used the pre-26.x `functions` key, which 26.3 ignores, so they came out blank).
 - **Not yet tested (objectives):**
   - a natural (unforced) site rests before its first drop and between counts; a ward over the drop point stops drops while a deactivated mob already on the pad is still lifted and sent (needs Totems & Artifacts + Reworked Beacons in the test run, or a stand-in ward through `api/Endermen.keepOut`);
@@ -340,7 +341,7 @@ Owner: "additional secrets and complexity (not to main mechanic, but to the gene
 - **Light:** unchanged at the existing spots (office 6, window ledge 7). New: intake 6 (soul fire, catalyst), terrace 4 (one soul lantern on the arch, one lit candle group), causeway 2. Everything else new is unlit (unlit candles).
 
 **Tests:**
-- New milestone server test `MobFactoryGameTest.secretsAreBuilt`: the tell is chiseled over a ladder; reject and buried chests carry their tables and the buried ones can open; the throat holds twisting vines; the intake is open; the spawner is where the design says and hidden on all six sides; both new tables roll items and reject gear comes out damaged.
+- Milestone server checks (2026-11-22: no longer a Fabricator build of their own): on `debuffsWithoutReworkedBeacons`' Fabricator, the tell is chiseled over a ladder; reject and buried chests carry their tables and the buried ones can open; the throat holds twisting vines; the intake is open; the spawner is where the design says and hidden on all six sides. `chestTablesRollTheirLoot`: both new tables roll items and reject gear comes out damaged.
 - Client part `factories` takes the shots above (`secrets(...)` in `FactoriesClientGameTest`) and prints `[fabricator] design blocks ...` with the intake, terrace and causeway light.
 - Not tested (objectives): a natural (city-turned) Fabricator's causeway meets its city tunnel; the hut lands on the side away from a leaning causeway.
 

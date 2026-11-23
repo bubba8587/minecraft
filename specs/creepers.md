@@ -112,9 +112,9 @@ Built as the creeper grove (`specs/testworld.md`, Layout).
 
 ## Milestone test objectives
 
-Core (every build, `ReworkedMobsCoreGameTest`): `creeperHitsFillTheMeterAndItDrains`, `creeperSprintingNearbyStartlesWalkingDoesNot`, `creeperFullMeterHissesAndDefuses` (sneak, then backing out of range), `blindedCreeperIgnoresMotion`, `chargedCreeperStaysVanilla`.
+Core (every build, `ReworkedMobsCoreGameTest`): `creeperSprintingNearbyStartlesWalkingDoesNot`.
 
-`CreeperGameTest` (milestone): `nearMissesStartle` (a snowball 1 block off counts, one 7.5 off doesn't); `aHitDuringTheHissStopsDefusing`; `peeksHalfBehindCover` (behind a wall it walks to a half-hidden spot with its eyes in view); `hidesWhenLookedAt` (peekaboo: hidden when looked at, half out again when looked away); `oneWatcherSpawnsBehindCoverOutOfView` (spawns out of sight, outside the view cone, 10-15 blocks, watching; one per player; vanilla random spawns blocked). Note: the spawn test failed once in ~12 runs early on (never reproduced after; maxTicks raised to 200); watch it.
+`CreeperGameTest` (milestone): `hitsFillTheMeterAndItDrains`; `fullMeterHissesAndDefuses` (sneak, then backing out of range; then a hit during the hiss means sneaking no longer saves you); `blindedCreeperIgnoresMotion`; `chargedCreeperStaysVanilla`; `nearMissesStartle` (a snowball 1 block off counts, one 7.5 off doesn't); `hidesWhenLookedAt` (behind a wall it walks to a half-hidden spot with its eyes in view; peekaboo: hidden when looked at, half out again when looked away); `oneWatcherSpawnsBehindCoverOutOfView` (spawns out of sight, outside the view cone, 10-15 blocks, watching; one per player; vanilla random spawns blocked). Note: the spawn test failed once in ~12 runs early on (never reproduced after; maxTicks raised to 200); watch it.
 
 `CreeperClientGameTest` (client part `creepers`): screenshots `creeper-peek` (from the watched armor stand: half behind a one-log tree), `creeper-peek-side`, `creeper-hidden` (player looking at it), `creeper-caught` (looked away, then straight back).
 
