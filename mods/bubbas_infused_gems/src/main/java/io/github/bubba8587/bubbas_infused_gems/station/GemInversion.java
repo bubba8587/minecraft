@@ -12,20 +12,14 @@ import io.github.bubba8587.bubbas_infused_gems.registry.ModItems;
 import net.minecraft.world.item.ItemStack;
 import org.jspecify.annotations.Nullable;
 
-/**
- * Gem inversion (owner, 2026-11-15): a finished gem with a drawback + a fermented spider eye at the brewing stand swaps
- * its main effect and its drawback. Nerfs every time: the new main is one grade below the old (strongest, medium, weak;
- * a weak one can't invert) and the gem loses an Infusion level (Infusion I can't invert). A drawback-only gem inverts to a
- * weak main of its drawback's effect and no drawback (owner). The old main becomes the
- * drawback at the old drawback's size; the bonus stays as it is (then acting as a second drawback until inverted back).
- */
+/** Gem inversion: a finished gem with a drawback + a fermented spider eye at the brewing. */
 public final class GemInversion {
 	private static final List<String> ORDER = List.of("weak", "medium", "strongest");
 
 	private GemInversion() {
 	}
 
-	/** The grade a main strength was rolled at on this Infusion level (variant factors are all in [variant_min, 1]). */
+	/** The grade a main strength was rolled at on this Infusion level. */
 	public static @Nullable String mainGrade(Gem gem) {
 		Balance b = Balance.get();
 		double x = gem.main() / b.infusion(gem.infusion()).factor();
@@ -33,7 +27,7 @@ public final class GemInversion {
 		for (String g : ORDER) {
 			double v = x / b.grades.get(g);
 			if (v >= b.variantMin - 1e-4 && v <= 1.0 + 1e-4) {
-				best = g; // the highest grade that fits
+				best = g;
 			}
 		}
 		return best;
@@ -44,7 +38,7 @@ public final class GemInversion {
 			return false;
 		}
 		if (!gem.hasMain()) {
-			return true; // owner: a drawback-only gem inverts to a weak main
+			return true;
 		}
 		String grade = mainGrade(gem);
 		return grade != null && !grade.equals("weak") && Balance.get().gemEffects.contains(gem.drawback().get().key());
@@ -57,7 +51,6 @@ public final class GemInversion {
 	public static Gem invert(Gem gem) {
 		Balance b = Balance.get();
 		if (!gem.hasMain()) {
-			// Owner: the drawback becomes a weak-grade main; no drawback after (the bonus, if any, stays as it is).
 			int infusion = gem.infusion() - 1;
 			float main = (float) (b.infusion(infusion).factor() * b.grades.get("weak"));
 			return new Gem(gem.drawback().get().effect(), infusion, gem.tier(), main, gem.other(), Optional.empty());

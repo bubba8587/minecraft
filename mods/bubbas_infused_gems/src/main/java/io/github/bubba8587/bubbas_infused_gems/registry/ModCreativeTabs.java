@@ -20,7 +20,7 @@ import net.minecraft.world.item.ItemStack;
 
 import net.fabricmc.fabric.api.creativetab.v1.FabricCreativeModeTab;
 
-/** Creative tab: a lingering Infusion VI Infused Gem and a perfect finished gem of every gem effect (all of them work). */
+/** Creative tab: a lingering Infusion VI Infused Gem and a perfect finished gem of every gem. */
 public final class ModCreativeTabs {
 	public static final ResourceKey<CreativeModeTab> MAIN_KEY = ResourceKey.create(Registries.CREATIVE_MODE_TAB, BubbasInfusedGems.id("main"));
 	public static final CreativeModeTab MAIN = Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, MAIN_KEY,
@@ -42,7 +42,7 @@ public final class ModCreativeTabs {
 	private ModCreativeTabs() {
 	}
 
-	/** The effect's strongest potion variant (the one that reaches a perfect gem). */
+	/** The effect's strongest potion variant. */
 	public static String top(String key) {
 		return Balance.get().effect(key).variants().values().stream().max((a, c) -> Double.compare(a.factor(), c.factor()))
 				.map(Balance.Variant::name).orElse("normal");

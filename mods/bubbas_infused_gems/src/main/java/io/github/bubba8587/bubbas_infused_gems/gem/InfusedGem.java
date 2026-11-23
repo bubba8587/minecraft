@@ -18,11 +18,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipProvider;
 
-/**
- * The {@code infused_gem} component: a brewed, not yet enchanted gem. Effect, potion variant (normal/long/strong, sets
- * the potion factor), form (sets the highest enchant tier) and Infusion level I-VI (the base gem, sets the Infusion
- * factor).
- */
+/** The infused_gem component: a brewed, not yet enchanted gem. */
 public record InfusedGem(Holder<MobEffect> effect, String variant, GemForm form, int infusion) implements TooltipProvider {
 	public static final Codec<InfusedGem> CODEC = RecordCodecBuilder.create(i -> i.group(
 			MobEffect.CODEC.fieldOf("effect").forGetter(InfusedGem::effect),
@@ -41,14 +37,14 @@ public record InfusedGem(Holder<MobEffect> effect, String variant, GemForm form,
 		return GemText.key(this.effect);
 	}
 
-	/** The highest enchant tier this gem can reach (owner: normal 1, splash 2, lingering 3). */
+	/** The highest enchant tier this gem can reach. */
 	public int maxTier() {
 		Balance b = Balance.get();
 		if (this.form == GemForm.ITEM) {
 			Balance.EffectData e = b.effect(this.key());
 			Balance.Variant v = e == null ? null : e.variants().get(this.variant);
 			if (v != null && v.maxTier() > 0) {
-				return v.maxTier(); // the model's per-source cap
+				return v.maxTier();
 			}
 		}
 		return b.formMaxTier.getOrDefault(this.form.getSerializedName(), 1);
@@ -64,7 +60,6 @@ public record InfusedGem(Holder<MobEffect> effect, String variant, GemForm form,
 
 	@Override
 	public void addToTooltip(Item.TooltipContext context, Consumer<Component> out, TooltipFlag flag, DataComponentGetter components) {
-		// One short line (owner): the name already has the effect, Infusion and form; no how-to lines.
 		out.accept((this.form == GemForm.ITEM ? Component.translatable(GemText.KEY + "tooltip.item", this.maxTier())
 				: Component.translatable(GemText.KEY + "tooltip.potion", Component.translatable(GemText.KEY + "variant." + this.variant),
 						this.maxTier())).withStyle(ChatFormatting.GRAY));

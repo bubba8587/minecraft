@@ -31,10 +31,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 
-/**
- * Gems beyond potions (owner, 2026-11-15): Wind Burst, Weaving and Oozing do what the thing does, and Silence, Ender and
- * Breeze give the wearer what sculk, chorus fruit and breezes do. Numbers from the balance model (WORN table).
- */
+/** Gems beyond potions. */
 public final class GemActions {
 	private GemActions() {
 	}
@@ -47,9 +44,7 @@ public final class GemActions {
 		return Math.max(s, 0.0) / Balance.get().cap;
 	}
 
-	// ------------------------------------------------------------------ hits
-
-	/** A Wind Burst, Weaving or Oozing gem's hit (an action, not a timed effect). */
+	/** A Wind Burst, Weaving or Oozing gem's hit. */
 	public static void hit(ServerLevel level, String key, double s, LivingEntity target, @Nullable Entity attacker, @Nullable Entity direct, ItemStack weapon) {
 		switch (key) {
 			case "wind_charged" -> windHit(level, s, target, direct != null ? direct : attacker, weapon);
@@ -65,7 +60,7 @@ public final class GemActions {
 		}
 	}
 
-	/** Whether this weapon is a mace with the Wind Burst enchantment (owner: the gems go past the cap there). */
+	/** Whether this weapon is a mace with the Wind Burst enchantment. */
 	public static boolean windMace(ServerLevel level, ItemStack weapon) {
 		if (weapon == null || !weapon.is(Items.MACE)) {
 			return false;
@@ -74,10 +69,9 @@ public final class GemActions {
 		return EnchantmentHelper.getItemEnchantmentLevel(windBurst, weapon) > 0;
 	}
 
-	/** Wind Burst's launch at strength s: (up, away) in blocks/tick; a Wind Burst mace multiplies it past the cap. */
+	/** Wind Burst's launch at strength s. */
 	public static double[] windLaunch(double s, boolean mace) {
 		double r = rel(s) * (mace ? num("wind_charged", "mace_bonus", 1.6) : 1.0);
-		// Owner (Q9): any hit throws the target at least hit_up_min up, a visible hop.
 		double up = s <= 0.0 ? 0.0 : Math.max(num("wind_charged", "hit_up_min", 0.35), num("wind_charged", "hit_up", 0.9) * r);
 		return new double[] {up, num("wind_charged", "hit_push", 0.6) * r};
 	}
@@ -97,12 +91,7 @@ public final class GemActions {
 		level.playSound(null, at.getX(), at.getY(), at.getZ(), SoundEvents.WIND_CHARGE_BURST, SoundSource.PLAYERS, 0.6F, 1.0F);
 	}
 
-	/**
-	 * Weaving hit (owner, Q14): a chance per hit set per build (10 / 25 / 50 %), no cooldown. Below perfect, one web at the
-	 * target's feet; the perfect weapon drops vanilla Weaving's 2-3 webs around the target, by vanilla's own placement rule
-	 * (replaceable spots on a sturdy floor). Only into air or other replaceable blocks, never replacing a solid block (owner);
-	 * the webs are real and stay.
-	 */
+	/** Weaving hit: a chance per hit set per build, no cooldown. */
 	private static void webHit(ServerLevel level, double s, LivingEntity target) {
 		double r = Math.min(1.0, rel(s));
 		if (target.getRandom().nextDouble() >= Balance.get().hitCurve("weaving", "value", r)) {
@@ -135,11 +124,7 @@ public final class GemActions {
 		}
 	}
 
-	/**
-	 * Ender hit (owner, Q18/Q19): a chance per hit set per build (10 / 25 / 40 %) to blink the target away with chorus
-	 * fruit's own teleport (vanilla's code: up to 8 blocks any way, landing on a floor, its sound and game event). Players
-	 * and mobs alike.
-	 */
+	/** Ender hit: a chance per hit to blink the target away. */
 	private static void enderHit(ServerLevel level, double s, LivingEntity target) {
 		if (!target.isAlive() || target.getRandom().nextDouble() >= Balance.get().hitCurve("ender", "value", Math.min(1.0, rel(s)))) {
 			return;
@@ -147,24 +132,19 @@ public final class GemActions {
 		boolean blinked = new net.minecraft.world.item.consume_effects.TeleportRandomlyConsumeEffect((float) num("ender", "hit_diameter", 16.0), false)
 				.apply(level, ItemStack.EMPTY, target);
 		if (blinked && target instanceof net.minecraft.world.entity.Mob mob) {
-			// Owner: a blinked mob is briefly confused: it drops its target and takes none for ENDER_CONFUSED_TICKS (vanilla's
-			// own target slot and attack-target memory; Mob.setTarget is held off meanwhile). Players only teleport.
 			mob.setTarget(null);
 			mob.getBrain().eraseMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.ATTACK_TARGET);
 			mob.setAttached(ModAttachments.ENDER_CONFUSED_UNTIL, level.getGameTime() + (long) num("ender", "confused_ticks", 20));
 		}
 	}
 
-	/** Whether this mob is still confused after an Ender blink (it takes no new target). */
+	/** Whether this mob is still confused after an Ender blink. */
 	public static boolean enderConfused(net.minecraft.world.entity.Mob mob) {
 		Long until = mob.getAttached(ModAttachments.ENDER_CONFUSED_UNTIL);
 		return until != null && mob.level().getGameTime() < until;
 	}
 
-	/**
-	 * Breeze hit (owner, Q22): while the target carries the Breeze gem effect, its own shots veer off: the spread of what it
-	 * fires is multiplied by the hit's dial (x3 / x6 / x12). Returns the multiplier, 1 when unaffected.
-	 */
+	/** Breeze hit: while the target carries the Breeze gem effect, its own shots veer off. */
 	public static double veer(@Nullable Entity shooter) {
 		if (!(shooter instanceof LivingEntity living)) {
 			return 1.0;
@@ -173,12 +153,12 @@ public final class GemActions {
 		return p <= 0.0 ? 1.0 : Balance.get().hitCurve("breeze", "value", p);
 	}
 
-	/** How near the owner an Oozing slime counts toward the cap (owner: left-behind slimes don't). */
+	/** How near the owner an Oozing slime counts toward the cap. */
 	public static final double SLIME_NEAR = 128.0;
-	/** Live Oozing slimes by owner (in memory: the slimes are never saved, so this is all of them). */
+	/** Live Oozing slimes by owner. */
 	private static final java.util.Map<UUID, java.util.Set<UUID>> SLIMES = new java.util.concurrent.ConcurrentHashMap<>();
 
-	/** The owner's Oozing slimes alive near them (owner: the cap of 8 counts these; a few lookups, no entity search). */
+	/** The owner's Oozing slimes alive near them. */
 	public static int ownedSlimes(ServerLevel level, LivingEntity owner) {
 		java.util.Set<UUID> set = SLIMES.get(owner.getUUID());
 		if (set == null) {
@@ -191,7 +171,7 @@ public final class GemActions {
 				if (slime != null) {
 					it.remove();
 				}
-				continue; // another dimension, or gone: not near
+				continue;
 			}
 			if (slime.distanceToSqr(owner) <= SLIME_NEAR * SLIME_NEAR) {
 				n++;
@@ -200,7 +180,7 @@ public final class GemActions {
 		return n;
 	}
 
-	/** An Oozing slime leaves the world (killed, discarded, or its chunk unloads): forget it. */
+	/** An Oozing slime leaves the world: forget it. */
 	public static void removed(Entity entity, Entity.RemovalReason reason) {
 		UUID owner = entity.getAttached(ModAttachments.SLIME_OWNER);
 		if (owner != null && reason != Entity.RemovalReason.CHANGED_DIMENSION) {
@@ -215,14 +195,14 @@ public final class GemActions {
 		int count = rel(s) >= 0.5 ? (int) num("oozing", "slimes_max", 2) : (int) num("oozing", "slimes_min", 1);
 		int room = (int) num("oozing", "slime_cap", 8) - ownedSlimes(level, owner);
 		for (int i = 0; i < Math.min(count, room); i++) {
-			// Neutral, so allowed in peaceful too (vanilla refuses slimes there).
+			// Neutral, so allowed in peaceful too
 			Slime slime = EntityTypes.SLIME.create(level, new net.minecraft.world.entity.EntitySpawnRequest(EntitySpawnReason.TRIGGERED, true));
 			if (slime == null) {
 				return;
 			}
 			slime.setSize(1, true);
 			slime.setAttached(ModAttachments.SLIME_OWNER, owner.getUUID());
-			slime.setPersistenceRequired(); // no despawning while loaded near the owner; never saved, so left-behind ones dissolve
+			slime.setPersistenceRequired();
 			slime.snapTo(target.getX() + (target.getRandom().nextDouble() - 0.5), target.getY() + 0.5,
 					target.getZ() + (target.getRandom().nextDouble() - 0.5), target.getRandom().nextFloat() * 360.0F, 0.0F);
 			if (level.addFreshEntity(slime)) {
@@ -231,7 +211,7 @@ public final class GemActions {
 		}
 	}
 
-	/** Whether this mob is an Oozing slime (neutral: it never takes a target, drops nothing). */
+	/** Whether this mob is an Oozing slime. */
 	public static boolean ownedSlime(Entity entity) {
 		return entity.hasAttached(ModAttachments.SLIME_OWNER);
 	}
@@ -241,12 +221,7 @@ public final class GemActions {
 		return owner != null && owner.equals(other.getUUID());
 	}
 
-	// ------------------------------------------------------------------ worn
-
-	/**
-	 * A wearer lands from a fall: Wind Burst and Oozing bounce them (a small burst; a slime block's bounce) and take
-	 * r = strength / cap of the fall damage away, so only the perfect set is fully immune. Returns the damage factor (1 - r).
-	 */
+	/** A wearer lands from a fall. */
 	public static float landing(LivingEntity entity, double fallDistance) {
 		if (!(entity.level() instanceof ServerLevel level) || WornEffects.of(entity).isEmpty() || fallDistance <= 1.0) {
 			return 1.0F;
@@ -256,7 +231,6 @@ public final class GemActions {
 		boolean hurts = fallDistance > entity.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.SAFE_FALL_DISTANCE);
 		double bounce = 0.0;
 		if (wind > 0.0 && hurts) {
-			// Owner (Q9): any landing bounce is at least a visible hop.
 			bounce = Math.max(bounce, Math.max(num("wind_charged", "land_bounce_min", 0.25), num("wind_charged", "land_bounce", 0.6) * rel(wind)));
 			burst(level, entity);
 		}
@@ -280,14 +254,13 @@ public final class GemActions {
 			return multiplier;
 		}
 		if (r >= 1.0 - 1e-6) {
-			// At Weaving's cap: not stuck at all. Any non-zero multiplier, even (1, 1, 1), makes Entity.move zero the
-			// velocity every tick, so walking, sprinting and falling never build up speed (owner playtest bug).
+			// At Weaving's cap: not stuck at all
 			return Vec3.ZERO;
 		}
 		return new Vec3(multiplier.x + (1.0 - multiplier.x) * r, multiplier.y + (1.0 - multiplier.y) * r, multiplier.z + (1.0 - multiplier.z) * r);
 	}
 
-	/** Silence worn: whether this movement vibration from the wearer is dropped (chance s/cap; all at the cap). */
+	/** Silence worn: whether this movement vibration from the wearer is dropped. */
 	public static boolean silenced(@Nullable Entity source, Holder<GameEvent> event) {
 		if (!(source instanceof LivingEntity entity) || WornEffects.of(entity).isEmpty() && GemValues.hit(entity, "silence") <= 0.0) {
 			return false;
@@ -300,12 +273,12 @@ public final class GemActions {
 		return r > 0.0 && (r >= 1.0 - 1e-9 || entity.getRandom().nextDouble() < r);
 	}
 
-	/** Ender worn: a projectile would hurt the wearer; with chance, chorus fruit's random teleport instead (true: no damage). */
+	/** Ender worn: a projectile would hurt the wearer. */
 	public static boolean blink(ServerLevel level, LivingEntity entity, Entity direct) {
 		if (!(direct instanceof Projectile projectile) || projectile.getOwner() == entity) {
 			return false;
 		}
-		double r = rel(GemValues.rawWorn(entity, "ender")); // worn only: an Ender hit blinks its target instead
+		double r = rel(GemValues.rawWorn(entity, "ender"));
 		if (r <= 0.0 || entity.getRandom().nextDouble() >= num("ender", "chance", 0.5) * r) {
 			return false;
 		}
@@ -323,8 +296,6 @@ public final class GemActions {
 				return true;
 			}
 		}
-		// Owner: the blink always triggers at the perfect set, but chorus fruit's 16 tries are all it gets: boxed in, the
-		// projectile hits (so a boss with perfect Blink can be trapped).
 		return false;
 	}
 
@@ -333,11 +304,10 @@ public final class GemActions {
 		if (vanilla != ProjectileDeflection.NONE || projectile.getOwner() == entity || entity.level().isClientSide()) {
 			return vanilla;
 		}
-		// Owner (Q17): wind charges pass, as they do through a real breeze (Breeze.deflection).
 		if (projectile.is(EntityTypes.BREEZE_WIND_CHARGE) || projectile.is(EntityTypes.WIND_CHARGE)) {
 			return vanilla;
 		}
-		double r = rel(GemValues.rawWorn(entity, "breeze")); // worn only: a Breeze hit makes the target's shots veer instead
+		double r = rel(GemValues.rawWorn(entity, "breeze"));
 		if (r <= 0.0 || entity.getRandom().nextDouble() >= num("breeze", "chance", 0.5) * r) {
 			return vanilla;
 		}

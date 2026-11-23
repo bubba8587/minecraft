@@ -30,16 +30,10 @@ import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 
-/**
- * Gems as loot (owner). Additive only: vanilla tables are never replaced. Each listed vanilla table (balance.json
- * {@code loot_inject}) gets one pool that rolls the mod's own table {@code bubbas_infused_gems:inject/<vanilla path>}, and
- * the trial chamber melee and ranged equipment tables get the item modifier {@code bubbas_infused_gems:trial_chamber_gear};
- * mobs' spawn armor and weapons go through {@code bubbas_infused_gems:mob_gear}. All three are data files, so a datapack can change or
- * empty any of them. A table replaced through Fabric's REPLACE event is left alone.
- */
+/** Gems as loot. */
 public final class GemLoot {
 	private static ResourceKey<LootItemFunction> mobGear;
-	/** Spawn equipment calls nest (an override calls super): gems are added once, when the outermost call returns. */
+	/** Spawn equipment calls nest: gems are added once, when the outermost call returns. */
 	private static final ThreadLocal<int[]> SPAWN_DEPTH = ThreadLocal.withInitial(() -> new int[1]);
 	private static final Map<Identifier, ResourceKey<LootTable>> INJECT = new LinkedHashMap<>();
 	private static final Map<Identifier, ResourceKey<LootItemFunction>> EQUIPMENT = new LinkedHashMap<>();
@@ -61,8 +55,7 @@ public final class GemLoot {
 		raw.getAsJsonObject("loot_equipment").entrySet().forEach(e -> EQUIPMENT.put(Identifier.parse(e.getKey()),
 				ResourceKey.create(Registries.ITEM_MODIFIER, Identifier.parse(e.getValue().getAsString()))));
 		LootTableEvents.MODIFY.register((key, builder, source, registries) -> {
-			// Not a table a datapack replaced through Fabric. Vanilla's own feature packs (the trade rebalance's chest tables)
-			// load as data packs, so those are included; a datapack that wants no gems empties the mod's inject table.
+			// Not a table a datapack replaced through Fabric
 			if (source == LootTableSource.REPLACED) {
 				return;
 			}
@@ -90,7 +83,7 @@ public final class GemLoot {
 		}
 	}
 
-	/** After a mob's spawn armor and weapons are chosen: each piece may get gems (item modifier {@code mob_gear}). */
+	/** After a mob's spawn armor and weapons are chosen: each piece may get gems. */
 	public static void gemSpawnGear(Mob mob) {
 		if (!(mob.level() instanceof ServerLevel level)) {
 			return;

@@ -14,7 +14,7 @@ import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.functions.LootItemConditionalFunction;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 
-/** Loot function {@code bubbas_infused_gems:random_gem}: turns the entry into a finished gem rolled from {@link GemRollSpec}. */
+/** Loot function bubbas_infused_gems:random_gem. */
 public class RandomGemFunction extends LootItemConditionalFunction {
 	public static final MapCodec<RandomGemFunction> MAP_CODEC = RecordCodecBuilder.mapCodec(i -> commonFields(i)
 			.and(GemRollSpec.MAP_CODEC.forGetter(f -> f.spec))

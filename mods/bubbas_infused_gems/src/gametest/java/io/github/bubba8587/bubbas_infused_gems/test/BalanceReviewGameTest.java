@@ -44,7 +44,7 @@ import net.minecraft.world.phys.Vec3;
 
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 
-/** The balance review's bugs (2026-11-15): each test would have caught one. */
+/** The balance review's bugs: each test would have caught one. */
 public class BalanceReviewGameTest {
 	private static final String[] PIECES = {"helmet", "chestplate", "leggings", "boots"};
 
@@ -68,7 +68,7 @@ public class BalanceReviewGameTest {
 		return pig;
 	}
 
-	/** 1. A weak Wind Burst or Oozing gem only softens a fall; a weak Levitation gem doesn't stop one. */
+	/** 1. */
 	@GameTest
 	public void weakGemsDoNotNegateFalls(GameTestHelper helper) {
 		for (String key : List.of("wind_charged", "oozing")) {
@@ -85,7 +85,7 @@ public class BalanceReviewGameTest {
 		helper.succeed();
 	}
 
-	/** 2. A Harming strike leaves the hit's cooldown alone: clicking again during it lands nothing, no gems again. */
+	/** 2. */
 	@GameTest
 	public void harmingStrikeKeepsTheHitCooldown(GameTestHelper helper) {
 		Zombie attacker = helper.spawnWithNoFreeWill(EntityTypes.ZOMBIE, new BlockPos(1, 1, 1));
@@ -104,7 +104,7 @@ public class BalanceReviewGameTest {
 		helper.succeed();
 	}
 
-	/** 3. A hit gem effect and worn gems of the same effect don't add; hit potency stays under the worn cap; Absorption fills once. */
+	/** 3. */
 	@GameTest
 	public void hitEffectsDoNotStackOnWornGems(GameTestHelper helper) {
 		Balance b = Balance.get();
@@ -133,10 +133,7 @@ public class BalanceReviewGameTest {
 		WornEffects.refresh(e);
 	}
 
-	/**
-	 * 4. Equipping fills the shield at once but a quick re-equip doesn't; the refill fills only the gem's share, after
-	 * 30 s without damage; and the equip-fill throttle is game time, saved on the wearer (it survives a rejoin).
-	 */
+	/** 4. */
 	@GameTest
 	public void absorptionRefillsOnlyItsShareAndRemembersTheThrottle(GameTestHelper helper) {
 		Balance b = Balance.get();
@@ -145,7 +142,6 @@ public class BalanceReviewGameTest {
 		fresh.tickCount = 1000;
 		wear(fresh, "absorption");
 		close(fresh.getAbsorptionAmount(), share, 1e-3, helper, "equipping fills the shield at once (owner)");
-		// Hurt, then swap gear right away: no second equip-fill within 30 s.
 		fresh.setAbsorptionAmount(2.0F);
 		strip(fresh);
 		wear(fresh, "absorption");
@@ -163,13 +159,12 @@ public class BalanceReviewGameTest {
 		fresh.discard();
 		Mob pig = pig(helper, 1, 1);
 		wear(pig, "absorption");
-		pig.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 2400, 3)); // an enchanted golden apple: 16
+		pig.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 2400, 3));
 		pig.setAbsorptionAmount(0.0F);
 		((GemEntity) pig).bubbas$setLastHurtTick(pig.tickCount - 1000);
 		WornEffects.tick(helper.getLevel(), pig, WornEffects.of(pig));
 		close(pig.getAbsorptionAmount(), share, 1e-3, helper, "the refill went past the gem's share");
 		check(helper, pig.getAttached(ModAttachments.LAST_EQUIP_FILL) != null, "no equip-fill time saved");
-		// Rejoin: a saved copy with the same gear refreshes without filling (the throttle came along).
 		TagValueOutput out = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, helper.getLevel().registryAccess());
 		pig.saveWithoutId(out);
 		Mob copy = helper.spawnWithNoFreeWill(EntityTypes.PIG, new BlockPos(3, 1, 3));
@@ -181,7 +176,7 @@ public class BalanceReviewGameTest {
 		helper.succeed();
 	}
 
-	/** 5. A weak Hero of the Village gem can round to nothing off: no 1-emerald floor. */
+	/** 5. */
 	@GameTest
 	public void weakHeroGemHasNoEmeraldFloor(GameTestHelper helper) {
 		ServerPlayer player = helper.makeMockServerPlayerInLevel();
@@ -199,7 +194,7 @@ public class BalanceReviewGameTest {
 		helper.succeed();
 	}
 
-	/** 6. Ender never blinks from a harmless projectile or from an explosion. */
+	/** 6. */
 	@GameTest
 	public void enderIgnoresHarmlessProjectilesAndExplosions(GameTestHelper helper) {
 		Mob pig = pig(helper, 2, 2);
@@ -217,7 +212,7 @@ public class BalanceReviewGameTest {
 		helper.succeed();
 	}
 
-	/** Owner: a weak Saturation gem fills food only to about 7 with a small share of saturation; a mid build (two gemmed pieces) stops between that and a full bar. */
+	/** A weak Saturation gem fills food only to about 7 with a small share of saturation. */
 	@GameTest(maxTicks = 100)
 	public void weakAndMidSaturationStopShort(GameTestHelper helper) {
 		ServerPlayer player = helper.makeMockServerPlayerInLevel();
@@ -242,7 +237,7 @@ public class BalanceReviewGameTest {
 		helper.succeed();
 	}
 
-	/** Ticks a Saturation build from the given food (no saturation) and returns the highest food level seen. */
+	/** Ticks a Saturation build from the given food and returns the highest food level seen. */
 	private static int run(GameTestHelper helper, ServerPlayer player, int food, int ticks) {
 		player.getFoodData().setFoodLevel(food);
 		player.getFoodData().setSaturation(0.0F);
@@ -254,7 +249,7 @@ public class BalanceReviewGameTest {
 		return top;
 	}
 
-	/** Owner: only the perfect Saturation set fills food to 20, so vanilla's fast regeneration heals. */
+	/** Only the perfect Saturation set fills food to 20. */
 	@GameTest
 	public void perfectSaturationFeedsFastRegeneration(GameTestHelper helper) {
 		ServerPlayer player = helper.makeMockServerPlayerInLevel();
@@ -272,7 +267,6 @@ public class BalanceReviewGameTest {
 			top = Math.max(top, player.getFoodData().getFoodLevel());
 		}
 		check(helper, top == 20, "a perfect Saturation set reached food " + top);
-		// Fast regeneration (1 HP per 10 ticks at food 20 with saturation) heals far more than slow's 5 HP in 400 ticks.
 		check(helper, player.getHealth() - 4.0F > 6.0F, "a perfect Saturation set healed only " + (player.getHealth() - 4.0F) + " HP in 20 s");
 		GemKit.remove(helper, player);
 		helper.succeed();

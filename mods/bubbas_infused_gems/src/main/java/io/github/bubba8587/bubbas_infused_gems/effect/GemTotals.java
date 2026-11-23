@@ -17,11 +17,7 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 
-/**
- * Combined gem strengths of one set of gear (the balance model, specs/effect-gems.md): per effect, the stacked total
- * of every main and "other" roll (gem quality x gear factor, strongest first), and per drawback effect its fixed size
- * by count. Computed when equipment changes, never per tick.
- */
+/** Combined gem strengths of one set of gear. */
 public record GemTotals(Map<String, Double> totals, Map<String, Integer> drawbackCounts, Map<String, Double> drawbacks) {
 	public static final GemTotals NONE = new GemTotals(Map.of(), Map.of(), Map.of());
 	public static final EquipmentSlot[] ARMOR = {EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET};
@@ -32,7 +28,7 @@ public record GemTotals(Map<String, Double> totals, Map<String, Integer> drawbac
 
 	/** Main/other total plus drawbacks of the same effect: what the effect does. */
 	public double value(String key) {
-		// No clamp at 1.0: mobility effects have raised worn caps (owner).
+		// No clamp at 1.0: mobility effects have raised worn caps
 		return this.totals.getOrDefault(key, 0.0) + this.drawbacks.getOrDefault(key, 0.0);
 	}
 
@@ -48,9 +44,7 @@ public record GemTotals(Map<String, Double> totals, Map<String, Integer> drawbac
 		return new ArrayList<>(all.keySet());
 	}
 
-	// ------------------------------------------------------------------ materials
-
-	/** Armor material key of a piece ("netherite"...), or null when it isn't known armor. */
+	/** Armor material key of a piece, or null when it isn't known armor. */
 	public static String armorMaterial(ItemStack stack) {
 		if (stack.isEmpty()) {
 			return null;
@@ -65,7 +59,7 @@ public record GemTotals(Map<String, Double> totals, Map<String, Integer> drawbac
 		return null;
 	}
 
-	/** Weapon material key ("wood"... "netherite", or "bow"/"crossbow"/"trident"/"mace"), or null. */
+	/** Weapon material key, or null. */
 	public static String weaponMaterial(ItemStack stack) {
 		if (stack.isEmpty()) {
 			return null;
@@ -88,17 +82,13 @@ public record GemTotals(Map<String, Double> totals, Map<String, Integer> drawbac
 		return null;
 	}
 
-	/** Weapon factor; an unknown (modded) weapon counts as iron. */
+	/** Weapon factor; an unknown weapon counts as iron. */
 	public static double weaponFactor(ItemStack stack) {
 		String m = weaponMaterial(stack);
 		return Balance.get().weaponMaterials.getOrDefault(m, Balance.get().weaponMaterials.get("iron"));
 	}
 
-	/**
-	 * Gear factor of each armor piece (helmet, chestplate, leggings, boots): material x matching run, where a run is the
-	 * unbroken stretch of the same material the piece sits in. An unknown or missing piece breaks a run; an unknown piece
-	 * with gems counts as iron in a run of 1.
-	 */
+	/** Gear factor of each armor piece. */
 	public static double[] pieceFactors(String[] layout) {
 		Balance b = Balance.get();
 		double[] out = new double[layout.length];
@@ -117,9 +107,7 @@ public record GemTotals(Map<String, Double> totals, Map<String, Integer> drawbac
 		return out;
 	}
 
-	// ------------------------------------------------------------------ totals
-
-	/** What the entity wears from gems: its armor, joined by gems from Reworked Beacons (the stronger per effect). */
+	/** What the entity wears from gems: its armor, joined by gems from Reworked Beacons. */
 	public static GemTotals ofArmor(LivingEntity entity) {
 		ItemStack[] pieces = new ItemStack[ARMOR.length];
 		for (int i = 0; i < ARMOR.length; i++) {
@@ -128,7 +116,7 @@ public record GemTotals(Map<String, Double> totals, Map<String, Integer> drawbac
 		return stronger(ofArmor(pieces), GemBeacons.totals(entity));
 	}
 
-	/** Per effect, the stronger of two sources' totals and drawbacks (never added). */
+	/** Per effect, the stronger of two sources' totals and drawbacks. */
 	public static GemTotals stronger(GemTotals a, GemTotals b) {
 		if (b.isEmpty()) {
 			return a;
@@ -192,12 +180,10 @@ public record GemTotals(Map<String, Double> totals, Map<String, Integer> drawbac
 		Balance b = Balance.get();
 		Map<String, Double> totals = new LinkedHashMap<>();
 		contribs.forEach((k, list) -> {
-			// Worn: scaled to the effect's own cap (owner: mobility goes past the strongest potion; combat stays at the cap).
+			// Worn: scaled to the effect's own cap
 			Balance.EffectData e = b.effect(k);
 			double scale = worn && e != null && e.wornCap() > 0.0 ? e.wornCap() / b.cap : 1.0;
 			double v = b.stack(list, norm) * scale;
-			// The perfect set lands on its cap exactly, so "full" effects (infinite air, fire immunity, real invisibility,
-			// a 100 % chance) never miss it by rounding.
 			double top = worn && e != null && e.wornCap() > 0.0 ? e.wornCap() : b.cap;
 			totals.put(k, Math.abs(v - top) < 1e-6 ? top : v);
 		});

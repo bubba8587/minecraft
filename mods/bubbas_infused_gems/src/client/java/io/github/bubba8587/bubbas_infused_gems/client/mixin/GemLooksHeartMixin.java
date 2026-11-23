@@ -10,7 +10,7 @@ import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
-/** Gem Poison and Wither show vanilla's poisoned and withered hearts (owner). */
+/** Gem Poison and Wither show vanilla's poisoned and withered hearts. */
 @Mixin(targets = "net.minecraft.client.gui.Hud$HeartType")
 abstract class GemLooksHeartMixin {
 	@WrapOperation(method = "forPlayer",

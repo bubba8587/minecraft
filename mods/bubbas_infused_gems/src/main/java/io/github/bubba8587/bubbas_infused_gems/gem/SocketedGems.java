@@ -16,7 +16,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipProvider;
 
-/** The {@code socketed_gems} component on armor and weapons: the finished gems in it, in socketing order. */
+/** The socketed_gems component on armor and weapons. */
 public record SocketedGems(List<Gem> gems) implements TooltipProvider {
 	public static final SocketedGems EMPTY = new SocketedGems(List.of());
 	public static final Codec<SocketedGems> CODEC = Gem.CODEC.listOf(0, 3).xmap(SocketedGems::new, SocketedGems::gems);

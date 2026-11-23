@@ -8,10 +8,7 @@ import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
-/**
- * Grindstone: gear with gems in it gives the same gear without them (enchantments are stripped only if it has any,
- * as in vanilla). Taking the result returns the gems to the player (GrindstoneResultSlotMixin).
- */
+/** Grindstone: gear with gems in it gives the same gear without them. */
 @Mixin(GrindstoneMenu.class)
 public abstract class GrindstoneMenuMixin {
 	@ModifyReturnValue(method = "computeResult", at = @At("RETURN"))

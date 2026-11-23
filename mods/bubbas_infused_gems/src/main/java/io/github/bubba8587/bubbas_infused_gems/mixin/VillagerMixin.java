@@ -13,11 +13,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-/**
- * Hero of the Village gem: the price cut beside vanilla's, the stronger applies; gifts stay vanilla-only. When the gem's
- * cut is the stronger, vanilla's is switched off and the gem's applied without vanilla's "at least 1 emerald off" floor,
- * so a weak gem can round to nothing off a cheap trade.
- */
+/** Hero of the Village gem. */
 @Mixin(Villager.class)
 public abstract class VillagerMixin {
 	@ModifyVariable(method = "updateSpecialPrices", at = @At(value = "STORE", ordinal = 0), ordinal = 0)

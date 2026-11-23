@@ -36,7 +36,7 @@ import net.minecraft.world.phys.AABB;
 
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 
-/** Gems beyond potions (owner, 2026-11-15): Wind Burst, Weaving, Oozing, Silence, Ender, Breeze do what the thing does. */
+/** Gems beyond potions. */
 public class BeyondPotionsGameTest {
 	private static final String[] PIECES = {"helmet", "chestplate", "leggings", "boots"};
 
@@ -80,15 +80,13 @@ public class BeyondPotionsGameTest {
 		for (int t = 0; t < 60 && !webbed; t++) {
 			pig.damageCooldownTime = 0;
 			attacker.doHurtTarget(helper.getLevel(), pig);
-			// A perfect weapon (owner, Q14) drops vanilla Weaving's 2-3 webs around the target, not only at its feet.
 			for (BlockPos at : BlockPos.betweenClosed(pig.blockPosition().offset(-1, -1, -1), pig.blockPosition().offset(1, 1, 1))) {
 				webbed |= helper.getLevel().getBlockState(at).is(Blocks.COBWEB);
 			}
 		}
 		check(helper, webbed, "Weaving never webbed the target");
-		// Never replaces a block: a target standing in tall grass keeps it.
 		BlockPos grass = new BlockPos(1, 1, 4);
-		helper.setBlock(grass.below(), Blocks.GRASS_BLOCK); // so the grass survives the webs' block updates next to it
+		helper.setBlock(grass.below(), Blocks.GRASS_BLOCK);
 		helper.setBlock(grass, Blocks.SHORT_GRASS);
 		Mob other = helper.spawnWithNoFreeWill(EntityTypes.PIG, grass);
 		other.getAttribute(Attributes.MAX_HEALTH).setBaseValue(500.0);
@@ -110,7 +108,7 @@ public class BeyondPotionsGameTest {
 		int cap = (int) Balance.get().effect("oozing").wornNumber("slime_cap", 8);
 		for (int kill = 0; kill < cap + 3; kill++) {
 			Mob pig = helper.spawnWithNoFreeWill(EntityTypes.PIG, new BlockPos(2, 1, 2));
-			pig.setHealth(0.05F); // a fresh mock player swings at a fraction of full strength
+			pig.setHealth(0.05F);
 			player.attack(pig);
 		}
 		List<Slime> slimes = helper.getLevel().getEntitiesOfClass(Slime.class, new AABB(player.blockPosition()).inflate(16),
@@ -126,7 +124,6 @@ public class BeyondPotionsGameTest {
 		Zombie stranger = helper.spawnWithNoFreeWill(EntityTypes.ZOMBIE, new BlockPos(5, 1, 5));
 		slime.setTarget(stranger);
 		check(helper, slime.getTarget() == null, "an Oozing slime took a target (it should be neutral)");
-		// The cap counts only slimes near the owner, and slimes are never saved (left-behind ones dissolve).
 		check(helper, GemActions.ownedSlimes(helper.getLevel(), player) == cap, "nearby cap: " + GemActions.ownedSlimes(helper.getLevel(), player));
 		check(helper, !slime.shouldBeSaved(), "an Oozing slime would be saved with its chunk");
 		slime.discard();
@@ -153,7 +150,7 @@ public class BeyondPotionsGameTest {
 					"a sculk sensor heard a silenced step"));
 		}
 		helper.runAfterDelay(45, () -> {
-			// Control: the same step without gems is heard.
+			// Control: the same step without gems is heard
 			WornEffects.of(quiet);
 			for (EquipmentSlot slot : GemTotals.ARMOR) {
 				quiet.setItemSlot(slot, ItemStack.EMPTY);

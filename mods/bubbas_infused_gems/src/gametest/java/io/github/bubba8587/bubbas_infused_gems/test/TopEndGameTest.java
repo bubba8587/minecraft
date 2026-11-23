@@ -29,12 +29,7 @@ import net.minecraft.world.phys.Vec3;
 
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 
-/**
- * The new top end (owner, 2026-11-15): chance gems are certain at the perfect set (Ender), and the perfect
- * Invisibility set hides armor. The caps themselves (full potion for combat effects, complete for on/off ones, past
- * it for mobility, 88 % for netherite tier 3 Gem Power V) are checked by tools/gem-balance.py and, from real items,
- * by BalanceGameTest and GemsEverywhereGameTest.
- */
+/** The new top end: chance gems are certain at the perfect set. */
 public class TopEndGameTest {
 	private static final String[] PIECES = {"helmet", "chestplate", "leggings", "boots"};
 
@@ -50,10 +45,7 @@ public class TopEndGameTest {
 		return player;
 	}
 
-	/**
-	 * Owner: a perfect Ender set always blinks away from a projectile that would hurt (not from other damage). On a mob
-	 * wearing the same perfect set: a mock player teleported back each round is briefly invulnerable (awaiting its client).
-	 */
+	/** A perfect Ender set always blinks away from a projectile that would hurt. */
 	@GameTest
 	public void perfectEnderAlwaysBlinks(GameTestHelper helper) {
 		net.minecraft.world.entity.Mob pig = helper.spawnWithNoFreeWill(EntityTypes.PIG, new BlockPos(1, 1, 1));
@@ -97,11 +89,7 @@ public class TopEndGameTest {
 				&& eq.assetId().orElseThrow().identifier().getPath().equals(asset);
 	}
 
-	/**
-	 * Owner (2026-11-15): the perfect Invisibility set hides its armor by pointing each piece at an empty equipment asset;
-	 * one piece off restores them all, and a marked piece anywhere else (inventory, chest then pickup, ground, a crafting
-	 * output) restores itself.
-	 */
+	/** The perfect Invisibility set hides its armor by pointing each piece at an empty. */
 	@GameTest(maxTicks = 100)
 	public void perfectInvisibilityHidesArmorAndEveryExitRestoresIt(GameTestHelper helper) {
 		ServerPlayer player = kit(helper, "invisibility");
@@ -110,7 +98,6 @@ public class TopEndGameTest {
 		}
 		var eq = player.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.CHEST).get(net.minecraft.core.component.DataComponents.EQUIPPABLE);
 		check(helper, eq.slot() == net.minecraft.world.entity.EquipmentSlot.CHEST && eq.damageOnHurt(), "the hidden equippable lost its other fields");
-		// One piece off: the rest restore; the removed piece (now in the inventory) restores on its tick.
 		ItemStack helmet = player.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.HEAD);
 		player.setItemSlot(net.minecraft.world.entity.EquipmentSlot.HEAD, ItemStack.EMPTY);
 		WornEffects.refresh(player);
@@ -118,11 +105,10 @@ public class TopEndGameTest {
 		player.getInventory().setItem(9, helmet);
 		player.getInventory().tick();
 		check(helper, shown(player.getInventory().getItem(9), "netherite"), "the removed helmet stayed hidden in the inventory");
-		// Back on: hidden again.
+		// Back on: hidden again
 		player.setItemSlot(net.minecraft.world.entity.EquipmentSlot.HEAD, player.getInventory().removeItemNoUpdate(9));
 		WornEffects.refresh(player);
 		check(helper, hidden(player.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.HEAD)), "helmet not hidden when the set completed again");
-		// A marked piece in a chest restores when picked up (next inventory tick); on the ground, on its first tick.
 		ItemStack marked = player.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.LEGS).copy();
 		helper.setBlock(new BlockPos(2, 1, 2), net.minecraft.world.level.block.Blocks.CHEST);
 		var chest = (net.minecraft.world.level.block.entity.ChestBlockEntity) helper.getBlockEntity(new BlockPos(2, 1, 2), net.minecraft.world.level.block.entity.ChestBlockEntity.class);
@@ -137,7 +123,6 @@ public class TopEndGameTest {
 		item.tick();
 		check(helper, shown(item.getItem(), "netherite"), "a marked piece on the ground stayed hidden");
 		item.discard();
-		// Grindstone, smithing, anvil: their output container never holds a marked piece.
 		var result = new net.minecraft.world.inventory.ResultContainer();
 		result.setItem(0, marked.copy());
 		check(helper, shown(result.getItem(0), "netherite"), "a crafting output kept the hidden marker");

@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
-/** Weaving gems (cobwebs slow less), Breeze gems (deflect projectiles), and Oozing slimes allied to their owner. */
+/** Weaving gems, Breeze gems, and Oozing slimes allied to their owner. */
 @Mixin(Entity.class)
 public abstract class EntityMixin {
 	@ModifyVariable(method = "makeStuckInBlock", at = @At("HEAD"), argsOnly = true)
@@ -32,7 +32,7 @@ public abstract class EntityMixin {
 		GemActions.removed((Entity) (Object) this, reason);
 	}
 
-	/** Oozing slimes are never saved: when their chunk unloads (left behind, or a server stop) they dissolve (owner). */
+	/** Oozing slimes are never saved: when their chunk unloads they dissolve. */
 	@ModifyReturnValue(method = "shouldBeSaved", at = @At("RETURN"))
 	private boolean bubbas$slimeNotSaved(boolean save) {
 		return save && !GemActions.ownedSlime((Entity) (Object) this);

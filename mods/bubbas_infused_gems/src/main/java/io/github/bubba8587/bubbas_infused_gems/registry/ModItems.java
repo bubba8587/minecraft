@@ -13,7 +13,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 
-/** One Infused Gem item and one finished gem item, each with one model (owner); the data is in their components. */
+/** One Infused Gem item and one finished gem item, each with one model. */
 public final class ModItems {
 	public static final Item INFUSED_GEM = register("infused_gem", InfusedGemItem::new, new Item.Properties().stacksTo(16).rarity(Rarity.UNCOMMON));
 	public static final Item GEM = register("gem", GemItem::new, new Item.Properties().stacksTo(16).rarity(Rarity.RARE));

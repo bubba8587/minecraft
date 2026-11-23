@@ -19,12 +19,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipProvider;
 
-/**
- * The {@code gem} component: a finished (enchanted) gem, ready for the smithing table. {@code effect} is the gem's
- * intended effect (it names and colors the gem); {@code main} its strength (0 when tier 1 rolled a drawback alone);
- * {@code other} an extra effect of the same kind; {@code drawback} a mild effect of the opposite kind. Strengths are
- * gem quality (potion x Infusion x enchant grade, at most 1.0); a drawback's is its fixed size.
- */
+/** The gem component: a finished gem. */
 public record Gem(Holder<MobEffect> effect, int infusion, int tier, float main, Optional<Roll> other, Optional<Roll> drawback)
 		implements TooltipProvider {
 	public record Roll(Holder<MobEffect> effect, float strength) {
@@ -65,7 +60,7 @@ public record Gem(Holder<MobEffect> effect, int infusion, int tier, float main, 
 		return this.main > 0.0F;
 	}
 
-	/** One line per rolled effect, colored by kind: main and other in the effect's color, the drawback in red. */
+	/** One line per rolled effect, colored by kind. */
 	public void lines(Consumer<Component> out, String indent) {
 		if (this.hasMain()) {
 			out.accept(Component.literal(indent).append(GemText.effectName(this.effect)).append(" (" + GemText.percent(this.main) + ")")
@@ -85,7 +80,7 @@ public record Gem(Holder<MobEffect> effect, int infusion, int tier, float main, 
 		}
 		this.other.ifPresent(r -> line.append(Component.literal(", + ").append(GemText.effectName(r.effect()))
 				.append(" (" + GemText.percent(r.strength()) + ")").withColor(GemColors.text(r.effect().value().getColor()))));
-		// A drawback-only gem (owner: no special name) shows just its drawback.
+		// A drawback-only gem shows just its drawback
 		this.drawback.ifPresent(r -> line.append(Component.literal(this.hasMain() || this.other.isPresent() ? ", " : "").append(
 				Component.translatable(GemText.KEY + "tooltip.drawback", GemText.effectName(r.effect()))).withStyle(ChatFormatting.RED)));
 		return line;
@@ -93,7 +88,7 @@ public record Gem(Holder<MobEffect> effect, int infusion, int tier, float main, 
 
 	@Override
 	public void addToTooltip(Item.TooltipContext context, Consumer<Component> out, TooltipFlag flag, DataComponentGetter components) {
-		// Short (owner): the effects, then the tier. The name already says the Infusion level; no how-to lines.
+		// Short: the effects, then the tier
 		this.lines(out, "");
 		out.accept(Component.translatable(GemText.KEY + "tooltip.tier", this.tier).withStyle(ChatFormatting.GRAY));
 	}

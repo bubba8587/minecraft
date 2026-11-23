@@ -5,12 +5,7 @@ import net.minecraft.gametest.framework.GameTestHelper;
 
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 
-/**
- * Core suite (test-lite, specs/quality.md "Test suites"): the smoke tests that run on every build and push, one per
- * main mechanic. Each one runs a test whose body lives with its siblings in a milestone class (the method there has no
- * {@code @GameTest} of its own, so the full suite runs it once). Everything else in this source set is the milestone
- * suite, registered only with -PmilestoneTests. Objectives: specs/effect-gems.md, "Milestone test objectives".
- */
+/** Core suite: the smoke tests that run on every build and push, one per main mechanic. */
 public class InfusedGemsCoreGameTest {
 	@GameTest
 	public void balanceJsonLoadsWithKnownValues(GameTestHelper helper) {

@@ -15,11 +15,7 @@ import net.minecraft.world.item.crafting.SmithingRecipe;
 import net.minecraft.world.item.crafting.SmithingRecipeInput;
 import net.minecraft.world.level.Level;
 
-/**
- * Smithing table: gear + finished gem with the template slot left empty (26.3's SmithingRecipe allows no template:
- * Ingredient.testOptionalIngredient matches an empty slot) gives the gear with the gem socketed. Refused when the gear
- * has no free slot (3 per armor piece, 2 per weapon).
- */
+/** Smithing table: socket a finished gem into gear. */
 public class SocketRecipe implements SmithingRecipe {
 	public static final MapCodec<SocketRecipe> MAP_CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
 			Ingredient.CODEC.fieldOf("base").forGetter(r -> r.base),

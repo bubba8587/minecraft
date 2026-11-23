@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-/** Oozing slimes (owner): neutral, they never take a target (their owner included), and they never despawn. */
+/** Oozing slimes: neutral, they never take a target, and they never despawn. */
 @Mixin(Mob.class)
 public abstract class OwnedSlimeMixin {
 	@Inject(method = "setTarget", at = @At("HEAD"), cancellable = true)
@@ -20,7 +20,7 @@ public abstract class OwnedSlimeMixin {
 		}
 	}
 
-	/** Oozing slimes stay (owner): never despawned, by distance or by peaceful difficulty (they are neutral). */
+	/** Oozing slimes stay: never despawned, by distance or by peaceful difficulty. */
 	@Inject(method = "checkDespawn", at = @At("HEAD"), cancellable = true)
 	private void bubbas$keepSlime(CallbackInfo ci) {
 		if (GemActions.ownedSlime((Mob) (Object) this)) {

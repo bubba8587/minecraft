@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-/** The grindstone result slot (GrindstoneMenu's fourth anonymous class): taking it gives back every gem that was in the inputs. */
+/** The grindstone result slot: taking it gives back every gem that was in the inputs. */
 @Mixin(targets = "net.minecraft.world.inventory.GrindstoneMenu$4")
 public abstract class GrindstoneResultSlotMixin {
 	@Shadow

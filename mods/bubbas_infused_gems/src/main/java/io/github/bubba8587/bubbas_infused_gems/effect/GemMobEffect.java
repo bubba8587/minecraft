@@ -20,13 +20,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeMap;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
 
-/**
- * A gem's hit-applied effect (weapon gems, and weapon drawbacks on the target): the vanilla effect made partial, its
- * potency counted in 1% steps by the amplifier (amplifier 45 = 46% of the strongest vanilla level), with vanilla's icon
- * (client) and timer. Attribute effects use the balance model's worn attributes at that potency; damage, healing and
- * hunger tick at the model's rates; the hook effects (fire, falling, water drag, hunger, stealth, prices, night vision,
- * resistance) read the potency through {@link GemValues}. Turtle Master's own effect is one of these too.
- */
+/** A gem's hit-applied effect. */
 public class GemMobEffect extends MobEffect {
 	private static final int DAMAGE_INTERVAL = 10;
 	private final String key;
@@ -108,7 +102,6 @@ public class GemMobEffect extends MobEffect {
 	public void onEffectAdded(LivingEntity mob, int amplifier) {
 		super.onEffectAdded(mob, amplifier);
 		if (this.key.equals("absorption")) {
-			// The shield fills when the effect is new, not on every refreshing hit.
 			float shield = (float) Balance.get().effect("absorption").wornAttributes().getFirst().at(potency(amplifier));
 			mob.setAbsorptionAmount(Math.max(mob.getAbsorptionAmount(), shield));
 		}

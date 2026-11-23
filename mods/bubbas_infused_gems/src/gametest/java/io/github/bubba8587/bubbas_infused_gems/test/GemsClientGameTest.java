@@ -32,13 +32,7 @@ import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestServerContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext;
 
-/**
- * Looks at the gems (screenshots in build/run/clientGameTest/screenshots/): several colors in the inventory with their
- * tooltips (inventory), a big view of finished and Infused Gems in many colors (colors), the enchanting table with an Infused
- * Gem and its hint (enchanting), socketing at the smithing table (smithing), and a player in gemmed armor with /gems
- * (worn), a pig hit by a Glowing + Poison sword and /gems for Turtle Master gear (hits), a zombie spawned in gemmed armor
- * (Glowing, Speed) and the loot of a few hard-place rolls (mobs). Run a part with -PclientTests=inventory,... (ClientTests).
- */
+/** Looks at the gems: several colors in the inventory with their tooltips. */
 @SuppressWarnings("UnstableApiUsage")
 public class GemsClientGameTest implements FabricClientGameTest {
 	private static final List<Gem> COLORS = List.of(
@@ -155,7 +149,7 @@ public class GemsClientGameTest implements FabricClientGameTest {
 	private static void inventory(ClientGameTestContext context, TestServerContext server) {
 		items(server, i -> {
 			if (i < COLORS.size()) {
-				return GemKit.item(COLORS.get(i)); // hotbar: finished gems
+				return GemKit.item(COLORS.get(i));
 			}
 			return switch (i) {
 				case 9 -> GemKit.infused("speed", "strong", GemForm.LINGERING, 6);
@@ -173,7 +167,7 @@ public class GemsClientGameTest implements FabricClientGameTest {
 		context.waitTicks(5);
 		context.setScreen(() -> new InventoryScreen(Minecraft.getInstance().player));
 		context.waitTicks(5);
-		// InventoryMenu: hotbar slots are 36-44, main inventory 9-35.
+		// InventoryMenu: hotbar slots are 36-44, main inventory 9-35
 		hover(context, 36 + 2);
 		context.takeScreenshot("gems-inventory-poison-gem-tooltip");
 		hover(context, 36);
@@ -187,7 +181,7 @@ public class GemsClientGameTest implements FabricClientGameTest {
 		context.runOnClient(mc -> mc.player.closeContainer());
 	}
 
-	/** A big look at the colors: finished gems in the hotbar, the matching Infused Gems in the first inventory row. */
+	/** A big look at the colors. */
 	private static void colors(ClientGameTestContext context, TestServerContext server) {
 		items(server, i -> {
 			int col = i % 9;
@@ -241,7 +235,7 @@ public class GemsClientGameTest implements FabricClientGameTest {
 		context.waitTicks(10);
 		hoverAt(context, 60 + 54, 14 + 19 * 2 + 8);
 		context.takeScreenshot("gems-enchanting-lingering-gem-tier3-hint");
-		// The preview names an extra roll's kind and size only (owner): find gems whose tier 3 roll at this seed has one.
+		// The preview names an extra roll's kind and size only
 		for (String want : List.of("bonus", "drawback")) {
 			ItemStack pickGem = server.computeOnServer(s -> {
 				int seed = player(s).getEnchantmentSeed();
@@ -315,7 +309,7 @@ public class GemsClientGameTest implements FabricClientGameTest {
 		context.takeScreenshot("gems-worn-inventory-chestplate-tooltip");
 		context.runOnClient(mc -> mc.player.closeContainer());
 		context.runOnClient(mc -> mc.options.setCameraType(CameraType.FIRST_PERSON));
-		// Night vision at midnight: without the gem, then with 12 perfect Night Vision gems in full netherite (95%).
+		// Night vision at midnight
 		server.runCommand("time set midnight");
 		BlockPos wall = stationPos(server).offset(0, 0, -3);
 		server.runCommand("fill %d %d %d %d %d %d minecraft:red_wool".formatted(wall.getX(), wall.getY(), wall.getZ() - 2, wall.getX(), wall.getY() + 2, wall.getZ() + 2));
@@ -337,8 +331,7 @@ public class GemsClientGameTest implements FabricClientGameTest {
 			p.setItemSlot(EquipmentSlot.LEGS, GemKit.socketed(Items.NETHERITE_LEGGINGS, nv, nv, nv));
 			p.setItemSlot(EquipmentSlot.FEET, GemKit.socketed(Items.NETHERITE_BOOTS, nv, nv, nv));
 		});
-		// The client's own copy of the totals (it drives the lightmap): 12 perfect gems in full netherite = Night Vision's
-		// worn cap (1.00 since the top-end pass: full brightness).
+		// The client's own copy of the totals
 		double nvCap = io.github.bubba8587.bubbas_infused_gems.balance.Balance.get().effect("night_vision").wornCap();
 		context.waitFor(mc -> Math.abs(((io.github.bubba8587.bubbas_infused_gems.effect.GemEntity) mc.player).bubbas$wornGems()
 				.value("night_vision") - nvCap) < 1e-4);
@@ -346,7 +339,7 @@ public class GemsClientGameTest implements FabricClientGameTest {
 		context.takeScreenshot("gems-worn-midnight-12-night-vision-gems");
 	}
 
-	/** One real sword swing: the target pig glows (outline) and is poisoned; then /gems lists Turtle Master's two parts. */
+	/** One real sword swing. */
 	private static void hits(ClientGameTestContext context, TestServerContext server) {
 		server.runCommand("time set noon");
 		context.runOnClient(mc -> mc.gui.hud.getChat().clearMessages(false));
@@ -390,7 +383,7 @@ public class GemsClientGameTest implements FabricClientGameTest {
 		context.takeScreenshot("gems-command-turtle-master-and-weapon");
 	}
 
-	/** A zombie in gemmed iron armor: the Glowing gem outlines it, the armor renders as vanilla; then gem loot in the inventory. */
+	/** A zombie in gemmed iron armor. */
 	private static void mobs(ClientGameTestContext context, TestServerContext server) {
 		server.runCommand("difficulty easy");
 		server.runCommand("time set noon");
@@ -420,7 +413,7 @@ public class GemsClientGameTest implements FabricClientGameTest {
 		context.getInput().lookAt(at.above());
 		context.waitTicks(5);
 		context.takeScreenshot("gems-mobs-zombie-gemmed-armor-glowing");
-		// Closer, from the side.
+		// Closer, from the side
 		server.runOnServer(s -> {
 			ServerPlayer p = player(s);
 			p.teleportTo(at.getX() + 3.5, at.getY(), at.getZ() + 1.5);
@@ -429,7 +422,6 @@ public class GemsClientGameTest implements FabricClientGameTest {
 		context.getInput().lookAt(at.above());
 		context.waitTicks(5);
 		context.takeScreenshot("gems-mobs-zombie-gemmed-armor-close");
-		// A few hard-place rolls in the hotbar and inventory, one tooltip.
 		server.runOnServer(s -> {
 			ServerPlayer p = player(s);
 			var table = s.reloadableRegistries().getLootTable(net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.LOOT_TABLE,
@@ -454,7 +446,7 @@ public class GemsClientGameTest implements FabricClientGameTest {
 		server.runCommand("difficulty peaceful");
 	}
 
-	/** Darkness and Blindness gems worn: a steady, partial dim or fog by strength (weak, mid, best), same scene. */
+	/** Darkness and Blindness gems worn: a steady, partial dim or fog by strength, same scene. */
 	private static void screen(ClientGameTestContext context, TestServerContext server) {
 		server.runCommand("time set noon");
 		context.runOnClient(mc -> mc.gui.hud.getChat().clearMessages(false));
@@ -502,7 +494,7 @@ public class GemsClientGameTest implements FabricClientGameTest {
 		});
 	}
 
-	/** Owner (playtest): a Levitation set lifts the player continuously, in survival and in creative when not flying. */
+	/** A Levitation set lifts the player continuously. */
 	private static void levitation(ClientGameTestContext context, TestServerContext server) {
 		for (String mode : List.of("survival", "creative")) {
 			for (String build : List.of("best", "weak")) {
@@ -515,7 +507,7 @@ public class GemsClientGameTest implements FabricClientGameTest {
 					p.getAbilities().flying = false;
 					p.onUpdateAbilities();
 				});
-				context.waitTicks(40); // land
+				context.waitTicks(40);
 				server.runOnServer(s -> {
 					ServerPlayer p = player(s);
 					if (build.equals("weak")) {
@@ -551,7 +543,7 @@ public class GemsClientGameTest implements FabricClientGameTest {
 		server.runCommand("gamemode survival @a");
 	}
 
-	/** Gems beyond potions: a Weaving sword webs a pig in place, an Oozing sword's kill splits off small neutral slimes. */
+	/** Gems beyond potions: a Weaving sword webs a pig in place. */
 	private static void beyond(ClientGameTestContext context, TestServerContext server) {
 		server.runCommand("time set noon");
 		context.runOnClient(mc -> mc.gui.hud.getChat().clearMessages(false));
@@ -589,12 +581,11 @@ public class GemsClientGameTest implements FabricClientGameTest {
 		context.takeScreenshot("gems-beyond-weaving-web-and-oozing-slimes");
 	}
 
-	/** Owner: a perfect Jump Boost set lands a real player on top of a 4-high pillar from a standing jump. */
+	/** A perfect Jump Boost set clears a 4-high pillar from a standing jump. */
 	private static void jump(ClientGameTestContext context, TestServerContext server) {
 		server.runCommand("gamemode survival @a");
 		BlockPos feet = server.computeOnServer(s -> player(s).blockPosition());
 		BlockPos pillar = feet.offset(1, 0, 0);
-		// A 4-high step, deep enough that walking on after landing stays on top.
 		server.runCommand("fill %d %d %d %d %d %d minecraft:stone".formatted(pillar.getX(), pillar.getY(), pillar.getZ() - 1, pillar.getX() + 15, pillar.getY() + 3, pillar.getZ() + 1));
 		server.runOnServer(s -> {
 			ServerPlayer p = player(s);
@@ -606,7 +597,7 @@ public class GemsClientGameTest implements FabricClientGameTest {
 			p.setItemSlot(EquipmentSlot.FEET, GemKit.socketed(Items.NETHERITE_BOOTS, g, g, g));
 		});
 		context.waitTicks(20);
-		context.getInput().lookAt(-90.0F, 0.0F); // facing +x, the pillar
+		context.getInput().lookAt(-90.0F, 0.0F);
 		context.waitFor(mc -> mc.player.onGround());
 		context.waitTicks(3);
 		double y0 = context.computeOnClient(mc -> mc.player.getY());
@@ -631,7 +622,7 @@ public class GemsClientGameTest implements FabricClientGameTest {
 		});
 	}
 
-	/** Sprints a real client player along +x from start for 40 ticks; returns blocks per tick over the last 20. */
+	/** Sprints a real client player along +x from start for 40 ticks. */
 	private static double sprint(ClientGameTestContext context, TestServerContext server, BlockPos start) {
 		server.runOnServer(s -> {
 			ServerPlayer p = player(s);
@@ -639,7 +630,7 @@ public class GemsClientGameTest implements FabricClientGameTest {
 			p.getFoodData().setFoodLevel(20);
 		});
 		context.waitTicks(10);
-		context.getInput().lookAt(-90.0F, 0.0F); // facing +x
+		context.getInput().lookAt(-90.0F, 0.0F);
 		context.waitFor(mc -> mc.player.onGround());
 		context.getInput().holdKey(o -> o.keyUp);
 		context.getInput().holdKey(o -> o.keySprint);
@@ -656,10 +647,7 @@ public class GemsClientGameTest implements FabricClientGameTest {
 		return (x1 - x0) / 20.0;
 	}
 
-	/**
-	 * Owner playtest bug: a perfect Weaving set moves through cobwebs completely unimpeded, sprinting included. A real
-	 * client player sprints down an open lane and a cobweb lane (webs at feet and head height) and falls down a web shaft.
-	 */
+	/** a perfect Weaving set moves through cobwebs completely unimpeded. */
 	private static void weaving(ClientGameTestContext context, TestServerContext server) {
 		server.runCommand("gamemode survival @a");
 		BlockPos base = server.computeOnServer(s -> player(s).blockPosition()).offset(0, 20, 0);
@@ -667,7 +655,6 @@ public class GemsClientGameTest implements FabricClientGameTest {
 		server.runCommand("fill %d %d %d %d %d %d minecraft:stone".formatted(x - 2, y - 1, z - 2, x + 40, y - 1, z + 4));
 		server.runCommand("fill %d %d %d %d %d %d minecraft:air".formatted(x - 2, y, z - 2, x + 40, y + 3, z + 4));
 		server.runCommand("fill %d %d %d %d %d %d minecraft:cobweb".formatted(x + 1, y, z + 3, x + 40, y + 1, z + 3));
-		// A web shaft: 12 blocks of webs to fall through, beside the lanes.
 		server.runCommand("fill %d %d %d %d %d %d minecraft:cobweb".formatted(x - 2, y, z - 2, x - 2, y + 11, z - 2));
 		server.runCommand("fill %d %d %d %d %d %d minecraft:air".formatted(x - 1, y, z - 1, x - 1, y + 11, z - 1));
 		server.runCommand("fill %d %d %d %d %d %d minecraft:air".formatted(x - 2, y + 4, z - 2, x + 40, y + 11, z + 4));
@@ -693,14 +680,13 @@ public class GemsClientGameTest implements FabricClientGameTest {
 		if (Math.abs(webGems - openGems) > openGems * 0.03) {
 			throw new AssertionError("a perfect Weaving set sprinted through cobwebs at " + webGems + " blocks/tick, open ground " + openGems);
 		}
-		// Falling: from the top of the web shaft (perfect set) it takes as long as an open fall of the same height.
 		int[] ticks = new int[2];
 		for (int i = 0; i < 2; i++) {
 			int col = i == 0 ? -1 : -2;
 			server.runOnServer(s -> player(s).teleportTo(x + col + 0.5, y + 11.5, z + col + 0.5));
-			context.waitFor(mc -> mc.player.getY() > y + 10); // the client has the new position
+			context.waitFor(mc -> mc.player.getY() > y + 10);
 			int t = 0;
-			while (t < 200 && context.computeOnClient(mc -> mc.player.getY()) > y + 0.001) { // until it lands on the floor
+			while (t < 200 && context.computeOnClient(mc -> mc.player.getY()) > y + 0.001) {
 				context.waitTicks(1);
 				t++;
 			}
@@ -744,11 +730,7 @@ public class GemsClientGameTest implements FabricClientGameTest {
 		return z;
 	}
 
-	/**
-	 * Owner (2026-11-15): the perfect Invisibility set hides the wearer's armor too (held items still show). Left: a zombie
-	 * in the perfect set (real invisibility from the gems). Right: a near-perfect set plus a vanilla Invisibility potion,
-	 * whose armor shows as in vanilla.
-	 */
+	/** The perfect Invisibility set hides the wearer's armor too. */
 	private static void invisible(ClientGameTestContext context, TestServerContext server) {
 		server.runCommand("difficulty easy");
 		server.runCommand("time set noon");
@@ -785,7 +767,7 @@ public class GemsClientGameTest implements FabricClientGameTest {
 				e.discard();
 			}
 		});
-		// The wearer's own inventory in the perfect set (owner's question: slot icons, and the player preview).
+		// The wearer's own inventory in the perfect set
 		server.runOnServer(s -> {
 			try {
 				io.github.bubba8587.bubbas_infused_gems.registry.ModCommands.kit(player(s).createCommandSourceStack(), "invisibility", "netherite");
@@ -807,7 +789,7 @@ public class GemsClientGameTest implements FabricClientGameTest {
 		});
 	}
 
-	/** Owner: gem effects look like vanilla's on the HUD: a gem Poison hit gives poisoned hearts, worn Hunger a green food bar. */
+	/** Gem effects look like vanilla's on the HUD. */
 	private static void looks(ClientGameTestContext context, TestServerContext server) {
 		server.runCommand("gamemode survival @a");
 		server.runOnServer(s -> {
@@ -828,7 +810,7 @@ public class GemsClientGameTest implements FabricClientGameTest {
 		});
 	}
 
-	/** Owner's strength answers: a perfect Levitation hit lifting a pig (left on screen), a perfect Weaving hit's 2-3 webs around a pig (right). */
+	/** Hit dials by eye. */
 	private static void dials(ClientGameTestContext context, TestServerContext server) {
 		server.runCommand("time set noon");
 		BlockPos at = stationPos(server).offset(0, 0, 5);

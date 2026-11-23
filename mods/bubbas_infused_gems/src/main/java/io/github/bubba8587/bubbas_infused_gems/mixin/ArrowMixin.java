@@ -29,11 +29,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-/**
- * A gem arrow carries its bow's gem hit beside its pickup item, so it flies, trails and hits like a tipped arrow but is
- * a plain arrow again when picked up (owner). A real tipped arrow's effect and the gem's of the same effect don't add:
- * the stronger applies. The gem hit is saved with the arrow, so an arrow in flight (or stuck) across a save keeps it.
- */
+/** A gem arrow carries its bow's gem hit beside its pickup item. */
 @Mixin(Arrow.class)
 public abstract class ArrowMixin extends AbstractArrow implements GemArrow {
 	@Shadow

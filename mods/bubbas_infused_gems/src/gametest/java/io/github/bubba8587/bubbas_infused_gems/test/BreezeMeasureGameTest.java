@@ -30,14 +30,11 @@ import net.minecraft.world.phys.Vec3;
 
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 
-/**
- * Owner playtest: a perfect Breeze set (as /gems kit breeze gives) deflected about half of the arrows that reached the
- * wearer (measured 47-51 %); the owner then raised it (2026-11-15): the perfect set deflects every one. Real arrows from a dispenser and a skeleton, ticked through vanilla's own arrow movement and hit code.
- */
+/** A perfect Breeze set deflects every arrow that reaches the wearer. */
 public class BreezeMeasureGameTest {
 	private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger("bubbas_infused_gems-test");
 
-	/** Arrows that reached the wearer, deflected and never hurt it, deflected but hurt it anyway, hit without a deflection. */
+	/** Arrows that reached the wearer. */
 	private record Tally(int reached, int deflected, int deflectedThenHit, int hit, int rolls) {
 		double rate() {
 			return deflected / (double) Math.max(reached, 1);

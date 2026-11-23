@@ -12,11 +12,7 @@ import net.minecraft.world.entity.projectile.hurtingprojectile.AbstractHurtingPr
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
-/**
- * Breeze hit (owner, Q22) on fireballs and other powered projectiles (blazes, ghasts, withers' skulls, breezes' wind
- * charges): they don't go through shoot, so the same spread (vanilla's 0.0172275 per unit of uncertainty, from 1) is put on
- * their direction when a shooter carrying the Breeze gem effect makes one.
- */
+/** Breeze hit on fireballs and other powered projectiles. */
 @Mixin(AbstractHurtingProjectile.class)
 abstract class BreezeVeerFireballMixin {
 	@Inject(method = "<init>(Lnet/minecraft/world/entity/EntityType;Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/level/Level;)V",

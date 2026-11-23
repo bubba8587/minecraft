@@ -8,18 +8,12 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 
-/**
- * How much of one effect an entity gets from gems right now, on the effect's own scale (1.0 = its strongest vanilla
- * level): its armor gems (after the undead swap and immunities, topped up only above a vanilla effect of the same kind:
- * the stronger applies, they don't add) or a gem effect a weapon put on it, whichever is stronger. Works on the server
- * and, for the local player, on the client (both keep the worn totals). The hooks (gravity, water drag, hunger,
- * visibility, prices, fire, night vision...) all read it.
- */
+/** How much of one effect an entity gets from gems right now, on the effect's own scale. */
 public final class GemValues {
 	private GemValues() {
 	}
 
-	/** Armor gems only, before any vanilla effect: undead swap Healing and Harming (rule), immune entities get nothing. */
+	/** Armor gems only, before any vanilla effect. */
 	public static double rawWorn(LivingEntity entity, String key) {
 		GemTotals t = WornEffects.of(entity);
 		if (t.isEmpty()) {
@@ -39,7 +33,6 @@ public final class GemValues {
 			return 0.0;
 		}
 		if (!from.equals(key)) {
-			// Swapped on undead: read as the other gem, at that gem's own worn scale (harmful worn stays at the cap).
 			Balance.EffectData fe = b.effect(from);
 			Balance.EffectData ke = b.effect(key);
 			double fc = fe != null && fe.wornCap() > 0.0 ? fe.wornCap() : b.cap;
@@ -53,7 +46,7 @@ public final class GemValues {
 		return s;
 	}
 
-	/** The fraction of the effect's 1.0 level a vanilla instance of it on this entity gives (0 when none, or rule off). */
+	/** The fraction of the effect's 1.0 level a vanilla instance of it on this entity gives. */
 	public static double vanillaFraction(LivingEntity entity, String key) {
 		if (!Balance.get().strongerApplies) {
 			return 0.0;
@@ -63,7 +56,7 @@ public final class GemValues {
 		return inst == null ? 0.0 : levelFraction(key, inst.getAmplifier());
 	}
 
-	/** A vanilla level (amplifier) as a fraction of the effect's 1.0 level (the model's level_one and 1.0 amplifier). */
+	/** A vanilla level as a fraction of the effect's 1.0 level. */
 	public static double levelFraction(String key, int amplifier) {
 		Balance.EffectData d = Balance.get().effect(key);
 		if (d == null) {
@@ -79,7 +72,7 @@ public final class GemValues {
 		return d.levelOne() + (1.0 - d.levelOne()) * amplifier / top;
 	}
 
-	/** Armor gems after the vanilla effect of the same kind: only the part above it (the stronger applies). */
+	/** Armor gems after the vanilla effect of the same kind: only the part above it. */
 	public static double worn(LivingEntity entity, String key) {
 		double s = rawWorn(entity, key);
 		if (s <= 0.0) {
@@ -88,14 +81,14 @@ public final class GemValues {
 		return Math.max(0.0, s - Math.max(vanillaFraction(entity, key), hit(entity, key)));
 	}
 
-	/** The potency of a gem effect a weapon put on this entity (0 when none). */
+	/** The potency of a gem effect a weapon put on this entity. */
 	public static double hit(LivingEntity entity, String key) {
 		Holder<MobEffect> gem = ModEffects.gem(key);
 		MobEffectInstance inst = gem == null ? null : entity.getEffect(gem);
 		return inst == null ? 0.0 : GemMobEffect.potency(inst.getAmplifier());
 	}
 
-	/** What the entity gets of this effect from gems: armor or a weapon's gem effect, the stronger. */
+	/** What the entity gets of this effect from gems. */
 	public static double value(LivingEntity entity, String key) {
 		return Math.max(worn(entity, key), hit(entity, key));
 	}

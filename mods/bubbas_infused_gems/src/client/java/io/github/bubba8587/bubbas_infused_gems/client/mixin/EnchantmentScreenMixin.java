@@ -22,10 +22,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-/**
- * The preview hint for an Infused Gem, like vanilla's clue: hovering a row shows that tier's outcome (its main effect
- * and strength, then the kind and size of any extra roll, not which effect), worked out on the client from the synced enchantment seed exactly as the server will roll it.
- */
+/** The preview hint for an Infused Gem, like vanilla's clue. */
 @Mixin(EnchantmentScreen.class)
 public abstract class EnchantmentScreenMixin extends AbstractContainerScreen<EnchantmentMenu> {
 	protected EnchantmentScreenMixin(EnchantmentMenu menu, Inventory inventory, Component title) {

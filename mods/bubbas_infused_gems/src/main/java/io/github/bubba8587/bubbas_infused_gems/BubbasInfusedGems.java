@@ -19,7 +19,7 @@ import net.minecraft.world.entity.EquipmentSlot;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** Bubba's Infused Gems (C4 effectGems, specs/effect-gems.md). */
+/** Bubba's Infused Gems. */
 public class BubbasInfusedGems implements ModInitializer {
 	public static final String MOD_ID = "bubbas_infused_gems";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
@@ -40,7 +40,6 @@ public class BubbasInfusedGems implements ModInitializer {
 		ModCreativeTabs.initialize();
 		ModCommands.initialize();
 		GemLoot.initialize();
-		// Armor gems: recompute the wearer's totals and attributes only when armor changes (also on joining the level).
 		ServerEntityEvents.EQUIPMENT_CHANGE.register((entity, slot, previous, current) -> {
 			if (slot.getType() == EquipmentSlot.Type.HUMANOID_ARMOR) {
 				WornEffects.refresh(entity);

@@ -25,21 +25,13 @@ import net.minecraft.world.level.block.Blocks;
 
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 
-/**
- * Enchanting an Infused Gem: rows capped by form (normal 1, splash 2, lingering 3) with vanilla's bookshelf costs; a
- * fixed seed always gives the same gem; outcome odds follow the model; "other" rolls are the same kind and never the
- * main effect; drawbacks are the opposite kind and never the main effect's direct opposite; and the real enchanting
- * table turns the gem into a finished one.
- */
+/** Enchanting an Infused Gem. */
 public class EnchantingGameTest {
 	private static InfusedGem infused(String key, GemForm form) {
 		return GemKit.infused(key, "strong", form, 6).get(ModComponents.INFUSED_GEM);
 	}
 
-	/**
-	 * The rows a gem gets: its form caps the tier (normal 1, splash 2, lingering and item-sourced 3), and tiers are
-	 * gated by bookshelves like gear's strongest enchantments (owner: tier 2 needs 8, tier 3 all 15).
-	 */
+	/** The rows a gem gets: its form caps the tier. */
 	@GameTest
 	public void formAndBookshelvesCapTheTiers(GameTestHelper helper) {
 		InfusedGem lingeringGem = infused("speed", GemForm.LINGERING);
@@ -78,7 +70,7 @@ public class EnchantingGameTest {
 				Balance.Outcome o = GemEnchanting.outcome(seed, tier, gem);
 				Gem g = GemEnchanting.roll(seed, tier, gem);
 				check(helper, g.tier() == tier, "tier");
-				// The roll is exactly what the preview's outcome says.
+				// The roll is exactly what the preview's outcome says
 				check(helper, g.hasMain() == (o.main() != null) && g.other().isPresent() == (o.other() != null)
 						&& g.drawback().isPresent() == (o.drawback() != null), "roll and preview disagree at seed " + seed + ": " + o.label());
 				if (o.main() != null) {
@@ -94,18 +86,15 @@ public class EnchantingGameTest {
 			for (Balance.Outcome o : b.tiers.get(tier)) {
 				close(seen.getOrDefault(o.label(), 0) / (double) n, o.odds(), 0.02, helper, "tier " + tier + " " + o.label());
 			}
-			// Owner (Q34): the plain result is the most common at every tier.
 			Balance.Outcome first = b.tiers.get(tier).getFirst();
 			check(helper, first.other() == null && first.drawback() == null && first.main() != null, "tier " + tier + " does not start plain");
 		}
-		// Owner: extra rolls weighted by rarity, common 4, uncommon 2, rare (found-only) 1, in both pools.
 		Balance.EffectData e = b.effect("speed");
 		check(helper, e.otherWeights().size() == e.otherPool().size() && e.drawbackWeights().size() == e.drawbackPool().size(), "weights missing");
 		double ratio = others.getOrDefault("strength", 0) / (double) Math.max(1, others.getOrDefault("haste", 0));
 		check(helper, ratio > 2.8 && ratio < 5.6, "bonus Strength (common) / Haste (rare) " + ratio + " (" + others + ")");
 		double d = drawbacks.getOrDefault("weakness", 0) / (double) Math.max(1, drawbacks.getOrDefault("poison", 0));
 		check(helper, d > 1.4 && d < 2.8, "drawback Weakness (common) / Poison (uncommon) " + d + " (" + drawbacks + ")");
-		// The preview (owner): main effect and strength, then only the extra roll's kind and size.
 		for (int seed = 0; seed < 400; seed++) {
 			for (int tier = 1; tier <= 3; tier++) {
 				Balance.Outcome o = GemEnchanting.outcome(seed, tier, gem);
@@ -122,7 +111,6 @@ public class EnchantingGameTest {
 				check(helper, clue.equals(expected), "preview '" + clue + "', expected '" + expected + "'");
 			}
 		}
-		// Strength: lingering strong swiftness + nether star + tier 3 main = a perfect gem.
 		Gem best = GemEnchanting.roll(7, 3, gem);
 		close(best.main(), 1.0, 1e-6, helper, "perfect gem main");
 		helper.succeed();
@@ -151,9 +139,9 @@ public class EnchantingGameTest {
 		helper.succeed();
 	}
 
-	// Core test: registered by InfusedGemsCoreGameTest (test-lite, specs/quality.md).
+	// Core test: registered by InfusedGemsCoreGameTest
 	public void enchantingTableMakesAFinishedGem(GameTestHelper helper) {
-		// A table with a full ring of bookshelves (owner: tier 2 needs 8, tier 3 all 15).
+		// A table with a full ring of bookshelves
 		BlockPos table = new BlockPos(4, 1, 4);
 		helper.setBlock(table, Blocks.ENCHANTING_TABLE);
 		for (int dx = -2; dx <= 2; dx++) {
@@ -165,7 +153,7 @@ public class EnchantingGameTest {
 			}
 		}
 		ServerPlayer player = helper.makeMockServerPlayerInLevel();
-		player.getAbilities().instabuild = false; // pays lapis and levels like survival
+		player.getAbilities().instabuild = false;
 		player.setExperienceLevels(30);
 		EnchantmentMenu menu = new EnchantmentMenu(1, player.getInventory(), ContainerLevelAccess.create(helper.getLevel(), helper.absolutePos(table)));
 		menu.getSlot(0).set(GemKit.infused("strength", "strong", GemForm.SPLASH, 3));

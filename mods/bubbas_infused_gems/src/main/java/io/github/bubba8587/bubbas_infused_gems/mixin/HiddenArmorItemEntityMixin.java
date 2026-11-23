@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import io.github.bubba8587.bubbas_infused_gems.effect.HiddenArmor;
 import net.minecraft.world.entity.item.ItemEntity;
 
-/** Perfect Invisibility hidden armor: a dropped piece (death, thrown) shows again on the ground. */
+/** Perfect Invisibility hidden armor: a dropped piece shows again on the ground. */
 @Mixin(ItemEntity.class)
 abstract class HiddenArmorItemEntityMixin {
 	@Inject(method = "tick", at = @At("HEAD"))

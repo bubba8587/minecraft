@@ -17,12 +17,7 @@ import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
 
-/**
- * Gem mob effects ({@code bubbas_infused_gems:gem_<effect>}), one per scaled hit-applied effect: what a gemmed weapon
- * or arrow puts on its target. Healing and Harming strike at once instead, and on/off harmful effects use the vanilla
- * effect itself (effect/GemHits). A combined gem (Turtle Master) has no vanilla effect, so its own effect
- * ({@code bubbas_infused_gems:turtle_master}) both names the gem and is what its hits apply.
- */
+/** Gem mob effects, one per scaled hit-applied effect. */
 public final class ModEffects {
 	public static final Map<String, Holder<MobEffect>> GEM_EFFECTS = new LinkedHashMap<>();
 
@@ -37,7 +32,6 @@ public final class ModEffects {
 		Balance b = Balance.get();
 		for (Balance.EffectData e : b.effects.values()) {
 			if (!e.id().startsWith("minecraft:")) {
-				// A gem with no vanilla status effect (Turtle Master, Silence, Ender, Breeze): its own names it and is what hits apply.
 				int color = !e.parts().isEmpty() ? PotionContents.getColorOptional(Potions.TURTLE_MASTER.value().getEffects()).orElse(e.color()) : e.color();
 				GEM_EFFECTS.put(e.key(), Registry.registerForHolder(BuiltInRegistries.MOB_EFFECT, Identifier.parse(e.id()),
 						new GemMobEffect(e.key(), MobEffectCategory.BENEFICIAL, color)));
@@ -54,7 +48,7 @@ public final class ModEffects {
 		}
 	}
 
-	/** The vanilla effect of this key, or null (a combined gem has none). */
+	/** The vanilla effect of this key, or null. */
 	public static Holder<MobEffect> vanilla(String key) {
 		Balance.EffectData e = Balance.get().effect(key);
 		if (e == null || !e.id().startsWith("minecraft:")) {

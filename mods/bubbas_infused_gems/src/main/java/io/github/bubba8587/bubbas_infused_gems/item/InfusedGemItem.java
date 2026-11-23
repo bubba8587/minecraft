@@ -9,7 +9,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
-/** The one Infused Gem item (owner): its name carries the Infusion level, effect and form. */
+/** The one Infused Gem item: its name carries the Infusion level, effect and form. */
 public class InfusedGemItem extends Item {
 	public InfusedGemItem(Properties properties) {
 		super(properties);

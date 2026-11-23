@@ -14,10 +14,7 @@ import net.minecraft.world.item.crafting.PotionIngredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
 
-/**
- * Brewing stand: a finished gem with a drawback + a fermented spider eye inverts the gem (GemInversion). A vanilla
- * brewing recipe underneath, so the stand's own slots, timing and hoppers work; only gems that can invert match.
- */
+/** Brewing stand: a finished gem with a drawback + a fermented spider eye inverts the gem. */
 public class InvertGemRecipe extends BrewingRecipe {
 	public static final InvertGemRecipe INSTANCE = new InvertGemRecipe();
 	public static final RecipeSerializer<BrewingRecipe> SERIALIZER = new RecipeSerializer<>(MapCodec.unit(INSTANCE),
