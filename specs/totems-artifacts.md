@@ -52,6 +52,12 @@ No new blocks (B15). New ids, so no old-id alias. Numbers all in `totems/TotemsT
 - No beacon use (per design).
 - **Prior art / overlap:** keep-inventory mods (Keep Inventory Always, Nice Keep Inventory, Keep Inventory Orbs; MIT/GPL), soulbound enchantments, and grave mods (Universal Graves, Gravestones, You're in Grave Danger). Graves are the closest in purpose: with a grave mod installed, a kept death simply has nothing to put in the grave (they compose). None offers a single-use found totem; no library needed (two small injections, hand-rolled because no library does it, B9).
 
+#### Totems of Herding and Clear Skies (owner, 2026-11-22, not built)
+
+- **Totem of Herding:** held, nearby livestock of every kind (cows, sheep, pigs, chickens, goats, horses, llamas, rabbits...) follow you as if you were holding their food, so moving a herd is easy. In a beacon, animals in the area don't wander out of it, like a pasture without fences. Found, not crafted, like the others.
+- **Totem of Clear Skies:** in a beacon, no rain, snow or lightning in the area (it stays dry and lightning-safe; weather elsewhere is unchanged). Held, it's used up to end a storm (clear weather, like vanilla's `/weather clear`). Found, not crafted.
+- Neither overlaps a gem effect. Each gets an initial statue like the rest (statues give their effect in a tiny radius: Herding's statue keeps animals by it, Clear Skies' statue keeps rain off a few blocks).
+
 #### Growth also plants seeds (owner, 2026-11-22: Harvest folded into Growth; not built yet)
 
 - The Totem of Growth (held and in a beacon) now and then **takes a dropped or floating seed item nearby and plants it** in a valid spot close by: wheat, beetroot, melon and pumpkin seeds, carrots, potatoes, saplings, and so on, on farmland or the right soil. It's a random chance per check, never a sweep. It doesn't gather or harvest anything (owner: use a separate Gathering totem for that). Seeds floating in a Gathering ring count as dropped items.
