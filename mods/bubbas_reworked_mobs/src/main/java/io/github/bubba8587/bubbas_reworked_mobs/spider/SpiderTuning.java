@@ -88,15 +88,12 @@ public final class SpiderTuning {
 	/** A player who hurt it in the last this many ticks isn't dropped for livestock. */
 	public static final int LURE_IGNORED_AFTER_HURT_TICKS = 100;
 
-	/** Hauling: where it takes a catch (its own webs, or a tree), climb speed, and how long it feeds. */
+	/** Hauling: how far it looks for a tree, perch height on the trunk without an overhang, climb speed. */
 	public static final double LARDER_SEARCH = 14.0;
 	public static final int LARDER_HEIGHT_MIN = 4;
 	public static final int LARDER_HEIGHT_MAX = 7;
 	public static final double CLIMB_SPEED = 0.15;
 	public static final int HAUL_GIVE_UP_TICKS = 300;
-	public static final int FEED_TICKS = 300;
-	public static final int FEED_BITE_TICKS = 30;
-	public static final float FEED_BITE_DAMAGE = 2.0F;
 
 	/** Spinning: every 400-800 ticks while roaming, an orb web between two trunks 3-7 apart. */
 	public static final int SPIN_INTERVAL_MIN = 400;
@@ -143,4 +140,28 @@ public final class SpiderTuning {
 	public static final int NEST_WEB_RAYS = 26;
 	public static final double NEST_WEB_REACH = 11.0;
 	public static final int NEST_WEB_STRANDS = 16;
+
+	// --- cocoons (owner, 2026-11-22) ------------------------------------------------------------------
+
+	/** Silk to cut through, and how much each hit cuts by what it's made with (a fist takes 8 hits, a sword 3). */
+	public static final float COCOON_SILK = 100.0F;
+	public static final float COCOON_CUT_HAND = 13.0F;
+	public static final float COCOON_CUT_OTHER = 18.0F;
+	public static final float COCOON_CUT_AXE = 28.0F;
+	public static final float COCOON_CUT_SWORD = 35.0F;
+	public static final float COCOON_CUT_SHEARS = 40.0F;
+	/** Using shears on it from outside (right click). */
+	public static final float COCOON_SHEAR_USE = 50.0F;
+	/** Poison while wrapped (vanilla Poison never takes the last half heart), refreshed while it hangs. */
+	public static final int COCOON_POISON_TICKS = 200;
+	/** Cocooned livestock cry out every this many ticks, this loud (a normal mob sound is 1). */
+	public static final int COCOON_CRY_MIN = 30;
+	public static final int COCOON_CRY_MAX = 70;
+	public static final float COCOON_CRY_VOLUME = 2.5F;
+	/** After wrapping, the spider backs off and waits this long, then comes back to feed: a bite every so often. */
+	public static final int COCOON_WAIT_TICKS = 600;
+	public static final int COCOON_FEED_BITE_TICKS = 40;
+	public static final float COCOON_FEED_BITE_DAMAGE = 3.0F;
+	/** Cocoon hangs this far below the spider holding it. */
+	public static final double COCOON_DROP_BELOW = 0.15;
 }

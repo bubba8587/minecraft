@@ -30,6 +30,8 @@ import net.fabricmc.fabric.api.gametest.v1.GameTest;
  */
 public class SpiderGameTest {
 	public static final String ROOM = "bubbas_reworked_mobs-test:nest_room";
+	/** Spider tests run as their own batch, so their rooms don't shift the big Fabricator tests' layout. */
+	public static final String ENV = "bubbas_reworked_mobs-test:spiders";
 	/** Air just under the ceiling, middle of the room. */
 	private static final BlockPos TOP = new BlockPos(4, 14, 4);
 
@@ -58,23 +60,22 @@ public class SpiderGameTest {
 		return player;
 	}
 
-	/** Core: a player standing right under the nest is dropped on, latched and reeled up into the nest. */
-	@GameTest(structure = ROOM, maxTicks = 300)
+	/** Core: a player standing right under the nest is dropped on, latched, reeled up into the nest and cocooned there. */
+	@GameTest(environment = SpiderGameTest.ENV, structure = ROOM, maxTicks = 300)
 	public void sleeperDropsLatchesAndReelsUp(GameTestHelper helper) {
 		NestSpider spider = nest(helper);
 		ServerPlayer player = player(helper, 4.5, 4.5);
 		double floor = player.getY();
 		helper.succeedWhen(() -> {
-			helper.assertTrue(spider.isAlive() && spider.victim() == player, "not latched: phase " + spider.phase());
-			helper.assertTrue(spider.phase() == NestSpider.Phase.HOLDING, "still " + spider.phase());
-			helper.assertTrue(player.getVehicle() == spider, "player not held");
+			helper.assertTrue(spider.isAlive() && spider.phase() == NestSpider.Phase.WAITING, "not waiting by a cocoon: " + spider.phase());
+			helper.assertTrue(player.getVehicle() instanceof io.github.bubba8587.bubbas_reworked_mobs.spider.SilkCocoon, "player not cocooned: " + player.getVehicle());
+			helper.assertTrue(player.hasEffect(net.minecraft.world.effect.MobEffects.POISON), "not poisoned");
 			helper.assertTrue(player.getY() > floor + 8.0, "player only at " + (player.getY() - floor) + " above the floor");
-			helper.assertTrue(player.getHealth() < player.getMaxHealth(), "never bitten");
 		});
 	}
 
 	/** A player inside the trigger area but not under the sleeper: it drops, misses, hangs on its thread, and is a vanilla spider. */
-	@GameTest(structure = ROOM, maxTicks = 100)
+	@GameTest(environment = SpiderGameTest.ENV, structure = ROOM, maxTicks = 100)
 	public void aMissTurnsItIntoAVanillaSpider(GameTestHelper helper) {
 		NestSpider spider = nest(helper);
 		ServerPlayer player = player(helper, 4.5 + 2.2, 4.5);
@@ -92,7 +93,7 @@ public class SpiderGameTest {
 	}
 
 	/** A missed drop from a 14-high nest leaves the released spider at full health (no fall damage from the drop: owner bug). */
-	@GameTest(structure = ROOM, maxTicks = 140)
+	@GameTest(environment = SpiderGameTest.ENV, structure = ROOM, maxTicks = 140)
 	public void aMissedDropTakesNoFallDamage(GameTestHelper helper) {
 		NestSpider spider = nest(helper);
 		player(helper, 4.5 + 2.2, 4.5);
@@ -108,7 +109,7 @@ public class SpiderGameTest {
 	}
 
 	/** Hitting a spider that holds you loosens its grip; at 0 it lets go and becomes a vanilla spider. */
-	@GameTest(structure = ROOM, maxTicks = 300)
+	@GameTest(environment = SpiderGameTest.ENV, structure = ROOM, maxTicks = 300)
 	public void hitsBreakTheGrip(GameTestHelper helper) {
 		NestSpider spider = nest(helper);
 		ServerPlayer player = player(helper, 4.5, 4.5);
@@ -130,7 +131,7 @@ public class SpiderGameTest {
 	}
 
 	/** Worldgen: a nest of cobwebs with a brain and sleepers at the top of a tall room; none in a low one. */
-	@GameTest(structure = ROOM, maxTicks = 20)
+	@GameTest(environment = SpiderGameTest.ENV, structure = ROOM, maxTicks = 20)
 	public void nestsGenerateAtTheTopOfTallRooms(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
 		BlockPos floor = helper.absolutePos(BlockPos.ZERO);

@@ -47,7 +47,11 @@ import win.demistorm.stormiespiders.common.entity.mob.Orientation;
  */
 public class NestSpider extends Spider implements Gripper {
 	public enum Phase {
-		SLEEPING, DROPPING, REELING, HOLDING, DANGLING
+		SLEEPING, DROPPING, REELING, HOLDING, DANGLING,
+		/** Its victim is cocooned below; it has backed off into the nest and waits. */
+		WAITING,
+		/** Back down at the cocoon, feeding. */
+		FEEDING
 	}
 
 	private static final EntityDataAccessor<Byte> DATA_PHASE = SynchedEntityData.defineId(NestSpider.class, EntityDataSerializers.BYTE);
@@ -58,6 +62,8 @@ public class NestSpider extends Spider implements Gripper {
 	private @Nullable LivingEntity victim;
 	private float grip;
 	private int dangle;
+	private @Nullable SilkCocoon cocoon;
+	private int waitTicks;
 	private int sentGrip = -1;
 
 	public NestSpider(EntityType<? extends NestSpider> type, Level level) {
@@ -160,6 +166,7 @@ public class NestSpider extends Spider implements Gripper {
 			case SLEEPING -> setDeltaMovement(Vec3.ZERO);
 			case DROPPING -> tickDrop(level);
 			case REELING, HOLDING -> tickHold(level);
+			case WAITING, FEEDING -> tickCocoon(level);
 			case DANGLING -> {
 				setDeltaMovement(Vec3.ZERO);
 				if (--dangle <= 0) {
@@ -253,6 +260,8 @@ public class NestSpider extends Spider implements Gripper {
 				setPos(anchor.x, Math.min(top, getY() + SpiderTuning.REEL_SPEED), anchor.z);
 			} else {
 				setPhase(Phase.HOLDING);
+				wrap(level, held);
+				return;
 			}
 		} else {
 			setDeltaMovement(Vec3.ZERO);
@@ -265,10 +274,74 @@ public class NestSpider extends Spider implements Gripper {
 		}
 	}
 
+	// --- the cocoon (owner, 2026-11-22) -----------------------------------------------------------------------
+
+	public @Nullable SilkCocoon cocoon() {
+		return cocoon;
+	}
+
+	/** For tests: ticks left before it comes back to feed. */
+	public void setWaitTicks(int ticks) {
+		waitTicks = ticks;
+	}
+
+	/** Up in the nest: it wraps its victim where it hangs, then backs off and waits. */
+	private void wrap(ServerLevel level, LivingEntity held) {
+		victim = null;
+		held.stopRiding();
+		cocoon = SilkCocoon.wrap(level, held, anchor());
+		noPhysics = false;
+		if (cocoon == null) {
+			breakThread(level);
+			return;
+		}
+		waitTicks = SpiderTuning.COCOON_WAIT_TICKS;
+		setPhase(Phase.WAITING);
+		playSound(SoundEvents.SPIDER_AMBIENT, 1.0F, 0.5F);
+	}
+
+	private void tickCocoon(ServerLevel level) {
+		setDeltaMovement(Vec3.ZERO);
+		Vec3 anchor = anchor();
+		setPos(anchor.x, anchor.y - getBbHeight(), anchor.z);
+		SilkCocoon c = cocoon;
+		LivingEntity wrapped = c == null || c.isRemoved() ? null : c.victim();
+		if (wrapped == null) {
+			cocoon = null;
+			// Its meal got away (cut free) or is gone: an ordinary spider again if anyone's near, else back to sleep.
+			Player near = level.getNearestPlayer(this, 8.0);
+			if (near != null && NestSpider.grabbable(near)) {
+				breakThread(level);
+			} else {
+				sleep();
+			}
+			return;
+		}
+		if (phase() == Phase.WAITING) {
+			if (--waitTicks <= 0) {
+				setPhase(Phase.FEEDING);
+				waitTicks = 0;
+				playSound(SoundEvents.SPIDER_AMBIENT, 1.0F, 0.7F);
+			}
+			return;
+		}
+		if (++waitTicks % SpiderTuning.COCOON_FEED_BITE_TICKS == 0
+				&& wrapped.hurtServer(level, damageSources().mobAttack(this), SpiderTuning.COCOON_FEED_BITE_DAMAGE)) {
+			swingForAttack(InteractionHand.MAIN_HAND);
+			playSound(SoundEvents.SPIDER_HURT, 0.6F, 0.6F);
+		}
+	}
+
 	@Override
 	public boolean hurtServer(ServerLevel level, DamageSource source, float damage) {
 		boolean hurt = super.hurtServer(level, source, damage);
 		if (!hurt || !isAlive()) {
+			return hurt;
+		}
+		if (phase() == Phase.WAITING || phase() == Phase.FEEDING) {
+			// Disturbed at its cocoon: it comes down and fights.
+			cocoon = null;
+			breakThread(level);
 			return hurt;
 		}
 		if (sleeping()) {

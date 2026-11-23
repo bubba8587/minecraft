@@ -19,8 +19,9 @@ import net.minecraft.world.phys.Vec3;
 /**
  * A giant spider (specs/spiders.md "Giant spiders"): vanilla's spider model and texture at its scale (B17). Normally
  * posed by Stormie's Spiders like any spider. While it hauls a catch up a trunk it's posed here instead (owner,
- * 2026-11-22, the same as the nest spiders): vertical and head down, facing the catch hanging below it, climbing rear
- * first, with a pixel-art thread from its abdomen up to the web it's heading for.
+ * 2026-11-22, the same as the nest spiders): vertical and head down, belly to the trunk, facing the catch hanging below
+ * it, climbing rear first, with a pixel-art thread from its abdomen up to where it's heading. Up there by the cocoon it
+ * keeps to its surface: upside down under an overhang, or head down on the trunk (owner: it mustn't flip upright).
  */
 public class GiantSpiderRenderer extends SpiderRenderer<GiantSpider> {
 	/** The abdomen's end above the body's middle when it hangs head down, per unit of scale (a vanilla spider's). */
@@ -28,6 +29,9 @@ public class GiantSpiderRenderer extends SpiderRenderer<GiantSpider> {
 
 	public static class State extends LivingEntityRenderState {
 		public boolean hauling;
+		/** Up its tree with a catch, posed by us; under an overhang it hangs upside down, else head down on the trunk. */
+		public boolean perched;
+		public boolean under;
 		public List<PixelStrands.Pixel> thread = List.of();
 	}
 
@@ -45,6 +49,9 @@ public class GiantSpiderRenderer extends SpiderRenderer<GiantSpider> {
 		super.extractRenderState(entity, state, partialTicks);
 		State s = (State) state;
 		s.hauling = entity.haulingUp();
+		s.perched = entity.onPerch();
+		s.under = s.perched && !s.hauling && entity.perchedUnder();
+		s.isUpsideDown = s.under;
 		s.thread = List.of();
 		if (s.hauling && entity.syncedLarder().isPresent()) {
 			BlockPos larder = entity.syncedLarder().get();
@@ -62,8 +69,9 @@ public class GiantSpiderRenderer extends SpiderRenderer<GiantSpider> {
 	@Override
 	protected void setupRotations(LivingEntityRenderState state, PoseStack poseStack, float bodyRot, float entityScale) {
 		super.setupRotations(state, poseStack, bodyRot, entityScale);
-		if (!((State) state).hauling) {
-			return;
+		State s = (State) state;
+		if (!s.perched || s.under) {
+			return; // Stormie's poses it on the ground; under an overhang, vanilla's upside-down flip does
 		}
 		float half = state.boundingBoxHeight * 0.5F / entityScale;
 		poseStack.translate(0.0F, half, 0.0F);

@@ -40,6 +40,7 @@ public class GiantSpiderGameTest {
 		GiantSpider giant = Spiders.GIANT_SPIDER.create(level, EntitySpawnReason.COMMAND);
 		Vec3 at = helper.absoluteVec(new Vec3(x, 1.0, z));
 		giant.snapTo(at.x, at.y, at.z, 0.0F, 0.0F);
+		giant.setPersistenceRequired(); // other tests' players are far off: don't let vanilla despawn it first
 		level.addFreshEntity(giant);
 		return giant;
 	}
@@ -49,7 +50,7 @@ public class GiantSpiderGameTest {
 	}
 
 	/** Core: a giant is vanilla-scaled larger, and spins a web of strands between two trunks. */
-	@GameTest(structure = SpiderGameTest.ROOM)
+	@GameTest(environment = SpiderGameTest.ENV, structure = SpiderGameTest.ROOM)
 	public void giantIsLargeAndSpinsBetweenTrees(GameTestHelper helper) {
 		trunks(helper);
 		GiantSpider giant = giant(helper, 4.5, 2.5);
@@ -64,8 +65,8 @@ public class GiantSpiderGameTest {
 		helper.succeed();
 	}
 
-	/** A snatched pig is hauled up a trunk into a web and stuck there while the giant feeds. */
-	@GameTest(structure = SpiderGameTest.ROOM, maxTicks = 400)
+	/** A snatched pig is hauled up a trunk and cocooned there; the giant backs off and waits by it. */
+	@GameTest(environment = SpiderGameTest.ENV, structure = SpiderGameTest.ROOM, maxTicks = 400)
 	public void snatchesLivestockIntoItsWeb(GameTestHelper helper) {
 		trunks(helper);
 		ServerLevel level = helper.getLevel();
@@ -78,15 +79,14 @@ public class GiantSpiderGameTest {
 		helper.assertTrue(giant.snatch(level, pig), "no snatch");
 		helper.assertTrue(pig.getVehicle() == giant, "pig not held");
 		helper.succeedWhen(() -> {
-			helper.assertTrue(giant.task() == GiantSpider.Task.FEED, "task " + giant.task());
-			helper.assertTrue(pig.getVehicle() == null, "pig still riding");
+			helper.assertTrue(giant.task() == GiantSpider.Task.WAIT, "task " + giant.task());
+			helper.assertTrue(pig.getVehicle() instanceof io.github.bubba8587.bubbas_reworked_mobs.spider.SilkCocoon, "pig not cocooned: " + pig.getVehicle());
 			helper.assertTrue(pig.getY() > floor + 2.5, "pig only " + (pig.getY() - floor) + " up");
-			helper.assertTrue(level.getBlockState(giant.larder()).is(Blocks.COBWEB), "no cobweb at the larder");
 		});
 	}
 
 	/** Livestock is a distraction: hunting a player, it turns to a pig close by. */
-	@GameTest(structure = SpiderGameTest.ROOM, maxTicks = 60)
+	@GameTest(environment = SpiderGameTest.ENV, structure = SpiderGameTest.ROOM, maxTicks = 60)
 	public void livestockLuresItOffAPlayer(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
 		GiantSpider giant = giant(helper, 4.5, 4.5);
@@ -104,7 +104,7 @@ public class GiantSpiderGameTest {
 	}
 
 	/** Hurt by someone, it calls two little spiders (small, weak); not again until the cooldown is over; capped. */
-	@GameTest(structure = SpiderGameTest.ROOM)
+	@GameTest(environment = SpiderGameTest.ENV, structure = SpiderGameTest.ROOM)
 	public void hurtCallsLittleSpiders(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
 		GiantSpider giant = giant(helper, 4.5, 4.5);
@@ -121,7 +121,7 @@ public class GiantSpiderGameTest {
 	}
 
 	/** Spun webs slow what touches them (not spiders), three hits cut one, shears cut one cleanly for string. */
-	@GameTest(structure = SpiderGameTest.ROOM)
+	@GameTest(environment = SpiderGameTest.ENV, structure = SpiderGameTest.ROOM)
 	public void websSlowAndCut(GameTestHelper helper) {
 		trunks(helper);
 		ServerLevel level = helper.getLevel();
@@ -144,10 +144,11 @@ public class GiantSpiderGameTest {
 		giant.spin(level);
 		SpunWeb second = level.getEntitiesOfClass(SpunWeb.class, room(helper)).getFirst();
 		player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.SHEARS));
-		second.interact(player, InteractionHand.MAIN_HAND, second.position());
+		Vec3 cutAt = second.position().add(second.strands().getFirst().a().lerp(second.strands().getFirst().b(), 0.5));
+		second.interact(player, InteractionHand.MAIN_HAND, cutAt);
 		helper.assertTrue(second.isRemoved(), "shears didn't cut it");
-		// The string drops at the player's feet.
-		int string = level.getEntitiesOfClass(ItemEntity.class, player.getBoundingBox().inflate(2.0), e -> e.getItem().is(Items.STRING)).stream()
+		// The string falls from the cut.
+		int string = level.getEntitiesOfClass(ItemEntity.class, new AABB(cutAt, cutAt).inflate(1.0), e -> e.getItem().is(Items.STRING)).stream()
 				.mapToInt(e -> e.getItem().getCount()).sum();
 		helper.assertValueEqual(string, SpiderTuning.WEB_SHEAR_STRING, "string from shears");
 		helper.succeed();

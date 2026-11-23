@@ -412,7 +412,9 @@ public class SpunWeb extends Entity {
 		if (level() instanceof ServerLevel level) {
 			held.hurtAndBreak(1, player, hand);
 			level.playSound(null, getX(), getY(), getZ(), SoundEvents.SHEEP_SHEAR, SoundSource.PLAYERS, 0.8F, 1.4F);
-			level.addFreshEntity(new ItemEntity(level, player.getX(), player.getY() + 0.5, player.getZ(),
+			// The string falls from the cut, where the player's aim met the web (like shearing a sheep).
+			Vec3 cut = location == null ? position() : location;
+			level.addFreshEntity(new ItemEntity(level, cut.x, cut.y, cut.z,
 					new ItemStack(Items.STRING, SpiderTuning.WEB_SHEAR_STRING)));
 			discard();
 		}

@@ -102,14 +102,14 @@ public class WebsClientGameTest implements FabricClientGameTest {
 			}
 			setPack(context, false);
 			// A giant hauling a pig up a trunk rear first, the thread from its abdomen to the web (owner).
-			server.runCommand("summon minecraft:pig %.2f %d %.2f {NoAI:1b,Silent:1b,Tags:[\"web_shot_pig\"]}".formatted(ax + 2.5, y, tz - 1.5));
+			server.runCommand("summon minecraft:sheep %.2f %d %.2f {NoAI:1b,Tags:[\"web_shot_sheep\"]}".formatted(ax + 2.5, y, tz - 1.5));
 			context.waitTicks(3);
 			onServer(server, level -> {
 				GiantSpider hauler = Spiders.GIANT_SPIDER.create(level, EntitySpawnReason.COMMAND);
 				hauler.snapTo(ax + 2.0, y, tz + 0.5, 90.0F, 0.0F);
 				hauler.setSilent(true);
 				level.addFreshEntity(hauler);
-				net.minecraft.world.entity.animal.pig.Pig pig = level.getEntitiesOfClass(net.minecraft.world.entity.animal.pig.Pig.class,
+				net.minecraft.world.entity.animal.sheep.Sheep pig = level.getEntitiesOfClass(net.minecraft.world.entity.animal.sheep.Sheep.class,
 						new AABB(ax - 2, y - 1, tz - 4, ax + 6, y + 3, tz + 3)).getFirst();
 				if (!hauler.snatch(level, pig)) {
 					throw new AssertionError("the giant didn't snatch the pig");
@@ -128,6 +128,22 @@ public class WebsClientGameTest implements FabricClientGameTest {
 					.stream().map(g -> g.syncedTask() + "@" + g.position() + " larder " + g.syncedLarder() + " noAi " + g.isNoAi()).toList()));
 			tp(context, server, ax - 4.5, y + 4.0, tz - 4.0, -45.0F, 0.0F);
 			context.takeScreenshot("giant-haul-rear-first");
+			// Up under the canopy: it wraps the sheep, backs off along the underside, upside down (owner), and waits.
+			for (int i = 0; i < 300; i++) {
+				boolean waiting = onServer(server, level -> level.getEntitiesOfClass(GiantSpider.class, new AABB(ax - 4, y - 1, tz - 5, ax + 6, y + 14, tz + 5),
+						g -> g.task() == GiantSpider.Task.WAIT).size() == 1);
+				if (waiting) {
+					break;
+				}
+				context.waitTick();
+			}
+			context.waitTicks(30);
+			System.out.println("[web-shot] perched " + onServer(server, level -> level.getEntitiesOfClass(GiantSpider.class,
+					new AABB(ax - 4, y - 1, tz - 5, ax + 6, y + 14, tz + 5)).stream().map(g -> g.task() + "@" + g.position() + " under " + g.perchedUnder()).toList()));
+			tp(context, server, ax + 5.5, y + 6.5, tz - 4.5, 50.0F, -10.0F);
+			context.takeScreenshot("giant-cocoon-sheep-under-canopy");
+			tp(context, server, ax + 0.5, y + 2.0, tz - 3.5, 0.0F, -60.0F);
+			context.takeScreenshot("giant-cocoon-sheep-from-below");
 			// A torn, old web.
 			onServer(server, level -> {
 				webs(level, x, y, z).forEach(w -> w.setTear(0.6F));

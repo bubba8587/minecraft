@@ -183,6 +183,8 @@ public class ModDataGenerator implements DataGeneratorEntrypoint {
 			builder.add(io.github.bubba8587.bubbas_reworked_mobs.spider.Spiders.SPIDER_NEST, "Spider Nest");
 			builder.add(io.github.bubba8587.bubbas_reworked_mobs.spider.Spiders.GIANT_SPIDER, "Giant Spider");
 			builder.add(io.github.bubba8587.bubbas_reworked_mobs.spider.Spiders.SPUN_WEB, "Spider Web");
+			builder.add(io.github.bubba8587.bubbas_reworked_mobs.spider.Spiders.SILK_COCOON, "Silk Cocoon");
+			builder.add("bubbas_reworked_mobs.spider.cocooned", "Cocooned!");
 			builder.add("bubbas_reworked_mobs.spider.grabbed", "A spider has you! Hit it hard and fast to break free");
 		}
 	}

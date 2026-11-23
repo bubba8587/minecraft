@@ -40,9 +40,10 @@ public class NestSpiderRenderer extends SpiderRenderer<NestSpider> {
 		super.extractRenderState(entity, state, partialTicks);
 		State s = (State) state;
 		s.phase = entity.phase();
-		s.isUpsideDown = s.phase == NestSpider.Phase.SLEEPING;
+		// Asleep, and backed off into the nest waiting by its cocoon, it hangs upside down from the ceiling.
+		s.isUpsideDown = s.phase == NestSpider.Phase.SLEEPING || s.phase == NestSpider.Phase.WAITING;
 		s.thread = java.util.List.of();
-		if (s.phase != NestSpider.Phase.SLEEPING) {
+		if (s.phase != NestSpider.Phase.SLEEPING && s.phase != NestSpider.Phase.WAITING && s.phase != NestSpider.Phase.FEEDING) {
 			// The thread, as pixel art: from its back up to where it's tied in the nest, taut.
 			Vec3 at = entity.getPosition(partialTicks);
 			Vec3 from = at.add(0.0, state.boundingBoxHeight * 0.5 + 0.7, 0.0);
@@ -59,7 +60,7 @@ public class NestSpiderRenderer extends SpiderRenderer<NestSpider> {
 	protected void setupRotations(LivingEntityRenderState state, PoseStack poseStack, float bodyRot, float entityScale) {
 		super.setupRotations(state, poseStack, bodyRot, entityScale);
 		NestSpider.Phase phase = ((State) state).phase;
-		if (phase == NestSpider.Phase.SLEEPING) {
+		if (phase == NestSpider.Phase.SLEEPING || phase == NestSpider.Phase.WAITING) {
 			return;
 		}
 		// Vertical, pivoting about its middle: head down while it drops, head up while it climbs the thread.
@@ -81,6 +82,6 @@ public class NestSpiderRenderer extends SpiderRenderer<NestSpider> {
 	@Override
 	protected AABB getBoundingBoxForCulling(NestSpider entity, float partialTicks) {
 		AABB box = super.getBoundingBoxForCulling(entity, partialTicks);
-		return entity.sleeping() ? box : box.minmax(AABB.unitCubeFromLowerCorner(entity.anchor()));
+		return entity.sleeping() || entity.phase() == NestSpider.Phase.WAITING ? box : box.minmax(AABB.unitCubeFromLowerCorner(entity.anchor()));
 	}
 }

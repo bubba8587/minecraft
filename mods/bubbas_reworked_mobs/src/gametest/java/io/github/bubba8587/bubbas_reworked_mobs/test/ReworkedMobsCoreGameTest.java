@@ -181,12 +181,12 @@ public class ReworkedMobsCoreGameTest {
 		new MobFactoryGameTest().breakingTheHiddenSpawnerStopsItForGood(helper);
 	}
 
-	@GameTest(structure = SpiderGameTest.ROOM, maxTicks = 300)
+	@GameTest(environment = SpiderGameTest.ENV, structure = SpiderGameTest.ROOM, maxTicks = 300)
 	public void spiderSleeperDropsLatchesAndReelsUp(GameTestHelper helper) {
 		new SpiderGameTest().sleeperDropsLatchesAndReelsUp(helper);
 	}
 
-	@GameTest(structure = SpiderGameTest.ROOM)
+	@GameTest(environment = SpiderGameTest.ENV, structure = SpiderGameTest.ROOM)
 	public void giantSpiderIsLargeAndSpinsBetweenTrees(GameTestHelper helper) {
 		new GiantSpiderGameTest().giantIsLargeAndSpinsBetweenTrees(helper);
 	}

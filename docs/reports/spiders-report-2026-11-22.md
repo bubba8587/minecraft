@@ -39,3 +39,45 @@ SendMessage from this session doesn't reach you, so reports go here.
   - **Wall and ceiling screenshot:** a scripted path to a wall or ceiling point is refused by Stormie's navigator (`moveTo` returns false), so I don't have a ceiling or wall shot yet.
   - **Giant hold pose (your latest owner note):** the giant must keep its surface orientation while holding or waiting, upside down under a branch or sideways on the trunk.
   - **Cocoons (owner):** not started.
+
+## Cocoons, giant perch pose, two cocoon shapes (spiders branch)
+
+- **Cocoons (owner).** New entity `silk_cocoon`. A nest spider that reels its victim up, and a giant that hauls a catch to its perch, wraps it instead of biting it to death.
+  - The victim rides the cocoon and can't move or sneak off. It shows the hint "Cocooned!" (trimmed per the owner).
+  - Wrapping poisons the victim. Vanilla Poison never takes the last half heart.
+  - The spider backs off and waits 600 ticks, then comes back and bites: 3 damage every 40 ticks. Those bites can kill.
+    - The nest spider waits upside down on the ceiling, then hangs head down to feed.
+    - The giant backs off along the underside, or up the trunk, then returns.
+  - Cutting: the victim hits from inside, or anyone hits from outside. Silk is 100.
+    - Points per hit: hand 13 (8 hits), other items 18, axe 28, sword 35 (3 hits), shears 40. Shears used from outside cut 50.
+    - At 0 the victim drops out alive with the poison cleared.
+    - Fire and explosions burn or blow the cocoon open.
+  - Cocooned livestock cry their ambient sound at volume 2.5 every 30-70 ticks.
+  - A nest spider whose victim gets away turns vanilla if a player is near, else goes back to sleep. A giant whose victim gets away goes back to roaming. Hitting a waiting or feeding nest spider makes it drop and fight.
+- **Two cocoon shapes (owner).** Animals, and anything wider than it is tall, are slung lengthwise in a horizontal cocoon from two threads. Upright victims (players, villagers, zombies) hang head down in a vertical cocoon tied at the feet.
+  - Both are drawn in the same pixel silk as the webs, and the silk thins as it's cut.
+- **Giant pose (owner).**
+  - The perch prefers an underside: the highest spot beside the trunk with leaves or wood above and room below for the cocoon. There the giant hangs upside down with the cocoon below. Without one, it clings head down on the trunk, belly to the bark.
+  - It never flips upright while climbing, waiting or feeding. We pose it ourselves then, with Stormie's render pose skipped.
+  - Busy giants no longer despawn (`requiresCustomPersistence` while it has a task), so they never leave a cocoon behind.
+- **Stormie's Spiders and the Fabricator.**
+  - With Stormie's loaded, a Fabricator's deactivated spider stuck to the walls instead of dropping onto its pad.
+  - New mixin `StormieDeactivatedSpiderMixin` (Spider, priority 1500) makes Stormie's merged `onTravel` step aside for deactivated mobs.
+  - That fixed `fabricatorDropsDeactivatedMob`.
+- **Shear string** now falls where the web was cut, not at the player.
+- **Tests.**
+  - New milestone class `CocoonGameTest`:
+    - `swordCutsFreeFasterThanAHand`
+    - `anotherPlayerCutsAPigFree`
+    - `poisonNeverKills`
+    - `spiderComesBackToFeed`
+  - The latch and snatch tests now expect a cocoon.
+  - Spider tests run in their own test environment `bubbas_reworked_mobs-test:spiders`, so they don't shift the big Fabricator tests' layout.
+  - All 17 spider and cocoon tests pass, three runs in a row.
+- **Flaky on develop too (not from this branch).** `mob_factory_game_test_warden_wakes_when_it_hears_aplayer_at_the_machine` ("one Warden per Fabricator, found 2") and `mob_factory_game_test_secrets_are_built` fail in about 2 of 3 full `-PmilestoneTests` runs on plain develop (checked in ../mc-spiderfix). Neighbouring Fabricator test structures overlap.
+- **Screenshots.** Client parts `spiders` and `webs`, all looked at:
+  - cocoon-player-outside and cocoon-player-outside-back: a player head down in a vertical cocoon;
+  - spider-held: a pig slung horizontally under its nest;
+  - giant-haul-rear-first: on the trunk, head down, sheep below;
+  - giant-cocoon-sheep-under-canopy and giant-cocoon-sheep-from-below: upside down under the canopy, sheep slung horizontally below.
+- **Still open: a Stormie's wall and ceiling shot.** Its navigator refuses scripted climbing paths, so I'll need to bait the shot with prey at night.

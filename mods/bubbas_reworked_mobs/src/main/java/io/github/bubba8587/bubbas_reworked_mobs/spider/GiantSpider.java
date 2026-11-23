@@ -62,7 +62,9 @@ import org.jspecify.annotations.Nullable;
  */
 public class GiantSpider extends Spider implements Gripper {
 	public enum Task {
-		ROAM, HAUL, CLIMB, FEED
+		ROAM, HAUL, CLIMB, FEED,
+		/** Its catch is cocooned; it has backed off on its perch and waits. */
+		WAIT
 	}
 
 	/** Marks the little spiders it calls, to count them. */
@@ -77,6 +79,14 @@ public class GiantSpider extends Spider implements Gripper {
 	private Task task = Task.ROAM;
 	private @Nullable LivingEntity catchHeld;
 	private @Nullable BlockPos larder;
+	/** The perch is under something (a branch, the canopy): it hangs upside down there. Else sideways on the trunk. */
+	private boolean perchUnder;
+	/** From the perch toward the trunk it clings to. */
+	private Direction trunkSide = Direction.NORTH;
+	private @Nullable SilkCocoon cocoon;
+	private Vec3 backOff = Vec3.ZERO;
+	private static final net.minecraft.network.syncher.EntityDataAccessor<Boolean> DATA_UNDER =
+			net.minecraft.network.syncher.SynchedEntityData.defineId(GiantSpider.class, net.minecraft.network.syncher.EntityDataSerializers.BOOLEAN);
 	private final List<BlockPos> sites = new ArrayList<>();
 	private float grip;
 	private int sentGrip = -1;
@@ -94,6 +104,7 @@ public class GiantSpider extends Spider implements Gripper {
 		super.defineSynchedData(builder);
 		builder.define(DATA_TASK, (byte) Task.ROAM.ordinal());
 		builder.define(DATA_LARDER, java.util.Optional.empty());
+		builder.define(DATA_UNDER, false);
 	}
 
 	/** The task as both sides see it. */
@@ -106,6 +117,28 @@ public class GiantSpider extends Spider implements Gripper {
 		return syncedTask() == Task.CLIMB;
 	}
 
+	/** Up its tree with a catch (climbing, waiting by the cocoon, feeding): posed by us, not by Stormie's Spiders. */
+	public boolean onPerch() {
+		Task t = syncedTask();
+		return t == Task.CLIMB || t == Task.WAIT || t == Task.FEED;
+	}
+
+	/** Its perch is an underside (it hangs upside down there), as both sides see it. */
+	public boolean perchedUnder() {
+		return entityData.get(DATA_UNDER);
+	}
+
+	public @Nullable SilkCocoon cocoon() {
+		return cocoon;
+	}
+
+	/** For tests: skip the rest of the wait. */
+	public void endWait() {
+		if (task == Task.WAIT) {
+			taskTicks = SpiderTuning.COCOON_WAIT_TICKS;
+		}
+	}
+
 	public java.util.Optional<BlockPos> syncedLarder() {
 		return entityData.get(DATA_LARDER);
 	}
@@ -114,6 +147,7 @@ public class GiantSpider extends Spider implements Gripper {
 		task = t;
 		entityData.set(DATA_TASK, (byte) t.ordinal());
 		entityData.set(DATA_LARDER, t == Task.ROAM ? java.util.Optional.empty() : java.util.Optional.ofNullable(larder));
+		entityData.set(DATA_UNDER, t != Task.ROAM && perchUnder);
 	}
 
 	public static AttributeSupplier.Builder createAttributes() {
@@ -196,7 +230,7 @@ public class GiantSpider extends Spider implements Gripper {
 			case ROAM -> tickRoam(level);
 			case HAUL -> tickHaul(level);
 			case CLIMB -> tickClimb(level);
-			case FEED -> tickFeed(level);
+			case FEED, WAIT -> tickPerch(level);
 		}
 		sentGrip = Meters.sync(this, Meters.GRIP, catchHeld != null ? grip : 0.0F, sentGrip, SpiderTuning.GRIP_FULL);
 	}
@@ -282,48 +316,107 @@ public class GiantSpider extends Spider implements Gripper {
 		}
 	}
 
+	/** Where its body ends up on the perch: under the overhang, top against it; on the trunk, a little below the spot. */
+	private Vec3 perchPos() {
+		Vec3 site = Vec3.atBottomCenterOf(larder);
+		Vec3 toTrunk = new Vec3(trunkSide.getStepX(), 0.0, trunkSide.getStepZ());
+		// Hug the trunk: its middle a little off the bark.
+		Vec3 hug = site.add(toTrunk.scale(Math.max(0.0, 0.5 - getBbWidth() * 0.5 + 0.05)));
+		return perchUnder ? new Vec3(hug.x, site.y + 1.0 - getBbHeight(), hug.z) : new Vec3(hug.x, site.y - 0.4, hug.z);
+	}
+
+	/** Faces the trunk (its belly to the bark when posed head down on the trunk). */
+	private void faceTrunk() {
+		float yaw = trunkSide.toYRot();
+		setYRot(yaw);
+		setYBodyRot(yaw);
+		setYHeadRot(yaw);
+	}
+
 	private void tickClimb(ServerLevel level) {
 		if (!holding()) {
 			setNoGravity(false);
 			return;
 		}
-		Vec3 site = Vec3.atBottomCenterOf(larder);
-		double targetY = site.y - 0.4;
-		double nx = getX() + Mth.clamp(site.x - getX(), -0.08, 0.08);
-		double nz = getZ() + Mth.clamp(site.z - getZ(), -0.08, 0.08);
+		Vec3 target = perchPos();
+		double nx = getX() + Mth.clamp(target.x - getX(), -0.08, 0.08);
+		double nz = getZ() + Mth.clamp(target.z - getZ(), -0.08, 0.08);
 		setDeltaMovement(Vec3.ZERO);
-		if (getY() < targetY) {
-			setPos(nx, Math.min(targetY, getY() + SpiderTuning.CLIMB_SPEED), nz);
+		faceTrunk();
+		resetFallDistance();
+		if (getY() < target.y) {
+			setPos(nx, Math.min(target.y, getY() + SpiderTuning.CLIMB_SPEED), nz);
 			setClimbing(true);
 			return;
 		}
-		// Up: the catch goes into the web and stays stuck there.
+		setPos(target.x, target.y, target.z);
+		// Up: it wraps its catch in silk where it hangs below it (owner: cocooned, not bitten to death), then backs off.
 		LivingEntity prey = catchHeld;
 		catchHeld = null;
 		prey.stopRiding();
-		if (level.getBlockState(larder).isAir()) {
-			level.setBlock(larder, Blocks.COBWEB.defaultBlockState(), Block.UPDATE_ALL);
+		double below = prey.getBbHeight() + SpiderTuning.COCOON_DROP_BELOW;
+		prey.teleportTo(target.x, target.y - below, target.z);
+		cocoon = SilkCocoon.wrap(level, prey, new Vec3(target.x, target.y, target.z));
+		if (cocoon == null) {
+			endTask();
+			return;
 		}
-		prey.teleportTo(site.x, site.y + 0.05, site.z);
-		catchHeld = prey;
-		setTask(Task.FEED);
+		backOff = backOffSpot(level, target);
+		setTask(Task.WAIT);
 		taskTicks = 0;
-		playSound(SoundEvents.SPIDER_STEP, 1.0F, 0.7F);
+		playSound(SoundEvents.SPIDER_AMBIENT, 1.2F, 0.5F);
 	}
 
-	private void tickFeed(ServerLevel level) {
+	/** Where it waits: along the overhang away from the trunk, or up the trunk; where it is if there's no room. */
+	private Vec3 backOffSpot(ServerLevel level, Vec3 at) {
+		if (perchUnder) {
+			BlockPos out = larder.relative(trunkSide.getOpposite());
+			if (level.getBlockState(out).isAir() && !level.getBlockState(out.above()).isAir()) {
+				return at.add(-trunkSide.getStepX() * 1.0, 0.0, -trunkSide.getStepZ() * 1.0);
+			}
+			return at;
+		}
+		BlockPos up = larder.above();
+		if (level.getBlockState(up).isAir() && level.getBlockState(up.above()).isAir()) {
+			return at.add(0.0, 1.5, 0.0);
+		}
+		return at;
+	}
+
+	/** On its perch by the cocoon: backed off while it waits, back at the cocoon to feed. */
+	private void tickPerch(ServerLevel level) {
 		taskTicks++;
 		setDeltaMovement(Vec3.ZERO);
 		setClimbing(true);
-		LivingEntity prey = catchHeld;
-		if (prey != null && prey.isAlive() && taskTicks % SpiderTuning.FEED_BITE_TICKS == 0 && distanceToSqr(prey) < 16.0) {
-			lookAt(prey, 30.0F, 30.0F);
-			if (prey.hurtServer(level, damageSources().mobAttack(this), SpiderTuning.FEED_BITE_DAMAGE)) {
-				swingForAttack(InteractionHand.MAIN_HAND);
-			}
-		}
-		if (prey == null || !prey.isAlive() || taskTicks > SpiderTuning.FEED_TICKS) {
+		resetFallDistance();
+		faceTrunk();
+		SilkCocoon c = cocoon;
+		LivingEntity wrapped = c == null || c.isRemoved() ? null : c.victim();
+		if (wrapped == null || larder == null) {
+			// Cut free, or eaten: it comes down and roams again.
 			endTask();
+			return;
+		}
+		Vec3 home = perchPos();
+		Vec3 goal = task == Task.WAIT ? backOff : home;
+		Vec3 step = goal.subtract(position());
+		double len = step.length();
+		if (len > 1.0E-3) {
+			Vec3 move = len > 0.08 ? step.scale(0.08 / len) : step;
+			setPos(getX() + move.x, getY() + move.y, getZ() + move.z);
+		}
+		if (task == Task.WAIT) {
+			if (taskTicks >= SpiderTuning.COCOON_WAIT_TICKS) {
+				setTask(Task.FEED);
+				taskTicks = 0;
+				playSound(SoundEvents.SPIDER_AMBIENT, 1.2F, 0.7F);
+			}
+			return;
+		}
+		if (len < 0.2 && taskTicks % SpiderTuning.COCOON_FEED_BITE_TICKS == 0
+				&& wrapped.hurtServer(level, damageSources().mobAttack(this), SpiderTuning.COCOON_FEED_BITE_DAMAGE)) {
+			swingForAttack(InteractionHand.MAIN_HAND);
+			playSound(SoundEvents.SPIDER_HURT, 0.8F, 0.5F);
 		}
 	}
 
@@ -350,6 +443,8 @@ public class GiantSpider extends Spider implements Gripper {
 	}
 
 	private void endTask() {
+		cocoon = null;
+		perchUnder = false;
 		larder = null;
 		setTask(Task.ROAM);
 		catchHeld = null;
@@ -361,30 +456,39 @@ public class GiantSpider extends Spider implements Gripper {
 
 	// --- larders and spinning ------------------------------------------------------------------------------
 
-	/** Where a catch goes: the nearest of its own webs in reach, else a new spot by the nearest trunk. */
+	/**
+	 * Where it takes a catch: a perch beside the nearest trunk. It prefers an underside (owner): the highest spot by
+	 * the trunk with leaves or wood right above, where it hangs upside down with the cocoon below. Without one, a spot on
+	 * the trunk 4-7 up, where it clings sideways. Sets {@link #perchUnder} and {@link #trunkSide}.
+	 */
 	private @Nullable BlockPos findLarder(ServerLevel level) {
-		BlockPos best = null;
-		double bestDist = SpiderTuning.LARDER_SEARCH * SpiderTuning.LARDER_SEARCH;
-		for (BlockPos site : sites) {
-			double d = site.distToCenterSqr(position());
-			if (d < bestDist && (level.getBlockState(site).is(Blocks.COBWEB) || level.getBlockState(site).isAir())) {
-				bestDist = d;
-				best = site;
-			}
-		}
-		if (best != null) {
-			return best;
-		}
 		BlockPos trunk = nearestTrunk(level, (int) SpiderTuning.LARDER_SEARCH);
 		if (trunk == null) {
 			return null;
 		}
-		int height = SpiderTuning.LARDER_HEIGHT_MIN + random.nextInt(SpiderTuning.LARDER_HEIGHT_MAX - SpiderTuning.LARDER_HEIGHT_MIN + 1);
-		for (int h = height; h >= SpiderTuning.LARDER_HEIGHT_MIN - 1; h--) {
+		int height = 1;
+		while (height < 40 && level.getBlockState(trunk.above(height)).is(BlockTags.LOGS)) {
+			height++;
+		}
+		// Undersides, highest first, with room below for the cocoon.
+		for (int h = height - 1; h >= SpiderTuning.LARDER_HEIGHT_MIN; h--) {
 			for (Direction d : Direction.Plane.HORIZONTAL) {
 				BlockPos spot = trunk.above(h).relative(d);
-				if (level.getBlockState(spot).isAir() && level.getBlockState(trunk.above(h)).is(BlockTags.LOGS)) {
-					remember(spot);
+				if (level.getBlockState(spot).isAir() && !level.getBlockState(spot.above()).isAir()
+						&& level.getBlockState(spot.below()).isAir() && level.getBlockState(spot.below(2)).isAir()) {
+					perchUnder = true;
+					trunkSide = d.getOpposite();
+					return spot;
+				}
+			}
+		}
+		int pick = SpiderTuning.LARDER_HEIGHT_MIN + random.nextInt(SpiderTuning.LARDER_HEIGHT_MAX - SpiderTuning.LARDER_HEIGHT_MIN + 1);
+		for (int h = Math.min(pick, height - 1); h >= SpiderTuning.LARDER_HEIGHT_MIN - 1; h--) {
+			for (Direction d : Direction.Plane.HORIZONTAL) {
+				BlockPos spot = trunk.above(h).relative(d);
+				if (level.getBlockState(spot).isAir()) {
+					perchUnder = false;
+					trunkSide = d.getOpposite();
 					return spot;
 				}
 			}
@@ -540,6 +644,12 @@ public class GiantSpider extends Spider implements Gripper {
 			playSound(SoundEvents.SPIDER_AMBIENT, 1.5F, 0.5F);
 		}
 		return made;
+	}
+
+	/** Never despawns while it has a catch, a climb, or a cocoon to feed on (it would leave a cocoon behind). */
+	@Override
+	public boolean requiresCustomPersistence() {
+		return super.requiresCustomPersistence() || task != Task.ROAM;
 	}
 
 	@Override

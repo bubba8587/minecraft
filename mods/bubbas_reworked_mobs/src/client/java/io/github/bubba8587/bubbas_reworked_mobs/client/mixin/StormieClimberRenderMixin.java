@@ -13,15 +13,15 @@ import win.demistorm.stormiespiders.common.entity.mob.IClimberEntity;
 
 /**
  * Stormie's Spiders (a required dependency) poses every spider it lets climb. A giant spider hauling a catch up a
- * trunk is posed by us instead (rear first, facing down at the catch: owner), so Stormie's render transform is skipped
- * for it then. Everything else, the giant's ordinary climbing included, is left to Stormie's.
+ * trunk, and waiting or feeding by its cocoon up there, is posed by us instead (rear first, facing down at the catch;
+ * upside down under an overhang, sideways on the trunk: owner), so Stormie's render transform is skipped for it then. Everything else, the giant's ordinary climbing included, is left to Stormie's.
  */
 @Mixin(value = ClientEventHandlers.class, remap = false)
 abstract class StormieClimberRenderMixin {
 	@Inject(method = "storeClimberDataForRenderState", at = @At("HEAD"), cancellable = true)
 	private static void brm$weposeHauling(LivingEntityRenderState state, LivingEntity entity, IClimberEntity climber, float partialTicks,
 			CallbackInfo ci) {
-		if (entity instanceof GiantSpider giant && giant.haulingUp()) {
+		if (entity instanceof GiantSpider giant && giant.onPerch()) {
 			ci.cancel();
 		}
 	}

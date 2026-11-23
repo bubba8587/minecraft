@@ -32,6 +32,10 @@ public final class Spiders {
 	public static final EntityType<SpunWeb> SPUN_WEB = register("spun_web",
 			EntityType.Builder.<SpunWeb>of(SpunWeb::new, MobCategory.MISC).sized(0.5F, 0.5F).clientTrackingRange(10).updateInterval(40));
 
+	public static final EntityType<SilkCocoon> SILK_COCOON = register("silk_cocoon",
+			EntityType.Builder.<SilkCocoon>of(SilkCocoon::new, MobCategory.MISC).sized(0.6F, 0.6F).clientTrackingRange(8).updateInterval(5)
+					.noSummon());
+
 	public static final ResourceKey<PlacedFeature> NEST_FEATURE = ResourceKey.create(Registries.PLACED_FEATURE, BubbasReworkedMobs.id("spider_nest"));
 
 	private Spiders() {
