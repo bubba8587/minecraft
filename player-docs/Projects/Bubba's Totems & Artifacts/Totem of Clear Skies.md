@@ -17,7 +17,7 @@ Found in igloos, desert village houses and shipwreck supply chests.
 
 ## Usage
 
-Used while it rains or storms, it ends the weather at once, and the totem is used up. In clear weather nothing happens and it is kept.
+Used while it rains or storms, it ends the weather at once. The totem isn't used up, so you can use it again next time it rains. In clear weather nothing happens and it is kept.
 
 In a reworked beacon, no rain, snow or lightning falls anywhere in the beacon's range: snow doesn't pile up and cauldrons don't fill. Ice still forms in cold places.
 

@@ -65,7 +65,7 @@ No new blocks (B15). New ids, so no old-id alias. Numbers all in `totems/TotemsT
 
 #### Totem of Clear Skies (`skies/ClearSkies`, built 2026-11-22)
 
-- **Used in rain or a storm,** it ends the weather like `/weather clear` (`MinecraftServer.setWeatherParameters(RAIN_DELAY.sample, 0, false, false)`) and is used up. In clear weather nothing happens and it isn't used.
+- **Used in rain or a storm,** it ends the weather like `/weather clear` (`MinecraftServer.setWeatherParameters(RAIN_DELAY.sample, 0, false, false)`). It isn't used up and has no cooldown (owner, 2026-11-22: weather doesn't come back that fast). In clear weather nothing happens and it isn't used.
 - **In a beacon or as a statue:** no rain, snow or lightning on the area's columns, sky to ground. No snow builds up and cauldrons don't fill; ice still forms in cold biomes. Beacon text: "No rain, snow or lightning in the area".
   - Server: `TotemAreas.Kind.CLEAR_SKIES`, flattened per tick to column rectangles. Mixins on `Level.precipitationAt` (covers `isRainingAt`: lightning, wetness, rain putting out fire) and on `ServerLevel.tickPrecipitation`'s `isRaining` (snow layers, cauldrons).
   - Client: rectangles are sent once a second and when the areas end (payload `bubbas_totems_artifacts:clear_skies`, with the dimension); `ClientLevelPrecipitationMixin` on `ClientLevel.getPrecipitationAt` stops rain drawing, splashes and sounds there. A copy older than 3 s, or from another dimension, is ignored.
@@ -73,6 +73,8 @@ No new blocks (B15). New ids, so no old-id alias. Numbers all in `totems/TotemsT
 - Neither totem overlaps a gem effect.
 
 #### Growth also plants seeds (built 2026-11-22; Harvest folded in, owner)
+
+- **Planting needs room (owner, 2026-11-22):** a seed is planted only where vanilla's survival rules pass against the real neighbours (`canSurvive`), the spot above is open, and no wall face, log or (for non-crops) other plant is beside it, so what Growth plants can grow; crops may sit in rows. Never on top of another plant. Test: `NewTotemsGameTest.growthNeedsRoomAround`.
 
 - Held, in a beacon or as a statue: every 2 s, with a 35 % chance, one random dropped plantable item in range (any item whose block is in `growth_totem_boosts`: seeds, carrots, potatoes, saplings, berries, nether wart...) is planted within 3 blocks of where it lies, where vanilla says it can grow (`Growth.plant`: 32 tries of `BlockPos.randomBetweenClosed`, y -3..+1, air plus `canSurvive`). **Never on top of another plant** (owner, 2026-11-22: it stacked sugar cane on sugar cane, and would bamboo and cactus too): the block below must not be a plant (`Growth.isPlant`: the `growth_totem_boosts` tag, `#minecraft:flowers`, or any vanilla `VegetationBlock`), so only the ground plants are planted on. Never a sweep, never harvests or gathers. Items circling a Gathering ring count.
 

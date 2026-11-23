@@ -85,6 +85,30 @@ public class NewTotemsGameTest {
 		helper.succeed();
 	}
 
+	/** Growth needs room around a spot: a sapling isn't planted in a walled hole, a cactus isn't planted beside a block. */
+	@GameTest(structure = TestSupport.FIELD, maxTicks = 20)
+	public void growthNeedsRoomAround(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		helper.setBlock(new BlockPos(20, 0, 3), Blocks.DIRT);
+		for (BlockPos wall : java.util.List.of(new BlockPos(19, 1, 3), new BlockPos(21, 1, 3), new BlockPos(20, 1, 2), new BlockPos(20, 1, 4))) {
+			helper.setBlock(wall, Blocks.STONE);
+		}
+		helper.setBlock(new BlockPos(20, 0, 8), Blocks.SAND);
+		helper.setBlock(new BlockPos(21, 1, 8), Blocks.STONE);
+		record Case(BlockPos spot, ItemStack stack) {
+		}
+		for (Case c : java.util.List.of(new Case(new BlockPos(20, 1, 3), new ItemStack(Items.OAK_SAPLING, 4)),
+				new Case(new BlockPos(20, 1, 8), new ItemStack(Items.CACTUS, 4)))) {
+			drop(helper, Vec3.atBottomCenterOf(c.spot()).add(0, 0.05, 0), c.stack());
+			AABB box = new AABB(helper.absolutePos(c.spot())).inflate(0.6);
+			for (int i = 0; i < 200; i++) {
+				Growth.plant(level, box);
+			}
+			helper.assertTrue(helper.getBlockState(c.spot()).isAir(), c.stack().getItem() + " planted without room: " + helper.getBlockState(c.spot()));
+		}
+		helper.succeed();
+	}
+
 	/** Growth never plants on top of another plant: sugar cane, bamboo and cactus don't stack; a sapling still goes on dirt. */
 	@GameTest(structure = TestSupport.FIELD, maxTicks = 20)
 	public void growthNeverStacksPlants(GameTestHelper helper) {

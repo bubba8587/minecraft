@@ -78,7 +78,7 @@ public final class Growth {
 		int reach = TotemsTuning.PLANT_REACH;
 		for (BlockPos pos : BlockPos.randomBetweenClosed(random, 32, from.getX() - reach, from.getY() - 3, from.getZ() - reach,
 				from.getX() + reach, from.getY() + 1, from.getZ() + reach)) {
-			if (level.getBlockState(pos).isAir() && !isPlant(level.getBlockState(pos.below())) && plant.canSurvive(level, pos)) {
+			if (level.getBlockState(pos).isAir() && !isPlant(level.getBlockState(pos.below())) && plant.canSurvive(level, pos) && hasRoom(level, pos, plant)) {
 				level.setBlock(pos, plant, Block.UPDATE_ALL);
 				seed.getItem().shrink(1);
 				if (seed.getItem().isEmpty()) {
@@ -90,6 +90,23 @@ public final class Growth {
 			}
 		}
 		return false;
+	}
+
+	/** Room to grow: open above, and no wall, trunk or (except for crops) other plant beside it. */
+	public static boolean hasRoom(ServerLevel level, BlockPos pos, BlockState plant) {
+		if (!level.getBlockState(pos.above()).getCollisionShape(level, pos.above()).isEmpty()) {
+			return false;
+		}
+		boolean crop = plant.is(net.minecraft.tags.BlockTags.CROPS);
+		for (net.minecraft.core.Direction side : net.minecraft.core.Direction.Plane.HORIZONTAL) {
+			BlockPos n = pos.relative(side);
+			BlockState there = level.getBlockState(n);
+			if (there.is(net.minecraft.tags.BlockTags.LOGS) || there.isFaceSturdy(level, n, side.getOpposite())
+					|| !crop && isPlant(there)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/** Whether a block is a plant (nothing is planted on top of one). */
