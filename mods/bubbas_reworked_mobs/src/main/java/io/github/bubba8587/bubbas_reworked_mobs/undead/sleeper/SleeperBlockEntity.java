@@ -162,16 +162,18 @@ public class SleeperBlockEntity extends BlockEntity implements GameEventListener
 		level.scheduleTick(worldPosition, getBlockState().getBlock(), Math.max(1, delay));
 	}
 
+	/** A wake that couldn't spawn its mob: back to listening. */
+	public void cancelWake() {
+		wakePending = false;
+		setChanged();
+	}
+
 	public @Nullable Vec3 getWakeSource() {
 		return wakeSource;
 	}
 
 	public @Nullable UUID getWaker() {
 		return waker;
-	}
-
-	public float getSensitivity() {
-		return sensitivity;
 	}
 
 	/**

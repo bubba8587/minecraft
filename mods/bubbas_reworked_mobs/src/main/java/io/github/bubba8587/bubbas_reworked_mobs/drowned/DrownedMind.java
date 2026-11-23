@@ -66,6 +66,7 @@ public final class DrownedMind {
 	private @Nullable BlockPos avoid;
 	private @Nullable LivingEntity victim;
 	private @Nullable Vec3 deepTarget;
+	private long nextDeepSearch;
 	private boolean stared;
 	/** Something looks roughly its way (UNSEEN_HALF_ANGLE): it doesn't move spots while seen. */
 	private boolean seen;
@@ -527,13 +528,16 @@ public final class DrownedMind {
 			recruit(drowned, level, held);
 		}
 		// Toward the deepest water nearby, backwards (facing away from it, toward the victim and the shore).
-		if (deepTarget == null || horizontalDistance(drowned.position(), deepTarget) < DrownedTuning.DRAG_ARRIVE) {
+		if ((deepTarget == null || horizontalDistance(drowned.position(), deepTarget) < DrownedTuning.DRAG_ARRIVE)
+				&& level.getGameTime() >= nextDeepSearch) {
 			Vec3 next = findDeeper(level, drowned);
 			if (next != null) {
 				deepTarget = next;
-			} else if (deepTarget == null && !drowned.isInWater() && spot != null) {
-				// Up the bank with no water column found from here: back to its spot first.
-				deepTarget = spot.centre();
+			} else {
+				nextDeepSearch = level.getGameTime() + DrownedTuning.DEEP_SEARCH_RETRY_TICKS;
+				if (deepTarget == null && !drowned.isInWater() && spot != null) {
+					deepTarget = spot.centre(); // up the bank: back to its spot first
+				}
 			}
 		}
 		Vec3 v = drowned.getDeltaMovement();

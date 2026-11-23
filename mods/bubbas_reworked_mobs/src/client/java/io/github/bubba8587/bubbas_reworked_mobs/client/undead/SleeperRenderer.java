@@ -134,10 +134,4 @@ public class SleeperRenderer implements BlockEntityRenderer<SleeperBlockEntity, 
 		variants.get(state.variant).submit(state.pose, state.humanoid, poseStack, collector, state.lightCoords, state.breakProgress);
 		poseStack.popPose();
 	}
-
-	/** Lying sleepers overhang their block; don't drop them while their own block is just off screen. */
-	@Override
-	public boolean shouldRenderOffScreen() {
-		return true;
-	}
 }

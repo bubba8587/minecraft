@@ -47,7 +47,7 @@ import win.demistorm.stormiespiders.common.entity.mob.Orientation;
  */
 public class NestSpider extends Spider implements Gripper {
 	public enum Phase {
-		SLEEPING, DROPPING, REELING, HOLDING, DANGLING,
+		SLEEPING, DROPPING, REELING, DANGLING,
 		/** Its victim is cocooned below; it has backed off into the nest and waits. */
 		WAITING,
 		/** Back down at the cocoon, feeding. */
@@ -163,9 +163,14 @@ public class NestSpider extends Spider implements Gripper {
 			resetFallDistance();
 		}
 		switch (phase()) {
-			case SLEEPING -> setDeltaMovement(Vec3.ZERO);
+			case SLEEPING -> {
+				setDeltaMovement(Vec3.ZERO);
+				if (isVehicle()) {
+					ejectPassengers(); // a victim left riding it by a reload
+				}
+			}
 			case DROPPING -> tickDrop(level);
-			case REELING, HOLDING -> tickHold(level);
+			case REELING -> tickHold(level);
 			case WAITING, FEEDING -> tickCocoon(level);
 			case DANGLING -> {
 				setDeltaMovement(Vec3.ZERO);
@@ -259,12 +264,9 @@ public class NestSpider extends Spider implements Gripper {
 				setDeltaMovement(0.0, 0.0, 0.0);
 				setPos(anchor.x, Math.min(top, getY() + SpiderTuning.REEL_SPEED), anchor.z);
 			} else {
-				setPhase(Phase.HOLDING);
 				wrap(level, held);
 				return;
 			}
-		} else {
-			setDeltaMovement(Vec3.ZERO);
 		}
 		if (random.nextFloat() < Mth.lerp(tight, SpiderTuning.BITE_CHANCE_PER_TICK, SpiderTuning.BITE_CHANCE_PER_TICK_FULL)) {
 			if (held.hurtServer(level, damageSources().mobAttack(this), Mth.lerp(tight, SpiderTuning.BITE_DAMAGE, SpiderTuning.BITE_DAMAGE_FULL))) {
@@ -278,11 +280,6 @@ public class NestSpider extends Spider implements Gripper {
 
 	public @Nullable SilkCocoon cocoon() {
 		return cocoon;
-	}
-
-	/** For tests: ticks left before it comes back to feed. */
-	public void setWaitTicks(int ticks) {
-		waitTicks = ticks;
 	}
 
 	/** Up in the nest: it wraps its victim where it hangs, then backs off and waits. */
@@ -309,8 +306,8 @@ public class NestSpider extends Spider implements Gripper {
 		if (wrapped == null) {
 			cocoon = null;
 			// Its meal got away (cut free) or is gone: an ordinary spider again if anyone's near, else back to sleep.
-			Player near = level.getNearestPlayer(this, 8.0);
-			if (near != null && NestSpider.grabbable(near)) {
+			Player near = level.getNearestPlayer(getX(), getY(), getZ(), 8.0, e -> e instanceof LivingEntity living && grabbable(living));
+			if (near != null) {
 				breakThread(level);
 			} else {
 				sleep();

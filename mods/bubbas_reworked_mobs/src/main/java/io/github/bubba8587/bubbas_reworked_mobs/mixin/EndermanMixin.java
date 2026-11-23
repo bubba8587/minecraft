@@ -122,7 +122,7 @@ abstract class EndermanMixin extends Monster implements EndermanAccess {
 	@Inject(method = "addAdditionalSaveData", at = @At("TAIL"))
 	private void brm$saveVanilla(ValueOutput output, CallbackInfo ci) {
 		if (brm$vanilla) {
-			output.putBoolean("bubbas_reworked_mobs:vanilla", true);
+			output.putBoolean(io.github.bubba8587.bubbas_reworked_mobs.BubbasReworkedMobs.VANILLA_KEY, true);
 		}
 		if (brm$home != null) {
 			output.putLong("bubbas_reworked_mobs:cairn_home", brm$home.asLong());
@@ -131,7 +131,7 @@ abstract class EndermanMixin extends Monster implements EndermanAccess {
 
 	@Inject(method = "readAdditionalSaveData", at = @At("TAIL"))
 	private void brm$loadVanilla(ValueInput input, CallbackInfo ci) {
-		if (input.getBooleanOr("bubbas_reworked_mobs:vanilla", false)) {
+		if (input.getBooleanOr(io.github.bubba8587.bubbas_reworked_mobs.BubbasReworkedMobs.VANILLA_KEY, false)) {
 			brm$makeVanilla();
 		}
 		input.getLong("bubbas_reworked_mobs:cairn_home").ifPresent(l -> brm$home = BlockPos.of(l));

@@ -208,8 +208,8 @@ public final class EndermanJobGoal extends Goal {
 			case VIGIL, WAIT -> {
 				Vec3 at = Vec3.atBottomCenterOf(target);
 				CairnSite site = CairnSites.covering(level, vigilCentre);
-				if (site == null || (mind.job() == EndermanMind.Job.VIGIL && !site.complete(level))) {
-					// Its cairn was damaged or is gone: look for work instead.
+				if (site == null || (mind.job() == EndermanMind.Job.VIGIL && (level.getGameTime() - mind.started()) % 20 == 0 && !site.complete(level))) {
+					// cairn damaged or gone: back to work
 					mind.clear();
 					return;
 				}

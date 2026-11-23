@@ -50,8 +50,6 @@ abstract class DrownedMixin extends Zombie implements DrownedAccess {
 	private @Nullable DrownedMind brm$mind;
 	@Unique
 	private boolean brm$vanilla;
-	@Unique
-	private static final String BRM_VANILLA_KEY = "bubbas_reworked_mobs:vanilla";
 
 	protected DrownedMixin(EntityType<? extends Zombie> type, Level level) {
 		super(type, level);
@@ -100,7 +98,7 @@ abstract class DrownedMixin extends Zombie implements DrownedAccess {
 	protected void addAdditionalSaveData(net.minecraft.world.level.storage.ValueOutput output) {
 		super.addAdditionalSaveData(output);
 		if (brm$vanilla) {
-			output.putBoolean(BRM_VANILLA_KEY, true);
+			output.putBoolean(io.github.bubba8587.bubbas_reworked_mobs.BubbasReworkedMobs.VANILLA_KEY, true);
 		}
 	}
 
@@ -108,7 +106,7 @@ abstract class DrownedMixin extends Zombie implements DrownedAccess {
 	protected void readAdditionalSaveData(net.minecraft.world.level.storage.ValueInput input) {
 		super.readAdditionalSaveData(input);
 		// The saved attributes are already vanilla's; only the flag is needed.
-		brm$vanilla = input.getBooleanOr(BRM_VANILLA_KEY, false);
+		brm$vanilla = input.getBooleanOr(io.github.bubba8587.bubbas_reworked_mobs.BubbasReworkedMobs.VANILLA_KEY, false);
 	}
 
 	@Inject(method = "createAttributes", at = @At("RETURN"))

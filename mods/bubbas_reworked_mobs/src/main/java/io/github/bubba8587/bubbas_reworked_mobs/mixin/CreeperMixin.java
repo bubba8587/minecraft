@@ -101,13 +101,13 @@ abstract class CreeperMixin extends Monster implements CreeperAccess {
 	@Inject(method = "addAdditionalSaveData", at = @At("TAIL"))
 	private void brm$saveVanilla(ValueOutput output, CallbackInfo ci) {
 		if (brm$vanilla) {
-			output.putBoolean("bubbas_reworked_mobs:vanilla", true);
+			output.putBoolean(io.github.bubba8587.bubbas_reworked_mobs.BubbasReworkedMobs.VANILLA_KEY, true);
 		}
 	}
 
 	@Inject(method = "readAdditionalSaveData", at = @At("TAIL"))
 	private void brm$loadVanilla(ValueInput input, CallbackInfo ci) {
-		if (input.getBooleanOr("bubbas_reworked_mobs:vanilla", false)) {
+		if (input.getBooleanOr(io.github.bubba8587.bubbas_reworked_mobs.BubbasReworkedMobs.VANILLA_KEY, false)) {
 			brm$makeVanilla();
 		}
 	}

@@ -37,4 +37,7 @@ public final class BoggedTuning {
 
 	private BoggedTuning() {
 	}
+
+	/** Ticks between a lurking bogged's checks of who is looking. */
+	public static final int WATCH_INTERVAL = 4;
 }

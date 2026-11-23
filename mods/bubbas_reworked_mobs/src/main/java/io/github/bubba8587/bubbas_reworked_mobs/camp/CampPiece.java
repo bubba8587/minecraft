@@ -72,8 +72,8 @@ public class CampPiece extends StructurePiece {
 	}
 
 	static BoundingBox box(BlockPos centre, CampTuning.Size size) {
-		// The clearing, and the underground room's stair tunnel, which reaches 8 past the room's half-width.
-		int r = Math.max(size.radius + 1, (size == CampTuning.Size.LARGE ? 3 : 2) + 8);
+		// clearing plus edge outcrops (up to 3 past the radius), or the stair tunnel
+		int r = Math.max(size.radius + 3, (size == CampTuning.Size.LARGE ? 3 : 2) + 8);
 		return new BoundingBox(centre.getX() - r, centre.getY() - 6, centre.getZ() - r, centre.getX() + r, centre.getY() + 18, centre.getZ() + r);
 	}
 

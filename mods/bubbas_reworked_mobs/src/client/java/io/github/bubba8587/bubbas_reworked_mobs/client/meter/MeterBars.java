@@ -17,20 +17,16 @@ import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
+import io.github.bubba8587.bubbas_reworked_mobs.grip.Gripper;
 import net.minecraft.world.entity.monster.zombie.Drowned;
 
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
 
-/**
- * Draws the visible meters ({@link Meters}, game rule {@code show_meters}) in vanilla's own bar style: the boss bar's
- * blue (drowned grip) and red (creeper startle) sprites with the 20-notch overlay, the same 182 x 5 notched bar as the
- * experience bar, no new textures. On the screen of a player a drowned holds, the bar sits under the crosshair; in the
- * world it floats over the mob as a small camera-facing bar, over the victim's head when a drowned holds someone. The
- * values come from the server; nothing is computed here.
- */
+/** Meter bars: on the held player's HUD and over mobs in the world (specs/drowned.md, specs/creepers.md). */
 public final class MeterBars {
 	/** Entity id to (kind << 8 | value). */
 	private static final Int2IntOpenHashMap METERS = new Int2IntOpenHashMap();
@@ -73,6 +69,7 @@ public final class MeterBars {
 		});
 		ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> METERS.clear());
 		ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> METERS.clear());
+		ClientEntityEvents.ENTITY_UNLOAD.register((entity, level) -> METERS.remove(entity.getId()));
 		HudElementRegistry.attachElementAfter(VanillaHudElements.CROSSHAIR, BubbasReworkedMobs.id("grip_meter"), MeterBars::extractHud);
 	}
 
@@ -141,13 +138,14 @@ public final class MeterBars {
 		buffer.addVertex(pose, x, y, z).setColor(-1).setUv(u, v).setLight(FULL_BRIGHT);
 	}
 
-	/** The held player's grip bar, under the crosshair: a boss bar in blue, notched. */
+	/** The held player's grip bar, under the crosshair. */
 	private static void extractHud(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
 		Minecraft mc = Minecraft.getInstance();
-		if (mc.player == null || !(mc.player.getVehicle() instanceof Drowned drowned)) {
+		Entity holder = mc.player == null ? null : mc.player.getVehicle();
+		if (!(holder instanceof Drowned || holder instanceof Gripper)) {
 			return;
 		}
-		int packed = METERS.getOrDefault(drowned.getId(), 0);
+		int packed = METERS.getOrDefault(holder.getId(), 0);
 		int value = packed & 0xFF;
 		if (value == 0) {
 			return;

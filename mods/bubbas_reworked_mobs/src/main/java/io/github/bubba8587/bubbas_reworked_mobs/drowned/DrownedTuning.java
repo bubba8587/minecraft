@@ -204,4 +204,7 @@ public final class DrownedTuning {
 
 	private DrownedTuning() {
 	}
+
+	/** Ticks before a dragging drowned looks again for deeper water after finding none. */
+	public static final int DEEP_SEARCH_RETRY_TICKS = 10;
 }
