@@ -117,7 +117,26 @@ public class CampPiece extends StructurePiece {
 	private record Spot(int x, int z, int size, long seed) {
 	}
 
+	/** One piece's ground cells (inclusive, columns), for the footprint plan and tests. */
+	public record Footprint(String what, int minX, int minZ, int maxX, int maxZ) {
+		public boolean clearOf(Footprint other, int margin) {
+			return minX > other.maxX + margin || other.minX > maxX + margin || minZ > other.maxZ + margin || other.minZ > maxZ + margin;
+		}
+
+		static Footprint around(String what, int x, int z, int reach) {
+			return new Footprint(what, x - reach, z - reach, x + reach, z + reach);
+		}
+	}
+
+	/** Every planned piece's footprint: the fire, the stair tunnel, towers, lean-tos, outcrops, pikes and banners. */
+	public List<Footprint> footprints() {
+		return List.copyOf(plan.footprints);
+	}
+
 	private static final class Plan {
+		static final int MARGIN = 1;
+		static final int TRIES = 16;
+		final List<Footprint> footprints = new ArrayList<>();
 		final List<Tower> towers = new ArrayList<>();
 		final List<Spot> banners = new ArrayList<>();
 		final List<Spot> outcrops = new ArrayList<>();
@@ -136,50 +155,10 @@ public class CampPiece extends StructurePiece {
 		Plan(long seed, BlockPos centre, CampTuning.Size size) {
 			RandomSource random = RandomSource.create(net.minecraft.world.level.levelgen.RandomSupport.mixStafford13(seed));
 			int r = size.radius;
-			double towerAngle = random.nextDouble() * Math.PI * 2.0;
-			int towerCount = random.nextInt(size.maxTowers + 1);
-			for (int i = 0; i < towerCount; i++) {
-				double a = towerAngle + i * (Math.PI * 2.0 / towerCount) + (random.nextDouble() - 0.5) * 0.8;
-				int d = r - 2;
-				towers.add(new Tower(centre.getX() + (int) Math.round(Math.cos(a) * d), centre.getZ() + (int) Math.round(Math.sin(a) * d),
-						5 + random.nextInt(3), Direction.Plane.HORIZONTAL.getRandomDirection(random), true, random.nextInt(4)));
-			}
-			// banners: the first flies from the first tower when there is one
-			for (int i = towers.isEmpty() ? 0 : 1; i < size.banners; i++) {
-				double a = random.nextDouble() * Math.PI * 2.0;
-				int d = 3 + random.nextInt(Math.max(1, r - 4));
-				banners.add(new Spot(centre.getX() + (int) Math.round(Math.cos(a) * d), centre.getZ() + (int) Math.round(Math.sin(a) * d), 0,
-						random.nextLong()));
-			}
-			int outcropCount = random.nextInt(size.outcrops + 2);
-			for (int i = 0; i < outcropCount; i++) {
-				double a = random.nextDouble() * Math.PI * 2.0;
-				int d = r - 2 + random.nextInt(2);
-				outcrops.add(new Spot(centre.getX() + (int) Math.round(Math.cos(a) * d), centre.getZ() + (int) Math.round(Math.sin(a) * d),
-						1 + random.nextInt(2), random.nextLong()));
-			}
-			int pikeCount = random.nextInt(size.outcrops + 3);
-			for (int i = 0; i < pikeCount; i++) {
-				double a = random.nextDouble() * Math.PI * 2.0;
-				int d = r - 1;
-				pikes.add(new Spot(centre.getX() + (int) Math.round(Math.cos(a) * d), centre.getZ() + (int) Math.round(Math.sin(a) * d), 0, random.nextLong()));
-			}
-			int leanToCount = 1 + random.nextInt(size == CampTuning.Size.SMALL ? 1 : 2);
-			double la = random.nextDouble() * Math.PI * 2.0;
-			for (int i = 0; i < leanToCount; i++) {
-				double a = la + i * Math.PI * (0.7 + random.nextDouble() * 0.6);
-				leanTos.add(new Spot(centre.getX() + (int) Math.round(Math.cos(a) * (r - 3)), centre.getZ() + (int) Math.round(Math.sin(a) * (r - 3)), 0,
-						random.nextLong()));
-			}
-			// the room: size, shape and offset; its stairs come up on any side but the first tower's
-			Direction towerSide = towers.isEmpty() ? null : Direction.getApproximateNearest(towers.getFirst().x - centre.getX(), 0.0,
-					towers.getFirst().z - centre.getZ());
-			Direction pick;
-			do {
-				pick = Direction.Plane.HORIZONTAL.getRandomDirection(random);
-			} while (pick == towerSide);
-			stairs = pick;
-			// toward the stairs the room keeps the old reach, so the tunnel still surfaces inside the clearing
+			int cx = centre.getX();
+			int cz = centre.getZ();
+			// the room and its stairs first: size, shape, offset, stair side
+			stairs = Direction.Plane.HORIZONTAL.getRandomDirection(random);
 			int max = size.maxRoomHalf;
 			int reach = size == CampTuning.Size.LARGE ? 3 : 2;
 			boolean alongX = stairs.getAxis() == Direction.Axis.X;
@@ -201,7 +180,132 @@ public class CampPiece extends StructurePiece {
 			chestSide = Direction.Plane.HORIZONTAL.getRandomDirection(random);
 			spawnAngle = random.nextDouble() * Math.PI * 2.0;
 			bannerRotation = random.nextInt(16);
+			// reserved first: the fire with its seats and chest, and the stair tunnel where it opens to the surface, with its mouth and walls
+			footprints.add(Footprint.around("fire", cx, cz, 2));
+			Direction side = stairsClockwise ? stairs.getClockWise() : stairs.getCounterClockWise();
+			int h = alongX ? hx : hz;
+			int fx = cx + dx;
+			int fz = cz + dz;
+			int ax = fx + stairs.getStepX() * (h + 4) - side.getStepX();
+			int az = fz + stairs.getStepZ() * (h + 4) - side.getStepZ();
+			int bx = fx + stairs.getStepX() * (h + 10) + side.getStepX() * 2;
+			int bz = fz + stairs.getStepZ() * (h + 10) + side.getStepZ() * 2;
+			footprints.add(new Footprint("stairs", Math.min(ax, bx), Math.min(az, bz), Math.max(ax, bx), Math.max(az, bz)));
+			// then each piece on free cells only, its spot re-rolled until one fits, or dropped
+			int leanToCount = 1 + random.nextInt(size == CampTuning.Size.SMALL ? 1 : 2);
+			double la = random.nextDouble() * Math.PI * 2.0;
+			for (int i = 0; i < leanToCount; i++) {
+				double base = la + i * Math.PI * (0.7 + random.nextDouble() * 0.6);
+				long pieceSeed = random.nextLong();
+				for (int t = 0; t < TRIES; t++) {
+					double a = t == 0 ? base : random.nextDouble() * Math.PI * 2.0;
+					int d = r - 3 + (t & 1);
+					int x = cx + (int) Math.round(Math.cos(a) * d);
+					int z = cz + (int) Math.round(Math.sin(a) * d);
+					Spot spot = new Spot(x, z, 0, pieceSeed);
+					if (claim(leanToFootprint(spot, centre))) {
+						leanTos.add(spot);
+						break;
+					}
+				}
+			}
+			double towerAngle = random.nextDouble() * Math.PI * 2.0;
+			int towerCount = random.nextInt(size.maxTowers + 1);
+			for (int i = 0; i < towerCount; i++) {
+				double base = towerAngle + i * (Math.PI * 2.0 / towerCount);
+				int height = 5 + random.nextInt(3);
+				Direction ladder = Direction.Plane.HORIZONTAL.getRandomDirection(random);
+				int corner = random.nextInt(4);
+				for (int t = 0; t < TRIES; t++) {
+					double a = t == 0 ? base + (random.nextDouble() - 0.5) * 0.8 : random.nextDouble() * Math.PI * 2.0;
+					int x = cx + (int) Math.round(Math.cos(a) * (r - 2));
+					int z = cz + (int) Math.round(Math.sin(a) * (r - 2));
+					if (claim(new Footprint("tower", x - 2, z - 2, x + 3, z + 3))) {
+						towers.add(new Tower(x, z, height, ladder, true, corner));
+						break;
+					}
+				}
+			}
+			int outcropCount = random.nextInt(size.outcrops + 2);
+			for (int i = 0; i < outcropCount; i++) {
+				int m = 1 + random.nextInt(2);
+				long pieceSeed = random.nextLong();
+				for (int t = 0; t < TRIES; t++) {
+					double a = random.nextDouble() * Math.PI * 2.0;
+					int d = r - 2 + random.nextInt(2);
+					int x = cx + (int) Math.round(Math.cos(a) * d);
+					int z = cz + (int) Math.round(Math.sin(a) * d);
+					if (claim(Footprint.around("outcrop", x, z, m + 1))) {
+						outcrops.add(new Spot(x, z, m, pieceSeed));
+						break;
+					}
+				}
+			}
+			int pikeCount = random.nextInt(size.outcrops + 3);
+			for (int i = 0; i < pikeCount; i++) {
+				long pieceSeed = random.nextLong();
+				for (int t = 0; t < TRIES; t++) {
+					double a = random.nextDouble() * Math.PI * 2.0;
+					int x = cx + (int) Math.round(Math.cos(a) * (r - 1));
+					int z = cz + (int) Math.round(Math.sin(a) * (r - 1));
+					if (claim(Footprint.around("pike", x, z, 0))) {
+						pikes.add(new Spot(x, z, 0, pieceSeed));
+						break;
+					}
+				}
+			}
+			// banners: the first flies from the first tower when there is one
+			for (int i = towers.isEmpty() ? 0 : 1; i < size.banners; i++) {
+				long pieceSeed = random.nextLong();
+				for (int t = 0; t < TRIES; t++) {
+					double a = random.nextDouble() * Math.PI * 2.0;
+					int d = 3 + random.nextInt(Math.max(1, r - 4));
+					int x = cx + (int) Math.round(Math.cos(a) * d);
+					int z = cz + (int) Math.round(Math.sin(a) * d);
+					if (claim(Footprint.around("banner", x, z, 0))) {
+						banners.add(new Spot(x, z, 0, pieceSeed));
+						break;
+					}
+				}
+			}
 		}
+
+		/** Adds the footprint when it keeps the margin from every planned one (a lean-to may open right onto the fire's seats). */
+		private boolean claim(Footprint footprint) {
+			for (Footprint other : footprints) {
+				int margin = footprint.what().equals("lean-to") && other.what().equals("fire") ? 0 : MARGIN;
+				if (!footprint.clearOf(other, margin)) {
+					return false;
+				}
+			}
+			footprints.add(footprint);
+			return true;
+		}
+	}
+
+	/** A lean-to's cells. */
+	private static Footprint leanToFootprint(Spot spot, BlockPos centre) {
+		Direction facing = leanToFacing(spot, centre);
+		Direction along = facing.getClockWise();
+		int minX = Integer.MAX_VALUE;
+		int minZ = Integer.MAX_VALUE;
+		int maxX = Integer.MIN_VALUE;
+		int maxZ = Integer.MIN_VALUE;
+		for (int k = -1; k <= 1; k++) {
+			for (int row = 0; row <= 2; row++) {
+				int x = spot.x + along.getStepX() * k - facing.getStepX() * row;
+				int z = spot.z + along.getStepZ() * k - facing.getStepZ() * row;
+				minX = Math.min(minX, x);
+				minZ = Math.min(minZ, z);
+				maxX = Math.max(maxX, x);
+				maxZ = Math.max(maxZ, z);
+			}
+		}
+		return new Footprint("lean-to", minX, minZ, maxX, maxZ);
+	}
+
+	private static Direction leanToFacing(Spot spot, BlockPos centre) {
+		return Direction.getApproximateNearest(centre.getX() - spot.x, 0.0, centre.getZ() - spot.z);
 	}
 
 	// --- building ---------------------------------------------------------------------------------
@@ -517,7 +621,7 @@ public class CampPiece extends StructurePiece {
 
 	/** Which way a lean-to opens: toward the fire. */
 	private Direction leanToFacing(Spot spot) {
-		return Direction.getApproximateNearest(centre.getX() - spot.x, 0.0, centre.getZ() - spot.z);
+		return leanToFacing(spot, centre);
 	}
 
 	/**
@@ -563,6 +667,11 @@ public class CampPiece extends StructurePiece {
 	/** The room's interior half-width toward the stairs. */
 	private int roomHalf() {
 		return plan.stairs.getAxis() == Direction.Axis.X ? plan.roomHalfX : plan.roomHalfZ;
+	}
+
+	/** The middle of the room's floor-level air (screenshots, tests). */
+	public BlockPos roomSpot() {
+		return roomCentre().atY(roomFloor() + 1);
 	}
 
 	private BlockPos roomCentre() {

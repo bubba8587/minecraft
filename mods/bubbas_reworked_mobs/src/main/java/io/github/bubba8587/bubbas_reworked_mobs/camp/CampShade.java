@@ -46,7 +46,8 @@ public final class CampShade {
 	}
 
 	private static boolean open(ServerLevel level, BlockPos pos) {
-		return level.getBlockState(pos).getCollisionShape(level, pos).isEmpty();
+		BlockState state = level.getBlockState(pos);
+		return state.is(net.minecraft.tags.BlockTags.WOOL_CARPETS) || state.getCollisionShape(level, pos).isEmpty();
 	}
 
 	/**

@@ -72,6 +72,21 @@ public class CampsClientGameTest implements FabricClientGameTest {
 				tp(context, server, c.getX() + 9.5, c.getY() + 3.5, c.getZ() - 9.5, 45, 12);
 				context.takeScreenshot("camp-" + kinds[i].id() + "-close");
 			}
+			// More seeds of each kind, a size each, from above.
+			CampTuning.Size[] all = CampTuning.Size.values();
+			for (int i = 0; i < kinds.length; i++) {
+				for (int j = 0; j < 3; j++) {
+					BlockPos at = base.offset(i * 40, 0, 50 + j * 40);
+					int k = i;
+					int n = j;
+					tp(context, server, at.getX() + 0.5, at.getY() + 30, at.getZ() - 20.5, 0, 50);
+					sp.getConnection().waitForChunksRender();
+					CampPiece extra = server.computeOnServer(s -> CampCommand.build(s.overworld(), at, kinds[k], all[n], 500L + k * 10 + n));
+					BlockPos ec = extra.centre();
+					tp(context, server, ec.getX() + 0.5, ec.getY() + 26, ec.getZ() - 16.5, 0, 58);
+					context.takeScreenshot("camp-" + kinds[i].id() + "-seed" + j + "-" + all[j].id());
+				}
+			}
 			// The skeleton camp's roster: a creative (not spectating) player nearby makes it appear.
 			BlockPos c = centres.getFirst();
 			server.runCommand("gamemode creative @p");
@@ -105,9 +120,10 @@ public class CampsClientGameTest implements FabricClientGameTest {
 			sp.getConnection().waitForChunksRender();
 			TestServerContext server = sp.getServer();
 			setup(server);
-			List<BlockPos> found = server.computeOnServer(s -> survey(s.overworld()));
+			List<CampPiece> found = server.computeOnServer(s -> survey(s.overworld()));
 			for (int i = 0; i < Math.min(1, found.size()); i++) {
-				BlockPos c = found.get(i);
+				CampPiece piece = found.get(i);
+				BlockPos c = piece.centre();
 				tp(context, server, c.getX() + 0.5, c.getY() + 40, c.getZ() - 20.5, 0, 50);
 				sp.getConnection().waitForChunksRender();
 				tp(context, server, c.getX() + 0.5, c.getY() + 22, c.getZ() - 20.5, 0, 45);
@@ -124,7 +140,7 @@ public class CampsClientGameTest implements FabricClientGameTest {
 						zombie.snapTo(sx + 0.5, level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, sx, sz), sz + 0.5, 0, 0);
 						zombie.setOnGround(true);
 						level.addFreshEntity(zombie);
-						var path = zombie.getNavigation().createPath(c.below(4), 1); // a bone block may sit on the exact cell
+						var path = zombie.getNavigation().createPath(piece.roomSpot(), 2); // a bone block may sit on the exact cell
 						zombie.discard();
 						return path == null ? "no path" : path.canReach() ? "reachable" : "ends at " + path.getEndNode();
 					});
@@ -134,9 +150,10 @@ public class CampsClientGameTest implements FabricClientGameTest {
 					}
 					// Inside its underground room (night vision: it's dark).
 					server.runCommand("effect give @p minecraft:night_vision infinite 0 true");
-					tp(context, server, c.getX() + 0.5, c.getY() - 3.4, c.getZ() + 0.5, 0, 15);
+					BlockPos room = piece.roomSpot();
+					tp(context, server, room.getX() + 0.5, room.getY() + 0.6, room.getZ() + 0.5, 0, 15);
 					context.takeScreenshot("camp-room");
-					tp(context, server, c.getX() + 0.5, c.getY() - 3.4, c.getZ() + 0.5, 180, 15);
+					tp(context, server, room.getX() + 0.5, room.getY() + 0.6, room.getZ() + 0.5, 180, 15);
 					context.takeScreenshot("camp-room-back");
 					server.runCommand("effect clear @p");
 				}
@@ -148,7 +165,7 @@ public class CampsClientGameTest implements FabricClientGameTest {
 	 * Counts the camps whose start chunk is within 2048 blocks of spawn (structure starts only: cheap), prints the
 	 * density and nearest distances, and returns the nearest few camps of different kinds (centres).
 	 */
-	private static List<BlockPos> survey(ServerLevel level) {
+	private static List<CampPiece> survey(ServerLevel level) {
 		var structure = level.registryAccess().lookupOrThrow(Registries.STRUCTURE).getValue(Camps.CAMP_KEY);
 		var set = level.registryAccess().lookupOrThrow(Registries.STRUCTURE_SET).getValue(
 				net.minecraft.resources.ResourceKey.create(Registries.STRUCTURE_SET, io.github.bubba8587.bubbas_reworked_mobs.BubbasReworkedMobs.id("monster_camps")));
@@ -157,7 +174,7 @@ public class CampsClientGameTest implements FabricClientGameTest {
 		BlockPos spawn = level.getRespawnData().pos();
 		int half = 2048;
 		int cell = placement.spacing() * 16;
-		Map<CampKind, List<BlockPos>> byKind = new EnumMap<>(CampKind.class);
+		Map<CampKind, List<CampPiece>> byKind = new EnumMap<>(CampKind.class);
 		int cells = 0;
 		for (int gx = Math.floorDiv(spawn.getX() - half, cell); gx <= Math.floorDiv(spawn.getX() + half, cell); gx++) {
 			for (int gz = Math.floorDiv(spawn.getZ() - half, cell); gz <= Math.floorDiv(spawn.getZ() + half, cell); gz++) {
@@ -166,7 +183,7 @@ public class CampsClientGameTest implements FabricClientGameTest {
 				var access = level.getChunk(chunk.x(), chunk.z(), ChunkStatus.STRUCTURE_STARTS, true);
 				StructureStart start = access == null ? null : access.getStartForStructure(structure);
 				if (start != null && start.isValid() && start.getPieces().getFirst() instanceof CampPiece piece) {
-					byKind.computeIfAbsent(piece.kind(), k -> new ArrayList<>()).add(piece.centre());
+					byKind.computeIfAbsent(piece.kind(), k -> new ArrayList<>()).add(piece);
 				}
 			}
 		}
@@ -176,12 +193,13 @@ public class CampsClientGameTest implements FabricClientGameTest {
 				.formatted(cells, area, total, total / area));
 		// Typical distance to the nearest of each kind, from a grid of points.
 		for (CampKind kind : CampKind.values()) {
-			List<BlockPos> camps = byKind.getOrDefault(kind, List.of());
+			List<CampPiece> camps = byKind.getOrDefault(kind, List.of());
 			List<Double> nearest = new ArrayList<>();
 			for (int px = -1536; px <= 1536; px += 256) {
 				for (int pz = -1536; pz <= 1536; pz += 256) {
 					double best = Double.MAX_VALUE;
-					for (BlockPos c : camps) {
+					for (CampPiece p : camps) {
+						BlockPos c = p.centre();
 						best = Math.min(best, Math.hypot(c.getX() - (spawn.getX() + px), c.getZ() - (spawn.getZ() + pz)));
 					}
 					nearest.add(best);
@@ -194,12 +212,12 @@ public class CampsClientGameTest implements FabricClientGameTest {
 		}
 		System.out.println(report);
 		// The nearest camp of each kind, nearest first.
-		List<BlockPos> picks = new ArrayList<>();
+		List<CampPiece> picks = new ArrayList<>();
 		for (CampKind kind : CampKind.values()) {
-			byKind.getOrDefault(kind, List.of()).stream().min((a, b) -> Double.compare(a.distSqr(spawn), b.distSqr(spawn))).ifPresent(picks::add);
+			byKind.getOrDefault(kind, List.of()).stream().min((a, b) -> Double.compare(a.centre().distSqr(spawn), b.centre().distSqr(spawn))).ifPresent(picks::add);
 		}
-		picks.sort((a, b) -> Double.compare(a.distSqr(spawn), b.distSqr(spawn)));
-		System.out.println("[camps] nearest of each kind: " + picks);
+		picks.sort((a, b) -> Double.compare(a.centre().distSqr(spawn), b.centre().distSqr(spawn)));
+		System.out.println("[camps] nearest of each kind: " + picks.stream().map(CampPiece::centre).toList());
 		return picks;
 	}
 
