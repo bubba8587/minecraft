@@ -10,7 +10,7 @@
 > | **Tool** | Pickaxe |
 > | **Stacks** | 16 |
 
-A **gravestone** is a stone headstone on a small plinth. It works exactly like a standing sign: the player can write on its front and back, and the edit screen opens right after you place it. Dyes colour the text, glow ink makes it glow, and honeycomb waxes it so it can't be edited. It can face any of 16 directions. You can't walk through it.
+A **gravestone** is a stone headstone on a small plinth. It works exactly like a standing sign: the player can write on its front and back, and the edit screen opens right after you place it. The edit screen shows the gravestone's own face, with your text in the same place and size as it will appear on the stone. Dyes colour the text, glow ink makes it glow, and honeycomb waxes it so it can't be edited. It can face any of 16 directions. You can't walk through it.
 
 ## Obtaining
 

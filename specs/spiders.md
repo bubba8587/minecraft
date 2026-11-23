@@ -57,6 +57,7 @@ Owner's design (2026-11-22). Ordinary spiders stay **mostly vanilla**. What's ne
 
 - Nests generate only at the tops of tall cave rooms, made of cobwebs.
 - A player walking under a nest makes a sleeper drop on its thread. A miss turns it into a normal spider. A hit latches and reels the player up into the nest.
+- Spun webs are hit only at their strands (`GiantSpiderGameTest.webHitsOnlyTheStrands`, also core `spunWebHitsOnlyTheStrands`): a crosshair pick through a gap, from inside or outside the span, hits nothing; aiming at a strand hits the web there; a pig behind a gap gets hit; an arrow through a gap misses and one along a strand's line hits.
 - Giant spiders spawn only in old-growth taiga, at the larger scale. They spin webs between trees as they roam, snatch nearby livestock into their webs before going for players, and summon small, weak spiders when fought.
 
 ## Step 1 as built: cave nests (2026-11-22)
@@ -277,3 +278,11 @@ Player-facing: `player-docs/Projects/Bubba's Reworked Mobs/Spiders.md`. Numbers 
 
 - While a giant spider waits to come back and feed, it no longer sits still. Every `WAIT_PACE_TICKS` (50) it creeps to a new spot up to `WAIT_PACE_RADIUS` (2 blocks) from where it backed off to: along the overhang when perched under one, up the trunk otherwise. It only moves where its body fits (`noCollision`). It still feeds on time.
 - Not yet: true wandering off the perch (vanilla stroll plus `restrictTo`), and hauling the catch to the centre of its own web (BACKLOG item 6).
+
+## Strand hitboxes (2026-11-23)
+
+- The `SpunWeb` entity box still spans all its strands, but only for culling and entity searches (`getEntities`). Hits never use the box.
+- Hit test: `SpunWeb.strandClip(from, to)` finds the closest points between the ray segment and each strand segment; a hit within `SpiderTuning.WEB_PICK_RADIUS` (0.3), hit point where the ray enters that radius.
+- `mixin/ProjectileUtilWebMixin` hooks vanilla's three entity picks in `ProjectileUtil`: the view pick (`getEntityHitResult(Entity, ...)`, used by the client crosshair in `LocalPlayer.pick`: melee, shears, use); the move pick (`getEntityHitResult(Level, ...)`: arrows, throwables, fireballs, rockets); and `getManyEntityHitResult` (attack-range weapons). For a web the box clip is replaced by the strand clip, and both the pick-from-inside-the-box check and the margin hit are off.
+- Not multipart: 26.3's parts are specific to the ender dragon (`EnderDragonPart`, the level's dragon-part list), not a general API, and up to 16 strand parts per web would add entities.
+- Open (cosmetic): F3+B debug hitboxes still draw the whole span box.

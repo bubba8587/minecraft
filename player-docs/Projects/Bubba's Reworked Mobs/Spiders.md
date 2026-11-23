@@ -51,6 +51,8 @@ Giant spiders roam **old-growth taiga**. They're nearly twice the size of a norm
 
 The webs round nests and between trees are tangles of thick strands. Walking through them slows you like a cobweb (spiders aren't slowed). Three hits bring a strand down, shears cut it for string, and fire burns it away. Old webs grow ragged.
 
+Only the strands themselves get in the way: you can hit, mine and use blocks and mobs through the gaps, from inside or outside a web. Swings, shears, arrows and other projectiles only hit a web when they pass close to a strand, so shears cut and fire arrows burn the web you actually aim at.
+
 ## History
 
 | Version | Changes |

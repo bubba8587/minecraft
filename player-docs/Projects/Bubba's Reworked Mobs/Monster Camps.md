@@ -30,6 +30,8 @@ There are three sizes:
 
 The camp's monsters appear when you come within about 48 blocks. Archers man the towers and the rest stand round the fire. They stay at their camp and never despawn.
 
+No two parts of a camp are built over each other: towers, rock piles, pikes, lean-tos and banners always keep clear of the stair tunnel, the fire and each other. A part with no room is left out, so some camps have fewer towers or rock piles than others.
+
 By day they keep to the shade: under the lean-to, under the tower roofs, or down in the **underground room** beneath the camp, reached by a stair tunnel. Caught in the sun, they burn like any other undead (husks don't).
 
 **The leader** is the same kind of monster, a bit bigger and much tougher. It wears an iron helmet and chestplate and carries an iron axe or a strong bow. It sometimes drops its gear.

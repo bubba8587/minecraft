@@ -88,6 +88,7 @@ Owner's design (2026-11-22), building on the earlier idea in `docs/research/camp
 - A camp's roster appears when a player comes within range, with one larger, tougher, better-geared leader.
 - Breaking every banner in a camp stops it for good. Placing a matching banner back in its area brings it back.
 - An outpost with every banner broken spawns no pillagers. Putting one back restores them.
+- Camp pieces never overlap, 32 seeds per kind and size (`CampsGameTest.campPiecesNeverOverlap`).
 
 ## As built (2026-11-22)
 
@@ -160,3 +161,17 @@ Measured by the client part `camps` (seed 20261116, every placement cell within 
 - **Playtest numbers:** spacing (14 chunks, roughly half the old 3.2 camps per km²), trigger range, roster sizes, the leader, camp loot: starting values above.
 - **Natural forest camps** sit among uncleared trees (leaves crowd the towers); worth a look.
 - **Builder's calls to review:** the Builder's choices list above (camp bogged don't lurk, re-arming waits for the next daily check, rosters show for creative players).
+
+## Footprint plan (2026-11-23, fixes overlapping pieces from the variety change)
+
+The variety ranges are kept; pieces are laid out in a footprint plan (`CampPiece.Plan`) before building.
+
+- Planning order: room and stair side first (no longer chosen to avoid the first tower), then reserved footprints: the fire (centre ±2: ring, seats, chest) and the stair tunnel where it opens to the surface (from step 3 of the tunnel to its cleared mouth, step 9, plus a wall column either side).
+- Then pieces in order lean-tos, towers, outcrops, pikes, banners. Each claims a rectangle of ground cells: tower 6x6 (4x4 plus ladder ring), lean-to 3x3, outcrop (2m+3)², pike and banner 1 cell.
+- A claim needs a gap of at least 1 cell (`MARGIN`) from every earlier footprint; a lean-to may sit right against the fire's footprint (it opens onto the seats). Each piece tries 16 spots (first at its planned angle, then random angles; lean-tos alternate distance r-3 and r-2), then is dropped, so a camp can have fewer pieces than it rolled. Lean-tos go first, so the guaranteed lean-to always fits.
+- `CampPiece.footprints()` lists the plan's footprints (tests); `CampPiece.roomSpot()` is the room's middle floor cell (camera, path checks).
+- Shade fix: `CampShade` treated carpet (lean-to bedrolls) as blocking, so most lean-to shade spots never resolved; carpet now counts as open.
+
+Tests: milestone `CampsGameTest.campPiecesNeverOverlap` (32 seeds x every kind x every size, no two footprints share a cell); `campsHaveShadeAndARoom` targets `roomSpot()`. Client part `camps`: three extra seeds per kind (small, medium, large) from above (`camp-<kind>-seed<n>-<size>`); `camp-room`/`camp-room-back` stand in the actual room (`roomSpot()`); the natural room path check targets `roomSpot()` with accuracy 2.
+
+Open: towers sometimes bunch on one side of the camp.

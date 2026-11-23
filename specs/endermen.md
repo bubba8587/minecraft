@@ -81,7 +81,13 @@ Owner's design (2026-11-16). Endermen are the world's **caretakers and builders*
 
 **Home cairn (audit 2026-11-16).** Every enderman a site spawns, and every builder `cairn builders` summons, remembers its site (saved, `bubbas_reworked_mobs:cairn_home`). A site's cap and snowball count only its own: endermen whose home it is, plus homeless caretakers whose nearest site it is. Counting every enderman within 64 blocks made sites near each other (the test world's row, 15 blocks apart) count each other's, so they all sat at their cap and none spawned. Claims on missing blocks still count every enderman near the site. A vigil is kept at its home cairn first.
 
-**Waiting builders (audit 2026-11-16).** A builder whose block can't go in yet takes its place in the ring round its cairn (the vigil's place) and stands there facing it (job WAIT), checking every second whether its block can go in, and plans afresh every 20 s. Before, it had no job: vanilla's stroll walked it off and it teleported back, over and over.
+**Builders set blocks down (2026-11-23, replaces the waiting ring).** A builder whose block can't go in yet takes job `SET_DOWN` (counts as work, so eye contact doesn't anger it): it puts the block on the ground near the cairn and carries on. The old WAIT job and `WAIT_TICKS` are gone. Set-down spot: a random angle at `radius + SET_DOWN_GAP_MIN..MAX` (2..4) from the origin, on the ground (heightmap top), within 4 blocks of the cairn's height, air with a sturdy floor, the block can survive there, the target world says air there, not a design block of any cairn or resting on one, and not within 3 blocks of the trade pad. 12 tries per plan; if none fits it tries again next look round.
+
+Take side: a block a nearby cairn wants, lying where the target world is air (above the original ground), is taken only when some unwarded cairn within `SITE_WORK_RADIUS` has a placeable spot for it (`EndermanWork.readyCairnBlock`), so a set-down block that doesn't fit yet is left lying. This also works for non-liftable cairn blocks (end rods, slabs, glass). The pickup scan reads one block higher per column (from the motion-blocking heightmap, not one below it), so end rods and flowers lying on the ground are seen (one extra block read per column). Endermen standing where a block has to go teleport a few blocks off so it can go in.
+
+`CairnSite.canPlace`: a design block can go in when any face neighbour or any of its 12 edge neighbours is solid (was faces only). Before, diagonal "arms" could never be placed and their builders waited forever, likely the main cause of builders standing still all night.
+
+Ring places are now used only for the vigil (`ringPlace` renamed back to `vigilPlace`). Open for the owner: the vigil was kept, reading "ring places can go" as the waiting ring only.
 
 **Cairn blocks are left alone (audit 2026-11-16).** Judging a block inside a cairn's design, an enderman takes it only if it isn't the designed block. Before, a finished cairn's own offerings (moss, podzol, pumpkins, flowers: natural blocks endermen can carry) looked like rubbish to clear, so they were taken and put back over and over and the cairn never stayed complete (no vigil). Where hand-placed cairns' boxes overlap, the cairn with a design block at that spot answers what belongs there (`CairnSites.covering`).
 
@@ -150,6 +156,7 @@ Tests: milestone `EndermanTotemsGameTest` (`rippleRestoresGroundButNotBuilds`, `
 | Counting radius | 64 blocks around a site |
 | Waiting builder | stays within 8 of its cairn |
 | Vigil | ring 3 outside the footprint, 60 s at a time |
+| Set-down | 2 to 4 outside the footprint (`SET_DOWN_GAP_MIN`/`MAX`), 3 clear of the trade pad, 12 tries per plan |
 | Waiting builder | in the ring, checks each second, replans after 20 s |
 | Errand | 25 % per idle look round, 12-40 blocks off, only if there is work there |
 | Leaves by day | 1 in 400 a tick under open sky (~20 s); name tags keep one |
@@ -185,6 +192,7 @@ Built as "Cairns and endermen" (`specs/testworld.md`, Layout). Two code changes 
 ## Milestone test objectives
 
 - Day leave: a caretaker under open sky at noon is gone within 60 s; a name-tagged one and one in the dark stay. Cairn spawning still runs with `spawn_mobs` false and stops with `spawn_monsters` false.
+- Builders arriving out of order at a half-built cairn set blocks down and others bring them in; the cairn finishes within a night with no builder idle (`EndermanGameTest.outOfOrderBuildersFinishHalfBuiltCairn`, environment `enderman_relay`, night: 93-block cairn, seed 1234, radius 8, built to one above its origin, 49 builders every 2 s carrying the missing blocks top first; finished about tick 2200, 30 to 36 set-downs, longest idle carry 15 ticks; turns the cairn spawner rule off and force-loads the field's chunks while it runs, then restores both).
 - (not yet tested) A `cairn here` site is still a site after the level is saved and reloaded (the test world's verify step checks it with `cairn locate`); `cairn builders` builders complete a cut-down cairn.
 
 Core (every build, `ReworkedMobsCoreGameTest`): `endermanBuilderDeliversCairnBlock` (a builder carrying a missing block completes the cairn). Milestone (`EndermanGameTest`, moved out of core 2026-11-22): `terrainOracleAnswersFlatLayersAndCairns` (regenerated superflat column equals the generator's; a cairn's design is the target inside its site); `cairnDesignsVaryAndUseOnlyEndBlocks` (108 designs: deterministic per seed, varied heights/sizes/trunk counts, only End blocks in the structure, none natural, never obsidian, every cairn has offerings and rods, the tallest rod is the pointer and faces the stronghold, TNT present but rare; and 2000 more designs average under 1 ms and none has more than 120 End blocks); `endermanTakesStrayBlockAndFillsHole` (cobblestone on open ground is taken and fills a stone hole as stone); `busyEndermanIgnoresEyeContact`. The client part `endermen` shoots the three nearest natural sites as generated (`cairn-N-stub`) and `enderman-carrying`; built cairns of every form are the `cairnforms` part.
