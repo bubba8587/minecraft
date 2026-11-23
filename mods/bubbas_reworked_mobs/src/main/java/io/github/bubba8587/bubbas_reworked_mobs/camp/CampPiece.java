@@ -704,28 +704,25 @@ public class CampPiece extends StructurePiece {
 		}
 	}
 
-	/** A sagging plank bridge between two towers' platforms, chain rope railing between fence end posts. */
+	/** A sagging plank bridge between two towers' platforms, chain rope railing strung between log posts on side beams. */
 	private void bridge(ClippedBuild b, Bridge bridge) {
 		Tower t = bridge.from;
 		int top = centre.getY() + t.height;
 		Direction d = bridge.dir;
 		int n = bridge.length;
 		for (int k = 1; k <= n; k++) {
-			boolean end = k == 1 || k == n;
+			boolean post = k == 1 || k == n || k % 4 == 1 && n - k >= 3;
 			boolean sag = k > 1 + n / 4 && k < n - n / 4;
 			for (int w = 0; w <= 1; w++) {
 				int[] c = towerCell(t.x, t.z, d, k, w);
 				b.put(c[0], top, c[1], sag ? kind.slab() : kind.planks());
 				b.clearAbove(c[0], top, c[1], 2);
 			}
+			// side beams under the railing, posts on them, chain rope between posts
 			for (int w : new int[] { -1, 2 }) {
 				int[] c = towerCell(t.x, t.z, d, k, w);
-				if (end) {
-					b.put(c[0], top, c[1], kind.fence());
-					b.put(c[0], top + 1, c[1], kind.fence());
-				} else {
-					b.put(c[0], top + 1, c[1], Blocks.IRON_CHAIN.defaultBlockState().setValue(RotatedPillarBlock.AXIS, d.getAxis()));
-				}
+				b.put(c[0], top, c[1], kind.log().trySetValue(RotatedPillarBlock.AXIS, d.getAxis()));
+				b.put(c[0], top + 1, c[1], post ? kind.log() : Blocks.IRON_CHAIN.defaultBlockState().setValue(RotatedPillarBlock.AXIS, d.getAxis()));
 			}
 		}
 	}
@@ -785,20 +782,15 @@ public class CampPiece extends StructurePiece {
 		return true;
 	}
 
-	/** Skull cell: 0 outside, 1 bone shell, 2 air (hollow or an opening), 3 dark socket back. */
+	/** Skull cell: 0 outside, 1 bone shell, 2 air (hollow or an opening). */
 	private static int skullCell(int u, int w, int dy, boolean buried) {
 		if (!skullShape(u, w, dy)) {
 			return 0;
 		}
 		char c = skullFace(u, dy);
 		boolean door = c == 'E' && buried && u > 0;
-		if ((c == 'E' || c == 'N') && !door) {
-			if (w >= 2) {
-				return 2;
-			}
-			if (w == 1) {
-				return 3;
-			}
+		if ((c == 'E' || c == 'N') && !door && w >= 1) {
+			return 2;
 		}
 		if (c == 'M' && w >= -1 || door && w >= 1 || skullHollow(u, w, dy)) {
 			return 2;
@@ -806,12 +798,26 @@ public class CampPiece extends StructurePiece {
 		return 1;
 	}
 
+	/** Skull shell material: quartz pillar brow, bone block mostly, some calcite and quartz. */
+	private static BlockState skullBone(int u, int w, int dy, float roll, Direction.Axis across) {
+		if (dy == 9 && w == 5) {
+			return Blocks.QUARTZ_PILLAR.defaultBlockState().setValue(RotatedPillarBlock.AXIS, across);
+		}
+		if (roll < 0.7F) {
+			return Blocks.BONE_BLOCK.defaultBlockState();
+		}
+		if (roll < 0.85F) {
+			return Blocks.CALCITE.defaultBlockState();
+		}
+		return roll < 0.95F ? Blocks.SMOOTH_QUARTZ.defaultBlockState() : Blocks.QUARTZ_BLOCK.defaultBlockState();
+	}
+
 	private static double sq(double v) {
 		return v * v;
 	}
 
 	/**
-	 * A big skull rock facing the fire: a round calcite cranium over a narrower jaw, a brow over two big dark eye
+	 * A big skull rock facing the fire: a round bone cranium over a narrower jaw, a brow over two big hollow eye
 	 * sockets, a nose hole, the mouth a doorway into the hollow. Half-buried, only the cranium shows and an eye is the way in.
 	 */
 	private void skull(ClippedBuild b, Skull s) {
@@ -843,7 +849,7 @@ public class CampPiece extends StructurePiece {
 					b.put(x, y, z, Blocks.AIR.defaultBlockState());
 				}
 				boolean floorInside = skullCell(u, w, sink + 1, s.buried) == 2;
-				b.put(x, y0, z, floorInside ? fullBlock(kind.trodden(cell.nextFloat())) : skullShape(u, w, sink) ? Blocks.CALCITE.defaultBlockState()
+				b.put(x, y0, z, floorInside ? fullBlock(kind.trodden(cell.nextFloat())) : skullShape(u, w, sink) ? Blocks.BONE_BLOCK.defaultBlockState()
 						: kind.rock(cell.nextFloat()));
 				for (int dy = sink + 1; dy <= 12; dy++) {
 					int y = y0 + dy - sink;
@@ -859,7 +865,7 @@ public class CampPiece extends StructurePiece {
 		}
 		if (s.buried) {
 			for (int u = 2; u <= 4; u++) {
-				b.put(s.x + across.getStepX() * u + f.getStepX() * 5, y0 + 1, s.z + across.getStepZ() * u + f.getStepZ() * 5, Blocks.CALCITE.defaultBlockState());
+				b.put(s.x + across.getStepX() * u + f.getStepX() * 5, y0 + 1, s.z + across.getStepZ() * u + f.getStepZ() * 5, Blocks.BONE_BLOCK.defaultBlockState());
 			}
 		}
 		// a skull on the floor inside

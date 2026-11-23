@@ -130,11 +130,36 @@ public class ClippedBuild {
 					BlockState state = level.getBlockState(pos);
 					if (state.getBlock() instanceof net.minecraft.world.level.block.FenceBlock) {
 						BlockState fixed = joined(pos, state);
+						if (!anySide(fixed) && level.getBlockState(pos.above()).isAir()
+								&& !(level.getBlockState(pos.below()).getBlock() instanceof net.minecraft.world.level.block.FenceBlock)) {
+							fixed = Blocks.AIR.defaultBlockState();
+							rejoinAround(pos);
+						}
 						if (fixed != state) {
 							level.setBlock(pos, fixed, Block.UPDATE_CLIENTS);
 						}
 					}
 				}
+			}
+		}
+	}
+
+	private static boolean anySide(BlockState fence) {
+		for (net.minecraft.core.Direction d : net.minecraft.core.Direction.Plane.HORIZONTAL) {
+			if (fence.getValue(propertyOf(d))) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/** Neighbour fences inside the chunk re-joined after a ring fence went. */
+	private void rejoinAround(BlockPos pos) {
+		for (net.minecraft.core.Direction d : net.minecraft.core.Direction.Plane.HORIZONTAL) {
+			BlockPos n = pos.relative(d);
+			BlockState ns = level.getBlockState(n);
+			if (inside(n.getX(), n.getY(), n.getZ()) && ns.getBlock() instanceof net.minecraft.world.level.block.FenceBlock) {
+				level.setBlock(n, ns.setValue(propertyOf(d.getOpposite()), false), Block.UPDATE_CLIENTS);
 			}
 		}
 	}

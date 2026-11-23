@@ -358,7 +358,7 @@ public class CampsGameTest {
 		walkable(helper, CampKind.BOGGED, CampPiece::ribcageEnds, "ribcage");
 	}
 
-	/** Fences in built camps: every side joined exactly where a neighbour takes it, and no lone rail left with nothing to join. */
+	/** Fences and chains in built camps: fence sides joined where a neighbour takes them, no lone rail, no chain end hanging in air. */
 	@GameTest(structure = FIELD, maxTicks = 20)
 	public void campFencesEndCleanly(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
@@ -377,6 +377,24 @@ public class CampsGameTest {
 		List<String> faults = new ArrayList<>();
 		for (BlockPos pos : BlockPos.betweenClosed(box.minX(), box.minY(), box.minZ(), box.maxX(), box.maxY(), box.maxZ())) {
 			var state = level.getBlockState(pos);
+			if (state.getBlock() instanceof net.minecraft.world.level.block.ChainBlock) {
+				net.minecraft.core.Direction.Axis axis = state.getValue(net.minecraft.world.level.block.RotatedPillarBlock.AXIS);
+				for (net.minecraft.core.Direction.AxisDirection sign : net.minecraft.core.Direction.AxisDirection.values()) {
+					net.minecraft.core.Direction d = net.minecraft.core.Direction.fromAxisAndDirection(axis, sign);
+					if (axis == net.minecraft.core.Direction.Axis.Y && d == net.minecraft.core.Direction.DOWN) {
+						continue;
+					}
+					BlockPos n = pos.relative(d);
+					var ns = level.getBlockState(n);
+					boolean held = ns.getBlock() instanceof net.minecraft.world.level.block.ChainBlock && ns.getValue(net.minecraft.world.level.block.RotatedPillarBlock.AXIS) == axis
+							|| ns.getBlock() instanceof net.minecraft.world.level.block.FenceBlock || ns.getBlock() instanceof net.minecraft.world.level.block.WallBlock
+							|| ns.isFaceSturdy(level, n, d.getOpposite());
+					if (!held) {
+						faults.add("chain loose " + d.getName() + " @" + pos.toShortString());
+					}
+				}
+				continue;
+			}
 			if (!(state.getBlock() instanceof net.minecraft.world.level.block.FenceBlock fence)) {
 				continue;
 			}
