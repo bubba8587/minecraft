@@ -87,6 +87,12 @@ Parked ideas and open items, newest first within each project. Agents add to it 
     - (a) far away in its own forceloaded chunks, beyond render distance (e.g. x -2000);
     - (b) better, if it works: save the yard as a structure template and have the sign run `/place template`, with no second copy in the world at all.
     Update the sign's command and verify.mcfunction to match.
+12. **The Fabricator teleporter must not take Wardens (owner, 2026-11-22):** exclude the Warden, and any entity in a new `#bubbas_reworked_mobs:fabricator_ignores` tag, from the teleporter pad. Test: a Warden standing on the pad stays put.
+13. **The natural world's Fabricator spawner doesn't run (owner, 2026-11-22). Cause found:** `Fabricators.java:309` stops the machine when `!level.isSpawningMonsters()` (the `spawn_mobs` and `spawn_monsters` game rules), and `tools/build-naturalworld.py` sets `spawn_mobs false`. Vanilla spawner blocks ignore those rules: they obey `spawner_blocks_work` (`GameRules.SPAWNER_BLOCKS_WORK`) and refuse only monsters on Peaceful. Plan:
+    - (a) gate the Fabricator the vanilla way: `spawner_blocks_work` and Peaceful only (specs/vanilla-subsystems.md);
+    - (b) the natural world should leave mob spawning on, since it's for playtesting real behaviour; keep only time and weather frozen if wanted;
+    - test: the machine runs with `spawn_mobs false` and stops with `spawner_blocks_work false`.
+14. **Most natural-world teleport signs don't work (owner, 2026-11-22). Likely cause:** every sign except the Fabricator's runs `execute positioned X 0 Z positioned over motion_blocking_no_leaves run tp @s ~ ~1 ~`. That heightmap lookup needs the chunk loaded when you click, and the builder trimmed the world to only the saved chunks, so it does nothing. The Fabricator's sign works because it uses a fixed y. Fix: record each spot's surface y at build time, while the chunks are force-loaded, and write plain `tp @s X Y Z` signs. Test by clicking every sign in a client test, checking that the player arrives within a few blocks of each spot.
 
 ## Repo
 - **Multiplayer check (owner, 2026-11-22: "make sure these mods work in multiplayer"; light scan done, the rest is here).** Scan results:
