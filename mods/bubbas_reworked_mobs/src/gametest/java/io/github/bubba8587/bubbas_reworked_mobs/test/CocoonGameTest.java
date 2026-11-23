@@ -80,7 +80,7 @@ public class CocoonGameTest {
 		cocoon.interact(rescuer, InteractionHand.MAIN_HAND, cocoon.position());
 		helper.assertTrue(!cocoon.isRemoved(), "one shear cut freed it at once");
 		rescuer.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.IRON_SWORD));
-		for (int i = 0; i < 5 && !cocoon.isRemoved(); i++) {
+		for (int i = 0; i < 12 && !cocoon.isRemoved(); i++) {
 			cocoon.hurtServer(level, level.damageSources().playerAttack(rescuer), 6.0F);
 		}
 		helper.assertTrue(cocoon.isRemoved(), "still wrapped, silk " + cocoon.silk());

@@ -63,6 +63,13 @@ public final class SpiderTuning {
 	public static final float GRIP_START = 50.0F;
 	public static final float GRIP_FULL = 100.0F;
 	public static final float GRIP_RISE_PER_TICK = 0.2F;
+	/**
+	 * Owner (2026-11-22): a spider's grip is much harder to break than a drowned's; it doesn't kill you for a while, so
+	 * the skill is breaking free and surviving the fall (or killing it). Each hit loosens it by the drowned's points
+	 * (DrownedMind.gripPoints) times this: from a fresh grip an iron axe takes 3 full hits, a sword about 6 quick ones,
+	 * so you come loose well up the thread (a drowned lets go after 1-2 axe hits).
+	 */
+	public static final float GRIP_HIT_FACTOR = 0.45F;
 	/** Its bites while it holds: chance a tick and damage, from a fresh grip to a full one. */
 	public static final float BITE_CHANCE_PER_TICK = 0.03F;
 	public static final float BITE_CHANCE_PER_TICK_FULL = 0.08F;
@@ -143,8 +150,8 @@ public final class SpiderTuning {
 
 	// --- cocoons (owner, 2026-11-22) ------------------------------------------------------------------
 
-	/** Silk to cut through, and how much each hit cuts by what it's made with (a fist takes 8 hits, a sword 3). */
-	public static final float COCOON_SILK = 100.0F;
+	/** Silk to cut through (owner: hard to escape), and how much each hit cuts by what it's made with (a fist ~24 hits, a sword ~9). */
+	public static final float COCOON_SILK = 300.0F;
 	public static final float COCOON_CUT_HAND = 13.0F;
 	public static final float COCOON_CUT_OTHER = 18.0F;
 	public static final float COCOON_CUT_AXE = 28.0F;

@@ -604,7 +604,7 @@ public class GiantSpider extends Spider implements Gripper {
 			return hurt;
 		}
 		if ((task == Task.HAUL || task == Task.CLIMB) && source.getEntity() != null) {
-			grip -= DrownedMind.gripPoints(level, source.getWeaponItem(), damage);
+			grip -= DrownedMind.gripPoints(level, source.getWeaponItem(), damage) * SpiderTuning.GRIP_HIT_FACTOR;
 			if (grip <= 0.0F) {
 				letGo(true);
 			}

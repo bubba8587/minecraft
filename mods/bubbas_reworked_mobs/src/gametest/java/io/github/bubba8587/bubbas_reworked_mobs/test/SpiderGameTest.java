@@ -108,25 +108,30 @@ public class SpiderGameTest {
 		});
 	}
 
-	/** Hitting a spider that holds you loosens its grip; at 0 it lets go and becomes a vanilla spider. */
-	@GameTest(environment = SpiderGameTest.ENV, structure = ROOM, maxTicks = 300)
+	/** Hitting a spider that holds you loosens its grip, slowly; at 0 it lets go and becomes a vanilla spider. */
+	@GameTest(environment = SpiderGameTest.ENV, structure = ROOM, maxTicks = 400)
 	public void hitsBreakTheGrip(GameTestHelper helper) {
 		NestSpider spider = nest(helper);
 		ServerPlayer player = player(helper, 4.5, 4.5);
 		player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.IRON_AXE));
+		// Tough enough not to die first: this measures the grip, not the kill (an axe kills a nest spider in two hits).
+		spider.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH).setBaseValue(500.0);
+		spider.setHealth(500.0F);
 		helper.runAfterDelay(40, () -> helper.assertTrue(spider.victim() == player, "not latched after 40 ticks: " + spider.phase()));
-		// Four iron axe hits, past the hurt cooldown each time: (6 + 3 x 2) x 1.5 = 18 grip points a hit.
-		for (int i = 0; i < 4; i++) {
-			helper.runAfterDelay(41 + 12 * i, () -> {
-				if (!spider.isRemoved()) {
-					spider.hurtServer(helper.getLevel(), helper.getLevel().damageSources().playerAttack(player), 2.0F);
-				}
-			});
-		}
-		helper.runAfterDelay(41 + 12 * 4, () -> {
-			helper.assertTrue(spider.isRemoved(), "still holding, grip " + spider.grip());
+		// Full iron axe hits (9) every 22 ticks, an axe's attack speed: (6 + 3 x 9) x 1.5 x GRIP_HIT_FACTOR a hit against
+		// a grip that keeps tightening. It takes many (owner: hard to break free), but it does let go.
+		int[] hits = {0};
+		helper.onEachTick(() -> {
+			if (helper.getTick() > 40 && (helper.getTick() - 41) % 22 == 0 && !spider.isRemoved() && spider.victim() == player) {
+				spider.hurtServer(helper.getLevel(), helper.getLevel().damageSources().playerAttack(player), 9.0F);
+				hits[0]++;
+			}
+		});
+		helper.succeedWhen(() -> {
+			helper.assertTrue(spider.isRemoved(), "still holding, grip " + spider.grip() + " after " + hits[0] + " hits");
 			helper.assertTrue(player.getVehicle() == null, "player still held");
-			helper.succeed();
+			helper.assertTrue(hits[0] >= 3, "broke free too easily: " + hits[0] + " hits");
+			helper.assertTrue(player.getY() > helper.absoluteVec(Vec3.ZERO).y + 5.0, "freed too low to matter: " + (player.getY() - helper.absoluteVec(Vec3.ZERO).y));
 		});
 	}
 

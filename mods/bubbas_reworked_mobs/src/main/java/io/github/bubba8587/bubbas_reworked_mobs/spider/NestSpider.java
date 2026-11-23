@@ -348,7 +348,7 @@ public class NestSpider extends Spider implements Gripper {
 			// Woken by a hit (an arrow from below): it drops on whoever shot it.
 			drop(source.getEntity() instanceof LivingEntity attacker ? attacker : null);
 		} else if (victim != null && source.getEntity() != null) {
-			grip -= DrownedMind.gripPoints(level, source.getWeaponItem(), damage);
+			grip -= DrownedMind.gripPoints(level, source.getWeaponItem(), damage) * SpiderTuning.GRIP_HIT_FACTOR;
 			if (grip <= 0.0F) {
 				LivingEntity held = victim;
 				breakThread(level);

@@ -81,3 +81,14 @@ SendMessage from this session doesn't reach you, so reports go here.
   - giant-haul-rear-first: on the trunk, head down, sheep below;
   - giant-cocoon-sheep-under-canopy and giant-cocoon-sheep-from-below: upside down under the canopy, sheep slung horizontally below.
 - **Still open: a Stormie's wall and ceiling shot.** Its navigator refuses scripted climbing paths, so I'll need to bait the shot with prey at night.
+
+## Harder to escape (owner, 2026-11-22, in my session)
+
+- **Owner's words:** "spiders should be a lot harder to break free of (unless you kill them) as should cocoons, the reason being that they don't kill you until after a little while. so if you can break free and survive the fall, that's where the skill comes into play."
+- **The grip.** Each hit on a spider holding you now loosens its grip by the drowned's points × `SpiderTuning.GRIP_HIT_FACTOR` = 0.45. The grip still tightens while it reels you up. This applies to nest spiders and to a giant hauling its catch.
+  - From a fresh grip, an iron axe takes 3 full hits and a sword about 6 quick ones. A drowned lets go after 1-2 axe hits.
+  - You come loose well up the thread. The test checks you're freed more than 5 blocks up.
+  - Killing the spider is unchanged: an axe kills a nest spider in 2 hits.
+- **Cocoons.** Silk went from 100 to 300: about 24 fist hits or 9 sword hits; shears are still fastest. The feeding wait stays 30 s.
+- **Tests.** `hitsBreakTheGrip` now swings a full iron axe at its real pace against a spider made tough enough not to die first. It checks that it takes at least 3 hits and that the victim is freed high. Spider tests pass twice in a row, and the RM core suite passes (33).
+- **For the spec.** This replaces the step 1 grip numbers ("start 50, +0.2/tick, drowned points").
