@@ -12,7 +12,7 @@
 > | **Requires** | [[Bubba's Reworked Mobs]] |
 > | **Works in a beacon** | Yes, with [[Bubba's Reworked Beacons]] |
 
-The **Totem of the Beginning** is a single-use artifact that returns the ground around its user to how the world first generated it.
+The **Totem of the Beginning** is a reusable artifact that slowly returns the ground around its user to how the world first generated it.
 
 ## Obtaining
 
@@ -20,17 +20,21 @@ The Totem of the Beginning is found only at [[Endermen|enderman cairns]]. Once a
 
 ## Usage
 
-Using the totem uses it up. A ripple spreads outward from the player over about two seconds, reaching 24 blocks in every direction, up and down included. Inside it, the ground goes back to how it was first generated:
+Using the totem sends a ripple outward from the player over about three seconds, reaching 8 blocks in every direction. The totem is not used up; after each use it has a 60-second cooldown, shown as a sweep over the item. Inside the ripple, some of the ground goes back to how it was first generated:
 
 - Holes, creeper craters and strip mines fill with the ground that was there (grass on top, then dirt, then stone).
-- Piles and pillars of dirt, stone, sand or gravel standing where there was no ground are removed.
+- Piles and pillars of dirt, stone, sand or gravel standing where there was no ground shrink from the top.
 - A wrong top layer, such as sand where grass was, turns back to its original block. This does not happen next to water.
 
-The ripple changes only air and natural ground blocks (dirt, grass, stone, sand, gravel, clay, mud, snow blocks, terracotta). It never changes logs, leaves, ores, flowers, water or lava. Anything built or placed, such as planks, glass, torches, rails, chests, cobblestone, farmland or paths, keeps the ground in its column and in every column within 2 blocks untouched, so a house in a dug-out pit keeps its pit. No block is placed where a player or mob stands.
+Each use brings back only part of the ground, about one block in eight, so standing in one spot and using the totem once a minute heals the land slowly: a dug-out patch is mostly back after about ten uses. Mined-out ore comes back far more rarely, about one block in eighty per use, and only into empty space.
 
-The ripple cannot bring back trees, ores, flowers, water or lava: only the shape and material of the ground. A burnt forest gets its ground back, not its trees. A shelter built only from dirt or stone is not recognized as a build and can be removed like a pile.
+The ripple changes only air and natural ground blocks (dirt, grass, stone, sand, gravel, clay, mud, snow blocks, terracotta), plus the rare ore. It never changes logs, leaves, flowers, water or lava, unbreakable blocks, or ground protected around the world spawn. Anything built or placed, such as planks, glass, torches, rails, chests, cobblestone, farmland or paths, keeps the ground in its column and in every column within 2 blocks untouched, so a house in a dug-out pit keeps its pit. No block is placed where a player or mob stands.
 
-The totem works only in the Overworld and only with [[Bubba's Reworked Mobs]] installed. Elsewhere, using it does nothing and it is not used up.
+The ripple cannot bring back trees, flowers, water or lava: only the shape and material of the ground. A burnt forest gets its ground back, not its trees. A shelter built only from dirt or stone is not recognized as a build and can be removed like a pile.
+
+Each block that changes gives off a dark puff of souls with purple motes and a low, soft sculk sound.
+
+The totem works only in the Overworld and only with [[Bubba's Reworked Mobs]] installed. Elsewhere, using it does nothing and starts no cooldown.
 
 ### In a beacon
 
@@ -38,7 +42,7 @@ In a [[Bubba's Reworked Beacons]] beacon (any pyramid), the beacon's area draws 
 
 ## Statue
 
-Sneaking and using the totem on a block sets it down as a [[Totem Statue]] instead of using it. Mining the statue gives the totem back.
+Sneaking and using the totem on a block sets it down as a [[Totem Statue]] instead of sending a ripple. Mining the statue gives the totem back.
 
 ## Textures
 

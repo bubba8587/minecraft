@@ -61,10 +61,11 @@ The yard is built with its gate at the player's feet, running south. A yard buil
 
 Requires operator permission; intended for building and testing.
 
-- `camp build <kind> <size> [<seed>]` builds a camp here.
+- `camp build <kind> <size> [<seed>]` builds a camp here (size small, medium or large).
 - `camp reset` runs the daily refill check now, even with players near.
 - `camp list` lists known camps.
-- `camp locate <kind>` names the nearest camp of that kind (skeleton, zombie, husk, stray or bogged) and how far away it is.
+- `camp locate <kind>` names the nearest camp of that kind (skeleton, zombie, husk, stray, bogged or piglin) and how far away it is. Piglin camps are Nether outposts: run `camp locate piglin` in the Nether.
+- `camp build piglin <size> [<seed>]` builds a Nether outpost here. Built outside the Nether, its piglins and hoglins don't turn into zombies.
 
 ### ancient_fabricator
 

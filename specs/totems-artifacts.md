@@ -11,7 +11,7 @@ A separate mod for **artifacts**: found items that do things potions and enchant
 | Grave Talisman | built (moved from Reworked Mobs) |
 | Totem of Warding | built (moved from Reworked Mobs), plus its totem statue |
 | Totem of Keeping, Gathering, Fortification, Growth, Seeking | built 2026-11-16 (below; unreleased) |
-| Totem of the Beginning, Totem of the End | built 2026-11-22 (below; unreleased) |
+| Totem of the Beginning, Totem of the End | built 2026-11-22; the Beginning reworked 2026-11-24 into a reusable pulse (below; unreleased) |
 | Totem statue for every totem (decorative) | built 2026-11-22 |
 | Totems of Herding and Clear Skies | built (2026-11-22) |
 | Gathering beacon ring, Growth seed planting, statues giving a tiny-radius effect | built (2026-11-22) |
@@ -187,7 +187,7 @@ Client part `totems` (`TotemsClientGameTest`): the five (and Warding) in the hot
 
 Owner-approved design, handed over by the orchestrator. Player-facing description: `player-docs/Projects/Bubba's Totems & Artifacts/Totem of the Beginning.md` and `Totem of the End.md`. The cairn side (ripple, offerings, beacon nexus) lives in Reworked Mobs: `specs/endermen.md`, "Cairn gifts, the ripple and the nexus".
 
-- **Totem of the Beginning:** used up on use; the ground within 24 blocks ripples back, outward, to how it generated (Reworked Mobs' target world), never harming builds. Without Reworked Mobs or outside the overworld it does nothing and isn't used up. In a beacon the area draws caretaker endermen like a cairn nexus. Found only as a once-ever offering at some complete cairns. Never crafted.
+- **Totem of the Beginning** (original 2026-11-22 design; replaced by the 2026-11-24 rework, next section): used up on use; the ground within 24 blocks ripples back, outward, to how it generated (Reworked Mobs' target world), never harming builds. Without Reworked Mobs or outside the overworld it does nothing and isn't used up. In a beacon the area draws caretaker endermen like a cairn nexus. Found only as a once-ever offering at some complete cairns. Never crafted.
 - **Totem of the End:** held (either hand), endermen treat you as kin (eye contact, and Reworked Mobs' cairn anger). Used, it teleports to the aimed block within range by the owner's landing rules (top face: stand on it; side face: on top if the 2 above are open, else down to the nearest safe footing; bottom face: down), with a cooldown sweep; no hit, no cooldown. Found only in End city chests (owner, 2026-11-22: no cairn reward).
 
 ### As built
@@ -226,7 +226,7 @@ Owner-approved design, handed over by the orchestrator. Player-facing descriptio
 5. **Water and lava are never filled over or put back**; a crater that flooded stays a pond.
 6. **A strip mine you're standing in fills round you but not where you stand**, so you can end up in a 1x2 pocket of stone. No block goes where a mob or player is.
 7. **The top-layer swap only happens away from water** (like the endermen), so natural sand and gravel by rivers and lakes stay.
-8. **The Beginning is used up only when the ripple starts**; the client shows the use animation only in the overworld with Reworked Mobs installed. No message when it does nothing.
+8. ~~Used up only when the ripple starts~~ (replaced 2026-11-24: never used up, cooldown instead); the client shows the use animation only in the overworld with Reworked Mobs installed. No message when it does nothing.
 9. **Beacon: the totem isn't accepted without Reworked Mobs** (there are no caretakers to draw), rather than taking it and doing nothing.
 10. **Beacon area spawns** follow the cairn rules (night, game rule, Peaceful...) but keep only 16 blocks from players, not 24 (beacon areas are often small).
 11. **Offerings: 0.15 of cairns (owner, 2026-11-22; was 1 in 2), about a minute after completion with one of its endermen present.** The offering appears with an enderman's teleport sound and portal particles; no enderman walks over and sets it down.
@@ -242,13 +242,27 @@ Owner-approved design, handed over by the orchestrator. Player-facing descriptio
 - Reworked Mobs core `ReworkedMobsCoreGameTest.endermanRippleRestoresGroundButNotBuilds` (body in `EndermanTotemsGameTest`): a hole fills with grass on stone, a dirt pillar goes, sand on the top layer turns to grass, a 3x3 pit with a plank floor keeps its air.
 - Reworked Mobs milestone `EndermanTotemsGameTest`: `offeringLaidOncePerCairn` (laid once on display; a player takes it with an empty hand; never laid again, also after it's taken).
 - Totems core `BubbasTotemsArtifactsCoreGameTest.endLandingRules` (body in `BeginningEndGameTest`): top face, side with room, side without room → floor in front, slab top, fire on top → nowhere, bottom face → floor under it, miss → nowhere.
-- Totems milestone `BeginningEndGameTest`: `endTeleportsWhereAimedWithCooldown` (real use: unsafe aim → FAIL, no cooldown, no move; aim at a block 10 away → there, cooldown on, not used up), `endHeldMakesEyeContactHarmless` (vanilla `isBeingStaredBy`: true without, false with the totem in the off hand), `beginningUsedOnlyWithReworkedMobs` (used up with `-PwithMobs`, PASS and kept without), `endFoundInEndCitiesAndSingleStack`.
+- Totems milestone `BeginningEndGameTest`: `endTeleportsWhereAimedWithCooldown` (real use: unsafe aim → FAIL, no cooldown, no move; aim at a block 10 away → there, cooldown on, not used up), `endHeldMakesEyeContactHarmless` (vanilla `isBeingStaredBy`: true without, false with the totem in the off hand), `beginningPulsesOnlyWithReworkedMobs` (renamed from `beginningUsedOnlyWithReworkedMobs` in the 2026-11-24 rework: with `-PwithMobs` SUCCESS, count stays 1, cooldown full; without, PASS and no cooldown), `endFoundInEndCitiesAndSingleStack`.
 - Reworked Mobs client part `endermen` (real default-preset world, seed 20261116): a ripple dry run (`Ripples.dryRun`, changes nothing) at spawn and 40 blocks east of each of the three nearest cairns, radius 24: **0 changes on untouched ground at all four**. Control: after digging a 3x3x3 hole and stacking a 3-high dirt pillar at spawn it finds exactly 30 (9 air→grass, 18 air→dirt, 3 dirt→air). Printed as `[endermen] ripple dry run ...`.
 - Client part `totems`: both in the hotbar and held in first person, 16x and 32x (`totems-hotbar`, `totems-held-beginning`, `totems-held-end`, and their `-32x`).
 
 Milestone test objectives not yet written as tests:
 - A beacon with the Totem of the Beginning draws caretakers into its area at night and they repair a hole there (needs `-PwithMobs -PwithBeacons`).
 - With Reworked Mobs, a player holding the Totem of the End breaks a cairn block and no enderman turns on them.
+
+## Totem of the Beginning rework (owner, 2026-11-24; built 2026-11-24)
+
+Owner decisions (C6 detail, spec not leaf): the totem is never used up; right-click is an area pulse with a cooldown and per-block odds; hardened against ore farming; beacon and statue reverts get the same puff and sound. The ripple's Reworked Mobs side: `specs/endermen.md`, "The pulse".
+
+- **Use:** the ground within 8 blocks ripples back toward how it generated over about 3 seconds (7 ticks a block), then a 60-second cooldown (the item's cooldown sweep). Without Reworked Mobs or outside the overworld it does nothing and sets no cooldown.
+- **Odds:** each pulse brings back about 1 block in 8 (0.12); mined-out ore far more rarely (0.012), only into empty space. Never touches builds (as before), unbreakable blocks or spawn-protected ground.
+- **Effect:** each changed block gives a dark soul puff with purple portal motes and a low, soft sculk sound (at most about 3 sounds a second). Item use sound: `SCULK_CATALYST_BLOOM` at pitch 0.5 (was the totem-pop sound).
+- **Tooltip:** "Use: the ground nearby slowly remembers how it began". Rarity stays Rare.
+- **Numbers** (`TotemsTuning.BEGINNING_PULSE_*`): radius 8, 7 ticks/block, cooldown 1200 ticks, chance 0.12, ore chance 0.012, recent window 12000 ticks (superseded, below). The old `BEGINNING_RADIUS`/`BEGINNING_TICKS_PER_BLOCK` (24/2) are unused by the item, left in place to keep `TotemsTuning` edits additive; remove once the parallel builder's edits are merged.
+- **Why these numbers (builder):** at 12 % a fully dug spot of terrain is about 70 % back after 10 pulses (10 minutes), so healing a crater is a session's background chore, not instant, while one pulse visibly changes something. Ore at 1.2 % means about 80 pulses (80 minutes of standing and clicking) per ore spot on average: mining normally is far faster, so no ore farm. 60 s cooldown and radius 8 as the owner suggested.
+- **Superseded (pending, 2026-11-24):** two parts of the build report are being replaced by a follow-up being built now, so they aren't documented as current: (1) the 10-minute recent window (a block that just came back can't come back again for 10 minutes; `BEGINNING_PULSE_RECENT_TICKS`) is being removed; (2) beacon and statue Beginning areas played the revert effect when their endermen took or set down a block, and will instead revert blocks directly. Update this section when the follow-up lands.
+- **Tests:** milestone `BeginningEndGameTest.beginningPulsesOnlyWithReworkedMobs`; Reworked Mobs milestone `EndermanTotemsGameTest.pulseOddsTerrainOverOre` and `pulseRecentWindowAndBuilds` (`specs/endermen.md`); client part `totems` (with `-PwithMobs`) screenshot `totems-beginning-pulse` (revert puffs on grass). Not tested: outside the overworld (`Ripples.supported` is unchanged and covered by the same check).
+- **Milestone objective:** a pulse with Reworked Mobs starts a cooldown and leaves the totem in hand; without Reworked Mobs it passes and sets no cooldown. Ten pulses over a dug field bring back most terrain but far less ore, and never touch a build.
 
 ## As built (0.1.0)
 

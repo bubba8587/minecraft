@@ -42,7 +42,7 @@ A found item that makes nearby monsters run away while held, and in a beacon fro
 - [[Totem of Fortification]]: stops explosions from breaking blocks.
 - [[Totem of Growth]]: makes plants grow faster and plants dropped seeds.
 - [[Totem of Seeking]]: points toward a chosen kind of structure.
-- [[Totem of the Beginning]]: returns the ground around its user to how it was first generated (single use; needs Bubba's Reworked Mobs).
+- [[Totem of the Beginning]]: slowly returns the ground around its user to how it was first generated (reusable, with a cooldown; needs Bubba's Reworked Mobs).
 - [[Totem of the End]]: endermen treat its holder as one of their own; teleports its user to the block they aim at.
 - [[Totem of Herding]]: animals follow its holder; in a beacon, they stay in the area.
 - [[Totem of Clear Skies]]: ends a storm; in a beacon, keeps rain, snow and lightning off the area.

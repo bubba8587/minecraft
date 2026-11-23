@@ -1,7 +1,7 @@
 <!-- dte:A3 -->
 # Status board
 
-Every feature of every project, and where it stands. Last checked against the code on `develop`: 2026-11-22.
+Every feature of every project, and where it stands. Last checked against the code on `develop`: 2026-11-24.
 
 | Mark | Means |
 |---|---|
@@ -51,12 +51,15 @@ Nothing is released yet: every mod is 0.1.0 in `develop`.
 - built: a lit fire quiets a camp ([§](monster-camps.md#lighting-a-fire-quiets-a-camp-owner-2026-11-22))
 - built: pillager outposts as camps ([§](monster-camps.md#pillager-outposts-become-camps-too-owner))
 - built: explorer maps from cartographers to graveyards, camps and Fabricators (Fabricator map marks its city for now) ([§](monster-camps.md#maps-owner-2026-11-22-built))
+- built: Nether outposts, the piglin kind: crimson forest and Nether wastes, gilded gate, hoglin pen, portal room ([§](monster-camps.md#nether-outposts-owner-2026-11-24-built-2026-11-24))
+- dropped: overworld piglin outposts (owner, 2026-11-24: vanilla zombification) ([§](monster-camps.md#nether-outposts-owner-2026-11-24-built-2026-11-24))
 
 **Spiders** ([spec](spiders.md))
 - built: cave nests, dropping and latching spiders ([§](spiders.md#cave-nests))
 - built: giant spiders ([§](spiders.md#giant-spiders-owner-2026-11-22))
 - built: spun webs ([§](spiders.md#spun-webs-owner-2026-11-22-we-should-try-at-least-to-make-something-really-outstanding-looking-there))
 - built: cocoons ([§](spiders.md#cocoons-owner-2026-11-22))
+- built: giants prowl off the perch and haul to their own webs ([§](spiders.md#prowling-and-own-webs-backlog-playtest-fixes-5-and-6-built-2026-11-24))
 - built: walls and ceilings (Stormie's Spiders, required) ([§](spiders.md#walls-and-ceilings-owner-2026-11-22))
 
 **Creepers** ([spec](creepers.md))
@@ -92,6 +95,8 @@ Nothing is released yet: every mod is 0.1.0 in `develop`.
 - built: Totem of Growth ([§](totems-artifacts.md#totem-of-growth-working-name-growthgrowth-totemofgrowthitem-compatgrowthbeaconpayload))
 - built: Totem of Seeking ([§](totems-artifacts.md#totem-of-seeking-seekingtotemofseekingitem-seekingtypes-structureseeker-seekingbeacon-mixincompassitemmixin-compatseekingbeaconpayload))
 - built: Totems of the Beginning and the End ([§](totems-artifacts.md#totems-of-the-beginning-and-the-end-built-2026-11-22))
+- built: the Beginning reworked into a reusable pulse with a cooldown and per-block odds ([§](totems-artifacts.md#totem-of-the-beginning-rework-owner-2026-11-24-built-2026-11-24))
+- in progress: the Beginning without the 10-minute window; beacons and statues revert blocks directly ([§](totems-artifacts.md#totem-of-the-beginning-rework-owner-2026-11-24-built-2026-11-24))
 - built: a statue for every totem, decorative ([§](totems-artifacts.md#totem-statue-block-b15-exception))
 - built: Gathering beacon makes a floating ring of items and XP for a side hopper ([§](totems-artifacts.md#gathering-in-a-beacon-a-floating-ring-built-2026-11-22-replaced-into-a-chest-below))
 - built: Growth plants dropped seeds ([§](totems-artifacts.md#growth-also-plants-seeds-built-2026-11-22-harvest-folded-in-owner))

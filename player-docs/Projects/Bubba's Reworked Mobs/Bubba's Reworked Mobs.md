@@ -18,7 +18,7 @@ side: client and server
 > | **Side** | Client and server |
 > | **Status** | Active |
 
-**Bubba's Reworked Mobs** is a Fabric mod that reworks Minecraft's mobs one family at a time. Far fewer monsters spawn on their own; instead they come from places: undead lie dormant in graveyards and crypts until noise wakes them, spiders nest in caves, monster camps hold skeletons and zombies, and Ancient Fabricators beside ancient cities send monsters to the surface. Creepers are nervous watchers that explode only when startled, endermen mend the land and build cairns, and drowned and bogged lurk at the water's edge.
+**Bubba's Reworked Mobs** is a Fabric mod that reworks Minecraft's mobs one family at a time. Far fewer monsters spawn on their own; instead they come from places: undead lie dormant in graveyards and crypts until noise wakes them, spiders nest in caves, monster camps hold skeletons and zombies (and piglins in the Nether), and Ancient Fabricators beside ancient cities send monsters to the surface. Creepers are nervous watchers that explode only when startled, endermen mend the land and build cairns, and drowned and bogged lurk at the water's edge.
 
 In this early test version, sleeping bodies use the normal mob look, and sleeper item icons are the matching mob heads.
 
@@ -108,13 +108,13 @@ Fenced graveyards in every state of decay stand on dry, flat ground, their grave
 
 *Main article: [[Spiders]]*
 
-Spiders climb walls and ceilings. Cobweb nests cling to the ceilings of tall cave rooms. Walk underneath and a spider drops on a thread; if it lands, it reels you up and cocoons you. Giant spiders roam old-growth taiga, webbing the trees and snatching livestock.
+Spiders climb walls and ceilings. Cobweb nests cling to the ceilings of tall cave rooms. Walk underneath and a spider drops on a thread; if it lands, it reels you up and cocoons you. Giant spiders roam old-growth taiga, webbing the trees and snatching livestock into their own webs.
 
 ## Monster camps
 
 *Main article: [[Monster Camps]]*
 
-Dark camps of skeletons, zombies, husks, strays or bogged, each with a leader. Break every banner to clear a camp for good, leave one to let it refill, or light a fire to quiet it. Pillager outposts stop spawning when their banners are gone.
+Dark camps of skeletons, zombies, husks, strays or bogged, each with a leader. Break every banner to clear a camp for good, leave one to let it refill, or light a fire to quiet it. Pillager outposts stop spawning when their banners are gone. In the Nether, piglin outposts with hoglin pens and a portal room stand in crimson forests and the Nether wastes.
 
 ## Bogged
 

@@ -1,7 +1,7 @@
 <!-- dte:C1,B15,B17 -->
 # Reworked Mobs: monster camps (spec)
 
-**Status:** built 2026-11-22: camps, banner keys, leaders, daily resets, a lit fire quiets a camp, shade and the underground room, pillager outposts. In progress (agent 2, after its other undead work): maps from cartographers.
+**Status:** built 2026-11-22: camps, banner keys, leaders, daily resets, a lit fire quiets a camp, shade and the underground room, pillager outposts, maps from cartographers. Built 2026-11-24: Nether outposts (the piglin kind, below).
 
 Owner's design (2026-11-22), building on the earlier idea in `docs/research/camps-blood-moon-idea.md`. Decisions made since win where they differ (the 15 % spawn cut stays; **no blood moon**, owner 2026-11-22).
 
@@ -92,6 +92,11 @@ Owner's design (2026-11-22), building on the earlier idea in `docs/research/camp
 - A camp's kind follows the biome at its centre: desert and badlands husk, swamp and mangrove bogged, snowy biomes stray, everything else skeleton or zombie (`CampsGameTest.campKindFollowsTheBiome`).
 - Skull rocks (full and half-buried), winding towers, ramps, bridges and ribcage arches: every block supported, and a zombie can walk each end to end (`skullRockCanBeWalkedInto`, `buriedSkullCanBeWalkedInto`, `windingTowerCanBeClimbed`, `towerRampCanBeClimbed`, `bridgeJoinsTwoTowers`, `ribcagePathRunsUnderTheRibs`).
 - Camp fences and chains end cleanly: every fence side matches its neighbour, no lone fence posts, every chain end meets a chain on its axis, a fence, a wall or a sturdy face (`campFencesEndCleanly`, all kinds, large camps).
+- Nether outposts generate only in crimson forests and the Nether wastes (`CampsGameTest.netherOutpostBiomes`).
+- An outpost's roster is piglins with a piglin brute leader; its hoglins stand in their pen, the first leashed to the post, none huntable (`outpostRosterAndPennedHoglins`).
+- A piglin can walk through an outpost's gate, climb its ramps and reach its portal room (`outpostGateCanBeWalkedThrough`, `outpostRampCanBeClimbed`, `outpostPortalRoomCanBeReached`).
+- An outpost's portal matches its seeded state: lit, whole and unlit, or broken (`outpostPortalsMatchTheirState`).
+- Natural outposts in a real Nether (seed 20261116): in an allowed biome, no lava within radius + 1 from 8 below to 3 above, a piglin can path from the fire to the ramp's platform, the gate and down the tunnel, hoglins penned and leashed; shot from above, close, side, tunnel, gate and portal (client part `outposts`, `OutpostsClientGameTest`).
 
 ## As built (2026-11-22)
 
@@ -161,6 +166,7 @@ Measured by the client part `camps` (seed 20261116, every placement cell within 
 
 ## Open
 
+- **Nether outposts (owner to decide):** rarity (spacing 22), whether piglins may hunt the penned hoglins (now they can't), whether netherite scrap stays in the room chest. In `BACKLOG.md`.
 - **Playtest numbers:** spacing (14 chunks, roughly half the old 3.2 camps per km²), trigger range, roster sizes, the leader, camp loot: starting values above.
 - **Natural forest camps** sit among uncleared trees (leaves crowd the towers); worth a look.
 - **Builder's calls to review:** the Builder's choices list above (camp bogged don't lurk, re-arming waits for the next daily check, rosters show for creative players).
@@ -196,3 +202,75 @@ All go through the footprint plan. Plan order: fire, stairs tunnel, skull rock, 
 Client part `camps`: `camp-skull-*`, `camp-buried-*`, `camp-ribcage-*`, `camp-winding-*`, `camp-ramp-*`, `camp-bridge-*` (front, 3/4, side, far 34 blocks). Framing to fix: the ribcage bogged front camera ends up inside that camp's skull; the ramp `-side` camera sits close among towers.
 
 Open: bridges to outcrops or skull tops, ramps up rock outcrops; nether fossil templates (`nether_fossils/fossil_*` via StructureTemplate through the plan) as bone dressing near skulls or outcrops; ramps and towers on rough ground only checked on flat ground and the natural camp.
+
+## Nether outposts (owner, 2026-11-24; built 2026-11-24)
+
+Owner's asks: Nether outposts as a kind of monster camp, less common than overworld camps; piglins and piglin brutes, with hoglins kept as livestock (penned and tethered); blackstone, polished blackstone bricks, gilded blackstone, gold, crimson wood, chains, soul and regular lanterns, with the bastion as reference; crimson forest and Nether wastes only; a lower room with a Nether portal, ruined-portal style (some lit, some unlit, some broken, crying obsidian), with layout ideas from bastions and fortresses.
+
+**Overworld piglin outposts: scrapped (owner, 2026-11-24).** Piglins zombify in the overworld (vanilla), so outposts are Nether only.
+
+### Kind and structure
+
+- `CampKind.PIGLIN` (`camp locate piglin`, `camp build piglin <size> [seed]`). Same `CampPiece`, footprint plan, roster, refill and banner rules as overworld camps.
+- Structure type `bubbas_reworked_mobs:nether_outpost` (`NetherOutpostStructure`): finds its own floor under the ceiling and builds the PIGLIN kind of `CampPiece`.
+- Structure set `nether_outposts`: random spread, spacing 22, separation 8 chunks, salt 20261124, kept 3 chunks from `minecraft:nether_complexes` (bastions and fortresses). Overworld camps use 14/5. Terrain rejects many candidates, so outposts are much rarer: seed 20261116 had 5 outposts within 2000 blocks of 5 points.
+- Biome tag `has_structure/nether_outpost`: crimson_forest and nether_wastes. Not basalt deltas (too jagged for a level clearing); not soul sand valley or warped forest (piglins don't spawn there in vanilla and warped fungus repels them).
+
+### Placement under a ceiling
+
+All from noise columns, before any block exists:
+
+- The centre column is scanned for floors at least 10 above the lava sea (y >= 42): solid ground with 12 air above it, below the generation depth (so never the bedrock roof). One floor is picked at random.
+- Columns every 3 blocks out to radius + 4 (gate, rampart and pen stand at the edge) each need a floor within ±5 with 5 air above it.
+- Floor spread across the outpost at most 5.
+- No lava from 9 below to 2 above any sampled floor.
+
+### Building under a ceiling
+
+`NetherBuild`, a `ClippedBuild` whose ground is the surface nearest the outpost's height (a lava surface counts as no ground):
+
+- The clearing is levelled to the outpost's height (fill under, cut over, natural floor blocks kept); headroom carved 12 up.
+- Lava within radius + 1.5, from 9 below to 12 above, is sealed to blackstone (lava springs come before our generation step).
+- A level walkway runs round the stair tunnel to its mouth, and a 5-wide approach leads out of the gate.
+
+### Materials (PIGLIN)
+
+| Part | Block |
+| --- | --- |
+| Posts | crimson stem |
+| Platforms | crimson planks |
+| Roofs | polished blackstone brick slabs |
+| Railings | nether brick fence (fortress) |
+| Ramps | crimson stairs |
+| Tunnel stairs | polished blackstone brick stairs |
+| Ground | blackstone, netherrack, soul soil, polished blackstone |
+| Outcrops | polished/cracked blackstone bricks, blackstone, gilded blackstone, gold blocks jutting out instead of bones |
+| Fire | unlit regular campfire on a gilded blackstone ring |
+| Pikes | piglin heads, or lanterns and soul lanterns |
+| Bridge deck | nether bricks, nether brick slab sag (chains still end on posts) |
+| Banner | black with a yellow piglin snout and an orange triangles-bottom |
+
+### Pieces
+
+- **From bastions:** a gilded gate in a stretch of rampart (thick polished blackstone brick pillars capped with gilded blackstone and gold, a chiselled keystone and gold over a 3-wide arched opening, cracked brick rampart wings with blackstone wall tops, soul lanterns under the arch); the hoglin pen (a nod to bastion hoglin stables).
+- **From fortresses:** nether brick fence railings, nether brick bridge decks.
+- **Not in outposts:** the skull rock, winding tower and ribcage (overworld only).
+- **Hoglin pen:** a closed 5x5 ring of crimson fence on crimson nylium and soul soil, with a crimson fungus or two; the tether post in the middle is a fence with a lantern on top. Hoglins per pen: 1 small, 2 medium, 3 large (`CampTuning.OUTPOST_HOGLINS`); the first is leashed to the post. All are tagged livestock and set "cannot be hunted", as in a bastion stable (mixin `HoglinHuntInvoker`). They are not on the roster and not counted for clearing; re-made with the roster only when the pen has none left and its post still stands.
+- **Portal room:** the overworld room, deeper (floor 7 down, 5 high, always 7x7 inside), reached by a longer stair tunnel. A 4x5 obsidian frame stands at the back facing the stairs, its whole frame inside one chunk. State from the outpost's seed: 40 % lit; 30 % whole but unlit with 1 to 3 crying obsidian; 30 % broken (1 or 2 frame blocks gone, crying obsidian, unlit). Netherrack and magma at its foot, magma only beside the frame, not in the walkway. A lit portal works as vanilla (using it may create an overworld portal).
+
+### Roster, leader, light, loot
+
+- **Roster:** piglins; ground members are a piglin brute 25 % of the time (`CampTuning.OUTPOST_BRUTE`). Tower lookouts hold crossbows; other piglins a crossbow or golden sword, brutes a golden axe. Piglins keep vanilla behaviour (neutral to players wearing gold). Built outside the Nether (command, tests), piglins and hoglins are made immune to zombification.
+- **Leader:** a piglin brute, scaled and toughened like overworld leaders, in golden helmet, chestplate and leggings with Protection II and a golden axe with Sharpness III; drop chances as overworld leaders.
+- **Light:** outposts are lit (lanterns, a lit portal). Overworld camps stay dark; the "camps are dark" check in `everyCampBlockIsSupported` skips the piglin kind.
+- **Loot:** `chests/nether_outpost` (by the fire): gold nuggets and ingots, crimson fungus, raw and cooked porkchops, leather, quartz, arrows, string, golden carrots, a worn crossbow, 1 in 4 the outpost's banner. `chests/nether_outpost_room`: gold, gilded blackstone, enchanted golden sword/helmet/chestplate, obsidian, crying obsidian, flint and steel, fire charges, porkchops, a gold block, the piglin banner pattern, a snout trim template, and rarely netherite scrap (weight 1 of about 90).
+
+### Numbers for the owner to playtest
+
+In `CampTuning`, `NetherOutpostStructure` and the structure set: spacing 22 / separation 8; floor at least 10 above the lava sea, headroom 12, slope 5; brute chance 25 %; hoglins 1/2/3; portal 40/30/30.
+
+### Tests
+
+- Milestone `CampsGameTest`: `netherOutpostBiomes`, `outpostRosterAndPennedHoglins`, `outpostGateCanBeWalkedThrough`, `outpostRampCanBeClimbed`, `outpostPortalRoomCanBeReached`, `outpostPortalsMatchTheirState`. Existing camp tests include the piglin kind automatically: `campPiecesNeverOverlap` (gate and pen are new footprints), `campFencesEndCleanly`, `everyCampBlockIsSupported` (minus the dark check).
+- Client part `outposts` (`OutpostsClientGameTest`, seed 20261116): see Milestone test objectives.
+- Natural test world: `tools/build-naturalworld.py` has a "Nether outpost (piglins)" sign (found with `camp locate piglin` run in the Nether, chunks force-loaded there, the sign teleports into the Nether, Nether chunks pruned like overworld ones). Not run yet (built in a worktree); the script is only syntax-checked.

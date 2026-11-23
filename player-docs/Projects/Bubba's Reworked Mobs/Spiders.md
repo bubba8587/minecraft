@@ -42,8 +42,10 @@ Upright victims hang head down in a tall cocoon. Animals are slung lengthwise.
 Giant spiders roam **old-growth taiga**. They're nearly twice the size of a normal spider. They:
 
 - spin big tangled webs between the tree trunks as they go, tied off with cobwebs;
-- snatch livestock and haul it up a trunk into a web, where it's cocooned;
-- go after a nearby animal before a player, so livestock makes good bait;
+- snatch livestock and carry it up to the centre of the nearest web they spun themselves, where it hangs cocooned below them (with none of their own webs nearby, they haul it up a trunk instead);
+- remember up to six webs of their own, and ignore webs other spiders spun;
+- leave a fresh catch for about 30 seconds, letting themselves down on silk and prowling the ground within about 10 blocks of the cocoon, then walk back, climb up and feed;
+- go after a nearby animal before a player, so livestock makes good bait (a prowling giant still fights players in the dark or when hurt, but takes no more animals);
 - call little spiders, small and weak, when hurt;
 - drop extra string and spider eyes.
 

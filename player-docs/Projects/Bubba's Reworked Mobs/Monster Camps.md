@@ -6,7 +6,7 @@
 > | | |
 > |---|---|
 > | **Type** | Structure |
-> | **Location** | Most overworld land biomes; the kind follows the biome |
+> | **Location** | Most overworld land biomes; Nether outposts in crimson forests and the Nether wastes |
 > | **Contains** | A roster of monsters with a leader, banners, a loot chest, a dark room underground |
 
 A **monster camp** is a dark, trodden clearing held by a band of undead. It has scrappy lookout towers on stilts, bone-and-skull rock piles, skulls on pikes, a cold campfire ringed by log seats, a lean-to and a chest of loot. Camps have **no light at all**, so they're hard to spot at night. Far fewer monsters spawn on their own (see [[Monster Spawning]]), so camps are where to go for skeletons and zombies.
@@ -19,6 +19,7 @@ A **monster camp** is a dark, trodden clearing held by a band of undead. It has 
 | Husk | Deserts and badlands |
 | Stray | Snowy biomes |
 | Bogged | Swamps and mangroves |
+| Piglin ([[#Nether outposts]]) | Crimson forests and the Nether wastes |
 
 There are three sizes:
 
@@ -62,15 +63,28 @@ A lit campfire anywhere in a camp **quiets it** while it burns: no roster appear
 
 Pillager outposts follow the same rule. Break every banner in an outpost and pillagers stop spawning there; put a banner back and they return. Patrols are unchanged.
 
+## Nether outposts
+
+A **Nether outpost** is the piglin kind of monster camp, found only in crimson forests and the Nether wastes. Outposts are much rarer than overworld camps and never stand near a bastion or fortress. Each sits on a levelled shelf of ground under the Nether's ceiling, with any lava close by sealed over with blackstone.
+
+- **Look:** crimson-wood watchtowers with nether brick railings and polished blackstone roofs, a gilded blackstone gate in a stretch of rampart hung with soul lanterns, rock piles studded with gilded blackstone and gold, piglin heads and lanterns on pikes, and nether brick bridges between towers. Unlike overworld camps, outposts are lit.
+- **Hoglin pen:** a fenced pen of crimson nylium with one to three hoglins kept as livestock, the first tied to a post in the middle. Piglins don't hunt them. They don't count toward clearing the outpost, and come back with the roster if the pen is empty and its post still stands.
+- **The roster:** piglins, about one in four of them a piglin brute. Lookouts on the towers carry crossbows; the rest carry crossbows or golden swords, and brutes golden axes. As in vanilla, piglins leave a player wearing gold alone.
+- **The leader** is a big piglin brute in enchanted gold armor with an enchanted golden axe.
+- **The portal room:** the stair tunnel leads deeper than in overworld camps, to a room with an obsidian Nether portal frame at the back, like a ruined portal. Some portals are lit and work as normal, some are whole but unlit with crying obsidian in the frame, and some are broken.
+- **Loot:** a chest by the fire holds gold, crimson fungus, porkchops, quartz, a worn crossbow and sometimes the outpost's banner. The room's chest holds better gold gear, obsidian, crying obsidian, flint and steel, the piglin banner pattern, a snout armor trim and, rarely, netherite scrap.
+
+Banners, refilling and lit fires work the same as in every other camp. The outpost's banner is black with a yellow piglin snout.
+
 ## Finding one
 
-There are about six camps in every 1000 by 1000 blocks, never near villages. A skeleton or zombie camp is usually a few hundred blocks away. Husk, stray and bogged camps are only found in their own biomes. Operators can build one with `/bubbas_reworked_mobs camp build` (see [[Reworked Mobs Commands]]).
+There are about six camps in every 1000 by 1000 blocks, never near villages. A skeleton or zombie camp is usually a few hundred blocks away. Husk, stray and bogged camps are only found in their own biomes, and piglin outposts only in the Nether. Operators can build one with `/bubbas_reworked_mobs camp build` (see [[Reworked Mobs Commands]]).
 
 ## History
 
 | Version | Changes |
 |---|---|
-| 0.1.0 | Added: monster camps with banners, leaders, shade and an underground room. Pillager outposts stop spawning when their banners are gone. |
+| 0.1.0 | Added: monster camps with banners, leaders, shade and an underground room. Pillager outposts stop spawning when their banners are gone. Nether outposts. |
 
 ## See also
 

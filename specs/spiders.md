@@ -59,6 +59,8 @@ Owner's design (2026-11-22). Ordinary spiders stay **mostly vanilla**. What's ne
 - A player walking under a nest makes a sleeper drop on its thread. A miss turns it into a normal spider. A hit latches and reels the player up into the nest.
 - Spun webs are hit only at their strands (`GiantSpiderGameTest.webHitsOnlyTheStrands`, also core `spunWebHitsOnlyTheStrands`): a crosshair pick through a gap, from inside or outside the span, hits nothing; aiming at a strand hits the web there; a pig behind a gap gets hit; an arrow through a gap misses and one along a strand's line hits.
 - Giant spiders spawn only in old-growth taiga, at the larger scale. They spin webs between trees as they roam, snatch nearby livestock into their webs before going for players, and summon small, weak spiders when fought.
+- A giant hauls its catch to the hub of its own nearest web, ignoring a nearer web another spider spun; the cocoon hangs within 1 block of the hub (`GiantSpiderGameTest.haulsToItsOwnWebCentre`). It remembers its webs across a save and load (`remembersItsWebsAcrossSaves`).
+- A giant with a cocoon comes down to the ground, strolls 3+ blocks from its perch, walks back and feeds (`leavesItsPerchAndComesBackToFeed`).
 
 ## Step 1 as built: cave nests (2026-11-22)
 
@@ -273,11 +275,12 @@ Player-facing: `player-docs/Projects/Bubba's Reworked Mobs/Spiders.md`. Numbers 
 - **Playtest numbers:** nest frequency, trigger area, drop speed, reel speed, refill rate, grip and cocoon toughness (tables above).
 - **Still to do:** a screenshot of Stormie's wall and ceiling climbing (its navigator refuses scripted paths; bait it with prey at night).
 - **Milestone objectives without tests:** listed under each step's Tests.
+- **Giants away from the cocoon (owner to decide):** a prowling giant walks 1 block off the perch and the cocoon hangs low, so a player can reach under it and cut the catch free while the spider is away (intended?). Owner may want it to stay closer or guard. Tasks aren't saved: a giant reloaded mid-prowl roams again (its cocoon stays). In `BACKLOG.md`.
 
 ## Waiting by the cocoon (owner, 2026-11-22)
 
 - While a giant spider waits to come back and feed, it no longer sits still. Every `WAIT_PACE_TICKS` (50) it creeps to a new spot up to `WAIT_PACE_RADIUS` (2 blocks) from where it backed off to: along the overhang when perched under one, up the trunk otherwise. It only moves where its body fits (`noCollision`). It still feeds on time.
-- Not yet: true wandering off the perch (vanilla stroll plus `restrictTo`), and hauling the catch to the centre of its own web (BACKLOG item 6).
+- Replaced 2026-11-24 by real prowling off the perch and hauling to its own web (below).
 
 ## Strand hitboxes (2026-11-23)
 
@@ -286,3 +289,22 @@ Player-facing: `player-docs/Projects/Bubba's Reworked Mobs/Spiders.md`. Numbers 
 - `mixin/ProjectileUtilWebMixin` hooks vanilla's three entity picks in `ProjectileUtil`: the view pick (`getEntityHitResult(Entity, ...)`, used by the client crosshair in `LocalPlayer.pick`: melee, shears, use); the move pick (`getEntityHitResult(Level, ...)`: arrows, throwables, fireballs, rockets); and `getManyEntityHitResult` (attack-range weapons). For a web the box clip is replaced by the strand clip, and both the pick-from-inside-the-box check and the margin hit are off.
 - Not multipart: 26.3's parts are specific to the ender dragon (`EnderDragonPart`, the level's dragon-part list), not a general API, and up to 16 strand parts per web would add entities.
 - Open (cosmetic): F3+B debug hitboxes still draw the whole span box.
+
+## Prowling and own webs (BACKLOG playtest fixes 5 and 6; built 2026-11-24)
+
+- **Prowling:** a giant that has cocooned a catch rests on its perch a few seconds, then lets itself down on silk beside the perch (away from the trunk, clear of the cocoon) and prowls the ground within about 10 blocks of its cocoon. After the wait (30 s, as before) it walks back to the foot of its perch, climbs up and feeds. While prowling it still fights players (in the dark or when hurt) but doesn't snatch more livestock.
+- **Own webs:** a giant remembers the webs it spun (up to 6, kept across save and load). With a catch it goes to the centre of its nearest own web within 24 blocks: walks under the hub, climbs straight up its thread and hangs upside down at the hub with the cocoon slung below. Webs other spiders spun are ignored. With no own web in reach it uses the old trunk perch.
+
+### How it's built
+
+- New tasks: `DESCEND` (silk down to a landing spot one block off the perch, at `CLIMB_SPEED`), `PROWL` (on the ground, vanilla stroll), `RETURN` (paths to the perch foot, then `CLIMB` without a catch, then `FEED`). `WAIT` is now only the rest on the perch (`WAIT_PERCH_TICKS` 120); `COCOON_WAIT_TICKS` (600) counts across WAIT and PROWL. RETURN gives up pathing after `HAUL_GIVE_UP_TICKS` and climbs from where it is.
+- Prowl uses vanilla: `setHomeTo(larder, PROWL_RADIUS = 10)` plus a vanilla `RandomStrollGoal(0.8, STROLL_INTERVAL = 60, checkNoActionTime = false)` that only runs in PROWL. Not the existing `WaterAvoidingRandomStrollGoal`: it checks vanilla's monster "no action time", which climbs in daylight, so a giant never strolled by day. `RandomPos` already biases toward the home, so no hand-rolled wander.
+- Hand-rolled: the descent and climb (straight-line moves on silk, like the haul climb; vanilla has no rope-descent movement) and picking the larder web (a loop over the giant's own remembered webs; no vanilla search covers "entities this mob made").
+- Own webs: an `EntityReference<SpunWeb>` list saved as `OwnWebs` (vanilla's entity-reference codec, as Fox's trusted list). `OWN_WEBS_MAX` 6, `OWN_WEB_SEARCH` 24. A web hub qualifies if the two blocks under it are air.
+- Hits on a giant climbing back up without a catch don't loosen any grip (nothing is held).
+- Tasks still aren't saved: a giant reloaded mid-prowl roams again; its cocoon stays.
+
+### Tests
+
+- Milestone `GiantSpiderGameTest`: `haulsToItsOwnWebCentre`, `remembersItsWebsAcrossSaves`, `leavesItsPerchAndComesBackToFeed` (objectives above). `CocoonGameTest.spiderComesBackToFeed` skips the prowl too.
+- Client part `webs`: new shots `giant-cocoon-own-web-hub`, `giant-prowls-below-its-web`.
