@@ -23,6 +23,8 @@ public final class ModBlocks {
 
 	/** Loot on display: one item shown with its own model (owner-approved B15 exception, specs/undead.md "Loot on display"). */
 	public static final LootDisplayBlock LOOT_DISPLAY;
+	/** Gravestone (grave/GravestoneBlock): a standing sign in stone (specs/graveyards.md; B15, owner-approved). */
+	public static final io.github.bubba8587.bubbas_reworked_mobs.grave.GravestoneBlock GRAVESTONE;
 
 	static {
 		for (UndeadVariant variant : UndeadVariant.values()) {
@@ -38,6 +40,10 @@ public final class ModBlocks {
 		LOOT_DISPLAY = Registry.register(BuiltInRegistries.BLOCK, displayKey, new LootDisplayBlock(BlockBehaviour.Properties.of().setId(displayKey)
 				.mapColor(MapColor.NONE).strength(0.2F).noCollision().noOcclusion().noLootTable().pushReaction(PushReaction.POPPED)
 				.isSuffocating((s, l, p) -> false).isViewBlocking((s, l, p, box) -> false)));
+		ResourceKey<Block> graveKey = ResourceKey.create(Registries.BLOCK, BubbasReworkedMobs.id("gravestone"));
+		GRAVESTONE = Registry.register(BuiltInRegistries.BLOCK, graveKey, new io.github.bubba8587.bubbas_reworked_mobs.grave.GravestoneBlock(
+				BlockBehaviour.Properties.of().setId(graveKey).mapColor(MapColor.STONE).strength(1.5F, 6.0F).requiresCorrectToolForDrops()
+						.noOcclusion().isSuffocating((s, l, p) -> false).isViewBlocking((s, l, p, box) -> false)));
 	}
 
 	private ModBlocks() {

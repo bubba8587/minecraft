@@ -107,6 +107,14 @@ public final class TotemsTuning {
 	public static final Map<ResourceKey<LootTable>, Float> END_LOOT = Map.of(
 			BuiltInLootTables.END_CITY_TREASURE, 0.05F);
 
+	/**
+	 * Grave Talisman in Bubba's Reworked Mobs' crypts (specs/graveyards.md: a family vault has a chance of one). Keyed
+	 * by that mod's table id, so nothing here depends on it: without it the table never exists and the pool is unused.
+	 */
+	public static final Map<ResourceKey<LootTable>, Float> TALISMAN_LOOT = Map.of(
+			ResourceKey.create(net.minecraft.core.registries.Registries.LOOT_TABLE,
+					net.minecraft.resources.Identifier.fromNamespaceAndPath("bubbas_reworked_mobs", "chests/crypt_family")), 0.15F);
+
 	private TotemsTuning() {
 	}
 }

@@ -34,6 +34,7 @@ public final class TotemsLoot {
 		all.put(ModItems.TOTEM_OF_GROWTH, TotemsTuning.GROWTH_LOOT);
 		all.put(ModItems.TOTEM_OF_SEEKING, TotemsTuning.SEEKING_LOOT);
 		all.put(ModItems.TOTEM_OF_THE_END, TotemsTuning.END_LOOT);
+		all.put(ModItems.GRAVE_TALISMAN, TotemsTuning.TALISMAN_LOOT);
 		return all;
 	}
 

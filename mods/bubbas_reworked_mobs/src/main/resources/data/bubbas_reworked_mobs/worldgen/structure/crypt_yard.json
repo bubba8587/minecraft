@@ -1,0 +1,7 @@
+{
+  "type": "bubbas_reworked_mobs:crypt_yard",
+  "biomes": "#bubbas_reworked_mobs:has_structure/crypt_yard",
+  "spawn_overrides": {},
+  "step": "top_layer_modification",
+  "terrain_adaptation": "none"
+}
