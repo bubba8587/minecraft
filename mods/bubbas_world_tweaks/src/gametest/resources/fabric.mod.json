@@ -8,7 +8,9 @@
 		"fabric-gametest": [
 			"io.github.bubba8587.bubbas_world_tweaks.test.BubbasWorldTweaksCoreGameTest"
 		],
-		"bubba-milestone-gametest": [],
+		"bubba-milestone-gametest": [
+			"io.github.bubba8587.bubbas_world_tweaks.test.VentRhythmGameTest"
+		],
 		"fabric-client-gametest": [
 			"io.github.bubba8587.bubbas_world_tweaks.test.BubbasWorldTweaksClientGameTest"
 		]

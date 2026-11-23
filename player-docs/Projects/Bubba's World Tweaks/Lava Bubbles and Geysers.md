@@ -14,7 +14,7 @@ Wherever a magma block lies under lava (up to four blocks down), the surface abo
 
 ## Lava geysers
 
-Now and then, a bubbling spot near a player erupts for about five seconds, throwing a tall column of black smoke and sparks with a low rumble.
+Every magma block under lava is a vent with its own steady rhythm: it stays quiet for somewhere between 40 seconds and a minute and a half (always the same for that vent, longer under deeper lava), then erupts for about five seconds, throwing a tall column of black smoke and sparks with a low rumble. Watch a vent once and you can time your jump for the next eruption. Vents only erupt near players.
 
 ## Riding the updraft
 

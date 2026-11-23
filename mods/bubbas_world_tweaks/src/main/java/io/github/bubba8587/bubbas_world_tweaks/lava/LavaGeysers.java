@@ -44,16 +44,71 @@ public final class LavaGeysers {
 	}
 
 	private static void sample(ServerLevel level, ServerPlayer player) {
-		RandomSource random = level.getRandom();
+		checkAround(level, player, level.getGameTime() / WorldTweaksTuning.GEYSER_CHECK_TICKS);
+	}
+
+	/** One eruption check around a player, as of this check step. */
+	public static void checkAround(ServerLevel level, ServerPlayer player, long step) {
 		int r = WorldTweaksTuning.GEYSER_SEARCH_RADIUS;
-		for (int i = 0; i < WorldTweaksTuning.GEYSER_COLUMNS_PER_CHECK; i++) {
-			int x = player.getBlockX() + random.nextInt(2 * r + 1) - r;
-			int z = player.getBlockZ() + random.nextInt(2 * r + 1) - r;
-			BlockPos surface = lavaSurface(level, x, player.getBlockY() + 8, player.getBlockY() - 16, z);
-			if (surface != null && LavaGeyser.magmaUnder(level, surface) && random.nextFloat() < WorldTweaksTuning.GEYSER_CHANCE) {
-				erupt(level, surface);
+		int minY = Math.max(level.getMinY(), player.getBlockY() - 16 - WorldTweaksTuning.MAGMA_DEPTH - 1);
+		int maxY = Math.min(level.getMaxY(), player.getBlockY() + 8);
+		for (int cx = (player.getBlockX() - r) >> 4; cx <= (player.getBlockX() + r) >> 4; cx++) {
+			for (int cz = (player.getBlockZ() - r) >> 4; cz <= (player.getBlockZ() + r) >> 4; cz++) {
+				net.minecraft.world.level.chunk.LevelChunk chunk = level.getChunkSource().getChunkNow(cx, cz);
+				if (chunk != null) {
+					ventsIn(level, chunk, minY, maxY, step);
+				}
 			}
 		}
+	}
+
+	/** Magma blocks in this chunk's sections between minY and maxY: each erupts on its own rhythm. */
+	private static void ventsIn(ServerLevel level, net.minecraft.world.level.chunk.LevelChunk chunk, int minY, int maxY, long step) {
+		net.minecraft.world.level.chunk.LevelChunkSection[] sections = chunk.getSections();
+		BlockPos.MutableBlockPos p = new BlockPos.MutableBlockPos();
+		for (int i = level.getSectionIndex(minY); i <= level.getSectionIndex(maxY) && i < sections.length; i++) {
+			net.minecraft.world.level.chunk.LevelChunkSection section = sections[i];
+			if (section.hasOnlyAir() || !section.maybeHas(st -> st.is(net.minecraft.world.level.block.Blocks.MAGMA_BLOCK))) {
+				continue;
+			}
+			int baseY = level.getSectionYFromSectionIndex(i) << 4;
+			for (int y = 0; y < 16; y++) {
+				for (int x = 0; x < 16; x++) {
+					for (int z = 0; z < 16; z++) {
+						if (section.getBlockState(x, y, z).is(net.minecraft.world.level.block.Blocks.MAGMA_BLOCK)) {
+							p.set(chunk.getPos().getMinBlockX() + x, baseY + y, chunk.getPos().getMinBlockZ() + z);
+							ventAt(level, p, step);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	private static void ventAt(ServerLevel level, BlockPos magma, long step) {
+		BlockPos.MutableBlockPos q = magma.mutable();
+		for (int depth = 1; depth <= WorldTweaksTuning.MAGMA_DEPTH + 1; depth++) {
+			q.move(0, 1, 0);
+			if (!level.getFluidState(q).is(FluidTags.LAVA)) {
+				return;
+			}
+			if (level.getBlockState(q.above()).isAir()) {
+				if (eruptsAt(level.getSeed(), magma, depth, step)) {
+					erupt(level, q.immutable());
+				}
+				return;
+			}
+		}
+	}
+
+	/** Whether the vent on this magma block starts erupting on this check step: a fixed rhythm from the world seed and its position. */
+	public static boolean eruptsAt(long worldSeed, BlockPos magma, int depth, long step) {
+		RandomSource vent = RandomSource.create(worldSeed ^ net.minecraft.util.Mth.getSeed(magma) ^ WorldTweaksTuning.VENT_SALT);
+		int quietSeconds = WorldTweaksTuning.VENT_QUIET_BASE + vent.nextInt(WorldTweaksTuning.VENT_QUIET_SPREAD + 1)
+				+ WorldTweaksTuning.VENT_QUIET_PER_DEPTH * (depth - 1);
+		int period = Math.max(1, (quietSeconds * 20 + WorldTweaksTuning.GEYSER_DURATION_TICKS) / WorldTweaksTuning.GEYSER_CHECK_TICKS);
+		int phase = vent.nextInt(period);
+		return Math.floorMod(step + phase, period) == 0;
 	}
 
 	/** The top lava block (air above it) in a column between top and bottom, or null. */

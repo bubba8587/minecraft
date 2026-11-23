@@ -18,15 +18,17 @@ public final class WorldTweaksTuning {
 	public static final float PLOP_PITCH = 0.5F;
 	public static final float PLOP_VOLUME = 0.55F;
 
-	/** Each player checks for eruptions this often, sampling this many columns this far around them. */
+	/** Eruption checks: how often, and how far around each player. */
 	public static final int GEYSER_CHECK_TICKS = 40;
-	public static final int GEYSER_COLUMNS_PER_CHECK = 24;
 	public static final int GEYSER_SEARCH_RADIUS = 24;
-	/** Chance a bubbling spot found by a check erupts. */
-	public static final float GEYSER_CHANCE = 0.125F;
+	/** Every magma block under lava is a vent. Rhythm, in seconds: quiet for QUIET_BASE + up to QUIET_SPREAD (fixed per vent) + QUIET_PER_DEPTH per extra lava block. */
+	public static final int VENT_QUIET_BASE = 40;
+	public static final int VENT_QUIET_SPREAD = 50;
+	public static final int VENT_QUIET_PER_DEPTH = 5;
+	public static final long VENT_SALT = 0x6C617661L;
 	/** An eruption lasts this long, and no two erupt this close together. */
 	public static final int GEYSER_DURATION_TICKS = 100;
-	public static final double GEYSER_SPACING = 8.0;
+	public static final double GEYSER_SPACING = 5.0;
 	/** The column that lifts. */
 	public static final double GEYSER_HEIGHT = 14.0;
 	public static final double GEYSER_RADIUS = 0.8;
