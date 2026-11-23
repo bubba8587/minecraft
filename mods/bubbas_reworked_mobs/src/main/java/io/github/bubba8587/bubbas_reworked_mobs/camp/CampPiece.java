@@ -126,7 +126,18 @@ public class CampPiece extends StructurePiece {
 	private record Bridge(Tower from, Direction dir, int length) {
 	}
 
-	private record Skull(int x, int z, Direction facing, long seed) {
+	private record Skull(int x, int z, Direction facing, boolean buried, long seed) {
+	}
+
+	private record Ribs(int x, int z, Direction along, int length, long seed) {
+		Footprint footprint() {
+			Direction across = along.getClockWise();
+			int ax = x - along.getStepX() - across.getStepX() * 3;
+			int az = z - along.getStepZ() - across.getStepZ() * 3;
+			int bx = x + along.getStepX() * length + across.getStepX() * 3;
+			int bz = z + along.getStepZ() * length + across.getStepZ() * 3;
+			return new Footprint("ribcage", Math.min(ax, bx), Math.min(az, bz), Math.max(ax, bx), Math.max(az, bz));
+		}
 	}
 
 	private record Winding(int x, int z, int risers, int start, long seed) {
@@ -178,6 +189,7 @@ public class CampPiece extends StructurePiece {
 		final List<Spot> leanTos = new ArrayList<>();
 		final List<Bridge> bridges = new ArrayList<>();
 		Skull skull;
+		Ribs ribs;
 		Winding winding;
 		final Direction stairs;
 		final boolean stairsClockwise;
@@ -237,7 +249,7 @@ public class CampPiece extends StructurePiece {
 					int x = cx + (int) Math.round(Math.cos(a) * 10);
 					int z = cz + (int) Math.round(Math.sin(a) * 10);
 					if (claim(Footprint.around("skull", x, z, 6))) {
-						skull = new Skull(x, z, Direction.getApproximateNearest(cx - x, 0.0, cz - z), pieceSeed);
+						skull = new Skull(x, z, Direction.getApproximateNearest(cx - x, 0.0, cz - z), (pieceSeed & 1L) == 0L, pieceSeed);
 						break;
 					}
 				}
@@ -252,6 +264,20 @@ public class CampPiece extends StructurePiece {
 					int z = cz + (int) Math.round(Math.sin(a) * (r - 3));
 					if (claim(Footprint.around("winding tower", x, z, 3))) {
 						winding = new Winding(x, z, risers, start, pieceSeed);
+						break;
+					}
+				}
+			}
+			if (size == CampTuning.Size.LARGE && random.nextInt(3) == 0) {
+				long pieceSeed = random.nextLong();
+				for (int t = 0; t < TRIES; t++) {
+					double a = random.nextDouble() * Math.PI * 2.0;
+					int x = cx + (int) Math.round(Math.cos(a) * (r - 4));
+					int z = cz + (int) Math.round(Math.sin(a) * (r - 4));
+					Direction along = Direction.getApproximateNearest(-Math.sin(a), 0.0, Math.cos(a));
+					Ribs candidate = new Ribs(x - along.getStepX() * 3, z - along.getStepZ() * 3, along, 7, pieceSeed);
+					if (claim(candidate.footprint())) {
+						ribs = candidate;
 						break;
 					}
 				}
@@ -480,6 +506,9 @@ public class CampPiece extends StructurePiece {
 		if (plan.winding != null) {
 			winding(b, plan.winding);
 		}
+		if (plan.ribs != null) {
+			ribcage(b, plan.ribs);
+		}
 		for (Spot banner : plan.banners) {
 			standingBanner(b, banner.x, banner.z, plan.bannerRotation);
 		}
@@ -495,6 +524,7 @@ public class CampPiece extends StructurePiece {
 		if (roomFloor() > level.getMinY()) {
 			room(b); // (a superflat world is too shallow for it)
 		}
+		b.tidyFences(getBoundingBox());
 	}
 
 	/** A floor block mobs can't sink into: mud becomes packed mud. */
@@ -700,31 +730,80 @@ public class CampPiece extends StructurePiece {
 		}
 	}
 
-	private static final double SKULL_RU = 5.2;
-	private static final double SKULL_RW = 5.5;
-	private static final double SKULL_RY = 7.4;
-	private static final double SKULL_WC = -0.5;
+	/** Skull rock front, top row first (skull-local dy 12 down to 0, u -6 to 6): # bone, E eye socket, N nose, M mouth. */
+	private static final String[] SKULL_FACE = {
+			"....#####....",
+			"..#########..",
+			".###########.",
+			"#############",
+			"##EEE###EEE##",
+			"##EEE###EEE##",
+			"##EEE###EEE##",
+			".#####N#####.",
+			"..###NNN###..",
+			"...#######...",
+			"...#MMMMM#...",
+			"...#MMMMM#...",
+			"...#######...", };
+	/** How deep a half-buried skull sits: its eye sockets just off the ground, a step up into one. */
+	static final int SKULL_BURIED_SINK = 4;
 
-	/** Across-and-depth term of the skull's shape: round at the back, a flatter face at the front. */
-	private static double skullFlat(int u, int w, double ru, double rw) {
-		double t = (w - SKULL_WC) / rw;
-		return sq(u / ru) + (w > SKULL_WC ? sq(sq(t)) : sq(t));
+	private static char skullFace(int u, int dy) {
+		if (u < -6 || u > 6 || dy < 0 || dy > 12) {
+			return '.';
+		}
+		return SKULL_FACE[12 - dy].charAt(u + 6);
 	}
 
-	/** Skull rock cell, skull-local (u across, w toward the fire, dy up from the camp's ground): 0 outside, 1 shell, 2 hollow. */
-	private static int skullCell(int u, int w, int dy) {
-		double outer = skullFlat(u, w, SKULL_RU, SKULL_RW) + sq(dy / SKULL_RY);
-		if (outer > 1.0) {
+	/** The skull's solid envelope (skull-local u across, w toward the fire, dy up from the skull's base), openings filled. */
+	private static boolean skullShape(int u, int w, int dy) {
+		if (skullFace(u, dy) == '.') {
+			return false;
+		}
+		int au = Math.abs(u);
+		int front = dy == 9 && au >= 1 && au <= 5 ? 5 : au == 6 || dy == 12 ? 3 : 4; // brow ridge out over the eyes
+		if (w > front) {
+			return false;
+		}
+		return w >= 0 || sq(u / 6.6) + sq(w / 6.2) + sq((dy - 6.5) / 7.0) <= 1.0;
+	}
+
+	/** The skull's hollow: shape cells with shape all round them. */
+	private static boolean skullHollow(int u, int w, int dy) {
+		if (dy < 1) {
+			return false;
+		}
+		for (int a = -1; a <= 1; a++) {
+			for (int c = -1; c <= 1; c++) {
+				for (int e = -1; e <= 1; e++) {
+					if (!skullShape(u + a, w + c, dy + e)) {
+						return false;
+					}
+				}
+			}
+		}
+		return true;
+	}
+
+	/** Skull cell: 0 outside, 1 bone shell, 2 air (hollow or an opening), 3 dark socket back. */
+	private static int skullCell(int u, int w, int dy, boolean buried) {
+		if (!skullShape(u, w, dy)) {
 			return 0;
 		}
-		double inner = skullFlat(u, w, SKULL_RU - 1.3, SKULL_RW - 1.3) + sq(dy / (SKULL_RY - 1.4));
-		return inner < 1.0 && dy > 0 ? 2 : 1;
-	}
-
-	/** Openings in the skull's face: the mouth, the nose hole and the eye sockets. */
-	private static boolean skullOpening(int u, int w, int dy) {
-		int au = Math.abs(u);
-		return w >= 1 && (au <= 1 && dy >= 1 && dy <= 2 || au == 0 && dy == 3 || (au == 1 || au == 2) && (dy == 4 || dy == 5));
+		char c = skullFace(u, dy);
+		boolean door = c == 'E' && buried && u > 0;
+		if ((c == 'E' || c == 'N') && !door) {
+			if (w >= 2) {
+				return 2;
+			}
+			if (w == 1) {
+				return 3;
+			}
+		}
+		if (c == 'M' && w >= -1 || door && w >= 1 || skullHollow(u, w, dy)) {
+			return 2;
+		}
+		return 1;
 	}
 
 	private static double sq(double v) {
@@ -732,16 +811,21 @@ public class CampPiece extends StructurePiece {
 	}
 
 	/**
-	 * A big skull rock: a hollow dome of calcite and bone facing the fire, eye sockets and a nose hole, a mouth to walk
-	 * in by with dripstone fangs, a bone brow, a dark trodden floor with bones and a skull inside.
+	 * A big skull rock facing the fire: a round calcite cranium over a narrower jaw, a brow over two big dark eye
+	 * sockets, a nose hole, the mouth a doorway into the hollow. Half-buried, only the cranium shows and an eye is the way in.
 	 */
 	private void skull(ClippedBuild b, Skull s) {
 		Direction f = s.facing;
 		Direction across = f.getClockWise();
 		int y0 = centre.getY();
+		int sink = s.buried ? SKULL_BURIED_SINK : 0;
 		for (int u = -6; u <= 6; u++) {
-			for (int w = -6; w <= 6; w++) {
-				if (skullCell(u, w, 0) == 0) {
+			for (int w = -6; w <= 5; w++) {
+				boolean any = false;
+				for (int dy = sink; dy <= 12 && !any; dy++) {
+					any = skullShape(u, w, dy);
+				}
+				if (!any) {
 					continue;
 				}
 				int x = s.x + across.getStepX() * u + f.getStepX() * w;
@@ -758,41 +842,70 @@ public class CampPiece extends StructurePiece {
 				for (int y = y0 + 1; y <= g; y++) {
 					b.put(x, y, z, Blocks.AIR.defaultBlockState());
 				}
-				boolean inside = skullCell(u, w, 1) == 2 || skullOpening(u, w, 1);
-				b.put(x, y0, z, inside ? fullBlock(kind.trodden(cell.nextFloat())) : kind.rock(cell.nextFloat()));
-				for (int dy = 1; dy <= 8; dy++) {
-					int y = y0 + dy;
-					int what = skullCell(u, w, dy);
+				boolean floorInside = skullCell(u, w, sink + 1, s.buried) == 2;
+				b.put(x, y0, z, floorInside ? fullBlock(kind.trodden(cell.nextFloat())) : skullShape(u, w, sink) ? Blocks.CALCITE.defaultBlockState()
+						: kind.rock(cell.nextFloat()));
+				for (int dy = sink + 1; dy <= 12; dy++) {
+					int y = y0 + dy - sink;
+					int what = skullCell(u, w, dy, s.buried);
 					float roll = cell.nextFloat();
 					if (what == 0) {
 						continue;
 					}
-					if (what == 2 || skullOpening(u, w, dy)) {
-						boolean fang = Math.abs(u) == 1 && dy == 2 && what == 1 && skullCell(u, w, 3) == 1 && !skullOpening(u, w, 3);
-						b.put(x, y, z, fang ? Blocks.POINTED_DRIPSTONE.defaultBlockState().setValue(PointedDripstoneBlock.TIP_DIRECTION, Direction.DOWN)
-								: Blocks.AIR.defaultBlockState());
-					} else if (w >= 1 && dy == 6 && Math.abs(u) <= 3 && skullCell(u, w + 1, dy) == 0) {
-						b.put(x, y, z, Blocks.BONE_BLOCK.defaultBlockState().setValue(RotatedPillarBlock.AXIS, across.getAxis())); // brow
-					} else if (w >= 1 && dy <= 2 && Math.abs(u) <= 3 && skullCell(u, w + 1, dy) == 0) {
-						b.put(x, y, z, Blocks.BONE_BLOCK.defaultBlockState()); // teeth
-					} else if (dy == 1) {
-						b.put(x, y, z, kind.rock(roll));
-					} else {
-						b.put(x, y, z, roll < 0.78F ? Blocks.CALCITE.defaultBlockState() : roll < 0.92F ? Blocks.BONE_BLOCK.defaultBlockState()
-								: Blocks.DIORITE.defaultBlockState());
-					}
+					b.put(x, y, z, what == 2 ? Blocks.AIR.defaultBlockState() : what == 3 ? Blocks.COAL_BLOCK.defaultBlockState()
+							: roll < 0.9F ? Blocks.CALCITE.defaultBlockState() : Blocks.BONE_BLOCK.defaultBlockState());
 				}
 			}
 		}
-		// bones and a skull on the floor inside
+		if (s.buried) {
+			for (int u = 2; u <= 4; u++) {
+				b.put(s.x + across.getStepX() * u + f.getStepX() * 5, y0 + 1, s.z + across.getStepZ() * u + f.getStepZ() * 5, Blocks.CALCITE.defaultBlockState());
+			}
+		}
+		// a skull on the floor inside
 		RandomSource random = RandomSource.create(s.seed);
-		for (int i = 0; i < 3; i++) {
-			int u = (random.nextInt(3) - 1) * 2;
-			int w = -2 + random.nextInt(2);
-			int x = s.x + across.getStepX() * u + f.getStepX() * w;
-			int z = s.z + across.getStepZ() * u + f.getStepZ() * w;
-			b.put(x, y0 + 1, z, i == 0 ? kind.skull().setValue(SkullBlock.ROTATION, random.nextInt(16))
-					: Blocks.BONE_BLOCK.defaultBlockState().setValue(RotatedPillarBlock.AXIS, Direction.Axis.values()[random.nextInt(3)]));
+		int x = s.x - f.getStepX() * 2;
+		int z = s.z - f.getStepZ() * 2;
+		b.put(x, y0 + 1, z, kind.skull().setValue(SkullBlock.ROTATION, random.nextInt(16)));
+	}
+
+	/** Ribcage arch: one rib's cells across the path (|u|, dy above the ground), from the spine down to the ground. */
+	private static final int[][] RIB = { { 1, 5 }, { 2, 5 }, { 3, 4 }, { 3, 3 }, { 3, 2 }, { 2, 1 } };
+
+	/** A giant's ribcage lying over a path into the camp: a bone spine five up, ribs arching down either side every other block. */
+	private void ribcage(ClippedBuild b, Ribs ribs) {
+		Direction d = ribs.along;
+		Direction across = d.getClockWise();
+		int y0 = centre.getY();
+		for (int k = -1; k <= ribs.length; k++) {
+			for (int u = -3; u <= 3; u++) {
+				int x = ribs.x + d.getStepX() * k + across.getStepX() * u;
+				int z = ribs.z + d.getStepZ() * k + across.getStepZ() * u;
+				b.clearCover(x, z, 12);
+				for (int dy = 1; dy <= 6; dy++) {
+					b.put(x, y0 + dy, z, Blocks.AIR.defaultBlockState());
+				}
+				int g = b.ground(x, z);
+				if (g != Integer.MIN_VALUE) {
+					for (int y = g + 1; y <= y0; y++) {
+						b.put(x, y, z, kind.rock(0.5F));
+					}
+				}
+			}
+			int sx = ribs.x + d.getStepX() * k;
+			int sz = ribs.z + d.getStepZ() * k;
+			b.put(sx, y0 + 5, sz, Blocks.BONE_BLOCK.defaultBlockState().setValue(RotatedPillarBlock.AXIS, d.getAxis()));
+			if (k < 0 || k >= ribs.length || k % 2 == 1) {
+				continue;
+			}
+			for (int side = -1; side <= 1; side += 2) {
+				for (int[] c : RIB) {
+					int x = sx + across.getStepX() * c[0] * side;
+					int z = sz + across.getStepZ() * c[0] * side;
+					Direction.Axis axis = c[0] >= 2 && c[1] <= 4 || c[1] == 1 ? Direction.Axis.Y : across.getAxis();
+					b.put(x, y0 + c[1], z, Blocks.BONE_BLOCK.defaultBlockState().setValue(RotatedPillarBlock.AXIS, axis));
+				}
+			}
 		}
 	}
 
@@ -955,7 +1068,28 @@ public class CampPiece extends StructurePiece {
 
 	/** Inside the skull rock, and the ground before its mouth (tests); null without one. */
 	public BlockPos skullInside() {
-		return plan.skull == null ? null : new BlockPos(plan.skull.x, centre.getY() + 1, plan.skull.z);
+		if (plan.skull == null) {
+			return null;
+		}
+		Direction f = plan.skull.facing;
+		return new BlockPos(plan.skull.x - f.getStepX(), centre.getY() + 1, plan.skull.z - f.getStepZ());
+	}
+
+	/** Whether the camp's skull rock is the half-buried one (tests); false without one. */
+	public boolean skullBuried() {
+		return plan.skull != null && plan.skull.buried;
+	}
+
+	/** The ribcage's two path ends on the ground, just outside its first and last rib (tests); null without one. */
+	public BlockPos[] ribcageEnds() {
+		if (plan.ribs == null) {
+			return null;
+		}
+		Ribs ribs = plan.ribs;
+		Direction d = ribs.along;
+		int y = centre.getY() + 1;
+		return new BlockPos[] { new BlockPos(ribs.x - d.getStepX() * 2, y, ribs.z - d.getStepZ() * 2),
+				new BlockPos(ribs.x + d.getStepX() * (ribs.length + 1), y, ribs.z + d.getStepZ() * (ribs.length + 1)) };
 	}
 
 	public BlockPos skullMouth() {
@@ -963,7 +1097,9 @@ public class CampPiece extends StructurePiece {
 			return null;
 		}
 		Direction f = plan.skull.facing;
-		return new BlockPos(plan.skull.x + f.getStepX() * 6, centre.getY() + 1, plan.skull.z + f.getStepZ() * 6);
+		int u = plan.skull.buried ? 3 : 0;
+		Direction across = f.getClockWise();
+		return new BlockPos(plan.skull.x + f.getStepX() * 6 + across.getStepX() * u, centre.getY() + 1, plan.skull.z + f.getStepZ() * 6 + across.getStepZ() * u);
 	}
 
 	/** The first ramped tower: the ground at its ramp's foot and its platform (tests); null without one. */
@@ -1272,9 +1408,10 @@ public class CampPiece extends StructurePiece {
 		if (plan.skull != null) {
 			Direction f = plan.skull.facing;
 			Direction across = f.getClockWise();
+			int sink = plan.skull.buried ? SKULL_BURIED_SINK : 0;
 			for (int u = -2; u <= 2; u++) {
 				for (int w = -3; w <= 1; w++) {
-					if (skullCell(u, w, 1) == 2 && skullCell(u, w, 3) == 2) {
+					if (skullHollow(u, w, sink + 1) && skullHollow(u, w, sink + 3)) {
 						spots.add(new BlockPos(plan.skull.x + across.getStepX() * u + f.getStepX() * w, centre.getY() + 1,
 								plan.skull.z + across.getStepZ() * u + f.getStepZ() * w));
 					}
