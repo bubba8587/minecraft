@@ -25,6 +25,7 @@
 			"io.github.bubba8587.bubbas_reworked_mobs.test.UndeadVariantsGameTest",
 			"io.github.bubba8587.bubbas_reworked_mobs.test.CampsGameTest",
 			"io.github.bubba8587.bubbas_reworked_mobs.test.DawnGameTest",
+			"io.github.bubba8587.bubbas_reworked_mobs.test.FireWardGameTest",
 			"io.github.bubba8587.bubbas_reworked_mobs.test.GiantSpiderGameTest",
 			"io.github.bubba8587.bubbas_reworked_mobs.test.CocoonGameTest"
 		],

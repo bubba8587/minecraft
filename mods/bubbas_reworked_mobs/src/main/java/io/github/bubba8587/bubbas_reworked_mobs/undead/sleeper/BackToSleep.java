@@ -23,20 +23,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jspecify.annotations.Nullable;
 
-/**
- * Back to sleep at dawn (owner, 2026-11-22, specs/undead.md). A woken undead that was awake in the dark and is still
- * about when the sun comes up, with nothing to fight, walks to the nearest place out of the sun and becomes a sleeper
- * again there, with everything it carries. Crypts refill themselves; a cleared graveyard quietly repopulates if you
- * leave survivors.
- *
- * <p>Owner: an undead can always sleep by sitting down in a pocket where it's safe to stand. So a place is any spot on
- * a solid floor out of the sun (a light-blocking roof somewhere over it) and dim (block light at most
- * {@link UndeadTuning#SLEEP_MAX_LIGHT}): standing room means it sits down there; a one-high niche means it lies down.
- * An open grave (a pit walled on three sides) does too, sun or not: it lies down in it.
- *
- * <p>The walking and the nearest-first search are vanilla's {@link MoveToBlockGoal} (its target is the floor block).
- * "Was awake in the dark" is an entity tag, so it survives a reload; mobs woken by day don't go straight back to sleep.
- */
+/** Back to sleep at dawn: a woken undead walks to a shaded spot and becomes a sleeper again. */
 public final class BackToSleep extends MoveToBlockGoal {
 	/** Entity tag: this woken undead has been awake while it was dark. */
 	public static final String SAW_NIGHT_TAG = "bubbas_reworked_mobs.saw_night";
@@ -48,7 +35,7 @@ public final class BackToSleep extends MoveToBlockGoal {
 		this.undead = (Monster) mob;
 	}
 
-	/** Every server tick of a woken undead: remembers that it saw the night. */
+	/** Tags a woken undead that is awake at night. */
 	public static void noteNight(ServerLevel level, Monster mob) {
 		if (level.dimensionType().hasSkyLight() && level.isDarkOutside() && !mob.entityTags().contains(SAW_NIGHT_TAG)) {
 			mob.addTag(SAW_NIGHT_TAG);
@@ -75,7 +62,7 @@ public final class BackToSleep extends MoveToBlockGoal {
 		return reducedTickDelay(UndeadTuning.SLEEP_RESEARCH_TICKS + mob.getRandom().nextInt(20));
 	}
 
-	/** Close enough to lie down: beside it will do (a one-high niche has no room to step into first). */
+	/** Arrival distance. */
 	@Override
 	public double acceptedDistance() {
 		return 1.6;
@@ -89,16 +76,13 @@ public final class BackToSleep extends MoveToBlockGoal {
 		}
 	}
 
-	/** {@code floor} is the block it would rest on; the place itself is the one above. */
+	/** Valid floor block under a resting place. */
 	@Override
 	protected boolean isValidTarget(LevelReader level, BlockPos floor) {
 		return pose(level, floor.above()) != null;
 	}
 
-	/**
-	 * How it would rest at {@code at}, or null if it can't: sitting where there's room to stand, lying in a one-high
-	 * niche, both out of the sun and dim; lying in an open grave.
-	 */
+	/** Pose for resting at {@code at}, or null. */
 	public static @Nullable SleeperPose pose(LevelReader level, BlockPos at) {
 		BlockState here = level.getBlockState(at);
 		boolean water = here.is(Blocks.WATER) && here.getFluidState().isSource();
@@ -115,14 +99,14 @@ public final class BackToSleep extends MoveToBlockGoal {
 				walls++;
 			}
 		}
-		return walls >= 3 ? SleeperPose.LYING : null; // an open grave
+		return walls >= 3 ? SleeperPose.LYING : null;
 	}
 
 	private static boolean free(LevelReader level, BlockPos pos) {
 		return level.getBlockState(pos).getCollisionShape(level, pos).isEmpty();
 	}
 
-	/** Whether a light-blocking block stands over it within 16 (a barrier or glass roof doesn't keep the sun off). */
+	/** Light-blocking roof within 16 above. */
 	private static boolean roofed(LevelReader level, BlockPos at) {
 		for (int dy = 1; dy <= 16; dy++) {
 			BlockState state = level.getBlockState(at.above(dy));
@@ -143,7 +127,7 @@ public final class BackToSleep extends MoveToBlockGoal {
 		return null;
 	}
 
-	/** The mob rests at {@code at}: a sleeper block takes its place, with its gear and name. */
+	/** Replaces the mob with a sleeper block holding its gear and name. */
 	public static void lieDown(ServerLevel level, Monster mob, BlockPos at) {
 		UndeadVariant variant = variantOf(mob);
 		SleeperPose pose = pose(level, at);
@@ -155,7 +139,7 @@ public final class BackToSleep extends MoveToBlockGoal {
 		if (pose == SleeperPose.LYING) {
 			for (Direction side : Direction.Plane.HORIZONTAL) {
 				if (free(level, at.relative(side))) {
-					facing = side; // it lies looking out of its niche
+					facing = side;
 					break;
 				}
 			}

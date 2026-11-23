@@ -6,6 +6,7 @@
 		"BellBlockMixin",
 		"BoggedLurkMixin",
 		"CampMemberMixin",
+		"FireWardMixin",
 		"OutpostSpawnMixin",
 		"CreeperMixin",
 		"DrownedMixin",

@@ -37,3 +37,39 @@ Branch `undead-2` (worktree `../mc-undead2`), from develop. One section per step
 - `sitsDownUnderAnyCover`: under a plain stone canopy with standing room it sits down.
 - Full milestone suite 143/143.
 - No screenshots for this step (no new visuals: the sleeper poses are the existing ones).
+
+## 2. Fire as a weak ward (specs/undead.md)
+
+### Player-facing
+
+- A **lit campfire or soul campfire, fire or soul fire** keeps hostile mobs that fear fire about **6 blocks away** (counted along the ground's grid, up to 3 up or down): an idle zombie, skeleton, creeper or spider that comes near walks off again. An unlit campfire does nothing.
+- It's a **weak ward**, a deterrent and not a wall. Builder's proposal for the spec's open detail: **a mob already hunting someone pushes straight through.** Only mobs with nothing to fight keep off.
+- **Who fears it:** goal-driven hostile mobs that fire hurts. **Never** fire-immune mobs (blazes, ghasts, magma cubes, wither skeletons, zombified piglins and the like) and never the Nether natives that fire would hurt (piglins, piglin brutes, hoglins, zoglins), nor the warden.
+- Camps generate with an unlit campfire, so they don't ward themselves (and a lit fire also quiets a camp, as before).
+
+### Numbers
+
+| What | Value | Where |
+|---|---|---|
+| Keep-away distance | 6 (Manhattan, across) | `UndeadTuning.FIRE_WARD_RADIUS` |
+| Up and down | 3 | `UndeadTuning.FIRE_WARD_VERTICAL` |
+| Checked | every half second per mob (spread by entity id) | `FireWard.canUse` |
+| Walks off to | a spot up to 9 away from the fire, at 1.1x speed | vanilla `DefaultRandomPos.getPosAway` |
+
+### Spec facts
+
+- Built the way vanilla piglins and hoglins avoid their repellents (specs/vanilla-subsystems.md): block tag `#bubbas_reworked_mobs:undead_repellents` (campfire, soul campfire, fire, soul fire); a campfire counts only while lit (`CampfireBlock.isLitCampfire`, as `PiglinSpecificSensor.isValidRepellent`); the nearest is found with `findBlocksInBoxByManhattanDistance(pos, 6, 3).filterState(FireWard::repels).findFirst()` (as `HoglinSpecificSensor`); the mob walks to `DefaultRandomPos.getPosAway` from it.
+- `undead/FireWard` is a goal (priority 1, MOVE flag), added in `Mob`'s constructor by `mixin/FireWardMixin` to every server-side mob for which `FireWard.fearsFire` holds: `Enemy`, `PathfinderMob`, not `fireImmune()`, not in entity tag `#bubbas_reworked_mobs:unafraid_of_fire` (piglin, piglin brute, hoglin, zoglin, warden). Runs only with no target.
+- Why a goal and not a brain sensor: the mobs it covers (zombies, skeletons, creepers, spiders...) are goal-driven; brain-driven hostile mobs (breeze, creaking and the like) don't get it. Worth an owner call if any of those should.
+- The tag name follows agent 1's brief (`undead_repellents`) although it repels every fire-fearing hostile mob, not only undead.
+
+### Tests (milestone, `FireWardGameTest`)
+
+- `idleMobsKeepAwayFromALitCampfire`: an idle zombie 2 blocks from a lit campfire walks off to 4+ blocks.
+- `onlyLitFireRepels`: lit campfire, lit soul campfire, fire, soul fire repel; an unlit campfire doesn't.
+- `onlyFireFearingMobs`: zombie, skeleton, creeper, spider yes; blaze, wither skeleton, piglin, hoglin, zombified piglin, magma cube, warden, cow no.
+- Full milestone suite 146/146.
+
+### Code comments
+
+Per agent 1's relay of the owner rule (B38: comments are labels only), the comments and javadoc in the new undead-2 code (BackToSleep, FireWard, FireWardMixin, the UndeadTuning additions) were cut to short labels; their reasons are in this report.

@@ -41,7 +41,7 @@ public class WokenSkeleton extends Skeleton implements LootGrabbing.DeferredHold
 	@Override
 	protected void customServerAiStep(ServerLevel level) {
 		super.customServerAiStep(level);
-		io.github.bubba8587.bubbas_reworked_mobs.undead.sleeper.BackToSleep.noteNight(level, this); // for going back to sleep at dawn
+		io.github.bubba8587.bubbas_reworked_mobs.undead.sleeper.BackToSleep.noteNight(level, this);
 	}
 
 	@Override
@@ -61,7 +61,7 @@ public class WokenSkeleton extends Skeleton implements LootGrabbing.DeferredHold
 	/** Plus grabbing what's lying around when idle and empty-handed (below the attack goals, above strolling). */
 	@Override
 	protected void registerGoals() {
-		this.goalSelector.addGoal(1, new io.github.bubba8587.bubbas_reworked_mobs.undead.sleeper.BackToSleep(this)); // back to sleep at dawn
+		this.goalSelector.addGoal(1, new io.github.bubba8587.bubbas_reworked_mobs.undead.sleeper.BackToSleep(this));
 		super.registerGoals();
 		this.goalSelector.addGoal(5, new GrabLootGoal(this, 1.0));
 	}

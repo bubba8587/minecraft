@@ -99,15 +99,21 @@ public final class UndeadTuning {
 	/** A stray's ice cracks this long (ticks; 1.5 s) before it breaks free: the warning. */
 	public static final int STRAY_CRACK_TICKS = 30;
 
-	// --- back to sleep at dawn (owner, 2026-11-22) -------------------------------------------------------
-	/** A woken undead looks this far (blocks, each way) for a place to lie down at dawn... */
+	// --- back to sleep at dawn ---------------------------------------------------------------------------
+	/** Search range, across. */
 	public static final int SLEEP_SEARCH_RANGE = 16;
-	/** ...and this far up and down (vanilla MoveToBlockGoal's vertical range)... */
+	/** Search range, up and down. */
 	public static final int SLEEP_VERTICAL_RANGE = 4;
-	/** ...searching again this often (ticks) until it finds one. */
+	/** Ticks between searches. */
 	public static final int SLEEP_RESEARCH_TICKS = 60;
-	/** A shaded spot counts at this block light or less (a candle-lit crypt is fine, a torch-lit room isn't). */
+	/** Most block light for a resting place. */
 	public static final int SLEEP_MAX_LIGHT = 7;
+
+	// --- fire ward ----------------------------------------------------------------------------------------
+	/** Keep-away distance (Manhattan, across). */
+	public static final int FIRE_WARD_RADIUS = 6;
+	/** Search range, up and down. */
+	public static final int FIRE_WARD_VERTICAL = 3;
 
 	private UndeadTuning() {
 	}
