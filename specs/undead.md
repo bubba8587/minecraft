@@ -265,6 +265,14 @@ Using a sleeper with an empty hand takes one item: held weapon first (main hand,
 
 - Mining a sleeper with a **Silk Touch pickaxe** gives the whole mob as an item (its "statue": a sleeper item of that undead type, no gear on it, pose kept); its armor and weapons drop as separate items (owner's call). The tool is the item tag `#bubbas_reworked_mobs:sleeper_harvest_tools` (pickaxes) plus Silk Touch. Anything else (no Silk Touch, another tool, bare hands) leaves remains (a bone or rotten flesh) and the gear. The gear drops from the block entity whenever the block goes (mining, explosions, commands), except on waking, when the mob takes it.
 - Sleeper items can be placed back as sleepers, and placed sleepers can come alive like generated ones (decor, traps).
+
+### Sleeper items (2026-11-24)
+
+- One item per mob kind (`skeleton_sleeper`, `zombie_sleeper`, `husk_sleeper`, `drowned_sleeper`, `stray_sleeper`), class `undead/sleeper/SleeperItem` (a BlockItem); ids unchanged, so old worlds need no fix. One per kind because the kind is the block and vanilla maps block to item one to one (loot, pick block, item models with the mob head icon).
+- The form is the vanilla `minecraft:block_state` component: `pose` (`sitting` | `lying`) and `resting` (`true` = statue, inert). Vanilla BlockItem applies it on placing, `copy_state` loot copies it, and `SleeperBlock.getCloneItemStack` (pick block) copies both (it used to drop `resting`, so a picked statue placed again could wake). Gear stays in `minecraft:container`. Chosen over a custom component because every vanilla path already understands it (B9).
+- Names (`SleeperItem.getName`): "<base> (<pose>)", e.g. "Sleeping Zombie (Lying)", "Skeleton Statue (Lying)"; lang keys `item.bubbas_reworked_mobs.sleeper.form`, `...sleeper.pose.<pose>`, `block.bubbas_reworked_mobs.<kind>_sleeper.statue`. An anvil name wins.
+- Creative tab: every kind in every pose, sleeping and statue (20 stacks), plus the gravestone.
+- `lying` is on the back. A `prone` pose would need a pose in `SleeperPoses` (client), a shape and a lang key; the item side then works.
 - Magic that prevents waking: the Totem of Warding, now in Bubba's Totems & Artifacts (`specs/totems-artifacts.md`), through the sleeper hook.
 
 ## Scope and variants
@@ -356,6 +364,7 @@ Test-lite policy (`specs/quality.md`, Test suites): `ReworkedMobsCoreGameTest` r
 - `LootDisplayGameTest`: loot on display keeps its item through save/load and templates; an empty hand takes it per placement (ground, wall, stuck; water stays); quiet taking doesn't wake a sleeper but digging buried loot does (a shovel's durability, an empty hand can't dig, digging counts louder); breaking drops the item; the display command places it; woken zombies and skeletons take a displayed weapon or bow over a loose one.
 - `GrabLootGameTest`: the waking grab takes any item when no weapon is in reach; the idle grab goal walks to displays and loose items (zombies and skeletons), prefers a display over a closer loose item, ignores displays when the hand is full or the mob isn't in the tag (one test), ignores displays while chasing and goes back for them when idle; contact pickup while chasing stays vanilla's.
 - `UndeadCombatGameTest`: fist streaks shred armor and a pause resets them, Smite kills only our undead outright, skeletons shrug off arrows, zombie headshots hurt more, idle zombies drift together and a zombie with a target doesn't (checked once it reaches its target).
+- `SleeperFormsGameTest`: every kind x pose x statue survives the form stack, pick block and Silk Touch drop, and names show the form (`everyFormSurvivesPickUpAndPlace`); a re-placed statue ignores explosion, bell and noise, and plain items place the default wakeable form (`statueStaysInertAfterReplaceAndOldItemsPlace`).
 - `ZombieGaitGameTest`: the shamble's drag-and-lurch covers the same ground as a steady walker of the same speed.
 - Client (`ClientTests` names `sleepers`, `displays`, `gait`; screenshots): sleepers from several angles, sleeper items, a placed sleeper, a woken armored zombie, loot on display; the gait cycle from the side and front and the client's motion lag.
 

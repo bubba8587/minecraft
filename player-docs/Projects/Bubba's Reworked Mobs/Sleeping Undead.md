@@ -53,6 +53,8 @@ A sleeping undead woken by a theft attacks the thief.
 
 In either case, the weapon and armor drop as separate items.
 
+The item keeps the body's pose (sitting or lying) and whether it is a statue, and so does picking it with the middle mouse button in Creative mode. Placing it puts it back exactly the same, and a statue never wakes. The item's name shows its form, such as "Sleeping Zombie (Lying)" or "Skeleton Statue (Sitting)". The Creative tab has every kind sitting, lying and as a statue.
+
 ## Placing
 
 A sleeping-undead item can be placed again; it turns to face the player who places it. Placed sleeping undead can still wake up, which makes them usable as traps, or as decoration if the player is careful.

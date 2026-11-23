@@ -21,11 +21,11 @@ The [[Grave Talisman]] is not a totem and has no statue.
 
 ## Effects
 
-A statue works on the blocks within 3 of it, all the time:
+A statue works on the blocks within 3 of it (the Totem of Warding statue within 5), all the time:
 
 | Statue | Effect |
 |---|---|
-| [[Totem of Warding]] | Monsters keep out. Sleeping undead are not kept asleep. |
+| [[Totem of Warding]] | Monsters keep out, and sleeping undead stay asleep. Found standing in crypts with [[Bubba's Reworked Mobs]]. |
 | [[Totem of Gathering]] | Dropped items go into a chest or barrel touching the statue. |
 | [[Totem of Fortification]] | Explosions don't break blocks. |
 | [[Totem of Growth]] | Plants grow twice as fast, and dropped seeds get planted. |

@@ -180,7 +180,16 @@ Owner's design (2026-11-22). Part 1's worldgen (`specs/undead.md` "Worldgen"): t
 - **True Unbreaking books: 20 % per noble chest** with Bubba's Reworked Mining (its main source; ancient cities 4 %, End cities 3 %, bastions and ominous vaults 5 %).
 - Grave Talisman 25 % and Totem of Warding 12 % per noble chest with Totems & Artifacts (unchanged).
 
+## Warding statues in crypts (owner, 2026-11-24; built)
+
+With Totems & Artifacts loaded, a Totem of Warding statue stands among each wing's sleepers, facing the way in. Odds per wing (`GraveTuning.CRYPT_STATUE_NOBLE / _FAMILY / _PAUPER`): noble 85 % for the chamber and 85 % for each side hall (up to three), family 65 %, pauper 35 %. Rolled from the piece's own seed (`mixStafford13(seed) ^ 0x3A2D5`), separate from the build random, so layouts are unchanged. Chest loot unchanged. Without Totems & Artifacts nothing is placed (builder: no stand-in decoration). Breaking the statue drops the totem, and the sleepers can wake again.
+
+- Spots (`CryptYardPiece.wardSpots()`, record `WardSpot(pos, facing)`, on the floor): family at the vault's middle (gate x, `start + VAULT_LENGTH/2`) facing north; pauper one west of the tunnel's middle (`gate - 1`, `start + PAUPER_LENGTH/2`) facing north, the cell east of it cleared so the tunnel stays open; noble chamber at (gate, `chamber + 1`) just inside the entry facing north, each side hall at its middle (`gate ± 8`, `mid`) facing the chamber. Every crypt sleeper lies within 5 of its wing's spot.
+- Placement (`CryptYardPiece.wardStatues`): block looked up by id (`bubbas_totems_artifacts:totem_statue`, `BuiltInRegistries.BLOCK.getOptional`), `totem=warding` and `facing` set by property name (no compile dependency), and a block tick scheduled so it pulses at once (worldgen `setBlock` doesn't call `onPlace`).
+
 ## Milestone test objectives
+
+- A crypt with Totems & Artifacts gets statues per wing at the stated odds; without it the spot stays air (`GravesGameTest.cryptWardStatueOdds`, 4000 seeds per kind, within 3 points).
 
 - A gravestone places with any of the 16 rotations, takes text front and back, keeps it through save and load, and drops itself.
 - The gravestone edit screen opens on placement and shows the lines where the placed stone draws them (client part `graves`: shots graves-edit and graves-edit-stone, plus -32x).

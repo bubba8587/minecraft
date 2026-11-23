@@ -26,6 +26,16 @@ There are three sizes:
 - **Medium:** 5 monsters and a leader.
 - **Large:** 7 monsters and a leader, with two towers.
 
+## Big camps
+
+Large camps can have bigger landmarks, so a camp often reads as a plan from a distance:
+
+- **Skull rocks:** a huge hollow skull of bone, calcite and quartz, with a heavy brow over dark eye sockets. Walk in through the mouth. Half of them are **half-buried**, only the top of the skull and the eyes showing; climb in through one eye.
+- **Winding towers:** a tall log tower, 12 to 14 blocks high, with a wooden stair winding round the outside and an archer on the railed top.
+- **Ribcage arches:** a giant bone spine with ribs curling down to the ground, and a path running under it.
+
+Any camp's towers can have a **ramp** of wooden stairs up to the platform, and in medium and large camps two towers can be joined by a sagging plank **bridge** with log rails and chains.
+
 ## The roster
 
 The camp's monsters appear when you come within about 48 blocks. Archers man the towers and the rest stand round the fire. They stay at their camp and never despawn.

@@ -89,6 +89,9 @@ Owner's design (2026-11-22), building on the earlier idea in `docs/research/camp
 - Breaking every banner in a camp stops it for good. Placing a matching banner back in its area brings it back.
 - An outpost with every banner broken spawns no pillagers. Putting one back restores them.
 - Camp pieces never overlap, 32 seeds per kind and size (`CampsGameTest.campPiecesNeverOverlap`).
+- A camp's kind follows the biome at its centre: desert and badlands husk, swamp and mangrove bogged, snowy biomes stray, everything else skeleton or zombie (`CampsGameTest.campKindFollowsTheBiome`).
+- Skull rocks (full and half-buried), winding towers, ramps, bridges and ribcage arches: every block supported, and a zombie can walk each end to end (`skullRockCanBeWalkedInto`, `buriedSkullCanBeWalkedInto`, `windingTowerCanBeClimbed`, `towerRampCanBeClimbed`, `bridgeJoinsTwoTowers`, `ribcagePathRunsUnderTheRibs`).
+- Camp fences and chains end cleanly: every fence side matches its neighbour, no lone fence posts, every chain end meets a chain on its axis, a fence, a wall or a sturdy face (`campFencesEndCleanly`, all kinds, large camps).
 
 ## As built (2026-11-22)
 
@@ -109,7 +112,7 @@ Owner's design (2026-11-22), building on the earlier idea in `docs/research/camp
 - **Lighting a fire quiets a camp** (owner, 2026-11-22): a lit campfire or soul campfire anywhere in a camp's area disables it while it burns: the roster doesn't appear and the camp doesn't reset. Put the fire out or break it and the camp works again. Camps generate with their own campfire **unlit** and no light at all (owner: camps are dark), so they never quiet themselves. Checked from the area's block entities like the banners; saved as `quiet` on the camp.
 - **Pillager outposts:** break every banner in an outpost (the watchtower's ominous banners) and its pillagers stop spawning there; the area spawns as its biome normally would. Put any banner back in the outpost and they return. (Patrols are unchanged.)
 - **Loot chest:** 3-6 of bones, arrows, rotten flesh, string, leather, bread, iron and gold ingots, emeralds, gunpowder; plus one roll (35% nothing) of an enchanted iron sword, axe or bow, an enchanted book, chain helmet or chestplate, saddle, name tag, golden apple or 1-2 diamonds.
-- Command: `/bubbas_reworked_mobs camp build <kind> <size> [seed]`, `camp reset` (runs the daily reset now, sure, whoever is near), `camp list`.
+- Command: `/bubbas_reworked_mobs camp build <kind> <size> [seed]`, `camp reset` (runs the daily reset now, sure, whoever is near), `camp list`, `camp locate <kind>` (nearest camp of that kind: walks the camp structure set's spread grid ring by ring from where it runs, up to 6144 blocks, reading only each start chunk's structure start; "Nearest <kind> camp at x y z, N blocks away."; `CampCommand.nearest`). Vanilla `/locate structure` returns the nearest camp of any kind, so it can't be used to find a kind.
 
 ### Frequency
 
@@ -175,3 +178,21 @@ The variety ranges are kept; pieces are laid out in a footprint plan (`CampPiece
 Tests: milestone `CampsGameTest.campPiecesNeverOverlap` (32 seeds x every kind x every size, no two footprints share a cell); `campsHaveShadeAndARoom` targets `roomSpot()`. Client part `camps`: three extra seeds per kind (small, medium, large) from above (`camp-<kind>-seed<n>-<size>`); `camp-room`/`camp-room-back` stand in the actual room (`roomSpot()`); the natural room path check targets `roomSpot()` with accuracy 2.
 
 Open: towers sometimes bunch on one side of the camp.
+
+## Big pieces: skull rocks, winding towers, ramps, bridges, ribcages (2026-11-23/24)
+
+Prior art taken: Breath of the Wild bokoblin camps (skull rocks entered by the mouth, stilt lookouts, rickety bridges), Valheim fuling villages (large camps spread out and linked), Skyrim bandit and giant camps (plank ramps, bones and skulls round a fire), Elden Ring forts (towers with a stair winding round the outside, archers up high), Far Cry outposts (height variety and several ways up, so a camp reads as a plan from afar).
+
+All go through the footprint plan. Plan order: fire, stairs tunnel, skull rock, winding tower, ribcage, lean-tos, towers (+ ramp, + twin and bridge), outcrops, pikes, banners. Bounding box: radius + 5 out and 22 up. Kinds keep their themes (`CampKind.woodStairs()`: spruce, dark oak, acacia, mangrove). Vanilla blocks only (B15).
+
+- **Skull rock** (large camps, 1 in 3; footprint 13 x 13, 10 blocks from the fire, facing it): drawn from a hand-made 13 x 13 front grid (`CampPiece.SKULL_FACE`: bone, eye, nose, mouth), pushed 4 deep (5 at the brow), with an ellipsoid back half (radii 6.6 across, 6.2 deep, 7.0 high, centred 6.5 up); a 1-block shell. Detail-lite (owner): bold features only, a big cranium over a narrower jaw, a brow ledge one out over two 3 x 3 eye sockets, a nose hole, and the mouth (5 wide, 2 high) as the door. Eyes and nose are plain holes into the hollow. Materials (`skullBone`): brow (dy 9, w 5) quartz pillar across the face; otherwise 70 % bone block, 15 % calcite, 10 % smooth quartz, 5 % quartz block; base ring bone block. Inside: trodden floor, a mob skull; the inside floor cells are shade spots.
+- **Half-buried skull:** half of all skull rocks (from the skull's own seed bit). Sunk 4: cranium, brow and eyes show. The left eye (from the front) is the way in, with a bone-block step; the other eye stays dark.
+- **Winding tower** (large camps, 1 in 4; footprint 7 x 7): a 5 x 5 log-and-plank core 12 to 14 high, a 1-wide stair winding clockwise round the outside (corner landings on log posts), log bands every 5 blocks, fence window slits, doorways off the stair, a railed top with a slab roof on posts. Archer spot at the top; the top 3 x 3 are shade spots.
+- **Ribcage arch** (large camps, 1 in 3; footprint 9 x 7, 7 from the centre): a bone spine 5 up, 4 ribs each side curling in at the ground, a 3-wide path under it.
+- **Ramps** (any tower, 35 %; footprint `ramp`, may touch its tower): a 2-wide stair ramp from the ground to the platform on a side whose foot stays in the clearing, log stilts under every other step, the railing open where it arrives.
+- **Bridges** (medium and large camps, 40 % per tower): a same-height twin tower 4 to 7 off one side, a 2-wide plank bridge whose middle half sags to slabs. Railing (`CampPiece.bridge`), cells beside the deck: a log beam along the bridge at deck height; at deck + 1 log posts at both ends and every 4 blocks on long bridges, horizontal chains between. If the bridge doesn't fit, the twin is dropped too. Ladders never come down the bridge side.
+- **Fence tidy** (`ClippedBuild.tidyFences(pieceBox)`, after each chunk's build): removes lone fences (no side joined, nothing on top, no fence below), sets every fence's sides from its real neighbours, and fixes fences just over the chunk edge an earlier chunk built, including removing a ring fence left joining nothing and unjoining the fence beside it (fixed a chunk-edge flake).
+
+Client part `camps`: `camp-skull-*`, `camp-buried-*`, `camp-ribcage-*`, `camp-winding-*`, `camp-ramp-*`, `camp-bridge-*` (front, 3/4, side, far 34 blocks). Framing to fix: the ribcage bogged front camera ends up inside that camp's skull; the ramp `-side` camera sits close among towers.
+
+Open: bridges to outcrops or skull tops, ramps up rock outcrops; nether fossil templates (`nether_fossils/fossil_*` via StructureTemplate through the plan) as bone dressing near skulls or outcrops; ramps and towers on rough ground only checked on flat ground and the natural camp.

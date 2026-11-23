@@ -87,7 +87,7 @@ Take side: a block a nearby cairn wants, lying where the target world is air (ab
 
 `CairnSite.canPlace`: a design block can go in when any face neighbour or any of its 12 edge neighbours is solid (was faces only). Before, diagonal "arms" could never be placed and their builders waited forever, likely the main cause of builders standing still all night.
 
-Ring places are now used only for the vigil (`ringPlace` renamed back to `vigilPlace`). Open for the owner: the vigil was kept, reading "ring places can go" as the waiting ring only.
+Ring places are now used only for the vigil (`ringPlace` renamed back to `vigilPlace`). Owner decision (2026-11-24): the vigil ring stays; the waiting ring is gone.
 
 **Cairn blocks are left alone (audit 2026-11-16).** Judging a block inside a cairn's design, an enderman takes it only if it isn't the designed block. Before, a finished cairn's own offerings (moss, podzol, pumpkins, flowers: natural blocks endermen can carry) looked like rubbish to clear, so they were taken and put back over and over and the cairn never stayed complete (no vigil). Where hand-placed cairns' boxes overlap, the cairn with a design block at that spot answers what belongs there (`CairnSites.covering`).
 

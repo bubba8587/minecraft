@@ -127,7 +127,7 @@ Fixes (owner playtest, 2026-11-22):
 - Mob spawning is left on (no `spawn_mobs false`), so the world plays like a real one and the Fabricator runs. Time and weather stay frozen at build.
 - The build server never pauses (`pause-when-empty-seconds=-1`).
 
-Still open: the camp list at build time is empty (camps register only once a player is near), so the camp signs name the kind each biome should give.
+Camp signs (2026-11-24): one per kind (skeleton, zombie, husk, stray, bogged), each from `/bubbas_reworked_mobs camp locate <kind>` (vanilla `/locate` gave the nearest camp of any kind, so signs led to the wrong kind). Each sign teleports 3 blocks south of the fire. After loading, the builder re-runs `camp locate <kind>` from each camp's own centre and fails the build unless it returns that same camp ("camp sign <kind>: camp at x z confirmed <kind>"; `camp list` stays empty headless, since registration needs a nearby player). Seed 20261122: skeleton 712 264, zombie 920 56, husk -1240 280, stray 232 2536, bogged -1704 1032.
 
 Not covered: spider nests (a feature in 17 % of cave chunks, not locatable; the flat world's Showcase has one) and crypt wealth (rolled per yard, so the three yards are whatever the seed gives).
 

@@ -65,7 +65,7 @@ With [[Bubba's Reworked Mobs]] installed, a ward over an Ancient Fabricator stop
 
 *Main article: [[Totem Statue]]*
 
-Sneaking and using the totem on a block sets it down as a decorative statue, which does nothing. Mining the statue gives the totem back.
+Sneaking and using the totem on a block sets it down as a statue. Within 5 blocks of it, monsters keep out and sleeping undead stay asleep. With [[Bubba's Reworked Mobs]], crypts often have one standing among their sleepers. Mining the statue gives the totem back.
 
 ## Compatibility
 

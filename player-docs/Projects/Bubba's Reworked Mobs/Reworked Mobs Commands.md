@@ -64,6 +64,7 @@ Requires operator permission; intended for building and testing.
 - `camp build <kind> <size> [<seed>]` builds a camp here.
 - `camp reset` runs the daily refill check now, even with players near.
 - `camp list` lists known camps.
+- `camp locate <kind>` names the nearest camp of that kind (skeleton, zombie, husk, stray or bogged) and how far away it is.
 
 ### ancient_fabricator
 

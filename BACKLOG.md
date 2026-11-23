@@ -4,6 +4,8 @@
 Parked ideas and open items, newest first within each project. Agents add to it when the owner parks something; details live in the linked spec. What is built, being built or designed and unassigned is on the status board, `specs/STATUS.md`; once an item is built, delete it here.
 
 ## Bubba's Reworked Mobs
+- **Flaky test seen once (2026-11-24):** `enderman_game_test_out_of_order_builders_finish_half_built_cairn` (92 of 93 standing).
+- **Prone sleepers** (face down): not a pose yet; needs a client pose, a shape and a lang key (`specs/undead.md` "Sleeper items").
 - **Endermen trading at cairns** (owner, 2026-11-22; designed, unassigned; `specs/endermen.md` "Trading at cairns"): lay anything on a cairn's trade pad, an enderman takes it once you're away and returns with something random, sometimes good, sometimes weird. To be built with it: sneak + middle click places the held item on the ground anywhere (survival players placing items on display). Still open: the return table, the pad design, the return delay.
 - **Spiders** (`specs/spiders.md` Open): a unique giant drop, what giants do by day, a Stormie's wall/ceiling screenshot, milestone objectives without tests (giants only in old-growth taiga, spin cap, fire burns webs, grip break drops the animal, webs tear with age).
 - **Why challenge a Fabricator? (owner raised 2026-11-16, then skipped the options for now).** Today: two beacons, iron pyramids, office loot, the perfect gem in the floor beacon, farming limp mobs. Options offered: it feeds its region's surface spawns of its mob type (break it, that mob gets rare round there; recommended), capture it as a farm (powered lodestone), a prize found only there (at the intake chamber), office paperwork leading to the next Fabricator. Loot buffed 2026-11-22 (owner: rewarding, Warden stays vanilla). `specs/mob-factory.md`.
@@ -58,7 +60,8 @@ Left for next session:
 - **4 worn Wither on mobs:** owner to say whether non-harmful worn rolls apply only in the test world or to every gemmed mob.
 - **5 full:** spiders really wander off the perch (vanilla stroll near the cocoon) and walk back to feed.
 - **6:** giant spiders haul prey to the centre of their own web (the spider has to remember its webs).
-- **7 rest:** skull rocks built 2026-11-23 (one form; bone caves and varied skull shapes open), two-chamber rooms, camp loot themed per kind, screenshots of 6+ seeds per kind. The `camps` client part's `camp-room` camera still points at the old fixed room.
+- **7 rest:** skull rocks have two forms now (full and half-buried) plus ribcage arches, winding towers, ramps and bridges (2026-11-24). Still open: two-chamber rooms, camp loot themed per kind, screenshots of 6+ seeds per kind. The `camps` client part's `camp-room` camera still points at the old fixed room; the ribcage-bogged-front camera ends inside the camp's skull.
+- **Camp pieces next** (`specs/monster-camps.md` "Big pieces"): bridges to outcrops or skull tops, ramps up rock outcrops, nether fossil templates as bone dressing near skulls, check ramps and towers on rough ground.
 - **11:** the cairn yard and creeper grove backup copies still float at y 198. The quick fixes don't work: a far-away copy isn't loaded when the sign is clicked, and the builder pack is off in the finished world. Options: (a) structure templates (the yard is 51 wide, so two templates, plus copying the world's `generated/` folder), or (b) a small reset datapack left enabled.
 - **17 rest:** level rough high ground for camps (cut and fill or `terrain_adaptation`) instead of skipping anything over 6 blocks of slope.
 - **20 follow-up:** camp footprint plan done (2026-11-23); towers sometimes bunch on one side of a camp.
@@ -67,7 +70,6 @@ Left for next session:
 - **23, lava geysers only near the player (owner, 2026-11-23):** vents erupt only within 24 blocks sideways, and from 16 below to 8 above a player (`GEYSER_SEARCH_RADIUS`, `LavaGeysers.checkAround`). So a player gliding high over a lava sea never sees eruptions to steer to. Proposal, awaiting the owner's yes: about 64 blocks sideways and the full height from the player down to the lava sea (section skipping keeps it cheap). Lava bubbles stay on vanilla's ambient particle range: within 32 blocks, denser within 16.
 - **Not installed yet (2026-11-23):** the gravestone, geyser and bubble changes and the rebuilt test worlds are pushed but not installed (the game was open). Run `pwsh tools/install-to-modrinth.ps1 -ResetWorld` with the game closed.
 - **Tests:** milestone tests for 8, 12 and 13; a client check that clicks every natural-world sign; a screenshot of a crypt niche with the sleeper inside it.
-- **Natural world camp signs:** they name the kind each biome should give, because camps only register when a player comes near.
 - **Side effect to know:** mixing design seeds changed the form of every cairn, camp, crypt yard and Fabricator that isn't built yet, including half-built cairns in existing worlds.
 
 ## Repo

@@ -323,8 +323,8 @@ Owner's goal (2026-11-15): mob-free zones without spamming torches. Owner decisi
 
 ### Statues give their totem's effect (built 2026-11-22)
 
-- A statue gives a weaker form of its totem's area effect in a **7x7x7 box** round it (radius 3, builder), refreshed every second (`statue/StatueEffects`: a scheduled block tick every 20 ticks, no block entity; `onPlace` starts it, and statues saved earlier restart from a random tick; each pulse refreshes its area for 40 ticks under a `Source(pos)` key so it never collides with a beacon's).
-  - Warding: monsters keep out; sleepers are **not** kept asleep (builder).
+- A statue gives a weaker form of its totem's area effect in a **7x7x7 box** round it (radius 3, builder; the Warding statue radius 5, `TotemsTuning.WARD_STATUE_RADIUS`, used by `StatueEffects.area(pos, type)`), refreshed every second (`statue/StatueEffects`: a scheduled block tick every 20 ticks, no block entity; `onPlace` starts it, and statues saved earlier restart from a random tick; each pulse refreshes its area for 40 ticks under a `Source(pos)` key so it never collides with a beacon's).
+  - Warding (owner, 2026-11-24): monsters keep out, and sleepers within 5 never wake (`Wards.put(..., keepsSleepersAsleep = true, ...)`), like a full-pyramid beacon ward. Reworked Mobs crypts place these statues (`specs/graveyards.md` "Warding statues in crypts").
   - Gathering: drops go into a chest or barrel touching the statue.
   - Fortification: no blast damage to blocks.
   - Growth: plants grow twice as fast, plus planting.
@@ -362,12 +362,14 @@ Owner decisions still pending (built as described above until decided):
 - **Builder's calls to review:** Keeping counts anywhere in the inventory and keeps XP levels; the totem loot tables and chances; the Beginning/End builder's choices 1-16 (ripple size, what counts as built, landing rules, rarity, End city 5 %); trapped monsters in a ward fight rather than cower.
 - **Art:** person-made statue designs and mod icon (B14); the Gathering texture reads like gingerbread (`docs/art-todo.md`).
 - **Gathering ring look:** functional but plain (items orbit at the beacon's top). Slower, or a second ring for XP?
-- **Statues:** radius 3, and a Warding statue doesn't keep sleepers asleep (builder).
 - **Herding** counts every animal except tamed pets, so bees, axolotls and the like too (builder).
 - **Art:** the Herding (spruce ram-headed idol with a gold bell) and Clear Skies (calcite, gold sun crown, sky emblem) items and statues are builder art.
 - **Numbers to playtest:** every value in `TotemsTuning` and `WardingTuning`.
 
 ## Milestone test objectives
+
+- A warding statue keeps sleepers within 5 asleep, not farther (`CryptWardsGameTest.wardStatueKeepsNearSleepersAsleep`, `-PwithMobs`).
+- Crypt statues stand on every wing's spot facing the right way and never cut off part of a crypt (`CryptWardsGameTest.cryptStatuesStandInEveryWing`, `-PwithMobs`; test structure `crypt_field`). Client part `crypts` (`CryptWardsClientGameTest`, `-PwithMobs`): `crypt-wards-family`, `-noble`, `-noble-west`, `-noble-east`.
 
 Test-lite (`specs/quality.md`, Test suites). Run: `./gradlew :bubbas_totems_artifacts:build` (standalone core); `:bubbas_totems_artifacts:runGameTest -PwithMobs -PwithBeacons -PmilestoneTests` for every test for real (the sleeper tests pass trivially without `-PwithMobs`, the beacon test without `-PwithBeacons`).
 
