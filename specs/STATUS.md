@@ -139,5 +139,6 @@ Nothing is released yet: every mod is 0.1.0 in `develop`.
 - in progress (world-tweaks, done, awaiting merge): lift and speed from lava and sulfur geysers ([§](world-tweaks.md#lava-bubbles-and-lava-geysers-owner-2026-11-22))
 
 ## Repo
+- designed: settings for every mod: game rules in a per-mod category, structure datapacks at world creation, optional Mod Menu button ([§](settings.md))
 - built: test world with stations for most features; missing ones listed in [testworld.md](testworld.md)
 - parked: compatibility tests before releases (`BACKLOG.md`, Repo)
