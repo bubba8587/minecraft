@@ -244,6 +244,99 @@ public class EndermanGameTest {
 		});
 	}
 
+	/**
+	 * Builders arriving top block first at a half-built cairn: those whose block can't go in yet set it down near the
+	 * cairn and carry on; endermen fetch the set-down blocks as they fit, and the cairn is finished with no builder idle.
+	 */
+	@GameTest(environment = "bubbas_reworked_mobs-test:enderman_relay", structure = FIELD, maxTicks = 8000)
+	public void outOfOrderBuildersFinishHalfBuiltCairn(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		int floor = helper.absolutePos(BlockPos.ZERO).getY();
+		BlockPos corner = helper.absolutePos(BlockPos.ZERO);
+		BoundingBox box = new BoundingBox(corner.getX() - 40, level.getMinY(), corner.getZ() - 40, corner.getX() + 64, level.getMaxY(), corner.getZ() + 56);
+		AABB bounds = helper.getBounds();
+		java.util.function.IntBinaryOperator ground = (x, z) -> x >= bounds.minX && x < bounds.maxX && z >= bounds.minZ && z < bounds.maxZ ? floor
+				: level.getHeight(Heightmap.Types.WORLD_SURFACE, x, z) - 1;
+		Map<Long, Integer> surfaces = new java.util.HashMap<>();
+		Runnable unTerrain = TargetWorld.overrideTerrain(level, box, pos -> {
+			int top = surfaces.computeIfAbsent(BlockPos.asLong(pos.getX(), 0, pos.getZ()), k -> ground.applyAsInt(pos.getX(), pos.getZ()));
+			return pos.getY() > top ? Blocks.AIR.defaultBlockState() : level.getBlockState(pos);
+		}, (x, z) -> surfaces.computeIfAbsent(BlockPos.asLong(x, 0, z), k -> ground.applyAsInt(x, z)));
+		boolean spawning = level.getGameRules().get(io.github.bubba8587.bubbas_reworked_mobs.registry.ModGameRules.CAIRN_ENDERMEN);
+		level.getGameRules().set(io.github.bubba8587.bubbas_reworked_mobs.registry.ModGameRules.CAIRN_ENDERMEN, false, level.getServer());
+		BlockPos middle = helper.absolutePos(new BlockPos(12, 1, 8));
+		List<net.minecraft.world.level.ChunkPos> forced = new ArrayList<>();
+		for (int cx = (middle.getX() - 32) >> 4; cx <= (middle.getX() + 32) >> 4; cx++) {
+			for (int cz = (middle.getZ() - 32) >> 4; cz <= (middle.getZ() + 32) >> 4; cz++) {
+				if (level.setChunkForced(cx, cz, true)) {
+					forced.add(new net.minecraft.world.level.ChunkPos(cx, cz));
+				}
+			}
+		}
+		Runnable restore = () -> {
+			forced.forEach(c -> level.setChunkForced(c.x(), c.z(), false));
+			unTerrain.run();
+			level.getGameRules().set(io.github.bubba8587.bubbas_reworked_mobs.registry.ModGameRules.CAIRN_ENDERMEN, spawning, level.getServer());
+		};
+		CairnSite site = CairnSites.addSite(level, helper.absolutePos(new BlockPos(12, 1, 8)), 1234L);
+		site.buildAll(level);
+		int keepUpTo = site.origin().getY() + 1;
+		List<BlockPos> missing = new ArrayList<>(site.order().stream().filter(p -> p.getY() > keepUpTo).toList());
+		missing.forEach(p -> level.setBlock(p, Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS));
+		helper.assertTrue(missing.size() >= 4, "the cairn should be missing several blocks, got " + missing.size());
+		java.util.Collections.reverse(missing);
+		List<Enderman> builders = new ArrayList<>();
+		Map<java.util.UUID, Integer> idle = new java.util.HashMap<>();
+		Map<java.util.UUID, EndermanMind.Job> lastJob = new java.util.HashMap<>();
+		int[] worstIdle = { 0 };
+		int[] setDowns = { 0 };
+		List<BlockPos> arrivals = new ArrayList<>();
+		for (int dx = 1; dx < 23; dx++) {
+			for (int dz = 1; dz < 15; dz++) {
+				BlockPos at = helper.absolutePos(new BlockPos(dx, 1, dz));
+				if (!site.box().inflatedBy(1).isInside(at) && level.getBlockState(at).isAir() && level.getBlockState(at.above()).isAir()) {
+					arrivals.add(new BlockPos(dx, 1, dz));
+				}
+			}
+		}
+		helper.assertTrue(!arrivals.isEmpty(), "no room in the field round a cairn of radius " + site.radius());
+		AABB area = new AABB(site.origin()).inflate(48.0);
+		for (int i = 0; i < missing.size(); i++) {
+			BlockPos spot = missing.get(i);
+			BlockPos at = arrivals.get((i * 37) % arrivals.size());
+			helper.runAtTickTime(1 + i * 40, () -> {
+				Enderman builder = helper.spawn(EntityTypes.ENDERMAN, Vec3.atBottomCenterOf(at));
+				builder.setPersistenceRequired();
+				builder.setCarriedBlock(site.at(spot));
+				builders.add(builder);
+			});
+		}
+		helper.onEachTick(() -> {
+			for (Enderman e : level.getEntitiesOfClass(Enderman.class, area, Enderman::isAlive)) {
+				EndermanMind mind = EndermanMind.of(e);
+				EndermanMind.Job job = mind == null ? null : mind.job();
+				if (job == EndermanMind.Job.SET_DOWN && lastJob.get(e.getUUID()) != EndermanMind.Job.SET_DOWN) {
+					setDowns[0]++;
+				}
+				lastJob.put(e.getUUID(), job);
+				int ticks = e.getCarriedBlock() != null && job == null ? idle.getOrDefault(e.getUUID(), 0) + 1 : 0;
+				idle.put(e.getUUID(), ticks);
+				worstIdle[0] = Math.max(worstIdle[0], ticks);
+			}
+		});
+		helper.succeedWhen(() -> {
+			helper.assertTrue(worstIdle[0] <= 100, "a builder stood idle holding its block for " + worstIdle[0] + " ticks");
+			helper.assertTrue(builders.size() == missing.size() && site.complete(level),
+					"the cairn (radius " + site.radius() + ") should be finished: " + site.standing(level) + " of " + site.size() + " standing, " + setDowns[0] + " set down");
+			helper.assertTrue(setDowns[0] > 0, "out of order, some builders should have set their block down");
+			System.out.println("[relay] cairn of " + site.size() + " blocks, " + missing.size() + " brought, finished at tick " + helper.getTick()
+					+ ", " + setDowns[0] + " set down, longest idle carry " + worstIdle[0] + " ticks");
+			restore.run();
+			removeBuilt(level, site);
+			level.getEntitiesOfClass(Enderman.class, area).forEach(Enderman::discard);
+		});
+	}
+
 	/** E4: eye contact angers an idle enderman, but one busy on a job ignores it. */
 	@GameTest(environment = "bubbas_reworked_mobs-test:enderman_stare", structure = FIELD, maxTicks = 20)
 	public void busyEndermanIgnoresEyeContact(GameTestHelper helper) {

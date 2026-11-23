@@ -20,8 +20,8 @@ public final class EndermanMind {
 		TRAMPLE,
 		/** Stand in the ring around a complete cairn, staring at it (owner; not work: eye contact still angers it). */
 		VIGIL,
-		/** A builder whose block can't go in yet: stands in the ring around its cairn, checking again now and then. */
-		WAIT
+		/** A builder whose block can't go in yet: sets it down on the ground at {@link #target()}, near its cairn. */
+		SET_DOWN
 	}
 
 	private @Nullable Job job;
@@ -54,7 +54,7 @@ public final class EndermanMind {
 
 	/** E4: while repairing or building it ignores eye contact. */
 	public boolean busy() {
-		return busy && job != null && job != Job.VIGIL && job != Job.WAIT;
+		return busy && job != null && job != Job.VIGIL;
 	}
 
 	public void setBusy(boolean busy) {

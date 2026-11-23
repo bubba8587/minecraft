@@ -66,8 +66,9 @@ public final class EndermanTuning {
 	public static final int VIGIL_TICKS = 1200;
 	/** By day a caretaker under open sky leaves with a 1-in-this chance each tick. */
 	public static final int DAY_LEAVE_ONE_IN = 400;
-	/** A builder whose block can't go in yet stands in the ring around its cairn (the vigil's place), checking every second whether it can go in, and plans afresh after this long. */
-	public static final int WAIT_TICKS = 400;
+	/** A builder whose block can't go in yet sets it down this many blocks outside its cairn's footprint (a random one of these). */
+	public static final int SET_DOWN_GAP_MIN = 2;
+	public static final int SET_DOWN_GAP_MAX = 4;
 	/**
 	 * New tasks: an empty-handed enderman with
 	 * nothing to do near it (and one whose vigil just ended) has this chance per look round to go on an errand: it looks
