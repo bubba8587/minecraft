@@ -26,7 +26,8 @@ Owner's design (2026-11-22), building on the earlier idea in `docs/research/camp
 
 ## Look (owner)
 
-- Started from images of Breath of the Wild's monster camps for the feel (owner: "look at images of it to start"; Minecraft's blocks make ours different anyway): **scant wooden lookout towers, ladders, campfires (soul campfires fit), bone-and-skull rock outcrops** built from Minecraft blocks (bone blocks, skulls, stone).
+- Started from images of Breath of the Wild's monster camps for the feel (owner: "look at images of it to start"; Minecraft's blocks make ours different anyway): **scant wooden lookout towers, ladders, bone-and-skull rock outcrops** built from Minecraft blocks (bone blocks, skulls, stone).
+- **No campfires or other fire, and no light at all (owner, 2026-11-22): camps are dark.** Fire would ward their own monsters (`specs/undead.md` "Fire as a weak ward") and would make camps too easy to find and see. Dead (unlit) campfires as decoration are fine.
 - Sizes and layouts vary. All deterministic from the seed.
 
 ## How common (owner, 2026-11-22)
