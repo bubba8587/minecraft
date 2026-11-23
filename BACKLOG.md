@@ -83,6 +83,10 @@ Parked ideas and open items, newest first within each project. Agents add to it 
     - place through vanilla's own placement path (`BlockItem` placement context, `canSurvive` against the real neighbours), so a cactus never goes next to a block, sugar cane only beside water, and so on;
     - give saplings and other growing plants room: no planting right against walls, other saplings, trunks or another plant of its kind, so what it plants can actually grow;
     - test: items next to walls, solid blocks and other plants get planted only where vanilla would allow them and where they can grow.
+11. **The cairn yard's backup copy floats in the sky above it (owner, 2026-11-22):** `cairns.mcfunction:49` clones the yard to y 198 straight above itself, as the source for the "Reset yard" sign. Move the backup out of sight. Options:
+    - (a) far away in its own forceloaded chunks, beyond render distance (e.g. x -2000);
+    - (b) better, if it works: save the yard as a structure template and have the sign run `/place template`, with no second copy in the world at all.
+    Update the sign's command and verify.mcfunction to match.
 
 ## Repo
 - **Multiplayer check (owner, 2026-11-22: "make sure these mods work in multiplayer"; light scan done, the rest is here).** Scan results:
