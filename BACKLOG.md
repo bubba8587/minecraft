@@ -73,6 +73,12 @@ Left for next session:
   - fix it, or narrow the ranges.
   - **Owner's finding (2026-11-23):** it's mostly pieces placed on top of each other: towers on the stairs, rock and bone outcrops on the stairs. Fix: lay the camp out in a footprint plan before building. Reserve the stair and tunnel cells, plus a clear margin, first; then place each tower, outcrop, pike and lean-to only on free cells, re-rolling its spot or dropping it if none fits. Never draw two pieces over each other.
   - If it can't be fixed quickly, revert just the variety part and keep the seed mixing.
+- **21, spun web hitboxes need a major fix (owner, 2026-11-23).** Each `SpunWeb` is one entity whose bounding box is the whole span of its strands (up to about 22 blocks across, `SpunWeb.makeBoundingBox`/`strandBox`), and it's pickable and attackable. So the crosshair, attacks, and probably arrows hit that big invisible box anywhere in the area, not the strands: you can't reach blocks or mobs behind it, and the box shows outlines and debug boxes in odd places. (The slow itself already follows the strands, `touching`.) Plan:
+  - (a) the big box is only for culling and searching: no pick, no attack, no projectile hits on it;
+  - (b) hits go to the strands themselves: a ray-to-segment test (within about 0.3 block of a strand) used by the player's crosshair pick, melee and projectiles, through a small mixin at vanilla's entity pick (`ProjectileUtil.getEntityHitResult` and the client pick), or by splitting into per-strand hitbox parts if 26.3 has a general multipart entity API. Check vanilla's ender dragon parts first (specs/vanilla-subsystems.md);
+  - (c) shears and fire keep working on the strand you aim at.
+  - Ask the owner what they ran into (can't hit things behind it, can't cut it, odd outlines?), so the test covers it.
+  - **Test:** a player can hit a block and a mob through the gaps between strands, and cutting works only when aiming at a strand.
 - **Tests:** milestone tests for 8, 12 and 13; a client check that clicks every natural-world sign; a screenshot of a crypt niche with the sleeper inside it.
 - **Natural world camp signs:** they name the kind each biome should give, because camps only register when a player comes near.
 - **Side effect to know:** mixing design seeds changed the form of every cairn, camp, crypt yard and Fabricator that isn't built yet, including half-built cairns in existing worlds.
