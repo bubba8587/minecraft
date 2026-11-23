@@ -10,7 +10,6 @@ import java.util.Set;
 import java.util.WeakHashMap;
 
 import it.unimi.dsi.fastutil.longs.Long2BooleanOpenHashMap;
-import it.unimi.dsi.fastutil.longs.Long2LongOpenHashMap;
 import net.fabricmc.fabric.api.tag.convention.v2.ConventionalBlockTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -49,7 +48,7 @@ import net.minecraft.world.phys.AABB;
  * back or filled over. Structures and wards are skipped (the target world has no opinion there).
  *
  * <p>A pulse ({@link #pulse}) is the same ripple with odds: each change happens only with a chance (ore far less),
- * never on a block reverted within the recent window, never on a block that can't be broken or that the player may
+ * never on a block that can't be broken or that the player may
  * not touch; ore only ever comes back into air. See specs/endermen.md and specs/totems-artifacts.md.
  *
  * <p>Cost: one pass over the cylinder (each block read once or twice), spread over the ripple's time; a column whose
@@ -64,8 +63,6 @@ public final class Ripples {
 			Blocks.AMETHYST_CLUSTER, Blocks.LARGE_AMETHYST_BUD, Blocks.MEDIUM_AMETHYST_BUD, Blocks.SMALL_AMETHYST_BUD);
 
 	private static final Map<ServerLevel, List<Ripple>> ACTIVE = new WeakHashMap<>();
-	/** Per level: packed position to the game time it was last reverted by a pulse. */
-	private static final Map<ServerLevel, Long2LongOpenHashMap> RECENT = new WeakHashMap<>();
 	/** Per level: game time of the last revert sound. */
 	private static final Map<ServerLevel, long[]> LAST_SOUND = new WeakHashMap<>();
 
@@ -90,8 +87,8 @@ public final class Ripples {
 		return true;
 	}
 
-	/** A pulse's odds: per-block chance, ore chance, recent window in ticks, and the player (null: no protection check). */
-	public record Odds(float chance, float oreChance, int recentTicks, @org.jspecify.annotations.Nullable Player player) {
+	/** A pulse's odds: per-block chance, ore chance, and the player (null: no protection check). */
+	public record Odds(float chance, float oreChance, @org.jspecify.annotations.Nullable Player player) {
 	}
 
 	/** Starts a pulse: a ripple where each change only happens with {@code odds}. False when unsupported here. */
@@ -99,30 +96,8 @@ public final class Ripples {
 		if (!supported(level)) {
 			return false;
 		}
-		pruneRecent(level, odds.recentTicks());
 		ACTIVE.computeIfAbsent(level, l -> new ArrayList<>()).add(new Ripple(level, centre.immutable(), radius, Math.max(1, ticksPerBlock), null, odds));
 		return true;
-	}
-
-	/** Forgets recent reverts (tests). */
-	public static void clearRecent(ServerLevel level) {
-		RECENT.remove(level);
-	}
-
-	/** Forgets one recent revert (tests). */
-	public static void clearRecent(ServerLevel level, BlockPos pos) {
-		Long2LongOpenHashMap recent = RECENT.get(level);
-		if (recent != null) {
-			recent.remove(pos.asLong());
-		}
-	}
-
-	private static void pruneRecent(ServerLevel level, int window) {
-		Long2LongOpenHashMap recent = RECENT.get(level);
-		if (recent != null) {
-			long now = level.getGameTime();
-			recent.long2LongEntrySet().removeIf(e -> now - e.getLongValue() >= window);
-		}
 	}
 
 	/** The revert effect on one block: a puff, and a soft low sound at most every few ticks per level. */
@@ -316,7 +291,7 @@ public final class Ripples {
 			return true;
 		}
 
-		/** A pulse's checks and roll for one change (always true for a full ripple); records the revert. */
+		/** A pulse's checks and roll for one change (always true for a full ripple). */
 		private boolean allowed(ServerLevel level, BlockPos pos, BlockState real, BlockState target) {
 			if (odds == null) {
 				return true;
@@ -328,17 +303,10 @@ public final class Ripples {
 			if (player != null && !level.mayInteract(player, pos)) {
 				return false;
 			}
-			Long2LongOpenHashMap recent = RECENT.computeIfAbsent(level, l -> new Long2LongOpenHashMap());
-			long key = pos.asLong();
-			long now = level.getGameTime();
-			if (recent.containsKey(key) && now - recent.get(key) < odds.recentTicks()) {
-				return false;
-			}
 			float chance = target.is(ConventionalBlockTags.ORES) ? odds.oreChance() : odds.chance();
 			if (level.getRandom().nextFloat() >= chance) {
 				return false;
 			}
-			recent.put(key, now);
 			return true;
 		}
 

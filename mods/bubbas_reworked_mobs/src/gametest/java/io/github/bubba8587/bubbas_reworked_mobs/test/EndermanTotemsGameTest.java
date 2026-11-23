@@ -150,7 +150,6 @@ public class EndermanTotemsGameTest {
 				}
 			}
 		}
-		Ripples.clearRecent(level);
 		return undo;
 	}
 
@@ -195,7 +194,7 @@ public class EndermanTotemsGameTest {
 				if (pulse == 1) {
 					firstPulse[0] = filled(helper, 0, -1, -3);
 				}
-				helper.assertTrue(Endermen.pulseAround(level, centre, 7, 1, 0.12F, 0.012F, 12000, null), "the pulse didn't start");
+				helper.assertTrue(Endermen.pulseAround(level, centre, 7, 1, 0.12F, 0.012F, null), "the pulse didn't start");
 			});
 		}
 		helper.runAtTickTime(330, () -> {
@@ -220,17 +219,17 @@ public class EndermanTotemsGameTest {
 	}
 
 	/**
-	 * At chance 1: blocks a pulse reverted and that were dug out again stay dug out on the next pulse (recent window);
+	 * At chance 1: blocks a pulse reverted and that were dug out again come back on the next pulse (no hidden window);
 	 * stone placed in an ore spot stays stone; a plank in the ground keeps the columns round it as they are.
 	 */
 	@GameTest(structure = FIELD, maxTicks = 100)
-	public void pulseRecentWindowAndBuilds(GameTestHelper helper) {
+	public void pulseRepeatsAndBuilds(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
 		Runnable undo = pulseField(helper);
 		BlockPos centre = helper.absolutePos(new BlockPos(12, 1, 8));
 		helper.setBlock(new BlockPos(12, -2, 8), Blocks.STONE);
 		helper.setBlock(new BlockPos(18, -3, 8), Blocks.OAK_PLANKS);
-		helper.assertTrue(Endermen.pulseAround(level, centre, 7, 1, 1.0F, 1.0F, 12000, null), "the pulse didn't start");
+		helper.assertTrue(Endermen.pulseAround(level, centre, 7, 1, 1.0F, 1.0F, null), "the pulse didn't start");
 		helper.runAtTickTime(20, () -> {
 			helper.assertBlockPresent(Blocks.GRASS_BLOCK, new BlockPos(10, 0, 8));
 			helper.assertBlockPresent(Blocks.IRON_ORE, new BlockPos(10, -2, 8));
@@ -238,15 +237,12 @@ public class EndermanTotemsGameTest {
 			helper.assertBlockPresent(Blocks.AIR, new BlockPos(18, 0, 8));
 			helper.setBlock(new BlockPos(10, 0, 8), Blocks.AIR);
 			helper.setBlock(new BlockPos(10, -2, 8), Blocks.AIR);
-			helper.setBlock(new BlockPos(9, 0, 8), Blocks.AIR);
-			Ripples.clearRecent(level, helper.absolutePos(new BlockPos(9, 0, 8)));
-			helper.assertTrue(Endermen.pulseAround(level, centre, 7, 1, 1.0F, 1.0F, 12000, null), "the second pulse didn't start");
+			helper.assertTrue(Endermen.pulseAround(level, centre, 7, 1, 1.0F, 1.0F, null), "the second pulse didn't start");
 		});
 		helper.runAtTickTime(40, () -> {
 			try {
-				helper.assertBlockPresent(Blocks.AIR, new BlockPos(10, 0, 8));
-				helper.assertBlockPresent(Blocks.AIR, new BlockPos(10, -2, 8));
-				helper.assertBlockPresent(Blocks.GRASS_BLOCK, new BlockPos(9, 0, 8));
+				helper.assertBlockPresent(Blocks.GRASS_BLOCK, new BlockPos(10, 0, 8));
+				helper.assertBlockPresent(Blocks.IRON_ORE, new BlockPos(10, -2, 8));
 				helper.assertBlockPresent(Blocks.OAK_PLANKS, new BlockPos(18, -3, 8));
 			} finally {
 				undo.run();

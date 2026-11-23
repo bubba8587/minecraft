@@ -66,15 +66,11 @@ public interface SleeperHook {
 
 	/**
 	 * Starts the Totem of the Beginning's pulse: like {@link #restoreAround}, but each block only goes back with a chance
-	 * (ores far less), not twice within {@code recentTicks}, never where {@code player} may not build. False when it can't.
+	 * (ores far less), never where {@code player} may not build. False when it can't.
 	 */
 	default boolean pulseAround(ServerLevel level, BlockPos centre, int radius, int ticksPerBlock, float chance, float oreChance,
-			int recentTicks, @org.jspecify.annotations.Nullable Player player) {
+			@org.jspecify.annotations.Nullable Player player) {
 		return false;
-	}
-
-	/** {@code area} draws Reworked Mobs' caretaker endermen like a cairn for {@code lifetimeTicks}; refresh to keep it. */
-	default void drawEndermen(ServerLevel level, Object source, AABB area, int lifetimeTicks) {
 	}
 
 	/**

@@ -134,8 +134,10 @@ public final class TotemsTuning {
 	public static final float BEGINNING_PULSE_CHANCE = 0.12F;
 	/** Pulse: chance a mined-out ore spot gets its ore back (a tenth of terrain's). */
 	public static final float BEGINNING_PULSE_ORE_CHANCE = 0.012F;
-	/** Pulse: a block a pulse reverted can't be reverted again for this long (10 minutes). */
-	public static final int BEGINNING_PULSE_RECENT_TICKS = 12000;
+	/** Beacon and statue: a Beginning area pulses once every this many ticks (15 s). */
+	public static final int BEGINNING_AREA_PULSE_TICKS = 300;
+	/** Beacon and statue: the area pulse spreads one block every this many ticks. */
+	public static final int BEGINNING_AREA_TICKS_PER_BLOCK = 2;
 
 	private TotemsTuning() {
 	}

@@ -68,13 +68,12 @@ public final class Endermen {
 
 	/**
 	 * Starts a pulse at {@code centre}: like {@link #restoreAround}, but each block only goes back with {@code chance}
-	 * ({@code oreChance} where the generated block is an ore, and ore only into air), never one a pulse reverted within
-	 * {@code recentTicks}, never an unbreakable block or one {@code player} may not touch (null: no player check). Each
+	 * ({@code oreChance} where the generated block is an ore, and ore only into air), never an unbreakable block or one {@code player} may not touch (null: no player check). Each
 	 * reverted block puffs and sounds ({@link #revertEffect}). False when this level has no generated terrain.
 	 */
 	public static boolean pulseAround(ServerLevel level, BlockPos centre, int radius, int ticksPerBlock, float chance, float oreChance,
-			int recentTicks, @Nullable Player player) {
-		return Ripples.pulse(level, centre, radius, ticksPerBlock, new Ripples.Odds(chance, oreChance, recentTicks, player));
+			@Nullable Player player) {
+		return Ripples.pulse(level, centre, radius, ticksPerBlock, new Ripples.Odds(chance, oreChance, player));
 	}
 
 	/** The revert effect on one block: a particle puff and a soft, low sound (throttled per level). */

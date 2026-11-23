@@ -38,7 +38,7 @@ public class TotemOfTheBeginningItem extends io.github.bubba8587.bubbas_totems_a
 		}
 		if (!SleeperHook.get().pulseAround(server, player.blockPosition(), TotemsTuning.BEGINNING_PULSE_RADIUS,
 				TotemsTuning.BEGINNING_PULSE_TICKS_PER_BLOCK, TotemsTuning.BEGINNING_PULSE_CHANCE, TotemsTuning.BEGINNING_PULSE_ORE_CHANCE,
-				TotemsTuning.BEGINNING_PULSE_RECENT_TICKS, player)) {
+				player)) {
 			return InteractionResult.PASS;
 		}
 		server.sendParticles(ParticleTypes.REVERSE_PORTAL, player.getX(), player.getY() + 1.0, player.getZ(), 60, 0.6, 1.0, 0.6, 0.1);
