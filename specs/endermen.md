@@ -321,3 +321,8 @@ Seven forms picked by seed: chorus, grove, spire, arch, canopy, henge, leaning (
 - Owner to playtest the numbers (all in `EndermanTuning`), the cairn pace and the vigil refill.
 - Owner to review the builder's choices (first build 1-13, cairn forms 1-4); in particular whether builders' carried End blocks should vanish on death (choice 13) and whether canopy cairns are too slow to finish (forms choice 2).
 - Trading at cairns (builder's choices to review): the answer table, the pad's look (purpur plinth with end stone brick slabs), the 2-4 s stare and the 4-10 s return, the 16-block "nobody near" range, and existing finished cairns counting as unfinished until their pad is built.
+
+## Caretakers leave builds alone (owner, 2026-11-22)
+
+- Terrain mending only lifts natural terrain: block tag `#bubbas_reworked_mobs:caretaker_liftable` (vanilla's holdable, dirt, sand, base stones, terracotta, nylium, snow, plus gravel, clay, cobblestone kinds and sandstone). Never a beacon base (`#minecraft:beacon_base_blocks`) or anything with a block entity. This came from a Totem of the Beginning beacon whose caretakers took a pyramid block and broke the beacon.
+- Clearing a cairn's footprint keeps the broader rule (`TerrainKinds.clearable`: holdable or a full cube, never a beacon base or block entity), so trees and player blocks in the way still go.

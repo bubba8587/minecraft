@@ -300,13 +300,14 @@ public final class Fabricators {
 		}
 	}
 
-	/** What stands on the pad (not spectators, not the Warden). */
+	/** What stands on the pad (not spectators, not the Warden or anything in #fabricator_ignores). */
 	static List<LivingEntity> riders(ServerLevel level, FabricatorSite site) {
-		return level.getEntitiesOfClass(LivingEntity.class, site.padArea(), EntitySelector.ENTITY_STILL_ALIVE.and(EntitySelector.NO_SPECTATORS).and(e -> !(e instanceof Warden)));
+		return level.getEntitiesOfClass(LivingEntity.class, site.padArea(), EntitySelector.ENTITY_STILL_ALIVE.and(EntitySelector.NO_SPECTATORS)
+				.and(e -> !(e instanceof Warden) && !e.is(io.github.bubba8587.bubbas_reworked_mobs.registry.ModTags.FABRICATOR_IGNORES)));
 	}
 
 	static void tryDrop(ServerLevel level, FabricatorSite site) {
-		if (level.getDifficulty() == Difficulty.PEACEFUL || !level.isSpawningMonsters() && !(level.getServer() instanceof net.minecraft.gametest.framework.GameTestServer)) {
+		if (level.getDifficulty() == Difficulty.PEACEFUL || !level.getGameRules().get(net.minecraft.world.level.gamerules.GameRules.SPAWNER_BLOCKS_WORK)) {
 			return;
 		}
 		// A ward over the dripper (a Totem of Warding, e.g. in the Fabricator's own beacon) stops its spawning, not its

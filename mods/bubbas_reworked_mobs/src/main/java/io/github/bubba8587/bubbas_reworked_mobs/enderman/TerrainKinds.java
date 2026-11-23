@@ -94,13 +94,23 @@ public final class TerrainKinds {
 				|| !state.getFluidState().isEmpty() || state.is(BlockTags.REPLACEABLE);
 	}
 
-	/**
-	 * Whether an enderman may lift this block at all: no block entity (chests, sleepers, displays), not unbreakable or
-	 * boss-proof, and either vanilla's holdable set or a plain full cube (so no doors, beds, rails, torches...).
-	 */
+	/** Natural terrain a caretaker may lift (data: tags/block/caretaker_liftable). */
+	public static final net.minecraft.tags.TagKey<net.minecraft.world.level.block.Block> CARETAKER_LIFTABLE = net.minecraft.tags.TagKey.create(
+			net.minecraft.core.registries.Registries.BLOCK, io.github.bubba8587.bubbas_reworked_mobs.BubbasReworkedMobs.id("caretaker_liftable"));
+
+	/** Whether an enderman may lift this block at all. */
 	public static boolean liftable(BlockGetter level, BlockPos pos, BlockState state) {
 		if (state.isAir() || state.hasBlockEntity() || !state.getFluidState().isEmpty() || state.getDestroySpeed(level, pos) < 0.0F
-				|| state.is(BlockTags.WITHER_IMMUNE) || state.is(BlockTags.DRAGON_IMMUNE)) {
+				|| state.is(BlockTags.WITHER_IMMUNE) || state.is(BlockTags.DRAGON_IMMUNE) || state.is(BlockTags.BEACON_BASE_BLOCKS)) {
+			return false;
+		}
+		return state.is(CARETAKER_LIFTABLE);
+	}
+
+	/** Whether a builder may clear this block out of its cairn's footprint: holdable or a plain full cube, never a beacon base. */
+	public static boolean clearable(BlockGetter level, BlockPos pos, BlockState state) {
+		if (state.isAir() || state.hasBlockEntity() || !state.getFluidState().isEmpty() || state.getDestroySpeed(level, pos) < 0.0F
+				|| state.is(BlockTags.WITHER_IMMUNE) || state.is(BlockTags.DRAGON_IMMUNE) || state.is(BlockTags.BEACON_BASE_BLOCKS)) {
 			return false;
 		}
 		return state.is(BlockTags.ENDERMAN_HOLDABLE) || state.isCollisionShapeFullBlock(level, pos);

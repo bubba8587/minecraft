@@ -327,3 +327,8 @@ Owner: "additional secrets and complexity (not to main mechanic, but to the gene
 - Test world station: not built. Idea: a zombie Fabricator built with `ancient_fabricator build` under the hub, reached by a ladder shaft with a sign; the tour photographs the overview and the face wall.
 - Flaky tests: `fabricatorBreakingTheSpawnerStopsIt`, `fabricatorDropsDeactivatedMob`, `fabricatorSendsItUpAndItWakesReworked` and `wardenWakesWhenItHearsAPlayerAtTheMachine` fail now and then (`BACKLOG.md`).
 - Office jukebox loop: when we move to the release with vanilla's infinite jukebox.
+
+## Playtest fixes (2026-11-22)
+
+- The teleporter takes nothing in `#bubbas_reworked_mobs:fabricator_ignores` (the Warden; the Warden is also excluded by type).
+- The machine is gated like vanilla spawner blocks: it runs while `spawner_blocks_work` is on and refuses on Peaceful. The `spawn_mobs` and `spawn_monsters` rules no longer stop it, so it runs in worlds with mob spawning off, such as the natural test world.
