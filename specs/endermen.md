@@ -1,7 +1,9 @@
 <!-- dte:C1,B17,B18,B19,D2 -->
-# Reworked Mobs: endermen (spec, first build done 2026-11-16)
+# Reworked Mobs: endermen (spec)
 
-Owner's design (2026-11-16), being worked out in conversation. Endermen are the world's **caretakers and builders**.
+**Status:** caretakers, cairns (seven forms), cairn spawning, vigil, the ripple and nexus for Totems & Artifacts: **built** (first build 2026-11-16, forms 2026-11-22). Trading at cairns and sneak + middle-click placing: **designed, not built** (last section). Open items at the end.
+
+Owner's design (2026-11-16). Endermen are the world's **caretakers and builders**.
 
 ## Two jobs
 
@@ -9,7 +11,7 @@ Owner's design (2026-11-16), being worked out in conversation. Endermen are the 
    - Example (owner): they intentionally jump on and break **farmland back to dirt** if the original block there was dirt.
 2. **Build:** they complete **enderman cairns**: strange structures whose full design is fixed when the world generates (deterministic templates), so endermen always know what to build. They bring in **End blocks** for them (end stone, purpur, etc.).
    - Endermen choose between the two jobs.
-   - **Look (owner):** strange, twisty, **chorus-plant-like** spires rather than stacked stones: purpur pillar trunks that step sideways as they climb, branches ending in end-rod 'flowers', on an end stone brick footing (preview in the test world east of the hub).
+   - **Look (owner):** strange, twisty, **chorus-plant-like** spires rather than stacked stones: purpur pillar trunks that step sideways as they climb, branches ending in end-rod 'flowers', on an end stone brick footing. Since 2026-11-22 this "chorus" look is one of seven forms (Cairn forms, below).
    - **Cairns point to the stronghold** (owner): a few blocks in each cairn's design, not too obvious (e.g. a leaning top stone, a line of end stone along the base), point toward the nearest stronghold. Observant players can follow cairns there.
 
 ## The target world (owner, 2026-11-16)
@@ -115,13 +117,13 @@ New in `api/Endermen` (add, don't change):
 - `boolean restoreAround(ServerLevel, BlockPos centre, int radius, int ticksPerBlock)` → `enderman/Ripples`. False outside the overworld or with a generator the target world can't reproduce.
 - `void drawIn(ServerLevel, Object source, AABB, int lifetimeTicks)` / `stopDrawing(ServerLevel, Object source)` → `enderman/EndermanNexus` (lapses unless refreshed, like `EndermanWards`).
 - `void setKin(Predicate<Player>)` → `enderman/Endermen.anger` skips kin (creative and spectator were already skipped).
-- `void setCairnGifts(Supplier<ItemStack> offering, Supplier<ItemStack> completionGift)` → `enderman/CairnGifts`.
+- `void setCairnGifts(Supplier<ItemStack> offering)` → `enderman/CairnGifts` (the completion gift was removed, owner 2026-11-22).
 
 `enderman/Ripples`: per column, nearest first as the ring passes: (1) top down, terrain-family blocks above the generated surface where the target is air are removed; (2) bottom up, air where the target is a family block is filled with the target (falling blocks only on a solid floor; never into a cell an entity's box touches, items and XP orbs excepted); a family block of the wrong family at or one below the generated surface, not touching a fluid, becomes the target. Protective blocks (any of them anywhere in the cylinder's height protects its column and every column within 2): anything not `TerrainKinds.isNatural`, any block entity, lava, cobblestone, mossy cobblestone, cobbled deepslate, smooth stone, dirt path, and geode blocks (amethyst block, budding amethyst, amethyst buds and clusters, smooth basalt). Structures and wards: the target world has no opinion, so they're skipped. Columns not worked out yet wait. Effects: reverse-portal particles on changed blocks (at most 48 a tick) and the block's place sound now and then. Updates with `Block.UPDATE_ALL`.
 
 `enderman/EndermanNexus`: per area, every `SPAWN_INTERVAL` (5 s) in the overworld, when cairn spawning is allowed (game rule, spawn_monsters, not Peaceful): below the cap, 35 % to spawn a caretaker (marked as a cairn spawn, no home) at a random column inside the area, on a spawn cell (vanilla spawn placement and darkness rules, not warded, not within 16 of a player). It arrives carrying the original block of a hole it finds in the area (16 random columns, 12 deep, like a cairn filler), else empty-handed.
 
-`enderman/CairnGifts`: saved level attachment `bubbas_reworked_mobs:cairn_gifts` (`offered` list of site origins; `granted` is left over from the removed completion gift and only read from old saves). Offering: ticked every 100 ticks for sites within 96 of a player (not on the game test server); needs a supplier, the site picked by its seed, not offered, its centre loaded and not warded, the cairn complete, and one of its own endermen within 16. The site is marked before the item is placed, as a Reworked Mobs loot display (`GROUND`, facing the cairn), with portal particles and the enderman teleport sound. Spot: 16 angles round the cairn starting at a seed-picked one, `radius() + 2` out, y from origin+3 down to origin-3, air on a floor that holds a display up and not on or above a design block. Completion gift: `mixin/BlockItemPlaceMixin` (RETURN of `BlockItem.placeBlock`, success only, server player) calls `CairnGifts.placedBy`: the placed block is a design block standing as designed, the site is complete and not marked; then mark, `placeItemBackInInventory`, portal particles and `END_PORTAL_FRAME_FILL`. Nothing is marked while no supplier is set.
+`enderman/CairnGifts`: saved level attachment `bubbas_reworked_mobs:cairn_gifts` (`offered` list of site origins; `granted` is left over from the removed completion gift and only read from old saves). Offering: ticked every 100 ticks for sites within 96 of a player (not on the game test server); needs a supplier, the site picked by its seed, not offered, its centre loaded and not warded, the cairn complete, and one of its own endermen within 16. The site is marked before the item is placed, as a Reworked Mobs loot display (`GROUND`, facing the cairn), with portal particles and the enderman teleport sound. Spot: 16 angles round the cairn starting at a seed-picked one, `radius() + 2` out, y from origin+3 down to origin-3, air on a floor that holds a display up and not on or above a design block. Nothing is marked while no supplier is set. (The completion gift and its `BlockItemPlaceMixin` were removed: see Owner answers, 2026-11-22.)
 
 Numbers (in `EndermanTuning`): offering share 0.15 of sites (`OFFERING_SHARE`; owner, 2026-11-22: nerfed from 1 in 2), checked every 100 ticks (`OFFERING_CHECK_TICKS`), 1 in 12 per check (`OFFERING_ONE_IN`), witness within 16 (`OFFERING_WITNESS_RANGE`), spot 2 outside the footprint (`OFFERING_GAP`); nexus 35 % per spawn check (`NEXUS_SPAWN_CHANCE`), cap 6 (`NEXUS_CAP`) counted within the area + 8 (`NEXUS_MARGIN`), not within 16 of a player (`NEXUS_PLAYER_DISTANCE`), 8 tries (`NEXUS_TRIES`); ripple columns wait up to 600 ticks for their terrain (`RIPPLE_PENDING_TICKS`), protection radius 2 (`RIPPLE_PROTECT_RADIUS`), at most 48 particles a tick (`RIPPLE_PARTICLES_PER_TICK`). The ripple's radius and speed are the caller's (Totems: 24, 2 ticks a block).
 
@@ -161,7 +163,7 @@ Tests: core `endermanRippleRestoresGroundButNotBuilds`; milestone `EndermanTotem
 ## Builder's choices (the owner may want to change these)
 
 1. **Stray flowers and other natural features are not moved unless a cairn wants them.** The design says "a stray flower elsewhere gets moved", but with no record of placed blocks every natural flower, pumpkin and mushroom would count as stray (features can't be reproduced), and endermen would strip meadows. So natural non-terrain blocks are only fetched for a nearby unfinished cairn that wants exactly that block (stray flowers do get carried to offering spots). Say if you want more.
-2. **The footing stub at worldgen** (footing, rim, first trunk blocks), so sites are findable before endermen come.
+2. **The worldgen stub is natural offerings only** (owner, 2026-11-16: nothing unnatural a player could notice); the first build's End-block footing stub is gone.
 3. **No banners** on cairns for now (the preview's were bad); the magenta glass pane is the only end-city decoration besides stairs and slabs.
 4. **The stronghold pointer is one of four directions** (the rod lies flat facing N/E/S/W).
 5. **Overworld only.** Nether and End endermen stay vanilla.
@@ -243,7 +245,7 @@ Seven forms picked by seed: chorus, grove, spire, arch, canopy, henge, leaning (
 - `:bubbas_reworked_mobs:build` passes (30 core); EndermanGameTest and EndermanTotemsGameTest milestone pass.
 - Client part `cairnforms` (`CairnFormsClientGameTest`): one finished cairn of each form plus three more seeds on a flat world, from the north-west: `cairn-form-<form>-<seed>` and `cairn-forms-row`, and it prints each one's block counts. I looked at all seven forms and the extra arch.
 
-## Trading at cairns (owner, 2026-11-22; design in progress, not built)
+## Trading at cairns (owner, 2026-11-22; designed, not built)
 
 - **Endermen trade at their cairns.** Each cairn has **an obvious trade block** as part of its design, where a player leaves something and the endermen answer with something they've gathered.
 - **Like piglin bartering:** the return is random from a table, **sometimes good and sometimes weird as hell** (owner).
@@ -252,3 +254,9 @@ Seven forms picked by seed: chorus, grove, spire, arch, canopy, henge, leaning (
 - **Timing (owner):** as soon as no player is nearby, an enderman comes, takes the item and vanishes (teleport particles and sound), then **returns shortly after** with the answer and leaves it on the pad.
 - **Pure random (owner):** what you give doesn't shape what comes back. Junk or diamonds, the same odds: sometimes good, sometimes weird as hell.
 - **Placing control (owner):** **sneak + middle mouse button** lays the held item on the ground as a display; plain middle click stays vanilla's pick block. It needs a client-side hook (pick block is a client action) sending a request to the server. It works **anywhere** (owner, 2026-11-22), not just on trade pads, so survival players can set items down as decoration; picking one back up with an empty hand already works. Belongs to the shared loot-on-display system (`specs/undead.md`).
+
+## Open
+
+- Owner to playtest the numbers (all in `EndermanTuning`), the cairn pace and the vigil refill.
+- Owner to review the builder's choices (first build 1-13, cairn forms 1-4); in particular whether builders' carried End blocks should vanish on death (choice 13) and whether canopy cairns are too slow to finish (forms choice 2).
+- Trading at cairns: the return table (what "good" and "weird" mean), the pad's design and the "shortly after" delay are not set yet.

@@ -48,6 +48,7 @@ Minecraft renames things every release and memory from older versions is wrong m
 1. Read the relevant file in `docs/knowledge/` (index: `docs/knowledge/README.md`).
 2. Check every class and method you use against the decompiled source. Run `./gradlew :<mod>:genSources` once per Minecraft version, then `python3 tools/mcsrc.py` to unpack it into `build/mcsrc/` (common, client, vanilla data/assets) for grepping. Fabric API source: clone `FabricMC/fabric-api` at the branch named after the Minecraft version. Its testmods are the best examples.
 3. When the docs and the source disagree, the source wins; fix the doc in the same change.
+4. **Use vanilla subsystems (owner):** before writing any search, scan, timer or mob movement, check `specs/vanilla-subsystems.md`. Use vanilla's entity selectors, targeting conditions, block and POI searches and AI goals instead of hand-rolling them; when vanilla doesn't fit, say why in the project's spec (code comments only label WHAT a section is; WHY goes in a leaf, HOW in a spec: DTE B38).
 
 ## Layout (`specs/build.md`)
 
@@ -132,5 +133,6 @@ Releases go out from CI on a tag `<project>/v<version>`, made on `main` after me
 
 ## Style
 
+- **Code comments are labels only (owner, DTE B38):** a comment says WHAT a section or block is, in a few words. Reasons (WHY, owner decisions, history) go in the decision leaf or the spec; explanations of HOW a system works go in the spec. No dated "(owner, 2026-…)" notes, design rationale or tuning history in javadoc.
 - Java: tabs, Mojang names, one class per registered concept group (`ModItems`, `ModBlocks`...). Mod id lowercase with underscores; author `bubba8587`, Java packages `io.github.bubba8587.<modid>` (`specs/build.md`); license MIT (B12 mitLicense).
 - **On the owner's PC: commit locally as you go, but push only after the builds and the relevant tests pass** (owner's instruction), in verified batches; subagents never push, the orchestrator does after checking. In cloud sessions, commit and push as you go on `develop` (see Branch model). Messages say what changed and which leaf governs it. A snapshot commit of unfinished work (an agent mid-task) ends its message with the skip-CI marker (`[skip ci]`; never write that text in other commit messages, or GitHub skips CI for them), so half-written code doesn't turn CI red; finished work never skips CI.

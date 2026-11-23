@@ -6,13 +6,13 @@
 > | | |
 > |---|---|
 > | **Variants** | Sleeping Skeleton, Sleeping Zombie, Sleeping Husk, Sleeping Stray |
-> | **Poses** | Sitting slumped, or lying on its back (both variants) |
+> | **Poses** | Sitting slumped, or lying on its back |
 > | **Behavior** | Motionless until woken |
 > | **Gear** | Often a weapon and armor |
 > | **Mined with** | Silk Touch pickaxe (drops the body) |
 > | **Wakes into** | [[Woken Undead\|Woken undead]] |
 
-A **sleeping undead** is a dormant skeleton or zombie that lies motionless in the world until noise wakes it. Both skeletons and zombies sit slumped or lie on their backs. They often hold a weapon and wear armor, and they neither move nor attack while asleep.
+A **sleeping undead** is a dormant skeleton, zombie, husk or stray that lies motionless in the world until noise wakes it. All four sit slumped or lie on their backs. They often hold a weapon and wear armor, and they neither move nor attack while asleep.
 
 ## Husks and strays
 
@@ -43,7 +43,7 @@ A sleeping undead woken by a theft attacks the thief.
 | Tool | Drops |
 |---|---|
 | Silk Touch pickaxe | The body, as a sleeping-undead item that can be placed again |
-| Anything else | A bone (skeleton) or rotten flesh (zombie) |
+| Anything else | A bone (skeleton, stray) or rotten flesh (zombie, husk) |
 
 In either case, the weapon and armor drop as separate items.
 

@@ -27,7 +27,7 @@ A drowned lunges out at a player, animal or villager near the water's edge with 
 
 ### Grip
 
-A drowned's grip starts half-tight and **tightens the longer it holds on**: it strikes more often and harder, knocks out more breath, and more bubbles stream off its victim. Every hit on it loosens the grip, and when the grip is gone it lets go. Hits count more when they come quickly; axes and Impaling loosen it most, and Knockback helps. A Riptide trident pulls its user free at once. Water Breathing, Respiration and Conduit Power only buy time. An unarmored player who doesn't fight back drowns in under ten seconds.
+A drowned's grip starts half-tight and **tightens the longer it holds on**: it strikes more often and harder, knocks out more breath, and more bubbles stream off its victim. Every hit on it, from the victim or anyone else, loosens the grip, and when the grip is gone it lets go. Harder hits loosen it more, so quick, heavy blows work best; axes and Impaling loosen it most, and Knockback helps. A Riptide trident pulls its user free at once. Water Breathing, Respiration and Conduit Power only buy time. An unarmored player who doesn't fight back drowns in under ten seconds. The game rule `bubbas_reworked_mobs:show_meters` shows the grip as a blue bar.
 
 ### Others join in
 

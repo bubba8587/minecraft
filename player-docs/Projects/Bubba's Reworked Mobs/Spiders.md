@@ -9,7 +9,7 @@
 > | **Location** | Ceilings of tall cave rooms, all overworld biomes |
 > | **Contains** | Cobwebs, 2-4 sleeping spiders |
 
-Spiders climb walls and walk on ceilings, through the Stormie's Spiders mod, which Reworked Mobs needs. What's new is a ceiling ambush in caves, and giant spiders in old forests.
+**Spiders** in [[Bubba's Reworked Mobs]] are mostly vanilla. They climb walls and walk on ceilings through the Stormie's Spiders mod, which Reworked Mobs needs. What's new is a ceiling ambush in caves, and giant spiders in old forests.
 
 ## Nests
 

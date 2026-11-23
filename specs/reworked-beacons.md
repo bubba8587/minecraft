@@ -6,7 +6,7 @@ A separate mod that reworks vanilla beacons into a general "area" system. Built 
 
 ## Payload API (the hook other mods use)
 
-Other mods (Infused Gems, Totems & Artifacts) supply beacon items **without depending on this mod and without this mod knowing them**. Everything public lives in the package `io.github.bubba8587.bubbas_reworked_beacons.api`; nothing outside it is API. Keep it small and stable: add methods only as `default` methods.
+Other mods (Infused Gems, Totems & Artifacts, Reworked Mobs) supply beacon items **without depending on this mod and without this mod knowing them**. Everything public lives in the package `io.github.bubba8587.bubbas_reworked_beacons.api`; nothing outside it is API. Keep it small and stable: add methods only as `default` methods.
 
 **Registering.** Implement `BeaconPayload` (public no-argument constructor) and list it under the entrypoint key `"bubbas_reworked_beacons:payload"` in the supplying mod's `fabric.mod.json`:
 
@@ -36,14 +36,15 @@ Compile against this mod only (`compileOnly project(':bubbas_reworked_beacons')`
 
 ## Why its own mod (owner, 2026-11-16)
 
-Area effects are needed by two projects: Bubba's Infused Gems (gems broadcasting their effect) and Bubba's Reworked Mobs (Warding: mob-free zones without spamming torches; the Totem of Warding has since moved to Bubba's Totems & Artifacts). The owner split the beacon rework out so the mods stay independent:
+Area effects were first needed by two projects: Bubba's Infused Gems (gems broadcasting their effect) and Bubba's Reworked Mobs (Warding: mob-free zones without spamming torches; the Totem of Warding has since moved to Bubba's Totems & Artifacts). The owner split the beacon rework out so the mods stay independent:
 
 | Installed | Beacons |
 |---|---|
 | Reworked Beacons alone | the reworked beacon; gem-base payments buy vanilla's six powers (Standalone, below) |
 | + Infused Gems | gems go in the slot and broadcast their effect; the standalone payments are off (owner, 2026-11-16) |
-| + Totems & Artifacts | the Totem of Warding goes in the slot and wards the area |
-| Gems or Mobs without Beacons | beacons stay vanilla; those mods work exactly as they do now |
+| + Totems & Artifacts | totems go in the slot: Warding wards the area; Gathering, Fortification, Growth, Seeking and the Beginning have area forms too (`specs/totems-artifacts.md`) |
+| + Reworked Mobs | the Ancient Fabricator's Fabricator Heart works in its beacons (Mining Fatigue III, Weakness and Slowness on players in the area; `specs/mob-factory.md`) |
+| Gems, Totems or Mobs without Beacons | beacons stay vanilla; those mods work exactly as they do now |
 
 Reworked Beacons offers one hook: "this item in a beacon does X at power Y". Infused Gems and Totems & Artifacts answer it only when Reworked Beacons is present (optional dependency), so none of them depends on another.
 
@@ -94,7 +95,7 @@ Technical choices, not leaves: change them when a better way turns up. No new bl
 
 **Prior art (2026-11-15, `tools/prior-art.py`):** beacon mods change range (Beacon Range, Extended Beacon Range), base blocks (PurpurPack bases), payments (Potion Beacons: potions as beacon effects, CC-BY-SA) or let beacons work underground (Underground Beacons, ARR; Underground Beacon, MIT, 26.2). None offers a one-slot item beacon with an API for other mods, mobs in range, a pyramid power cap or upside-down pairs. No library fits (custom menu plus a block entity mixin), so it is hand-rolled because no library does it (B9).
 
-## Owner questions (all answered)
+## Owner questions (answered)
 
 - (answered) Standalone 4-layer pyramid: **automatically upgrades the paid power to level II** and reaches the furthest range (50); no secondary slot (owner, 2026-11-16).
 - (answered) Totem of Warding: found in a mix of places, more common than the Totem of Undying; in a beacon: 1-3 layers stop spawns and keep monsters out, 4 layers also keep sleepers asleep; range as normal. Details in the Warding doc.
@@ -105,6 +106,13 @@ Technical choices, not leaves: change them when a better way turns up. No new bl
 - (answered) Existing beacons are simply **wiped** of their vanilla powers when the mod is installed; no conversion (owner, 2026-11-16).
 - (answered) Gem strength in a beacon: half a full netherite set (`BEACON_SHARE` 0.5, `specs/effect-gems.md`), approved for now (owner, 2026-11-16); revisit after playtesting.
 - (answered) Harmful gems in a beacon hit everyone, the builder included: **no protection** (owner). Players can counter with gems (e.g. matching resistances), and it enables designed AoE debuff environments (e.g. hostile structures, boss arenas).
+
+## Open
+
+- **Builder's choices to review** (marked *(agent's choice)* above): screen wording and the item-name line; standalone effects ambient with particles, spectators unaffected; no maximum gap between paired beacons; a pair beats a sky beam on the same floor beacon; a pair's beam shows even with no item.
+- **Gem strength in a beacon** (`BEACON_SHARE` 0.5): approved for now, revisit after playtesting.
+- **Compatibility before release:** test against Beyond Basic Beacons / Potion Beacons (likely mark incompatible) and Underground Beacons / Extended Beacon Range (BACKLOG).
+- Not done: a client screenshot of the beacon screen holding a gem (for the player docs).
 
 ## Milestone test objectives
 

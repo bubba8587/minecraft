@@ -10,7 +10,7 @@ Builds the C3 craftingTweaksMod direction. Mod id `bubbas_extra_recipes` (same n
 - **No durability.** The owner dislikes durability; the Glider's nerf is entirely in how it flies. (Easy to add later if wanted.)
 - **Handling** (tunable, starting values): turns more slowly toward where the player looks (vanilla blends 10% per tick; the Glider 3%: halved at first, then cut further after the owner's playtest, "nerf the glider's handling even more. speed is fine."), and firework rocket boosts are weaker. Done with a small mixin on the elytra flight code that applies only when the worn glider item is ours. Lift and sink rate stay vanilla to start.
 - **Recipe:** the owner's original elytra recipe from Extra Recipes: diamond, bamboo, diamond / phantom membrane, empty, phantom membrane / feather, empty, feather. Result: one Glider.
-- **Look:** its own item model and wing texture at 16x and 32x (B16), made by a person. Placeholder art until then; nothing ships to Modrinth with placeholder art.
+- **Look:** its own item model and wing texture at 16x and 32x (B16), to be made by a person. Agent-made hang-glider art until then (As built, Glider); nothing ships to Modrinth with it.
 - **Tests:** game tests compare a Glider flight against an elytra flight from the same start (it turns slower, rockets add less speed) and check the recipe; client screenshots of the item and the wings on a player, front and back.
 
 ## Synthetic Diamond Ore
@@ -20,7 +20,7 @@ Builds the C3 craftingTweaksMod direction. Mod id `bubbas_extra_recipes` (same n
 - That table (owner: "may not actually drop anything, so it feels much more rare"): 25 % chance of 1 diamond, Fortune doesn't help, no XP. Silk Touch returns the Synthetic Diamond Ore item unchanged. Starting numbers; tune by playtest.
 - Technique, tests and tradeoffs: `docs/knowledge/item-keyed-block-drops.md` (approach C), proven first in refmod (requirement 18). Removing the mod turns synthetic ore into natural ore. The mod is required on client and server (a configuration-phase handshake turns away clients without it).
 
-## As built (2026-11-14)
+## As built (2026-11-14; everything above is built)
 
 Code: `mods/bubbas_extra_recipes` (package `io.github.bubba8587.bubbas_extra_recipes`). Requires Fabric API; `environment: "*"`, required on both sides.
 
@@ -35,7 +35,7 @@ Code: `mods/bubbas_extra_recipes` (package `io.github.bubba8587.bubbas_extra_rec
   - `FireworkRocketGliderMixin`: `@WrapOperation` on the first `Vec3#add(DDD)` in `FireworkRocketEntity#tick`, the boost to the attached fall-flying entity (`look*0.1 + (look*1.5 - v)*0.5`). Glider: the 0.1 push and the 1.5 target speed are scaled by `GLIDER_ROCKET_POWER = 0.6`, so a rocket both accelerates less and tops out at about 60 % of an elytra's rocket speed (about 1.0 instead of 1.7 blocks/tick). Owner confirmed this starting strength.
   - Movement runs on the client for the local player and on the server for everything else; both mixins are common code, so both sides agree.
 - Recipe `data/bubbas_extra_recipes/recipe/glider.json` (mod data, not the datapack): the old `elytra2` shape, result `bubbas_extra_recipes:glider`.
-- Look: item model `items/glider.json` → `item/glider` (generated); wings `equipment/glider.json` (layer `wings`) → `textures/entity/equipment/wings/glider.png` (elytra UV layout, 64x32). **Placeholder art** at 16x and 32x, drawn in code by `tools-local/make_placeholder_textures.py` (flat bamboo-green spar, membrane panels, feather fringe). A person replaces both before any Modrinth release.
+- Look: item model `items/glider.json` → `item/glider` (generated); wings `equipment/glider.json` (layer `wings`) → `textures/entity/equipment/wings/glider.png` (elytra UV layout, 64x32). Agent-made art at 16x and 32x, drawn in code by `tools-local/make_placeholder_textures.py` (art pass 2026-11-16): the icon is a home-made hang glider seen from the front (swept chevron wing with a bamboo leading edge and membrane sail, a triangle control frame, feather tassels); the wings are phantom-membrane sails on a bamboo spar and battens, diamond spar caps, feathered tips. Listed in `docs/art-todo.md`; a person replaces both before any Modrinth release.
 
 ### Synthetic Diamond Ore
 - Port of refmod's approach C (refmod keeps its copy as the reference): `blockstate/SyntheticOre`, `mixin/BlockExtraPropertyMixin` (adds `synthetic`, default false), `mixin/BlockPropertiesAccessor`, `mixin/DropExperienceBlockMixin` (no XP from synthetic ore), `network/ExtraStatesHandshake` (configuration-phase check; the client registers the receiver in `BubbasExtraRecipesClient`).
@@ -60,3 +60,8 @@ Test-lite policy (`specs/quality.md`, Test suites): `ExtraRecipesCoreGameTest` r
 - `GliderGameTest` (milestone part): the Glider has the glider and equippable components and no durability; a rocket adds less speed to it than to an elytra.
 - `SyntheticOreGameTest` (milestone part): the `synthetic` property exists with natural as the default, natural ore keeps vanilla drops, Fortune and XP, synthetic ore drops a diamond about one time in four over 2000 fixed-seed rolls, pick-block gives plain ore, saves with and without the property load.
 - Client (screenshots listed above): the Glider's tooltip, worn standing and gliding from both sides (and the client agrees it can glide), synthetic vs natural ore, the bundled resource pack on by default, a modded client passes the handshake.
+
+## Open
+
+- Real Glider art (item and wings, 16x and 32x) and a mod icon, both made by a person (`BACKLOG.md`).
+- Glider numbers (turn blend 0.03, rocket power 0.6) and Synthetic Diamond Ore's 25 % are starting values to tune by playtest.

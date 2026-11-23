@@ -1,5 +1,7 @@
 <!-- dte:C1,B15,B17 -->
-# Reworked Mobs: monster camps (spec, design 2026-11-22; built 2026-11-22 except alarms and maps)
+# Reworked Mobs: monster camps (spec)
+
+**Status:** built 2026-11-22: camps, banner keys, leaders, daily resets, a lit fire quiets a camp, shade and the underground room, pillager outposts. Designed, not built: alarm bells and the outpost raid horn. In progress (agent 2, after its other undead work): maps from cartographers.
 
 Owner's design (2026-11-22), building on the earlier idea in `docs/research/camps-blood-moon-idea.md`. Decisions made since win where they differ (the 15 % spawn cut stays; **no blood moon**, owner 2026-11-22).
 
@@ -18,9 +20,9 @@ Owner's design (2026-11-22), building on the earlier idea in `docs/research/camp
 
 ## Lighting a fire quiets a camp (owner, 2026-11-22)
 
-- **A lit campfire (or soul campfire) inside a camp's area disables it** while it burns: the roster doesn't spawn and the camp doesn't reset. It's the fire ward applied to the whole camp, and the way to shut a camp down **without breaking its banners**. Put the fire out (water, shovel) or break it, and the camp works again. It only quiets camps whose mobs fear fire (all of ours do).
+- **A lit campfire (or soul campfire) inside a camp's area disables it** while it burns: the roster doesn't spawn and the camp doesn't reset. It's the fire ward idea (`specs/undead.md`, in progress) applied to the whole camp, and the way to shut a camp down **without breaking its banners**. Put the fire out (water, shovel) or break it, and the camp works again. It only quiets camps whose mobs fear fire (all of ours do).
 
-## Alarms (owner, 2026-11-22, not built)
+## Alarms (owner, 2026-11-22; designed, not built)
 
 - **Skeleton and zombie camps have an alarm bell.** The first monster to spot a player runs to ring it, waking the whole camp and any sleepers in earshot (bells are already loud to sleepers, `specs/undead.md`). Kill the ringer first or break the bell to keep the element of surprise.
 - **Pillager outposts sound the raid horn instead** (vanilla's `event.raid.horn` sound), with the same effect.
@@ -43,14 +45,10 @@ Owner's design (2026-11-22), building on the earlier idea in `docs/research/camp
 
 - **Not crazy frequent, but frequent enough to replace natural spawns for grinding mobs.** Natural surface spawning is cut to 15 %, so re-armable camps are where players farm skeletons and zombies. A player should usually find a camp of each type within a reasonable walk. Builder states the spacing (camps per 1000x1000 blocks, typical distance to the nearest of each type).
 
-## Maps (owner, 2026-11-22, not built; queued with agent 2)
+## Maps (owner, 2026-11-22; in progress, agent 2, after its other undead work)
 
 - **Cartographer villagers sell maps to our places**, the way they sell ocean monument maps: the nearest graveyard, camp or Fabricator (Fabricators might need a high trade level). **Fabricator office chests hold a map to the next Fabricator.** (`specs/graveyards.md` and `specs/mob-factory.md` share this.)
 
-## Open
-
-- Camp loot, spacing, biomes, trigger range, roster sizes and the leader: builder's starting values are in "As built" below; the owner tunes them by playing.
-- Alarms (bell / raid horn) not built yet.
 
 ## Milestone test objectives
 
@@ -58,9 +56,7 @@ Owner's design (2026-11-22), building on the earlier idea in `docs/research/camp
 - Breaking every banner in a camp stops it for good. Placing a matching banner back in its area brings it back.
 - An outpost with every banner broken spawns no pillagers. Putting one back restores them.
 
-## As built (2026-11-22, agent 2)
-
-### Player-facing
+## As built (2026-11-22)
 
 - **Monster camps** generate across the overworld: a dark trodden clearing (no light at all, owner) round a cold, unlit soul campfire ringed by log seats, a chest of loot, scrappy stilt lookout towers (log posts, a patchy plank platform, railings with gaps, a ladder, sometimes a slab roof), bone-and-skull rock outcrops, skulls on pikes and, in bigger camps, a lean-to over bedrolls.
 - **Kinds** follow the biome: **husk** camps in deserts and badlands (acacia, sandstone), **stray** camps in snow (spruce, packed ice), **bogged** camps in swamps and mangroves (mangrove wood, mud bricks), and **skeleton** or **zombie** camps everywhere else (spruce or dark oak, stone or mossy cobble). Zombie and husk camps have zombie heads; the others skulls.
@@ -81,7 +77,7 @@ Owner's design (2026-11-22), building on the earlier idea in `docs/research/camp
 - **Loot chest:** 3-6 of bones, arrows, rotten flesh, string, leather, bread, iron and gold ingots, emeralds, gunpowder; plus one roll (35% nothing) of an enchanted iron sword, axe or bow, an enchanted book, chain helmet or chestplate, saddle, name tag, golden apple or 1-2 diamonds.
 - Command: `/bubbas_reworked_mobs camp build <kind> <size> [seed]`, `camp reset` (runs the daily reset now, sure, whoever is near), `camp list`.
 
-### Frequency (orchestrator's owner note: not crazy frequent, but enough to replace grinding spawns)
+### Frequency
 
 Structure set `monster_camps`: random spread, **spacing 10 chunks, separation 3**, kept **4 chunks clear of villages** (vanilla outposts do the same; a first run had a camp cutting through a village house). A camp needs fairly flat ground (rise of at most 6 across it), a dry centre and its biome at the centre and four corners, so only about 15% of tries make a camp.
 
@@ -90,32 +86,31 @@ Measured by the client part `camps` (seed 20261116, every placement cell within 
 - **Typical distance to the nearest camp of a kind** (median over a grid of points): skeleton **~360 blocks**, zombie **~340 blocks**. Husk/stray/bogged ~1700-2200 here, i.e. "go find a desert/snowfield/swamp, then there are a few".
 - Earlier tries for comparison: spacing 16 gave 2.3/km², nearest ~500-580; spacing 12 gave 4.5/km², ~350-400. Spacing is one number in the data file to tune after playtests.
 
-### Builder's choices (owner may want to weigh in)
+### Builder's choices
 
-- (Replaced by the owner's shade rule: camp mobs burn, and seek shade; `CampMemberMixin` now drives `camp/CampShade`.)
 - Camp mobs are vanilla mobs (skeleton, zombie, husk, stray, bogged) with a home radius at the camp; camp bogged don't lurk.
 - A camp's banner check reads the block entities of the chunks its box touches (only while a player is within 96 blocks), not the world blocks; nothing is scanned.
 - Roster spawns even with a creative player near (only spectators don't count), so building/inspecting a camp shows it.
 - Re-arming makes the next daily check certain rather than spawning the roster instantly in front of you (the "never refills while someone is there" rule).
 - Leaders and helmets as above; no names, no glow.
 
-### Spec facts (specs/monster-camps.md)
+### Code
 
 - Code: `camp/` — `CampKind` (mob, banner, materials, `forBiome`), `CampTuning` (sizes and numbers), `CampStructure` (placement checks), `CampPiece` (code-built layout; plan from the seed before any world read; `towerSpots()`, `groundSpots()`), `CampBanners` (patterns, `paint`, `matches`, `standsIn`), `CampSite` (saved state: id = start chunk, kind or null for outposts, box, centre, size, tower/ground spots, spawned, armed, rearmed, members), `CampSites` (registry as a Fabric level attachment `bubbas_reworked_mobs:camp_sites`; discovery from structure references of loaded chunks within 4 chunks of each player every second; arming; roster trigger; daily reset; outposts; `disarmedOutpostAt`), `CampRoster` (spawning, leader), `CampCommand`, `Camps` (registration, tick and entity-unload hooks). Shared `worldgen/ClippedBuild` (chunk-clipped placing, now also used by `CryptYardPiece`).
-- Mixins: `CampMemberMixin` (Mob.burnUndead HEAD), `OutpostSpawnMixin` (ChunkGenerator.getMobsAt HEAD: inside a disarmed outpost, return the biome's spawns), `BoggedLurk` skips camp mobs.
+- Mixins: `CampMemberMixin` (Mob.customServerAiStep HEAD: gives camp zombies vanilla's `RestrictSunGoal` and `FleeSunGoal` once), `OutpostSpawnMixin` (ChunkGenerator.getMobsAt HEAD: inside a disarmed outpost, return the biome's spawns), `BoggedLurk` skips camp mobs.
 - Roster deaths: Fabric `ServerEntityEvents.ENTITY_UNLOAD` with a destroying removal reason (killed or discarded, so conversions count too) removes the mob from its camp (entity tags `bubbas_reworked_mobs.camp` and `bubbas_reworked_mobs.camp:<id>`; leader also `bubbas_reworked_mobs.camp.leader`).
 - Data: `worldgen/structure/monster_camp.json` (step top_layer_modification), `worldgen/structure_set/monster_camps.json`, `tags/worldgen/biome/has_structure/monster_camp.json` (26 land biomes incl. desert, badlands, snowy, swamp, mangrove, cherry grove, sparse jungle; no oceans, rivers, beaches, mushroom fields, deep dark, pale garden), `loot_table/chests/monster_camp.json`.
 
 ### Tests
 
 - Core: `ReworkedMobsCoreGameTest.campRosterAppearsWithALeader` (body in `CampsGameTest.rosterAppearsWithALeader`): a survival player near a small skeleton camp makes 3 + 1 appear, exactly one leader, larger, tougher, iron chestplate, no banner.
-- Milestone `CampsGameTest`: `bannersAreTheKey` (break every banner → disarmed, roster removal counted, never resets; put the kind's banner back → re-armed, resets at the next check), `otherBannersDontCount`, `aLitFireQuietsTheCamp` (lit campfire: no roster; out: roster appears; lit again after clearing: no reset), `campsHaveShadeAndARoom` (all 25 room cells and at least 4 surface spots are usable shade; a zombie can walk down the tunnel into the room), `exposedCampMobsSeekShade` (at noon the roster appears in shade; a skeleton put in the sun walks into shade), `outpostWithoutBannersSpawnsNoPillagers` (registered outpost box; banner gone → disarmed and `getMobsAt` has no pillagers; banner back → armed). Full milestone server suite 121/121; camp tests stable over 5 reruns. The client part also checks that a zombie on the surface outside a natural camp can path down into its room (reachable). One core build run failed once and passed on three reruns (could not see which test; likely one of the known flaky ones).
+- Milestone `CampsGameTest`: `bannersAreTheKey` (break every banner → disarmed, roster removal counted, never resets; put the kind's banner back → re-armed, resets at the next check), `otherBannersDontCount`, `aLitFireQuietsTheCamp` (lit campfire: no roster; out: roster appears; lit again after clearing: no reset), `campsHaveShadeAndARoom` (all 25 room cells and at least 4 surface spots are usable shade; a zombie can walk down the tunnel into the room), `exposedCampMobsSeekShade` (at noon the roster appears in shade; a skeleton put in the sun walks into shade), `outpostWithoutBannersSpawnsNoPillagers` (registered outpost box; banner gone → disarmed and `getMobsAt` has no pillagers; banner back → armed). The client part also checks that a zombie on the surface outside a natural camp can path down into its room (reachable).
 - Client part `camps` (`CampsClientGameTest`), screenshots looked at: one camp of each kind built on a flat world from above and close (camp-skeleton/zombie/husk/stray/bogged-above/-close), `camp-roster` (skeletons round the fire, a lookout on the tower, the leader), `camp-leanto` (a skeleton standing in its shade at noon), `camp-roster-night`, `camp-room` / `camp-room-back` (inside a natural camp's room, night vision), and the nearest natural camps in seed 20261116 (`camp-natural-0..2`: a skeleton camp in a forest clearing, a bogged camp in a swamp). The survey numbers above print from the same part.
 - Not covered by a test: a natural outpost losing its banners in a generated world (the test uses a hand-registered outpost box; the mixin path and the outpost discovery are the same code the natural case uses).
 
-### Spec facts added for shade (specs/monster-camps.md)
+### Shade code
 
-- `camp/CampShade`: by day (`isBrightOutside` and the `monsters_burn` environment attribute), for camp mobs tagged burn-in-daylight: avoid-sun pathing on; when the eye sees the sky and there's no target (or it's on fire), path to the nearest free shade spot. `resolve` finds the standable, sky-less height of a spot (exact for the room, near the ground for the rest). Sky visibility is the sky-light level (15), so it settles with the light engine a moment after blocks change.
+- `camp/CampShade` only answers where the shade is: `sunBurns` (vanilla's rule: `isBrightOutside` and the `monsters_burn` environment attribute), `resolve` (the standable, covered height at a spot, three blocks of headroom), `covered` (blocks overhead). `CampRoster` uses it so a roster that appears by day appears in the shade. Taking cover itself is vanilla's sun goals (`CampMemberMixin`).
 - `CampPiece.shadeSpots()` (saved on the site as `shade`), `tunnelStep(i)`, `leanToSpot()`; the camp box now reaches 10 (12 for large) from the centre so the tunnel is built; the room is skipped where the world isn't deep enough (superflat).
 
 ### Fixes after owner review (2026-11-22)
@@ -125,4 +120,10 @@ Measured by the client part `camps` (seed 20261116, every placement cell within 
 - **Crypts:** the noble sarcophagus lid is an upper slab, so its candle stands.
 - Milestone tests `CampsGameTest.everyCampBlockIsSupported` (each kind) and `GravesGameTest.everyYardBlockIsSupported` (each wealth): every built block passes `canSurvive`.
 - Shade checks read the blocks overhead (`CampShade.covered`), not sky light; shade spots need three blocks of headroom (leaders are 1.25x). The custom walk-to-shade code is replaced by vanilla's sun goals (above).
-- Camp and crypt tests run on their own deep 32 x 48 field (`camp_field`); the camp box had spilled into neighbouring tests and broken two Mob Factory tests. Full milestone suite 123/123, twice.
+- Camp and crypt tests run on their own deep 32 x 48 field (`camp_field`); the camp box had spilled into neighbouring tests and broken two Mob Factory tests.
+
+## Open
+
+- **Playtest numbers:** spacing (10 chunks, about 6 camps per km²), trigger range, roster sizes, the leader, camp loot: starting values above.
+- **Natural forest camps** sit among uncleared trees (leaves crowd the towers); worth a look.
+- **Builder's calls to review:** the Builder's choices list above (camp bogged don't lurk, re-arming waits for the next daily check, rosters show for creative players).

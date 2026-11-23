@@ -9,7 +9,7 @@ Each mod ships with Fabric game tests covering its main behavior, and the build 
 
 The owner, for speed: "For things that you are confident in, write down the test objectives and what they SHOULD achieve, but separate out those tests and do not run them except upon major release milestones. This should be an ongoing policy as part of speedy development." Every commit is local history, so a test that isn't run every day is still there to run (or write) later.
 
-- **Core suite (every build, every push).** A small smoke set per mod, about 3-8 server game tests: the mod loads and each main mechanic works at least once. One class per mod, `<Mod>CoreGameTest`, listed under `"fabric-gametest"` in `src/gametest/resources/fabric.mod.json`. A core test usually just calls a test method that lives in a milestone class next to its helpers; that method then has no `@GameTest` of its own (the core class carries the annotation: environment, structure, ticks), so the full suite runs each test once.
+- **Core suite (every build, every push).** A small smoke set per mod: the mod loads and each main mechanic works at least once (2026-11-22: Extra Recipes 4, Reworked Beacons 4, Reworked Mining 5, Infused Gems 9, Totems & Artifacts 17, Reworked Mobs 34; the last two have grown past "small" and are worth trimming when their build feels slow). One class per mod, `<Mod>CoreGameTest`, listed under `"fabric-gametest"` in `src/gametest/resources/fabric.mod.json`. A core test usually just calls a test method that lives in a milestone class next to its helpers; that method then has no `@GameTest` of its own (the core class carries the annotation: environment, structure, ticks), so the full suite runs each test once.
 - **Milestone suite (release milestones only).** Every other server game test class, listed under `"bubba-milestone-gametest"` in the same file (Fabric ignores that key; the build appends it to `"fabric-gametest"` with `-PmilestoneTests`), plus every client game test and the test world screenshot tour. Each mod's spec has a "Milestone test objectives" section: one line per milestone class saying what it proves.
 - **Confident new work:** write the objective (one line, in the spec's "Milestone test objectives") instead of a test; writing the milestone test code is optional until the release. Not confident (new kind of mechanic, fiddly maths, a past bug area): write the test, as milestone unless it is the mechanic's first smoke test, which goes in core.
 - **Bug fixes** ship with a milestone test that would have caught the bug, or at least a written objective for one.
@@ -35,7 +35,7 @@ The owner never runs builds or tests; agents keep this loop fast unprompted (CLA
 | Test world screenshot tour (`:testworldshots:runClientGameTest`, 128 shots, all mods) | - | ~50 s | spectator + `tp` per shot, waits only for chunk render + 5 ticks (owner PC, 2026-11-15) |
 | Extra Recipes: server tests after a change (`-PrerunGametests`) | 11-13 s full (12 tests) | ~10 s core (4 now) | test-lite core suite; server boot (~9 s) is the floor (owner PC, 2026-11-15) |
 | Infused Gems: server tests after a change | 12-15 s full (80 then, about 86 now) | ~10 s core (8 now) | same |
-| Reworked Mobs: server tests after a change | 14-15 s full (61 then) | ~10 s core (12 now, with Warding) | same |
+| Reworked Mobs: server tests after a change | 14-15 s full (61 then) | ~10 s core (12 then; 34 on 2026-11-22, not re-timed) | same |
 | Reworked Beacons: server tests after a change | not measured yet | core (4) | |
 | Client tests on the default loop (per mod) | 32 s (Extra Recipes), 40 s+ (Infused Gems), 59 s (Reworked Mobs), 72 s (tour) | 0 s (skipped); one part 25 s | client tests and the tour are milestone; agents run only the parts they changed (owner PC, 2026-11-15) |
 | Switching suites (`-PmilestoneTests` on or off) | - | +2-3 s once | configuration cache entry per property set, gametest resources reprocessed |
@@ -60,18 +60,16 @@ morning, always clear), and a failure logs its surroundings (`FailureContextMixi
 does nothing on the test server (only a test's first attempt counts): don't use it to paper over a flake.
 Chase one test with `-PgametestFilter=<selector>`.
 
-Also replace the "Known flaky: `idleZombieWalksToADisplayAndTakesIt`" line under CI: same symptom as the skeleton
-(empty hand at tick 402 in a night environment), same causes, not seen in the runs since.
-
-Milestone test objective (drowned spec): a drowned swimming out of a pit onto a 2-deep shallows gets over the lip
-(covered statistically by `swimsToALurkSpotNearThePlayer`; a deterministic start under the lip did not reproduce the
-hover, so no separate test).
+Still unexplained and not seen since these fixes: the light engine standing still (`strongLightCalmsSleepersInWorld`)
+and a drowned freezing mid-water at path node 2 (`swimsToALurkSpotNearThePlayer`). Open flakes in the Fabricator tests
+are listed in `BACKLOG.md`.
 
 ### Causes found and fixed (2026-11-16)
 
 | Test | Cause | Fix |
 |---|---|---|
 | `GrabLootGameTest.idleSkeletonTakesADisplayedSword` ("holds air on tick 402") | **Sunrise.** The `clock_time` environment sets 18000 only when the batch starts; the test then waits for its chunks to load while the test server ticks as fast as it can. Once 12000 ticks went by first (clock 30009 at test tick 0): the skeleton burned, `RestrictSunGoal` + `FleeSunGoal` ran, no grabbing. | Clock and weather frozen on the game test server (`FrozenClockMixin`: `advance_time` and `advance_weather` off, clear weather). Time of day is now exactly what the environment says, else the world start (morning). |
+| `GrabLootGameTest.idleZombieWalksToADisplayAndTakesIt` (empty hand at tick 402) | Same symptom and causes as the skeleton above. | Frozen clock; not seen since. |
 | `UndeadCombatGameTest.idleZombiesDriftTogether` ("16.8 apart") | Not reproduced alone. Same night/day drift and leftovers next door (below) are the candidates; never failed again after the isolation fixes. | Isolation + frozen clock. |
 | `BubbasReworkedMobsGameTest.sneakingNearbyDoesNotWakeSleeper`, `woolWallBlocksHearing` (sleeper became air) | **Leftovers from earlier tests.** The vanilla test server never clears a finished test: batches run one after another along a grid 5 blocks apart; on a pass it only discards entities inside the area (not players, not blocks), on a fail nothing. Sleepers, displays, items, mobs and mock players of earlier tests sat right next to later ones (seen in failure dumps: leftover sleepers and woken mobs within 15 blocks). | `TestAreaCleanupMixin`: when a test finishes (pass or fail) its area is wiped (blocks, scheduled ticks, entities) and the mock players inside it logged out. The two tests also now record what woke the sleeper (`watchWake`: noise source and maker) and put it in the message. |
 | `CreeperGameTest.oneWatcherSpawnsBehindCoverOutOfView` | Daylight (same clock drift); `forceNight` worked around it. | Frozen clock (`forceNight` kept, harmless). |

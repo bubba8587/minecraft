@@ -49,9 +49,11 @@ Finds and builds enderman cairns. Requires operator permission; intended for bui
 
 Builds a crypt yard. Requires operator permission.
 
-**Syntax:** `/bubbas_reworked_mobs graveyard build <lone|small|medium|large> <kept|overgrown|sunken|collapsed|nearly_gone> <none|pauper|family|noble>`
+**Syntax:**
+- `/bubbas_reworked_mobs graveyard build <lone|small|medium|large> <kept|overgrown|sunken|collapsed|nearly_gone> <none|pauper|family|noble>`
+- `/bubbas_reworked_mobs graveyard place [crypt|nocrypt] [<seed>]` builds an overgrown yard, with or without a family vault.
 
-The yard is built with its gate at your feet.
+The yard is built with its gate at the player's feet, running south. A yard built by command is ordinary blocks, not a structure, so `/locate` does not find it.
 
 ### camp
 
@@ -62,3 +64,15 @@ Requires operator permission; intended for building and testing.
 - `camp build <kind> <size> [<seed>]` builds a camp here.
 - `camp reset` runs the daily refill check now, even with players near.
 - `camp list` lists known camps.
+
+### ancient_fabricator
+
+*Main article: [[Ancient Fabricators]]*
+
+Finds and builds Ancient Fabricators. Requires operator permission; intended for building and testing.
+
+- `ancient_fabricator locate` names the nearest Ancient Fabricator within 3000 blocks and whether it still runs.
+- `ancient_fabricator here <mob> [<seed>]` builds one at the player's position.
+- `ancient_fabricator build <position> <mob> <seed> <turns>` builds one exactly there.
+
+A built Fabricator is saved with the world and runs like a natural one.

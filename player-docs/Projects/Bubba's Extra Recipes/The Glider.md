@@ -41,7 +41,7 @@ The Glider is worn in the chest slot. Jumping while falling starts gliding, exac
 
 ## Appearance
 
-The item and its wings use placeholder textures in this version.
+The Glider looks like a home-made hang glider: phantom membrane stretched over a bamboo frame, with diamond caps on the spar ends and feathers on the trim. Worn, it shows as a pair of membrane sails on the player's back. The textures are temporary and will be redrawn; a 32x version comes with the mod.
 
 ## History
 

@@ -1,5 +1,7 @@
 <!-- dte:C1,B15,B17,B18 -->
-# Reworked Mobs: spiders (spec, design 2026-11-22; built 2026-11-22: nests, giants, spun webs, cocoons, Stormie's Spiders)
+# Reworked Mobs: spiders (spec)
+
+**Status:** all built 2026-11-22: cave nests with dropping sleeper spiders, giant spiders, spun webs, cocoons, walls and ceilings through Stormie's Spiders. Open items below.
 
 Owner's design (2026-11-22). Ordinary spiders stay **mostly vanilla**. What's new is a ceiling ambush in caves, and a giant variant in old forests.
 
@@ -51,21 +53,15 @@ Owner's design (2026-11-22). Ordinary spiders stay **mostly vanilla**. What's ne
 - **In a fight it summons little spiders**: smaller and weaker than vanilla spiders (owner). Builder tunes how many and how often, with a cap.
 - **Drops (default until the owner decides, 2026-11-22: "idk"):** vanilla spider drops, more of them (string and spider eyes). Revisit if it wants a unique drop.
 
-## Open
-
-- Giant spider: a unique drop (maybe later), what it does by day (builder: attacks players only in the dark, takes livestock any time).
-- A screenshot of Stormie's climbing on walls and ceilings (its navigator refuses scripted paths).
-- Numbers: nest spacing, the trigger area under the nest, drop speed, latch odds, reel speed, nest refill rate.
-
 ## Milestone test objectives
 
 - Nests generate only at the tops of tall cave rooms, made of cobwebs.
 - A player walking under a nest makes a sleeper drop on its thread. A miss turns it into a normal spider. A hit latches and reels the player up into the nest.
 - Giant spiders spawn only in old-growth taiga, at the larger scale. They spin webs between trees as they roam, snatch nearby livestock into their webs before going for players, and summon small, weak spiders when fought.
 
-## Step 1 as built: cave nests (2026-11-22, agent 3)
+## Step 1 as built: cave nests (2026-11-22)
 
-Player-facing: `player-docs/Projects/Bubba's Reworked Mobs/Spiders.md`. Numbers in `spider/SpiderTuning`. The spun webs (thick diagonal strands between random points, owner) and giant spiders are step 2, not built yet.
+Player-facing: `player-docs/Projects/Bubba's Reworked Mobs/Spiders.md`. Numbers in `spider/SpiderTuning`.
 
 ### Numbers (SpiderTuning)
 
@@ -80,7 +76,7 @@ Player-facing: `player-docs/Projects/Bubba's Reworked Mobs/Spiders.md`. Numbers 
 | Drop | 0.9 blocks a tick, straight down; bite 4 |
 | Miss | stops 1 block above the floor (or level with the target), hangs 20 ticks, then snaps |
 | Reel | 0.12 blocks a tick up the thread (a 13-block room takes about 5 s) |
-| Grip | starts 50, +0.2 a tick, full 100; bites 3-8 % a tick, 2-4 damage (from a fresh grip to a full one); hit points as the drowned's (`DrownedMind.gripPoints`) |
+| Grip | starts 50, +0.2 a tick, full 100; bites 3-8 % a tick, 2-4 damage (from a fresh grip to a full one); a hit loosens it by the drowned's points (`DrownedMind.gripPoints`) x 0.45 (`GRIP_HIT_FACTOR`, see Harder to escape) |
 | Refill | checked every 200 ticks, 4 % chance, only with no player within 12 blocks |
 
 ### Builder's choices
@@ -88,7 +84,7 @@ Player-facing: `player-docs/Projects/Bubba's Reworked Mobs/Spiders.md`. Numbers 
 - **(builder) Sleepers are entities, not blocks.** The sleeping undead are blocks, but a spider variant would mean a new registered block (B15 needs the owner's go-ahead first) and a spider block renderer. Instead, a sleeper is a real spider entity with no AI, no gravity, persistent and asleep. It's cheap: it does nothing while asleep, and persistent mobs don't count against the mob cap. It's drawn upside down with vanilla's flip. If the owner wants block sleepers like the undead, that's a later swap.
 - **(builder) A nest has an invisible "brain" entity** (`spider_nest`) at its middle. It watches the floor under it (one entity box query every 4 ticks), picks which sleeper drops, and refills. Nothing is drawn for it, and it can't be hit.
 - **(builder) Trigger area and which sleeper drops:** the closest one above the player, horizontally.
-- **(builder) Grip and escape rules** are copied from the drowned (start 50, rises, hits loosen it with the same points), with spider numbers: slower rise, bites instead of air loss. Riptide isn't a way out (no water).
+- **(builder) Grip and escape rules** are copied from the drowned (start 50, rises, hits loosen it), with spider numbers: slower rise, bites instead of air loss, hits count for less (x0.45). Riptide isn't a way out (no water).
 - **(builder) After any let-go, a miss or a lost victim** the spider turns into a vanilla spider, persistent (it doesn't despawn), and targets the player it held.
 - **(builder) Nest spiders drop vanilla spider loot.**
 - **(builder) The victim hangs below the spider,** head just under it.
@@ -96,7 +92,7 @@ Player-facing: `player-docs/Projects/Bubba's Reworked Mobs/Spiders.md`. Numbers 
 - **(builder) The thread** is a straight off-white line, drawn like vanilla's fishing line (B17).
 - **(builder) Worldgen:** placed in `UNDERGROUND_DECORATION`, overworld only, every overworld biome (deep dark included).
 
-### How it's built (for the spec)
+### How it's built
 
 - `spider/NestSpider` (extends vanilla `Spider`, implements `grip/Gripper`): phases SLEEPING, DROPPING, DANGLING, REELING and HOLDING, synced to the client with the thread's anchor. It moves itself during the drop and reel (no AI means no physics of its own).
 - `spider/SpiderNest`: the brain entity.
@@ -122,9 +118,9 @@ Player-facing: `player-docs/Projects/Bubba's Reworked Mobs/Spiders.md`. Numbers 
   - A mined-out nest's brain goes away.
   - A shot sleeper drops on its shooter.
 
-## Step 2 as built (2026-11-22, agent 3): giant spiders, spun webs, Stormie's, cocoons
+## Step 2 as built (2026-11-22): giant spiders, spun webs, Stormie's, cocoons
 
-#### Owner decisions made during the build (2026-11-22, for the spec)
+#### Owner decisions made during the build (2026-11-22)
 
 - **Spun webs replace the plain cobweb spans** round the cave nests and between trees. The nests keep their cobweb core.
 - **Not an orb web** (no hub, spokes or spiral): "for minecraft fitting-in reasons", a tangle of thick strings stretched diagonally between many random anchor points, criss-crossing through the space. Seeded per site, so it's stable.
@@ -132,7 +128,6 @@ Player-facing: `player-docs/Projects/Bubba's Reworked Mobs/Spiders.md`. Numbers 
 - **Pixelated, not smooth:**
   - Smooth strands "look out of place next to vanilla webs" and went "much yellower in shadow".
   - The pixel version: "MUCH better, keep at this angle".
-  - This replaces the spec's "fine translucent strands with a faint shine" wording.
 
 #### Player-facing behaviour
 
@@ -150,7 +145,7 @@ Player-facing: `player-docs/Projects/Bubba's Reworked Mobs/Spiders.md`. Numbers 
   - **What they are:** a tangle of strands between points on trunks, branches, leaves, the ground, and cave ceilings and walls.
   - **How they look:** drawn in pixels in the cobweb texture's own white and greys, lit like the cobwebs around them. A few strands are heavier guy-lines, two pixels wide.
   - **Tie-offs:** where a giant's strands meet a trunk, it ties them off with a real cobweb block. A cave nest's tangle runs out from its cobweb core to the ceiling and walls.
-  - **In play:** walking through strands slows you a little (less than a cobweb); spiders aren't slowed. 3 hits bring a web down, shears cut it cleanly for 2 string, and fire burns it away.
+  - **In play:** walking through strands slows you exactly like a cobweb block; spiders aren't slowed. 3 hits bring a web down, shears cut it cleanly for 2 string, and fire burns it away.
   - **Ageing:** webs tear over time and turn ragged after about 5 in-game days. Torn strands hang loose from where they're tied.
 
 #### Numbers (SpiderTuning)
@@ -164,7 +159,7 @@ Player-facing: `player-docs/Projects/Bubba's Reworked Mobs/Spiders.md`. Numbers 
 | Little spiders | 2 per call, cap 4, cooldown 200 ticks, scale 0.5, health 6, attack 1 |
 | Tree web | 22 rays, reach 7, up to 14 strands, 3 cobweb tie-offs |
 | Nest web | 1 per nest; 26 rays (mostly up), reach 11, up to 16 strands, anchored in the cobweb core |
-| Strands | at least 2.5 blocks long; slow movement x0.7; 3 hits cut; 2 string from shears; ragged up to 45% over 5 days; +25% torn per hit |
+| Strands | at least 2.5 blocks long; slow like a vanilla cobweb (`WEB_STUCK`, Weaving case too); 3 hits cut; 2 string from shears; ragged up to 45% over 5 days; +25% torn per hit |
 
 #### Builder's choices
 
@@ -218,8 +213,6 @@ Player-facing: `player-docs/Projects/Bubba's Reworked Mobs/Spiders.md`. Numbers 
   - A giant hauling a catch up a trunk is posed the same way, with a pixel thread to the web. Its task and larder are now synced to the client.
   - A client mixin into Stormie's `ClientEventHandlers.storeClimberDataForRenderState` skips Stormie's pose during that climb only.
 - **Strands slow you like a cobweb block (owner):** exactly vanilla's `WebBlock` multiplier, including the Weaving effect case.
-- **Tests:** 12 spider tests pass, including `aMissedDropTakesNoFallDamage`.
-- **Not done yet:** a Stormie's wall and ceiling screenshot (its navigator refuses scripted climbing paths).
 
 ### Cocoons, giant perch pose, two cocoon shapes (spiders branch)
 
@@ -229,8 +222,8 @@ Player-facing: `player-docs/Projects/Bubba's Reworked Mobs/Spiders.md`. Numbers 
   - The spider backs off and waits 600 ticks, then comes back and bites: 3 damage every 40 ticks. Those bites can kill.
     - The nest spider waits upside down on the ceiling, then hangs head down to feed.
     - The giant backs off along the underside, or up the trunk, then returns.
-  - Cutting: the victim hits from inside, or anyone hits from outside. Silk is 100.
-    - Points per hit: hand 13 (8 hits), other items 18, axe 28, sword 35 (3 hits), shears 40. Shears used from outside cut 50.
+  - Cutting: the victim hits from inside, or anyone hits from outside. Silk is 300 (raised from 100, see Harder to escape).
+    - Points per hit: hand 13 (about 24 hits), other items 18, axe 28, sword 35 (9 hits), shears 40. Shears used from outside cut 50.
     - At 0 the victim drops out alive with the poison cleared.
     - Fire and explosions burn or blow the cocoon open.
   - Cocooned livestock cry their ambient sound at volume 2.5 every 30-70 ticks.
@@ -254,16 +247,13 @@ Player-facing: `player-docs/Projects/Bubba's Reworked Mobs/Spiders.md`. Numbers 
     - `spiderComesBackToFeed`
   - The latch and snatch tests now expect a cocoon.
   - Spider tests run in their own test environment `bubbas_reworked_mobs-test:spiders`, so they don't shift the big Fabricator tests' layout.
-  - All 17 spider and cocoon tests pass, three runs in a row.
-- **Flaky on develop too (not from this branch).** `mob_factory_game_test_warden_wakes_when_it_hears_aplayer_at_the_machine` ("one Warden per Fabricator, found 2") and `mob_factory_game_test_secrets_are_built` fail in about 2 of 3 full `-PmilestoneTests` runs on plain develop (checked in ../mc-spiderfix). Neighbouring Fabricator test structures overlap.
 - **Screenshots.** Client parts `spiders` and `webs`, all looked at:
   - cocoon-player-outside and cocoon-player-outside-back: a player head down in a vertical cocoon;
   - spider-held: a pig slung horizontally under its nest;
   - giant-haul-rear-first: on the trunk, head down, sheep below;
   - giant-cocoon-sheep-under-canopy and giant-cocoon-sheep-from-below: upside down under the canopy, sheep slung horizontally below.
-- **Still open: a Stormie's wall and ceiling shot.** Its navigator refuses scripted climbing paths, so I'll need to bait the shot with prey at night.
 
-### Harder to escape (owner, 2026-11-22, in my session)
+### Harder to escape (owner, 2026-11-22)
 
 - **Owner's words:** "spiders should be a lot harder to break free of (unless you kill them) as should cocoons, the reason being that they don't kill you until after a little while. so if you can break free and survive the fall, that's where the skill comes into play."
 - **The grip.** Each hit on a spider holding you now loosens its grip by the drowned's points × `SpiderTuning.GRIP_HIT_FACTOR` = 0.45. The grip still tightens while it reels you up. This applies to nest spiders and to a giant hauling its catch.
@@ -271,5 +261,13 @@ Player-facing: `player-docs/Projects/Bubba's Reworked Mobs/Spiders.md`. Numbers 
   - You come loose well up the thread. The test checks you're freed more than 5 blocks up.
   - Killing the spider is unchanged: an axe kills a nest spider in 2 hits.
 - **Cocoons.** Silk went from 100 to 300: about 24 fist hits or 9 sword hits; shears are still fastest. The feeding wait stays 30 s.
-- **Tests.** `hitsBreakTheGrip` now swings a full iron axe at its real pace against a spider made tough enough not to die first. It checks that it takes at least 3 hits and that the victim is freed high. Spider tests pass twice in a row, and the RM core suite passes (33).
-- **For the spec.** This replaces the step 1 grip numbers ("start 50, +0.2/tick, drowned points").
+- **Tests.** `hitsBreakTheGrip` now swings a full iron axe at its real pace against a spider made tough enough not to die first. It checks that it takes at least 3 hits and that the victim is freed high.
+
+## Open
+
+- **Giant spider drop:** vanilla drops, more of them (default); a unique drop later? (owner: "idk").
+- **Giants by day:** builder made them attack players only in the dark (like vanilla) but take livestock any time; owner to confirm.
+- **Block vs entity sleepers:** nest sleepers are entities (builder's call, avoids a new block under B15); fine?
+- **Playtest numbers:** nest frequency, trigger area, drop speed, reel speed, refill rate, grip and cocoon toughness (tables above).
+- **Still to do:** a screenshot of Stormie's wall and ceiling climbing (its navigator refuses scripted paths; bait it with prey at night).
+- **Milestone objectives without tests:** listed under each step's Tests.
