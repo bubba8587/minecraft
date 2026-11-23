@@ -33,13 +33,13 @@ public final class ModItems {
 	// one per stack like the Totem of Undying. New ids, so no old-id alias.
 
 	/** Totem of Keeping (keeping/Keeping): carried, used up on death to keep everything. */
-	public static final Item TOTEM_OF_KEEPING = registerNew("totem_of_keeping", Item::new, totem());
+	public static final Item TOTEM_OF_KEEPING = registerNew("totem_of_keeping", io.github.bubba8587.bubbas_totems_artifacts.statue.StatueTotemItem::new, totem());
 
 	/** Totem of Gathering (gathering/Gathering): held, pulls dropped items; in a beacon, into a chest below. */
 	public static final Item TOTEM_OF_GATHERING = registerNew("totem_of_gathering", TotemOfGatheringItem::new, totem());
 
 	/** Totem of Fortification (fortification/Fortification): held or in a beacon, explosions break no blocks. */
-	public static final Item TOTEM_OF_FORTIFICATION = registerNew("totem_of_fortification", Item::new, totem());
+	public static final Item TOTEM_OF_FORTIFICATION = registerNew("totem_of_fortification", io.github.bubba8587.bubbas_totems_artifacts.statue.StatueTotemItem::new, totem());
 
 	/** Totem of Growth, working name (growth/Growth): held or in a beacon, plants grow faster. */
 	public static final Item TOTEM_OF_GROWTH = registerNew("totem_of_growth", TotemOfGrowthItem::new, totem());

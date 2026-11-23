@@ -20,7 +20,7 @@ import net.minecraft.world.phys.Vec3;
  * the block you aim at ({@link EndTeleport}); reusable, with the item cooldown sweep after each teleport (B19). Aiming
  * at nothing, or at a spot with nowhere safe to land, does nothing and starts no cooldown.
  */
-public class TotemOfTheEndItem extends Item {
+public class TotemOfTheEndItem extends io.github.bubba8587.bubbas_totems_artifacts.statue.StatueTotemItem {
 	public TotemOfTheEndItem(Properties properties) {
 		super(properties);
 	}

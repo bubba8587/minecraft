@@ -2,15 +2,166 @@
 	"type": "minecraft:block",
 	"pools": [
 		{
-			"rolls": 1,
-			"bonus_rolls": 0,
-			"conditions": [{"condition": "minecraft:survives_explosion"}],
 			"entries": [
 				{
-					"type": "minecraft:item",
-					"name": "bubbas_totems_artifacts:totem_of_warding"
+					"type": "minecraft:alternatives",
+					"children": [
+						{
+							"type": "minecraft:item",
+							"name": "bubbas_totems_artifacts:totem_of_warding",
+							"condition": {
+								"type": "minecraft:all_of",
+								"terms": [
+									{
+										"type": "minecraft:survives_explosion"
+									},
+									{
+										"type": "minecraft:match_block",
+										"blocks": "bubbas_totems_artifacts:totem_statue",
+										"state": {
+											"totem": "warding"
+										}
+									}
+								]
+							}
+						},
+						{
+							"type": "minecraft:item",
+							"name": "bubbas_totems_artifacts:totem_of_keeping",
+							"condition": {
+								"type": "minecraft:all_of",
+								"terms": [
+									{
+										"type": "minecraft:survives_explosion"
+									},
+									{
+										"type": "minecraft:match_block",
+										"blocks": "bubbas_totems_artifacts:totem_statue",
+										"state": {
+											"totem": "keeping"
+										}
+									}
+								]
+							}
+						},
+						{
+							"type": "minecraft:item",
+							"name": "bubbas_totems_artifacts:totem_of_gathering",
+							"condition": {
+								"type": "minecraft:all_of",
+								"terms": [
+									{
+										"type": "minecraft:survives_explosion"
+									},
+									{
+										"type": "minecraft:match_block",
+										"blocks": "bubbas_totems_artifacts:totem_statue",
+										"state": {
+											"totem": "gathering"
+										}
+									}
+								]
+							}
+						},
+						{
+							"type": "minecraft:item",
+							"name": "bubbas_totems_artifacts:totem_of_fortification",
+							"condition": {
+								"type": "minecraft:all_of",
+								"terms": [
+									{
+										"type": "minecraft:survives_explosion"
+									},
+									{
+										"type": "minecraft:match_block",
+										"blocks": "bubbas_totems_artifacts:totem_statue",
+										"state": {
+											"totem": "fortification"
+										}
+									}
+								]
+							}
+						},
+						{
+							"type": "minecraft:item",
+							"name": "bubbas_totems_artifacts:totem_of_growth",
+							"condition": {
+								"type": "minecraft:all_of",
+								"terms": [
+									{
+										"type": "minecraft:survives_explosion"
+									},
+									{
+										"type": "minecraft:match_block",
+										"blocks": "bubbas_totems_artifacts:totem_statue",
+										"state": {
+											"totem": "growth"
+										}
+									}
+								]
+							}
+						},
+						{
+							"type": "minecraft:item",
+							"name": "bubbas_totems_artifacts:totem_of_seeking",
+							"condition": {
+								"type": "minecraft:all_of",
+								"terms": [
+									{
+										"type": "minecraft:survives_explosion"
+									},
+									{
+										"type": "minecraft:match_block",
+										"blocks": "bubbas_totems_artifacts:totem_statue",
+										"state": {
+											"totem": "seeking"
+										}
+									}
+								]
+							}
+						},
+						{
+							"type": "minecraft:item",
+							"name": "bubbas_totems_artifacts:totem_of_the_beginning",
+							"condition": {
+								"type": "minecraft:all_of",
+								"terms": [
+									{
+										"type": "minecraft:survives_explosion"
+									},
+									{
+										"type": "minecraft:match_block",
+										"blocks": "bubbas_totems_artifacts:totem_statue",
+										"state": {
+											"totem": "beginning"
+										}
+									}
+								]
+							}
+						},
+						{
+							"type": "minecraft:item",
+							"name": "bubbas_totems_artifacts:totem_of_the_end",
+							"condition": {
+								"type": "minecraft:all_of",
+								"terms": [
+									{
+										"type": "minecraft:survives_explosion"
+									},
+									{
+										"type": "minecraft:match_block",
+										"blocks": "bubbas_totems_artifacts:totem_statue",
+										"state": {
+											"totem": "end"
+										}
+									}
+								]
+							}
+						}
+					]
 				}
-			]
+			],
+			"rolls": 1
 		}
 	],
 	"random_sequence": "bubbas_totems_artifacts:blocks/totem_statue"

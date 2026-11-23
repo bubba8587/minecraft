@@ -13,7 +13,15 @@ import net.minecraft.world.item.Item;
  * Grave Talisman is not a totem and has no statue (owner).
  */
 public enum TotemType implements StringRepresentable {
-	WARDING("warding", () -> ModItems.TOTEM_OF_WARDING);
+	// Warding first: it is the default, so statues saved before the property existed load as warding statues.
+	WARDING("warding", () -> ModItems.TOTEM_OF_WARDING),
+	KEEPING("keeping", () -> ModItems.TOTEM_OF_KEEPING),
+	GATHERING("gathering", () -> ModItems.TOTEM_OF_GATHERING),
+	FORTIFICATION("fortification", () -> ModItems.TOTEM_OF_FORTIFICATION),
+	GROWTH("growth", () -> ModItems.TOTEM_OF_GROWTH),
+	SEEKING("seeking", () -> ModItems.TOTEM_OF_SEEKING),
+	BEGINNING("beginning", () -> ModItems.TOTEM_OF_THE_BEGINNING),
+	END("end", () -> ModItems.TOTEM_OF_THE_END);
 
 	private final String name;
 	private final Supplier<Item> item;
@@ -26,6 +34,16 @@ public enum TotemType implements StringRepresentable {
 	/** The totem item this statue is placed from and drops. */
 	public Item item() {
 		return item.get();
+	}
+
+	/** The statue type of a totem item, or null for an item that isn't a totem. */
+	public static @org.jspecify.annotations.Nullable TotemType forItem(Item item) {
+		for (TotemType type : values()) {
+			if (type.item() == item) {
+				return type;
+			}
+		}
+		return null;
 	}
 
 	@Override

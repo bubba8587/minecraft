@@ -11,7 +11,7 @@ import net.minecraft.world.item.ItemStack;
 import org.jspecify.annotations.Nullable;
 
 /** Totem of Growth (working name), held in either hand: plants nearby grow faster (growth/Growth). */
-public class TotemOfGrowthItem extends Item {
+public class TotemOfGrowthItem extends io.github.bubba8587.bubbas_totems_artifacts.statue.StatueTotemItem {
 	private static final Held HELD = new Held();
 
 	public TotemOfGrowthItem(Properties properties) {
