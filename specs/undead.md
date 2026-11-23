@@ -57,6 +57,10 @@ A sleeper lying somewhere lower than its mob is tall (a crypt wall niche under a
 
 - A **drowned sleeper** variant, placed inside **shipwreck interiors** (the cabins and hold): the ship's drowned crew, waking like other sleepers. Underwater sleepers are waterlogged already (`SleeperBlock.WATERLOGGED`). Shipwrecks are vanilla structures, so they're added by a structure processor or a placement hook. (Sunken graveyards: no, owner.)
 
+## Back to sleep at dawn (owner, 2026-11-22, not built)
+
+- Woken skeletons and zombies (and their variants) that survive the night look for shade at sunrise: an open grave, a crypt niche or a dark corner nearby. They lie down there and **become sleepers again** (a sleeper block with the gear they carry). Crypts refill themselves, and a cleared graveyard quietly repopulates if you leave survivors. Builder proposes the search range and what counts as shade; the resting dead (never-waking grave skeletons) are not involved.
+
 ## Fire as a weak ward (owner idea, 2026-11-22, not built)
 
 - A lit **campfire** (and soul campfire) or plain **fire** works as a **weak ward**: hostile mobs are reluctant to come close (a few blocks), like a small, soft version of the Totem of Warding (`specs/totems-artifacts.md`). It is a deterrent, not a wall. **Only mobs that would fear fire** (owner, 2026-11-22): nothing that's immune to fire or at home in it, so no Nether mobs (blazes, ghasts, magma cubes, piglins, hoglins, wither skeletons, striders...) and no other fire-immune mob. In practice, a mob that takes fire damage and isn't from the Nether (for example `fireImmune()` false and not in a Nether-mob tag). Details (radius, whether a hunting mob still pushes through) to be proposed.

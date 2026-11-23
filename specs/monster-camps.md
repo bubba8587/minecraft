@@ -20,6 +20,11 @@ Owner's design (2026-11-22), building on the earlier idea in `docs/research/camp
 
 - **A lit campfire (or soul campfire) inside a camp's area disables it** while it burns: the roster doesn't spawn and the camp doesn't reset. It's the fire ward applied to the whole camp, and the way to shut a camp down **without breaking its banners**. Put the fire out (water, shovel) or break it, and the camp works again. It only quiets camps whose mobs fear fire (all of ours do).
 
+## Alarms (owner, 2026-11-22)
+
+- **Skeleton and zombie camps have an alarm bell.** The first monster to spot a player runs to ring it, waking the whole camp and any sleepers in earshot (bells are already loud to sleepers, `specs/undead.md`). Kill the ringer first or break the bell to keep the element of surprise.
+- **Pillager outposts sound the raid horn instead** (vanilla's `event.raid.horn` sound), with the same effect.
+
 ## Refilling (owner, 2026-11-22)
 
 - **No blood moon.** A camp whose roster is dead but whose banner still stands has a **random chance to reset while you're away**: checked about once per in-game day while no player is near (outside the trigger range), with a chance per check (builder's starting value about 1 in 3, so usually within a few days). It never refills while someone is there.
@@ -37,6 +42,10 @@ Owner's design (2026-11-22), building on the earlier idea in `docs/research/camp
 ## How common (owner, 2026-11-22)
 
 - **Not crazy frequent, but frequent enough to replace natural spawns for grinding mobs.** Natural surface spawning is cut to 15 %, so re-armable camps are where players farm skeletons and zombies. A player should usually find a camp of each type within a reasonable walk. Builder states the spacing (camps per 1000x1000 blocks, typical distance to the nearest of each type).
+
+## Maps (owner, 2026-11-22)
+
+- **Cartographer villagers sell maps to our places**, the way they sell ocean monument maps: the nearest graveyard, camp or Fabricator (Fabricators might need a high trade level). **Fabricator office chests hold a map to the next Fabricator.** (`specs/graveyards.md` and `specs/mob-factory.md` share this.)
 
 ## Open
 
