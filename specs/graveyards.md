@@ -1,5 +1,7 @@
 <!-- dte:C1,B15 -->
-# Reworked Mobs: graveyards, crypts and gravestones (spec, design 2026-11-22; step 1 built: gravestone, overgrown crypt yard, family vault)
+# Reworked Mobs: graveyards, crypts and gravestones (spec)
+
+**Status:** built: gravestones, crypt yards in four sizes and five states of breakdown, desert and snowy yards, the resting dead, pauper/family/noble crypts and their loot. In progress (agent 2): will-o'-wisps, noble dead in gemmed armor. Designed, not built: standalone crypts with a collapsed hillside entrance.
 
 Owner's design (2026-11-22). Part 1's worldgen (`specs/undead.md` "Worldgen"): the places sleepers (dormant undead) are found, and where the Grave Talisman and Totem of Warding turn up as loot.
 
@@ -20,12 +22,12 @@ Owner's design (2026-11-22). Part 1's worldgen (`specs/undead.md` "Worldgen"): t
 - Graveyards on the surface in a **variety of states of breakdown** (owner): kept, overgrown (moss, vines, grass through the paths), sunken and tilted stones, collapsed (fallen stones, broken fences, open graves), and nearly gone (a few stones in the grass).
 - **Iron bar fences** (owner) around them, with gaps, bent runs and missing sections as they decay.
 - **One soul lantern per yard** (owner, 2026-11-22), on a gate post; soul torches mark the crypt stairs (builder's choice). No soul lights inside crypts.
-- Rows of gravestones over shallow graves holding sleepers (skeletons and zombies by biome; husks in deserts, strays in snow). Some graves have loot on display (`specs/undead.md` "Loot on display").
+- Rows of gravestones over shallow graves holding the resting dead (below; husks in deserts, strays in snow). Some graves have loot on display (`specs/undead.md` "Loot on display").
 - Sizes from a lone family plot to a large yard. Some yards sit over a crypt entrance; some don't.
 
 ## The resting dead (owner, 2026-11-22)
 
-- **A class of sleepers that never wake up.** Sleepers in **proper graves** (the plots under gravestones in crypt yards) are **always skeletons** and **never wake**: noise, bells, robbing and the rest leave them be. They are the yard's buried dead, not a trap.
+- **A class of sleepers that never wake up.** Sleepers in **proper graves** (the plots under gravestones in crypt yards) are **always skeletons** (husks and strays in desert and snowy yards, see below) and **never wake**: noise, bells, robbing and the rest leave them be. They are the yard's buried dead, not a trap.
 - They are **more likely to wear dyed leather armor** (burial clothes), in muted colours.
 - **Free to rob and dig (owner):** players can take their armor and items, and mine the skeleton itself, at no risk. A mined one stays a never-waking sleeper wherever it's placed, so it works as decoration.
 - Crypt sleepers (vaults, ossuaries, noble crypts) are unchanged: they wake as before. The danger lives underground.
@@ -37,7 +39,7 @@ Owner's design (2026-11-22). Part 1's worldgen (`specs/undead.md` "Worldgen"): t
   - *Pauper's ossuary:* a cramped dug tunnel and niches, bone blocks, cobble and dirt, many sleepers with little gear, poor loot.
   - *Family vault:* stone-brick chambers with a few coffin niches, candles, modest loot, a chance of a Grave Talisman.
   - *Noble crypt:* polished and chiseled stone, a central sarcophagus room, side halls, armoured sleepers, the best loot (Grave Talisman, Totem of Warding, enchanted gear).
-- Reached by stairs from a crypt yard, or standalone (a collapsed entrance in a hillside).
+- Reached by stairs from a crypt yard (built), or standalone with a collapsed entrance in a hillside (designed, not built).
 - **Lit with candles only (owner, 2026-11-22)**, and dark enough that sleepers stay asleep until disturbed (light calms them: `specs/undead.md`).
 
 ## Owner decisions during the build (2026-11-22)
@@ -49,7 +51,7 @@ Owner's design (2026-11-22). Part 1's worldgen (`specs/undead.md` "Worldgen"): t
 - **Plots are coarse or rooted dirt,** so grass doesn't grow over them.
 - **A grave lies on one level:** the sleeper under both plot blocks, so the plot blocks, the sleeper and the stone's footing share a y (the first build followed each column's ground and left some plots one up, one down).
 
-## How it's built (step 1, 2026-11-22)
+## How it's built (step 1, 2026-11-22; step 2 changes below)
 
 **Gravestone (`grave/GravestoneBlock`, `GravestoneBlockEntity`; client `client/grave/GravestoneRenderer`).** Vanilla's sign code reused, as the owner asked:
 - `GravestoneBlock extends StandingSignBlock` with a stone `WoodType` named `bubbas_gravestone`. It is not registered with `WoodType.register`, so vanilla builds no sign sprite materials for it; its sounds are stone (`BlockSetType.STONE`, `SoundType.STONE`). Its own block entity type `bubbas_reworked_mobs:gravestone` and its own ticker. Shapes: cardinal rotations get the exact stone and plinth (12 x 14 x 4 on 14 x 2 x 6); diagonal rotations a 9 x 9 column. Can't respawn in it. Properties: strength 1.5 / 6, pickaxe required, no occlusion.
@@ -64,7 +66,7 @@ Owner's design (2026-11-22). Part 1's worldgen (`specs/undead.md` "Worldgen"): t
 - **After trees:** the step is `top_layer_modification` so the yard is built after vanilla's trees, and it clears trees and plants (logs, leaves, replaceables, vines, flowers, mushroom blocks, berry bushes, pumpkins) from its columns, 24 up, before building. The ground is read past trees and plants.
 - **Same yard in every chunk:** the piece builds from its own seed and only writes inside the chunk being generated. Every random roll is made before looking at the world, so every chunk draws the same sequence. Each column reads its own ground.
 - **Graves:** rows every 4 blocks, every other column, keeping 2 blocks either side of the path. A grave is a stone at its south end facing north over a two-block plot. The level is the plot's first block's ground; dirt is filled two below and the space cleared three above. The sleeper lies one under the plot, facing north. Graves that would cross a chunk border along z are left out (their level is read from one column, which only one chunk can see).
-- **Sleepers:** skeleton or zombie, 50/50 in graves, 60/40 in the vault (only these two exist so far; husks and strays wait for their sleeper variants). Gear: skeletons a bow half the time, zombies a stone sword or iron shovel a quarter of the time; vault sleepers a chain or iron helmet 30 %.
+- **Sleepers:** yard graves hold the resting dead (step 2, below); vault niches skeleton or zombie 60/40 (climate-swapped in desert and snowy yards). Gear: skeletons a bow half the time, zombies a stone sword or iron shovel a quarter of the time; vault sleepers a chain or iron helmet 30 %.
 - **Vault:** 7 wide, 9 long, 4 high inside, floor 5 below the yard's ground (`CRYPT_DEPTH` 6 to the floor block). Stone brick shell (cracked and mossy mixed in), polished andesite and cobblestone floor. Niches every other block on both long walls with a slab over each. Altar (chiseled stone bricks, 3 lit candles), chest (`bubbas_reworked_mobs:chests/crypt_family`), more candles along the walls, about a quarter of them lit, cobwebs. Stairs: stone brick stairs one step per block, brick walls, a low parapet only round the top two steps, a brick roof once below ground, a soul torch on each side wall at the top.
 - **Loot:** `data/bubbas_reworked_mobs/loot_table/chests/crypt_family.json`, 3-6 rolls, in 26.3's format (`modifier` objects: `set_count`, `enchant_randomly` with `#minecraft:on_random_loot`; the older `functions` key is silently ignored). The Grave Talisman joins it from Totems & Artifacts (`TotemsTuning.TALISMAN_LOOT`, 15 %, keyed by the table's id so there's no dependency; Totems' loot test skips tables that aren't installed).
 
@@ -72,20 +74,20 @@ Owner's design (2026-11-22). Part 1's worldgen (`specs/undead.md` "Worldgen"): t
 
 | | Value |
 |---|---|
-| Yard size | 13-19 x 13-19 |
+| Yard size | by size class, 7-27 (step 2, `YardKinds.Size`) |
 | Max corner slope | 3 |
-| Yards with a crypt | 60 % |
+| Yards with a crypt | by size: 0 / 50 / 60 / 80 % |
 | Crypt depth | 6 (floor 5 below ground) |
 | Blank stones | 40 % (the rest 1-3 lines of glyph words) |
 | Buried loot | 12 % of graves |
 | Graves with a sleeper | 75 % |
-| Skeletons in yard graves | 50 % |
+| Resting dead in leather | 70 % |
 | Trees per yard | 2 at 35 %, else 1 at 75 % (none in deserts) |
 | Flowers / weeds on a plot block | 15 % / 25 % |
 | Missing fence bars | 12 %; one high 18 % |
 | Stones askew / fallen | 25 % / 10 % |
 | Structure spacing / separation | 36 / 12 chunks |
-| Grave Talisman in family vaults | 15 % (Totems & Artifacts) |
+| Grave Talisman | family 15 %, noble 25 % (Totems & Artifacts) |
 
 ### Builder's choices (owner may change)
 
@@ -99,8 +101,6 @@ Owner's design (2026-11-22). Part 1's worldgen (`specs/undead.md` "Worldgen"): t
 8. **Worldgen stones aren't waxed:** players can carve their own words on a found stone.
 9. **Fallen stones are stone brick slabs** lying in the grass.
 10. **Buried loot** is an iron sword, stone axe, iron shovel or bow, at the plot's foot.
-11. **Yard sleepers are skeletons and zombies only** for now (no husks or strays yet: those sleeper variants don't exist).
-12. **One state of breakdown so far (overgrown).** Kept, sunken, collapsed and nearly gone come in step 2, with the other crypt wealth levels.
 
 **Command (ops):** `/bubbas_reworked_mobs graveyard place [crypt|nocrypt] [seed]` builds a yard with its gate at your feet, the yard running south, straight into the world (not a structure: `/locate` doesn't find it, and caretaker endermen treat it as ordinary blocks).
 
@@ -112,7 +112,7 @@ Owner's design (2026-11-22). Part 1's worldgen (`specs/undead.md` "Worldgen"): t
 - Totems: `totemsAreFoundInLoot` passes standalone (crypt table skipped) and with `-PwithMobs`.
 - Not yet tested (objectives): a crypt generates under a natural yard with its chest and niche sleepers (needs a deeper test field; checked by eye in the client part); crypt yards generate in each breakdown state (step 2); the gravestone's edit screen opens on placement (vanilla path, not exercised by a test).
 
-## Will-o'-wisps (owner, 2026-11-22, not built)
+## Will-o'-wisps (owner, 2026-11-22; in progress, agent 2)
 
 - **Just soul fire particles** (vanilla `soul_fire_flame`), **faint and only occasional**.
 - **Over graveyards at night:** a few drift over the graves and slowly lead toward the yard's crypt entrance.
@@ -120,11 +120,11 @@ Owner's design (2026-11-22). Part 1's worldgen (`specs/undead.md` "Worldgen"): t
 - **Cleared for good after discovery:** each player has a saved list of the yards they've reached (a persistent player attachment). Once you've walked into a yard, its wisps stop showing for you, both the hints and the ones over its graves. Other players who haven't found it still see them. The server sends them only to players who haven't found that yard.
 - Needs a cheap way to find yards near a player (a per-world registry of yards, like the cairn sites, rather than structure searches).
 
-## Noble dead in gemmed armor (owner, 2026-11-22, not built)
+## Noble dead in gemmed armor (owner, 2026-11-22; in progress, agent 2)
 
 - With Bubba's Infused Gems installed, the armor and weapons of noble crypt sleepers carry gems (their burial finery). Woken, they fight with those effects; robbed, their gemmed gear is the prize. No hard dependency: the gems come through Infused Gems' own item modifier or api only when it's loaded.
 
-## Noble crypt loot (agent's call, owner 2026-11-22: "do whatever you like with the noble crypt loot")
+## Noble crypt loot (built; agent's call, owner 2026-11-22: "do whatever you like with the noble crypt loot")
 
 - The noble crypts are the endgame dungeon find. On top of the base table (gold, emeralds, iron, a golden apple, diamonds, enchanted books and gear) a second pool gives **1-2 burial goods**: a level 25-35 enchanted book, a worn but strongly enchanted diamond sword or chestplate, an enchanted golden helmet or chestplate, rarely an enchanted golden apple, a totem of undying or disc 13.
 - **True Unbreaking books: 20 % per noble chest** with Bubba's Reworked Mining (its main source; ancient cities 4 %, End cities 3 %, bastions and ominous vaults 5 %).
@@ -137,7 +137,7 @@ Owner's design (2026-11-22). Part 1's worldgen (`specs/undead.md` "Worldgen"): t
 - Each crypt wealth level generates with sleepers and its own loot table. The noble crypt's table can give a Grave Talisman and a Totem of Warding (with Totems & Artifacts).
 - Crypt yards generate in each breakdown state, with iron bar fences and soul lights.
 
-## Step 2 as built (2026-11-22, agent 2): sizes, states of breakdown, the three crypts, the resting dead
+## Step 2 as built (2026-11-22): sizes, states of breakdown, the three crypts, the resting dead
 
 Player-facing: `player-docs/Projects/Bubba's Reworked Mobs/Crypt Yards.md`. A sleeper in a niche wakes standing in front of it (`specs/undead.md`, Waking in tight spots).
 
@@ -158,16 +158,21 @@ Player-facing: `player-docs/Projects/Bubba's Reworked Mobs/Crypt Yards.md`. A sl
 5. **Ossuary niches** sometimes stack a second sleeper two above the floor niche.
 6. **Noble armour:** 85 % of hall sleepers and the sarcophagus's (100 %) wear a full set: 15 % gold, 40 % chain, 45 % iron; zombies carry iron swords or axes 60 %. No enchanted gear on them (that's in the chests).
 7. **The resting dead** are skeletons only and keep the "Sleeping Skeleton" name as items (no separate name or tooltip).
-8. **Not built:** standalone crypts with a collapsed hillside entrance (the spec's other way in), and husk/stray sleepers by biome (those sleeper variants don't exist yet).
+8. **Not built:** standalone crypts with a collapsed hillside entrance (the spec's other way in).
 
 ### Tests
 
-- `:bubbas_reworked_mobs:build` passes (31 core). The core yard test now also checks every yard-grave sleeper is a resting skeleton.
+- The core yard test now also checks every yard-grave sleeper is a resting skeleton.
 - Milestone `GravesGameTest.restingDeadNeverWake` (new): an explosion three blocks off wakes an ordinary sleeper (control) but not a resting one; neither does a bell rung beside it, nor robbing by a player (at sensitivity 10, where an ordinary robbery wake is certain); mined with Silk Touch the item keeps `resting`, placed again it is still resting and sleeps through another explosion and 40 more ticks. `generatedTextIsGlyphsOrBlank` and `gravestoneIsASign` pass.
-- Existing sleeper milestone classes pass: BubbasReworkedMobsGameTest (13), SleeperNoiseGameTest (16), LootDisplayGameTest (8).
 - Client part `yards` (new, `YardKindsClientGameTest`): every state, a lone plot, and pauper/family/noble yards on sky platforms: `yard-<kind>-above`, `yard-<kind>-gate`, `crypt-<wealth>` (night vision), `crypt-<wealth>-dark`, `crypt-noble-hall`. Looked at: kept, collapsed, nearly-gone (above), collapsed and noble (gate), pauper, noble and noble-hall crypts.
 - Not yet tested (objectives): each wealth's chest rolls its own table in generated worlds (checked by eye); natural generation picks every state and size (shares are code, not measured).
 
-## Desert and snowy yards (2026-11-22, agent 2)
+## Desert and snowy yards (built 2026-11-22)
 
-Crypt yards take a climate from the biome at their centre (`YardKinds.Climate`: TEMPERATE, DESERT for desert and badlands, SNOWY for base temperature under 0.15). Desert yards have sand plots, crypts of 70 % husks (30 % skeletons) buried under sand in the niches, and resting husks in the graves; snowy yards have snow plots, crypts of 70 % strays (30 % zombies) frozen in clear ice, and resting strays. Saved in the piece tag as `Climate`. Builder's call: resting dead follow the climate (the owner said "the skeleton kind"; flip with `Climate.resting()`). Details in `specs/undead.md` "Undead variants".
+Crypt yards take a climate from the biome at their centre (`YardKinds.Climate`: TEMPERATE, DESERT for desert and badlands, SNOWY for base temperature under 0.15). Desert yards have sand plots, crypts of 70 % husks (30 % skeletons) buried under sand in the niches, and resting husks in the graves; snowy yards have snow plots, crypts of 70 % strays (30 % zombies) frozen in clear ice, and resting strays. Saved in the piece tag as `Climate`. Resting dead follow the climate (builder's call, see Open). Details in `specs/undead.md` "Undead variants".
+
+## Open
+
+- **Builder's choices to review:** the step 1 and step 2 lists above (stonecutter-only recipe, soul torches at the crypt stairs, shares of sizes/states/wealths, noble armour mix).
+- **Resting dead in desert/snowy yards:** husks/strays (built) or skeletons everywhere (owner said "the skeleton kind")? Flip with `YardKinds.Climate.resting()`.
+- **Standalone hillside crypts:** designed, not built; still wanted?

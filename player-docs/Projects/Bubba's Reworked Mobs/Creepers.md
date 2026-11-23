@@ -27,7 +27,7 @@ On open ground with nothing to hide behind, it stays about 12 blocks off and sta
 
 ### Startling
 
-Being startled fills a hidden meter that empties again over a few seconds:
+Being startled fills a meter that empties again over a few seconds (the game rule `bubbas_reworked_mobs:show_meters` shows it as a red bar above the creeper):
 
 - Being attacked (one hit calms down in a few seconds; three quick hits set it off)
 - Anything moving faster than a walk within about 6 blocks: sprinting, riding, gliding, running or panicking mobs and animals, being knocked back toward it

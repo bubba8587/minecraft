@@ -9,9 +9,9 @@ Builds part 1 of the C1 reworkedMobs direction (mod id `bubbas_reworked_mobs`; l
 Dormant undead are real blocks, not entities or display-entity pseudo-blocks. They can be mined into items (see Mining and placing sleepers), cost nothing to tick in large numbers, and never count against mob caps. Waking one replaces the block with a real mob. (Moved here from the tree on the owner's word: it is a technical choice. B15 fewNewBlocks is satisfied because the owner gave the reason for these blocks.)
 
 - Modeled on vanilla's copper golem statue: block + block entity, **no ticker**. Blockstate: `facing`, `pose`, `waterlogged`. Block entity holds the gear as the vanilla `minecraft:container` component, a lazy gear loot table (rolled on first interaction or wake), a wake cooldown and who woke it.
-- Rendering (hybrid): the body is a baked block model per pose (part of the chunk mesh, free per frame; 26.3 block models allow free per-element rotation). A block entity renderer draws only armor and held items, only when the sleeper has gear and is within 32 blocks. Pose models and renderer poses are generated from one Java pose table by datagen so they never drift apart. Armor in the renderer needs one client accessor mixin for the equipment asset manager.
+- Rendering, planned before release (hybrid): the body is a baked block model per pose (part of the chunk mesh, free per frame; 26.3 block models allow free per-element rotation). A block entity renderer draws only armor and held items, only when the sleeper has gear and is within 32 blocks. Pose models and renderer poses are generated from one Java pose table by datagen so they never drift apart. Armor in the renderer needs one client accessor mixin for the equipment asset manager.
 - Lying sleepers are one block with an overhanging model (collision stays one block).
-- First playable version (built): the block entity renderer draws the whole sleeper with the vanilla mob model and texture as placeholder art, one baked model per pose, and reuses vanilla's own `HumanoidArmorLayer` and `ItemInHandLayer` for gear (they only need a `RenderLayerParent`, so armor, trims, dye and glint come free). Poses are part rotations applied after the vanilla model's `setupAnim` (`SleeperPoses`, the pose table), so armor models pose identically. The block's own model is particle-only. The hybrid baked-body version and our own 16x/32x textures come before release; item icons are solid-colour placeholders until then.
+- First playable version (built): the block entity renderer draws the whole sleeper with the vanilla mob model and texture as placeholder art, one baked model per pose, and reuses vanilla's own `HumanoidArmorLayer` and `ItemInHandLayer` for gear (they only need a `RenderLayerParent`, so armor, trims, dye and glint come free). Poses are part rotations applied after the vanilla model's `setupAnim` (`SleeperPoses`, the pose table), so armor models pose identically. The block's own model is particle-only. The hybrid baked-body version and our own 16x/32x body textures come before release. Sleeper item icons are agent-made heads with shut eyes (`tools-local/make_sleeper_icons.py`, listed in `docs/art-todo.md`).
 - Code layout: one block class, one block entity type and one renderer serve every variant; a variant is one `UndeadVariant` entry (block + item `<name>_sleeper`, entity `woken_<name>`) plus one entry in the renderer's client table.
 
 ## Hearing and waking
@@ -53,15 +53,15 @@ Dormant undead are real blocks, not entities or display-entity pseudo-blocks. Th
 
 A sleeper lying somewhere lower than its mob is tall (a crypt wall niche under a slab, a shallow grave) used to wake into a box overlapping blocks: no suffocation (eyes clear a half slab) but stuck. `SleeperWaking.stepOutIfStuck` now moves it to the nearest free spot: beside it on the same level first (a niche's open side), then one up, then diagonals; with none it stays. Milestone test `BubbasReworkedMobsGameTest.sleeperInANicheStepsOutWhenItWakes`.
 
-## Drowned sleepers in shipwrecks (owner, 2026-11-22, not built)
+## Drowned sleepers in shipwrecks (owner, 2026-11-22; in progress, agent 2)
 
 - A **drowned sleeper** variant, placed inside **shipwreck interiors** (the cabins and hold): the ship's drowned crew, waking like other sleepers. Underwater sleepers are waterlogged already (`SleeperBlock.WATERLOGGED`). Shipwrecks are vanilla structures, so they're added by a structure processor or a placement hook. (Sunken graveyards: no, owner.)
 
-## Back to sleep at dawn (owner, 2026-11-22, not built)
+## Back to sleep at dawn (owner, 2026-11-22; in progress, agent 2)
 
 - Woken skeletons and zombies (and their variants) that survive the night look for shade at sunrise: an open grave, a crypt niche or a dark corner nearby. They lie down there and **become sleepers again** (a sleeper block with the gear they carry). Crypts refill themselves, and a cleared graveyard quietly repopulates if you leave survivors. Builder proposes the search range and what counts as shade; the resting dead (never-waking grave skeletons) are not involved.
 
-## Fire as a weak ward (owner idea, 2026-11-22, not built)
+## Fire as a weak ward (owner idea, 2026-11-22; in progress, agent 2)
 
 - A lit **campfire** (and soul campfire) or plain **fire** works as a **weak ward**: hostile mobs are reluctant to come close (a few blocks), like a small, soft version of the Totem of Warding (`specs/totems-artifacts.md`). It is a deterrent, not a wall. **Only mobs that would fear fire** (owner, 2026-11-22): nothing that's immune to fire or at home in it, so no Nether mobs (blazes, ghasts, magma cubes, piglins, hoglins, wither skeletons, striders...) and no other fire-immune mob. In practice, a mob that takes fire damage and isn't from the Nether (for example `fireImmune()` false and not in a Nether-mob tag). Details (radius, whether a hunting mob still pushes through) to be proposed.
 - Light already makes sleepers harder to wake (above), so a campfire also helps keep a crypt asleep.
@@ -72,9 +72,7 @@ A sleeper lying somewhere lower than its mob is tall (a crypt wall niche under a
 - **Bogged are not sleepers** (owner): they act like the reworked drowned (`specs/drowned.md`): lurking in swamp water and mud, moving unseen, ambushing from the reeds.
 - Resting dead in yard graves never wake (`specs/graveyards.md`).
 
-### As built (2026-11-22, agent 2)
-
-#### Player-facing changes
+### As built (2026-11-22)
 
 - **Husk sleepers** (new): lie buried in sand. When woken, the sand over and round them bursts in a cloud of sand and dust; any survival player within 4 blocks is **blinded for 2 seconds**. Woken husks don't burn by day and their bare-handed hits give Hunger (as vanilla husks).
 - **Stray sleepers** (new): lie frozen in ice (clear ice in crypt niches, so you can see them inside). When something wakes one, the ice **cracks first** (a glassy crack sound and ice shards: the warning) and the stray breaks free **1.5 seconds later**, shattering the ice round it. Woken strays shoot Slowness arrows (as vanilla strays) and wear the stray's ragged clothes.
@@ -82,7 +80,7 @@ A sleeper lying somewhere lower than its mob is tall (a crypt wall niche under a
 - **Desert and snowy graveyards**: crypt yards take their climate from the biome. Desert (desert, badlands) yards have sand grave plots, husks in the crypts (mostly husks, some skeletons) buried under sand in the wall niches, and resting husks in the yard graves. Snowy yards (base temperature under 0.15) have snow plots, mostly strays (some zombies) frozen in ice niches, and resting strays in the graves. Everywhere else is as before.
 - **Bogged lurk** (they are not sleepers): a bogged notices a player within 32 blocks and slips to a hiding spot near them: water 1-2 deep over a floor (2 deep hides it fully), or mud beside reeds (sugar cane, tall grass, ferns). There it crouches, still, and holds its fire. While nobody looks toward it, it now and then moves to a new spot (about every 30 s, every few seconds once you've moved more than 12 blocks off, so it follows). It **ambushes** when a player within 10 blocks turns their back on it (it's more than 100 degrees from where they look) or anyone comes within 4 blocks, or when it's hit; then it fights normally (poison arrows) and goes back to hiding 10 s after losing its target. Bogged from trial spawners stay vanilla.
 
-#### Numbers (builder's starting values, for the owner to playtest)
+#### Numbers (starting values, owner to playtest)
 
 | What | Value | Where |
 |---|---|---|
@@ -97,16 +95,18 @@ A sleeper lying somewhere lower than its mob is tall (a crypt wall niche under a
 | Moves while unseen (nobody within 70° looking) | 1 in 600 a tick (~30 s), 1 in 80 (~4 s) once the player is 12+ blocks from its spot | `BoggedTuning.MOVE_ONE_IN*` |
 | Back to hiding after a fight | 10 s without a target | `BoggedTuning.HUNT_LINGER` |
 
-#### Builder's choices (owner may want to weigh in)
+#### Builder's choices
 
-- **Resting dead** in desert/snowy yard graves are resting husks/strays (the owner said resting dead are "the skeleton kind"; I read husk/stray as the biome's version of it). Easy to flip to skeletons everywhere: `YardKinds.Climate.resting()`.
+(The two the owner may want to flip are under Open.)
+
+- Resting dead in desert/snowy yard graves are resting husks/strays (`YardKinds.Climate.resting()`).
 - Snowy crypts mix in **zombies**, desert crypts mix in **skeletons**, so each crypt still has both melee and archers.
 - Stray niches use **clear ice** (not packed ice) so players see the stray frozen inside; snow-yard grave plots are snow blocks. Ice can melt next to strong light, but crypts are candle-lit (owner: not too well lit), so it stays.
-- The bogged hides **fully underwater** in 2-deep water (you can just make out its shape). If the owner wants its head showing, the spot rule changes to 1-deep water.
+- The bogged hides fully underwater in 2-deep water (you can just make out its shape).
 - Bogged's lurk mind is not saved: after a reload it finds a spot again.
 - Cleared what the husk/stray was in: the block over the sleeper (and two up), its four sides, and the four sides of the block over it (so a lying one's foot end is freed). Only sand-like (sand, red sand, sandstone slab, suspicious sand) for husks and ice-like (ice, packed/blue ice, snow block, powder snow) for strays.
 
-#### Spec facts (specs/undead.md)
+#### Code
 
 - `UndeadVariant` has HUSK and STRAY (block, item, woken entity each). `isSkeleton()` = SKELETON or STRAY (bows, robbing weapon choice in crypt gear).
 - `WokenHusk extends WokenZombie` (no sun sensitivity, husk sounds, Hunger on bare-handed hit), `WokenStray extends WokenSkeleton` (stray sounds, Slowness arrows). Client: `WokenZombieRenderer(context, texture)` and `WokenSkeletonRenderer.stray(context)` (stray body/armor layers + `SkeletonClothingLayer`); `SleeperRenderer` has HUSK/STRAY posed models.
@@ -134,7 +134,7 @@ Weapons near sleepers, and later other loot, are shown with a dedicated block ra
 - Rendering: the item's own model, posed per placement, so any item (vanilla or modded, any resource pack) looks right with no extra art.
 - Taking: use with an empty hand takes the item and removes the block. `buried` needs a shovel and makes more noise (sleepers hear it). Breaking the block drops the item.
 - Worldgen and structures place it next to sleepers, half-buried in graves, hung on crypt walls.
-- Player placement (decor): backlogged, needs care (BACKLOG.md).
+- Player placement: designed, not built: sneak + middle click places the held item on the ground anywhere (owner, 2026-11-22; built together with endermen trading, `specs/endermen.md`).
 
 As built (`display/` package; renderer in `client/display/`):
 
@@ -145,14 +145,14 @@ As built (`display/` package; renderer in `client/display/`):
 - Taking (`LootDisplays`): an empty main hand takes `ground`, `wall` and `stuck` (pickup sound, the quiet `minecraft:item_interact_finish` game event, which vanilla ignores while sneaking, so sneaking makes taking a displayed item silent: owner confirmed). Holding anything else does nothing to the display. `buried` ignores an empty hand (an action-bar hint says to dig) and needs a shovel (`#minecraft:shovels`): digging costs the shovel 1 durability and plays the ground's break sound plus `minecraft:block_destroy`, which sleepers hear three times as well as the quiet event (0.3 vs 0.1 base). Breaking drops the item: other placements break at once like a flower; `buried` mines like packed dirt (hardness 0.8, fast with a shovel; the block is in `#minecraft:mineable/shovel`). A waterlogged display leaves its water behind.
 - **Grabbing what's lying around (owner: "all weapon-carrying mobs should grab whatever's lying around").** Any mob in the entity tag `#bubbas_reworked_mobs:grabs_loot` (our woken undead now; other weapon-carrying mobs as later parts rework them) takes **any** item, not only weapons, so loot rooms and dungeons can put specific items in their hands. On waking: weapons first (nearest within 3 blocks), then any other item if no weapon is in reach. Afterwards, while chasing a player, it ignores displays and items entirely (the chase wins); it still picks up loose items it touches, like vanilla. Only when idle (no target) does it walk to a display block or loose item within a short range and take it. Displays come before loose items; any placement (undead don't need shovels); the display block goes. Runs after the mob is added, so a refused spawn takes nothing. Shared code, not under undead.
   As built (`loot/` package, shared code): `LootGrabbing` holds the rules and the take helpers both paths use; `GrabLootGoal` is the idle behavior.
-  - Tags (datagen): `#bubbas_reworked_mobs:grabs_loot` (entity types; woken skeleton and woken zombie) and `#bubbas_reworked_mobs:preferred_on_wake` (items: `#minecraft:swords`, `#minecraft:axes`, `#minecraft:spears`, bow, crossbow, trident, mace; vanilla has no tag for the last four). The old `#sleeper_weapons` tag is gone. Skeletons now take any of these too, and loose items as well as displays (before, only zombies took loose weapons).
+  - Tags (datagen): `#bubbas_reworked_mobs:grabs_loot` (entity types; woken skeleton, zombie, husk and stray) and `#bubbas_reworked_mobs:preferred_on_wake` (items: `#minecraft:swords`, `#minecraft:axes`, `#minecraft:spears`, bow, crossbow, trident, mace; vanilla has no tag for the last four). The old `#sleeper_weapons` tag is gone. Skeletons now take any of these too, and loose items as well as displays (before, only zombies took loose weapons).
   - Waking grab (`LootGrabbing.grabOnWake`, called by `SleeperWaking` after the mob is added, empty main hand only): nearest `#preferred_on_wake` display within 3 blocks, else nearest such loose item, else nearest display of anything, else nearest loose anything. One item goes into the main hand and always drops on death; a skeleton re-picks bow or melee attack through vanilla's `onEquipItem`.
   - Idle goal (`GrabLootGoal`, MOVE flag, priority 5 on our mobs: below their attack goals, above strolling): runs only with an empty main hand, **no target**, not riding, and the mob in `#grabs_loot` (so a datapack can switch it off, and a later mixin can add the goal to vanilla mobs without touching their behavior until they're tagged). It stops the moment the mob gets a target. Every 20 ticks (first search at a random offset so mobs loaded together spread out) it looks for the nearest display within 8 blocks, else the nearest loose item, paths there with vanilla navigation and takes it within 1.75 blocks (displays through the same helper as the waking grab, loose items with vanilla's pickup animation, one of a stack). Unreachable targets, and ones it gave up on after 15 s, are skipped for 10 s. While the mob is in the air (just spawned, falling) it doesn't search, since ground navigation can't path then.
   - Cost: a search walks the block entities of the loaded chunks in range (`LootDisplays.findNearest`, never loads chunks) plus one entity box query; one path per chosen target, a re-path at most once a second when navigation ends early. Nothing at all for mobs that hold something or have a target.
   - Contact pickup stays vanilla's: woken mobs come out of `create` without vanilla's natural-spawn roll, so their vanilla "can pick up loot" flag is off and they don't scoop items up by touch; with the flag on (vanilla's rule) they do, even mid-chase (tested).
   - Tests (`GrabLootGameTest`, real paths): each walking test runs in its own test environment (tests in a batch sit 5 blocks apart, inside the notice range) at night (in daylight they burn and flee the sun).
 - Worldgen defaults: skeleton sleepers get standard bows; zombie sleepers get tools/weapons at vanilla's normal zombie equipment rates. Loot rooms and dungeons will place specific items on display instead.
-- Placing for building and tests: `/bubbas_reworked_mobs display <ground|buried|wall|stuck> <item> [<pos> [north|south|east|west]]` (ops, permission level 2). Without a position it goes where you look (within 20 blocks): `wall` on the face you look at, the others on the floor you look at, turned toward you. It refuses a spot that's taken or has nothing to hold the item up. How survival players place displays (if at all) is still the owner's call; nothing in survival places them yet.
+- Placing for building and tests: `/bubbas_reworked_mobs display <ground|buried|wall|stuck> <item> [<pos> [north|south|east|west]]` (ops, permission level 2). Without a position it goes where you look (within 20 blocks): `wall` on the face you look at, the others on the floor you look at, turned toward you. It refuses a spot that's taken or has nothing to hold the item up. Survival placement (sneak + middle click) is designed, not built (above).
 
 ## Robbing
 
@@ -166,8 +166,8 @@ Using a sleeper with an empty hand takes one item: held weapon first (main hand,
 
 ## Scope and variants
 
-- Only this mod's undead change: our own entity types (woken sleepers and the rare natural spawns), tagged as undead. Vanilla zombies and skeletons elsewhere (other mods' spawners and structures) stay vanilla, and AI or animation mods that target vanilla classes don't override ours. Mob spawners will be tweaked as well (design to come).
-- Built: skeleton and zombie, each sitting and lying (`UndeadVariant`). Planned: stray, bogged, parched, wither skeleton; husk, zombie villager (no drowned sleepers: owner, 2026-11-16, drowned are their own segment, `specs/drowned.md`). Some variants may get unique behavior later. Not yet: zombified piglin, skeleton/zombie horses, camel husk, zombie nautilus.
+- Only this mod's undead change: our own entity types (woken sleepers and the rare natural spawns), tagged as undead. Vanilla zombies and skeletons elsewhere (other mods' spawners and structures) stay vanilla, and AI or animation mods that target vanilla classes don't override ours. Mob spawner tweaks are parked (BACKLOG.md).
+- Built: skeleton, zombie, husk and stray sleepers, each sitting and lying (`UndeadVariant`). Bogged are not sleepers: they lurk (Undead variants, above). Drowned sleepers only in shipwrecks (in progress); elsewhere drowned are their own segment (`specs/drowned.md`). Ideas, not designed: parched, wither skeleton, zombie villager. Not yet: zombified piglin, skeleton/zombie horses, camel husk, zombie nautilus.
 - One sleeper block per variant (or a variant property), each with its own 16x and 32x textures.
 
 ## Natural spawning
@@ -179,7 +179,7 @@ One small mixin cuts the global monster cap to a game-rule percentage (`bubbas_r
 ## Tuning
 
 - Speed, health and damage are our entity types' default attributes (`FabricDefaultAttributeRegistry.register`; values in `UndeadTuning`): skeleton 60 health, speed 0.15; zombie 80 health, speed 0.13; fists 1 damage (vanilla: 20 health, 0.25/0.23, 2-3 damage). Zombies get no reinforcements and don't turn into vanilla drowned.
-- The early game is meant to be quite a bit tougher: high health and armor-shredding hits, balanced by undead being slow and easy to escape. (A separate future mod will drastically reduce unenchanted mining speed.)
+- The early game is meant to be quite a bit tougher: high health and armor-shredding hits, balanced by undead being slow and easy to escape. (Bubba's Reworked Mining slows bare tools: `specs/reworked-mining.md`.)
 
 As built (`undead/UndeadCombat`, `undead/entity/DriftToHordeGoal`, client `client/undead/UndeadGaits`; numbers in `UndeadTuning`). All values are **starting values, owner to tune**. Everything is scoped to our woken undead (`#bubbas_reworked_mobs:woken_undead` or our own entity/renderer classes); vanilla mobs are unchanged.
 
@@ -219,7 +219,7 @@ A small public class, `io.github.bubba8587.bubbas_reworked_mobs.api.Sleepers`, t
 
 ## Worldgen
 
-Sleepers are plain block placement. **Crypt yards and crypts (built 2026-11-22, step 1) are a code-built structure, not jigsaw:** `specs/graveyards.md`. Yard graves hold skeleton and zombie sleepers (husks and strays when those variants exist); the family vault holds niche sleepers.
+Sleepers are plain block placement. **Crypt yards and crypts (built 2026-11-22, step 1) are a code-built structure, not jigsaw:** `specs/graveyards.md`. Yard graves hold resting dead and the crypts hold niche sleepers, husks and strays in desert and snowy yards.
 
 ## Libraries
 
@@ -229,16 +229,22 @@ Only Fabric API (+ MixinExtras bundled with Loader). GeckoLib and Polymer were c
 
 Sleeper on the server: 0 per tick. Hearing: under 0.05 ms per tick with 200 sleepers near a walking player. 100 armed sleepers in view: under 1 ms per frame. Measure with spark before release.
 
-## Open questions for the owner
+## Open
 
-- Nothing open here (the Totem of Warding's mob-holder question moved to `specs/totems-artifacts.md`). (Name: Bubba's Reworked Mobs, mod id `bubbas_reworked_mobs`.)
+- **Playtest numbers:** the noise table, tuning, husk/stray/bogged numbers above are starting values.
+- **Resting dead in desert/snowy yards:** husks/strays (built) or skeletons everywhere (owner said "the skeleton kind")?
+- **Bogged hiding:** fully underwater in 2-deep water (built), or head showing (1-deep)?
+- **Bury-break system** (BACKLOG): shovel-only vs by hand, noise, tools. Today a shovel digs loudly; by hand works, slowly.
+- **Back to sleep at dawn:** search range and what counts as shade (builder proposes).
+- **Fire ward:** radius, and whether a hunting mob pushes through (builder proposes).
+- **Mob spawner tweaks:** parked, no design yet.
 
 ## Milestone test objectives
 - (objective, no test yet) A woken skeleton that grabs a bow or sword from a display or the ground never crashes the game: the item is equipped at the start of its next tick, outside goal ticking (crash 2026-11-15: GoalSelector NPE when Skeleton.reassessWeaponGoal ran mid goal-tick), and a skeleton killed before that tick still drops it.
 
 Test-lite policy (`specs/quality.md`, Test suites): `ReworkedMobsCoreGameTest` runs on every build and push; everything below is the milestone suite, run on release tags, manual CI dispatch and `-PmilestoneTests`. Each line says what the class proves.
 
-- Core (`ReworkedMobsCoreGameTest`, 10): a placed sleeper item keeps its gear and pose; walking near a sleeper wakes it; a wake spawns a tuned mob with its gear facing the noise; silk-touch mining gives the sleeper item; an empty hand takes loot off a display; a waking mob grabs a weapon first; zombie headshots hurt more; strong light calms a sleeper; a bell wakes a sleeper 14 blocks off and stirs one 23 off; the `api.Sleepers` hook calms, senses and keeps sleepers asleep.
+- Core (`ReworkedMobsCoreGameTest`, 10 undead tests of its 34): a placed sleeper item keeps its gear and pose; walking near a sleeper wakes it; a wake spawns a tuned mob with its gear facing the noise; silk-touch mining gives the sleeper item; an empty hand takes loot off a display; a waking mob grabs a weapon first; zombie headshots hurt more; strong light calms a sleeper; a bell wakes a sleeper 14 blocks off and stirs one 23 off; the `api.Sleepers` hook calms, senses and keeps sleepers asleep.
 - `SleeperCalmGameTest` (was `WardingGameTest`): light calming, loud bells and the hook.
 - The Grave Talisman and Totem of Warding tests moved to Totems & Artifacts (`specs/totems-artifacts.md`).
 - `BubbasReworkedMobsGameTest`: sleepers end to end through the real interaction paths: hearing (animals, sneaking and wool don't wake; the awaken event caps how many wake), woken mobs are tuned undead and pick up a nearby weapon, a refused spawn keeps the sleeper, robbing order and its wake chance, mining with and without silk touch or bare-handed, and the monster-cap rule.

@@ -1,7 +1,7 @@
 <!-- dte:C1,B17,B18,B19,D2 -->
-# Reworked Mobs: creepers (spec, first build done 2026-11-16)
+# Reworked Mobs: creepers (spec)
 
-The next segment of Bubba's Reworked Mobs (C1), after the undead. Owner's design (2026-11-16), recorded as given.
+**Status: built** (first build 2026-11-16). A segment of Bubba's Reworked Mobs (C1). Owner's design (2026-11-16), recorded as given; "How it's built" is what the code does.
 
 ## The watcher
 
@@ -36,7 +36,7 @@ Charged creepers keep vanilla's current suicide-bomber behavior.
 ## Owner answers
 
 - **C1 fuse:** a full meter starts vanilla's 1.5 s hiss and swell. During the hiss, if nothing attacks it and the target either **sneaks** or **moves outside its trigger range**, it **defuses**. Hearing the hiss, crouching and backing up keeps you safe.
-- **C2 watching:** it **never stops watching a player** within aggro range (vanilla's 16 blocks). The meter still drains when nothing startles it (that's the calming down).
+- **C2 watching:** it **never stops watching a player** within aggro range (vanilla's 16 blocks; widened to 24 by the owner, 2026-11-16, see Numbers). The meter still drains when nothing startles it (that's the calming down).
 - **C3 fast movement:** **any living thing moving faster than a walk within about 6 blocks** startles it: panicking animals, hopping rabbits, running horses and mobs, and players sprinting, gliding (elytra/Glider) or riding; being knocked toward it (e.g. Wind Burst) counts too (B18: same rule for everyone).
 - **C4 projectiles:** projectiles flying past close (near-misses) startle it, not just hits. So rapid things like snowballs set it off remotely; to kill one without an explosion, slay it in melee or one-shot it with a strong bow.
 - **C5 no cover:** on open ground with nothing to hide behind, it creeps to an **uncomfortably close** distance and stares: just outside the range where you could sprint and hit it in one motion, so dashing toward it makes it back up (owner: numbers to be playtested).
@@ -45,8 +45,8 @@ Charged creepers keep vanilla's current suicide-bomber behavior.
 
 **No new entity type.** Every vanilla `Creeper` gets the behavior through `mixin/CreeperMixin` (natural spawns, eggs, commands), **except creepers from spawners and trial spawners, which stay vanilla** (owner, 2026-11-16: "spawners should spawn vanilla mobs, for now"; `MobFinalizeSpawnMixin` unwraps the hunting goals and drops the watcher's, saved as `bubbas_reworked_mobs:vanilla`). Vanilla's hunting goals (both target goals, `MeleeAttackGoal`, `SwellGoal`) are wrapped in `ChargedOnlyGoal`, so they run only while the creeper is charged; a charged creeper's goal list is exactly vanilla's. Uncharged creepers get `CreeperFuseGoal` (priority 2, vanilla SwellGoal's slot) and `CreeperWatchGoal` (priority 4, the melee slot). Floating, cat/ocelot avoidance, strolling and looking around stay vanilla (they run when it has nothing to watch). Code: `creeper/` package; all numbers in `CreeperTuning`.
 
-**Senses (`CreeperMind`, one per creeper, server only, not saved).** Ticked from `Creeper.tick`. Every 4 ticks (phase spread by entity id) one box query of 16 blocks for living things; speed = distance moved since the last scan / 4 (horizontal, plus vertical at half weight). Every 2 ticks a box query of 8 blocks for moving projectiles.
-- *Watching:* moving things (>= 0.03 blocks/tick) in its 120-degree field of view and in line of sight catch its eye; players first (nearest), else the nearest other mob. A player is watched while within 16 blocks, whatever they do (C2); anything else for 15 s, then it may pick something new. Never other creepers, spectators or invisible things.
+**Senses (`CreeperMind`, one per creeper, server only, not saved).** Ticked from `Creeper.tick`. Every 4 ticks (phase spread by entity id) one box query of 24 blocks (`WATCH_RANGE`) for living things; speed = distance moved since the last scan / 4 (horizontal, plus vertical at half weight). Every 2 ticks a box query of 8 blocks for moving projectiles.
+- *Watching:* moving things (>= 0.03 blocks/tick) in its 120-degree field of view and in line of sight catch its eye; players first (nearest), else the nearest other mob. A player is watched while within 24 blocks, whatever they do (C2); anything else for 15 s, then it may pick something new. Never other creepers, spectators or invisible things.
 - *Startle meter:* 0-100, drains 0.5 a tick (10/s) when nothing startles it; frozen while hissing.
   - an attack (any damage with an attacking entity: hits, arrows, thrown things) +40 (Fabric `ServerLivingEntityEvents.AFTER_DAMAGE`); falls, cactus, fire don't startle (vanilla's own fall-swell still shows);
   - anything living moving faster than 0.24 blocks/tick within 6 blocks and in line of sight (field of view not needed) +8 per scan, per mover (sprinting, gliding, riding, panicking or hopping animals, running mobs, being knocked back: B18, one rule). A rider counts through its mount, once;
@@ -70,7 +70,7 @@ Charged creepers keep vanilla's current suicide-bomber behavior.
 - A watcher remembers whose it is (persistent attachment `bubbas_reworked_mobs:watcher_for`), so reloads keep the one-per-player count; one more than 48 blocks from its player no longer counts as theirs. Watchers despawn like any vanilla creeper (not persistent).
 - Vanilla's `spawn_mobs` and `spawn_monsters` rules and Peaceful turn it off. New game rule `bubbas_reworked_mobs:watcher_creepers` (default true, "Creepers spawn as watchers"): false brings vanilla's random spawns back and stops ours (for spawn-control mods). Off on the game test server (tests call the spawner directly).
 
-**Cost.** Per creeper: one 16-block entity box query every 4 ticks, one 8-block projectile query every 2 ticks (class-filtered), line-of-sight checks only for things that move. Cover search: at most once a second while it has no spot, a few block lookups per cell plus at most ~120 short raycasts. Spawner: every 10 s per player without a watcher, at most 16 column probes and a few raycasts.
+**Cost.** Per creeper: one 24-block entity box query every 4 ticks, one 8-block projectile query every 2 ticks (class-filtered), line-of-sight checks only for things that move. Cover search: at most once a second while it has no spot, a few block lookups per cell plus at most ~120 short raycasts. Spawner: every 10 s per player without a watcher, at most 16 column probes and a few raycasts.
 
 **Visible meter (owner, 2026-11-16):** with the game rule `bubbas_reworked_mobs:show_meters` on (default off), the startle meter shows as a red 20-mark bar above the creeper (`meter/Meters`, shared with the drowned's grip bars; synced only while the rule is on and the value changes). See `specs/drowned.md`.
 
@@ -93,7 +93,9 @@ Charged creepers keep vanilla's current suicide-bomber behavior.
 | Sneak notice | 18 blocks |
 | Watcher spawning | 1 per player, every 10 s at night, 15-21 blocks, outside 70 degrees of view, released beyond 48 blocks |
 
-## Builder's choices (the owner may want to change these)
+## Builder's choices
+
+The owner may want to change these; listed under Open.
 
 1. **Creative players are watched and startle creepers** (`IGNORE_CREATIVE_PLAYERS = false`), so the owner can try it in creative; vanilla's targeting ignores creative players. Flying fast in creative near a creeper startles it (it can't hurt you there).
 2. Fast movement needs line of sight but not the field of view (a sprint behind it still startles it); noticing something to watch needs both.
@@ -114,8 +116,13 @@ Built as the creeper grove (`specs/testworld.md`, Layout).
 
 Core (every build, `ReworkedMobsCoreGameTest`): `creeperHitsFillTheMeterAndItDrains`, `creeperSprintingNearbyStartlesWalkingDoesNot`, `creeperFullMeterHissesAndDefuses` (sneak, then backing out of range), `blindedCreeperIgnoresMotion`, `chargedCreeperStaysVanilla`.
 
-`CreeperGameTest` (milestone): `nearMissesStartle` (a snowball 1 block off counts, one 7.5 off doesn't); `aHitDuringTheHissStopsDefusing`; `peeksHalfBehindCover` (behind a wall it walks to a half-hidden spot with its eyes in view); `hidesWhenLookedAt` (peekaboo: hidden when looked at, half out again when looked away); `oneWatcherSpawnsBehindCoverOutOfView` (spawns out of sight, outside the view cone, 10-15 blocks, watching; one per player; vanilla random spawns blocked). Note: the spawn test failed once in ~12 runs early on (never reproduced after; maxTicks raised to 200); watch it.
+`CreeperGameTest` (milestone): `nearMissesStartle` (a snowball 1 block off counts, one 7.5 off doesn't); `aHitDuringTheHissStopsDefusing`; `peeksHalfBehindCover` (behind a wall it walks to a half-hidden spot with its eyes in view); `hidesWhenLookedAt` (peekaboo: hidden when looked at, half out again when looked away); `oneWatcherSpawnsBehindCoverOutOfView` (spawns out of sight, outside the view cone, watching; one per player; vanilla random spawns blocked). The test checks 15-21 blocks (`SPAWN_MIN_DISTANCE`-`SPAWN_MAX_DISTANCE`, 1.5 slack). Note: the spawn test failed once in ~12 runs early on (never reproduced after; maxTicks raised to 200); watch it.
 
 `CreeperClientGameTest` (client part `creepers`): screenshots `creeper-peek` (from the watched armor stand: half behind a one-log tree), `creeper-peek-side`, `creeper-hidden` (player looking at it), `creeper-caught` (looked away, then straight back).
 
 Not yet tested (objectives): with cover 18 blocks off and none nearer, it walks there (far cover); in the open it holds 12 and edges back while looked at; peekaboo triggers when the player looks within 45 degrees of its edge, not only its eyes; riders and mounts counted once; knockback toward it startles; a sneaking player closing in makes it back behind cover; it repositions when the target leaves its view; it backs off when dashed at in the open; gliding with elytra startles; the game rule off brings vanilla spawns back.
+
+## Open
+
+- Owner to playtest the numbers (all in `CreeperTuning`) and C5's open-ground distances.
+- Owner to review the 10 builder's choices above.

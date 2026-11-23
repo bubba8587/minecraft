@@ -18,7 +18,7 @@ side: client and server
 > | **Side** | Client and server |
 > | **Status** | Active |
 
-**Bubba's Reworked Mobs** is a Fabric mod that reworks Minecraft's mobs one family at a time. Part 1 covers the undead: skeletons and zombies lie dormant in the world as bodies that wake when players make noise near them, and far fewer monsters spawn on their own. Creepers are nervous watchers that explode only when startled, and endermen mend the land and build cairns.
+**Bubba's Reworked Mobs** is a Fabric mod that reworks Minecraft's mobs one family at a time. Far fewer monsters spawn on their own; instead they come from places: undead lie dormant in graveyards and crypts until noise wakes them, spiders nest in caves, monster camps hold skeletons and zombies, and Ancient Fabricators beside ancient cities send monsters to the surface. Creepers are nervous watchers that explode only when startled, endermen mend the land and build cairns, and drowned and bogged lurk at the water's edge.
 
 In this early test version, sleeping bodies use the normal skeleton and zombie look, and item icons are placeholders until the final art is drawn.
 
@@ -26,7 +26,7 @@ In this early test version, sleeping bodies use the normal skeleton and zombie l
 
 *Main article: [[Sleeping Undead]]*
 
-Skeletons and zombies sit or lie motionless, often armed and armored. They can be robbed, dug up with a Silk Touch pickaxe, and placed again as traps or decoration.
+Skeletons, zombies, husks and strays sit or lie motionless, often armed and armored. They can be robbed, dug up with a Silk Touch pickaxe, and placed again as traps or decoration.
 
 ## Waking
 
@@ -114,7 +114,7 @@ Natural monster spawning is cut to 15 % of normal everywhere. Structures and spa
 
 *Main article: [[Reworked Mobs Commands]]*
 
-Game rules control the spawn cut and watcher creepers, and an operator command puts items on display.
+Game rules control the spawn cut, watcher creepers, cairn endermen and visible meters; operator commands put items on display and find or build cairns, graveyards, camps and Fabricators.
 
 ## Installation
 
@@ -136,7 +136,7 @@ Optional: [[Bubba's Totems & Artifacts]], whose [[Grave Talisman]] and [[Totem o
 
 | Version | Changes |
 |---|---|
-| 0.1.0 | Added part 1, the undead: sleeping and woken skeletons and zombies, loot on display, loud bells, light that calms sleepers, and the monster spawn cut. Early test version. (The Grave Talisman and Totem of Warding, first added here, moved to Bubba's Totems & Artifacts.) |
+| 0.1.0 (not released yet) | Added the undead (sleeping and woken skeletons, zombies, husks and strays, loot on display, loud bells, light that calms sleepers), crypt yards and gravestones, the monster spawn cut, watcher creepers, caretaker endermen and cairns, lurking drowned and bogged, spiders and their nests, monster camps and Ancient Fabricators. (The Grave Talisman and Totem of Warding, first added here, moved to Bubba's Totems & Artifacts.) |
 
 ## See also
 

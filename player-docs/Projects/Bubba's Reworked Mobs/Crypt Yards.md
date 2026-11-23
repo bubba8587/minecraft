@@ -6,7 +6,7 @@
 > | | |
 > |---|---|
 > | **Type** | Structure |
-> | **Location** | Fairly flat, dry ground in plains, forests, taigas, snowy plains, savannas, deserts, swamps, meadows, windswept hills and the pale garden |
+> | **Location** | Fairly flat, dry ground in plains, meadows, forests, dark forests, taigas, snowy plains and taigas, savannas, deserts, swamps, windswept hills and the pale garden |
 > | **Contains** | [[Gravestone|Gravestones]], [[Sleeping Undead|sleeping undead]], sometimes a crypt |
 
 A **crypt yard** is an old graveyard behind an iron-bar fence with stone brick posts and a gate. A single soul lantern hangs on one gate post, and a path leads in from the gate. Rows of graves fill the yard, each a [[Gravestone]] over a plot of coarse or rooted dirt, some with flowers or weeds. One or two old trees of the local wood grow where a grave would be; in deserts, dead bushes grow on the graves instead.
@@ -40,7 +40,7 @@ See [[Sleeping Undead]].
 Many yards have stairs at the far end leading down to a crypt. Bigger yards have richer crypts. Unlike the yard's dead, the [[Sleeping Undead|sleepers]] down here **do wake**.
 - **Pauper's ossuary** (small and medium yards): a cramped tunnel of cobblestone, packed mud and dirt with bones in the walls, lined with niches, almost every one holding a sleeper with little or nothing on them, some stacked two high. A candle or two and a chest of poor things: bones, rotten flesh, string, coal, iron nuggets, rarely an emerald.
 - **Family vault:** a candlelit stone brick room, skeletons and zombies in niches along both walls, and a small altar with a chest of the family's things: gold nuggets, some iron, sometimes an emerald, a name tag or an enchanted book. With [[Bubba's Totems & Artifacts]], sometimes a [[Grave Talisman]].
-- **Noble crypt** (medium and large yards): polished andesite and chiseled stone, an entry hall, a pillared chamber with a sarcophagus holding an armoured sleeper under a stone lid, and two side halls lined with niches of sleepers in full iron, chainmail or gold armour, some armed. The chests hold gold, emeralds, iron, a golden apple, sometimes diamonds, enchanted books and enchanted gear. With [[Bubba's Totems & Artifacts]], a [[Grave Talisman]] (one chest in four) and a [[Totem of Warding]] (about one in eight).
+- **Noble crypt** (medium and large yards): polished andesite and chiseled stone, an entry hall, a pillared chamber with a sarcophagus holding an armoured sleeper under a stone lid, and two side halls lined with niches of sleepers in full iron, chainmail or gold armour, some armed. The chests hold gold, emeralds, iron, a golden apple, sometimes diamonds, enchanted books and enchanted gear. A second roll adds one or two burial goods: a high-level enchanted book, a worn but strongly enchanted diamond sword or chestplate, enchanted gold armour, rarely an enchanted golden apple, a Totem of Undying or music disc 13. With [[Bubba's Totems & Artifacts]], a [[Grave Talisman]] (one chest in four) and a [[Totem of Warding]] (about one in eight); with [[Bubba's Reworked Mining]], a True Unbreaking book (one chest in five).
 
 A sleeper lying in a niche wakes standing in front of it.
 

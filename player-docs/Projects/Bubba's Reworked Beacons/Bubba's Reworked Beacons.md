@@ -38,10 +38,11 @@ The mod uses vanilla's beacon textures; an upside-down beacon is the normal beac
 
 ## Compatibility
 
-Requires Fabric API. Two other mods supply beacon items when installed, and none of the three requires another:
+Requires Fabric API. Other Bubba's mods supply beacon items when installed; none of them requires another:
 
 - [[Bubba's Infused Gems]]: Gems go in the slot and give their effects to everything in range (*see [[Gem Effects#In beacons]]*). With it installed, the plain base-gem payments no longer work.
-- [[Bubba's Totems & Artifacts]]: the [[Totem of Warding]] goes in the slot and wards the area against monsters.
+- [[Bubba's Totems & Artifacts]]: totems go in the slot and work across the area: the [[Totem of Warding]] keeps monsters out, and the [[Totem of Gathering]], [[Totem of Fortification]], [[Totem of Growth]], [[Totem of Seeking]] and [[Totem of the Beginning]] each have an area form.
+- [[Bubba's Reworked Mobs]]: the beacons of an [[Ancient Fabricators|Ancient Fabricator]] weaken players near the machine.
 
 ## History
 

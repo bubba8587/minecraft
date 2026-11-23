@@ -2,7 +2,7 @@
 
 *Part of [[Bubba's Reworked Mining]].*
 
-Every tool tier mines at its own pace, with stone and deepslate as the steep part of the curve.
+The **mining curve** is how fast each tool tier mines and how quickly it wears out in [[Bubba's Reworked Mining]]. Every tier mines at its own pace, with stone and deepslate as the steep part of the curve.
 
 ## Pickaxes on stone and deepslate
 
@@ -28,7 +28,7 @@ Axes, shovels, hoes, and pickaxes on other blocks follow a gentler curve: wood a
 
 - **Efficiency** multiplies the tool's own speed: x1.5, 2.1, 2.8, 3.5 and 4.25 at levels I to V. An Efficiency V iron pickaxe beats a bare diamond one on deepslate; Efficiency V diamond is as fast as in vanilla.
 - **Unbreaking** keeps a durability point with odds 1 in 3, 1 in 5 and 1 in 7 at levels I to III. Armor gets the same extra protection.
-- **True Unbreaking** stops all durability loss (see [[Bubba's Reworked Mining]]).
+- **[[True Unbreaking]]**, found only in rare chests, stops all durability loss.
 - **Haste**, from potions, beacons or [[Bubba's Infused Gems]] Haste gems, multiplies on top.
 
 Tools from other mods stay vanilla.

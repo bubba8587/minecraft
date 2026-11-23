@@ -27,8 +27,7 @@ The Totem of Warding cannot be crafted. Each source adds a totem on top of its n
 | Trial chambers vault | 8% per opening |
 | Ominous trial chambers vault | 15% per opening |
 | Evoker | 5%, a rare bonus drop |
-
-Graveyard and crypt chests are planned to hold them once those structures exist.
+| Noble crypt chest (with [[Bubba's Reworked Mobs]]) | 12% per chest |
 
 ## Usage
 

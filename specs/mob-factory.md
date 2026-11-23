@@ -1,5 +1,7 @@
 <!-- dte:C1,B15,B17,B19 -->
-# Reworked Mobs: Ancient Fabricators (spec, design agreed 2026-11-16: first full build done 2026-11-17)
+# Reworked Mobs: Ancient Fabricators (spec)
+
+**Status: built** (look 2026-11-16, mechanics and worldgen 2026-11-17, secrets and lower city 2026-11-16/17, loot buffed 2026-11-22). Not built: a test world station, the looping office jukebox (waits for vanilla's infinite jukebox). Open items at the end.
 
 **Name (owner): Ancient Fabricators. Placement (owner): one next to every ancient city.**
 
@@ -37,13 +39,13 @@ Owner's idea (2026-11-16), to make mob farming possible again after the spawn cu
 - The Warden's observation area is its **office**: **chests** (loot), and a **jukebox with a weird music disc that's always playing** (owner). Looping: vanilla's infinite jukebox is in current snapshots (owner); plan for it when we move to that release, no workaround now (it plays once until then).
 - **Right before it fires, whatever is on the pad gets a bit of Levitation**, lifting slightly off the pad, then it teleports.
 
-## Independence (first thoughts)
+## Independence
 
-Lives in Reworked Mobs, built from vanilla blocks (B15). With Bubba's Reworked Beacons installed its two halves could also be a real paired beacon (to be designed); without it, the factory still works.
+Lives in Reworked Mobs, built from vanilla blocks (B15). With Bubba's Reworked Beacons installed its two halves are a real paired beacon; without it, the factory still works (Debuffs, below).
 
-## The look, as built (visual pass, 2026-11-16; no mechanics yet)
+## The look, as built (visual pass, 2026-11-16)
 
-**Code-built, deterministic.** `factory/FactoryDesign.design(seed, mob)` is a pure function of a seed and the factory's mob: about 54,000 block placements in local coordinates (origin = first air above the middle of the platform; +z the entrance, -z the face wall, +x the Warden's tower), rotatable in quarter turns. Ready for worldgen to place chunk by chunk later (not wired yet). Vanilla blocks only (B15); no new blocks, items or entities.
+**Code-built, deterministic.** `factory/FactoryDesign.design(seed, mob)` is a pure function of a seed and the factory's mob: about 54,000 block placements in local coordinates (origin = first air above the middle of the platform; +z the entrance, -z the face wall, +x the Warden's tower), rotatable in quarter turns. Worldgen places it chunk by chunk (Mechanics, below). Vanilla blocks only (B15); no new blocks, items or entities.
 
 **Parts** (all numbers are local blocks):
 - *Cavern:* a squashed dome, radius 21 with a 3-wave wobble, floor 8 below the deck (rising at the walls), ceiling 22 above the deck in the middle, 13 at the edge. A 2-block shell of deepslate (cobbled deepslate 12 %, tuff 6 %) seals it, so caves and fluids don't break in; rock faces touching the air are **sculk** (floor: about 80 %, walls and ceiling: patches), with **sculk veins** creeping over 16 % of the open cells next to rock. A winding entrance tunnel climbs out the front (+z), 5 wide, about 40 blocks long.
@@ -53,24 +55,19 @@ Lives in Reworked Mobs, built from vanilla blocks (B15). With Bubba's Reworked B
 - *Chains (owner):* 9-11 **alien chains/spurs** of warped wart (a little nether wart and shroomlight) with **stripped-hyphae link rings** every few blocks and warped-stem thorns, each starting low on the cavern wall, climbing it, running along the roof twisting (so they spiral in) and **curling in to end round the dripper**. None start on the face wall, the tower or the tunnel mouth. *(They still read weakly among the growth; see choices.)*
 - *The hidden spawner:* an empty (inert) vanilla `spawner`, buried 2 blocks up inside the mass right above the dripper's root, wrapped in stripped hyphae on all six sides. The build command prints where it is.
 - *Sculk, grown the ancient-city way (owner: match real ancient cities):* vanilla's city pieces contain **no sculk at all** (checked: barracks, tall ruin, city centre, walls; their palette is deepslate, tiles, bricks, polished, chiseled, gray wool and carpet, candles, soul fire/sand, soul lanterns, redstone lamps and wiring) and are degraded by `ancient_city_generic_degradation` (30 % of bricks and tiles cracked, 5 % of blocks rotted away, 5 % of soul lanterns gone). Their sculk is the `sculk_patch_ancient_city` feature run over them afterwards: vanilla's real sculk spreader (10 charges of 32, veins left at the edges), a catalyst at half of the patches and 1-3 shriekers. The Fabricator does exactly that: the build is placed clean with **30 % cracked bricks and tiles**, then **vanilla's own `sculk_patch_ancient_city` feature is grown** from about 17 spots (deck corners, by the face wall, the stairs' foot, the window ledge, the tunnel floor, the cavern floor). Its shriekers are then set to can't-summon (one Warden). The teleporter pad and every redstone lamp are restored clear of sculk afterwards (the working parts stay readable). The rock lining keeps a little painted sculk only (floor ~45 %, walls in rare patches) under the grown patches. Not done (yet): the 5 % block rot (it would hole the deck).
-- *Platform (ancient city + redstone):* 19 x 19 deck of deepslate tiles (cracked 18 %, chiseled every 4th), polished deepslate border and underlayer, upside-down tile-stair corbels under the edge; 2 x 2 deepslate-brick pillars to the floor with an **observer** staring out of each outer pillar; low tile walls along the sides and front (gaps for the entrance and the tower stairs); corner posts with **soul lanterns**; six **lit redstone lamps** set flush in the deck (each on a redstone block); gray candles; two **sculk shriekers** (can_summon false) by the face wall, sensors and a calibrated sensor; then grown sculk over all of it, as above.
+- *Platform (ancient city + redstone; the sculk and lighting passes below changed it):* 19 x 19 deck of deepslate tiles (cracked 18 %, chiseled every 4th), polished deepslate border and underlayer, upside-down tile-stair corbels under the edge; 2 x 2 deepslate-brick pillars to the floor with an **observer** staring out of each outer pillar; low tile walls along the sides and front (gaps for the entrance and the tower stairs); corner posts with **soul lanterns**; six **lit redstone lamps** set flush in the deck (each on a redstone block); gray candles; two **sculk shriekers** (can_summon false) by the face wall, sensors and a calibrated sensor; then grown sculk over all of it, as above.
 - *Teleporter pad (at the drop point):* a **lodestone** ringed by **crying obsidian**, then the **timer ring**: eight redstone lamps going round clockwise from the back, with reinforced deepslate between. The owner wants a redstone-visible activation timer that is **lamps lighting up one by one, not a redstone clock**: the look shows it mid-count (five of eight lit). Under the soul-fire pit below the deck, soul fire smoulders on soul soil.
 - *Paired beacon halves:* the **floor beacon** stands on a 3 x 3 **iron** inlay framed by polished blackstone bricks (gray candles at the corners), on the deck's left (x -6, z -1; off the face wall's sightline). Straight above, set into the growth, the **ceiling beacon** with its 3 x 3 iron pyramid above it, ringed by crying obsidian and polished basalt. The column between is kept clear. With Bubba's Reworked Beacons installed, the ceiling beacon is placed **upside down** (its `upside_down` state, looked up by name: no compile or runtime link) and the pair shows its beam (seen in the screenshots); without it, both are plain vanilla beacons with no beam.
 - *Face wall:* behind the deck, a 3-block-thick deepslate brick wall to the ceiling; the mob's face, **16 x 16 blocks (its 8 x 8 face texture at 2 blocks a pixel)**, in a polished deepslate frame with chiseled corners, **lit by redstone lamps set in the frame** (4 along the top, 3 down each side, powered from behind), a tile-slab shelf under it and soul lanterns on chains either side. Faces come from `tools/factory-faces.py`: it reads the vanilla mob texture, posterizes it into 2-4 tones (k-means, contrast stretched), maps each tone to the nearest flat-looking vanilla block (concrete, terracotta, polished stones; no bricks, whose seams fight the pixels), and gives the glowing eyes one glowing block. Output: `factory/FactoryFaces.java` (generated). Mobs: **zombie** (moss/green concrete/cut copper, black eyes), **skeleton** (calcite/polished diorite, polished deepslate eyes and mouth), **creeper** (lime/oxidized cut copper, black face), **spider** (polished deepslate and black, eight **magma block** eyes), **enderman** (black concrete, **crying obsidian** eye bars).
-- *Warden's tower (observation area, "the office", owner):* a deepslate-brick tower from the floor to the ceiling on the +x side (7 x 9), tile bands; a room inside (5 x 7 x 5) laid out as the Warden's **office**: gray wool floor under gray carpet, **three chests** (filing) along the back wall with a candle, a **desk** (lectern, a polished deepslate slab desktop with a candle, a tile-stair chair), a **jukebox playing music disc 13** in the corner on and beside wool, a sculk catalyst grown in at one corner, soul lanterns on chains and a lit lamp in the floor; a **5-wide, 5-tall open window** framed in chiseled deepslate looking over the deck; a ledge on upside-down stairs with tile walls and soul lanterns; stairs down to a walkway beside the deck. The **Warden** stands just inside the window (local 15, 6, 0), looking out over the platform. For now the command spawns it with **NoAI**, persistent (look only).
+- *Warden's tower (observation area, "the office", owner):* a deepslate-brick tower from the floor to the ceiling on the +x side (7 x 9), tile bands; a room inside (5 x 7 x 5) laid out as the Warden's **office**: gray wool floor under gray carpet, **three chests** (filing) along the back wall with a candle, a **desk** (lectern, a polished deepslate slab desktop with a candle, a tile-stair chair), a **jukebox playing music disc 13** in the corner on and beside wool, a sculk catalyst grown in at one corner, soul lanterns on chains and a lit lamp in the floor; a **5-wide, 5-tall open window** framed in chiseled deepslate looking over the deck; a ledge on upside-down stairs with tile walls and soul lanterns; stairs down to a walkway beside the deck. The **Warden** stands just inside the window, looking out over the platform (passive until woken: see The Warden, below). The split-level office (Secrets, below) replaced this room's layout.
 
-**Command (ops):** `/bubbas_reworked_mobs ancient_fabricator here <mob> [seed]` builds one with the platform's middle at your feet; `ancient_fabricator build <pos> <mob> <seed> <turns>` at a position, turned 0-3 quarter turns. Mobs: zombie, skeleton, creeper, spider, enderman. Not saved as a site yet (mechanics).
+**Command (ops):** `/bubbas_reworked_mobs ancient_fabricator here <mob> [seed]` builds one with the platform's middle at your feet; `ancient_fabricator build <pos> <mob> <seed> <turns>` at a position, turned 0-3 quarter turns. Mobs: zombie, skeleton, creeper, spider, enderman. Hand-placed ones are saved and run like natural ones (`ancient_fabricator locate`, Mechanics).
 
 **Cost:** working out a design is one pass over a 69 x 48 x 87 grid plus the shell check; placing is ~54,000 `setBlock` calls with no neighbour updates (well under a second on the test machine), then a pass to connect walls.
 
 ### Look round 2 (crimson streaks, less sculk, chains)
 
-Adds to `docs/reports/factories-docs-2026-11-16.md` (merge both into `specs/mob-factory.md`). Still look only, no mechanics.
-
-## Owner's feedback this round
-"That's really close actually." Two changes: crimson streaks through the warped, and less sculk. Also done: the chains now read as chains. A jukebox hopper loop was asked for and then cancelled by the owner, because vanilla's infinite jukebox is coming in current snapshots. Nothing was added for it, and the office jukebox stays as it was (disc 13 in it, playing when placed).
-
-## Changes (as built)
+**Owner's feedback:** "That's really close actually." Two changes: crimson streaks through the warped, and less sculk. Also done: the chains now read as chains. A jukebox hopper loop was asked for and then cancelled by the owner, because vanilla's infinite jukebox is coming in current snapshots. Nothing was added for it, and the office jukebox stays as it was (disc 13 in it, playing when placed).
 
 **Crimson streaks:**
 - Crimson runs as thin streaks through the warped roof mass, the dripper's skin and the chains.
@@ -94,23 +91,13 @@ Adds to `docs/reports/factories-docs-2026-11-16.md` (merge both into `specs/mob-
 - They start low on the cavern wall and climb it. Then they hang **free under the roof**, at least 1.5 below it and sagging up to 2.5 more between wall and dripper. They twist as they go and end at the dripper's stalk.
 - The thorn spurs are gone, since the beaded links read better.
 
-## Screenshots (`docs/previews/factories/`, refreshed)
-The same set as round 1 (the cavern-floor close-up is still left out). Best views of this round's changes:
-- crimson streaks: `fabricator-overview-lit.png`, `fabricator-side-lit.png`
-- chains: `fabricator-chains-lit.png`
-- lighter sculk: `fabricator-platform.png`, `fabricator-sculk-deck.png`
-
-## For the mechanics phase
-- **Office jukebox:** plan on vanilla's infinite jukebox (in current snapshots) instead of a workaround. Until then, the disc plays once when the Fabricator is placed.
+Best views (`docs/previews/factories/`): crimson streaks `fabricator-overview.png`, `fabricator-side.png`; chains `fabricator-chains.png`; lighter sculk `fabricator-platform.png`, `fabricator-sculk-deck.png`.
 
 ### Lighting pass (dark like an ancient city)
 
-Adds to `factories-docs-2026-11-16.md` and `factories-look2-2026-11-16.md`. Look only.
+**Owner's feedback:** too much light. A Fabricator should be dark like an ancient city: the pad and the dripper glow out of the gloom, and you need a torch to explore.
 
-## Owner's feedback
-Too much light. A Fabricator should be dark like an ancient city: the pad and the dripper glow out of the gloom, and you need a torch to explore.
-
-## Light sources now (as built)
+**Light sources (as built):**
 - **Dripper (main glow above):**
   - its thin lower half is a beaded spine with a shroomlight every other block;
   - rings of shroomlight glands (40 %) on the thick upper skin, and a core gland every 4 blocks;
@@ -127,7 +114,7 @@ Too much light. A Fabricator should be dark like an ancient city: the pad and th
   - sculk's own faint glow.
 - **Switched off:** the deck's 6 redstone lamps and the face frame's 10 lamps (still placed, unlit, no power under them), the 2 lanterns hanging by the face wall, the lamp under the Warden.
 
-## Block light measured (client test prints `[fabricator-light]`, zombie Fabricator, seed 1000)
+**Block light measured** (client test prints `[fabricator-light]`, zombie Fabricator, seed 1000; before the secrets pass, see Secrets for the new spots):
 
 | Spot | Block light |
 |---|---|
@@ -145,50 +132,27 @@ Too much light. A Fabricator should be dark like an ancient city: the pad and th
 
 The deck's middle and the pad are bright. The face wall, the cavern floor, the tunnel and most of the roof are 0-5, so hostile mobs could spawn there (vanilla needs block light 0). The face reads faintly from the deck and properly with a torch.
 
-## Screenshots
-- All shots in `docs/previews/factories/` are now taken **without night vision**, as in play.
-- Exception: one detail shot, labelled `fabricator-overview-nightvision.png`.
-- The old `-lit` shots are gone; `fabricator-side.png` and `fabricator-chains.png` replace them.
+**Screenshots:** shots in `docs/previews/factories/` are taken **without night vision**, as in play, except those labelled `-nightvision` (detail views of dark spots).
 
-## Choices to hear about
-- The **floor beacon's own light (15)** keeps one corner of the deck bright. It's part of the paired beacon (the debuff source), so I left it.
-- **The face wall is dark until you bring light.** If the owner wants it to loom out of the dark, two lit lamps at the top of its frame would do it.
+### Builder's choices (look)
 
-### Builder's choices
-
-0. **Chains read weakly:** they're there (warped columns with teal link rings climbing the side walls and arching in to the dripper), but in the warped roof they read as more growth rather than distinct chains. A dedicated pass could make them thinner and longer with clearer links.
+0. **Light:** the floor beacon's own light (15) keeps one corner of the deck bright (it's part of the paired beacon, so it stays); the face wall is dark until you bring light (two lit lamps at the top of its frame would make it loom out of the dark).
 0. **Dripper block:** crying obsidian tip (real purple drips). Alternatives if it doesn't read: a shroomlight tip (glowing, no drip), or a sculk catalyst tip (ties it to the sculk; blooms when things die nearby).
 1. **Mob types:** zombie, skeleton, creeper, spider, enderman (the faces read best; witch, husk, stray are easy to add with the tool).
-2. **Iron pyramids and two beacons are real loot** (18 iron blocks, 2 beacons = 2 nether stars) for whoever conquers a factory. Could be swapped for something cheaper, or the beacons made to drop nothing, if that's too rich.
+2. **Iron pyramids and two beacons are real loot** (now 68 iron blocks with the two-layer pyramids, 2 beacons) for whoever conquers a factory. Owner, 2026-11-16: fine as built.
 3. **The floor beacon sits off to the left of the deck** (not in front of the face), so the beam never blocks the face.
 4. **The drop point is the teleporter pad** (deck middle, a little forward): mobs will fall onto the pad and be sent from it, so the dripper hangs precisely over it and the chains curl in to it.
 5. **Reinforced deepslate in the pad ring** (unbreakable, as in ancient cities' portal frame). Taking over doesn't need to break it.
 6. **Shriekers can't summon** (one Warden per factory, F8).
-7. **Factories sit with the deck at y -38** in the screenshots; real placement depth is for the worldgen step.
+7. Natural Fabricators sit with the deck at y -50 (Mechanics); look-pass screenshots used y -38.
 8. **Rare blocks used as decoration** that a player could mine: lodestone (1), crying obsidian, redstone blocks (under lit lamps), iron blocks. Fine for a dangerous structure, in my view.
 
-### Recorded for the mechanics phase
+### Owner's calls kept from the look phase
 
-- **Placement: one next to every ancient city** (owner, 2026-11-16). Plan: a worldgen step after structures finds each ancient city start in the chunk's region (vanilla `minecraft:ancient_city` starts, so `/locate` for cities finds fabricators too), picks a side of the city's bounding box away from its centre, and places the Fabricator there with its deck at the city's floor level (city floors are at y -51; the cavern is ~32 deep and ~44 wide, so it sits beside the city, not over it). Its entrance tunnel is turned to face the city and runs to the city's outer wall, where the build cuts a doorway-sized **gap in the city's wall** (deepslate brick frame, like the city's own arches). Built chunk by chunk from the pure design (it's already deterministic). In the look pass the tunnel winds out the front; turning it toward a city is a parameter, not a redesign.
-- **Office chests' loot (plan):** "the factory's paperwork": paper, books and a book and quill, a map to the nearest other Fabricator's city, echo shards, sculk, disc fragments 5 and a chance of a music disc (13 or 11), candles, a few iron and redstone, and sometimes an enchanted book with Swift Sneak (ancient-city flavour). Loot tables come with mechanics.
-- **The jukebox (vibrations):** a playing jukebox gives off vibrations (vanilla's `jukebox_play`, and sensors near one keep resonating) that sculk sensors, shriekers and a Warden react to. As built, it stands on wool with wool beside it and the office floor is wool under carpet, and the office's own sculk sensor was removed (wool doesn't stop vibrations through the air in vanilla; it only blocks them as a block in the path). For mechanics: the passive Warden's "hearing" filter ignores vibrations whose source is its own jukebox (or any non-player source while passive, which is the plan anyway); shriekers only answer players in vanilla, so the music can't set them off. If sensors on the deck twitch to it that's ambience; if it's too much, the jukebox gets "always playing" by our code restarting it silently (`setSongItemWithoutPlaying` + a client-side loop) rather than vanilla's play event.
-- **Music disc 13** chosen (eerie ambient cave sounds, long, loops naturally); vanilla stops it at the end, so "always playing" is a mechanics item (restart it when it ends, while a player is near).
-
-- The teleporter's **activation timer is lamps lighting up** (the eight-lamp ring), not a redstone clock.
-- Its **particles run even with nothing on the pad**, so a player could hop on and ride it up to escape with the right timing.
-- **Right before it fires, whatever is on the pad gets a bit of Levitation** (lifted slightly off the pad), then teleports: a deactivated mob, or a player who hopped on, rises a little as the timer completes.
-
-### Left (mechanics)
-
-Worldgen placement (sites from the seed, the feature that builds a factory chunk by chunk, saved command sites, `factory locate`), dropping deactivated mobs, the teleporter (timer lamps, particles, levitation, sending up to the surface, waking reworked), redstone control, breaking the spawner, the passive Warden (hearing, no digging away), debuffs (payload through Reworked Beacons' API, or a core without it). Server game tests for those (`ReworkedMobsCoreGameTest` smoke tests, `MobFactoryGameTest`) come with the mechanics.
-
-### Test world station idea
-
-A zombie Ancient Fabricator built with `ancient_fabricator build` under the hub (deck at y -38), reached by a ladder shaft with a sign; the tour photographs the overview and the face wall.
-
-**Spare parts (owner, 2026-11-16):** the office chests have a chance of the gems that power the debuff beacon. With Infused Gems installed, the paired beacon runs on a real harmful gem (Mining Fatigue first; taking it out ends that debuff); without it, a hidden core does the debuffs and there are no gems.
-
-**Loot (owner, 2026-11-16): fine as built** (18 iron blocks and 2 beacons per Fabricator).
+- **Placement: one next to every ancient city** (owner, 2026-11-16; built, see Mechanics).
+- **Music disc 13** in the office jukebox (eerie, long). Vanilla stops it at the end; "always playing" waits for vanilla's infinite jukebox (owner: no workaround now).
+- **Spare parts (owner, 2026-11-16):** the office chests have a chance of the gems that power the debuff beacon (built, see Office loot).
+- **Loot (owner, 2026-11-16): fine as built**; buffed 2026-11-22 (Office loot).
 
 ## Mechanics, as built (2026-11-17)
 
@@ -317,10 +281,6 @@ The Warden and the debuffs carry on.
 
 - A "totem of spawning"/lure for beacons (Totems & Artifacts, held or in a beacon like wards; keeps mod independence): maybe later.
 
-## Milestone test objectives
-
-None yet (not built).
-
 ## Secrets and the lower city (owner, 2026-11-16)
 
 Owner: "additional secrets and complexity (not to main mechanic, but to the generated area)"; chosen: a reject pit, an intake chamber, buried chests, real ancient-city detail below the deck ("right now it's 3 large square platforms and some stairs"), "a more dynamic Office, more stairs". The machine is unchanged.
@@ -352,3 +312,11 @@ Owner: "additional secrets and complexity (not to main mechanic, but to the gene
 5. **Prize spots** if the owner wants one: the intake chamber (hardest to reach: chain climb, Warden-sensitive, right over the spawner), then the reject vault (secret), then the office loft (lectern, nothing on it yet).
 6. Office tower grew 3 blocks deeper into the cavern wall (outside unchanged from the deck side).
 
+## Open
+
+- **Why challenge a Fabricator?** (owner raised 2026-11-16, options skipped for now; `BACKLOG.md`): it feeds its region's surface spawns of its mob type (recommended), capture it as a farm, a prize only found there (intake chamber), or office paperwork leading to the next Fabricator.
+- Owner to playtest the rate (about one mob per 77 s), the doorway spot (walk a natural one) and the Warden.
+- Owner to review the builder's choices (look, mechanics, secrets); in particular whether the causeway should be broken in the middle and whether the reject-pit tell is too hidden.
+- Test world station: not built. Idea: a zombie Fabricator built with `ancient_fabricator build` under the hub, reached by a ladder shaft with a sign; the tour photographs the overview and the face wall.
+- Flaky tests: `fabricatorBreakingTheSpawnerStopsIt`, `fabricatorDropsDeactivatedMob`, `fabricatorSendsItUpAndItWakesReworked` and `wardenWakesWhenItHearsAPlayerAtTheMachine` fail now and then (`BACKLOG.md`).
+- Office jukebox loop: when we move to the release with vanilla's infinite jukebox.

@@ -1,7 +1,7 @@
 <!-- dte:C1,B17,B18,B19 -->
-# Reworked Mobs: drowned (spec, first build done 2026-11-16)
+# Reworked Mobs: drowned (spec)
 
-The next segment of Bubba's Reworked Mobs (C1), after creepers and endermen. Owner's design (2026-11-16), recorded as given; open questions below.
+**Status: built** (first build 2026-11-16, danger rework and ankle hold the same day). A segment of Bubba's Reworked Mobs (C1). Owner's design (2026-11-16), recorded as given; "How it's built" is what the code does. Open items at the end.
 
 ## The lurker
 
@@ -26,16 +26,11 @@ The next segment of Bubba's Reworked Mobs (C1), after creepers and endermen. Own
 - **D7 Vanilla:** zombie-to-drowned conversion stays; a low rate of random natural spawns stays (like the other undead).
 - **D8:** **no drowned sleepers** (dropped from the undead plan).
 
-## Still open (builder decides, owner may change)
-
-- When a drowned leaves the water: [builder: only to reach something it's grabbing near the edge, a few blocks up the bank, then it crawls back dragging it].
-- How much stronger: health, armor, drag speed, the grip-break meter's numbers.
-
 ## How it's built
 
 **No new entity type.** Every vanilla `Drowned` gets the behavior through `mixin/DrownedMixin` (natural spawns, zombies that drowned, eggs, commands). Code: `drowned/` package; all numbers in `DrownedTuning`.
 - Goals: vanilla's trident goal, melee chase (`DrownedAttackGoal`), night beach walk (`DrownedGoToBeachGoal`) and every target goal are wrapped in `VanillaOnlyGoal` (they run only on a drowned that stays vanilla, below). `DrownedLurkGoal` (priority 0, MOVE/LOOK/JUMP) holds movement while the mind steers; when the mind is idle, vanilla's daytime "go to water", swim-up, stroll and look-around goals run.
-- **Spawners stay vanilla (owner, 2026-11-16, "for now").** `DrownedAccess.brm$makeVanilla()` turns the rework off for good: vanilla goals and targeting, vanilla attributes (20 health, 2 armor, speed 0.23), vanilla gear (tridents included). Called at the head of `Drowned.finalizeSpawn` when `EntitySpawnReason.isSpawner(reason)` (spawners and trial spawners); saved as `bubbas_reworked_mobs:vanilla`. To fold into main's `MobFinalizeSpawnMixin`: drop `brm$spawnerStaysVanilla` from `DrownedMixin` and call `((DrownedAccess) drowned).brm$makeVanilla()` there.
+- **Spawners stay vanilla (owner, 2026-11-16, "for now").** `DrownedAccess.brm$makeVanilla()` turns the rework off for good: vanilla goals and targeting, vanilla attributes (20 health, 2 armor, speed 0.23), vanilla gear (tridents included). Called at the head of `Drowned.finalizeSpawn` when `EntitySpawnReason.isSpawner(reason)` (spawners and trial spawners); saved as `bubbas_reworked_mobs:vanilla`. It stays in `DrownedMixin`'s own hook rather than the shared `MobFinalizeSpawnMixin`, because it must run before vanilla picks the drowned's gear.
 - Attributes (via `Drowned.createAttributes`): 60 health, 6 armor, 0.6 knockback resistance, speed 0.23; on land a transient -40 % speed modifier (it crawls).
 - No tridents: drowned no longer spawn holding one (removed after vanilla's equipment roll; fishing rods stay). One picked up off the ground is held, never thrown. Buried treasure gets one extra pool rolling a trident at 10 % (Fabric `LootTableEvents.MODIFY`, skipped when a datapack replaced the table).
 - Spawning (owner, 2026-11-16: "a handful of them if you're travelling near the ocean"): vanilla's rules (water, depth, darkness, 1 in 40 or 1 in 15 in river-type biomes), plus their own allowance past the monster cap cut: once the cut cap is full, a natural drowned may still spawn while fewer than 5 drowned are within 48 blocks of the spot (`MonsterCap.allows`, `DrownedTuning.NATURAL_NEAR_*`). Before this they shared the cut cap with land monsters, which fill it at night, so they were very rare. Drowned are `MONSTER`, so the natural monster cap cut (`SpawnStateMixin` → `MonsterCap.allows`) applies to their natural spawns (verified in the code path: the cut checks `type.getCategory() == MONSTER`, no type list). Zombie-to-drowned conversion is untouched (vanilla zombies only; our woken zombies never convert).
@@ -44,13 +39,13 @@ The next segment of Bubba's Reworked Mobs (C1), after creepers and endermen. Own
 - *IDLE:* vanilla. With a non-spectator player within 32 blocks it looks for a lurk spot (at most once a second, phase-spread).
 - *Lurk spots (`LurkSpots.find`):* 40 random columns 3-14 blocks around the nearest player and within 32 of the drowned. A column qualifies with water exactly 2 deep (owner: "a standing drowned's head just breaks the surface") over a solid floor, open air above, and land within 3 blocks (level with the water's surface or one block up) in one of 8 directions (straight ones win ties): the shore it faces. Best: nearest to 6 blocks from the player, then nearest the drowned. A spot whose player goes more than 20 blocks away is dropped.
 - *TRAVEL:* swims there (vanilla's drowned swim control, lying down).
-- *LURK:* upright, held by a spring at the spot's centre, its eyes 0.25 above the surface (in 2-deep water it floats a little off the floor), body facing the shore, head turning to the nearest player.
+- *LURK:* upright, held by a spring at the spot's centre, its eyes 0.12 above the surface (see Lower lurk) (in 2-deep water it floats a little off the floor), body facing the shore, head turning to the nearest player.
 - *Stared at → sinks (D2):* every 4 ticks one 16-block box query. Anyone it could grab, plus creative players, looking within 40 degrees of any of six points (where its head shows at the spot centre just above the surface, 0.4 higher, and 0.3 to each side), with a clear line of sight to that point, is staring (`sense/Gaze`; owner 2026-11-16: a cone, not a direct line; was 30 degrees to the one point). Stared at, it sinks until its head is 0.1 below the surface or it stands on the floor, and crouches (vanilla's synced crouch pose; the model lowers its head about a quarter block), so in 2-deep water its head ends just under the surface. Looked away from, it rises again. Using the spot's point rather than its eyes means it doesn't bob in and out of a watcher's sight at the bank's edge.
 - *SURGE:* nobody staring, and a grabbable thing within 4.5 blocks (horizontal), standing between 1 block below and 2.5 above the surface, not under water, in its line of sight, with the drowned more than 100 degrees from where it faces (its back turned): it lunges (0.3 blocks a tick, rising out of the water, climbing the bank) and grabs when within 0.8 blocks (box to box). It gives up if the victim gets 7 blocks away or it is 4.5 blocks from its spot (it leaves the water at most ~3.5 blocks).
 - *Grabbable (D4, B18):* players (not spectators, not creative) and passive mobs (animals, villagers) that can drown; nothing invisible, riding or ridden.
 - *DRAG:* the victim rides the drowned (below), held in front of it, feet level with its own. It moves backwards: faces away from the deepest water nearby and moves toward it (0.07 blocks a tick in water, 0.06 crawling on land), sinking to the floor. Deepest water: columns every 2 blocks in a 21 x 21 square, depth measured to 24 blocks; re-searched each time it arrives (it stays put when nothing is deeper). Upright in water, lying (crawling back) on land.
-- *Small hits:* a 1-in-50 chance each tick (no fixed rhythm, B19; about every 2.5 s): 2 damage, and 45 air knocked out (1.5 bubbles), divided by 1 + the victim's oxygen bonus (Respiration), none under Water Breathing, Conduit Power or Breath of the Nautilus (vanilla's "can't lose air" test). Otherwise drowning is vanilla's air rule: the victim's eyes are under water, they can't swim up.
-- *Grip-break meter (D3, B19):* 0-100, drains 0.25 a tick (5 a second). Every hit on it with an attacker (the victim's, a friend's, an arrow: B18) adds 6 + 3 per point of damage (before armor); axes double it; +12 per level of Impaling and +10 per level of Knockback on the weapon. Full: it lets go and recoils (pushed 0.5 a tick away from the victim; the victim nudged up 0.3), then looks for a new spot (not the one it just used). A Riptide trident released by its victim (charged, in water or rain) frees them outright and launches them the vanilla way (`TridentRiptideMixin`, both sides). Respiration, Water Breathing and Conduit Power only buy time (vanilla). Hit while lurking or travelling (no victim), it abandons that spot.
+- *Small hits:* a chance each tick (no fixed rhythm, B19), rising with the grip (see Danger rework): from 1 in 50 (about every 2.5 s), 2 damage and 45 air knocked out (1.5 bubbles), divided by 1 + the victim's oxygen bonus (Respiration), none under Water Breathing, Conduit Power or Breath of the Nautilus (vanilla's "can't lose air" test). Otherwise drowning is vanilla's air rule: the victim's eyes are under water, they can't swim up.
+- *Breaking free (D3, B19):* the first build's grip-break meter is replaced by the **grip** meter (see Danger rework below). Hits from anyone with an attacker (the victim's, a friend's, an arrow: B18) loosen it. At 0 it lets go and recoils (pushed 0.5 a tick away from the victim; the victim nudged up 0.3), then looks for a new spot (not the one it just used). A Riptide trident released by its victim (charged, in water or rain) frees them outright and launches them the vanilla way (`TridentRiptideMixin`, both sides). Respiration, Water Breathing and Conduit Power only buy time (vanilla). Hit while lurking or travelling (no victim), it abandons that spot.
 - A drowned that dies lets go. A victim that leaves another way (ender pearl, commands, death) ends the drag; it goes back to seeking.
 
 **Why the victim rides the drowned.** Player movement is client-authoritative. Riding makes the position exact on both sides with no rubber-banding: the passenger's place is computed from the vehicle on each side (`getPassengerAttachmentPoint` override, needs no syncing), they can't swim, and vanilla's air rules keep running. Server-sent motion every tick was the alternative (a spring the client fights, laggy at high ping). What riding needed:
@@ -145,7 +140,7 @@ Before this change it was about 17 s unarmored. The model assumes the victim is 
 | Crawl speed on land | -40 % |
 | Wakes (looks for a spot) with a player within | 32 blocks |
 | Lurk spot | water exactly 2 deep, land within 3, 3-14 blocks from the player (best ~6) |
-| Lurking: eyes above the surface | 0.25 |
+| Lurking: eyes above the surface | 0.12 |
 | Sunk: head below the surface | 0.1, or on the floor and crouched |
 | Stare cone / sense range | 40 degrees round 6 points / 16 blocks, every 4 ticks |
 | Restless: moves when unseen (70 degrees) / following | 1 in 800 a tick (~40 s) / 1 in 80 (~4 s) past 10 blocks; new spot within 16 |
@@ -155,18 +150,18 @@ Before this change it was about 17 s unarmored. The model assumes the victim is 
 | Lunge speed / grab reach / leaves the water up to | 0.3 a tick / 0.8 / ~3.5 blocks |
 | Drag speed (water / land) | 0.07 / 0.06 a tick |
 | Deep water search | 21 x 21 blocks every 2nd column, 24 deep |
-| Small hits | 1/50 chance a tick (~2.5 s), 2 damage, 45 air (1.5 bubbles) |
-| Grip meter full / drain | 100 / 0.25 a tick (5 a second) |
-| Per hit | 6 + 3 x damage; axe x2; Impaling +12/level; Knockback +10/level; Riptide frees outright |
-| Examples | iron axe (9): 66, two fast hits free you; iron sword (6): 24, about 5 hits in 3 s; fists: 9, at most 2 a second through vanilla's hurt time, about 8 s |
+| Small hits | 1/50 a tick, 2 damage, 45 air at grip 50 or less; up to 1/10, 4 damage, 90 air at grip 100 |
+| Grip | starts 50, free at 0, rises 0.25 a tick (+50 % per extra holder) |
+| Per hit (loosens) | 6 + 3 x damage; axe x1.5; Impaling +12/level; Knockback +10/level; divided by 1 + 0.6 per extra holder; Riptide frees outright |
+| Extra holders | up to 2 more, joining from 16 blocks; drag 35 % faster per extra |
 | Recoil / victim lift | 0.5 / 0.3 a tick |
 | Buried treasure trident | 10 % per chest |
 
-Time to drown with nobody fighting: about 15-16 s for a full-health player (air gone in ~8.5 s with the knocks, then vanilla drowning plus the hits).
+Time to drown with nobody fighting: see "Death times" above (about 8.5 s unarmored with one drowned).
 
 ## Builder's choices (the owner may want to change these)
 
-1. **The victim rides the drowned** (see above), and sneaking can't get you off. The only way out is the meter, Riptide, its death, or ender pearls/commands.
+1. **The victim rides the drowned** (see above), and sneaking can't get you off. The only way out is the grip meter, Riptide, its death, or ender pearls/commands.
 2. **When it leaves the water:** only to reach a victim at the edge (about 3.5 blocks from its spot at most), then it crawls back dragging them. Otherwise it stays in the water while a player is near; vanilla's own behavior (daytime "back to water", swimming up) runs when nobody is.
 3. **Someone staring keeps everyone safe:** while anything is staring at it, it won't surge at anyone (`WATCHED_BLOCKS_SURGE`). "Watch the water for your friend."
 4. **Passive mobs count as watchers too** (B18): a cow looking at it makes it sink, a cow with its back turned gets grabbed. Creative players' stares count (so the owner can try the sinking); creative players are never grabbed (they can't drown).
@@ -176,18 +171,18 @@ Time to drown with nobody fighting: about 15-16 s for a full-health player (air 
 8. **Hit from the shore while lurking, it moves to another spot** (no free hits on a sitting target), rather than charging.
 9. **Hits are a chance per tick, not a timer** (B19).
 10. Spectators don't wake drowned, stare, or get grabbed.
-11. The mind (spot, meter) isn't saved; a reloaded drowned looks for a spot again and lets go of anything riding it.
+11. The mind (spot, grip) isn't saved; a reloaded drowned looks for a spot again and lets go of anything riding it.
 12. Lying uses vanilla's swimming flag, so a lying drowned is silent to sculk (no step vibrations) and its hitbox stays upright-sized while it crawls.
 
-## Test world station idea
+## Test world station idea (designed, not built)
 
 "The drowned shore": a small pond with a 2-deep shelf by a grass bank and a deep middle, one drowned pinned to a lurk spot (`DrownedMind.pinTo`, keeps its spot with no player near), a villager on the bank behind a fence facing the water (so it sinks while the villager watches). Shots: from the bank (head just showing), and from the side at water level.
 
 ## Milestone test objectives
 
-Core (every build, `ReworkedMobsCoreGameTest`): `drownedGrabsAndDragsToDeepWater` (a survival player at the edge with their back turned is grabbed within 4 s, sneaking doesn't free them, dragged backwards out over the pit, eyes under water, drowned upright), `drownedGripBreakMeterBreaksTheHold` (a fist hit adds ~9 and drains away; two fast axe hits free a villager), `drownedStaredAtItSinks` (stared at: sunk and crouched, head at or under the surface; looked away from: eyes above the surface, upright).
+Core (every build, `ReworkedMobsCoreGameTest`): `drownedGrabsAndDragsToDeepWater` (a survival player at the edge with their back turned is grabbed within 4 s, sneaking doesn't free them, dragged backwards out over the pit, eyes under water, drowned upright), `drownedGripLoosensWithHitsAndTightensWhileDragging` (hits loosen the grip, it tightens while dragging, enough hits free the victim), `drownedSecondDrownedJoinsAndHoldsHarder` (a free drowned nearby swims over and grabs the other leg), `drownedStaredAtItSinks` (stared at: sunk and crouched, head at or under the surface; looked away from: eyes above the surface, upright).
 
-`DrownedGameTest` (milestone): `swimsToALurkSpotNearThePlayer` (from the deep pit to the shallows by the shore, facing it); `onlyBacksTurnedAreGrabbed` (facing it, or creative: not grabbed); `hitsKnockAirOutUnlessWaterBreathing`; `gripPointsFavourAxesImpalingKnockback`; `strongerAndNoTridents` (200 natural spawns: tuned health and armor, no tridents); `spawnerDrownedStayVanilla` (spawner and trial spawner: vanilla flag, 20 health, tridents possible, flag survives a save); `buriedTreasureCanHoldATrident` (10-90 in 400 rolls). Tests use their own structure `drowned_pool` (land, 2-deep shallows, an 8-deep pit), not dug under the shared field: digging below a shared structure left blocks the runner never clears and made `SleeperNoiseGameTest.strongLightCalmsSleepersInWorld` fail every run.
+`DrownedGameTest` (milestone): `swimsToALurkSpotNearThePlayer` (from the deep pit to the shallows by the shore, facing it); `onlyBacksTurnedAreGrabbed` (facing it, or creative: not grabbed); `hitsKnockAirOutUnlessWaterBreathing`; `gripPointsFavourAxesImpalingKnockback`; `strongerAndNoTridents` (200 natural spawns: tuned health and armor, no tridents); `spawnerDrownedStayVanilla` (spawner and trial spawner: vanilla flag, 20 health, tridents possible, flag survives a save); `buriedTreasureCanHoldATrident` (10-90 in 400 rolls). A drowned swimming out of a pit onto 2-deep shallows gets over the lip (covered statistically by `swimsToALurkSpotNearThePlayer`; a deterministic start under the lip did not reproduce the hover, so no separate test). Tests use their own structure `drowned_pool` (land, 2-deep shallows, an 8-deep pit), not dug under the shared field: digging below a shared structure left blocks the runner never clears and made `SleeperNoiseGameTest.strongLightCalmsSleepersInWorld` fail every run.
 
 `DrownedClientGameTest` (client part `drowned`): screenshots drowned-lurk, drowned-lurk-low (upright, head above water), drowned-sunk (a villager stares: under the surface), drowned-grab (surged at a villager with its back turned), drowned-drag-deep (upright under water holding it), drowned-swim (lying, swimming to its spot), drowned-crawl-side, drowned-crawl-front (lying, crawling on land, at night), drowned-held-player (the camera player held, third person, with the grabbed hint). Previews kept in `docs/previews/drowned/`.
 
@@ -196,3 +191,11 @@ Not yet tested (objectives): Riptide frees a held player and launches them; Knoc
 ## Bogged (2026-11-22)
 
 Bogged lurk and ambush like the drowned, in swamp water and mud by reeds, but never grab: `bogged/BoggedLurk`. Spec and numbers in `specs/undead.md` "Undead variants".
+
+## Open
+
+- Owner to playtest the numbers (all in `DrownedTuning`): health and armor, drag speed, the grip's rise and the per-hit points, the death times.
+- Owner to review the builder's choices (both lists above), in particular: when it leaves the water (only to reach a victim at the edge), someone staring keeps everyone safe, it lurks day and night, and the danger counting from grip 50.
+- Owner: grab by the feet is built; a flailing or lying-on-the-back pose for the held victim is not (say if wanted).
+- Test world "drowned shore" station: not built; build it when the owner wants to playtest drowned there.
+- Compatibility: Armored Foes (gives mobs armor) with the stronger drowned, before release.

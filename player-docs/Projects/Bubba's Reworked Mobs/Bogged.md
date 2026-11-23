@@ -2,7 +2,7 @@
 
 *Part of [[Bubba's Reworked Mobs]].*
 
-Bogged in swamps are lurkers, like the [[Drowned]]. When a bogged notices a player within about 32 blocks, it slips into a hiding spot nearby: shallow water, or mud beside reeds and tall grass. In water two blocks deep it's fully under. There it crouches still and holds its fire. When nobody is looking, it moves to a new spot now and then, and follows you if you walk off.
+The **bogged** in [[Bubba's Reworked Mobs]] is a swamp lurker, like the [[Drowned]], not a sleeper. When a bogged notices a player within about 32 blocks, it slips into a hiding spot nearby: shallow water, or mud beside reeds and tall grass. In water two blocks deep it's fully under. There it crouches still and holds its fire. When nobody is looking, it moves to a new spot now and then, and follows you if you walk off.
 
 It **ambushes** in three cases:
 

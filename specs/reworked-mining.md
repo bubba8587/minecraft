@@ -1,5 +1,7 @@
 <!-- dte:C7 -->
-# Bubba's Reworked Mining (spec, design 2026-11-22; built 2026-11-22: curve, finds, True Unbreaking, quartz set)
+# Bubba's Reworked Mining (spec)
+
+**Status (2026-11-22): everything below is built** (mod 0.1.0, not released): the curve for every vanilla tool, stronger Efficiency and Unbreaking, rare finds, True Unbreaking, the quartz set. Numbers are first-pass, for the owner to tune by playing.
 
 Mod id `bubbas_reworked_mining`. Owner's design (2026-11-22): "really just establishing a curve here and making enchantments (& gems) very worthwhile, such that you can go from 'tough' to 'highly powered machine' and get a real sense of progression." Slow the early game **a bit**, and the midgame **a lot**, through deepslate.
 
@@ -34,7 +36,7 @@ Speeds and wear compared to vanilla:
 ## True Unbreaking (owner, 2026-11-22)
 
 - A new enchantment, **True Unbreaking**: the item never loses durability. Data-driven (an `item_damage` effect set to zero).
-- **Found only, rare:** in loot (proposed: ancient city, End city, bastion and trial vault chests; later Reworked Mobs' noble crypts and Fabricator offices). Never from the enchanting table or villagers.
+- **Found only, rare:** in loot: ancient city, End city, bastion and ominous trial vault chests, and Reworked Mobs' noble crypts (its main source when both mods are installed). Never from the enchanting table or villagers.
 - Works on anything with durability (tools, weapons, armor, elytra, the Glider, shields). Applied at an anvil.
 - Incompatible with Mending (pointless together). Plain Unbreaking stays, stronger, as the everyday route.
 
@@ -47,11 +49,6 @@ Speeds and wear compared to vanilla:
 - Made from nether quartz (recipe: builder's proposal, probably quartz blocks like iron ingots, on a crafting table).
 - Prior art: Quartz Tools (fatlard1993, MIT, on 26.3, 611 downloads) has smooth-quartz tools but no armor and no Nether bonus. We build our own, since quartz has to sit on this mod's curve. Its code can be read, and reused with credit since it's MIT.
 - These are new items (B15 only limits new blocks).
-
-## Open
-
-- Exact numbers (the owner tunes after playing; see As built).
-- How each step shows to the player (tooltips stay minimal, per the owner).
 
 ## As built (2026-11-22, builder: agent 3)
 
@@ -71,7 +68,7 @@ Every number is in `MiningTuning`. **(builder)** marks the builder's own choices
 - **Unbreaking is stronger:** at level III a tool loses about 1 durability in 7 (vanilla is 1 in 4). Armor gets the same extra protection on top of its vanilla odds.
 - **Haste (potion, beacon) and Infused Gems' Haste gems** still multiply on top of all of this.
 - **Rare finds:** mining stone, granite, diorite, andesite or tuff sometimes drops iron or gold nuggets (1-3), rarely lapis, very rarely an emerald. Deepslate has slightly better odds and a tiny diamond chance. Each Fortune level doubles the odds. Silk Touch never gives finds. Placed blocks give finds like natural ones (**owner, 2026-11-22: no natural/placed distinction**; this replaces the spec's "only from natural blocks" bullet). Explosions can give finds (at the no-Fortune odds).
-- **True Unbreaking** (new enchantment, max level I): the item never loses durability. It works on anything with durability (tools, weapons, armor, elytra, shields, ...) and is applied at an anvil. It can't combine with Mending. It's never offered by the enchanting table or villagers and never appears as a random enchantment on loot: it's found only as an enchanted book in ancient city, End city, bastion treasure and ominous trial vault (rare) chests.
+- **True Unbreaking** (new enchantment, max level I): the item never loses durability. It works on anything with durability (tools, weapons, armor, elytra, shields, ...) and is applied at an anvil. It can't combine with Mending. It's never offered by the enchanting table or villagers and never appears as a random enchantment on loot: it's found only as an enchanted book in ancient city, End city, bastion treasure and ominous trial vault (rare) chests, and in Reworked Mobs' noble crypt chests.
 - Tooltips: no new tooltip lines (minimal-tooltips preference). True Unbreaking shows as a normal enchantment name.
 
 #### Numbers (MiningTuning)
@@ -94,7 +91,7 @@ What that means in seconds (on the ground, no Haste): iron on deepslate is about
 - Extra Unbreaking cancel chance at I/II/III: 0.333, 0.40, 0.43. Tools then keep a point with odds 1/3, 1/5, 1/7.
 - Find chance per block, at Fortune 0/I/II/III: stone-type 0.5 %, 1 %, 2 %, 4 %; deepslate 0.8 %, 1.6 %, 3.2 %, 6.4 %.
 - Find weights: stone-type: iron nugget 60, gold nugget 30, lapis 7, emerald 3. Deepslate: iron nugget 50, gold nugget 35, lapis 10, emerald 4, diamond 1. So a bare pickaxe finds a diamond about once per 12,500 deepslate blocks.
-- True Unbreaking book chance per chest: ancient city 4 %, End city treasure 3 %, bastion treasure 5 %, trial chambers `reward_ominous_rare` 5 %. Anvil cost 8, weight 1.
+- True Unbreaking book chance per chest: ancient city 4 %, End city treasure 3 %, bastion treasure 5 %, trial chambers `reward_ominous_rare` 5 %, Reworked Mobs' `chests/crypt_noble` 20 % (applies only when that mod is installed). Anvil cost 8, weight 1.
 
 #### Builder's choices (owner may want to look)
 
@@ -105,7 +102,7 @@ What that means in seconds (on the ground, no Haste): iron on deepslate is about
 - **(builder) Which tools are on the curve:** the vanilla pickaxe, axe, shovel, hoe and sword of each tier, through item tags `bubbas_reworked_mining:tier/<wood|stone|copper|iron|gold|diamond|netherite>`. Other mods' tools stay vanilla unless a datapack adds them to a tier tag. Swords keep vanilla wear (2 per block). Spears, shears and maces aren't on the curve.
 - **(builder) Wear on wood in deepslate** is 3 even though it drops nothing, so trying it is a bad deal.
 - **(builder) Unbreaking on armor** gets the same extra roll as tools (the spec says Unbreaking is stronger; armor wasn't singled out).
-- **(builder) True Unbreaking chest list and odds**, from the spec's proposal: ancient city, End city treasure, bastion treasure, ominous trial vault (rare pool). Noble crypts and Fabricator offices are for later (Reworked Mobs, no hard dependency).
+- **(builder) True Unbreaking chest list and odds**, from the spec's proposal: ancient city, End city treasure, bastion treasure, ominous trial vault (rare pool), and Reworked Mobs' noble crypts at 20 % (owner, 2026-11-22; no hard dependency). Fabricator offices don't have it.
 - **(builder) Explosions** can give finds (at no-Fortune odds).
 
 #### How it's built (for the spec, not for players)
@@ -128,12 +125,7 @@ What that means in seconds (on the ground, no Haste): iron on deepslate is about
   - `unbreakingStrongerAndTrueUnbreakingIsTotal`: Unbreaking III keeps about 1/7. True Unbreaking takes zero damage on an elytra, is incompatible with Mending, and is in none of the enchanting table, tradeable or random-loot tags.
 - Milestone (`MiningMilestoneGameTest`):
   - `trueUnbreakingInChests`: 2000 bastion treasure rolls give about 5 % books; True Unbreaking takes zero damage on armor.
-- Milestone objectives to add to the spec (no test yet):
-  - Every tier's speed and wear on stone, deepslate and "other" match `MiningTuning` (the core test covers iron, wood and the wood axe).
-  - Unbreaking I and II and armor odds.
-  - Deepslate find odds and the diamond weight.
-  - Explosions give finds only at no-Fortune odds.
-  - Haste and gem `block_break_speed` stack on top.
+- The rest is in Milestone test objectives below (no test yet).
 
 ### Step 2: the quartz set
 
@@ -165,18 +157,22 @@ What that means in seconds (on the ground, no Haste): iron on deepslate is about
 
 - Core: `quartzIsIronLevelAndFasterInTheNether` (quartz on netherrack is 1.6x iron; on deepslate it equals iron; no ancient debris; harvests diamond ore; in `#pickaxes` and `#chest_armor`).
 - Client part `quartz` (`-PclientTests=quartz`): two armor stands (quartz next to iron) with pickaxes, the quartz pickaxe and sword held in first person with the whole set in the hotbar, and the player wearing the set in third person, each at 16x and 32x. Checked by eye on 2026-11-22: textures load (no missing-texture checkerboard), the quartz armor is clearly whiter than iron with soft veins, and the 32x pack switches on. Items held by armor stands render dark for iron and quartz alike (lighting, not the texture).
-- Milestone objectives to add to the spec:
-  - Every quartz recipe crafts.
-  - Repairing with a quartz block works.
-  - Quartz on each Nether block is 1.6x.
-  - Quartz armor protection values.
+- The rest is in Milestone test objectives below (no test yet).
 
 ## Milestone test objectives
 
-- Mining time and wear per tool tier on stone and deepslate match the tuning table.
-- Efficiency and Unbreaking levels give the stronger values.
-- Finds drop from stone and deepslate (placed or natural) at the tuned odds, never with Silk Touch; explosions give them only at no-Fortune odds.
-- True Unbreaking stops all durability loss, isn't offered by the enchanting table or villagers, and can't combine with Mending.
+- Every tier's speed and wear on stone, deepslate and "other" match `MiningTuning` (the core test covers iron, wood and the wood axe).
+- Efficiency and Unbreaking levels give the stronger values, including Unbreaking I and II and the armor odds.
+- Finds drop from stone and deepslate (placed or natural) at the tuned odds, with the deepslate diamond weight, never with Silk Touch; explosions give them only at no-Fortune odds.
+- Haste and gem `block_break_speed` stack on top.
+- True Unbreaking stops all durability loss, isn't offered by the enchanting table or villagers, and can't combine with Mending (core); books in noble crypts at about 20 % with Reworked Mobs.
+- Every quartz recipe crafts; repairing with a quartz block works; quartz on each Nether block is 1.6x; quartz armor protection values.
+
+## Open (owner)
+
+- Exact numbers: speeds, wear, Efficiency and Unbreaking curves, find odds, book odds (tune by playing; all in `MiningTuning`).
+- How each step shows to the player (tooltips stay minimal, per the owner; today there are no new tooltip lines).
+- Builder's calls to review (marked **(builder)** above): Efficiency as a multiplier capped at vanilla for Efficiency V diamond (raise it if "stronger" should beat vanilla at the top); gold can't mine deepslate; which blocks count as stone/deepslate and which give finds; swords, spears, shears and maces off the curve; Unbreaking's extra roll on armor; explosions give finds; the quartz recipe (12 quartz per pickaxe), Nether speed 1.6x and block list, quartz durability 220 / armor 13; no armor trims on quartz armor.
 
 ## Quartz tool textures fixed (2026-11-22, agent 3)
 

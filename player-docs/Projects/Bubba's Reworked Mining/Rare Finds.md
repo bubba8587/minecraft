@@ -2,7 +2,7 @@
 
 *Part of [[Bubba's Reworked Mining]].*
 
-Mining plain stone sometimes turns up something extra on top of the block.
+**Rare finds** are extra items that mining plain stone sometimes turns up on top of the block.
 
 | Mined block | Chance per block | What drops |
 |---|---|---|

@@ -31,16 +31,17 @@ While a player is nearby, the Fabricator rests in the dark for a while, often a 
 A Fabricator hides more than its machine:
 
 - One tile in the deck looks a little wrong. Under it, a ladder leads down into a sealed pit of failed products, with a chest of rejects.
-- Up inside the roof, over the great dripper, is the chamber that feeds the machine, full of soul soil, bone and sculk. Twisting vines grow up into it from one of the chains. Climbing up there is loud work near the Warden.
+- Up inside the roof, over the great dripper, is the chamber that feeds the machine, full of soul soil, bone and sculk. Twisting vines grow up into it from one of the chains. Breaking blocks up there wakes the Warden, even while sneaking.
 - Below the deck lie terraces, ruined arches, a small hut, stairs going down every way, and chests buried in the rubble.
 - The Warden's office has a sunken archive and a loft.
+
 ## The Warden
 
-A Warden watches from its office window. It stays still until it hears a player going for the roof or the beacons, or is hit, and then it hunts like any Warden.
+A Warden watches from its office window. It stays still until a player goes for the hidden spawner, the roof or the beacons without sneaking, breaks a block there, or hits it; then it hunts like any Warden, except that it never digs away. There is only one, and it does not come back.
 
 ## The beacons
 
-The Fabricator's beacons weaken everyone nearby with Mining Fatigue, Weakness and Slowness. Taking the item out of the floor beacon, or breaking it, ends the effects. With [[Bubba's Infused Gems]] installed, the beacon runs on a harmful gem.
+The Fabricator's beacons weaken every player within about 90 blocks with Mining Fatigue, Weakness and Slowness. Breaking the floor beacon ends the effects; with [[Bubba's Reworked Beacons]] installed, so does taking the item out of it (a Fabricator Heart, which makes a debuff beacon of any beacon it is put in). With [[Bubba's Infused Gems]] installed, the beacon runs on a harmful gem.
 
 ## Loot
 

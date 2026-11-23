@@ -2,7 +2,7 @@
 <!-- covers: datapacks/bubbas_extra_recipes/*, resourcepacks/bubbas_extra_recipes/* -->
 # Bubba's Extra Recipes (spec)
 
-The core recipe datapack. Owner-authored recipe set (originally for 26.1), ported to 26.3.
+The core recipe datapack (built: datapack 1.0.0, 11 recipes). Owner-authored recipe set (originally for 26.1), ported to 26.3.
 
 - Lives in its own namespace, `bubbas_extra_recipes`, so it never replaces a vanilla recipe by file name. The original pack used the `minecraft` namespace. Its `saddle.json` would have silently replaced vanilla's saddle recipe (added in 1.21.6); the owner chose vanilla's, so the pack has no saddle recipe.
 - The original pack's elytra recipe moved out: it now makes the Glider in the companion mod (`specs/extra-recipes-mod.md`).

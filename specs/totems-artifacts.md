@@ -12,6 +12,11 @@ A separate mod for **artifacts**: found items that do things potions and enchant
 | Totem of Warding | built (moved from Reworked Mobs), plus its totem statue |
 | Totem of Keeping, Gathering, Fortification, Growth, Seeking | built 2026-11-16 (below; unreleased) |
 | Totem of the Beginning, Totem of the End | built 2026-11-22 (below; unreleased) |
+| Totem statue for every totem (decorative) | built 2026-11-22 |
+| Totems of Herding and Clear Skies | in progress (agent 3, `totems-2` branch; not in develop) |
+| Gathering beacon ring, Growth seed planting, statues giving a tiny-radius effect | in progress (agent 3, `totems-2` branch; develop still has the chest-below Gathering beacon and inert statues) |
+
+Previews (client test screenshots, 2026-11-16, still current for these totems): `docs/previews/totems/` (`textures-16x-32x.png` and `hotbar-16x-and-32x.png`: the Warding, Keeping, Gathering, Fortification, Growth and Seeking icons at 16x and 32x; `gathering-pulling.png`: a held Gathering totem pulling items; `seeking-ahead-turned-turned32x.png`: the Seeking needle facing the found village, turned 90 degrees, and at 32x).
 
 What stays in Reworked Mobs (`specs/undead.md`): sleepers, the hearing/disturbance meter, light calming sleepers, bells being loud to sleepers, loot displays, combat, the monster cap, and the `api.Sleepers` hook below.
 
@@ -52,17 +57,23 @@ No new blocks (B15). New ids, so no old-id alias. Numbers all in `totems/TotemsT
 - No beacon use (per design).
 - **Prior art / overlap:** keep-inventory mods (Keep Inventory Always, Nice Keep Inventory, Keep Inventory Orbs; MIT/GPL), soulbound enchantments, and grave mods (Universal Graves, Gravestones, You're in Grave Danger). Graves are the closest in purpose: with a grave mod installed, a kept death simply has nothing to put in the grave (they compose). None offers a single-use found totem; no library needed (two small injections, hand-rolled because no library does it, B9).
 
-#### Totems of Herding and Clear Skies (owner, 2026-11-22, not built)
+#### Totems of Herding and Clear Skies
+
+*Owner, 2026-11-22. In progress on `totems-2`, not in develop.*
 
 - **Totem of Herding:** held, nearby livestock of every kind (cows, sheep, pigs, chickens, goats, horses, llamas, rabbits...) follow you as if you were holding their food, so moving a herd is easy. In a beacon, animals in the area don't wander out of it, like a pasture without fences. Found, not crafted, like the others.
 - **Totem of Clear Skies:** in a beacon, no rain, snow or lightning in the area (it stays dry and lightning-safe; weather elsewhere is unchanged). Held, it's used up to end a storm (clear weather, like vanilla's `/weather clear`). Found, not crafted.
 - Neither overlaps a gem effect. Each gets an initial statue like the rest (statues give their effect in a tiny radius: Herding's statue keeps animals by it, Clear Skies' statue keeps rain off a few blocks).
 
-#### Growth also plants seeds (owner, 2026-11-22: Harvest folded into Growth; not built yet)
+#### Growth also plants seeds
+
+*Owner, 2026-11-22: Harvest folded into Growth. In progress on `totems-2`, not in develop.*
 
 - The Totem of Growth (held and in a beacon) now and then **takes a dropped or floating seed item nearby and plants it** in a valid spot close by: wheat, beetroot, melon and pumpkin seeds, carrots, potatoes, saplings, and so on, on farmland or the right soil. It's a random chance per check, never a sweep. It doesn't gather or harvest anything (owner: use a separate Gathering totem for that). Seeds floating in a Gathering ring count as dropped items.
 
-#### Gathering in a beacon: a floating ring (owner, 2026-11-22, replaces "into a chest below"; not built yet)
+#### Gathering in a beacon: a floating ring
+
+*Owner, 2026-11-22, replaces "into a chest below". In progress on `totems-2`; develop still has the chest-below version described next.*
 
 - In a beacon, gathered items **float in a slowly rotating ring around the beacon** (no gravity, held in orbit at about the beacon's height, a radius of 1-2 blocks), instead of going into a chest below. It's meant to look cool.
 - Players collect them with **a simple sideways hopper into a chest**: a hopper next to the beacon whose pickup space the ring passes through takes items as they come round. Builder sets the ring's height and radius so one hopper placed beside the beacon works.
@@ -147,14 +158,12 @@ Four new payload classes, one per totem, all under the existing entrypoint `bubb
 
 ### Not built / left for later
 
-- **Totem statues for every totem:** built 2026-11-22 (owner: "generate initial statue for all totems"); see Totem statue below.
-- Seeking "next structure" (see above); a GUI picker instead of signature blocks if the owner prefers.
-- Name for Growth still open (owner).
+- Seeking "next structure" (see above); a GUI picker instead of signature blocks if the owner prefers (both in Open, below).
 
 
 ### Milestone test objectives (new totems)
 
-Core (`BubbasTotemsArtifactsCoreGameTest`, now 14; bodies in `TotemsGameTest`):
+Core (`BubbasTotemsArtifactsCoreGameTest`, 16 in all; these five bodies in `TotemsGameTest`):
 - Keeping: with keep_inventory off a player with the totem in the backpack dies: no item or XP drops, one totem used, tagged; respawned with the dirt and 5 levels, tag gone; the next death drops.
 - Gathering: an armor stand holding it pulls a dirt item from 6 blocks; an item 12 blocks away stays.
 - Fortification: a TNT-type blast inside a 5x3x5 dirt cube next to a holder breaks nothing.
@@ -178,7 +187,7 @@ Owner-approved design, handed over by the orchestrator. Player-facing descriptio
 ### As built
 
 **Totems & Artifacts** (`mods/bubbas_totems_artifacts`)
-- Items `bubbas_totems_artifacts:totem_of_the_beginning` (`beginning/TotemOfTheBeginningItem`) and `:totem_of_the_end` (`end/TotemOfTheEndItem`), `stacksTo(1)`, `Rarity.RARE`, in the creative tab after Seeking. No new blocks (B15). No statue (only Warding has one so far; spec says statues come with the owner's designs).
+- Items `bubbas_totems_artifacts:totem_of_the_beginning` (`beginning/TotemOfTheBeginningItem`) and `:totem_of_the_end` (`end/TotemOfTheEndItem`), `stacksTo(1)`, `Rarity.RARE`, in the creative tab after Seeking. No new blocks (B15). Statues for both came later (Totem statue, below).
 - `end/EndTeleport`: aim = `level.clip` from the eyes, `ClipContext.Block.COLLIDER` (aims through grass and flowers) and `Fluid.NONE` (through water). Landing uses vanilla's `noCollision` for the entity's box (as `randomTeleport` does). Teleport like the ender pearl: `stopRiding`, `ServerPlayer.teleport(TeleportTransition(..., Vec3.ZERO, Relative.ROTATION, DO_NOTHING))`, `resetFallDistance`, `resetCurrentImpulseContext`, `GameEvent.TELEPORT`; sound `ENDERMAN_TELEPORT` and `PORTAL` particles at both ends; cooldown via `ItemCooldowns.addCooldown` (B19).
 - `mixin/EndermanKinMixin`: HEAD of `Enderman.isBeingStaredBy` returns false when the player holds the totem in either hand (vanilla's own disguise check is the carved pumpkin on the head; this is the same check for the hand).
 - `compat/BeginningBeaconPayload` (entrypoint `bubbas_reworked_beacons:payload`): accepts the totem only when Reworked Mobs is installed; power 1, 1 layer; refreshes the area each pulse for `AREA_LIFETIME_TICKS` (100).
@@ -275,7 +284,7 @@ This mod reaches it only through `compat/SleeperHook`, picked once by `FabricLoa
 
 Owner's idea, deliberately loose: "a talisman that faintly glows near undead." Item `bubbas_totems_artifacts:grave_talisman`; working name, the owner may rename it.
 
-- **Getting one (owner, 2026-11-14): found only, no recipe.** Planned as grave and crypt loot once Reworked Mobs' worldgen builds them, possibly a rare find on sleepers. Until then creative tab only.
+- **Getting one (owner, 2026-11-14): found only, no recipe.** With Reworked Mobs: family vault chests (`bubbas_reworked_mobs:chests/crypt_family`) 15 % and noble crypt chests (`chests/crypt_noble`) 25 % (`TotemsTuning.TALISMAN_LOOT`, keyed by table id, no dependency). Also in the creative tab. A rare find on sleepers is an unbuilt idea.
 - **What it does:** glows when undead are near, brighter the closer; nothing else. Undead = Reworked Mobs' sleeper blocks (through the hook) and any entity in `#minecraft:undead`.
 - **Levels (`talisman/GraveTalisman`):** nearest undead within 40 blocks of the holder's eyes: faint; within 24: bright; within 12: brightest; none: off. (Was 16/8/4; owner: too short. At sprint speed, ~5.6 blocks/s, faint gives about 7 s of warning.)
 - **Where it shows:** in either hand and as the icon in hotbar and inventory, for the local player's own talismans only. Held by others, dropped, in item frames: dark.
@@ -290,7 +299,7 @@ Owner's goal (2026-11-15): mob-free zones without spamming torches. Owner decisi
 
 **The item** (`bubbas_totems_artifacts:totem_of_warding`, `warding/TotemOfWardingItem`): an artifact like the Totem of Undying (uncommon, stacks to 1), found only, never a gem. Placeholder art from `tools/warding-textures.py` (16x and 32x).
 
-- **Found (owner: a mix of places, more common than the Totem of Undying).** One extra pool per table via `LootTableEvents.MODIFY` (`WardingLoot`; Fabric-replaced tables skipped): evoker 5 % (owner, 2026-11-16: a rare bonus), woodland mansion chest 20 %, ancient city chest 12 %, trial chambers vault 8 %, ominous vault 15 % *(chest rates: agent's choice)*. Graveyard and crypt chests join `WardingTuning.LOOT` once worldgen builds them.
+- **Found (owner: a mix of places, more common than the Totem of Undying).** One extra pool per table via `LootTableEvents.MODIFY` (`WardingLoot`; Fabric-replaced tables skipped): evoker 5 % (owner, 2026-11-16: a rare bonus), woodland mansion chest 20 %, ancient city chest 12 %, trial chambers vault 8 %, ominous vault 15 % *(chest rates: agent's choice)*, and Reworked Mobs' noble crypt chests 12 % (keyed by table id, so no dependency).
 - **Held (owner):** in either hand (`Item.inventoryTick`, MAINHAND or OFFHAND) it pulses every 10 s (`PULSE_INTERVAL_TICKS` 200), the first as soon as it is held off cooldown. Players get vanilla's cooldown sweep (`ItemCooldowns.addCooldown`); other holders use a weak map of next pulse times. Visuals: soul-fire ring at shin height, rising souls, low amethyst chime *(agent's choice)*. Held, it doesn't stop spawns (owner).
 - **Pulse:** every `Enemy` within 8 blocks (`PULSE_RADIUS`) flees the holder for 100 ticks (`FLEE_TICKS`), keeping away while within 12 (`FLEE_KEEP_AWAY`), speeds 1.0 / 1.2 within 7, like a creeper from a cat *(keep-away: agent's choice)*. Goal-driven `PathfinderMob`s get `WardFleeGoal` (priority 0, MOVE, added lazily; picks copy `AvoidEntityGoal`, which isn't reused because its targeting skips creative players and non-player holders). Brain mobs with `AVOID_TARGET` (piglins, hoglins) get it for 100 ticks. Not affected (limitation): slimes, ghasts, phantoms, vexes, the warden, breezes. Sleepers within 8 blocks lose 40 points (`PULSE_CALM_POINTS`, via `Sleepers.calm`) *(agent's choice)*.
 - **Mob holders:** a mob holding a totem pulses on the same rhythm (B18) *(agent's choice)*; a woken undead can pick one up.
@@ -306,7 +315,9 @@ Owner's goal (2026-11-15): mob-free zones without spamming torches. Owner decisi
 - 4 layers: **sleepers inside stay asleep** (`Sleepers.keepAsleep` for the ward's area).
 - `Wards.put(level, key, AABB, keepsSleepersAsleep, lifetimeTicks)` lapses unless refreshed: refreshed every 80-tick beacon pulse for 100 ticks (`WARD_DEFAULT_LIFETIME_TICKS`), so a ward ends about 5 s after its beacon stops. One map lookup when no ward exists.
 
-### Statues give their totem's effect (owner, 2026-11-22, not built)
+### Statues give their totem's effect
+
+*Owner, 2026-11-22. In progress on `totems-2`, not in develop.*
 
 - A placed totem statue gives its totem's area effect in a **very small radius** (a few blocks), weaker than the same totem in a beacon: a Warding statue keeps a doorway clear, a Growth statue a garden bed, a Gathering statue pulls drops into a chest beside it, and so on. Builder proposes each statue's version and radius. Totems with no area form (Keeping, the End's teleport) give nothing as statues.
 
@@ -314,7 +325,7 @@ Owner's goal (2026-11-15): mob-free zones without spamming torches. Owner decisi
 
 - `bubbas_totems_artifacts:totem_statue` ("Totem Statue"). **B15 reason (owner-approved, 2026-11-16):** one shared block for every totem, so a found totem can be set down as decoration.
 - **Placing (owner-approved, 2026-11-16; every totem since 2026-11-22):** sneak and use any totem on a block (sneaking, so holding a totem for its pulse never places it by accident; without sneaking the click does nothing). The statue faces the player and the totem is used up (creative keeps it). The Grave Talisman is not a totem and has no statue.
-- **Inert:** no pulse, ward or beacon effect; no block entity, no ticking.
+- **Inert in develop:** no pulse, ward or beacon effect; no block entity, no ticking (tiny-radius effects are in progress, above).
 - **Breaking** (any tool, pickaxe fastest, strength 1) drops the totem back; pistons pop it off as its totem. Shape: 10x10 footprint, 14 high (plinth and column).
 - **Which totem:** `statue/TotemType`: WARDING (first, so it's the default and statues saved before the `totem` property load as warding), KEEPING, GATHERING, FORTIFICATION, GROWTH, SEEKING, BEGINNING, END, with `forItem(Item)`. `statue/StatueTotemItem` is an `Item` whose `useOn` places the statue when sneaking (PASS otherwise, so `use()` still runs); Keeping and Fortification are `StatueTotemItem`s, Gathering, Growth, the Beginning and the End extend it, Seeking checks sneaking first, Warding keeps its own `useOn`. **Sneak-use always places the statue** (builder's choice): a sneaking Totem of the End doesn't teleport, the Beginning doesn't ripple, Seeking doesn't pick a structure.
 - **Loot (26.3 format):** one pool, an `alternatives` entry with one item per totem, each with `"condition": {"type": "minecraft:all_of", "terms": [survives_explosion, match_block {state: {totem}}]}`. The pre-26.x `conditions` / `block_state_property` keys are silently ignored by 26.3 (they made every statue drop all eight totems).
@@ -324,20 +335,26 @@ Owner's goal (2026-11-15): mob-free zones without spamming torches. Owner decisi
 
 `tools/install-to-modrinth.ps1`, `tools/build-testworld.py` (`MODS`) and `mods/testworldshots` (`modsUnderTest`) include this mod; the test world builder names `bubbas_totems_artifacts:totem_of_warding` (the saved world's old-id totems load through the alias). No mod icon yet; it must be person-made (B14).
 
-## Open questions (owner)
+## Open
 
-- Mob holders: should mobs holding a totem pulse, and may woken undead pick one up? (built as yes, agent's choice)
-- The talisman's name. Found: Reworked Mobs' family vault chests (`bubbas_reworked_mobs:chests/crypt_family`), 15 % (`TotemsTuning.TALISMAN_LOOT`, keyed by table id, no dependency; added 2026-11-22); more crypts to come.
+Owner decisions still pending (built as described above until decided):
+
+- **Mob holders:** should mobs holding a Totem of Warding pulse, and may woken undead pick one up? (built as yes, agent's choice)
+- **Names:** the Grave Talisman's name; the Totem of Growth's name (owner wanted a verb-like word).
+- **Seeking:** signature blocks (built) or a picker screen; keep pointing at a found structure (built) or "point to the next one".
+- **Builder's calls to review:** Keeping counts anywhere in the inventory and keeps XP levels; Gathering's "under the beacon" chest rule (being replaced by the ring); the totem loot tables and chances; the Beginning/End builder's choices 1-16 (ripple size, what counts as built, landing rules, rarity, End city 5 %); trapped monsters in a ward fight rather than cower.
+- **Art:** person-made statue designs and mod icon (B14); the Gathering texture reads like gingerbread (`docs/art-todo.md`).
+- **Numbers to playtest:** every value in `TotemsTuning` and `WardingTuning`.
 
 ## Milestone test objectives
 
 Test-lite (`specs/quality.md`, Test suites). Run: `./gradlew :bubbas_totems_artifacts:build` (standalone core); `:bubbas_totems_artifacts:runGameTest -PwithMobs -PwithBeacons -PmilestoneTests` for every test for real (the sleeper tests pass trivially without `-PwithMobs`, the beacon test without `-PwithBeacons`).
 
-- Core (`BubbasTotemsArtifactsCoreGameTest`, 9): old Reworked Mobs ids load as these items (registry lookup and the item stack codec, re-saved under the new id); sneaking places a warding statue facing the player and breaking it drops the totem (not sneaking places nothing); the talisman senses undead mobs at 29/17/11 blocks; it senses sleepers; a held totem pulses onto the cooldown and scares a zombie away; the pulse calms sleepers; a ward stops spawns and sends monsters out; a full ward keeps sleepers asleep and releases them on removal; a ward pushes back mobs that don't path.
+- Core (`BubbasTotemsArtifactsCoreGameTest`, 16: the nine below, the five new totems' (above), `endLandingRules` and `endStatuePlacesWithoutTeleportingAndDropsItsTotem`): old Reworked Mobs ids load as these items (registry lookup and the item stack codec, re-saved under the new id); sneaking places a warding statue facing the player and breaking it drops the totem (not sneaking places nothing); the talisman senses undead mobs at 29/17/11 blocks; it senses sleepers; a held totem pulses onto the cooldown and scares a zombie away; the pulse calms sleepers; a ward stops spawns and sends monsters out; a full ward keeps sleepers asleep and releases them on removal; a ward pushes back mobs that don't path.
 - `GraveTalismanGameTest`: the glow-level table; undead mobs and sleepers sensed at each level.
 - `WardingGameTest`: the core warding checks plus the off-hand totem pulses and a backpack one doesn't; a zombie can't path into a ward; a ridden happy ghast is put back outside; mansion chests (about 20 %) and evokers (about 5 %) give a totem.
 - `WardingBeaconGameTest`: a totem beacon wards its range (1 layer: spawns only, 20 blocks; 4 layers: 50 blocks and sleepers kept asleep). Real only with `-PwithBeacons`.
-- `TotemStatueGameTest`: sneak-place, facing, no place without sneaking, break drops the totem.
+- `TotemStatueGameTest`: sneak-place, facing, no place without sneaking, break drops the totem (core); the End statue places without teleporting (core); every statue drops its own totem and statues saved before the `totem` property load as Warding.
 - Client (`ClientTests` names `talisman`, `warding`; screenshots): the talisman's glow at each distance in hand and hotbar (vanilla husk, skeleton, zombie, so it runs without Reworked Mobs); the Totem of Warding in the hotbar, its pulse ring and cooldown sweep in first and third person; the statue from three angles at 16x and 32x.
 
 **Trapped inside a ward (bug fix 2026-11-16, owner: a skeleton in an enclosed beacon ward was "stuck running/jittering").** A monster inside a ward plans its walk out (`WardFleeGoal`); when the walk can't end outside the ward (an enclosed room) it counts as trapped for 10 s (`TRAPPED_RECHECK_TICKS`): it stops trying to leave, the ward's outward push skips it (it only pressed it into the wall), and it behaves normally (fights), then looks for a way out again. Milestone test `WardingGameTest.trappedInAnEnclosedWardItStillFights`. Builder's choice the owner may change: trapped monsters fight as normal rather than cower.

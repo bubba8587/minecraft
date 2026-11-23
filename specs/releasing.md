@@ -9,4 +9,4 @@ A release is published by pushing a git tag of the form `<project>/v<version>`. 
 
 Work happens on `develop`; `main` is the released state (CLAUDE.md "Branch model"). To release: run the release milestone checks on `develop`, merge `develop` into `main`, push `main`, then tag `<project>/v<version>` on `main` and push the tag. `main` never gets direct commits.
 
-Status (2026-11-16): `.github/workflows/build.yml` runs the full suite on release tags, but no publish step is wired in yet, so nothing has been released.
+Status (checked 2026-11-22): `.github/workflows/build.yml` runs the full suite on release tags, but no publish step is wired in yet and no release tag exists, so nothing has been released.
