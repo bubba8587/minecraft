@@ -18,11 +18,7 @@ import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.AABB;
 
-/**
- * A lava geyser erupting (specs/world-tweaks.md "Lava geysers"): an invisible, short-lived marker at the lava surface
- * over a magma block. While it lasts the client draws a plume of black smoke (vanilla's sulfur geyser plume, darkened)
- * and rumbles, and {@link GeyserLift} lifts players above it. No blocks (B15); never saved (an eruption is momentary).
- */
+/** A lava geyser erupting. */
 public class LavaGeyser extends Entity {
 	public LavaGeyser(EntityType<? extends LavaGeyser> type, Level level) {
 		super(type, level);
@@ -59,7 +55,7 @@ public class LavaGeyser extends Entity {
 		}
 	}
 
-	/** Whether a magma block lies under lava at {@code surface} (the top lava block), within MAGMA_DEPTH. */
+	/** Whether a magma block lies under lava at surface (the top lava block), within MAGMA_DEPTH. */
 	public static boolean magmaUnder(Level level, BlockPos surface) {
 		BlockPos.MutableBlockPos p = surface.mutable();
 		for (int i = 0; i <= WorldTweaksTuning.MAGMA_DEPTH; i++) {

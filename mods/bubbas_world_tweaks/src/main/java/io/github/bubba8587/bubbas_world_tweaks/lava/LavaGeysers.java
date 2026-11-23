@@ -20,12 +20,7 @@ import org.jspecify.annotations.Nullable;
 
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 
-/**
- * Where and when lava geysers erupt (specs/world-tweaks.md). No worldgen (owner): vanilla's magma blobs along the Nether
- * lava sea are enough. Every {@link WorldTweaksTuning#GEYSER_CHECK_TICKS} ticks each player samples a few random
- * columns round them for a lava surface with magma under it (a bubbling spot), and such a spot erupts now and then.
- * Cost: a few dozen block reads per player every two seconds; nothing at all far from players.
- */
+/** Where and when lava geysers erupt. */
 public final class LavaGeysers {
 	public static final EntityType<LavaGeyser> LAVA_GEYSER = Registry.register(BuiltInRegistries.ENTITY_TYPE,
 			ResourceKey.create(Registries.ENTITY_TYPE, BubbasWorldTweaks.id("lava_geyser")),
@@ -61,7 +56,7 @@ public final class LavaGeysers {
 		}
 	}
 
-	/** The top lava block (air above it) in a column between {@code top} and {@code bottom}, or null. */
+	/** The top lava block (air above it) in a column between top and bottom, or null. */
 	public static @Nullable BlockPos lavaSurface(ServerLevel level, int x, int top, int bottom, int z) {
 		BlockPos.MutableBlockPos p = new BlockPos.MutableBlockPos(x, top, z);
 		boolean airAbove = level.getBlockState(p).isAir();
@@ -75,7 +70,7 @@ public final class LavaGeysers {
 		return null;
 	}
 
-	/** Starts an eruption at a bubbling spot (unless one is already going close by). Returns it, or null. */
+	/** Starts an eruption at a bubbling spot (unless one is already going close by). */
 	public static @Nullable LavaGeyser erupt(ServerLevel level, BlockPos surface) {
 		double s = WorldTweaksTuning.GEYSER_SPACING;
 		if (!level.getEntitiesOfClass(LavaGeyser.class, new AABB(surface).inflate(s)).isEmpty()) {

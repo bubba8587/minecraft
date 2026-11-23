@@ -8,7 +8,7 @@ import net.minecraft.resources.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** Bubba's World Tweaks (specs/world-tweaks.md): world and environment touches. First: lava bubbles and lava geysers. */
+/** Bubba's World Tweaks. */
 public class BubbasWorldTweaks implements ModInitializer {
 	public static final String MOD_ID = "bubbas_world_tweaks";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);

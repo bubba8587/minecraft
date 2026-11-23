@@ -16,7 +16,6 @@ import net.minecraft.network.chat.Component;
 public class BubbasWorldTweaksClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
-		// 32x textures (Faithful style) as an optional built-in resource pack: specs/textures.md.
 		FabricLoader.getInstance().getModContainer(BubbasWorldTweaks.MOD_ID).ifPresent(mod ->
 			ResourceLoader.registerBuiltinPack(BubbasWorldTweaks.id(BubbasWorldTweaks.MOD_ID + "_32x"), mod,
 				Component.literal("Bubba's World Tweaks 32x (Faithful style)"), PackActivationType.NORMAL));

@@ -14,11 +14,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-/**
- * Lava bubbles (specs/world-tweaks.md): vanilla already samples lava near the player for its pops and sparks
- * ({@code LavaFluid.animateTick}, client only); a surface lava block with magma under it now also sometimes swells a
- * bubble. The lava version of magma's bubble columns in water (B17). Display only: nothing on the server.
- */
+/** Lava bubbles. */
 @Mixin(LavaFluid.class)
 abstract class LavaFluidBubbleMixin {
 	@Inject(method = "animateTick", at = @At("TAIL"))

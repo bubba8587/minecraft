@@ -6,11 +6,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.level.Level;
 
-/**
- * What an erupting lava geyser looks and sounds like (client side, from {@link LavaGeyser#tick}): vanilla's sulfur
- * geyser rhythm (a plume burst every 20 ticks, a sound every 40) with its plume darkened to black smoke
- * ({@code lava_geyser_plume}, vanilla's plume sprites), plus large smoke and a few lava sparks.
- */
+/** What an erupting lava geyser looks and sounds like (client side, from tick). */
 public final class LavaGeyserEffects {
 	private LavaGeyserEffects() {
 	}

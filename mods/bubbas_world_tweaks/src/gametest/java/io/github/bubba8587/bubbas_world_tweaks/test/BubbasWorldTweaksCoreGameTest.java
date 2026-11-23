@@ -17,9 +17,9 @@ import net.minecraft.world.phys.Vec3;
 
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 
-/** Core smoke tests (test-lite, specs/quality.md): lava geysers and the geyser lift. */
+/** Core smoke tests. */
 public class BubbasWorldTweaksCoreGameTest {
-	/** A 3x3 lava pool, 2 deep, magma under the middle. Returns the surface lava block over the magma (absolute). */
+	/** A 3x3 lava pool, 2 deep, magma under the middle. */
 	private static BlockPos pool(GameTestHelper helper, boolean magma) {
 		for (int x = 1; x <= 3; x++) {
 			for (int z = 1; z <= 3; z++) {
@@ -42,7 +42,7 @@ public class BubbasWorldTweaksCoreGameTest {
 		return player;
 	}
 
-	/** Magma under lava is found; the same lava without magma isn't a bubbling spot. */
+	/** Magma under lava is found. */
 	@GameTest
 	public void magmaUnderLavaIsABubblingSpot(GameTestHelper helper) {
 		BlockPos surface = pool(helper, true);
@@ -54,7 +54,7 @@ public class BubbasWorldTweaksCoreGameTest {
 		helper.succeed();
 	}
 
-	/** An erupting lava geyser lifts a player above it and speeds them up; with nothing erupting, nothing happens. */
+	/** An erupting lava geyser lifts a player above it and speeds them up. */
 	@GameTest
 	public void lavaGeyserLiftsAndBoosts(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
@@ -75,7 +75,7 @@ public class BubbasWorldTweaksCoreGameTest {
 		helper.succeed();
 	}
 
-	/** Over an erupting sulfur geyser, a player gets the speed boost (vanilla already does the lifting). */
+	/** Over an erupting sulfur geyser, a player gets the speed boost. */
 	@GameTest
 	public void sulfurGeyserBoosts(GameTestHelper helper) {
 		helper.setBlock(new BlockPos(2, 0, 2), Blocks.POTENT_SULFUR.defaultBlockState().setValue(PotentSulfurBlock.STATE, PotentSulfurState.ERUPTING));

@@ -12,11 +12,7 @@ import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestServerContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext;
 
-/**
- * Lava bubbles and a lava geyser by eye (specs/world-tweaks.md). A lava pool over a magma floor in a netherrack basin at
- * dusk; shots: lava-bubbles (close, many bubbles swelling and popping), lava-geyser (an eruption's black smoke), each
- * at 16x and 32x. Screenshots go to build/run/clientGameTest/screenshots/.
- */
+/** Lava bubbles and a lava geyser by eye. */
 @SuppressWarnings("UnstableApiUsage")
 public class BubbasWorldTweaksClientGameTest implements FabricClientGameTest {
 	private static final String PACK_32X = "bubbas_world_tweaks:bubbas_world_tweaks_32x";
@@ -50,7 +46,6 @@ public class BubbasWorldTweaksClientGameTest implements FabricClientGameTest {
 				String sfx = x32 ? "-32x" : "";
 				hud(context, false);
 				context.runOnClient(mc -> mc.player.snapTo(x + 0.5, y + 3.0, z - 4.5, 0.0F, 38.0F));
-				// Natural bubbles come from vanilla's random lava display ticks; add a field of them so the shot isn't luck.
 				for (int wave = 0; wave < 3; wave++) {
 					context.runOnClient(mc -> {
 						var random = mc.level.getRandom();

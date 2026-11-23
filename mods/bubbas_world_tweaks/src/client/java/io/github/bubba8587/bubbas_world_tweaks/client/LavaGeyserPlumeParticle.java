@@ -10,10 +10,7 @@ import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.util.RandomSource;
 import org.jspecify.annotations.Nullable;
 
-/**
- * A lava geyser's black smoke (specs/world-tweaks.md): vanilla's sulfur geyser plume (GeyserPlumeParticle's motion: a
- * fast jet that slows, spreads and swells toward the top; vanilla's geyser_plume sprites) tinted to soot.
- */
+/** A lava geyser's black smoke. */
 public class LavaGeyserPlumeParticle extends SingleQuadParticle {
 	private static final int PLUME_HEIGHT = 10;
 	private final SpriteSet sprites;

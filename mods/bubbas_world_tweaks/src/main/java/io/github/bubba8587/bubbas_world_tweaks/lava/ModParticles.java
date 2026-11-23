@@ -12,7 +12,7 @@ import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
 public final class ModParticles {
 	/** A lava bubble swelling on the surface over magma, then popping. */
 	public static final SimpleParticleType LAVA_BUBBLE = register("lava_bubble");
-	/** A lava geyser's black smoke plume (vanilla's sulfur geyser plume, darkened). */
+	/** A lava geyser's black smoke plume. */
 	public static final SimpleParticleType LAVA_GEYSER_PLUME = register("lava_geyser_plume");
 
 	private ModParticles() {

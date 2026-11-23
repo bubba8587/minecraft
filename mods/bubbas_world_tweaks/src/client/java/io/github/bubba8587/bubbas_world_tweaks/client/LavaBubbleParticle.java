@@ -13,12 +13,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import org.jspecify.annotations.Nullable;
 
-/**
- * A lava bubble (specs/world-tweaks.md): a half-dome of lava swelling on the surface for about a second, then bursting
- * with a goopy plop (vanilla's lava pop, pitched down). Pixel-art frames in vanilla lava's palette
- * (textures/particle/lava_bubble_0..6: 0-4 swell, 5-6 burst), lit like lava (full bright). A round blister facing the
- * camera, centred on the surface: the lava hides its lower half from the side (a half-dome), and from above it's whole.
- */
+/** A lava bubble. */
 public class LavaBubbleParticle extends SingleQuadParticle {
 	private final SpriteSet sprites;
 	private final int swell;

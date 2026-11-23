@@ -11,18 +11,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.PotentSulfurState;
 import net.minecraft.world.phys.Vec3;
 
-/**
- * Geysers lift (specs/world-tweaks.md "Lift"). Run every player tick on both sides: a player's own movement is decided
- * on their client, so the client must apply it too (as vanilla's sulfur geyser launch does).
- * <ul>
- * <li>Over an erupting <b>lava geyser</b>: pushed up like vanilla's sulfur geyser does it (vanilla doesn't know lava
- * geysers).</li>
- * <li>Over an erupting lava <b>or sulfur</b> geyser: a speed boost, horizontal speed growing a little each tick up to a
- * cap. Made for the Glider (Bubba's Extra Recipes): circle a geyser to climb and pick up speed. Nothing here needs the
- * Glider, and it works the same on foot, falling, or gliding with elytra.</li>
- * </ul>
- * Not for spectators or flying (creative-flight) players, like vanilla's geyser.
- */
+/** Geysers lift. */
 public final class GeyserLift {
 	private GeyserLift() {
 	}
