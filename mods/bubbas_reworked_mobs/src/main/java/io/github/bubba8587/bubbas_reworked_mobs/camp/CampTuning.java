@@ -69,6 +69,9 @@ public final class CampTuning {
 	/** Chance a roster member wears a helmet, and holds a weapon (melee kinds). */
 	public static final float MEMBER_HELMET = 0.5F;
 	public static final float MEMBER_WEAPON = 0.4F;
+	/** Nether outposts: chance a ground member is a piglin brute, and hoglins per pen by size (small, medium, large). */
+	public static final float OUTPOST_BRUTE = 0.25F;
+	static final int[] OUTPOST_HOGLINS = { 1, 2, 3 };
 
 	/** Entity tag on every camp mob; a second tag {@code CAMP_TAG + ":" + id} says which camp. */
 	public static final String CAMP_TAG = "bubbas_reworked_mobs.camp";

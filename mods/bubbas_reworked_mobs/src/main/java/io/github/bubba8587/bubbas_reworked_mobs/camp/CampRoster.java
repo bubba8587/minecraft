@@ -8,7 +8,14 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
+import io.github.bubba8587.bubbas_reworked_mobs.mixin.HoglinHuntInvoker;
+import net.minecraft.world.attribute.EnvironmentAttributes;
 import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.decoration.LeashFenceKnotEntity;
+import net.minecraft.world.entity.monster.hoglin.Hoglin;
+import net.minecraft.world.entity.monster.piglin.AbstractPiglin;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -49,14 +56,15 @@ public final class CampRoster {
 		int ground = 0;
 		int tower = 0;
 		// The leader first, by the fire.
-		Mob leader = one(level, site, kind, groundSpot(level, site, ground++), random, true);
+		Mob leader = one(level, site, kind, kind.nether() ? EntityTypes.PIGLIN_BRUTE : kind.mob(), groundSpot(level, site, ground++), random, true, false);
 		if (leader != null) {
 			mobs.add(leader);
 		}
 		for (int i = 0; i < count; i++) {
 			boolean lookout = kind.archers() && tower < site.towers.size();
 			BlockPos at = lookout ? site.towers.get(tower++) : groundSpot(level, site, ground++);
-			Mob mob = one(level, site, kind, at, random, false);
+			EntityType<? extends Mob> type = kind.nether() && !lookout && random.nextFloat() < CampTuning.OUTPOST_BRUTE ? EntityTypes.PIGLIN_BRUTE : kind.mob();
+			Mob mob = one(level, site, kind, type, at, random, false, lookout);
 			if (mob != null) {
 				mobs.add(mob);
 				if (lookout) {
@@ -69,7 +77,50 @@ public final class CampRoster {
 		for (Mob mob : mobs) {
 			site.members.add(mob.getUUID());
 		}
+		if (kind.nether()) {
+			livestock(level, site, random);
+		}
 		return mobs;
+	}
+
+	/** Entity tag on an outpost's hoglins (not on its roster: they are livestock, not counted). */
+	public static final String LIVESTOCK_TAG = CampTuning.CAMP_TAG + ".livestock";
+
+	/**
+	 * A Nether outpost's hoglins: in each pen that has none left, {@link CampTuning#OUTPOST_HOGLINS} of them, the first
+	 * leashed to the pen's tether post; never hunted by the piglins, as in a bastion's stable.
+	 */
+	private static void livestock(ServerLevel level, CampSite site, RandomSource random) {
+		for (BlockPos post : site.pens) {
+			if (!(level.getBlockState(post).getBlock() instanceof net.minecraft.world.level.block.FenceBlock)) {
+				continue; // the pen was taken down
+			}
+			var box = new net.minecraft.world.phys.AABB(post).inflate(4.0, 2.0, 4.0);
+			if (!level.getEntitiesOfClass(Hoglin.class, box, h -> h.entityTags().contains(LIVESTOCK_TAG)).isEmpty()) {
+				continue;
+			}
+			int count = site.size == null ? 1 : CampTuning.OUTPOST_HOGLINS[site.size.ordinal()];
+			for (int i = 0; i < count; i++) {
+				Hoglin hoglin = EntityTypes.HOGLIN.create(level, EntitySpawnReason.STRUCTURE);
+				if (hoglin == null) {
+					continue;
+				}
+				int dx = i == 1 ? 1 : i == 2 ? -1 : 0;
+				int dz = i == 0 ? 1 : i == 2 ? -1 : -1;
+				hoglin.snapTo(post.getX() + dx + 0.5, post.getY(), post.getZ() + dz + 0.5, random.nextFloat() * 360.0F, 0.0F);
+				hoglin.finalizeSpawn(level, level.getCurrentDifficultyAt(post), EntitySpawnReason.STRUCTURE, null);
+				hoglin.setAge(0);
+				hoglin.setPersistenceRequired();
+				hoglin.addTag(LIVESTOCK_TAG);
+				((HoglinHuntInvoker) hoglin).bubbas_reworked_mobs$setCannotBeHunted(true);
+				if (level.environmentAttributes().getValue(EnvironmentAttributes.PIGLINS_ZOMBIFY, hoglin.position())) {
+					hoglin.setImmuneToZombification(true);
+				}
+				if (level.addFreshEntity(hoglin) && i == 0) {
+					hoglin.setLeashedTo(LeashFenceKnotEntity.getOrCreateKnot(level, post), true);
+				}
+			}
+		}
 	}
 
 	private static BlockPos groundSpot(ServerLevel level, CampSite site, int i) {
@@ -84,12 +135,32 @@ public final class CampRoster {
 			}
 		}
 		BlockPos column = site.ground.isEmpty() ? site.centre : site.ground.get(i % site.ground.size());
+		if (site.kind != null && site.kind.nether()) {
+			return standNear(level, column.atY(site.centre.getY() + 1));
+		}
 		int y = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, column.getX(), column.getZ());
 		return new BlockPos(column.getX(), y, column.getZ());
 	}
 
-	private static @Nullable Mob one(ServerLevel level, CampSite site, CampKind kind, BlockPos at, RandomSource random, boolean leader) {
-		Mob mob = kind.mob().create(level, EntitySpawnReason.STRUCTURE);
+	/** Under a ceiling: the nearest height to {@code spot} (up to 6 away) with ground below and three free blocks; else the spot. */
+	private static BlockPos standNear(ServerLevel level, BlockPos spot) {
+		for (int i = 0; i <= 12; i++) {
+			BlockPos at = spot.above((i % 2 == 0 ? 1 : -1) * ((i + 1) / 2));
+			if (level.getBlockState(at.below()).isFaceSturdy(level, at.below(), net.minecraft.core.Direction.UP) && free(level, at) && free(level, at.above())
+					&& free(level, at.above(2))) {
+				return at;
+			}
+		}
+		return spot;
+	}
+
+	private static boolean free(ServerLevel level, BlockPos pos) {
+		return level.getBlockState(pos).getCollisionShape(level, pos).isEmpty() && level.getFluidState(pos).isEmpty();
+	}
+
+	private static @Nullable Mob one(ServerLevel level, CampSite site, CampKind kind, EntityType<? extends Mob> type, BlockPos at, RandomSource random,
+			boolean leader, boolean lookout) {
+		Mob mob = type.create(level, EntitySpawnReason.STRUCTURE);
 		if (mob == null) {
 			return null;
 		}
@@ -105,7 +176,12 @@ public final class CampRoster {
 		mob.addTag(CampTuning.CAMP_TAG);
 		mob.addTag(CampTuning.CAMP_TAG + ":" + site.id);
 		mob.setHomeTo(site.centre, site.size == null ? 8 : site.size.radius + 2);
-		if (leader) {
+		if (mob instanceof AbstractPiglin piglin && level.environmentAttributes().getValue(EnvironmentAttributes.PIGLINS_ZOMBIFY, piglin.position())) {
+			piglin.setImmuneToZombification(true); // an outpost built outside the Nether (the command, tests)
+		}
+		if (kind.nether()) {
+			arm(level, mob, random, leader, lookout);
+		} else if (leader) {
 			lead(level, mob, kind);
 		} else {
 			gear(mob, kind, random);
@@ -125,8 +201,36 @@ public final class CampRoster {
 		}
 	}
 
-	private static void lead(ServerLevel level, Mob mob, CampKind kind) {
-		mob.addTag(LEADER_TAG);
+	/**
+	 * A Nether outpost's piglins: lookouts hold crossbows, the rest a crossbow or golden sword (brutes their golden axe).
+	 * The leader is a brute in enchanted gold armour with a Sharpness III golden axe, scaled and toughened like any leader.
+	 */
+	private static void arm(ServerLevel level, Mob mob, RandomSource random, boolean leader, boolean lookout) {
+		if (leader) {
+			mob.addTag(LEADER_TAG);
+			toughen(mob, true);
+			var enchantments = level.registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
+			for (EquipmentSlot slot : new EquipmentSlot[] { EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS }) {
+				ItemStack armour = new ItemStack(slot == EquipmentSlot.HEAD ? Items.GOLDEN_HELMET : slot == EquipmentSlot.CHEST ? Items.GOLDEN_CHESTPLATE
+						: Items.GOLDEN_LEGGINGS);
+				armour.enchant(enchantments.getOrThrow(Enchantments.PROTECTION), 2);
+				mob.setItemSlot(slot, armour);
+				mob.setDropChance(slot, CampTuning.LEADER_ARMOR_DROP);
+			}
+			ItemStack axe = new ItemStack(Items.GOLDEN_AXE);
+			axe.enchant(enchantments.getOrThrow(Enchantments.SHARPNESS), 3);
+			mob.setItemSlot(EquipmentSlot.MAINHAND, axe);
+			mob.setDropChance(EquipmentSlot.MAINHAND, CampTuning.LEADER_WEAPON_DROP);
+			return;
+		}
+		if (mob.getType() == EntityTypes.PIGLIN_BRUTE) {
+			mob.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.GOLDEN_AXE));
+		} else {
+			mob.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(lookout || random.nextBoolean() ? Items.CROSSBOW : Items.GOLDEN_SWORD));
+		}
+	}
+
+	private static void toughen(Mob mob, boolean melee) {
 		set(mob, Attributes.SCALE, CampTuning.LEADER_SCALE);
 		AttributeInstance health = mob.getAttribute(Attributes.MAX_HEALTH);
 		if (health != null) {
@@ -134,10 +238,15 @@ public final class CampRoster {
 			mob.setHealth(mob.getMaxHealth());
 		}
 		AttributeInstance damage = mob.getAttribute(Attributes.ATTACK_DAMAGE);
-		if (damage != null && !kind.archers()) {
+		if (damage != null && melee) {
 			damage.setBaseValue(damage.getBaseValue() + CampTuning.LEADER_DAMAGE);
 		}
 		set(mob, Attributes.KNOCKBACK_RESISTANCE, CampTuning.LEADER_KNOCKBACK_RESISTANCE);
+	}
+
+	private static void lead(ServerLevel level, Mob mob, CampKind kind) {
+		mob.addTag(LEADER_TAG);
+		toughen(mob, !kind.archers());
 		mob.setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.IRON_HELMET));
 		mob.setItemSlot(EquipmentSlot.CHEST, new ItemStack(Items.IRON_CHESTPLATE));
 		ItemStack weapon;

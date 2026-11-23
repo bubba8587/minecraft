@@ -49,12 +49,12 @@ public class CampPiece extends StructurePiece {
 	private final Plan plan;
 
 	public CampPiece(long seed, BlockPos centre, CampKind kind, CampTuning.Size size) {
-		super(Camps.CAMP_PIECE, 0, box(centre, size));
+		super(Camps.CAMP_PIECE, 0, box(centre, size, kind));
 		this.seed = seed;
 		this.centre = centre;
 		this.kind = kind;
 		this.size = size;
-		this.plan = new Plan(seed, centre, size);
+		this.plan = new Plan(seed, centre, size, kind);
 	}
 
 	public CampPiece(CompoundTag tag) {
@@ -63,7 +63,7 @@ public class CampPiece extends StructurePiece {
 		this.centre = BlockPos.of(tag.getLongOr("Centre", 0L));
 		this.kind = CampKind.values()[Math.floorMod(tag.getIntOr("Kind", 0), CampKind.values().length)];
 		this.size = CampTuning.Size.values()[Math.floorMod(tag.getIntOr("Size", 0), CampTuning.Size.values().length)];
-		this.plan = new Plan(seed, centre, size);
+		this.plan = new Plan(seed, centre, size, kind);
 	}
 
 	@Override
@@ -74,10 +74,10 @@ public class CampPiece extends StructurePiece {
 		tag.putInt("Size", size.ordinal());
 	}
 
-	static BoundingBox box(BlockPos centre, CampTuning.Size size) {
+	static BoundingBox box(BlockPos centre, CampTuning.Size size, CampKind kind) {
 		// clearing plus edge outcrops (up to 3 past the radius), or the stair tunnel
-		int r = Math.max(size.radius + 5, size.maxRoomHalf + 10);
-		return new BoundingBox(centre.getX() - r, centre.getY() - 6, centre.getZ() - r, centre.getX() + r, centre.getY() + 22, centre.getZ() + r);
+		int r = Math.max(size.radius + 5, size.maxRoomHalf + 10) + (kind.nether() ? 3 : 0);
+		return new BoundingBox(centre.getX() - r, centre.getY() - (kind.nether() ? 8 : 6), centre.getZ() - r, centre.getX() + r, centre.getY() + 22, centre.getZ() + r);
 	}
 
 	public BlockPos centre() {
@@ -191,6 +191,9 @@ public class CampPiece extends StructurePiece {
 		Skull skull;
 		Ribs ribs;
 		Winding winding;
+		/** The Nether outpost's gate (size: the direction it faces out, 2D data value) and hoglin pens. */
+		Spot gate;
+		final List<Spot> pens = new ArrayList<>();
 		final Direction stairs;
 		final boolean stairsClockwise;
 		final Direction chestSide;
@@ -201,7 +204,7 @@ public class CampPiece extends StructurePiece {
 		final int roomDx;
 		final int roomDz;
 
-		Plan(long seed, BlockPos centre, CampTuning.Size size) {
+		Plan(long seed, BlockPos centre, CampTuning.Size size, CampKind kind) {
 			RandomSource random = RandomSource.create(net.minecraft.world.level.levelgen.RandomSupport.mixStafford13(seed));
 			int r = size.radius;
 			int cx = centre.getX();
@@ -221,8 +224,8 @@ public class CampPiece extends StructurePiece {
 			if (!alongX && dz * stairs.getStepZ() > 0) {
 				dz = 0;
 			}
-			roomHalfX = hx;
-			roomHalfZ = hz;
+			roomHalfX = kind.nether() ? NETHER_ROOM_HALF : hx;
+			roomHalfZ = kind.nether() ? NETHER_ROOM_HALF : hz;
 			roomDx = dx;
 			roomDz = dz;
 			stairsClockwise = random.nextBoolean();
@@ -232,17 +235,17 @@ public class CampPiece extends StructurePiece {
 			// reserved first: the fire with its seats and chest, and the stair tunnel where it opens to the surface, with its mouth and walls
 			footprints.add(Footprint.around("fire", cx, cz, 2));
 			Direction side = stairsClockwise ? stairs.getClockWise() : stairs.getCounterClockWise();
-			int h = alongX ? hx : hz;
+			int h = alongX ? roomHalfX : roomHalfZ;
 			int fx = cx + dx;
 			int fz = cz + dz;
 			int ax = fx + stairs.getStepX() * (h + 4) - side.getStepX();
 			int az = fz + stairs.getStepZ() * (h + 4) - side.getStepZ();
-			int bx = fx + stairs.getStepX() * (h + 10) + side.getStepX() * 2;
-			int bz = fz + stairs.getStepZ() * (h + 10) + side.getStepZ() * 2;
+			int bx = fx + stairs.getStepX() * (h + 10 + (kind.nether() ? 2 : 0)) + side.getStepX() * 2;
+			int bz = fz + stairs.getStepZ() * (h + 10 + (kind.nether() ? 2 : 0)) + side.getStepZ() * 2;
 			footprints.add(new Footprint("stairs", Math.min(ax, bx), Math.min(az, bz), Math.max(ax, bx), Math.max(az, bz)));
 			// then each piece on free cells only, its spot re-rolled until one fits, or dropped
 			// rare centrepieces of large camps: a skull rock at the edge, a winding tower
-			if (size == CampTuning.Size.LARGE && random.nextInt(3) == 0) {
+			if (!kind.nether() && size == CampTuning.Size.LARGE && random.nextInt(3) == 0) {
 				long pieceSeed = random.nextLong();
 				for (int t = 0; t < TRIES; t++) {
 					double a = random.nextDouble() * Math.PI * 2.0;
@@ -254,7 +257,7 @@ public class CampPiece extends StructurePiece {
 					}
 				}
 			}
-			if (size == CampTuning.Size.LARGE && random.nextInt(4) == 0) {
+			if (!kind.nether() && size == CampTuning.Size.LARGE && random.nextInt(4) == 0) {
 				int risers = 12 + random.nextInt(3);
 				int start = random.nextInt(4);
 				long pieceSeed = random.nextLong();
@@ -268,7 +271,7 @@ public class CampPiece extends StructurePiece {
 					}
 				}
 			}
-			if (size == CampTuning.Size.LARGE && random.nextInt(3) == 0) {
+			if (!kind.nether() && size == CampTuning.Size.LARGE && random.nextInt(3) == 0) {
 				long pieceSeed = random.nextLong();
 				for (int t = 0; t < TRIES; t++) {
 					double a = random.nextDouble() * Math.PI * 2.0;
@@ -278,6 +281,34 @@ public class CampPiece extends StructurePiece {
 					Ribs candidate = new Ribs(x - along.getStepX() * 3, z - along.getStepZ() * 3, along, 7, pieceSeed);
 					if (claim(candidate.footprint())) {
 						ribs = candidate;
+						break;
+					}
+				}
+			}
+			// Nether outposts: a gilded gate in a stretch of rampart at the edge, and a hoglin pen
+			if (kind.nether()) {
+				List<Direction> sides = new ArrayList<>(Direction.Plane.HORIZONTAL.stream().toList());
+				net.minecraft.util.Util.shuffle(sides, random);
+				for (Direction d : sides) {
+					int x = cx + d.getStepX() * r;
+					int z = cz + d.getStepZ() * r;
+					Direction across = d.getClockWise();
+					int gax = x - across.getStepX() * GATE_REACH;
+					int gaz = z - across.getStepZ() * GATE_REACH;
+					int gbx = x + across.getStepX() * GATE_REACH;
+					int gbz = z + across.getStepZ() * GATE_REACH;
+					if (claim(new Footprint("gate", Math.min(gax, gbx), Math.min(gaz, gbz), Math.max(gax, gbx), Math.max(gaz, gbz)))) {
+						gate = new Spot(x, z, d.get2DDataValue(), random.nextLong());
+						break;
+					}
+				}
+				long pieceSeed = random.nextLong();
+				for (int t = 0; t < TRIES * 2; t++) {
+					double a = random.nextDouble() * Math.PI * 2.0;
+					int x = cx + (int) Math.round(Math.cos(a) * r);
+					int z = cz + (int) Math.round(Math.sin(a) * r);
+					if (claim(Footprint.around("pen", x, z, PEN_HALF))) {
+						pens.add(new Spot(x, z, PEN_HALF, pieceSeed));
 						break;
 					}
 				}
@@ -366,6 +397,9 @@ public class CampPiece extends StructurePiece {
 			}
 		}
 
+		static final int NETHER_ROOM_HALF = 3;
+		static final int GATE_REACH = 5;
+		static final int PEN_HALF = 2;
 		static final float RAMP_CHANCE = 0.35F;
 		static final float BRIDGE_CHANCE = 0.4F;
 
@@ -462,7 +496,7 @@ public class CampPiece extends StructurePiece {
 	@Override
 	public void postProcess(WorldGenLevel level, StructureManager structures, ChunkGenerator generator, RandomSource chunkRandom, BoundingBox chunkBB,
 			ChunkPos chunkPos, BlockPos referencePos) {
-		ClippedBuild b = new ClippedBuild(level, chunkBB);
+		ClippedBuild b = kind.nether() ? new NetherBuild(level, chunkBB, centre.getY()) : new ClippedBuild(level, chunkBB);
 		int r = size.radius;
 		int cx = centre.getX();
 		int cz = centre.getZ();
@@ -470,6 +504,9 @@ public class CampPiece extends StructurePiece {
 		for (int x = cx - r - 1; x <= cx + r + 1; x++) {
 			for (int z = cz - r - 1; z <= cz + r + 1; z++) {
 				double d = Math.sqrt((x - cx) * (x - cx) + (z - cz) * (z - cz));
+				if (b instanceof NetherBuild nether && d <= r + 1.5) {
+					nether.seal(x, z, centre.getY() - 9, centre.getY() + HEADROOM);
+				}
 				if (d > r + 0.5) {
 					continue;
 				}
@@ -478,6 +515,10 @@ public class CampPiece extends StructurePiece {
 				float what = column.nextFloat();
 				float weed = column.nextFloat();
 				b.clearCover(x, z, 20);
+				if (b instanceof NetherBuild nether) {
+					nether.carve(x, z, centre.getY() + HEADROOM);
+					levelWalk(nether, x, z, what);
+				}
 				int g = b.ground(x, z);
 				if (g == Integer.MIN_VALUE) {
 					continue;
@@ -521,6 +562,12 @@ public class CampPiece extends StructurePiece {
 		for (Spot leanTo : plan.leanTos) {
 			leanTo(b, leanTo);
 		}
+		if (plan.gate != null) {
+			gate(b, plan.gate);
+		}
+		for (Spot pen : plan.pens) {
+			pen(b, pen);
+		}
 		if (roomFloor() > level.getMinY()) {
 			room(b); // (a superflat world is too shallow for it)
 		}
@@ -534,15 +581,17 @@ public class CampPiece extends StructurePiece {
 
 	private static boolean natural(BlockState state) {
 		return state.is(BlockTags.DIRT) || state.is(BlockTags.SAND) || state.is(Blocks.GRAVEL) || state.is(Blocks.SNOW_BLOCK) || state.is(Blocks.MUD)
-				|| state.is(Blocks.STONE) || state.is(Blocks.GRASS_BLOCK) || state.is(Blocks.PODZOL) || state.is(Blocks.MYCELIUM);
+				|| state.is(Blocks.STONE) || state.is(Blocks.GRASS_BLOCK) || state.is(Blocks.PODZOL) || state.is(Blocks.MYCELIUM)
+				|| state.is(Blocks.NETHERRACK) || state.is(BlockTags.NYLIUM) || state.is(Blocks.SOUL_SOIL) || state.is(Blocks.SOUL_SAND) || state.is(Blocks.BLACKSTONE)
+				|| state.is(Blocks.GRAVEL) || state.is(Blocks.MAGMA_BLOCK);
 	}
 
 	/** The unlit soul campfire, a stone ring round it, log seats on three sides and the loot chest. */
 	private void fire(ClippedBuild b, int cx, int cz) {
 		int g = b.ground(cx, cz);
 		if (g != Integer.MIN_VALUE) {
-			b.put(cx, g, cz, Blocks.COBBLESTONE.defaultBlockState());
-			b.put(cx, g + 1, cz, Blocks.SOUL_CAMPFIRE.defaultBlockState().setValue(CampfireBlock.LIT, false));
+			b.put(cx, g, cz, kind.hearth());
+			b.put(cx, g + 1, cz, (kind.nether() ? Blocks.CAMPFIRE : Blocks.SOUL_CAMPFIRE).defaultBlockState().setValue(CampfireBlock.LIT, false));
 			b.clearAbove(cx, g + 1, cz, 4);
 		}
 		for (Direction side : Direction.Plane.HORIZONTAL) {
@@ -550,7 +599,7 @@ public class CampPiece extends StructurePiece {
 			int z = cz + side.getStepZ();
 			int gs = b.ground(x, z);
 			if (gs != Integer.MIN_VALUE) {
-				b.put(x, gs, z, Blocks.COBBLESTONE.defaultBlockState());
+				b.put(x, gs, z, kind.hearth());
 			}
 			if (side == plan.chestSide.getOpposite()) {
 				continue; // the open side
@@ -574,7 +623,7 @@ public class CampPiece extends StructurePiece {
 		int gc = b.ground(x, z);
 		if (gc != Integer.MIN_VALUE && b.inside(x, gc + 1, z)) {
 			b.put(x, gc + 1, z, Blocks.CHEST.defaultBlockState().setValue(ChestBlock.FACING, plan.chestSide.getOpposite()));
-			RandomizableContainer.setBlockEntityLootTable(b.level(), RandomSource.create(net.minecraft.world.level.levelgen.RandomSupport.mixStafford13(seed) ^ 0xC4E57L), new BlockPos(x, gc + 1, z), Camps.CAMP_LOOT);
+			RandomizableContainer.setBlockEntityLootTable(b.level(), RandomSource.create(net.minecraft.world.level.levelgen.RandomSupport.mixStafford13(seed) ^ 0xC4E57L), new BlockPos(x, gc + 1, z), kind.loot(false));
 		}
 	}
 
@@ -662,6 +711,9 @@ public class CampPiece extends StructurePiece {
 					b.put(x0 + dx, top + 4, z0 + dz, kind.slab()); // whole: the lookout's guaranteed shade
 				}
 			}
+			if (kind.nether()) {
+				hang(b, x0 + 2, top + 3, z0 + 2, random.nextBoolean());
+			}
 		}
 		// The ladder: up the outer face of a corner post to its top.
 		int[] lc = corners[ladderCorner];
@@ -715,7 +767,7 @@ public class CampPiece extends StructurePiece {
 			boolean sag = k > 1 + n / 4 && k < n - n / 4;
 			for (int w = 0; w <= 1; w++) {
 				int[] c = towerCell(t.x, t.z, d, k, w);
-				b.put(c[0], top, c[1], sag ? kind.slab() : kind.planks());
+				b.put(c[0], top, c[1], kind.deck(sag));
 				b.clearAbove(c[0], top, c[1], 2);
 			}
 			// side beams under the railing, posts on them, chain rope between posts
@@ -744,6 +796,8 @@ public class CampPiece extends StructurePiece {
 			"...#######...", };
 	/** How deep a half-buried skull sits: its eye sockets just off the ground, a step up into one. */
 	static final int SKULL_BURIED_SINK = 4;
+	/** How high a Nether outpost clears its clearing above its ground. */
+	static final int HEADROOM = 12;
 
 	private static char skullFace(int u, int dy) {
 		if (u < -6 || u > 6 || dy < 0 || dy > 12) {
@@ -1204,7 +1258,7 @@ public class CampPiece extends StructurePiece {
 				continue;
 			}
 			Direction.Axis axis = Direction.Axis.values()[bone[2]];
-			b.put(x, g + 1, z, Blocks.BONE_BLOCK.defaultBlockState().setValue(RotatedPillarBlock.AXIS, axis));
+			b.put(x, g + 1, z, kind.accent().trySetValue(RotatedPillarBlock.AXIS, axis));
 		}
 		int g = b.ground(spot.x, spot.z);
 		if (g != Integer.MIN_VALUE) {
@@ -1222,7 +1276,147 @@ public class CampPiece extends StructurePiece {
 		b.clearAbove(spot.x, g, spot.z, 4);
 		b.put(spot.x, g + 1, spot.z, kind.fence());
 		b.put(spot.x, g + 2, spot.z, kind.fence());
-		b.put(spot.x, g + 3, spot.z, kind.skull().setValue(SkullBlock.ROTATION, rot));
+		b.put(spot.x, g + 3, spot.z, kind.nether() && (spot.seed & 16L) == 0L ? lantern((spot.seed & 32L) == 0L, false)
+				: kind.skull().setValue(SkullBlock.ROTATION, rot));
+	}
+
+	/** A hanging lantern, only under something it can hang from. */
+	private static void hang(ClippedBuild b, int x, int y, int z, boolean soul) {
+		BlockPos above = new BlockPos(x, y + 1, z);
+		if (b.inside(x, y, z) && b.level().getBlockState(above).isFaceSturdy(b.level(), above, Direction.DOWN)) {
+			b.put(x, y, z, lantern(soul, true));
+		}
+	}
+
+	/** A lantern or soul lantern, standing or hanging. */
+	private static BlockState lantern(boolean soul, boolean hanging) {
+		return (soul ? Blocks.SOUL_LANTERN : Blocks.LANTERN).defaultBlockState().setValue(net.minecraft.world.level.block.LanternBlock.HANGING, hanging);
+	}
+
+	/**
+	 * The Nether outpost's gate in a stretch of rampart (bastion-style): two thick polished blackstone brick pillars capped
+	 * with gilded blackstone and gold, an arched lintel over a 3-wide opening, wall either side with blackstone wall on top
+	 * and soul lanterns hung under the arch.
+	 */
+	private void gate(ClippedBuild b, Spot gate) {
+		Direction out = Direction.from2DDataValue(gate.size);
+		Direction across = out.getClockWise();
+		int y0 = centre.getY();
+		for (int u = -Plan.GATE_REACH; u <= Plan.GATE_REACH; u++) {
+			int x = gate.x + across.getStepX() * u;
+			int z = gate.z + across.getStepZ() * u;
+			int au = Math.abs(u);
+			b.clearCover(x, z, 12);
+			int g = b.ground(x, z);
+			if (g == Integer.MIN_VALUE) {
+				continue;
+			}
+			int top = au <= 1 ? y0 + 5 : au == 2 ? y0 + 6 : y0 + 4 - (au == Plan.GATE_REACH ? 1 : 0);
+			for (int y = g + 1; y < y0 + 1; y++) {
+				b.put(x, y, z, Blocks.POLISHED_BLACKSTONE_BRICKS.defaultBlockState()); // footing
+			}
+			if (au <= 1) {
+				b.put(x, y0, z, Blocks.POLISHED_BLACKSTONE.defaultBlockState());
+				for (int y = y0 + 1; y <= y0 + 3; y++) {
+					b.put(x, y, z, Blocks.AIR.defaultBlockState());
+				}
+				b.put(x, y0 + 4, z, au == 0 ? Blocks.CHISELED_POLISHED_BLACKSTONE.defaultBlockState()
+						: Blocks.POLISHED_BLACKSTONE_BRICK_STAIRS.defaultBlockState().setValue(StairBlock.FACING, u < 0 ? across : across.getOpposite())
+								.setValue(StairBlock.HALF, Half.TOP));
+				b.put(x, y0 + 5, z, au == 0 ? Blocks.GOLD_BLOCK.defaultBlockState() : Blocks.POLISHED_BLACKSTONE_BRICKS.defaultBlockState());
+				if (au == 1) {
+					b.put(x, y0 + 6, z, Blocks.POLISHED_BLACKSTONE_BRICK_WALL.defaultBlockState());
+				}
+				continue;
+			}
+			for (int y = y0 + 1; y <= top; y++) {
+				boolean cap = au == 2 && y == top;
+				b.put(x, y, z, cap ? Blocks.GILDED_BLACKSTONE.defaultBlockState() : au == 2 || Math.floorMod(u * 13 + y * 7, 10) < 7
+						? Blocks.POLISHED_BLACKSTONE_BRICKS.defaultBlockState() : Blocks.CRACKED_POLISHED_BLACKSTONE_BRICKS.defaultBlockState());
+			}
+			b.put(x, top + 1, z, au == 2 ? Blocks.GOLD_BLOCK.defaultBlockState() : Blocks.BLACKSTONE_WALL.defaultBlockState());
+		}
+		// the approach: a walk out from the gate
+		if (b instanceof NetherBuild nether) {
+			for (int k = 1; k <= 5; k++) {
+				for (int u = -2; u <= 2; u++) {
+					levelWalk(nether, gate.x + out.getStepX() * k + across.getStepX() * u, gate.z + out.getStepZ() * k + across.getStepZ() * u,
+							Math.floorMod(k * 31 + u * 7, 10) / 10.0F);
+				}
+			}
+			for (int u = -1; u <= 1; u++) {
+				levelWalk(nether, gate.x - out.getStepX() + across.getStepX() * u, gate.z - out.getStepZ() + across.getStepZ() * u, 0.3F);
+			}
+		}
+		// lanterns hung under the arch, either side
+		for (int u : new int[] { -1, 1 }) {
+			hang(b, gate.x + across.getStepX() * u, y0 + 3, gate.z + across.getStepZ() * u, true);
+		}
+	}
+
+	/**
+	 * A hoglin pen: a closed ring of crimson fence 5 across round trodden nylium and soul soil, a tether post (fence with a
+	 * lantern on top) in the middle for a leashed hoglin, and a crimson fungus or two as fodder.
+	 */
+	private void pen(ClippedBuild b, Spot pen) {
+		int m = pen.size;
+		int y0 = centre.getY();
+		for (int dx = -m; dx <= m; dx++) {
+			for (int dz = -m; dz <= m; dz++) {
+				int x = pen.x + dx;
+				int z = pen.z + dz;
+				b.clearCover(x, z, 6);
+				if (b instanceof NetherBuild nether) {
+					nether.carve(x, z, y0 + 4);
+				}
+				int g = b.ground(x, z);
+				if (g == Integer.MIN_VALUE) {
+					continue;
+				}
+				for (int y = g + 1; y < y0; y++) {
+					b.put(x, y, z, Blocks.NETHERRACK.defaultBlockState()); // levelled
+				}
+				for (int y = Math.max(g + 1, y0 + 1); y <= g; y++) {
+					b.put(x, y, z, Blocks.AIR.defaultBlockState());
+				}
+				for (int y = y0 + 1; y <= y0 + 3; y++) {
+					b.put(x, y, z, Blocks.AIR.defaultBlockState());
+				}
+				float roll = RandomSource.create(pen.seed ^ (x * 73428767L) ^ (z * 912931L)).nextFloat();
+				b.put(x, y0, z, roll < 0.6F ? Blocks.CRIMSON_NYLIUM.defaultBlockState() : roll < 0.85F ? Blocks.SOUL_SOIL.defaultBlockState()
+						: Blocks.NETHERRACK.defaultBlockState());
+				boolean ring = Math.abs(dx) == m || Math.abs(dz) == m;
+				if (ring) {
+					b.put(x, y0 + 1, z, Blocks.CRIMSON_FENCE.defaultBlockState());
+				} else if (dx == 0 && dz == 0) {
+					b.put(x, y0 + 1, z, Blocks.CRIMSON_FENCE.defaultBlockState());
+					b.put(x, y0 + 2, z, lantern(false, false));
+				} else if (roll < 0.2F) {
+					b.put(x, y0, z, Blocks.CRIMSON_NYLIUM.defaultBlockState());
+					b.put(x, y0 + 1, z, Blocks.CRIMSON_FUNGUS.defaultBlockState());
+				}
+			}
+		}
+	}
+
+	/** The hoglin pens' tether posts (the fence in each middle); empty for other kinds. */
+	public List<BlockPos> tetherPosts() {
+		List<BlockPos> posts = new ArrayList<>();
+		for (Spot pen : plan.pens) {
+			posts.add(new BlockPos(pen.x, centre.getY() + 1, pen.z));
+		}
+		return posts;
+	}
+
+	/** The gate's opening on the ground, and a cell inside the camp in front of it (tests); null without one. */
+	public BlockPos[] gateEnds() {
+		if (plan.gate == null) {
+			return null;
+		}
+		Direction out = Direction.from2DDataValue(plan.gate.size);
+		int y = centre.getY() + 1;
+		return new BlockPos[] { new BlockPos(plan.gate.x + out.getStepX() * 2, y, plan.gate.z + out.getStepZ() * 2),
+				new BlockPos(plan.gate.x - out.getStepX() * 3, y, plan.gate.z - out.getStepZ() * 3) };
 	}
 
 	/** The foot of the room's stair tunnel, outside the room: a cell to stand in at its i-th stair (tests). */
@@ -1298,7 +1492,113 @@ public class CampPiece extends StructurePiece {
 
 	/** The room's floor block level (its air is the three above). */
 	private int roomFloor() {
-		return centre.getY() - 5;
+		return centre.getY() - roomDepth();
+	}
+
+	/** How far below the ground the room's floor is: deeper in a Nether outpost, for the portal. */
+	private int roomDepth() {
+		return kind.nether() ? 7 : 5;
+	}
+
+	/** The portal's state: lit, whole but unlit, or broken (a frame block or two missing). */
+	public enum Portal {
+		LIT, UNLIT, BROKEN
+	}
+
+	/** The Nether outpost room's portal state, by the camp's seed; null for other kinds. */
+	public Portal portal() {
+		if (!kind.nether()) {
+			return null;
+		}
+		int roll = (int) Math.floorMod(net.minecraft.world.level.levelgen.RandomSupport.mixStafford13(seed ^ 0x9047A1L), 10L);
+		return roll < 4 ? Portal.LIT : roll < 7 ? Portal.UNLIT : Portal.BROKEN;
+	}
+
+	/** The portal's bottom frame corner, on the floor at the back of the room, its whole frame in one chunk (tests). */
+	public BlockPos portalBase() {
+		Direction out = plan.stairs;
+		int h = roomHalf();
+		BlockPos row = roomCentre().relative(out, -(h - 1)).atY(roomFloor() + 1);
+		Direction along = portalAlong();
+		for (int s : new int[] { -1, 0, -2, -3 }) {
+			BlockPos a = row.relative(along, s);
+			BlockPos b = row.relative(along, s + 3);
+			if (a.getX() >> 4 == b.getX() >> 4 && a.getZ() >> 4 == b.getZ() >> 4) {
+				return a; // the frame in one chunk
+			}
+		}
+		return row.relative(along, -1);
+	}
+
+	/** Which way the portal faces: toward the stairs. */
+	public Direction portalStairs() {
+		return plan.stairs;
+	}
+
+	public Direction portalAlong() {
+		return plan.stairsClockwise ? plan.stairs.getClockWise() : plan.stairs.getCounterClockWise();
+	}
+
+	/**
+	 * A Nether portal at the back of the room, facing the stairs (ruined-portal style): an obsidian frame 4 wide and 5
+	 * tall, lit, whole and unlit, or broken with a block or two gone; crying obsidian in some of it, and magma and
+	 * netherrack scattered at its foot.
+	 */
+	/** Sets a portal or frame block without shape updates (a portal half-built across a chunk edge would otherwise go out). */
+	private static void quiet(ClippedBuild b, BlockPos at, BlockState state) {
+		if (b.inside(at.getX(), at.getY(), at.getZ())) {
+			b.level().setBlock(at, state, net.minecraft.world.level.block.Block.UPDATE_CLIENTS | net.minecraft.world.level.block.Block.UPDATE_KNOWN_SHAPE);
+		}
+	}
+
+	private void portalFrame(ClippedBuild b) {
+		Portal state = portal();
+		RandomSource random = RandomSource.create(net.minecraft.world.level.levelgen.RandomSupport.mixStafford13(seed ^ 0x9047A2L));
+		BlockPos base = portalBase();
+		Direction along = portalAlong();
+		int missing = state == Portal.BROKEN ? 1 + random.nextInt(2) : 0;
+		List<int[]> frame = new ArrayList<>();
+		for (int u = 0; u <= 3; u++) {
+			for (int v = 0; v <= 4; v++) {
+				boolean edge = u == 0 || u == 3 || v == 0 || v == 4;
+				if (edge) {
+					frame.add(new int[] { u, v });
+				}
+			}
+		}
+		int crying = state == Portal.LIT ? 0 : 1 + random.nextInt(3);
+		List<int[]> upper = new ArrayList<>(frame.stream().filter(c -> c[1] > 0).toList());
+		net.minecraft.util.Util.shuffle(upper, random);
+		List<int[]> gone = upper.subList(0, missing);
+		for (int[] c : frame) {
+			BlockPos at = base.relative(along, c[0]).above(c[1]);
+			boolean corner = (c[0] == 0 || c[0] == 3) && (c[1] == 0 || c[1] == 4);
+			BlockState block = gone.contains(c) ? Blocks.AIR.defaultBlockState()
+					: crying > 0 && !corner && random.nextInt(4) == 0 ? Blocks.CRYING_OBSIDIAN.defaultBlockState() : Blocks.OBSIDIAN.defaultBlockState();
+			if (block.is(Blocks.CRYING_OBSIDIAN)) {
+				crying--;
+			}
+			quiet(b, at, block);
+		}
+		BlockState inside = state == Portal.LIT
+				? Blocks.NETHER_PORTAL.defaultBlockState().setValue(net.minecraft.world.level.block.NetherPortalBlock.AXIS, along.getAxis())
+				: Blocks.AIR.defaultBlockState();
+		for (int u = 1; u <= 2; u++) {
+			for (int v = 1; v <= 3; v++) {
+				quiet(b, base.relative(along, u).above(v), inside);
+			}
+		}
+		// the ruin at its foot, on the room floor in front
+		Direction front = plan.stairs;
+		for (int u = -1; u <= 4; u++) {
+			BlockPos at = base.relative(along, u).relative(front).below();
+			float roll = random.nextFloat();
+			if ((u == -1 || u == 4) && roll < 0.5F) {
+				b.put(at.getX(), at.getY(), at.getZ(), Blocks.MAGMA_BLOCK.defaultBlockState());
+			} else if (roll < 0.5F) {
+				b.put(at.getX(), at.getY(), at.getZ(), Blocks.NETHERRACK.defaultBlockState());
+			}
+		}
 	}
 
 	/**
@@ -1325,15 +1625,15 @@ public class CampPiece extends StructurePiece {
 				float roll = cell.nextFloat();
 				float wallRoll = cell.nextFloat();
 				b.put(x, floor, z, wall ? kind.rock(roll) : fullBlock(kind.trodden(roll)));
-				for (int y = floor + 1; y <= floor + 3; y++) {
+				for (int y = floor + 1; y <= floor + roomDepth() - 2; y++) {
 					b.put(x, y, z, wall ? kind.rock(wallRoll) : Blocks.AIR.defaultBlockState());
 				}
 				boolean beam = !wall && Math.floorMod(out.getAxis() == Direction.Axis.X ? dx : dz, 2) == 0;
-				b.put(x, floor + 4, z, wall ? kind.rock(roll) : beam ? kind.log().trySetValue(RotatedPillarBlock.AXIS, beams) : kind.planks());
+				b.put(x, floor + roomDepth() - 1, z, wall ? kind.rock(roll) : beam ? kind.log().trySetValue(RotatedPillarBlock.AXIS, beams) : kind.planks());
 				boolean corner = Math.abs(dx) == hx && Math.abs(dz) == hz;
 				if (corner && roll < 0.7F) {
-					b.put(x, floor + 3, z, Blocks.COBWEB.defaultBlockState());
-				} else if (!wall && !corner && roll < 0.06F) {
+					b.put(x, floor + roomDepth() - 2, z, Blocks.COBWEB.defaultBlockState());
+				} else if (!wall && !corner && !kind.nether() && roll < 0.06F) {
 					b.put(x, floor + 1, z, Blocks.BONE_BLOCK.defaultBlockState());
 				}
 			}
@@ -1344,15 +1644,18 @@ public class CampPiece extends StructurePiece {
 		if (b.inside(chestX, floor + 1, chestZ)) {
 			b.put(chestX, floor + 1, chestZ, Blocks.CHEST.defaultBlockState().setValue(ChestBlock.FACING, out));
 			RandomizableContainer.setBlockEntityLootTable(b.level(), RandomSource.create(net.minecraft.world.level.levelgen.RandomSupport.mixStafford13(seed) ^ 0x500DL), new BlockPos(chestX, floor + 1, chestZ),
-					Camps.CAMP_ROOM_LOOT);
+					kind.loot(true));
+		}
+		if (kind.nether()) {
+			portalFrame(b);
 		}
 		// The stair tunnel: from the room's edge up to the ground, 2 wide, walled either side.
 		for (int w = 0; w <= 1; w++) {
-			for (int i = 0; i <= 6; i++) {
+			for (int i = 0; i <= roomDepth() + 1; i++) {
 				int x = cx + out.getStepX() * (h + 1 + i) + side.getStepX() * w;
 				int z = cz + out.getStepZ() * (h + 1 + i) + side.getStepZ() * w;
 				int step = floor + i;
-				if (i >= 1 && i <= 5) {
+				if (i >= 1 && i <= roomDepth()) {
 					b.put(x, step, z, kind.stairs().setValue(net.minecraft.world.level.block.StairBlock.FACING, out));
 				} else if (i == 0) {
 					b.put(x, step, z, fullBlock(kind.trodden(0.1F)));
@@ -1371,7 +1674,7 @@ public class CampPiece extends StructurePiece {
 			}
 		}
 		// the tunnel's mouth: trees and plants cleared round it, back to the clearing
-		for (int i = 3; i <= 9; i++) {
+		for (int i = 3; i <= roomDepth() + 4; i++) {
 			for (int w = -1; w <= 2; w++) {
 				b.clearCover(cx + out.getStepX() * (h + 1 + i) + side.getStepX() * w, cz + out.getStepZ() * (h + 1 + i) + side.getStepZ() * w, 20);
 			}
@@ -1381,6 +1684,41 @@ public class CampPiece extends StructurePiece {
 				b.clearCover(centre.getX() + out.getStepX() * (size.radius + i) + side.getStepX() * w,
 						centre.getZ() + out.getStepZ() * (size.radius + i) + side.getStepZ() * w, 20);
 			}
+		}
+		if (b instanceof NetherBuild nether) {
+			// under a ceiling: a level walk from the clearing's edge out round the tunnel to its mouth
+			int end = h + 1 + roomDepth() + 4;
+			for (int k = 0; k <= end; k++) {
+				for (int w = -2; w <= 3; w++) {
+					int x = cx + out.getStepX() * k + side.getStepX() * w;
+					int z = cz + out.getStepZ() * k + side.getStepZ() * w;
+					boolean trench = w >= 0 && w <= 1 && k >= h + 1 && k <= h + 1 + roomDepth();
+					if (trench || Math.hypot(x - centre.getX(), z - centre.getZ()) <= size.radius - 1) {
+						continue;
+					}
+					levelWalk(nether, x, z, (k * 7 + w) % 10 / 10.0F);
+				}
+			}
+		}
+	}
+
+	/** Under a ceiling: one column of walkway at the outpost's own height, its growth and rock cleared over it and filled under it. */
+	private void levelWalk(NetherBuild b, int x, int z, float roll) {
+		b.clearCover(x, z, 16);
+		b.carve(x, z, centre.getY() + 4);
+		int g = b.ground(x, z);
+		if (g == Integer.MIN_VALUE || g < centre.getY() - NetherBuild.BELOW + 2) {
+			g = centre.getY() - 3;
+		}
+		for (int y = g + 1; y < centre.getY(); y++) {
+			b.put(x, y, z, kind.rock(0.7F));
+		}
+		BlockPos floor = new BlockPos(x, centre.getY(), z);
+		if (g < centre.getY() || !natural(b.level().getBlockState(floor))) {
+			b.put(x, centre.getY(), z, fullBlock(kind.trodden(roll)));
+		}
+		for (int y = centre.getY() + 1; y <= Math.max(g, centre.getY() + 4); y++) {
+			b.put(x, y, z, Blocks.AIR.defaultBlockState());
 		}
 	}
 

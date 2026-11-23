@@ -57,7 +57,7 @@ public final class CampCommand {
 		try {
 			kind = CampKind.valueOf(StringArgumentType.getString(c, "kind").toUpperCase(java.util.Locale.ROOT));
 		} catch (IllegalArgumentException e) {
-			c.getSource().sendFailure(Component.literal("Kinds: skeleton, zombie, husk, stray, bogged."));
+			c.getSource().sendFailure(Component.literal("Kinds: skeleton, zombie, husk, stray, bogged, piglin (Nether outposts)."));
 			return 0;
 		}
 		BlockPos at = BlockPos.containing(c.getSource().getPosition());
@@ -76,9 +76,9 @@ public final class CampCommand {
 
 	/** The nearest natural camp of {@code kind} within {@code radius} (horizontal), read from structure starts; or null. */
 	public static CampPiece nearest(ServerLevel level, BlockPos at, CampKind kind, int radius) {
-		var structure = level.registryAccess().lookupOrThrow(Registries.STRUCTURE).getValue(Camps.CAMP_KEY);
+		var structure = level.registryAccess().lookupOrThrow(Registries.STRUCTURE).getValue(kind.nether() ? Camps.OUTPOST_KEY : Camps.CAMP_KEY);
 		var set = level.registryAccess().lookupOrThrow(Registries.STRUCTURE_SET).getValue(
-				ResourceKey.create(Registries.STRUCTURE_SET, BubbasReworkedMobs.id("monster_camps")));
+				ResourceKey.create(Registries.STRUCTURE_SET, BubbasReworkedMobs.id(kind.nether() ? "nether_outposts" : "monster_camps")));
 		if (structure == null || set == null || !(set.placement() instanceof RandomSpreadStructurePlacement placement)) {
 			return null;
 		}
@@ -124,14 +124,14 @@ public final class CampCommand {
 					piece.centre().toShortString(), seed)), true);
 			return 1;
 		} catch (IllegalArgumentException e) {
-			c.getSource().sendFailure(Component.literal("Kinds: skeleton, zombie, husk, stray, bogged. Sizes: small, medium, large."));
+			c.getSource().sendFailure(Component.literal("Kinds: skeleton, zombie, husk, stray, bogged, piglin (Nether outposts). Sizes: small, medium, large."));
 			return 0;
 		}
 	}
 
 	/** Builds a camp centred on {@code at}'s column (on its ground) and registers it; returns its piece. */
 	public static CampPiece build(ServerLevel level, BlockPos at, CampKind kind, CampTuning.Size size, long seed) {
-		int ground = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, at.getX(), at.getZ()) - 1;
+		int ground = level.dimensionType().hasCeiling() ? at.getY() - 1 : level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, at.getX(), at.getZ()) - 1;
 		CampPiece piece = new CampPiece(seed, new BlockPos(at.getX(), ground, at.getZ()), kind, size);
 		ClippedBuild.buildNow(level, piece, at);
 		CampSites.register(level, piece);

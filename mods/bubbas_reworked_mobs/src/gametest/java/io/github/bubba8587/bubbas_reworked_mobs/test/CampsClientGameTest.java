@@ -52,7 +52,7 @@ public class CampsClientGameTest implements FabricClientGameTest {
 			TestServerContext server = sp.getServer();
 			setup(server);
 			BlockPos base = context.computeOnClient(mc -> mc.player.blockPosition());
-			CampKind[] kinds = CampKind.values();
+			CampKind[] kinds = java.util.Arrays.stream(CampKind.values()).filter(k -> !k.nether()).toArray(CampKind[]::new);
 			CampTuning.Size[] sizes = { CampTuning.Size.LARGE, CampTuning.Size.MEDIUM, CampTuning.Size.SMALL, CampTuning.Size.MEDIUM, CampTuning.Size.MEDIUM };
 			List<BlockPos> centres = new ArrayList<>();
 			List<CampPiece> pieces = new ArrayList<>();

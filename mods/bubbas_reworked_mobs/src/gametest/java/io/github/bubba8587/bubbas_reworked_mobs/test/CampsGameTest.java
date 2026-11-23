@@ -307,7 +307,7 @@ public class CampsGameTest {
 			loose.addAll(unsupported(level, piece.getBoundingBox()));
 			BoundingBox box = piece.getBoundingBox();
 			for (BlockPos pos : BlockPos.betweenClosed(box.minX(), box.minY(), box.minZ(), box.maxX(), box.maxY(), box.maxZ())) {
-				if (level.getBlockState(pos).getLightEmission() > 0) {
+				if (!kind.nether() && level.getBlockState(pos).getLightEmission() > 0) {
 					lit.add(level.getBlockState(pos).getBlock().getDescriptionId().replaceFirst("^.*[.]", "") + "@" + pos.toShortString());
 				}
 			}
@@ -460,6 +460,121 @@ public class CampsGameTest {
 					+ e[1].toShortString() + ": " + (path == null ? "no path" : "ends at " + path.getEndNode()));
 			helper.succeed();
 		});
+	}
+
+	// --- Nether outposts ----------------------------------------------------------------------------
+
+	/** Nether outposts may only be placed in crimson forests and the Nether wastes. */
+	@GameTest(structure = FIELD, maxTicks = 1)
+	public void netherOutpostBiomes(GameTestHelper helper) {
+		var registries = helper.getLevel().registryAccess();
+		var structure = registries.lookupOrThrow(Registries.STRUCTURE).getValueOrThrow(io.github.bubba8587.bubbas_reworked_mobs.camp.Camps.OUTPOST_KEY);
+		var biomes = registries.lookupOrThrow(Registries.BIOME);
+		for (var key : List.of(Biomes.CRIMSON_FOREST, Biomes.NETHER_WASTES)) {
+			helper.assertTrue(structure.biomes().contains(biomes.getOrThrow(key)), "outposts belong in " + key.identifier());
+		}
+		for (var key : List.of(Biomes.BASALT_DELTAS, Biomes.SOUL_SAND_VALLEY, Biomes.WARPED_FOREST, Biomes.PLAINS, Biomes.DESERT)) {
+			helper.assertTrue(!structure.biomes().contains(biomes.getOrThrow(key)), "no outposts in " + key.identifier());
+		}
+		helper.succeed();
+	}
+
+	/** An outpost's roster: piglins with a brute leader in enchanted gold; its hoglins appear in their pen, one leashed, and stay penned. */
+	@GameTest(structure = FIELD, maxTicks = 200)
+	public void outpostRosterAndPennedHoglins(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		CampPiece piece = CampCommand.build(level, helper.absolutePos(new BlockPos(16, 8, 24)), CampKind.PIGLIN, CampTuning.Size.MEDIUM, 5L);
+		CampSite site = site(helper, piece);
+		helper.assertTrue(!piece.tetherPosts().isEmpty(), "an outpost has a hoglin pen");
+		ServerPlayer player = TestPlayers.survival(helper);
+		Vec3 at = helper.absoluteVec(new Vec3(2.5, 8.0, 2.5));
+		player.snapTo(at.x, at.y, at.z, 0.0F, 0.0F);
+		BlockPos post = piece.tetherPosts().getFirst();
+		net.minecraft.world.phys.AABB pen = new net.minecraft.world.phys.AABB(post).inflate(1.9, 2.0, 1.9);
+		helper.runAfterDelay(60, () -> {
+			helper.assertTrue(site.spawned() && site.members().size() == CampTuning.Size.MEDIUM.roster + 1, "roster of " + site.members().size());
+			int leaders = 0;
+			for (var uuid : site.members()) {
+				Entity e = level.getEntity(uuid);
+				if (e == null) {
+					continue; // wandered out of loaded ground beside a neighbouring test
+				}
+				helper.assertTrue(e instanceof net.minecraft.world.entity.monster.piglin.AbstractPiglin, "an outpost member is a piglin: " + e);
+				if (CampRoster.isLeader((Mob) e)) {
+					leaders++;
+					helper.assertTrue(e.getType() == net.minecraft.world.entity.EntityTypes.PIGLIN_BRUTE && ((Mob) e).getMaxHealth() > 50.0F
+							&& ((Mob) e).getItemBySlot(net.minecraft.world.entity.EquipmentSlot.CHEST).is(Items.GOLDEN_CHESTPLATE), "the leader is a geared brute");
+				}
+			}
+			helper.assertTrue(leaders <= 1 && site.members().stream().map(level::getEntity).filter(java.util.Objects::nonNull).count() >= CampTuning.Size.MEDIUM.roster, "one leader, found " + leaders);
+			var hoglins = level.getEntitiesOfClass(net.minecraft.world.entity.monster.hoglin.Hoglin.class, pen.inflate(8.0),
+					h -> h.entityTags().contains(CampRoster.LIVESTOCK_TAG));
+			helper.assertTrue(hoglins.size() == 2, "a medium outpost keeps two hoglins, found " + hoglins.size());
+			helper.assertTrue(hoglins.stream().anyMatch(h -> h.isLeashed()), "one hoglin is leashed to the tether post");
+			for (var h : hoglins) {
+				helper.assertTrue(pen.contains(h.position()), "hoglin stays in its pen: " + h.blockPosition().toShortString() + " pen " + post.toShortString());
+				helper.assertTrue(!h.canBeHunted(), "outpost hoglins are not hunted");
+			}
+			level.getServer().getPlayerList().remove(player);
+			for (var uuid : site.members()) {
+				Entity e = level.getEntity(uuid);
+				if (e != null) {
+					e.discard();
+				}
+			}
+			hoglins.forEach(Entity::discard);
+			helper.succeed();
+		});
+	}
+
+	/** An outpost: a mob can walk in through its gate, up a ramp onto a tower, and down the tunnel to the portal room. */
+	@GameTest(structure = FIELD, maxTicks = 20)
+	public void outpostGateCanBeWalkedThrough(GameTestHelper helper) {
+		walkable(helper, CampKind.PIGLIN, CampPiece::gateEnds, "gate");
+	}
+
+	@GameTest(structure = FIELD, maxTicks = 20)
+	public void outpostRampCanBeClimbed(GameTestHelper helper) {
+		walkable(helper, CampKind.PIGLIN, CampPiece::rampEnds, "outpost ramp");
+	}
+
+	@GameTest(structure = FIELD, maxTicks = 20)
+	public void outpostPortalRoomCanBeReached(GameTestHelper helper) {
+		walkable(helper, CampKind.PIGLIN, p -> new BlockPos[] { p.tunnelStep(3), p.portalBase().relative(p.portalAlong(), 1).relative(p.portalStairs(), 2) },
+				"portal room");
+	}
+
+	/** The portal: a lit one is a whole obsidian frame filled with portal; an unlit one whole and empty; a broken one missing a block or two. */
+	@GameTest(structure = FIELD, maxTicks = 20)
+	public void outpostPortalsMatchTheirState(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		java.util.EnumSet<CampPiece.Portal> seen = java.util.EnumSet.noneOf(CampPiece.Portal.class);
+		for (long seed = 0; seed < 40 && seen.size() < 3; seed++) {
+			CampPiece probe = new CampPiece(seed, helper.absolutePos(CENTRE), CampKind.PIGLIN, CampTuning.Size.SMALL);
+			if (!seen.add(probe.portal())) {
+				continue;
+			}
+			CampPiece piece = CampCommand.build(level, helper.absolutePos(CENTRE), CampKind.PIGLIN, CampTuning.Size.SMALL, seed);
+			int frame = 0;
+			int inner = 0;
+			for (int u = 0; u <= 3; u++) {
+				for (int v = 0; v <= 4; v++) {
+					var state = level.getBlockState(piece.portalBase().relative(piece.portalAlong(), u).above(v));
+					if (u == 0 || u == 3 || v == 0 || v == 4) {
+						frame += state.is(Blocks.OBSIDIAN) || state.is(Blocks.CRYING_OBSIDIAN) ? 1 : 0;
+					} else {
+						inner += state.is(Blocks.NETHER_PORTAL) ? 1 : 0;
+					}
+				}
+			}
+			switch (piece.portal()) {
+				case LIT -> helper.assertTrue(frame == 14 && inner == 6, "lit portal: frame " + frame + " portal " + inner);
+				case UNLIT -> helper.assertTrue(frame == 14 && inner == 0, "unlit portal: frame " + frame + " portal " + inner);
+				case BROKEN -> helper.assertTrue(frame >= 12 && frame < 14 && inner == 0, "broken portal: frame " + frame + " portal " + inner);
+			}
+		}
+		helper.assertTrue(seen.size() == 3, "all three portal states in 40 seeds: " + seen);
+		helper.succeed();
 	}
 
 	/** Blocks in the box that couldn't survive a block update where they are. */
