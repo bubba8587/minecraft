@@ -15,6 +15,7 @@ import net.minecraft.server.packs.repository.PackRepository;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 
 import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
@@ -144,6 +145,42 @@ public class WebsClientGameTest implements FabricClientGameTest {
 			context.takeScreenshot("giant-cocoon-sheep-under-canopy");
 			tp(context, server, ax + 0.5, y + 2.0, tz - 3.5, 0.0F, -60.0F);
 			context.takeScreenshot("giant-cocoon-sheep-from-below");
+			// The spinner takes a sheep to the centre of its own web, then comes down and prowls below it.
+			server.runCommand("summon minecraft:sheep %.2f %d %.2f {NoAI:1b,Tags:[\"web_shot_sheep2\"]}".formatted(x + 0.5, y, tz - 2.5));
+			context.waitTicks(3);
+			Vec3 hub = onServer(server, level -> {
+				GiantSpider spinner = level.getEntitiesOfClass(GiantSpider.class, new AABB(x - 3, y - 1, tz - 5, x + 4, y + 3, tz)).stream()
+						.filter(GiantSpider::isNoAi).findFirst().orElseThrow();
+				spinner.setNoAi(false);
+				spinner.setSilent(true);
+				net.minecraft.world.entity.animal.sheep.Sheep sheep = level.getEntitiesOfClass(net.minecraft.world.entity.animal.sheep.Sheep.class,
+						new AABB(x - 1, y - 1, tz - 4, x + 2, y + 3, tz - 1), s -> s.entityTags().contains("web_shot_sheep2")).getFirst();
+				if (!spinner.snatch(level, sheep) || !spinner.webLarder()) {
+					throw new AssertionError("the spinner didn't take the sheep to its own web");
+				}
+				return Vec3.atCenterOf(spinner.larder());
+			});
+			GiantSpider.Task[] seen = {null};
+			for (int i = 0; i < 400 && seen[0] != GiantSpider.Task.WAIT; i++) {
+				seen[0] = onServer(server, level -> level.getEntitiesOfClass(GiantSpider.class, new AABB(hub, hub).inflate(3.0), GiantSpider::webLarder)
+						.stream().map(GiantSpider::task).findFirst().orElse(null));
+				context.waitTick();
+			}
+			context.waitTicks(20);
+			tp(context, server, hub.x, hub.y - 1.0, hub.z - 6.0, 0.0F, 5.0F);
+			context.takeScreenshot("giant-cocoon-own-web-hub");
+			onServer(server, level -> {
+				level.getEntitiesOfClass(GiantSpider.class, new AABB(hub, hub).inflate(3.0), GiantSpider::webLarder).forEach(GiantSpider::endWait);
+				return null;
+			});
+			for (int i = 0; i < 300 && seen[0] != GiantSpider.Task.PROWL; i++) {
+				seen[0] = onServer(server, level -> level.getEntitiesOfClass(GiantSpider.class, new AABB(hub, hub).inflate(12.0), GiantSpider::webLarder)
+						.stream().map(GiantSpider::task).findFirst().orElse(null));
+				context.waitTick();
+			}
+			context.waitTicks(80);
+			tp(context, server, hub.x, hub.y + 1.0, hub.z - 9.0, 0.0F, 20.0F);
+			context.takeScreenshot("giant-prowls-below-its-web");
 			// A torn, old web.
 			onServer(server, level -> {
 				webs(level, x, y, z).forEach(w -> w.setTear(0.6F));

@@ -181,4 +181,83 @@ public class GiantSpiderGameTest {
 		helper.assertTrue(shotAt != null && shotAt.getEntity() == web, "an arrow along the strand's line misses it");
 		helper.succeed();
 	}
+
+	private static Pig pig(GameTestHelper helper, double x, double z) {
+		Pig pig = EntityTypes.PIG.create(helper.getLevel(), EntitySpawnReason.COMMAND);
+		Vec3 at = helper.absoluteVec(new Vec3(x, 1.0, z));
+		pig.snapTo(at.x, at.y, at.z, 0.0F, 0.0F);
+		helper.getLevel().addFreshEntity(pig);
+		return pig;
+	}
+
+	/** A catch goes to the centre of the giant's own web, not to a web another spider spun nearer it; cocooned at the hub. */
+	@GameTest(environment = SpiderGameTest.ENV, structure = SpiderGameTest.ROOM, maxTicks = 400)
+	public void haulsToItsOwnWebCentre(GameTestHelper helper) {
+		trunks(helper);
+		ServerLevel level = helper.getLevel();
+		GiantSpider giant = giant(helper, 4.5, 2.5);
+		helper.assertTrue(giant.spin(level) >= 3, "no web spun");
+		SpunWeb own = giant.ownWebs().getFirst();
+		SpunWeb other = Spiders.SPUN_WEB.create(level, EntitySpawnReason.COMMAND);
+		Vec3 o = helper.absoluteVec(new Vec3(4.5, 4.0, 2.5));
+		other.setPos(o.x, o.y, o.z);
+		other.setStrands(List.of(new SpunWeb.Strand(new Vec3(-3, 0, 0), new Vec3(3, 0, 0)), new SpunWeb.Strand(new Vec3(0, -3, 0), new Vec3(0, 3, 0)),
+				new SpunWeb.Strand(new Vec3(-3, -3, 0), new Vec3(3, 3, 0))));
+		level.addFreshEntity(other);
+		Pig pig = pig(helper, 4.5, 3.5);
+		helper.assertTrue(giant.snatch(level, pig), "no snatch");
+		helper.assertTrue(giant.webLarder(), "not taken to a web");
+		helper.assertValueEqual(giant.larder(), BlockPos.containing(own.position()), "larder");
+		helper.succeedWhen(() -> {
+			helper.assertTrue(giant.task() == GiantSpider.Task.WAIT, "task " + giant.task());
+			Vec3 c = giant.cocoon().position();
+			helper.assertTrue(Math.hypot(c.x - own.getX(), c.z - own.getZ()) < 1.0 && Math.abs(c.y - own.getY()) < 3.0,
+					"cocoon at " + c.subtract(own.position()) + " from the hub");
+		});
+	}
+
+	/** A giant remembers the webs it spun across a save and load. */
+	@GameTest(environment = SpiderGameTest.ENV, structure = SpiderGameTest.ROOM)
+	public void remembersItsWebsAcrossSaves(GameTestHelper helper) {
+		trunks(helper);
+		ServerLevel level = helper.getLevel();
+		GiantSpider giant = giant(helper, 4.5, 2.5);
+		giant.spin(level);
+		SpunWeb web = giant.ownWebs().getFirst();
+		var output = net.minecraft.world.level.storage.TagValueOutput.createWithoutContext(net.minecraft.util.ProblemReporter.DISCARDING);
+		giant.saveWithoutId(output);
+		GiantSpider loaded = Spiders.GIANT_SPIDER.create(level, EntitySpawnReason.LOAD);
+		loaded.load(net.minecraft.world.level.storage.TagValueInput.create(net.minecraft.util.ProblemReporter.DISCARDING, level.registryAccess(), output.buildResult()));
+		helper.assertTrue(loaded.ownWebs().equals(List.of(web)), "loaded webs " + loaded.ownWebs());
+		loaded.discard();
+		helper.succeed();
+	}
+
+	/** After cocooning, it drops off its perch and strolls away from it on the ground, then walks back, climbs and feeds. */
+	@GameTest(environment = SpiderGameTest.ENV, structure = SpiderGameTest.ROOM, maxTicks = 1200)
+	public void leavesItsPerchAndComesBackToFeed(GameTestHelper helper) {
+		trunks(helper);
+		ServerLevel level = helper.getLevel();
+		GiantSpider giant = giant(helper, 4.5, 2.5);
+		Pig pig = pig(helper, 4.5, 3.5);
+		helper.assertTrue(giant.snatch(level, pig), "no snatch");
+		double[] farthest = {0.0};
+		boolean[] grounded = {false};
+		helper.onEachTick(() -> {
+			if (giant.task() == GiantSpider.Task.PROWL) {
+				BlockPos l = giant.larder();
+				farthest[0] = Math.max(farthest[0], Math.hypot(giant.getX() - l.getX() - 0.5, giant.getZ() - l.getZ() - 0.5));
+				grounded[0] |= giant.onGround();
+				if (grounded[0] && farthest[0] >= 3.0) {
+					giant.endWait();
+				}
+			}
+		});
+		helper.succeedWhen(() -> {
+			helper.assertTrue(grounded[0], "never came down off its perch");
+			helper.assertTrue(farthest[0] >= 3.0, "only wandered " + farthest[0]);
+			helper.assertTrue(giant.task() == GiantSpider.Task.FEED, "task " + giant.task());
+			helper.assertTrue(pig.getLastHurtByMob() == giant, "not bitten yet");
+		});
+	}
 }

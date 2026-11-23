@@ -140,6 +140,9 @@ public class CocoonGameTest {
 				giant.endWait();
 				skipped[0] = true;
 			}
+			if (giant.task() == GiantSpider.Task.PROWL) {
+				giant.endWait();
+			}
 		});
 		helper.succeedWhen(() -> {
 			helper.assertTrue(skipped[0], "never cocooned it and waited: " + giant.task());
