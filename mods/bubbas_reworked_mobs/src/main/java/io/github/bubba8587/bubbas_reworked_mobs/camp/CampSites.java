@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.WeakHashMap;
 
 import io.github.bubba8587.bubbas_reworked_mobs.BubbasReworkedMobs;

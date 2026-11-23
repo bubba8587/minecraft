@@ -46,6 +46,18 @@ import win.demistorm.stormiespiders.common.entity.mob.Orientation;
  * </ul>
  */
 public class NestSpider extends Spider implements Gripper {
+	/** A new sleeper hung from {@code anchor} facing {@code yaw}, not yet added to the level. */
+	public static @Nullable NestSpider hanging(Level level, Vec3 anchor, float yaw) {
+		NestSpider spider = Spiders.NEST_SPIDER.create(level, net.minecraft.world.entity.EntitySpawnReason.STRUCTURE);
+		if (spider != null) {
+			spider.setYRot(yaw);
+			spider.setYBodyRot(yaw);
+			spider.setYHeadRot(yaw);
+			spider.hangFrom(anchor);
+		}
+		return spider;
+	}
+
 	public enum Phase {
 		SLEEPING, DROPPING, REELING, DANGLING,
 		/** Its victim is cocooned below; it has backed off into the nest and waits. */

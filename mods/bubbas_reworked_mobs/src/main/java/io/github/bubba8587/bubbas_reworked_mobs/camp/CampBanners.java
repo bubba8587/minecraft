@@ -4,7 +4,6 @@ package io.github.bubba8587.bubbas_reworked_mobs.camp;
 import java.util.List;
 
 import io.github.bubba8587.bubbas_reworked_mobs.world.LoadedBlockEntities;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;

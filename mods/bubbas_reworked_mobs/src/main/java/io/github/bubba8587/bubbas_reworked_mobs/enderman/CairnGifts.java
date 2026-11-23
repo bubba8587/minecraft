@@ -2,9 +2,7 @@
 package io.github.bubba8587.bubbas_reworked_mobs.enderman;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.SplittableRandom;
 import java.util.function.Supplier;
 
@@ -18,7 +16,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.gametest.framework.GameTestServer;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.monster.Enderman;
@@ -75,13 +72,7 @@ public final class CairnGifts {
 				|| level.getGameTime() % EndermanTuning.OFFERING_CHECK_TICKS != 0) {
 			return;
 		}
-		Set<CairnSite> active = new LinkedHashSet<>();
-		for (ServerPlayer player : level.players()) {
-			if (!player.isSpectator()) {
-				active.addAll(CairnSites.near(level, player.blockPosition(), EndermanTuning.SITE_ACTIVE_RANGE));
-			}
-		}
-		for (CairnSite site : active) {
+		for (CairnSite site : CairnSites.nearPlayers(level, EndermanTuning.SITE_ACTIVE_RANGE, false)) {
 			tryOffering(level, site, false);
 		}
 	}

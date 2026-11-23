@@ -1,28 +1,23 @@
 // dte:C1,D2
 package io.github.bubba8587.bubbas_reworked_mobs.enderman;
 
-import java.util.LinkedHashSet;
+import io.github.bubba8587.bubbas_reworked_mobs.world.NaturalSpawns;
 import java.util.List;
-import java.util.Set;
 
 import io.github.bubba8587.bubbas_reworked_mobs.registry.ModGameRules;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTestServer;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.Difficulty;
-import net.minecraft.world.attribute.EnvironmentAttributes;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityTypes;
-import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.entity.monster.Enderman;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gamerules.GameRules;
-import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.AABB;
 import org.jspecify.annotations.Nullable;
 
@@ -38,13 +33,7 @@ public final class EndermanSpawning {
 		if (!spawningAllowed(level)) {
 			return;
 		}
-		Set<CairnSite> active = new LinkedHashSet<>();
-		for (ServerPlayer player : level.players()) {
-			if (!player.isSpectator()) {
-				active.addAll(CairnSites.near(level, player.blockPosition(), EndermanTuning.SITE_ACTIVE_RANGE));
-			}
-		}
-		for (CairnSite site : active) {
+		for (CairnSite site : CairnSites.nearPlayers(level, EndermanTuning.SITE_ACTIVE_RANGE, false)) {
 			trySpawnAt(level, site, false);
 		}
 	}
@@ -161,12 +150,8 @@ public final class EndermanSpawning {
 			if (cell == null || EndermanWards.isWarded(level, cell) || !allowedHere(level, cell, random) || level.getNearestPlayer(x + 0.5, cell.getY(), z + 0.5, 24.0, false) != null) {
 				continue;
 			}
-			Enderman enderman = EntityTypes.ENDERMAN.create(level, EntitySpawnReason.NATURAL);
+			Enderman enderman = NaturalSpawns.create(level, EntityTypes.ENDERMAN, x + 0.5, cell.getY(), z + 0.5, random.nextFloat() * 360.0F);
 			if (enderman == null) {
-				return null;
-			}
-			enderman.snapTo(x + 0.5, cell.getY(), z + 0.5, random.nextFloat() * 360.0F, 0.0F);
-			if (!level.noCollision(enderman)) {
 				continue;
 			}
 			((EndermanAccess) enderman).brm$markCairnSpawn();
@@ -186,17 +171,12 @@ public final class EndermanSpawning {
 
 	/** The highest spot in this column within SPAWN_HEIGHT of the site's ground with a floor and room for an enderman. */
 	static @Nullable BlockPos spawnCell(ServerLevel level, int x, int y, int z) {
-		BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
-		for (int dy = EndermanTuning.SPAWN_HEIGHT; dy >= -EndermanTuning.SPAWN_HEIGHT; dy--) {
-			pos.set(x, y + dy, z);
+		return NaturalSpawns.highest(x, y, z, EndermanTuning.SPAWN_HEIGHT, EndermanTuning.SPAWN_HEIGHT, pos -> {
 			BlockPos below = pos.below();
-			if (level.getBlockState(below).isFaceSturdy(level, below, net.minecraft.core.Direction.UP) && level.getBlockState(pos).isAir()
+			return level.getBlockState(below).isFaceSturdy(level, below, net.minecraft.core.Direction.UP) && level.getBlockState(pos).isAir()
 					&& level.getBlockState(pos.above()).isAir() && level.getBlockState(pos.above(2)).isAir()
-					&& SpawnPlacements.isSpawnPositionOk(EntityTypes.ENDERMAN, level, pos)) {
-				return pos.immutable();
-			}
-		}
-		return null;
+					&& SpawnPlacements.isSpawnPositionOk(EntityTypes.ENDERMAN, level, pos);
+		});
 	}
 
 	/**
@@ -260,33 +240,18 @@ public final class EndermanSpawning {
 			return;
 		}
 		if (random.nextBoolean()) {
-			// A filler: find a hole near the site and bring its original block.
-			BlockPos.MutableBlockPos at = new BlockPos.MutableBlockPos();
+			// a filler: a hole near the site
 			for (int i = 0; i < EndermanTuning.FILL_COLUMNS; i++) {
 				int x = site.origin().getX() + random.nextInt(2 * EndermanTuning.FILL_RADIUS + 1) - EndermanTuning.FILL_RADIUS;
 				int z = site.origin().getZ() + random.nextInt(2 * EndermanTuning.FILL_RADIUS + 1) - EndermanTuning.FILL_RADIUS;
-				int surface = TargetWorld.surface(level, x, z);
-				if (surface == Integer.MIN_VALUE || !level.hasChunk(x >> 4, z >> 4)) {
-					continue;
-				}
-				for (int y = surface; y > surface - EndermanTuning.FILL_DEPTH; y--) {
-					at.set(x, y, z);
-					BlockState target = TargetWorld.target(level, at);
-					if (target != null && TerrainKinds.family(target) != null && EndermanWork.needsFill(level, at, target)) {
-						enderman.setCarriedBlock(target);
-						mind.set(EndermanMind.Job.DELIVER, at.immutable(), level.getGameTime());
-						return;
-					}
+				if (EndermanWork.carryToHole(level, enderman, mind, x, z)) {
+					return;
 				}
 			}
 		}
 	}
 
-	/** Vanilla's rules for a natural enderman here: the biome lists endermen, and its spawn placement and light rules pass. */
 	static boolean allowedHere(ServerLevel level, BlockPos cell, RandomSource random) {
-		boolean listed = level.environmentAttributes().getValue(EnvironmentAttributes.NATURAL_MOB_SPAWNS, cell)
-				.getMobsToSpawn(MobCategory.MONSTER).unwrap().stream().anyMatch(w -> w.value().type() == EntityTypes.ENDERMAN);
-		return listed && SpawnPlacements.isSpawnPositionOk(EntityTypes.ENDERMAN, level, cell)
-				&& SpawnPlacements.checkSpawnRules(EntityTypes.ENDERMAN, level, EntitySpawnReason.NATURAL, cell, random);
+		return NaturalSpawns.allowed(level, EntityTypes.ENDERMAN, cell, random);
 	}
 }

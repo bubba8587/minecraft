@@ -1,6 +1,7 @@
 // dte:C1
 package io.github.bubba8587.bubbas_reworked_mobs.camp;
 
+import io.github.bubba8587.bubbas_reworked_mobs.worldgen.ClippedBuild;
 import com.mojang.brigadier.arguments.LongArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -10,9 +11,7 @@ import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.levelgen.Heightmap;
-import net.minecraft.world.level.levelgen.structure.BoundingBox;
 
 /**
  * {@code /bubbas_reworked_mobs camp build <kind> <size> [seed]} builds a camp centred where you stand and registers it
@@ -62,15 +61,7 @@ public final class CampCommand {
 	public static CampPiece build(ServerLevel level, BlockPos at, CampKind kind, CampTuning.Size size, long seed) {
 		int ground = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, at.getX(), at.getZ()) - 1;
 		CampPiece piece = new CampPiece(seed, new BlockPos(at.getX(), ground, at.getZ()), kind, size);
-		BoundingBox box = piece.getBoundingBox();
-		for (int cx = box.minX() >> 4; cx <= box.maxX() >> 4; cx++) {
-			for (int cz = box.minZ() >> 4; cz <= box.maxZ() >> 4; cz++) {
-				ChunkPos chunk = new ChunkPos(cx, cz);
-				BoundingBox chunkBox = new BoundingBox(chunk.getMinBlockX(), level.getMinY(), chunk.getMinBlockZ(), chunk.getMaxBlockX(), level.getMaxY(),
-						chunk.getMaxBlockZ());
-				piece.postProcess(level, level.structureManager(), level.getChunkSource().getGenerator(), level.getRandom(), chunkBox, chunk, at);
-			}
-		}
+		ClippedBuild.buildNow(level, piece, at);
 		CampSites.register(level, piece);
 		return piece;
 	}

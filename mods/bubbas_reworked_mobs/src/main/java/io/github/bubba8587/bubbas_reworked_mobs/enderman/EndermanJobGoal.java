@@ -256,17 +256,11 @@ public final class EndermanJobGoal extends Goal {
 	private static @Nullable CairnSite siteWanting(ServerLevel level, BlockPos here, BlockState carried) {
 		CairnSite best = null;
 		for (CairnSite site : CairnSites.near(level, here, EndermanTuning.SITE_WORK_RADIUS)) {
-			if (site.wants(level, carried.getBlock()) && (best == null || horizontalDistSqr(site.origin(), here) < horizontalDistSqr(best.origin(), here))) {
+			if (site.wants(level, carried.getBlock()) && (best == null || CairnSites.horizontalDistSqr(site.origin(), here) < CairnSites.horizontalDistSqr(best.origin(), here))) {
 				best = site;
 			}
 		}
 		return best;
-	}
-
-	private static double horizontalDistSqr(BlockPos a, BlockPos b) {
-		double dx = a.getX() - b.getX();
-		double dz = a.getZ() - b.getZ();
-		return dx * dx + dz * dz;
 	}
 
 	/** Teleports to a free standing spot within reach of {@code job} (on the cairn itself for high blocks). */

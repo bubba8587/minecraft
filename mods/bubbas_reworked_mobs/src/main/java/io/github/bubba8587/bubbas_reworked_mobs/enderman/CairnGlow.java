@@ -9,7 +9,6 @@ import java.util.WeakHashMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
 
@@ -37,10 +36,7 @@ public final class CairnGlow {
 		}
 		boolean recheck = time % EndermanTuning.GLOW_CHECK_TICKS == 0;
 		Map<CairnSite, Boolean> known = COMPLETE.computeIfAbsent(level, l -> new HashMap<>());
-		java.util.Set<CairnSite> near = new java.util.HashSet<>();
-		for (ServerPlayer player : level.players()) {
-			near.addAll(CairnSites.near(level, player.blockPosition(), EndermanTuning.GLOW_RANGE));
-		}
+		java.util.Set<CairnSite> near = CairnSites.nearPlayers(level, EndermanTuning.GLOW_RANGE, true); // spectators see it too
 		known.keySet().retainAll(near);
 		RandomSource random = level.getRandom();
 		for (CairnSite site : near) {

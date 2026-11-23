@@ -117,6 +117,17 @@ public final class CairnSites {
 	}
 
 	/** Sites (worked out already) whose origin is within {@code radius} blocks (horizontally) of {@code pos}. */
+	/** Sites within {@code radius} of any player (spectators only when {@code spectators}). */
+	public static java.util.Set<CairnSite> nearPlayers(ServerLevel level, int radius, boolean spectators) {
+		java.util.Set<CairnSite> out = new java.util.LinkedHashSet<>();
+		for (net.minecraft.server.level.ServerPlayer player : level.players()) {
+			if (spectators || !player.isSpectator()) {
+				out.addAll(near(level, player.blockPosition(), radius));
+			}
+		}
+		return out;
+	}
+
 	public static List<CairnSite> near(ServerLevel level, BlockPos pos, int radius) {
 		List<CairnSite> found = new ArrayList<>();
 		List<CairnSite> extra = extra(level);
@@ -204,7 +215,7 @@ public final class CairnSites {
 		extra(level).remove(site);
 	}
 
-	private static double horizontalDistSqr(BlockPos a, BlockPos b) {
+	static double horizontalDistSqr(BlockPos a, BlockPos b) {
 		double dx = a.getX() - b.getX();
 		double dz = a.getZ() - b.getZ();
 		return dx * dx + dz * dz;

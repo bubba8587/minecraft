@@ -2,7 +2,6 @@
 package io.github.bubba8587.bubbas_reworked_mobs.client.spider;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Axis;
 import io.github.bubba8587.bubbas_reworked_mobs.spider.NestSpider;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
@@ -44,15 +43,9 @@ public class NestSpiderRenderer extends SpiderRenderer<NestSpider> {
 		s.isUpsideDown = s.phase == NestSpider.Phase.SLEEPING || s.phase == NestSpider.Phase.WAITING;
 		s.thread = java.util.List.of();
 		if (s.phase != NestSpider.Phase.SLEEPING && s.phase != NestSpider.Phase.WAITING && s.phase != NestSpider.Phase.FEEDING) {
-			// The thread, as pixel art: from its back up to where it's tied in the nest, taut.
+			// thread from its abdomen up to the nest
 			Vec3 at = entity.getPosition(partialTicks);
-			Vec3 from = at.add(0.0, state.boundingBoxHeight * 0.5 + 0.7, 0.0);
-			Vec3 to = entity.anchor();
-			if (to.y > from.y) {
-				java.util.List<PixelStrands.Pixel> pixels = new java.util.ArrayList<>();
-				PixelStrands.trace(pixels, java.util.List.of(from, to), at, PixelStrands.texel(), entity.level());
-				s.thread = pixels;
-			}
+			s.thread = PixelStrands.thread(at, at.add(0.0, state.boundingBoxHeight * 0.5 + 0.7, 0.0), entity.anchor(), entity.level());
 		}
 	}
 
@@ -63,13 +56,7 @@ public class NestSpiderRenderer extends SpiderRenderer<NestSpider> {
 		if (phase == NestSpider.Phase.SLEEPING || phase == NestSpider.Phase.WAITING) {
 			return;
 		}
-		// Vertical, pivoting about its middle: head down while it drops, head up while it climbs the thread.
-		float half = state.boundingBoxHeight * 0.5F / entityScale;
-		poseStack.translate(0.0F, half, 0.0F);
-		// Head down in every phase off the ceiling: it drops face first and climbs back up rear first, facing its victim
-		// below, the thread coming out of its abdomen (owner, 2026-11-22).
-		poseStack.rotateDegrees(Axis.XP, -90.0F);
-		poseStack.translate(0.0F, -half, 0.0F);
+		PixelStrands.headDown(poseStack, state.boundingBoxHeight, entityScale); // off the ceiling: head down
 	}
 
 	@Override

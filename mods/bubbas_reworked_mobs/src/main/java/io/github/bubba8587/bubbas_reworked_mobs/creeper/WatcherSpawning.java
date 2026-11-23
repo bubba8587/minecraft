@@ -1,6 +1,7 @@
 // dte:C1,B17
 package io.github.bubba8587.bubbas_reworked_mobs.creeper;
 
+import io.github.bubba8587.bubbas_reworked_mobs.world.NaturalSpawns;
 import java.util.UUID;
 
 import io.github.bubba8587.bubbas_reworked_mobs.BubbasReworkedMobs;
@@ -13,12 +14,9 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.Difficulty;
-import net.minecraft.world.attribute.EnvironmentAttributes;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EntityTypes;
-import net.minecraft.world.entity.MobCategory;
-import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.phys.Vec3;
@@ -119,21 +117,7 @@ public final class WatcherSpawning {
 
 	/** The highest cell in this column, from 4 above to 6 below {@code y}, where vanilla's rules let a creeper spawn. */
 	private static @Nullable BlockPos spawnCell(ServerLevel level, int x, int y, int z, RandomSource random) {
-		BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
-		for (int dy = 4; dy >= -6; dy--) {
-			pos.set(x, y + dy, z);
-			if (CoverFinder.standable(level, pos) && allowedHere(level, pos, random)) {
-				return pos.immutable();
-			}
-		}
-		return null;
-	}
-
-	/** Vanilla's rules for a natural creeper here: the biome lists creepers, and the creeper's spawn placement and light rules pass. */
-	private static boolean allowedHere(ServerLevel level, BlockPos cell, RandomSource random) {
-		boolean listed = level.environmentAttributes().getValue(EnvironmentAttributes.NATURAL_MOB_SPAWNS, cell)
-				.getMobsToSpawn(MobCategory.MONSTER).unwrap().stream().anyMatch(w -> w.value().type() == EntityTypes.CREEPER);
-		return listed && SpawnPlacements.isSpawnPositionOk(EntityTypes.CREEPER, level, cell)
-				&& SpawnPlacements.checkSpawnRules(EntityTypes.CREEPER, level, EntitySpawnReason.NATURAL, cell, random);
+		return NaturalSpawns.highest(x, y, z, 4, 6,
+				pos -> CoverFinder.standable(level, pos) && NaturalSpawns.allowed(level, EntityTypes.CREEPER, pos, random));
 	}
 }

@@ -175,15 +175,10 @@ public record SpiderNestFeature() implements Feature {
 			if (used.stream().anyMatch(u -> u.distManhattan(spot) < 2)) {
 				continue;
 			}
-			NestSpider spider = Spiders.NEST_SPIDER.create(server, EntitySpawnReason.STRUCTURE);
+			NestSpider spider = NestSpider.hanging(server, new Vec3(spot.getX() + 0.5, spot.getY() + 1.0, spot.getZ() + 0.5), random.nextFloat() * 360.0F);
 			if (spider == null) {
 				return;
 			}
-			float yaw = random.nextFloat() * 360.0F;
-			spider.setYRot(yaw);
-			spider.setYBodyRot(yaw);
-			spider.setYHeadRot(yaw);
-			spider.hangFrom(new Vec3(spot.getX() + 0.5, spot.getY() + 1.0, spot.getZ() + 0.5));
 			level.addFreshEntity(spider);
 			used.add(spot);
 		}

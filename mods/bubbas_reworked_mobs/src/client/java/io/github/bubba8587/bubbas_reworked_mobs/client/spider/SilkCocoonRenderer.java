@@ -2,9 +2,7 @@
 package io.github.bubba8587.bubbas_reworked_mobs.client.spider;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -34,13 +32,7 @@ public class SilkCocoonRenderer extends EntityRenderer<SilkCocoon, SilkCocoonRen
 		public List<PixelStrands.Pixel> pixels = List.of();
 	}
 
-	private static final class Cached {
-		String key;
-		long tick;
-		List<PixelStrands.Pixel> pixels = List.of();
-	}
-
-	private final Map<Integer, Cached> cache = new HashMap<>();
+	private final PixelStrands.Cache cache = new PixelStrands.Cache(REFRESH_TICKS, 128);
 
 	public SilkCocoonRenderer(EntityRendererProvider.Context context) {
 		super(context);
@@ -59,19 +51,9 @@ public class SilkCocoonRenderer extends EntityRenderer<SilkCocoon, SilkCocoonRen
 			state.pixels = List.of();
 			return;
 		}
-		Cached c = cache.computeIfAbsent(entity.getId(), id -> new Cached());
 		double texel = PixelStrands.texel();
 		String key = entity.position() + "|" + (int) victim.getYRot() + "|" + victim.getBbWidth() + "|" + victim.getBbHeight() + "|" + (int) entity.silk() + "|" + texel;
-		long now = entity.level().getGameTime();
-		if (!key.equals(c.key) || now - c.tick >= REFRESH_TICKS) {
-			c.pixels = build(entity, victim, texel);
-			c.key = key;
-			c.tick = now;
-		}
-		if (cache.size() > 128) {
-			cache.keySet().removeIf(id -> entity.level().getEntity(id) == null);
-		}
-		state.pixels = c.pixels;
+		state.pixels = cache.get(entity, key, () -> build(entity, victim, texel));
 	}
 
 	@Override

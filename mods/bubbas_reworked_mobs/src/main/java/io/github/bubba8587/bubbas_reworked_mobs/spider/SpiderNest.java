@@ -9,7 +9,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.level.Level;
@@ -149,14 +148,10 @@ public class SpiderNest extends Entity {
 			if (!level.getEntitiesOfClass(NestSpider.class, room).isEmpty()) {
 				continue;
 			}
-			NestSpider spider = Spiders.NEST_SPIDER.create(level, EntitySpawnReason.STRUCTURE);
+			NestSpider spider = NestSpider.hanging(level, anchor, rnd.nextFloat() * 360.0F);
 			if (spider == null) {
 				return null;
 			}
-			spider.setYRot(rnd.nextFloat() * 360.0F);
-			spider.setYBodyRot(spider.getYRot());
-			spider.setYHeadRot(spider.getYRot());
-			spider.hangFrom(anchor);
 			level.addFreshEntity(spider);
 			return spider;
 		}
