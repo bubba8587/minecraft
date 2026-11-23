@@ -468,12 +468,10 @@ public class CryptYardPiece extends StructurePiece {
 			}
 			if (state == YardKinds.State.SUNKEN) {
 				b.put(x, py, z, Blocks.AIR.defaultBlockState());
-				b.put(x, py - 1, z, soil < 0.6F ? Blocks.COARSE_DIRT.defaultBlockState() : Blocks.MUD.defaultBlockState());
+				b.put(x, py - 1, z, soil < 0.6F ? Blocks.COARSE_DIRT.defaultBlockState() : Blocks.ROOTED_DIRT.defaultBlockState());
 				continue;
 			}
-			b.put(x, py, z, climate == YardKinds.Climate.DESERT ? Blocks.SAND.defaultBlockState()
-					: climate == YardKinds.Climate.SNOWY ? Blocks.SNOW_BLOCK.defaultBlockState()
-					: soil < 0.65F ? Blocks.COARSE_DIRT.defaultBlockState() : Blocks.ROOTED_DIRT.defaultBlockState());
+			b.put(x, py, z, soil < 0.65F ? Blocks.COARSE_DIRT.defaultBlockState() : Blocks.ROOTED_DIRT.defaultBlockState());
 			if (plant < state.flowers) {
 				b.put(x, py + 1, z, trees.flower(plot));
 			} else if (plant < state.flowers + 0.25F) {

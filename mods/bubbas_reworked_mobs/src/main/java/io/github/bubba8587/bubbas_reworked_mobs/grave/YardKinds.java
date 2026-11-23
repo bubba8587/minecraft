@@ -54,11 +54,11 @@ public final class YardKinds {
 	 */
 	public enum State {
 		//              bars gone, one high, mossy posts, broken posts, posts gone, askew, fallen, open graves, stones gone, flowers
-		KEPT(0.0F, 0.0F, 0.1F, 0.0F, 0.0F, 0.1F, 0.0F, 0.0F, 0.0F, 0.35F),
-		OVERGROWN(0.12F, 0.18F, 0.35F, 0.0F, 0.0F, 0.25F, 0.1F, 0.0F, 0.0F, 0.15F),
-		SUNKEN(0.2F, 0.3F, 0.4F, 0.1F, 0.0F, 0.5F, 0.12F, 0.0F, 0.0F, 0.1F),
-		COLLAPSED(0.45F, 0.35F, 0.3F, 0.4F, 0.1F, 0.3F, 0.35F, 0.3F, 0.1F, 0.05F),
-		NEARLY_GONE(0.85F, 0.5F, 0.5F, 0.5F, 0.5F, 0.4F, 0.3F, 0.0F, 0.6F, 0.0F);
+		KEPT(0.0F, 0.0F, 0.1F, 0.0F, 0.0F, 0.02F, 0.0F, 0.0F, 0.0F, 0.35F),
+		OVERGROWN(0.12F, 0.18F, 0.35F, 0.0F, 0.0F, 0.05F, 0.1F, 0.0F, 0.0F, 0.15F),
+		SUNKEN(0.2F, 0.3F, 0.4F, 0.1F, 0.0F, 0.1F, 0.12F, 0.0F, 0.0F, 0.1F),
+		COLLAPSED(0.45F, 0.35F, 0.3F, 0.4F, 0.1F, 0.1F, 0.35F, 0.3F, 0.1F, 0.05F),
+		NEARLY_GONE(0.85F, 0.5F, 0.5F, 0.5F, 0.5F, 0.12F, 0.3F, 0.0F, 0.6F, 0.0F);
 
 		final float barsGone;
 		final float oneHigh;

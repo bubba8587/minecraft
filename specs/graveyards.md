@@ -48,7 +48,8 @@ Owner's design (2026-11-22). Part 1's worldgen (`specs/undead.md` "Worldgen"): t
 - **One soul lantern per yard,** outside: on one gate post.
 - **Trees and plants belong in yards, placed on purpose:** wild trees are cleared out of a yard, and the yard plants its own (one or two, by biome) plus flowers on some graves.
 - **No yards in the sea:** biome rules, like vanilla's structures, rather than scanning for water. The yard's biome tag has no oceans, rivers or beaches, and every corner must be in it. (The yard the owner saw in water was one a test built by command on a river; the test now picks dry ground.)
-- **Plots are coarse or rooted dirt,** so grass doesn't grow over them.
+- **Plots are coarse or rooted dirt,** so grass doesn't grow over them, in every climate and state (owner, 2026-11-23: no sand, snow or mud on grave tops).
+- **Gravestones stand straight;** only a few are turned askew (2 % kept, 5 % overgrown, 10-12 % in the worse states; owner, 2026-11-23).
 - **A grave lies on one level:** the sleeper under both plot blocks, so the plot blocks, the sleeper and the stone's footing share a y (the first build followed each column's ground and left some plots one up, one down).
 
 ## How it's built (step 1, 2026-11-22; step 2 changes below)
