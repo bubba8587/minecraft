@@ -51,6 +51,22 @@ Parked ideas and open items, newest first within each project. Agents add to it 
 - Player docs: a gem-in-beacon screen screenshot (client test) once the beacon screen is final.
 
 ## Repo
+- **Multiplayer check (owner, 2026-11-22: "make sure these mods work in multiplayer"; light scan done, the rest is here).** Scan results:
+  - No client classes are used in common code.
+  - All the per-thing state is keyed by level or entity (WeakHashMaps), not by a single player. The Seeking cache clears on server stop.
+  - Every mod has an `environment: "*"` main entrypoint and a client-only client entrypoint.
+  - The test world build already runs every mod together on a dedicated Fabric server, so server-side loading is proven.
+
+  Still to do:
+  1. **Client joining a dedicated server:** never tested. Add a client game test that starts a dedicated server with all our mods and joins it, or have a playtest on a LAN or real server with two players.
+  2. **Two players at once:** check the per-player features with two real players:
+     - one watcher creeper per player, each player's own meters;
+     - Fabricator debuffs and the Warden;
+     - Keeping and Seeking totems;
+     - camp and nest triggers, a drowned or spider holding one player while another hits it;
+     - endermen trading at cairns once it's built.
+  3. **Threads:** the static WeakHashMaps aren't thread-safe. Confirm that each is only touched on the server thread, and that none is touched from the client thread in single player (e.g. `WornEffects.LAST_SNEAK` if it is ever reached from client-side entity ticks).
+  4. **Player docs:** say which mods every player needs installed. All of them register content, so all are needed on client and server; vanilla clients can't join.
 - **Compatibility tests before releases** (prior-art research, docs/research/prior-art-all-projects-2026-11-16.md): Reworked Beacons vs Beyond Basic Beacons / Potion Beacons (likely mark incompatible) and Underground Beacons / Extended Beacon Range (test); Warding pathing vs Lithium; Infused Gems' enchanting hooks vs Easy Magic; Glider turning vs Do a Barrel Roll; Totem of Keeping vs grave mods (dupes/loss).
 - Test world stations for features that have none yet (list in `specs/testworld.md`, "No station yet"), when the owner wants to playtest them.
 - Owner to read and ratify (or rewrite) the goal drafts A1-A4 (`python3 tools/dte.py unratified`).
