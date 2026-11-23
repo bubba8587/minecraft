@@ -35,8 +35,10 @@ The owner never runs builds or tests; agents keep this loop fast unprompted (CLA
 | Test world screenshot tour (`:testworldshots:runClientGameTest`, 128 shots, all mods) | - | ~50 s | spectator + `tp` per shot, waits only for chunk render + 5 ticks (owner PC, 2026-11-15) |
 | Extra Recipes: server tests after a change (`-PrerunGametests`) | 11-13 s full (12 tests) | ~10 s core (4 now) | test-lite core suite; server boot (~9 s) is the floor (owner PC, 2026-11-15) |
 | Infused Gems: server tests after a change | 12-15 s full (80 then, about 86 now) | ~10 s core (8 now) | same |
-| Reworked Mobs: server tests after a change | 14-15 s full (61 then) | ~10 s core (12 then; 34 on 2026-11-22, not re-timed) | same |
-| Reworked Beacons: server tests after a change | not measured yet | core (4) | |
+| Reworked Mobs: server tests after a change | 28.6 s core (34 tests, 2026-11-22) | 19.7 s core (12), full suite ~23-38 s (125) | core trimmed to one smoke test per mechanic (owner PC, 2026-11-22) |
+| Reworked Beacons: server tests after a change | not measured yet | core (5) | |
+| Infused Gems: full suite (`-PmilestoneTests`) | - | 23.8 s whole build (76), core 15.3 s (8) | core loot check is 8 rolls a table, not 16,000 (owner PC, 2026-11-22) |
+| refmod: server tests on every build | 22 tests | 3 core | test-lite applied 2026-11-22 |
 | Client tests on the default loop (per mod) | 32 s (Extra Recipes), 40 s+ (Infused Gems), 59 s (Reworked Mobs), 72 s (tour) | 0 s (skipped); one part 25 s | client tests and the tour are milestone; agents run only the parts they changed (owner PC, 2026-11-15) |
 | Switching suites (`-PmilestoneTests` on or off) | - | +2-3 s once | configuration cache entry per property set, gametest resources reprocessed |
 | `pack.py check` / `packload.py` / `packtest.py` | - | 0.4 s / 15 s / 14 s | fast enough to stay on every push (owner PC, 2026-11-15) |
@@ -61,8 +63,9 @@ does nothing on the test server (only a test's first attempt counts): don't use 
 Chase one test with `-PgametestFilter=<selector>`.
 
 Still unexplained and not seen since these fixes: the light engine standing still (`strongLightCalmsSleepersInWorld`)
-and a drowned freezing mid-water at path node 2 (`swimsToALurkSpotNearThePlayer`). Open flakes in the Fabricator tests
-are listed in `BACKLOG.md`.
+and a drowned freezing mid-water at path node 2 (`swimsToALurkSpotNearThePlayer`). The Fabricator flakes were two tests' sites overlapping
+and one test un-forcing another's chunks: fixed 2026-11-22 (fixed site origins x 30000 + n·256, forced chunks counted,
+`TestCleanup` runs on failure too). Open flakes are listed in `BACKLOG.md`.
 
 ### Causes found and fixed (2026-11-16)
 
