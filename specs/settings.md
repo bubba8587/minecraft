@@ -1,4 +1,6 @@
-# Settings (spec, design 2026-11-22, not built)
+# Settings (spec, design 2026-11-22, not built; low priority, owner 2026-11-22)
+
+**Priority:** build after the content and cleanup work in flight; don't take a builder off features for it.
 
 Owner (2026-11-22): every mod should have settings. "Whatever is best" on how they work and what they cover. These are the choices made on that basis. Could become a B leaf if the owner wants it kept as a product rule.
 
