@@ -48,6 +48,7 @@ Minecraft renames things every release and memory from older versions is wrong m
 1. Read the relevant file in `docs/knowledge/` (index: `docs/knowledge/README.md`).
 2. Check every class and method you use against the decompiled source. Run `./gradlew :<mod>:genSources` once per Minecraft version, then `python3 tools/mcsrc.py` to unpack it into `build/mcsrc/` (common, client, vanilla data/assets) for grepping. Fabric API source: clone `FabricMC/fabric-api` at the branch named after the Minecraft version. Its testmods are the best examples.
 3. When the docs and the source disagree, the source wins; fix the doc in the same change.
+4. **Use vanilla subsystems (owner):** before writing any search, scan, timer or mob movement, check `specs/vanilla-subsystems.md`. Use vanilla's entity selectors, targeting conditions, block and POI searches and AI goals instead of hand-rolling them; when vanilla doesn't fit, say why in a code comment.
 
 ## Layout (`specs/build.md`)
 
