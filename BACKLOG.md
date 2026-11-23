@@ -4,6 +4,7 @@
 Parked ideas and open items, newest first within each project. Agents add to it when the owner parks something; details live in the linked spec.
 
 ## Bubba's Reworked Mobs
+- **Owner picks, 2026-11-22 (not built):** totem statues give their totem's effect in a very small radius (`specs/totems-artifacts.md`); noble crypt sleepers in gemmed armor with Infused Gems (`specs/graveyards.md`); drowned sleepers in shipwreck interiors (`specs/undead.md`).
 - **Endermen trading at cairns** (owner, 2026-11-22; `specs/endermen.md` "Trading at cairns", not built): lay anything on a cairn's trade pad, an enderman takes it once you're away and returns with something random, sometimes good, sometimes weird.
 - **Spiders** (owner, 2026-11-22; design in `specs/spiders.md`, not built): cobweb nests at the tops of tall cave rooms with sleeper spiders that drop on a thread; a landed hit latches and reels you up (the drowned grab, upward). Giant spiders with webs between trees in old-growth taiga (details open).
 - **Why challenge a Fabricator? (owner raised 2026-11-16, then skipped the options for now).** Today: two beacons, iron pyramids, office loot, the perfect gem in the floor beacon, farming limp mobs. Options offered: it feeds its region's surface spawns of its mob type (break it, that mob gets rare round there; recommended), capture it as a farm (powered lodestone), a prize found only there (at the intake chamber), office paperwork leading to the next Fabricator. Loot buffed 2026-11-22 (owner: rewarding, Warden stays vanilla). `specs/mob-factory.md`.

@@ -53,6 +53,10 @@ Dormant undead are real blocks, not entities or display-entity pseudo-blocks. Th
 
 A sleeper lying somewhere lower than its mob is tall (a crypt wall niche under a slab, a shallow grave) used to wake into a box overlapping blocks: no suffocation (eyes clear a half slab) but stuck. `SleeperWaking.stepOutIfStuck` now moves it to the nearest free spot: beside it on the same level first (a niche's open side), then one up, then diagonals; with none it stays. Milestone test `BubbasReworkedMobsGameTest.sleeperInANicheStepsOutWhenItWakes`.
 
+## Drowned sleepers in shipwrecks (owner, 2026-11-22, not built)
+
+- A **drowned sleeper** variant, placed inside **shipwreck interiors** (the cabins and hold): the ship's drowned crew, waking like other sleepers. Underwater sleepers are waterlogged already (`SleeperBlock.WATERLOGGED`). Shipwrecks are vanilla structures, so they're added by a structure processor or a placement hook. (Sunken graveyards: no, owner.)
+
 ## Fire as a weak ward (owner idea, 2026-11-22, not built)
 
 - A lit **campfire** (and soul campfire) or plain **fire** works as a **weak ward**: hostile mobs are reluctant to come close (a few blocks), like a small, soft version of the Totem of Warding (`specs/totems-artifacts.md`). It is a deterrent, not a wall. **Only mobs that would fear fire** (owner, 2026-11-22): nothing that's immune to fire or at home in it, so no Nether mobs (blazes, ghasts, magma cubes, piglins, hoglins, wither skeletons, striders...) and no other fire-immune mob. In practice, a mob that takes fire damage and isn't from the Nether (for example `fireImmune()` false and not in a Nether-mob tag). Details (radius, whether a hunting mob still pushes through) to be proposed.

@@ -290,6 +290,10 @@ Owner's goal (2026-11-15): mob-free zones without spamming torches. Owner decisi
 - 4 layers: **sleepers inside stay asleep** (`Sleepers.keepAsleep` for the ward's area).
 - `Wards.put(level, key, AABB, keepsSleepersAsleep, lifetimeTicks)` lapses unless refreshed: refreshed every 80-tick beacon pulse for 100 ticks (`WARD_DEFAULT_LIFETIME_TICKS`), so a ward ends about 5 s after its beacon stops. One map lookup when no ward exists.
 
+### Statues give their totem's effect (owner, 2026-11-22, not built)
+
+- A placed totem statue gives its totem's area effect in a **very small radius** (a few blocks), weaker than the same totem in a beacon: a Warding statue keeps a doorway clear, a Growth statue a garden bed, a Gathering statue pulls drops into a chest beside it, and so on. Builder proposes each statue's version and radius. Totems with no area form (Keeping, the End's teleport) give nothing as statues.
+
 ### Totem statue (block, B15 exception)
 
 - `bubbas_totems_artifacts:totem_statue` ("Totem Statue"). **B15 reason (owner-approved, 2026-11-16):** one shared block for every totem, so a found totem can be set down as decoration.
