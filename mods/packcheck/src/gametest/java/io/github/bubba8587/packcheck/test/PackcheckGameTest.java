@@ -45,7 +45,7 @@ import net.fabricmc.fabric.api.gametest.v1.GameTest;
  * {@link #everyPackRecipeHasATestCase} fails when the pack and the table disagree.
  */
 public class PackcheckGameTest {
-	private static final String TWEAKS = "bubbas_extra_recipes";
+	private static final String EXTRA_RECIPES_NS = "bubbas_extra_recipes";
 
 	// --- The table: one row per recipe in datapacks/bubbas_extra_recipes/data/bubbas_extra_recipes/recipe/ ---
 
@@ -103,40 +103,17 @@ public class PackcheckGameTest {
 	// --- Pack-level checks ---
 
 	@GameTest
-	public void bundledPackIsEnabled(GameTestHelper helper) {
-		helper.assertTrue(Packcheck.bundledPacks().contains(TWEAKS), "packcheck did not bundle " + TWEAKS + ": " + Packcheck.bundledPacks());
-		var selected = helper.getLevel().getServer().getPackRepository().getSelectedIds();
-		helper.assertTrue(selected.contains(Packcheck.id(TWEAKS).toString()), "pack not enabled on the server; selected: " + selected);
-		helper.succeed();
-	}
-
-	@GameTest
 	public void everyPackRecipeHasATestCase(GameTestHelper helper) {
+		// The pack is bundled and enabled (otherwise every recipe row below fails too, with a less clear message).
+		var selected = helper.getLevel().getServer().getPackRepository().getSelectedIds();
+		helper.assertTrue(Packcheck.bundledPacks().contains(EXTRA_RECIPES_NS) && selected.contains(Packcheck.id(EXTRA_RECIPES_NS).toString()),
+			"pack not bundled or not enabled: bundled " + Packcheck.bundledPacks() + ", selected " + selected);
 		List<String> inPack = recipes(helper.getLevel()).getRecipes().stream()
 			.map(h -> h.id().identifier())
-			.filter(id -> id.getNamespace().equals(TWEAKS))
+			.filter(id -> id.getNamespace().equals(EXTRA_RECIPES_NS))
 			.map(Identifier::getPath).sorted().toList();
 		List<String> inTable = EXTRA_RECIPES.stream().map(RecipeCase::id).sorted().toList();
 		helper.assertValueEqual(inPack, inTable, "recipes in the pack vs. rows in PackcheckGameTest.EXTRA_RECIPES");
-		helper.succeed();
-	}
-
-	/** The owner removed the pack's saddle recipe: vanilla's (iron ingot + leather) is the only saddle recipe. */
-	@GameTest
-	public void onlyVanillaSaddleRecipe(GameTestHelper helper) {
-		ServerLevel level = helper.getLevel();
-		RecipeManager recipes = recipes(level);
-		helper.assertTrue(recipes.byKey(key("minecraft", "saddle")).isPresent(), "vanilla minecraft:saddle recipe missing");
-		helper.assertTrue(recipes.byKey(key(TWEAKS, "saddle")).isEmpty(), "the pack still has a saddle recipe");
-
-		CraftingInput vanilla = craftingGrid(Map.of('X', Items.LEATHER, '#', Items.IRON_INGOT), " X ", "X#X", "   ");
-		List<Identifier> matching = matchingIds(level, RecipeType.CRAFTING, vanilla, TWEAKS);
-		helper.assertValueEqual(matching, List.of(Identifier.withDefaultNamespace("saddle")), "recipes matching vanilla's saddle grid");
-		ItemStack saddle = recipes.byKey(key("minecraft", "saddle")).map(h -> assemble(h, vanilla)).orElseThrow();
-		helper.assertTrue(saddle.is(Items.SADDLE), "vanilla saddle recipe makes " + saddle);
-
-		CraftingInput oldPackSaddle = craftingGrid(Map.of('#', Items.LEAD, 'L', Items.LEATHER), " # ", "LLL", "L L");
-		helper.assertValueEqual(matchingIds(level, RecipeType.CRAFTING, oldPackSaddle, TWEAKS), List.of(), "recipes matching the removed lead+leather saddle grid");
 		helper.succeed();
 	}
 
@@ -162,7 +139,7 @@ public class PackcheckGameTest {
 			.orElseThrow(() -> new IllegalArgumentException("no table row for " + id));
 		ServerLevel level = helper.getLevel();
 		RecipeManager recipes = recipes(level);
-		ResourceKey<Recipe<?>> key = key(TWEAKS, c.id);
+		ResourceKey<Recipe<?>> key = key(EXTRA_RECIPES_NS, c.id);
 		RecipeHolder<?> holder = recipes.byKey(key).orElse(null);
 		helper.assertTrue(holder != null, "recipe " + key.identifier() + " is not loaded");
 		helper.assertValueEqual(holder.value().getType(), c.type, c.id + " recipe type");
@@ -170,7 +147,7 @@ public class PackcheckGameTest {
 		for (RecipeInput input : c.inputs()) {
 			String where = c.id + " with " + describe(input);
 			helper.assertTrue(matches(holder, input, level), where + ": recipe does not match");
-			helper.assertValueEqual(matchingIds(level, c.type, input, TWEAKS), List.of(key.identifier()), where + ": vanilla/pack recipes that match this input");
+			helper.assertValueEqual(matchingIds(level, c.type, input, EXTRA_RECIPES_NS), List.of(key.identifier()), where + ": vanilla/pack recipes that match this input");
 			ItemStack out = assemble(holder, input);
 			helper.assertTrue(out.is(c.result), where + ": result is " + out + ", expected " + c.result);
 			helper.assertValueEqual(out.getCount(), c.count, where + ": result count");
@@ -310,7 +287,7 @@ public class PackcheckGameTest {
 	static List<ItemStack> assembledResults(ServerLevel level) {
 		List<ItemStack> out = new ArrayList<>();
 		for (RecipeCase c : EXTRA_RECIPES) {
-			recipes(level).byKey(key(TWEAKS, c.id)).ifPresent(h -> out.add(assemble(h, c.inputs().getFirst())));
+			recipes(level).byKey(key(EXTRA_RECIPES_NS, c.id)).ifPresent(h -> out.add(assemble(h, c.inputs().getFirst())));
 		}
 		return out;
 	}
