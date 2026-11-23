@@ -146,7 +146,7 @@ public class GravesGameTest {
 		io.github.bubba8587.bubbas_reworked_mobs.undead.sleeper.SleeperBells.rang(level, helper.absolutePos(new BlockPos(9, 1, 4)), null);
 		helper.assertFalse(resting.isWakePending(), "the resting dead woke at a bell");
 		// Robbed by a player (sensitivity 10 makes an ordinary sleeper's robbery wake roll certain).
-		net.minecraft.server.level.ServerPlayer player = SleeperNoiseGameTest.survivalPlayer(helper);
+		net.minecraft.server.level.ServerPlayer player = TestPlayers.survival(helper);
 		player.snapTo(helper.absoluteVec(new net.minecraft.world.phys.Vec3(8.5, 1.0, 6.5)));
 		BlockPos abs = helper.absolutePos(restingPos);
 		player.gameMode.useItemOn(player, level, player.getMainHandItem(), net.minecraft.world.InteractionHand.MAIN_HAND,

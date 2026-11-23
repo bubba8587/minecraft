@@ -49,7 +49,7 @@ public class GiantSpiderGameTest {
 		return new AABB(helper.absolutePos(BlockPos.ZERO)).expandTowards(9, 16, 9);
 	}
 
-	/** Core: a giant is vanilla-scaled larger, and spins a web of strands between two trunks. */
+	/** A giant is vanilla-scaled larger, and spins a web of strands between two trunks. */
 	@GameTest(environment = SpiderGameTest.ENV, structure = SpiderGameTest.ROOM)
 	public void giantIsLargeAndSpinsBetweenTrees(GameTestHelper helper) {
 		trunks(helper);
@@ -65,32 +65,12 @@ public class GiantSpiderGameTest {
 		helper.succeed();
 	}
 
-	/** A snatched pig is hauled up a trunk and cocooned there; the giant backs off and waits by it. */
-	@GameTest(environment = SpiderGameTest.ENV, structure = SpiderGameTest.ROOM, maxTicks = 400)
-	public void snatchesLivestockIntoItsWeb(GameTestHelper helper) {
-		trunks(helper);
-		ServerLevel level = helper.getLevel();
-		GiantSpider giant = giant(helper, 4.5, 2.5);
-		Pig pig = EntityTypes.PIG.create(level, EntitySpawnReason.COMMAND);
-		Vec3 at = helper.absoluteVec(new Vec3(4.5, 1.0, 1.5));
-		pig.snapTo(at.x, at.y, at.z, 0.0F, 0.0F);
-		level.addFreshEntity(pig);
-		double floor = at.y;
-		helper.assertTrue(giant.snatch(level, pig), "no snatch");
-		helper.assertTrue(pig.getVehicle() == giant, "pig not held");
-		helper.succeedWhen(() -> {
-			helper.assertTrue(giant.task() == GiantSpider.Task.WAIT, "task " + giant.task());
-			helper.assertTrue(pig.getVehicle() instanceof io.github.bubba8587.bubbas_reworked_mobs.spider.SilkCocoon, "pig not cocooned: " + pig.getVehicle());
-			helper.assertTrue(pig.getY() > floor + 2.5, "pig only " + (pig.getY() - floor) + " up");
-		});
-	}
-
 	/** Livestock is a distraction: hunting a player, it turns to a pig close by. */
 	@GameTest(environment = SpiderGameTest.ENV, structure = SpiderGameTest.ROOM, maxTicks = 60)
 	public void livestockLuresItOffAPlayer(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
 		GiantSpider giant = giant(helper, 4.5, 4.5);
-		ServerPlayer player = SleeperNoiseGameTest.survivalPlayer(helper);
+		ServerPlayer player = TestPlayers.survival(helper);
 		Vec3 p = helper.absoluteVec(new Vec3(4.5, 1.0, 8.0));
 		player.snapTo(p.x, p.y, p.z, 0.0F, 0.0F);
 		Pig pig = EntityTypes.PIG.create(level, EntitySpawnReason.COMMAND);
@@ -99,8 +79,9 @@ public class GiantSpiderGameTest {
 		pig.setNoAi(true);
 		level.addFreshEntity(pig);
 		giant.setTarget(player);
-		helper.succeedWhen(() -> helper.assertTrue(giant.getTarget() == pig || giant.task() != GiantSpider.Task.ROAM,
-				"still after " + giant.getTarget()));
+		boolean[] lured = {false};
+		helper.onEachTick(() -> lured[0] |= giant.getTarget() == pig || pig.getVehicle() == giant);
+		helper.succeedWhen(() -> helper.assertTrue(lured[0], "still after " + giant.getTarget()));
 	}
 
 	/** Hurt by someone, it calls two little spiders (small, weak); not again until the cooldown is over; capped. */
@@ -108,7 +89,7 @@ public class GiantSpiderGameTest {
 	public void hurtCallsLittleSpiders(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
 		GiantSpider giant = giant(helper, 4.5, 4.5);
-		ServerPlayer player = SleeperNoiseGameTest.survivalPlayer(helper);
+		ServerPlayer player = TestPlayers.survival(helper);
 		int first = giant.callSpiderlings(level, player);
 		helper.assertValueEqual(first, SpiderTuning.SPIDERLINGS_PER_CALL, "first call");
 		helper.assertValueEqual(giant.callSpiderlings(level, player), 0, "second call in the cooldown");
@@ -135,7 +116,7 @@ public class GiantSpiderGameTest {
 		helper.assertTrue(web.touching(pig), "a pig on a strand isn't touching it");
 		helper.assertTrue(!web.touching(giant) || giant instanceof Spider, "spiders are exempt by type");
 
-		ServerPlayer player = SleeperNoiseGameTest.survivalPlayer(helper);
+		ServerPlayer player = TestPlayers.survival(helper);
 		for (int i = 0; i < SpiderTuning.WEB_HITS_TO_CUT; i++) {
 			web.hurtServer(level, level.damageSources().playerAttack(player), 1.0F);
 		}

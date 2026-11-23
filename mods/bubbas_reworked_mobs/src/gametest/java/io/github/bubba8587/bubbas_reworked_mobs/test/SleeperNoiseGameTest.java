@@ -2,11 +2,8 @@
 package io.github.bubba8587.bubbas_reworked_mobs.test;
 
 import java.util.List;
-import java.util.UUID;
-import java.util.function.IntConsumer;
 import java.util.function.IntFunction;
 
-import com.mojang.authlib.GameProfile;
 import io.github.bubba8587.bubbas_reworked_mobs.registry.ModBlocks;
 import io.github.bubba8587.bubbas_reworked_mobs.registry.ModEntities;
 import io.github.bubba8587.bubbas_reworked_mobs.registry.ModTags;
@@ -16,15 +13,11 @@ import io.github.bubba8587.bubbas_reworked_mobs.undead.UndeadVariant;
 import io.github.bubba8587.bubbas_reworked_mobs.undead.sleeper.SleeperBlock;
 import io.github.bubba8587.bubbas_reworked_mobs.undead.sleeper.SleeperBlockEntity;
 import io.github.bubba8587.bubbas_reworked_mobs.undead.sleeper.SleeperWaking;
-import io.netty.channel.embedded.EmbeddedChannel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.network.Connection;
-import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.network.CommonListenerCookie;
 import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
@@ -36,7 +29,6 @@ import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.BlockHitResult;
@@ -63,32 +55,11 @@ public class SleeperNoiseGameTest {
 		return helper.getBlockEntity(pos, SleeperBlockEntity.class);
 	}
 
-	/** A real survival player in the level (the helper's own in-level mock player is creative). */
-	static ServerPlayer survivalPlayer(GameTestHelper helper) {
-		ServerLevel level = helper.getLevel();
-		CommonListenerCookie cookie = CommonListenerCookie.createInitial(new GameProfile(UUID.randomUUID(), "test-survivor"), false);
-		ServerPlayer player = new ServerPlayer(level.getServer(), level, cookie.gameProfile(), cookie.clientInformation()) {
-			@Override
-			public GameType gameMode() {
-				return GameType.SURVIVAL;
-			}
-		};
-		Connection connection = new Connection(PacketFlow.SERVERBOUND);
-		new EmbeddedChannel(connection);
-		level.getServer().getPlayerList().placeNewPlayer(connection, player, cookie);
-		GameType.SURVIVAL.updatePlayerAbilities(player.getAbilities());
-		return player;
-	}
-
 	private static ServerPlayer at(GameTestHelper helper, ServerPlayer player, double x, double z) {
 		Vec3 abs = helper.absoluteVec(new Vec3(x, 1.0, z));
 		player.snapTo(abs.x, abs.y, abs.z, 0.0F, 0.0F);
 		player.setOnGround(true);
 		return player;
-	}
-
-	private static void remove(GameTestHelper helper, ServerPlayer player) {
-		helper.getLevel().getServer().getPlayerList().remove(player);
 	}
 
 	private record Run(int wokeAt, float peak) {
@@ -174,7 +145,7 @@ public class SleeperNoiseGameTest {
 	public void sprintingCirclesWakeWithinASecond(GameTestHelper helper) {
 		BlockPos pos = new BlockPos(12, 1, 8);
 		SleeperBlockEntity sleeper = sleeper(helper, UndeadVariant.ZOMBIE, pos);
-		ServerPlayer player = at(helper, survivalPlayer(helper), 18.5, 8.5);
+		ServerPlayer player = at(helper, TestPlayers.survival(helper), 18.5, 8.5);
 		player.setSprinting(true);
 		Vec3 centre = helper.absoluteVec(new Vec3(12.5, 1.0, 8.5));
 		double radius = 6.0;
@@ -188,7 +159,7 @@ public class SleeperNoiseGameTest {
 			later(helper, 10, () -> {
 				Monster mob = (Monster) helper.findOneEntity(ModEntities.woken(UndeadVariant.ZOMBIE));
 				helper.assertTrue(mob.getTarget() == player, "a survival player who wakes it is its target: " + mob.getTarget());
-				remove(helper, player);
+				TestPlayers.remove(helper, player);
 				helper.succeed();
 			});
 		});
@@ -198,12 +169,12 @@ public class SleeperNoiseGameTest {
 	@GameTest(environment = "bubbas_reworked_mobs-test:noise_sprint_pass", structure = FIELD, maxTicks = 120)
 	public void sprintingPastWakes(GameTestHelper helper) {
 		SleeperBlockEntity sleeper = sleeper(helper, UndeadVariant.SKELETON, new BlockPos(12, 1, 2));
-		ServerPlayer player = at(helper, survivalPlayer(helper), 0.5, 8.5);
+		ServerPlayer player = at(helper, TestPlayers.survival(helper), 0.5, 8.5);
 		player.setSprinting(true);
 		drive(helper, player, sleeper, 80, straight(SPRINT), run -> {
 			int passed3 = (int) Math.ceil((15.5 - 0.5) / SPRINT); // the tick the player is 3 blocks past the sleeper
 			helper.assertTrue(run.wokeAt() > 0 && run.wokeAt() <= passed3, "sprint pass at 6: woke at tick " + run.wokeAt() + " (want <= " + passed3 + ")");
-			remove(helper, player);
+			TestPlayers.remove(helper, player);
 			helper.succeed();
 		});
 	}
@@ -228,7 +199,7 @@ public class SleeperNoiseGameTest {
 		helper.assertFalse(placing.isWakePending(), "one block placed 4 blocks away woke it");
 		place(helper, player, new BlockPos(16, 0, 12));
 		helper.assertTrue(placing.isWakePending(), "two blocks placed 4 blocks away did not wake it: " + placing.getDisturbance(helper.getLevel().getGameTime()));
-		remove(helper, player);
+		TestPlayers.remove(helper, player);
 		helper.succeed();
 	}
 
@@ -256,7 +227,7 @@ public class SleeperNoiseGameTest {
 			later(helper, 12, () -> {
 				jump.run();
 				helper.assertTrue(sleeper.isWakePending(), "three landings 3.5 blocks away did not wake it: " + sleeper.getDisturbance(helper.getLevel().getGameTime()));
-				remove(helper, player);
+				TestPlayers.remove(helper, player);
 				helper.succeed();
 			});
 		});
@@ -274,7 +245,7 @@ public class SleeperNoiseGameTest {
 		helper.runAfterDelay(12, () -> { // past the pig's hurt cooldown
 			pig.hurtServer(level, level.damageSources().playerAttack(player), 1.0F);
 			helper.assertTrue(sleeper.isWakePending(), "two hits 3 blocks away did not wake it: " + sleeper.getDisturbance(level.getGameTime()));
-			remove(helper, player);
+			TestPlayers.remove(helper, player);
 			helper.succeed();
 		});
 	}
@@ -304,7 +275,7 @@ public class SleeperNoiseGameTest {
 			later(helper, 10, () -> {
 				Monster mob = (Monster) helper.findOneEntity(ModEntities.woken(UndeadVariant.SKELETON));
 				helper.assertTrue(mob.getTarget() == null, "a creative waker is not targeted: " + mob.getTarget());
-				remove(helper, player);
+				TestPlayers.remove(helper, player);
 				helper.succeed();
 			});
 		});
@@ -314,7 +285,7 @@ public class SleeperNoiseGameTest {
 	@GameTest(environment = "bubbas_reworked_mobs-test:noise_walk_far", structure = FIELD, maxTicks = 240)
 	public void walkingAt7OrSprintingAt11DoesNotWake(GameTestHelper helper) {
 		SleeperBlockEntity sleeper = sleeper(helper, UndeadVariant.ZOMBIE, new BlockPos(12, 1, 2));
-		ServerPlayer player = at(helper, survivalPlayer(helper), 0.5, 9.5);
+		ServerPlayer player = at(helper, TestPlayers.survival(helper), 0.5, 9.5);
 		drive(helper, player, sleeper, 100, straight(WALK), walk -> {
 			helper.assertTrue(walk.wokeAt() < 0, "walking past at 7 woke it (peak " + walk.peak() + ")");
 			helper.assertTrue(walk.peak() > 0.0F, "it heard nothing at all: the test can't tell");
@@ -322,7 +293,7 @@ public class SleeperNoiseGameTest {
 			player.setSprinting(true);
 			drive(helper, player, sleeper, 80, straight(SPRINT), sprint -> {
 				helper.assertTrue(sprint.wokeAt() < 0, "sprinting past at 11 woke it (peak " + sprint.peak() + ")");
-				remove(helper, player);
+				TestPlayers.remove(helper, player);
 				helper.succeed();
 			});
 		});
@@ -332,7 +303,7 @@ public class SleeperNoiseGameTest {
 	@GameTest(environment = "bubbas_reworked_mobs-test:noise_sneak", structure = FIELD, maxTicks = 200)
 	public void sneakingPastAt2IsSilent(GameTestHelper helper) {
 		SleeperBlockEntity sleeper = sleeper(helper, UndeadVariant.ZOMBIE, new BlockPos(12, 1, 2));
-		ServerPlayer player = at(helper, survivalPlayer(helper), 0.5, 4.5);
+		ServerPlayer player = at(helper, TestPlayers.survival(helper), 0.5, 4.5);
 		player.setShiftKeyDown(true);
 		drive(helper, player, sleeper, 70, straight(0.065), sneak -> { // vanilla sneaking speed
 			helper.assertTrue(player.isSteppingCarefully(), "player not sneaking");
@@ -340,7 +311,7 @@ public class SleeperNoiseGameTest {
 			player.setShiftKeyDown(false);
 			drive(helper, player, sleeper, 60, straight(WALK), walk -> {
 				helper.assertTrue(walk.wokeAt() > 0, "walking the same path 2 blocks out did not wake it (peak " + walk.peak() + ")");
-				remove(helper, player);
+				TestPlayers.remove(helper, player);
 				helper.succeed();
 			});
 		});
@@ -353,7 +324,7 @@ public class SleeperNoiseGameTest {
 	@GameTest(environment = "bubbas_reworked_mobs-test:noise_single_step", structure = FIELD, maxTicks = 400)
 	public void smallNoisesSettle(GameTestHelper helper) {
 		SleeperBlockEntity sleeper = sleeper(helper, UndeadVariant.SKELETON, new BlockPos(12, 1, 2));
-		ServerPlayer player = at(helper, survivalPlayer(helper), 11.0, 7.5);
+		ServerPlayer player = at(helper, TestPlayers.survival(helper), 11.0, 7.5);
 		drive(helper, player, sleeper, 8, straight(WALK), step -> { // 1.7 blocks: exactly one footstep
 			helper.assertTrue(step.peak() > 0.0F && step.peak() < UndeadTuning.STIR_THRESHOLD, "one step at 5 blocks: meter " + step.peak());
 			at(helper, player, 0.5, 7.5);
@@ -362,7 +333,7 @@ public class SleeperNoiseGameTest {
 				helper.assertTrue(pass.peak() >= UndeadTuning.STIR_THRESHOLD, "walking past at 5 should stir it: peak " + pass.peak());
 				long settled = helper.getLevel().getGameTime() + 200;
 				helper.assertValueEqual(sleeper.getDisturbance(settled), 0.0F, "meter 10 s later");
-				remove(helper, player);
+				TestPlayers.remove(helper, player);
 				helper.succeed();
 			});
 		});
@@ -380,17 +351,21 @@ public class SleeperNoiseGameTest {
 			}
 		}
 		SleeperBlockEntity sleeper = sleeper(helper, UndeadVariant.SKELETON, new BlockPos(12, 1, 2));
-		ServerPlayer player = at(helper, survivalPlayer(helper), 0.5, 7.5);
+		ServerPlayer player = at(helper, TestPlayers.survival(helper), 0.5, 7.5);
 		player.setSprinting(true);
 		drive(helper, player, sleeper, 80, straight(SPRINT), run -> {
 			helper.assertTrue(run.wokeAt() < 0, "heard through 2 blocks of stone (peak " + run.peak() + ")");
 			helper.assertTrue(run.peak() > 0.0F, "heard nothing at all: the test can't tell");
-			remove(helper, player);
+			TestPlayers.remove(helper, player);
 			helper.succeed();
 		});
 	}
 
-	/** One neighbour waking wakes sleepers within about 6 blocks at once (default sensitivity), not ones 10 blocks off. */
+	/**
+	 * One neighbour waking wakes sleepers within about 6 blocks at once (default sensitivity), not ones 10 blocks off;
+	 * and however many sleepers hear one awaken event, at most {@code AWAKEN_CAP} of them wake (a ring of eight that hear
+	 * anything, round a second waker in another corner of the field).
+	 */
 	@GameTest(environment = "bubbas_reworked_mobs-test:noise_awaken", structure = FIELD)
 	public void awakenWakesNearNeighbours(GameTestHelper helper) {
 		List<SleeperBlockEntity> near = List.of(sleeper(helper, UndeadVariant.ZOMBIE, new BlockPos(10, 1, 2)),
@@ -402,6 +377,17 @@ public class SleeperNoiseGameTest {
 			helper.assertTrue(sleeper.isWakePending(), "neighbour at " + sleeper.getBlockPos() + " did not wake");
 		}
 		helper.assertFalse(far.isWakePending(), "a sleeper 10.5 blocks away woke");
+
+		List<SleeperBlockEntity> ring = List.of(new BlockPos(1, 1, 6), new BlockPos(3, 1, 6), new BlockPos(5, 1, 6), new BlockPos(1, 1, 8),
+				new BlockPos(5, 1, 8), new BlockPos(1, 1, 10), new BlockPos(3, 1, 10), new BlockPos(5, 1, 10)).stream().map(p -> {
+					SleeperBlockEntity s = sleeper(helper, UndeadVariant.ZOMBIE, p);
+					s.setSensitivity(1000.0F);
+					return s;
+				}).toList();
+		Monster second = helper.spawnWithNoFreeWill(ModEntities.woken(UndeadVariant.ZOMBIE), new BlockPos(3, 1, 8));
+		SleeperWaking.emitAwaken(helper.getLevel(), second);
+		long waking = ring.stream().filter(SleeperBlockEntity::isWakePending).count();
+		helper.assertValueEqual(waking, (long) UndeadTuning.AWAKEN_CAP, "sleepers woken by one awaken event");
 		helper.succeed();
 	}
 
@@ -432,7 +418,7 @@ public class SleeperNoiseGameTest {
 	/** Woken by a survival player: targets them. Woken by a creative player or by another mob: no target. */
 	@GameTest(environment = "bubbas_reworked_mobs-test:wake_targets_survival", structure = FIELD, maxTicks = 40)
 	public void onlyASurvivalWakerIsTargeted(GameTestHelper helper) {
-		ServerPlayer survivor = at(helper, survivalPlayer(helper), 3.5, 2.5);
+		ServerPlayer survivor = at(helper, TestPlayers.survival(helper), 3.5, 2.5);
 		ServerPlayer creative = at(helper, helper.makeMockServerPlayerInLevel(), 3.5, 8.5);
 		Mob zombie = helper.spawnWithNoFreeWill(EntityTypes.ZOMBIE, new BlockPos(3, 1, 13));
 		zombie.setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.LEATHER_HELMET));
@@ -451,8 +437,8 @@ public class SleeperNoiseGameTest {
 			helper.assertTrue(a.getTarget() == survivor, "survival waker not targeted: " + a.getTarget());
 			helper.assertTrue(b.getTarget() != creative, "creative waker targeted");
 			helper.assertTrue(c.getTarget() != zombie, "a mob waker (vanilla zombie) targeted");
-			remove(helper, survivor);
-			remove(helper, creative);
+			TestPlayers.remove(helper, survivor);
+			TestPlayers.remove(helper, creative);
 			helper.succeed();
 		});
 	}

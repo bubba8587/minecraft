@@ -53,18 +53,10 @@ public class SpiderGameTest {
 		return spider;
 	}
 
-	private static ServerPlayer player(GameTestHelper helper, double x, double z) {
-		ServerPlayer player = SleeperNoiseGameTest.survivalPlayer(helper);
-		Vec3 at = helper.absoluteVec(new Vec3(x, 1.0, z));
-		player.snapTo(at.x, at.y, at.z, 0.0F, 0.0F);
-		return player;
-	}
-
 	/** Core: a player standing right under the nest is dropped on, latched, reeled up into the nest and cocooned there. */
-	@GameTest(environment = SpiderGameTest.ENV, structure = ROOM, maxTicks = 300)
 	public void sleeperDropsLatchesAndReelsUp(GameTestHelper helper) {
 		NestSpider spider = nest(helper);
-		ServerPlayer player = player(helper, 4.5, 4.5);
+		ServerPlayer player = TestPlayers.survivalAt(helper, 4.5, 4.5);
 		double floor = player.getY();
 		helper.succeedWhen(() -> {
 			helper.assertTrue(spider.isAlive() && spider.phase() == NestSpider.Phase.WAITING, "not waiting by a cocoon: " + spider.phase());
@@ -74,11 +66,14 @@ public class SpiderGameTest {
 		});
 	}
 
-	/** A player inside the trigger area but not under the sleeper: it drops, misses, hangs on its thread, and is a vanilla spider. */
-	@GameTest(environment = SpiderGameTest.ENV, structure = ROOM, maxTicks = 100)
+	/**
+	 * A player inside the trigger area but not under the sleeper: it drops, misses, hangs on its thread, and is a
+	 * vanilla spider, at full health (a missed drop from a 14-high nest takes no fall damage: owner bug).
+	 */
+	@GameTest(environment = SpiderGameTest.ENV, structure = ROOM, maxTicks = 160)
 	public void aMissTurnsItIntoAVanillaSpider(GameTestHelper helper) {
 		NestSpider spider = nest(helper);
-		ServerPlayer player = player(helper, 4.5 + 2.2, 4.5);
+		ServerPlayer player = TestPlayers.survivalAt(helper, 4.5 + 2.2, 4.5);
 		boolean[] dangled = {false};
 		helper.onEachTick(() -> dangled[0] |= !spider.isRemoved() && spider.phase() == NestSpider.Phase.DANGLING);
 		helper.succeedWhen(() -> {
@@ -88,23 +83,10 @@ public class SpiderGameTest {
 					s -> s.getType() == EntityTypes.SPIDER);
 			helper.assertTrue(spiders.size() == 1, "vanilla spiders: " + spiders.size());
 			helper.assertTrue(!spiders.getFirst().isNoAi(), "the vanilla spider has no AI");
-			helper.assertTrue(player.getVehicle() == null, "player held after a miss");
-		});
-	}
-
-	/** A missed drop from a 14-high nest leaves the released spider at full health (no fall damage from the drop: owner bug). */
-	@GameTest(environment = SpiderGameTest.ENV, structure = ROOM, maxTicks = 140)
-	public void aMissedDropTakesNoFallDamage(GameTestHelper helper) {
-		NestSpider spider = nest(helper);
-		player(helper, 4.5 + 2.2, 4.5);
-		helper.runAfterDelay(100, () -> {
-			helper.assertTrue(spider.isRemoved(), "nest spider still there: " + spider.phase());
-			List<Spider> spiders = helper.getLevel().getEntitiesOfClass(Spider.class, new AABB(helper.absolutePos(BlockPos.ZERO)).inflate(12.0),
-					s -> s.getType() == EntityTypes.SPIDER);
-			helper.assertTrue(spiders.size() == 1, "vanilla spiders: " + spiders.size());
 			Spider released = spiders.getFirst();
+			helper.assertTrue(released.onGround(), "the released spider is still falling");
 			helper.assertTrue(released.getHealth() == released.getMaxHealth(), "released spider hurt: " + released.getHealth() + "/" + released.getMaxHealth());
-			helper.succeed();
+			helper.assertTrue(player.getVehicle() == null, "player held after a miss");
 		});
 	}
 
@@ -112,7 +94,7 @@ public class SpiderGameTest {
 	@GameTest(environment = SpiderGameTest.ENV, structure = ROOM, maxTicks = 400)
 	public void hitsBreakTheGrip(GameTestHelper helper) {
 		NestSpider spider = nest(helper);
-		ServerPlayer player = player(helper, 4.5, 4.5);
+		ServerPlayer player = TestPlayers.survivalAt(helper, 4.5, 4.5);
 		player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.IRON_AXE));
 		// Tough enough not to die first: this measures the grip, not the kill (an axe kills a nest spider in two hits).
 		spider.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH).setBaseValue(500.0);

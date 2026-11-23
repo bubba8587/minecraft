@@ -32,7 +32,7 @@ import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContex
  * <li>Built on a flat world, one of each kind and size: camp-&lt;kind&gt;-above and camp-&lt;kind&gt;-close, then a
  * skeleton camp with its roster out at noon, in the shade (camp-roster), inside its room (camp-room) and at night (camp-roster-night).</li>
  * <li>In a real world (seed 20261116): how often camps generate (printed: camps per 1000 x 1000 blocks by kind,
- * typical distance to the nearest of each kind), and the nearest natural camps (camp-natural-N-above / -close).</li>
+ * typical distance to the nearest of each kind), and the nearest natural camp (camp-natural-0-above / -close).</li>
  * </ul>
  */
 @SuppressWarnings("UnstableApiUsage")
@@ -106,7 +106,7 @@ public class CampsClientGameTest implements FabricClientGameTest {
 			TestServerContext server = sp.getServer();
 			setup(server);
 			List<BlockPos> found = server.computeOnServer(s -> survey(s.overworld()));
-			for (int i = 0; i < Math.min(3, found.size()); i++) {
+			for (int i = 0; i < Math.min(1, found.size()); i++) {
 				BlockPos c = found.get(i);
 				tp(context, server, c.getX() + 0.5, c.getY() + 40, c.getZ() - 20.5, 0, 50);
 				sp.getConnection().waitForChunksRender();

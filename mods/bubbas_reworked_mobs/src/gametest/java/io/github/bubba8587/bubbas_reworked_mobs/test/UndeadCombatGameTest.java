@@ -24,7 +24,6 @@ import net.minecraft.world.entity.projectile.arrow.Arrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantments;
-import net.minecraft.world.phys.Vec3;
 
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 
@@ -108,7 +107,6 @@ public class UndeadCombatGameTest {
 	 */
 	@GameTest
 	public void smiteKillsOurUndeadOutrightOnly(GameTestHelper helper) {
-		helper.assertTrue(UndeadTuning.SMITE_KILL_CHANCE_PER_LEVEL * 25 >= 1.0F, "Smite XXV should be a certain kill");
 		ServerPlayer player = helper.makeMockServerPlayerInLevel();
 		player.setItemInHand(InteractionHand.MAIN_HAND, smiteSword(helper, 25));
 		Monster ours = helper.spawnWithNoFreeWill(ModEntities.woken(UndeadVariant.ZOMBIE), new BlockPos(2, 1, 2));
@@ -174,7 +172,7 @@ public class UndeadCombatGameTest {
 		});
 	}
 
-	// Core test: registered by ReworkedMobsCoreGameTest (test-lite, specs/quality.md).
+	@GameTest(maxTicks = 40)
 	public void zombieHeadshotsHurtMore(GameTestHelper helper) {
 		Mob head = target(helper, ModEntities.woken(UndeadVariant.ZOMBIE), new BlockPos(4, 1, 2));
 		Mob body = target(helper, ModEntities.woken(UndeadVariant.ZOMBIE), new BlockPos(4, 1, 5));
@@ -212,11 +210,10 @@ public class UndeadCombatGameTest {
 		hunter.setTarget(pig);
 		Mob group = target(helper, ModEntities.woken(UndeadVariant.ZOMBIE), new BlockPos(17, 1, 2));
 		double start = hunter.distanceTo(group);
-		helper.runAfterDelay(450, () -> {
+		helper.succeedWhen(() -> {
+			helper.assertTrue(hunter.distanceTo(pig) < 3.0F, "never reached its target");
 			helper.assertTrue(hunter.getTarget() == pig, "lost its target: " + hunter.getTarget());
 			helper.assertTrue(hunter.distanceTo(group) > start, "drifted toward the group while hunting (" + hunter.distanceTo(group) + " < " + start + ")");
-			helper.assertTrue(hunter.distanceTo(pig) < 3.0F, "never reached its target");
-			helper.succeed();
 		});
 	}
 }

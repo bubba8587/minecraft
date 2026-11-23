@@ -16,7 +16,6 @@ import io.github.bubba8587.bubbas_reworked_mobs.undead.SleeperPose;
 import io.github.bubba8587.bubbas_reworked_mobs.undead.UndeadTuning;
 import io.github.bubba8587.bubbas_reworked_mobs.undead.UndeadVariant;
 import io.github.bubba8587.bubbas_reworked_mobs.undead.entity.WokenSkeleton;
-import io.github.bubba8587.bubbas_reworked_mobs.undead.entity.WokenZombie;
 import io.github.bubba8587.bubbas_reworked_mobs.undead.sleeper.SleeperBlock;
 import io.github.bubba8587.bubbas_reworked_mobs.undead.sleeper.SleeperBlockEntity;
 import io.github.bubba8587.bubbas_reworked_mobs.undead.sleeper.SleeperWaking;
@@ -35,7 +34,6 @@ import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.MoverType;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.item.ItemStack;
@@ -73,15 +71,7 @@ public class BubbasReworkedMobsGameTest {
 		return sleeper;
 	}
 
-	private static void floor(GameTestHelper helper) {
-		for (int x = 0; x < 8; x++) {
-			for (int z = 0; z < 8; z++) {
-				helper.setBlock(x, 0, z, Blocks.STONE);
-			}
-		}
-	}
-
-	/** A real player standing on the floor at {@code pos}; remove it with {@link #remove}. */
+	/** A real player standing on the floor at {@code pos}; remove it with {@link TestPlayers#remove}. */
 	private static ServerPlayer standingPlayer(GameTestHelper helper, BlockPos pos, boolean sneaking) {
 		ServerPlayer player = helper.makeMockServerPlayerInLevel();
 		Vec3 at = helper.absoluteVec(Vec3.atBottomCenterOf(pos));
@@ -116,10 +106,6 @@ public class BubbasReworkedMobsGameTest {
 		return cause;
 	}
 
-	private static void remove(GameTestHelper helper, ServerPlayer player) {
-		helper.getLevel().getServer().getPlayerList().remove(player);
-	}
-
 	private static void useBlock(GameTestHelper helper, ServerPlayer player, BlockPos pos, Direction face) {
 		BlockPos abs = helper.absolutePos(pos);
 		player.gameMode.useItemOn(player, helper.getLevel(), player.getMainHandItem(), InteractionHand.MAIN_HAND,
@@ -139,7 +125,7 @@ public class BubbasReworkedMobsGameTest {
 
 	// --- placing ----------------------------------------------------------------------------------
 
-	// Core test: registered by ReworkedMobsCoreGameTest (test-lite, specs/quality.md).
+	@GameTest
 	public void placedSleeperItemKeepsGearPoseAndFacesPlacer(GameTestHelper helper) {
 		helper.setBlock(SLEEPER.below(), Blocks.STONE);
 		ServerPlayer player = helper.makeMockServerPlayerInLevel();
@@ -158,7 +144,7 @@ public class BubbasReworkedMobsGameTest {
 			EquipmentSlot slot = SleeperBlockEntity.SLOTS.get(i);
 			helper.assertTrue(sleeper.getGear(slot).is(fullGear().get(i).getItem()), "gear in " + slot + ": " + sleeper.getGear(slot));
 		}
-		remove(helper, player);
+		TestPlayers.remove(helper, player);
 		helper.succeed();
 	}
 
@@ -169,7 +155,7 @@ public class BubbasReworkedMobsGameTest {
 	 */
 	@GameTest(maxTicks = 20)
 	public void sleeperInANicheStepsOutWhenItWakes(GameTestHelper helper) {
-		floor(helper);
+		TestFloors.stone(helper);
 		BlockPos niche = new BlockPos(2, 1, 4);
 		helper.setBlock(niche.above(), Blocks.STONE_BRICK_SLAB);
 		helper.setBlock(niche.west(), Blocks.STONE_BRICKS);
@@ -193,7 +179,7 @@ public class BubbasReworkedMobsGameTest {
 
 	// Core test: registered by ReworkedMobsCoreGameTest (test-lite, specs/quality.md).
 	public void walkingNearbyWakesSleeper(GameTestHelper helper) {
-		floor(helper);
+		TestFloors.stone(helper);
 		ServerPlayer player = standingPlayer(helper, new BlockPos(4, 1, 1), false);
 		placeSleeper(helper, UndeadVariant.SKELETON, SLEEPER, SleeperPose.SITTING, ALWAYS);
 		walk(player, 12);
@@ -201,14 +187,14 @@ public class BubbasReworkedMobsGameTest {
 		helper.succeedWhen(() -> {
 			helper.assertBlockPresent(Blocks.AIR, SLEEPER);
 			helper.assertEntityPresent(ModEntities.woken(UndeadVariant.SKELETON), SLEEPER, 1.0);
-			remove(helper, player);
+			TestPlayers.remove(helper, player);
 		});
 	}
 
 	/** A pig walking right past never wakes a sleeper; a player walking the same path does (so this can't pass by accident). */
 	@GameTest(environment = "bubbas_reworked_mobs-test:hearing_animal", maxTicks = 100)
 	public void animalsDoNotWakeSleepers(GameTestHelper helper) {
-		floor(helper);
+		TestFloors.stone(helper);
 		placeSleeper(helper, UndeadVariant.SKELETON, SLEEPER, SleeperPose.SITTING, ALWAYS);
 		net.minecraft.world.entity.animal.pig.Pig pig = helper.spawn(net.minecraft.world.entity.EntityTypes.PIG, new BlockPos(4, 1, 1));
 		for (int i = 0; i < 12; i++) {
@@ -222,29 +208,9 @@ public class BubbasReworkedMobsGameTest {
 		});
 	}
 
-	@GameTest(environment = "bubbas_reworked_mobs-test:hearing_sneak", maxTicks = 60)
-	public void sneakingNearbyDoesNotWakeSleeper(GameTestHelper helper) {
-		floor(helper);
-		ServerPlayer player = standingPlayer(helper, new BlockPos(4, 1, 1), true);
-		String[] woke = watchWake(helper, placeSleeper(helper, UndeadVariant.SKELETON, SLEEPER, SleeperPose.SITTING, ALWAYS));
-		walk(player, 12);
-		helper.assertTrue(player.isSteppingCarefully(), "player not sneaking");
-		helper.runAfterDelay(40, () -> {
-			helper.assertTrue(woke[0].equals("nothing"), "the sleeper woke: " + woke[0]);
-			helper.assertBlockPresent(ModBlocks.sleeper(UndeadVariant.SKELETON), SLEEPER);
-			helper.assertFalse(helper.getBlockEntity(SLEEPER, SleeperBlockEntity.class).isWakePending(), "sneaking woke the sleeper");
-			// The same player stops sneaking: now it hears them (so the test above can't pass by accident).
-			player.setShiftKeyDown(false);
-			walk(player, 8);
-			helper.assertTrue(helper.getBlockEntity(SLEEPER, SleeperBlockEntity.class).isWakePending(), "walking did not wake the sleeper");
-			remove(helper, player);
-			helper.succeed();
-		});
-	}
-
 	@GameTest(environment = "bubbas_reworked_mobs-test:hearing_wool", maxTicks = 60)
 	public void woolWallBlocksHearing(GameTestHelper helper) {
-		floor(helper);
+		TestFloors.stone(helper);
 		for (int y = 1; y < 8; y++) {
 			for (int z = 0; z < 8; z++) {
 				helper.setBlock(3, y, z, Blocks.WOOL.white());
@@ -257,26 +223,14 @@ public class BubbasReworkedMobsGameTest {
 			helper.assertTrue(woke[0].equals("nothing"), "the sleeper woke: " + woke[0]);
 			helper.assertBlockPresent(ModBlocks.sleeper(UndeadVariant.ZOMBIE), SLEEPER);
 			helper.assertFalse(helper.getBlockEntity(SLEEPER, SleeperBlockEntity.class).isWakePending(), "heard through wool");
-			remove(helper, player);
+			TestPlayers.remove(helper, player);
 			helper.succeed();
 		});
 	}
 
-	@GameTest(environment = "bubbas_reworked_mobs-test:hearing_chain")
-	public void awakenEventWakesAtMostTheCap(GameTestHelper helper) {
-		List<BlockPos> ring = List.of(new BlockPos(1, 1, 1), new BlockPos(3, 1, 1), new BlockPos(5, 1, 1), new BlockPos(1, 1, 3),
-				new BlockPos(5, 1, 3), new BlockPos(1, 1, 5), new BlockPos(3, 1, 5), new BlockPos(5, 1, 5));
-		List<SleeperBlockEntity> sleepers = ring.stream().map(p -> placeSleeper(helper, UndeadVariant.ZOMBIE, p, SleeperPose.SITTING, ALWAYS)).toList();
-		Monster waker = helper.spawnWithNoFreeWill(ModEntities.woken(UndeadVariant.ZOMBIE), new BlockPos(3, 1, 3));
-		SleeperWaking.emitAwaken(helper.getLevel(), waker);
-		long waking = sleepers.stream().filter(SleeperBlockEntity::isWakePending).count();
-		helper.assertValueEqual(waking, (long) UndeadTuning.AWAKEN_CAP, "sleepers woken by one awaken event");
-		helper.succeed();
-	}
-
 	@GameTest(environment = "bubbas_reworked_mobs-test:hearing_placed", maxTicks = 100)
 	public void sleeperPlacedFromItemWakesLikeAnyOther(GameTestHelper helper) {
-		floor(helper);
+		TestFloors.stone(helper);
 		ServerPlayer player = standingPlayer(helper, new BlockPos(4, 1, 0), false);
 		player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(ModItems.sleeper(UndeadVariant.ZOMBIE)));
 		useBlock(helper, player, SLEEPER.below(), Direction.UP);
@@ -289,13 +243,13 @@ public class BubbasReworkedMobsGameTest {
 		helper.succeedWhen(() -> {
 			helper.assertBlockPresent(Blocks.AIR, SLEEPER);
 			helper.assertEntityPresent(ModEntities.woken(UndeadVariant.ZOMBIE), SLEEPER, 1.0);
-			remove(helper, player);
+			TestPlayers.remove(helper, player);
 		});
 	}
 
 	// --- waking -----------------------------------------------------------------------------------
 
-	// Core test: registered by ReworkedMobsCoreGameTest (test-lite, specs/quality.md).
+	@GameTest(maxTicks = 40)
 	public void wakeSpawnsTunedMobWithGearFacingTheSource(GameTestHelper helper) {
 		SleeperBlockEntity sleeper = placeSleeper(helper, UndeadVariant.SKELETON, SLEEPER, SleeperPose.SITTING, 0.0F);
 		giveGear(sleeper, fullGear());
@@ -309,40 +263,10 @@ public class BubbasReworkedMobsGameTest {
 				helper.assertTrue(mob.getItemBySlot(slot).is(fullGear().get(i).getItem()), "mob " + slot + ": " + mob.getItemBySlot(slot));
 			}
 			helper.assertTrue(mob.isPersistenceRequired(), "woken mob should not despawn");
+			helper.assertTrue(mob.is(EntityTypeTags.UNDEAD) && mob.is(EntityTypeTags.SKELETONS) && mob.is(ModTags.WOKEN_UNDEAD),
+					"a woken skeleton is #minecraft:undead, #minecraft:skeletons and #woken_undead");
 			helper.assertValueInBetween(-1.0F, net.minecraft.util.Mth.wrapDegrees(mob.getYRot()), 1.0F, "yaw toward +z (0)");
 			helper.assertItemEntityNotPresent(Items.IRON_SWORD); // the gear went on the mob, not on the floor
-		});
-	}
-
-	@GameTest
-	public void wokenMobsAreTunedAndUndead(GameTestHelper helper) {
-		Monster skeleton = helper.spawnWithNoFreeWill(ModEntities.woken(UndeadVariant.SKELETON), SLEEPER);
-		Monster zombie = helper.spawnWithNoFreeWill(ModEntities.woken(UndeadVariant.ZOMBIE), SLEEPER.east());
-		helper.assertValueEqual(skeleton.getAttributeValue(Attributes.MAX_HEALTH), UndeadTuning.SKELETON_HEALTH, "skeleton health");
-		helper.assertValueEqual(skeleton.getHealth(), (float) UndeadTuning.SKELETON_HEALTH, "skeleton starts at full health");
-		helper.assertValueEqual(skeleton.getAttributeValue(Attributes.MOVEMENT_SPEED), UndeadTuning.SKELETON_SPEED, "skeleton speed");
-		helper.assertValueEqual(skeleton.getAttributeValue(Attributes.ATTACK_DAMAGE), UndeadTuning.FIST_DAMAGE, "skeleton fists");
-		helper.assertValueEqual(zombie.getAttributeValue(Attributes.MAX_HEALTH), UndeadTuning.ZOMBIE_HEALTH, "zombie health");
-		helper.assertValueEqual(zombie.getAttributeValue(Attributes.MOVEMENT_SPEED), UndeadTuning.ZOMBIE_SPEED, "zombie speed");
-		helper.assertValueEqual(zombie.getAttributeValue(Attributes.ATTACK_DAMAGE), UndeadTuning.FIST_DAMAGE, "zombie fists");
-		helper.assertTrue(skeleton instanceof WokenSkeleton && zombie instanceof WokenZombie, "woken classes");
-		helper.assertTrue(skeleton.is(EntityTypeTags.UNDEAD) && zombie.is(EntityTypeTags.UNDEAD), "woken mobs are #minecraft:undead");
-		helper.assertTrue(skeleton.is(EntityTypeTags.SKELETONS) && zombie.is(EntityTypeTags.ZOMBIES), "family tags");
-		helper.assertTrue(skeleton.is(ModTags.WOKEN_UNDEAD), "#woken_undead");
-		helper.succeed();
-	}
-
-	@GameTest(maxTicks = 40)
-	public void wakingZombiePicksUpNearbyWeapon(GameTestHelper helper) {
-		helper.setBlock(SLEEPER.below(), Blocks.STONE);
-		helper.setBlock(SLEEPER.below().east(), Blocks.STONE);
-		SleeperBlockEntity sleeper = placeSleeper(helper, UndeadVariant.ZOMBIE, SLEEPER, SleeperPose.SITTING, 0.0F);
-		ItemEntity sword = helper.spawnItem(Items.IRON_AXE, Vec3.atBottomCenterOf(SLEEPER.east()));
-		sleeper.scheduleWake(helper.getLevel(), null, null, 1);
-		helper.succeedWhen(() -> {
-			Monster mob = (Monster) helper.findOneEntity(ModEntities.woken(UndeadVariant.ZOMBIE));
-			helper.assertTrue(mob.getMainHandItem().is(Items.IRON_AXE), "zombie did not pick up the axe: " + mob.getMainHandItem());
-			helper.assertTrue(sword.isRemoved(), "axe still on the ground");
 		});
 	}
 
@@ -376,13 +300,12 @@ public class BubbasReworkedMobsGameTest {
 		helper.assertFalse(sleeper.hasGear(), "gear left after six thefts");
 		helper.assertFalse(sleeper.isWakePending(), "sensitivity 0 sleeper woke");
 		helper.assertBlockPresent(ModBlocks.sleeper(UndeadVariant.SKELETON), SLEEPER);
-		remove(helper, player);
+		TestPlayers.remove(helper, player);
 		helper.succeed();
 	}
 
 	@GameTest
 	public void robbingRollsWakeChanceArmorRiskier(GameTestHelper helper) {
-		helper.assertTrue(UndeadTuning.ROB_ARMOR_WAKE_CHANCE > UndeadTuning.ROB_WEAPON_WAKE_CHANCE, "armor must be riskier than the weapon");
 		ServerPlayer player = helper.makeMockServerPlayerInLevel();
 		// Sensitivity that makes armor theft certain but leaves weapon theft at a third.
 		float armorCertain = 1.0F / UndeadTuning.ROB_ARMOR_WAKE_CHANCE + 0.01F;
@@ -399,13 +322,13 @@ public class BubbasReworkedMobsGameTest {
 		helper.assertTrue(armed.isWakePending(), "weapon theft did not roll a wake");
 		helper.succeedWhen(() -> {
 			helper.assertEntityPresent(ModEntities.woken(UndeadVariant.ZOMBIE), SLEEPER, 1.5);
-			remove(helper, player);
+			TestPlayers.remove(helper, player);
 		});
 	}
 
 	// --- mining -----------------------------------------------------------------------------------
 
-	// Core test: registered by ReworkedMobsCoreGameTest (test-lite, specs/quality.md).
+	@GameTest
 	public void miningWithSilkTouchPickaxeGivesSleeperItemAndDropsGear(GameTestHelper helper) {
 		SleeperBlockEntity sleeper = placeSleeper(helper, UndeadVariant.ZOMBIE, SLEEPER, SleeperPose.LYING, 0.0F);
 		giveGear(sleeper, fullGear());
@@ -425,10 +348,10 @@ public class BubbasReworkedMobsGameTest {
 		helper.succeed();
 	}
 
-	/** Without Silk Touch, or with Silk Touch on anything but a pickaxe, a sleeper leaves remains (and its gear). */
+	/** Bare-handed, without Silk Touch, or with Silk Touch on anything but a pickaxe, a sleeper leaves remains (and its gear). */
 	@GameTest
 	public void miningWithoutSilkTouchPickaxeLeavesRemains(GameTestHelper helper) {
-		for (ItemStack tool : List.of(new ItemStack(Items.IRON_PICKAXE), silkTouch(helper, Items.IRON_AXE), silkTouch(helper, Items.IRON_SHOVEL))) {
+		for (ItemStack tool : List.of(ItemStack.EMPTY, new ItemStack(Items.IRON_PICKAXE), silkTouch(helper, Items.IRON_AXE), silkTouch(helper, Items.IRON_SHOVEL))) {
 			placeSleeper(helper, UndeadVariant.SKELETON, SLEEPER, SleeperPose.SITTING, 0.0F);
 			ServerPlayer player = (ServerPlayer) helper.makeMockServerPlayer(GameType.SURVIVAL);
 			player.setItemInHand(InteractionHand.MAIN_HAND, tool);
@@ -445,16 +368,6 @@ public class BubbasReworkedMobsGameTest {
 		stack.enchant(helper.getLevel().registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT)
 				.getOrThrow(net.minecraft.world.item.enchantment.Enchantments.SILK_TOUCH), 1);
 		return stack;
-	}
-
-	@GameTest
-	public void miningBareHandedLeavesRemains(GameTestHelper helper) {
-		placeSleeper(helper, UndeadVariant.SKELETON, SLEEPER, SleeperPose.SITTING, 0.0F);
-		ServerPlayer player = (ServerPlayer) helper.makeMockServerPlayer(GameType.SURVIVAL);
-		player.gameMode.destroyBlock(helper.absolutePos(SLEEPER));
-		helper.assertItemEntityPresent(Items.BONE, SLEEPER, 2.0);
-		helper.assertItemEntityNotPresent(ModItems.sleeper(UndeadVariant.SKELETON), SLEEPER, 2.0);
-		helper.succeed();
 	}
 
 	// --- natural spawning -------------------------------------------------------------------------

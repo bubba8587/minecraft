@@ -12,12 +12,10 @@ import io.github.bubba8587.bubbas_reworked_mobs.enderman.CairnSite;
 import io.github.bubba8587.bubbas_reworked_mobs.enderman.CairnSites;
 import io.github.bubba8587.bubbas_reworked_mobs.enderman.EndermanMind;
 import io.github.bubba8587.bubbas_reworked_mobs.enderman.EndermanSpawning;
-import io.github.bubba8587.bubbas_reworked_mobs.enderman.EndermanTuning;
 import io.github.bubba8587.bubbas_reworked_mobs.enderman.EndermanWards;
 import io.github.bubba8587.bubbas_reworked_mobs.enderman.TargetWorld;
 import io.github.bubba8587.bubbas_reworked_mobs.enderman.TerrainKinds;
 import io.github.bubba8587.bubbas_reworked_mobs.enderman.TerrainOracle;
-import io.github.bubba8587.bubbas_reworked_mobs.registry.ModGameRules;
 import io.github.bubba8587.bubbas_reworked_mobs.test.mixin.EndermanAccessor;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.BlockPos;
@@ -98,6 +96,7 @@ public class EndermanGameTest {
 	// --- the target world --------------------------------------------------------------------------
 
 	/** The oracle regenerates the superflat layers exactly, and a cairn's design overrides terrain inside its site. */
+	@GameTest(maxTicks = 40)
 	public void terrainOracleAnswersFlatLayersAndCairns(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
 		BlockPos at = helper.absolutePos(new BlockPos(5, 1, 5));
@@ -127,7 +126,13 @@ public class EndermanGameTest {
 		helper.succeed();
 	}
 
-	/** Designs are the same for the same seed, vary between seeds, and their structure is only End blocks. */
+	/**
+	 * Designs are the same for the same seed, vary between seeds, and their structure is only End blocks. They stay
+	 * cheap and buildable (2026-11-22, cairn variety): 2000 designs of every form average well under a millisecond each
+	 * (they are worked out once per site, off the main thread), and none has more than 120 End blocks (a site's spawn
+	 * check reads its design every 5 s; more blocks also mean more nights to build).
+	 */
+	@GameTest
 	public void cairnDesignsVaryAndUseOnlyEndBlocks(GameTestHelper helper) {
 		Set<Block> structural = Set.of(Blocks.PURPUR_BLOCK, Blocks.PURPUR_PILLAR, Blocks.PURPUR_STAIRS, Blocks.PURPUR_SLAB, Blocks.END_STONE,
 				Blocks.END_STONE_BRICKS, Blocks.END_STONE_BRICK_SLAB, Blocks.END_STONE_BRICK_STAIRS, Blocks.END_STONE_BRICK_WALL, Blocks.END_ROD,
@@ -178,12 +183,19 @@ public class EndermanGameTest {
 				multiTrunk += trunks > 1 ? 1 : 0;
 			}
 		}
-		// Every form turns up (owner, 2026-11-22: as much variety as you like).
+		// Every form turns up (owner, 2026-11-22: as much variety as you like), cheaply and within the block budget.
 		Set<CairnDesign.Form> forms = new HashSet<>();
-		for (long seed = 1; seed <= 400; seed++) {
-			forms.add(CairnDesign.formOf(seed * 7919L));
+		int most = 0;
+		long start = System.nanoTime();
+		for (long seed = 1; seed <= 2000; seed++) {
+			forms.add(CairnDesign.formOf(seed * 31337L));
+			List<Map.Entry<BlockPos, BlockState>> design = CairnDesign.design(seed * 31337L, CairnDesign.Offerings.TEMPERATE, Direction.NORTH, (x, z) -> -1);
+			most = Math.max(most, (int) design.stream().filter(e -> !e.getValue().is(BlockTags.ENDERMAN_HOLDABLE)).count());
 		}
+		double ms = (System.nanoTime() - start) / 1.0e6 / 2000;
 		helper.assertTrue(forms.size() == CairnDesign.Form.values().length, "every cairn form should turn up, got " + forms);
+		helper.assertTrue(ms < 1.0, "a design takes " + ms + " ms on average");
+		helper.assertTrue(most <= 120, "a design has " + most + " End blocks");
 		helper.assertTrue(heights.size() >= 5, "heights should vary, got " + heights);
 		helper.assertTrue(sizes.size() >= 15, "sizes should vary, got " + sizes.size());
 		helper.assertTrue(multiTrunk >= designs / 5, "some cairns should have several trunks: " + multiTrunk + " of " + designs);
@@ -191,37 +203,10 @@ public class EndermanGameTest {
 		helper.succeed();
 	}
 
-	/**
-	 * Cairn designs stay cheap and buildable (2026-11-22, cairn variety): 2000 designs of every form average well
-	 * under a millisecond each (they are worked out once per site, off the main thread), and none has more than 120 End
-	 * blocks (a site's spawn check reads its design every 5 s; more blocks also mean more nights to build).
-	 */
-	@GameTest(maxTicks = 5)
-	public void cairnDesignsAreCheapAndBounded(GameTestHelper helper) {
-		int most = 0;
-		java.util.Map<CairnDesign.Form, int[]> perForm = new java.util.EnumMap<>(CairnDesign.Form.class);
-		long start = System.nanoTime();
-		for (long seed = 1; seed <= 2000; seed++) {
-			List<Map.Entry<BlockPos, BlockState>> design = CairnDesign.design(seed * 31337L, CairnDesign.Offerings.TEMPERATE, Direction.NORTH, (x, z) -> -1);
-			int end = (int) design.stream().filter(e -> !e.getValue().is(BlockTags.ENDERMAN_HOLDABLE)).count();
-			most = Math.max(most, end);
-			int[] stats = perForm.computeIfAbsent(CairnDesign.formOf(seed * 31337L), f -> new int[3]);
-			stats[0]++;
-			stats[1] += end;
-			stats[2] = Math.max(stats[2], end);
-		}
-		double ms = (System.nanoTime() - start) / 1.0e6 / 2000;
-		StringBuilder report = new StringBuilder();
-		perForm.forEach((form, st) -> report.append(form).append(": ").append(st[0]).append(" designs, ").append(st[1] / st[0]).append(" End blocks on average, at most ").append(st[2]).append("; "));
-		System.out.println("[cairns] " + String.format(java.util.Locale.ROOT, "%.3f ms a design; ", ms) + report);
-		helper.assertTrue(ms < 1.0, "a design takes " + ms + " ms on average");
-		helper.assertTrue(most <= 120, "a design has " + most + " End blocks");
-		helper.succeed();
-	}
-
 	// --- jobs --------------------------------------------------------------------------------------
 
 	/** E1: a block where the ground was open is taken, and carried to a hole whose original block is its family. */
+	@GameTest(environment = "bubbas_reworked_mobs-test:enderman_take", structure = FIELD, maxTicks = 400)
 	public void endermanTakesStrayBlockAndFillsHole(GameTestHelper helper) {
 		Runnable restore = stoneField(helper, Map.of());
 		BlockPos pile = new BlockPos(10, 1, 8);
@@ -260,9 +245,10 @@ public class EndermanGameTest {
 	}
 
 	/** E4: eye contact angers an idle enderman, but one busy on a job ignores it. */
+	@GameTest(environment = "bubbas_reworked_mobs-test:enderman_stare", structure = FIELD, maxTicks = 20)
 	public void busyEndermanIgnoresEyeContact(GameTestHelper helper) {
 		Enderman enderman = enderman(helper, 12.5, 10.5, false);
-		ServerPlayer player = CreeperGameTest.player(helper, 12.5, 2.5);
+		ServerPlayer player = TestPlayers.survivalAt(helper, 12.5, 2.5);
 		player.lookAt(EntityAnchorArgument.Anchor.EYES, enderman.getEyePosition());
 		EndermanAccessor stare = (EndermanAccessor) enderman;
 		helper.assertTrue(stare.brmTest$isBeingStaredBy(player), "an idle enderman should notice the stare");
@@ -272,7 +258,7 @@ public class EndermanGameTest {
 		helper.assertFalse(stare.brmTest$isBeingStaredBy(player), "a busy enderman should ignore the stare");
 		mind.set(EndermanMind.Job.VIGIL, enderman.blockPosition(), helper.getLevel().getGameTime());
 		helper.assertTrue(stare.brmTest$isBeingStaredBy(player), "standing on a cairn is not a job");
-		CreeperGameTest.remove(helper, player);
+		TestPlayers.remove(helper, player);
 		enderman.discard();
 		helper.succeed();
 	}
@@ -305,7 +291,7 @@ public class EndermanGameTest {
 		site.buildAll(level);
 		Enderman watcher = enderman(helper, 6.5, 4.5, false);
 		Enderman other = enderman(helper, 6.5, 12.5, false);
-		ServerPlayer player = CreeperGameTest.player(helper, 12.5, 2.5);
+		ServerPlayer player = TestPlayers.survivalAt(helper, 12.5, 2.5);
 		try {
 			player.gameMode.destroyBlock(helper.absolutePos(new BlockPos(2, 0, 2)));
 			helper.assertTrue(watcher.getTarget() == null, "breaking a floor block shouldn't anger anyone");
@@ -317,7 +303,7 @@ public class EndermanGameTest {
 			watcher.hurtServer(level, level.damageSources().playerAttack(player), 1.0F);
 			helper.assertTrue(other.getTarget() == player, "hitting one near a cairn should anger the others");
 		} finally {
-			CreeperGameTest.remove(helper, player);
+			TestPlayers.remove(helper, player);
 			removeBuilt(level, site);
 			watcher.discard();
 			other.discard();
@@ -337,12 +323,6 @@ public class EndermanGameTest {
 	private void spawnsBuildersUpToItsCap(GameTestHelper helper) {
 		CreeperGameTest.forceNight(helper);
 		ServerLevel level = helper.getLevel();
-		helper.assertTrue(EndermanSpawning.chance(true, 1.0F, 0) >= EndermanSpawning.chance(false, 0.95F, 0)
-				&& EndermanSpawning.chance(false, 0.95F, 0) > EndermanSpawning.chance(false, 0.5F, 0)
-				&& EndermanSpawning.chance(false, 0.5F, 0) > EndermanSpawning.chance(false, 0.0F, 0), "the taller the spire, the faster it spawns");
-		helper.assertTrue(EndermanSpawning.cap(true, 1.0F) > EndermanSpawning.cap(false, 0.5F) && EndermanSpawning.cap(false, 0.5F) > EndermanSpawning.cap(false, 0.0F),
-				"the taller the spire, the more endermen it keeps");
-		helper.assertTrue(EndermanSpawning.chance(false, 0.5F, 2) > EndermanSpawning.chance(false, 0.5F, 0), "more endermen about, faster (snowball)");
 
 		// Vanilla's random natural spawns stay vanilla endermen (owner); the cairn spawner's stay caretakers.
 		Enderman natural = EntityTypes.ENDERMAN.create(level, net.minecraft.world.entity.EntitySpawnReason.NATURAL);

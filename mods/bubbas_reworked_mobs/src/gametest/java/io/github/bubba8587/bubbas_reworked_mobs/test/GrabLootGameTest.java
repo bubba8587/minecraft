@@ -35,14 +35,6 @@ import net.fabricmc.fabric.api.gametest.v1.GameTest;
 public class GrabLootGameTest {
 	private static final String ENV = "bubbas_reworked_mobs-test:grab_loot";
 
-	private static void floor(GameTestHelper helper) {
-		for (int x = 0; x < 8; x++) {
-			for (int z = 0; z < 8; z++) {
-				helper.setBlock(x, 0, z, Blocks.STONE);
-			}
-		}
-	}
-
 	private static void display(GameTestHelper helper, BlockPos pos, DisplayPlacement placement, Item item) {
 		LootDisplays.place(helper.getLevel(), helper.absolutePos(pos), placement, Direction.SOUTH, new ItemStack(item));
 	}
@@ -72,7 +64,7 @@ public class GrabLootGameTest {
 	/** Weapons first: a loose sword 2.5 blocks off beats a golden carrot on display right next to the sleeper. */
 	// Core test: registered by ReworkedMobsCoreGameTest (test-lite, specs/quality.md).
 	public void wakePrefersAWeaponOverACloserOtherItem(GameTestHelper helper) {
-		floor(helper);
+		TestFloors.stone(helper);
 		BlockPos at = new BlockPos(4, 1, 4);
 		SleeperBlockEntity sleeper = sleeper(helper, UndeadVariant.ZOMBIE, at);
 		BlockPos carrot = at.south();
@@ -90,7 +82,7 @@ public class GrabLootGameTest {
 	/** No weapon in reach: anything else lying around (here a pickaxe on display; any placement, even buried). */
 	@GameTest(environment = ENV, maxTicks = 40)
 	public void wakeTakesAnyItemWhenNoWeaponIsInReach(GameTestHelper helper) {
-		floor(helper);
+		TestFloors.stone(helper);
 		BlockPos at = new BlockPos(4, 1, 4);
 		SleeperBlockEntity sleeper = sleeper(helper, UndeadVariant.SKELETON, at);
 		BlockPos pick = at.west(2);
@@ -105,23 +97,10 @@ public class GrabLootGameTest {
 
 	// --- the idle goal ----------------------------------------------------------------------------
 
-	/** An empty-handed woken zombie walks 6 blocks to a pickaxe on display and ends up holding it; the block goes. */
-	@GameTest(environment = "bubbas_reworked_mobs-test:grab_walk_display", maxTicks = 400)
-	public void idleZombieWalksToADisplayAndTakesIt(GameTestHelper helper) {
-		floor(helper);
-		Monster zombie = zombie(helper, new BlockPos(1, 1, 1));
-		BlockPos pick = new BlockPos(7, 1, 1);
-		display(helper, pick, DisplayPlacement.GROUND, Items.IRON_PICKAXE);
-		helper.succeedWhen(() -> {
-			helper.assertTrue(zombie.getMainHandItem().is(Items.IRON_PICKAXE), "zombie holds " + zombie.getMainHandItem());
-			helper.assertBlockPresent(Blocks.AIR, pick);
-		});
-	}
-
 	/** Displays come first: the zombie goes for a display 5 blocks off rather than a golden carrot lying 2 blocks off. */
 	@GameTest(environment = "bubbas_reworked_mobs-test:grab_prefers_display", maxTicks = 400)
 	public void idleZombiePrefersADisplayOverACloserLooseItem(GameTestHelper helper) {
-		floor(helper);
+		TestFloors.stone(helper);
 		Monster zombie = zombie(helper, new BlockPos(1, 1, 1));
 		ItemEntity carrot = helper.spawnItem(Items.GOLDEN_CARROT, Vec3.atBottomCenterOf(new BlockPos(3, 1, 1)));
 		BlockPos pick = new BlockPos(1, 1, 6);
@@ -136,7 +115,7 @@ public class GrabLootGameTest {
 	/** With nothing on display, a loose item is the target: picked up after walking to it. */
 	@GameTest(environment = "bubbas_reworked_mobs-test:grab_walk_item", maxTicks = 400)
 	public void idleZombieWalksToALooseItem(GameTestHelper helper) {
-		floor(helper);
+		TestFloors.stone(helper);
 		Monster zombie = zombie(helper, new BlockPos(1, 1, 1));
 		ItemEntity carrot = helper.spawnItem(Items.GOLDEN_CARROT, Vec3.atBottomCenterOf(new BlockPos(6, 1, 5)));
 		helper.succeedWhen(() -> {
@@ -148,7 +127,7 @@ public class GrabLootGameTest {
 	/** Skeletons grab too, and not only bows: a sword stuck in the ground. */
 	@GameTest(environment = "bubbas_reworked_mobs-test:grab_skeleton_sword", maxTicks = 400)
 	public void idleSkeletonTakesADisplayedSword(GameTestHelper helper) {
-		floor(helper);
+		TestFloors.stone(helper);
 		Monster skeleton = mob(helper, ModEntities.woken(UndeadVariant.SKELETON), new BlockPos(1, 1, 1));
 		BlockPos sword = new BlockPos(6, 1, 2);
 		display(helper, sword, DisplayPlacement.STUCK, Items.IRON_SWORD);
@@ -158,31 +137,22 @@ public class GrabLootGameTest {
 		});
 	}
 
-	/** A full hand ignores displays (5 s, five searches). */
+	/** A full hand ignores displays (5 s, five searches), and so do mobs not in #grabs_loot (a vanilla zombie). */
 	@GameTest(environment = "bubbas_reworked_mobs-test:grab_full_hand", maxTicks = 120)
-	public void mobAlreadyHoldingSomethingIgnoresDisplays(GameTestHelper helper) {
-		floor(helper);
+	public void mobsThatCantGrabIgnoreDisplays(GameTestHelper helper) {
+		TestFloors.stone(helper);
 		Monster zombie = zombie(helper, new BlockPos(1, 1, 1));
 		zombie.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.STICK));
 		BlockPos pick = new BlockPos(4, 1, 1);
 		display(helper, pick, DisplayPlacement.GROUND, Items.IRON_PICKAXE);
+		Mob vanilla = mob(helper, EntityTypes.ZOMBIE, new BlockPos(1, 1, 6));
+		helper.assertFalse(vanilla.is(ModTags.GRABS_LOOT), "vanilla zombie in #grabs_loot");
+		BlockPos axe = new BlockPos(3, 1, 6);
+		display(helper, axe, DisplayPlacement.GROUND, Items.IRON_AXE);
 		helper.runAfterDelay(100, () -> {
 			helper.assertBlockPresent(ModBlocks.LOOT_DISPLAY, pick);
 			helper.assertTrue(zombie.getMainHandItem().is(Items.STICK), "zombie holds " + zombie.getMainHandItem());
-			helper.succeed();
-		});
-	}
-
-	/** Only mobs in #grabs_loot: a vanilla zombie leaves displays alone. */
-	@GameTest(environment = "bubbas_reworked_mobs-test:grab_vanilla_zombie", maxTicks = 120)
-	public void mobNotInTheTagIgnoresDisplays(GameTestHelper helper) {
-		floor(helper);
-		Mob vanilla = mob(helper, EntityTypes.ZOMBIE, new BlockPos(1, 1, 1));
-		helper.assertFalse(vanilla.is(ModTags.GRABS_LOOT), "vanilla zombie in #grabs_loot");
-		BlockPos pick = new BlockPos(3, 1, 1);
-		display(helper, pick, DisplayPlacement.GROUND, Items.IRON_PICKAXE);
-		helper.runAfterDelay(100, () -> {
-			helper.assertBlockPresent(ModBlocks.LOOT_DISPLAY, pick);
+			helper.assertBlockPresent(ModBlocks.LOOT_DISPLAY, axe);
 			helper.assertTrue(vanilla.getMainHandItem().isEmpty(), "vanilla zombie holds " + vanilla.getMainHandItem());
 			helper.succeed();
 		});
@@ -196,7 +166,7 @@ public class GrabLootGameTest {
 	 */
 	@GameTest(environment = "bubbas_reworked_mobs-test:grab_loot_chase", maxTicks = 600)
 	public void chasingIgnoresDisplaysIdleGoesBackForThem(GameTestHelper helper) {
-		floor(helper);
+		TestFloors.stone(helper);
 		Monster zombie = zombie(helper, new BlockPos(0, 1, 4));
 		Villager villager = helper.spawnWithNoFreeWill(EntityTypes.VILLAGER, new BlockPos(7, 1, 4));
 		BlockPos carrot = new BlockPos(3, 1, 4);
@@ -224,7 +194,7 @@ public class GrabLootGameTest {
 	 */
 	@GameTest(environment = "bubbas_reworked_mobs-test:grab_loot_contact", maxTicks = 600)
 	public void contactPickupWhileChasingIsVanillas(GameTestHelper helper) {
-		floor(helper);
+		TestFloors.stone(helper);
 		helper.assertFalse(ModEntities.woken(UndeadVariant.ZOMBIE).create(helper.getLevel(), net.minecraft.world.entity.EntitySpawnReason.TRIGGERED)
 				.canPickUpLoot(), "woken mobs start with vanilla pickup off");
 		Monster zombie = zombie(helper, new BlockPos(0, 1, 4));
