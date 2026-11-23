@@ -46,6 +46,12 @@ public class SleeperBlock extends BaseEntityBlock implements SimpleWaterloggedBl
 	public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
 	public static final EnumProperty<SleeperPose> POSE = EnumProperty.create("pose", SleeperPose.class);
 	public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
+	/**
+	 * The resting dead (owner, 2026-11-22, specs/graveyards.md "The resting dead"): a sleeper in a yard grave never
+	 * wakes, whatever the noise, bell or robbery. Block state, so a mined one keeps it as an item and stays asleep
+	 * wherever it is placed (decoration).
+	 */
+	public static final BooleanProperty RESTING = BooleanProperty.create("resting");
 	private static final VoxelShape SITTING_SHAPE = Block.column(12.0, 0.0, 12.0);
 	private static final VoxelShape LYING_SHAPE = Block.column(16.0, 0.0, 5.0);
 
@@ -54,7 +60,13 @@ public class SleeperBlock extends BaseEntityBlock implements SimpleWaterloggedBl
 	public SleeperBlock(UndeadVariant variant, BlockBehaviour.Properties properties) {
 		super(properties);
 		this.variant = variant;
-		registerDefaultState(defaultBlockState().setValue(FACING, Direction.NORTH).setValue(POSE, variant.poses().getFirst()).setValue(WATERLOGGED, false));
+		registerDefaultState(defaultBlockState().setValue(FACING, Direction.NORTH).setValue(POSE, variant.poses().getFirst()).setValue(WATERLOGGED, false)
+				.setValue(RESTING, false));
+	}
+
+	/** Whether this sleeper is one of the resting dead, who never wake. */
+	public static boolean isResting(BlockState state) {
+		return state.hasProperty(RESTING) && state.getValue(RESTING);
 	}
 
 	public UndeadVariant variant() {
@@ -64,7 +76,7 @@ public class SleeperBlock extends BaseEntityBlock implements SimpleWaterloggedBl
 	@Override
 	protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
 		super.createBlockStateDefinition(builder);
-		builder.add(FACING, POSE, WATERLOGGED);
+		builder.add(FACING, POSE, WATERLOGGED, RESTING);
 	}
 
 	/** Faces the player who places it (the pose comes from the item's block_state component, applied by BlockItem). */

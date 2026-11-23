@@ -29,9 +29,13 @@ public class CryptYardStructure extends Structure {
 	@Override
 	protected Optional<GenerationStub> findGenerationPoint(GenerationContext context) {
 		WorldgenRandom random = context.random();
-		int width = odd(GraveTuning.YARD_MIN_WIDTH + random.nextInt(GraveTuning.YARD_MAX_WIDTH - GraveTuning.YARD_MIN_WIDTH + 1));
-		int depth = odd(GraveTuning.YARD_MIN_DEPTH + random.nextInt(GraveTuning.YARD_MAX_DEPTH - GraveTuning.YARD_MIN_DEPTH + 1));
-		boolean crypt = random.nextFloat() < GraveTuning.CRYPT_CHANCE;
+		// Size, then the yard's state and its crypt (if any) and the crypt's wealth (specs/graveyards.md).
+		YardKinds.Size size = YardKinds.Size.pick(random);
+		int width = odd(size.min + random.nextInt(size.max - size.min + 1));
+		int depth = odd(size.min + random.nextInt(size.max - size.min + 1));
+		boolean crypt = random.nextFloat() < size.cryptChance;
+		YardKinds.Wealth wealth = size.wealth(random);
+		YardKinds.State state = YardKinds.State.pick(random);
 		long seed = random.nextLong();
 		ChunkPos chunk = context.chunkPos();
 		int minX = chunk.getMinBlockX();
@@ -69,7 +73,7 @@ public class CryptYardStructure extends Structure {
 		BlockPos origin = new BlockPos(minX, Math.round(sum / 4.0F), minZ);
 		YardTrees trees = YardTrees.forBiome(context.biomeResolver().getNoiseBiome(QuartPos.fromBlock(minX + width / 2), QuartPos.fromBlock(origin.getY()),
 				QuartPos.fromBlock(minZ + depth / 2)));
-		return Optional.of(new GenerationStub(origin, builder -> builder.addPiece(new CryptYardPiece(seed, origin, width, depth, crypt, trees))));
+		return Optional.of(new GenerationStub(origin, builder -> builder.addPiece(new CryptYardPiece(seed, origin, width, depth, crypt, trees, state, wealth))));
 	}
 
 	private static int odd(int n) {

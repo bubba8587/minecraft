@@ -38,6 +38,9 @@ public final class SleeperWaking {
 	 * @return the mob, or null if nothing spawned
 	 */
 	public static @Nullable Monster wake(ServerLevel level, BlockPos pos, BlockState state, SleeperBlockEntity sleeper) {
+		if (SleeperBlock.isResting(state)) {
+			return null; // the resting dead never wake, however they're asked
+		}
 		if (!(state.getBlock() instanceof SleeperBlock block)) {
 			return null;
 		}

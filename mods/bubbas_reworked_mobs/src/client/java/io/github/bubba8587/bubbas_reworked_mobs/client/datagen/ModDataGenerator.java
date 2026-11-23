@@ -78,7 +78,7 @@ public class ModDataGenerator implements DataGeneratorEntrypoint {
 						.add(LootItem.lootTableItem(block)
 								.when(MatchTool.toolMatches(ItemPredicate.Builder.item().of(items, ModTags.SLEEPER_HARVEST_TOOLS)))
 								.when(hasSilkTouch())
-								.apply(CopyBlockState.copyState(block).copy(SleeperBlock.POSE))
+								.apply(CopyBlockState.copyState(block).copy(SleeperBlock.POSE).copy(SleeperBlock.RESTING))
 								.otherwise(LootItem.lootTableItem(variant.remains())))));
 			}
 			// Gravestones drop themselves (mined with a pickaxe, like stone).
