@@ -3,6 +3,7 @@ package io.github.bubba8587.bubbas_reworked_mining;
 
 import io.github.bubba8587.bubbas_reworked_mining.enchant.ModEnchantments;
 import io.github.bubba8587.bubbas_reworked_mining.loot.MiningLoot;
+import io.github.bubba8587.bubbas_reworked_mining.registry.ModItems;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.resources.Identifier;
 import org.slf4j.Logger;
@@ -23,6 +24,7 @@ public class BubbasReworkedMining implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
+		ModItems.initialize();
 		ModEnchantments.initialize();
 		MiningLoot.initialize();
 	}

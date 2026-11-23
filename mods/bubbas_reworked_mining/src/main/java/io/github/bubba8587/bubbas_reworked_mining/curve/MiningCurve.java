@@ -26,6 +26,8 @@ import org.jspecify.annotations.Nullable;
 public final class MiningCurve {
 	public static final TagKey<Block> HARSH_STONE = TagKey.create(Registries.BLOCK, BubbasReworkedMining.id("harsh_stone"));
 	public static final TagKey<Block> HARSH_DEEPSLATE = TagKey.create(Registries.BLOCK, BubbasReworkedMining.id("harsh_deepslate"));
+	/** The Nether's natural blocks, where quartz tools are faster (ancient debris is not in it). */
+	public static final TagKey<Block> NETHER_BLOCKS = TagKey.create(Registries.BLOCK, BubbasReworkedMining.id("nether_blocks"));
 
 	/** Id vanilla gives Efficiency's mining_efficiency modifier on the main hand. */
 	public static final Identifier VANILLA_EFFICIENCY_MODIFIER = Identifier.withDefaultNamespace("enchantment.efficiency/mainhand");
@@ -37,7 +39,8 @@ public final class MiningCurve {
 		IRON("iron", MiningTuning.IRON),
 		GOLD("gold", MiningTuning.GOLD),
 		DIAMOND("diamond", MiningTuning.DIAMOND),
-		NETHERITE("netherite", MiningTuning.NETHERITE);
+		NETHERITE("netherite", MiningTuning.NETHERITE),
+		QUARTZ("quartz", MiningTuning.QUARTZ);
 
 		final TagKey<Item> tag;
 		final Tier tier;
@@ -95,6 +98,9 @@ public final class MiningCurve {
 		}
 		if (state.is(HARSH_STONE)) {
 			return tier.stone();
+		}
+		if (state.is(NETHER_BLOCKS)) {
+			return tier.nether();
 		}
 		return tier.other();
 	}

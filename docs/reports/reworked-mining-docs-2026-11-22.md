@@ -83,3 +83,39 @@ What that means in seconds (on the ground, no Haste): iron on deepslate is about
   - Deepslate find odds and the diamond weight.
   - Explosions give finds only at no-Fortune odds.
   - Haste and gem `block_break_speed` stack on top.
+
+## Step 2: the quartz set (built, 9/9 server tests pass, client screenshots checked)
+
+### Player-facing behaviour
+
+- **Quartz Sword, Shovel, Pickaxe, Axe, Hoe, Helmet, Chestplate, Leggings and Boots.** Crafted like iron gear, with **blocks of quartz** where the iron ingots go (sticks as usual), and repaired at an anvil with blocks of quartz.
+- **Iron level.** They harvest what iron harvests, so they can mine diamonds. They mine deepslate like iron does: slow, with heavy wear. **Ancient debris needs diamond**, so quartz doesn't skip netherite.
+- **Faster on the Nether's natural blocks:** netherrack, nether bricks and their slabs, stairs, walls and fences, basalt, blackstone, soul sand and soil, nylium, magma, wart blocks, glowstone, shroomlight, nether quartz and gold ore, crimson and warped stems and hyphae, bone blocks.
+- Damage and attack speed are iron's. Armor protects like iron, lasts a little less, and sounds like iron when you put it on.
+- Look: bright quartz white with faint rose-grey veins, with a 32x version in the built-in "Bubba's Reworked Mining 32x (Faithful style)" pack.
+- In the creative tabs, the tools come right after the iron tools and the armor right after the iron boots.
+- No new tooltip lines.
+
+### Numbers (MiningTuning)
+
+- `QUARTZ` tier: stone 1.0, deepslate 0.40, other 1.0, **Nether 1.6** (builder), wear 1 on stone and 3 on deepslate (iron's).
+- Tools **(builder):** durability 220 (copper 190, iron 250), speed 6 and damage bonus +2 (iron's), enchantability 14 (iron's). Per-tool damage and attack speed are iron's.
+- Armor **(builder):** durability multiplier 13 (copper 11, iron 15, so helmet 143, chestplate 208, leggings 195, boots 169). Protection 2/6/5/2 (iron's), toughness 0, enchantability 9 (iron's).
+
+### Builder's choices
+
+- **(builder) Recipe:** blocks of quartz in place of iron ingots, in vanilla's iron shapes (tag `bubbas_reworked_mining:quartz_tool_materials`, which also repairs). That's 4 quartz per block, so a pickaxe costs 12 nether quartz.
+- **(builder) Nether speed 1.6x** of the tool's normal speed, and the Nether block list above (tag `bubbas_reworked_mining:nether_blocks`). Ancient debris and obsidian are left out.
+- **(builder) Durability between copper and iron.** The owner said "roughly iron/copper level".
+- **(builder) No armor trims shown on the item icons** (vanilla needs a per-item trim model for that). Worn trims weren't enabled either: the armor isn't in `#minecraft:trimmable_armor`. Easy to add if the owner wants it.
+- **(builder) Art:** vanilla iron's silhouettes and shading bands, recoloured to quartz white with veins (script `mods/bubbas_reworked_mining/tools-local/make_quartz_textures.py`, listed in `docs/art-todo.md`).
+
+### Tests
+
+- Core: `quartzIsIronLevelAndFasterInTheNether` (quartz on netherrack is 1.6x iron; on deepslate it equals iron; no ancient debris; harvests diamond ore; in `#pickaxes` and `#chest_armor`).
+- Client part `quartz` (`-PclientTests=quartz`): two armor stands (quartz next to iron) with pickaxes, the quartz pickaxe and sword held in first person with the whole set in the hotbar, and the player wearing the set in third person, each at 16x and 32x. Checked by eye on 2026-11-22: textures load (no missing-texture checkerboard), the quartz armor is clearly whiter than iron with soft veins, and the 32x pack switches on. Items held by armor stands render dark for iron and quartz alike (lighting, not the texture).
+- Milestone objectives to add to the spec:
+  - Every quartz recipe crafts.
+  - Repairing with a quartz block works.
+  - Quartz on each Nether block is 1.6x.
+  - Quartz armor protection values.

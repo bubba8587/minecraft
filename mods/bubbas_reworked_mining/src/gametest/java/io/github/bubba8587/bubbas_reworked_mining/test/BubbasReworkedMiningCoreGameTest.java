@@ -6,6 +6,7 @@ import java.util.List;
 import io.github.bubba8587.bubbas_reworked_mining.MiningTuning;
 import io.github.bubba8587.bubbas_reworked_mining.enchant.ModEnchantments;
 import io.github.bubba8587.bubbas_reworked_mining.natural.NaturalStone;
+import io.github.bubba8587.bubbas_reworked_mining.registry.ModItems;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
@@ -131,6 +132,26 @@ public class BubbasReworkedMiningCoreGameTest {
 			}
 		}
 		return n;
+	}
+
+	/** Quartz: iron-level on the curve, faster on Nether blocks, can't harvest ancient debris. */
+	@GameTest
+	public void quartzIsIronLevelAndFasterInTheNether(GameTestHelper helper) {
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		player.setGameMode(GameType.SURVIVAL);
+		BlockState netherrack = Blocks.NETHERRACK.defaultBlockState();
+		float quartz = speed(player, new ItemStack(ModItems.QUARTZ_PICKAXE), netherrack);
+		float iron = speed(player, new ItemStack(Items.IRON_PICKAXE), netherrack);
+		near(helper, quartz / iron, MiningTuning.QUARTZ.nether() / MiningTuning.IRON.other(), "quartz vs iron on netherrack");
+		float quartzDeepslate = speed(player, new ItemStack(ModItems.QUARTZ_PICKAXE), Blocks.DEEPSLATE.defaultBlockState());
+		float ironDeepslate = speed(player, new ItemStack(Items.IRON_PICKAXE), Blocks.DEEPSLATE.defaultBlockState());
+		near(helper, quartzDeepslate / ironDeepslate, MiningTuning.QUARTZ.deepslate() / MiningTuning.IRON.deepslate(), "quartz vs iron on deepslate");
+		ItemStack pick = new ItemStack(ModItems.QUARTZ_PICKAXE);
+		helper.assertTrue(!pick.isCorrectToolForDrops(Blocks.ANCIENT_DEBRIS.defaultBlockState()), "quartz harvests ancient debris");
+		helper.assertTrue(pick.isCorrectToolForDrops(Blocks.DEEPSLATE_DIAMOND_ORE.defaultBlockState()), "quartz can't harvest diamond ore");
+		helper.assertTrue(pick.is(net.minecraft.tags.ItemTags.PICKAXES), "quartz pickaxe not a pickaxe");
+		helper.assertTrue(new ItemStack(ModItems.QUARTZ_CHESTPLATE).is(net.minecraft.tags.ItemTags.CHEST_ARMOR), "quartz chestplate not chest armor");
+		helper.succeed();
 	}
 
 	/** Unbreaking is stronger; True Unbreaking stops all wear, is found only, and can't join Mending. */

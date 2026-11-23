@@ -1,0 +1,19 @@
+{
+	"layers": {
+		"humanoid": [
+			{
+				"texture": "bubbas_reworked_mining:quartz"
+			}
+		],
+		"humanoid_baby": [
+			{
+				"texture": "bubbas_reworked_mining:quartz"
+			}
+		],
+		"humanoid_leggings": [
+			{
+				"texture": "bubbas_reworked_mining:quartz"
+			}
+		]
+	}
+}

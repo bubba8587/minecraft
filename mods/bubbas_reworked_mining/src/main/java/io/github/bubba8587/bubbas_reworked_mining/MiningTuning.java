@@ -26,10 +26,14 @@ public final class MiningTuning {
 	 * @param stone         speed factor on plain stone, cobblestone and stone ores (tag {@code harsh_stone})
 	 * @param deepslate     speed factor on deepslate, cobbled deepslate and deepslate ores (tag {@code harsh_deepslate})
 	 * @param other         speed factor on everything else the tool is meant for (wood for axes, dirt for shovels...)
+	 * @param nether        speed factor on the Nether's natural blocks (tag {@code nether_blocks}); same as other except quartz
 	 * @param stoneWear     durability lost per {@code harsh_stone} block
 	 * @param deepslateWear durability lost per {@code harsh_deepslate} block
 	 */
-	public record Tier(float stone, float deepslate, float other, int stoneWear, int deepslateWear) {
+	public record Tier(float stone, float deepslate, float other, float nether, int stoneWear, int deepslateWear) {
+		Tier(float stone, float deepslate, float other, int stoneWear, int deepslateWear) {
+			this(stone, deepslate, other, other, stoneWear, deepslateWear);
+		}
 	}
 
 	// Owner: wood "barely does anything" and can't mine deepslate at all (no drops: data tag incorrect_for_wooden_tool).
@@ -46,6 +50,23 @@ public final class MiningTuning {
 	public static final Tier DIAMOND = new Tier(1.0F, 1.0F, 1.0F, 1, 1);
 	// Owner: netherite faster than vanilla.
 	public static final Tier NETHERITE = new Tier(1.2F, 1.2F, 1.1F, 1, 1);
+	// Owner: quartz is iron/copper level on the curve, faster on all Nether blocks (builder: 1.6x).
+	public static final Tier QUARTZ = new Tier(1.0F, 0.40F, 1.0F, 1.6F, 1, 3);
+
+	// The quartz set (owner: "roughly iron/copper level"). Builder's numbers, between copper and iron.
+	/** Tool durability (copper 190, iron 250). Speed and damage are iron's (6, +2). */
+	public static final int QUARTZ_TOOL_DURABILITY = 220;
+	public static final float QUARTZ_TOOL_SPEED = 6.0F;
+	public static final float QUARTZ_TOOL_DAMAGE_BONUS = 2.0F;
+	/** Enchantability (copper 13, iron 14). */
+	public static final int QUARTZ_TOOL_ENCHANTABILITY = 14;
+	/** Armor durability multiplier (copper 11, iron 15) and protection per piece: boots, legs, chest, helmet (iron's). */
+	public static final int QUARTZ_ARMOR_DURABILITY = 13;
+	public static final int QUARTZ_ARMOR_BOOTS = 2;
+	public static final int QUARTZ_ARMOR_LEGGINGS = 5;
+	public static final int QUARTZ_ARMOR_CHESTPLATE = 6;
+	public static final int QUARTZ_ARMOR_HELMET = 2;
+	public static final int QUARTZ_ARMOR_ENCHANTABILITY = 9;
 
 	/**
 	 * Efficiency multiplies the tool's speed instead of vanilla's flat bonus (vanilla's +26 at level V would erase the
