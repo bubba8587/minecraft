@@ -1,0 +1,25 @@
+// dte:C1
+// Stormie's Spiders (Modrinth stormies-spiders, LGPL-2.1+), a required dependency of Bubba's Reworked Mobs (owner,
+// specs/spiders.md "Walls and ceilings"). Applied by every build that runs Reworked Mobs in a dev game: Reworked Mobs
+// itself, Totems & Artifacts with -PwithMobs, and testworldshots.
+//
+// Dev-run workaround: Stormie's jar has a log4j2.xml at its root, so on the runtime classpath Fabric Loader's library
+// classifier files it as a game library (it's added to the classpath next to log4j and gson before mod discovery) and
+// the mod can't see Fabric Loader or Fabric API ("requires fabricloader, which is missing"). So it stays off the
+// runtime classpath and is handed to the loader as a mod with -Dfabric.addMods. In a normal mods folder (players, the
+// owner's profile) none of this applies.
+//
+// Pinned by Modrinth version ID: the version number 3.3.1-fabric is shared with a 1.21.1 build, and the maven serves
+// that one for the number (docs/knowledge/libraries.md).
+ext.stormiesSpidersCoords = 'maven.modrinth:stormies-spiders:jTOAPFV5'
+
+configurations {
+	stormiesSpiders { transitive = false }
+}
+dependencies {
+	stormiesSpiders stormiesSpidersCoords
+}
+def stormiesJar = configurations.stormiesSpiders.singleFile.absolutePath
+tasks.matching { it.name in ['runGameTest', 'runClientGameTest', 'runClient', 'runServer', 'runDatagen'] }.configureEach { t ->
+	t.jvmArgs("-Dfabric.addMods=${stormiesJar}")
+}

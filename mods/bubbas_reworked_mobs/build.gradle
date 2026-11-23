@@ -2,6 +2,7 @@ plugins {
 	id 'net.fabricmc.fabric-loom'
 }
 apply from: rootProject.file('gradle/fabric-mod.gradle')
+apply from: rootProject.file('gradle/stormies-spiders.gradle')
 
 // No dependency on Bubba's Totems & Artifacts in either direction at build time: it reaches sleepers through this
 // mod's api/Sleepers (specs/totems-artifacts.md, "Independence"), and this mod never touches it.
@@ -13,6 +14,9 @@ evaluationDependsOn(':bubbas_reworked_beacons')
 def beaconsJar = files(rootProject.project(':bubbas_reworked_beacons').tasks.named('jar').flatMap { it.archiveFile })
 dependencies {
 	// Extra mod dependencies go here; see docs/knowledge/libraries.md.
+	// Stormie's Spiders (required; gradle/stormies-spiders.gradle): compiled against here, loaded in dev runs by that
+	// script. The nest spider opts out of its climbing while it's ours (spider/NestSpider).
+	compileOnly stormiesSpidersCoords
 	compileOnly project(':bubbas_reworked_beacons')
 	gametestCompileOnly project(':bubbas_reworked_beacons')
 	if (providers.gradleProperty('withBeacons').isPresent()) {
@@ -27,3 +31,4 @@ fabricApi {
 		client = true
 	}
 }
+

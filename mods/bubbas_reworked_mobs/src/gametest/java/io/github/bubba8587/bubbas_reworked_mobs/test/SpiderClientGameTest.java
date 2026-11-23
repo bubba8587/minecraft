@@ -24,7 +24,7 @@ import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContex
  * Looks at a cave nest (specs/spiders.md; client part {@code spiders}). A room in the sky: stone floor, a stone ceiling
  * 14 blocks up, open sides so the camera (a spectator) sees in. Shots: spider-nest (from the floor looking up at the
  * sleepers hanging upside down in the cobwebs), spider-nest-close, spider-drop (one falling head first on its thread), spider-dangle (a miss hanging on its thread before it snaps),
- * spider-latch (one reeling a pig up its thread), spider-held (the pig held in the nest).
+ * spider-latch (one reeling a pig up its thread), spider-held (the pig cocooned under the nest, its spider backed off above).
  */
 @SuppressWarnings("UnstableApiUsage")
 public class SpiderClientGameTest implements FabricClientGameTest {
@@ -102,7 +102,8 @@ public class SpiderClientGameTest implements FabricClientGameTest {
 			context.waitTicks(30);
 
 			// --- the latch: a pig under another one is dropped on, latched and reeled up -------------------
-			server.runCommand("summon minecraft:pig %d.5 %d %d.5 {NoAI:1b,Silent:1b,Tags:[\"spider_shot_pig\"]}".formatted(x - 1, y, z - 1));
+			// Right under the sleeper at (x - 0.5, z - 0.5). (Not "%d.5" with x - 1: for negative x that formats a block off.)
+			server.runCommand("summon minecraft:pig %.2f %d %.2f {NoAI:1b,Silent:1b,Tags:[\"spider_shot_pig\"]}".formatted(x - 0.5, y, z - 0.5));
 			server.runCommand("effect give @e[tag=spider_shot_pig] minecraft:resistance infinite 4 true");
 			context.waitTicks(3);
 			onServer(server, level -> {
@@ -113,12 +114,75 @@ public class SpiderClientGameTest implements FabricClientGameTest {
 			waitFor(context, server, "reeling up", level -> holder(level) != null && holder(level).getY() > y + 5.0);
 			tp(context, server, x - 7.5, y + 6.0, z - 0.5, -90.0F, -5.0F);
 			context.takeScreenshot("spider-latch");
-			waitFor(context, server, "held in the nest", level -> holder(level) != null && holder(level).phase() == NestSpider.Phase.HOLDING);
+			waitFor(context, server, "cocooned in the nest", level -> !level.getEntitiesOfClass(NestSpider.class, new AABB(-3.0E7, -1000, -3.0E7, 3.0E7, 1000, 3.0E7),
+					sp2 -> sp2.phase() == NestSpider.Phase.WAITING).isEmpty());
 			context.waitTicks(5);
 			tp(context, server, x - 6.5, top - 2.0, z - 0.5, -90.0F, 10.0F);
 			context.takeScreenshot("spider-held");
 			tp(context, server, x - 0.5, y + 0.5, z - 6.5, 0.0F, -50.0F);
 			context.takeScreenshot("spider-held-below");
+
+			// --- a cocooned player, seen from outside: the camera player wrapped under the nest, third person -------
+			server.runCommand("gamemode survival @p");
+			server.runCommand("effect give @p minecraft:resistance infinite 4 true");
+			server.runCommand("tp @p %.2f %d %.2f 0 0".formatted(x + 4.5, top - 3, z + 0.5));
+			context.waitTicks(5);
+			onServer(server, level -> {
+				net.minecraft.server.level.ServerPlayer me = level.getServer().getPlayerList().getPlayers().getFirst();
+				me.setDeltaMovement(Vec3.ZERO);
+				io.github.bubba8587.bubbas_reworked_mobs.spider.SilkCocoon.wrap(level, me, new Vec3(x + 4.5, top + 1.0, z + 0.5));
+				return null;
+			});
+			context.waitTicks(10);
+			context.runOnClient(mc -> mc.options.setCameraType(net.minecraft.client.CameraType.THIRD_PERSON_FRONT));
+			context.waitTicks(10);
+			context.takeScreenshot("cocoon-player-outside");
+			context.runOnClient(mc -> mc.options.setCameraType(net.minecraft.client.CameraType.THIRD_PERSON_BACK));
+			context.waitTicks(5);
+			context.takeScreenshot("cocoon-player-outside-back");
+			context.runOnClient(mc -> mc.options.setCameraType(net.minecraft.client.CameraType.FIRST_PERSON));
+			onServer(server, level -> {
+				net.minecraft.server.level.ServerPlayer me = level.getServer().getPlayerList().getPlayers().getFirst();
+				if (me.getVehicle() instanceof io.github.bubba8587.bubbas_reworked_mobs.spider.SilkCocoon c) {
+					c.release(level);
+				}
+				return null;
+			});
+			server.runCommand("gamemode spectator @p");
+
+			// --- Stormie's Spiders: a spider walks up the wall and across the ceiling ---------------------------
+			server.runCommand("fill %d %d %d %d %d %d minecraft:stone".formatted(x + 10, y, z - 10, x + 10, y + 15, z + 10));
+			// Prey up on a ledge, at night: vanilla spiders hunt iron golems in the dark, so they climb to it.
+			server.runCommand("time set midnight");
+			server.runCommand("fill %d %d %d %d %d %d minecraft:stone".formatted(x + 8, y + 9, z + 5, x + 9, y + 9, z + 8));
+			server.runCommand("summon minecraft:iron_golem %.2f %d %.2f {NoAI:1b,Silent:1b,Invulnerable:1b}".formatted(x + 8.5, y + 10, z + 6.5));
+			onServer(server, level -> {
+				for (net.minecraft.world.entity.monster.spider.Spider sp2 : level.getEntitiesOfClass(net.minecraft.world.entity.monster.spider.Spider.class,
+						new AABB(x - 30, y - 30, z - 30, x + 30, y + 30, z + 30), sp2 -> sp2.getType() == net.minecraft.world.entity.EntityTypes.SPIDER)) {
+					sp2.discard();
+				}
+				for (int i = 0; i < 2; i++) {
+					net.minecraft.world.entity.monster.spider.Spider climber = net.minecraft.world.entity.EntityTypes.SPIDER.create(level, EntitySpawnReason.COMMAND);
+					climber.snapTo(x + 8.5, y, z - 2.5 + i * 4, 90.0F, 0.0F);
+					climber.setPersistenceRequired();
+					climber.setSilent(true);
+					climber.addTag("stormie_climber_" + i);
+					level.addFreshEntity(climber);
+					// One to a spot high on the wall, one across the ceiling.
+					boolean ok = i == 0 ? climber.getNavigation().moveTo(x + 9.5, y + 8.0, z - 2.5, 1.0)
+							: climber.getNavigation().moveTo(x + 5.5, top, z + 1.5, 1.0);
+					System.out.println("[spider-shot] stormie path " + i + " " + ok + " nav " + climber.getNavigation().getClass().getSimpleName());
+				}
+				return null;
+			});
+			context.waitTicks(160);
+			System.out.println("[spider-shot] stormie " + onServer(server, level -> level.getEntitiesOfClass(net.minecraft.world.entity.monster.spider.Spider.class,
+					new AABB(x - 30, y - 30, z - 30, x + 30, y + 30, z + 30), sp2 -> sp2.getType() == net.minecraft.world.entity.EntityTypes.SPIDER)
+					.stream().map(sp2 -> sp2.entityTags() + "@" + sp2.position()).toList()));
+			tp(context, server, x + 1.5, y + 4.0, z - 3.5, -60.0F, -35.0F);
+			context.takeScreenshot("spider-stormie-ceiling-and-wall");
+			tp(context, server, x + 4.5, y + 6.5, z - 3.0, -90.0F, 0.0F);
+			context.takeScreenshot("spider-stormie-wall");
 		}
 	}
 

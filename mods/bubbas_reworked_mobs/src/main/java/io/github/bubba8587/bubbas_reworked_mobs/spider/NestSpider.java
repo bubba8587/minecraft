@@ -30,6 +30,7 @@ import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
 import org.jspecify.annotations.Nullable;
+import win.demistorm.stormiespiders.common.entity.mob.Orientation;
 
 /**
  * A spider of a cave nest (specs/spiders.md "Cave nests"). It sleeps hanging upside down in the cobwebs, like the
@@ -46,7 +47,11 @@ import org.jspecify.annotations.Nullable;
  */
 public class NestSpider extends Spider implements Gripper {
 	public enum Phase {
-		SLEEPING, DROPPING, REELING, HOLDING, DANGLING
+		SLEEPING, DROPPING, REELING, HOLDING, DANGLING,
+		/** Its victim is cocooned below; it has backed off into the nest and waits. */
+		WAITING,
+		/** Back down at the cocoon, feeding. */
+		FEEDING
 	}
 
 	private static final EntityDataAccessor<Byte> DATA_PHASE = SynchedEntityData.defineId(NestSpider.class, EntityDataSerializers.BYTE);
@@ -57,6 +62,8 @@ public class NestSpider extends Spider implements Gripper {
 	private @Nullable LivingEntity victim;
 	private float grip;
 	private int dangle;
+	private @Nullable SilkCocoon cocoon;
+	private int waitTicks;
 	private int sentGrip = -1;
 
 	public NestSpider(EntityType<? extends NestSpider> type, Level level) {
@@ -151,10 +158,15 @@ public class NestSpider extends Spider implements Gripper {
 		if (!(level() instanceof ServerLevel level)) {
 			return;
 		}
+		if (phase() != Phase.SLEEPING) {
+			// On its thread it isn't falling: nothing may carry over as fall damage when the thread snaps (owner bug).
+			resetFallDistance();
+		}
 		switch (phase()) {
 			case SLEEPING -> setDeltaMovement(Vec3.ZERO);
 			case DROPPING -> tickDrop(level);
 			case REELING, HOLDING -> tickHold(level);
+			case WAITING, FEEDING -> tickCocoon(level);
 			case DANGLING -> {
 				setDeltaMovement(Vec3.ZERO);
 				if (--dangle <= 0) {
@@ -216,12 +228,14 @@ public class NestSpider extends Spider implements Gripper {
 			held.stopRiding();
 		}
 		noPhysics = false;
+		resetFallDistance();
 		Meters.sync(this, Meters.GRIP, 0.0F, sentGrip, SpiderTuning.GRIP_FULL);
 		playSound(SoundEvents.SPIDER_STEP, 1.0F, 1.6F);
 		convertTo(EntityTypes.SPIDER, ConversionParams.single(this, true, true), spider -> {
 			spider.setNoAi(false);
 			spider.setNoGravity(false);
 			spider.setPersistenceRequired();
+			spider.resetFallDistance(); // only a real fall after release hurts
 			if (held instanceof Player player && grabbable(held)) {
 				spider.setTarget(player);
 			}
@@ -246,6 +260,8 @@ public class NestSpider extends Spider implements Gripper {
 				setPos(anchor.x, Math.min(top, getY() + SpiderTuning.REEL_SPEED), anchor.z);
 			} else {
 				setPhase(Phase.HOLDING);
+				wrap(level, held);
+				return;
 			}
 		} else {
 			setDeltaMovement(Vec3.ZERO);
@@ -258,17 +274,81 @@ public class NestSpider extends Spider implements Gripper {
 		}
 	}
 
+	// --- the cocoon (owner, 2026-11-22) -----------------------------------------------------------------------
+
+	public @Nullable SilkCocoon cocoon() {
+		return cocoon;
+	}
+
+	/** For tests: ticks left before it comes back to feed. */
+	public void setWaitTicks(int ticks) {
+		waitTicks = ticks;
+	}
+
+	/** Up in the nest: it wraps its victim where it hangs, then backs off and waits. */
+	private void wrap(ServerLevel level, LivingEntity held) {
+		victim = null;
+		held.stopRiding();
+		cocoon = SilkCocoon.wrap(level, held, anchor());
+		noPhysics = false;
+		if (cocoon == null) {
+			breakThread(level);
+			return;
+		}
+		waitTicks = SpiderTuning.COCOON_WAIT_TICKS;
+		setPhase(Phase.WAITING);
+		playSound(SoundEvents.SPIDER_AMBIENT, 1.0F, 0.5F);
+	}
+
+	private void tickCocoon(ServerLevel level) {
+		setDeltaMovement(Vec3.ZERO);
+		Vec3 anchor = anchor();
+		setPos(anchor.x, anchor.y - getBbHeight(), anchor.z);
+		SilkCocoon c = cocoon;
+		LivingEntity wrapped = c == null || c.isRemoved() ? null : c.victim();
+		if (wrapped == null) {
+			cocoon = null;
+			// Its meal got away (cut free) or is gone: an ordinary spider again if anyone's near, else back to sleep.
+			Player near = level.getNearestPlayer(this, 8.0);
+			if (near != null && NestSpider.grabbable(near)) {
+				breakThread(level);
+			} else {
+				sleep();
+			}
+			return;
+		}
+		if (phase() == Phase.WAITING) {
+			if (--waitTicks <= 0) {
+				setPhase(Phase.FEEDING);
+				waitTicks = 0;
+				playSound(SoundEvents.SPIDER_AMBIENT, 1.0F, 0.7F);
+			}
+			return;
+		}
+		if (++waitTicks % SpiderTuning.COCOON_FEED_BITE_TICKS == 0
+				&& wrapped.hurtServer(level, damageSources().mobAttack(this), SpiderTuning.COCOON_FEED_BITE_DAMAGE)) {
+			swingForAttack(InteractionHand.MAIN_HAND);
+			playSound(SoundEvents.SPIDER_HURT, 0.6F, 0.6F);
+		}
+	}
+
 	@Override
 	public boolean hurtServer(ServerLevel level, DamageSource source, float damage) {
 		boolean hurt = super.hurtServer(level, source, damage);
 		if (!hurt || !isAlive()) {
 			return hurt;
 		}
+		if (phase() == Phase.WAITING || phase() == Phase.FEEDING) {
+			// Disturbed at its cocoon: it comes down and fights.
+			cocoon = null;
+			breakThread(level);
+			return hurt;
+		}
 		if (sleeping()) {
 			// Woken by a hit (an arrow from below): it drops on whoever shot it.
 			drop(source.getEntity() instanceof LivingEntity attacker ? attacker : null);
 		} else if (victim != null && source.getEntity() != null) {
-			grip -= DrownedMind.gripPoints(level, source.getWeaponItem(), damage);
+			grip -= DrownedMind.gripPoints(level, source.getWeaponItem(), damage) * SpiderTuning.GRIP_HIT_FACTOR;
 			if (grip <= 0.0F) {
 				LivingEntity held = victim;
 				breakThread(level);
@@ -301,6 +381,34 @@ public class NestSpider extends Spider implements Gripper {
 	@Override
 	public Vec3 getDismountLocationForPassenger(LivingEntity passenger) {
 		return passenger.position();
+	}
+
+	// --- Stormie's Spiders (required: spiders walk on walls and ceilings) ----------------------------------
+	// Its climbing is mixed into vanilla's Spider, so this class gets it too. While it's a nest spider (asleep, dropping,
+	// dangling, reeling, holding) it poses itself, so it reports upright with no attachment: Stormie's neither moves it
+	// onto a surface nor rotates its model. Once it misses or lets go it becomes a vanilla spider and climbs like any.
+	// These override methods Stormie's adds to Spider at runtime (same signatures), hence no @Override.
+
+	private static final Orientation UPRIGHT = Orientation.fromNormal(new Vec3(0.0, 1.0, 0.0));
+
+	public Orientation calculateOrientation(float partialTicks) {
+		return UPRIGHT;
+	}
+
+	public Orientation getOrientation() {
+		return UPRIGHT;
+	}
+
+	public float getAttachmentOffset(net.minecraft.core.Direction.Axis axis, float partialTicks) {
+		return 0.0F;
+	}
+
+	public float getVerticalOffset(float partialTicks) {
+		return 0.0F;
+	}
+
+	public boolean canAttachToSide(net.minecraft.core.Direction side) {
+		return false;
 	}
 
 	@Override

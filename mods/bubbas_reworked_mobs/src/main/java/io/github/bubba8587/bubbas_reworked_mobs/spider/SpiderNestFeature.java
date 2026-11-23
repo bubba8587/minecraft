@@ -102,6 +102,23 @@ public record SpiderNestFeature() implements Feature {
 		return true;
 	}
 
+	/**
+	 * A spun web round the cobweb core (owner, 2026-11-22): thick strands criss-crossing between random points on the
+	 * ceiling and upper walls round the nest, seeded from the nest's position.
+	 */
+	public static void spinNestWebs(net.minecraft.world.level.ServerLevelAccessor level, BlockPos centre, RandomSource random, java.util.List<BlockPos> core) {
+		// Anchors in the cobweb core, so strands run out of the nest to the walls and ceiling.
+		java.util.List<Vec3> coreAnchors = new java.util.ArrayList<>();
+		for (int i = 0; i < core.size(); i += 2) {
+			coreAnchors.add(Vec3.atCenterOf(core.get(i)));
+		}
+		for (int w = 0; w < SpiderTuning.NEST_SPUN_WEBS; w++) {
+			Vec3 hub = Vec3.atCenterOf(centre).add(0.0, -2.5 - w * 1.5, 0.0);
+			SpunWeb.spin(level, hub, centre.asLong() * 31 + w, SpiderTuning.NEST_WEB_RAYS, 0.55, SpiderTuning.NEST_WEB_REACH,
+					coreAnchors, SpiderTuning.NEST_WEB_STRANDS, 0.15F + random.nextFloat() * 0.3F);
+		}
+	}
+
 	private static void build(WorldGenLevel level, BlockPos centre, int drop, RandomSource random) {
 		int r = SpiderTuning.NEST_RADIUS;
 		int webs = SpiderTuning.NEST_WEBS_MIN + random.nextInt(SpiderTuning.NEST_WEBS_MAX - SpiderTuning.NEST_WEBS_MIN + 1);
@@ -146,6 +163,7 @@ public record SpiderNestFeature() implements Feature {
 		nest.setPos(centre.getX() + 0.5, centre.getY() + 0.5, centre.getZ() + 0.5);
 		nest.setDepth(drop + 1);
 		level.addFreshEntity(nest);
+		spinNestWebs(level, centre, random, ceilingSpots);
 		// Sleepers, each under its own ceiling web (distinct spots, nearest the middle first).
 		ceilingSpots.sort((a, b) -> Double.compare(a.distSqr(centre), b.distSqr(centre)));
 		int sleepers = SpiderTuning.NEST_SLEEPERS_MIN + random.nextInt(SpiderTuning.NEST_SLEEPERS_MAX - SpiderTuning.NEST_SLEEPERS_MIN + 1);

@@ -10,14 +10,16 @@
 		"CreeperMixin",
 		"DrownedMixin",
 		"EndermanMixin",
+		"MobAmbientSoundInvoker",
 		"MobDeactivatedMixin",
 		"MobFinalizeSpawnMixin",
 		"MobPersistenceAccessor",
-		"WardenJukeboxMixin",
 		"PlayerGripMixin",
 		"ProjectileUtilGripMixin",
 		"SpawnStateMixin",
-		"TridentRiptideMixin"
+		"StormieDeactivatedSpiderMixin",
+		"TridentRiptideMixin",
+		"WardenJukeboxMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

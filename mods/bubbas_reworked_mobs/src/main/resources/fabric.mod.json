@@ -35,7 +35,8 @@
 		"fabricloader": ">=${loader_version}",
 		"minecraft": "~${minecraft_version}",
 		"java": ">=${java_version}",
-		"fabric-api": "*"
+		"fabric-api": "*",
+		"stormiespiders": ">=3.3.1"
 	},
 	"suggests": {
 		"bubbas_totems_artifacts": "*",
