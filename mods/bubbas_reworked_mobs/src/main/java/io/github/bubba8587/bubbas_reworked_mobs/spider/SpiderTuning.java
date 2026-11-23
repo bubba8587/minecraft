@@ -167,6 +167,15 @@ public final class SpiderTuning {
 	public static final int COCOON_WAIT_TICKS = 600;
 	/** While it waits it creeps to a new spot this often, up to this far from where it backed off to. */
 	public static final int WAIT_PACE_TICKS = 50;
+	/** On the perch after cocooning, before it drops down to prowl. */
+	public static final int WAIT_PERCH_TICKS = 120;
+	/** How far from its cocoon it strolls while it waits (vanilla home radius). */
+	public static final int PROWL_RADIUS = 10;
+	/** Vanilla stroll interval (mean ticks between strolls). */
+	public static final int STROLL_INTERVAL = 60;
+	/** How many of its own webs it remembers, and how far it looks for one to take a catch to. */
+	public static final int OWN_WEBS_MAX = 6;
+	public static final double OWN_WEB_SEARCH = 24.0;
 	public static final double WAIT_PACE_RADIUS = 2.0;
 	public static final int COCOON_FEED_BITE_TICKS = 40;
 	public static final float COCOON_FEED_BITE_DAMAGE = 3.0F;
