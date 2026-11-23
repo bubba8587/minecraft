@@ -118,3 +118,35 @@ Owner's design (2026-11-22). Part 1's worldgen (`specs/undead.md` "Worldgen"): t
 - Worldgen gravestones carry no real names: only blank text or glyphs.
 - Each crypt wealth level generates with sleepers and its own loot table. The noble crypt's table can give a Grave Talisman and a Totem of Warding (with Totems & Artifacts).
 - Crypt yards generate in each breakdown state, with iron bar fences and soul lights.
+
+## Step 2 as built (2026-11-22, agent 2): sizes, states of breakdown, the three crypts, the resting dead
+
+Player-facing: `player-docs/Projects/Bubba's Reworked Mobs/Crypt Yards.md`. A sleeper in a niche wakes standing in front of it (`specs/undead.md`, Waking in tight spots).
+
+### How it's built
+
+- `grave/YardKinds`: `Size` (LONE 7-9, SMALL 11-13, MEDIUM 15-19, LARGE 21-27; crypt chance 0 / 0.5 / 0.6 / 0.8; picked 20/30/35/15 %), `State` (the numbers per state: bars gone, one high, mossy and broken posts, posts gone, stones askew, fallen and gone, open graves, flowers; picked kept 15 %, overgrown 30, sunken 20, collapsed 20, nearly gone 15), `Wealth` (PAUPER, FAMILY, NOBLE; by size: lone/small 50/50 pauper or family; medium 20 % pauper, 60 % family, 20 % noble; large 40 % family, 60 % noble).
+- `CryptYardStructure` picks size, crypt, wealth and state; `CryptYardPiece` saves `State` and `Wealth` (pieces saved before step 2 read as overgrown and family). The piece's box is sized by wealth (pauper reaches 3 either side of the gate's line and 12 long; noble 12 either side and 14 long). Every roll is still made before reading the world.
+- **The resting dead:** `SleeperBlock.RESTING` (block state, default false). `SleeperBlockEntity.disturb` returns 0 and `scheduleWake` does nothing for a resting sleeper, and `SleeperWaking.wake` refuses one: that covers noise, bells and robbing, and anything that schedules a wake. The Silk Touch loot copies `resting` with `pose` (datagen), so the item's `block_state` carries it. Yard graves place resting skeletons via `Build.restingSkeleton` (leather 70 %, `GraveTuning.RESTING_LEATHER_CHANCE`: helmet and chest, legs 60 %, boots 40 %, one of eight colours; a bow 15 %). The old skeleton/zombie roll is kept as an unused roll so later rolls don't shift.
+- Loot (26.3 format): `chests/crypt_pauper` (2-5 rolls), `chests/crypt_noble` (4-8 rolls); Totems: `TotemsTuning.TALISMAN_LOOT` adds crypt_noble 25 %, `WardingTuning.LOOT` adds crypt_noble 12 % (keyed by id, no dependency; the old TODO there is resolved).
+- Removed now-unused `GraveTuning.YARD_MAX_*`, `CRYPT_CHANCE`, `SKELETON_SHARE`.
+
+### Builder's choices (owner may change)
+
+1. **Shares** of sizes, states and wealths above; lone plots never have a crypt (too small for the stairs).
+2. **Sunken** = plots settled one block into a hollow, the sleeper a block lower; stones lean (rotation), not sunk (a gravestone sunk one block would be hidden).
+3. **Open graves** (collapsed yards) show the resting dead; buried loot isn't placed in open or sunken plots.
+4. **Nearly-gone yards keep their dead** (75 % of graves) but lose their lantern.
+5. **Ossuary niches** sometimes stack a second sleeper two above the floor niche.
+6. **Noble armour:** 85 % of hall sleepers and the sarcophagus's (100 %) wear a full set: 15 % gold, 40 % chain, 45 % iron; zombies carry iron swords or axes 60 %. No enchanted gear on them (that's in the chests).
+7. **The resting dead** are skeletons only and keep the "Sleeping Skeleton" name as items (no separate name or tooltip).
+8. **Not built:** standalone crypts with a collapsed hillside entrance (the spec's other way in), and husk/stray sleepers by biome (those sleeper variants don't exist yet).
+
+### Tests
+
+- `:bubbas_reworked_mobs:build` passes (31 core). The core yard test now also checks every yard-grave sleeper is a resting skeleton.
+- Milestone `GravesGameTest.restingDeadNeverWake` (new): an explosion three blocks off wakes an ordinary sleeper (control) but not a resting one; neither does a bell rung beside it, nor robbing by a player (at sensitivity 10, where an ordinary robbery wake is certain); mined with Silk Touch the item keeps `resting`, placed again it is still resting and sleeps through another explosion and 40 more ticks. `generatedTextIsGlyphsOrBlank` and `gravestoneIsASign` pass.
+- Existing sleeper milestone classes pass: BubbasReworkedMobsGameTest (13), SleeperNoiseGameTest (16), LootDisplayGameTest (8).
+- Client part `yards` (new, `YardKindsClientGameTest`): every state, a lone plot, and pauper/family/noble yards on sky platforms: `yard-<kind>-above`, `yard-<kind>-gate`, `crypt-<wealth>` (night vision), `crypt-<wealth>-dark`, `crypt-noble-hall`. Looked at: kept, collapsed, nearly-gone (above), collapsed and noble (gate), pauper, noble and noble-hall crypts.
+- Not yet tested (objectives): each wealth's chest rolls its own table in generated worlds (checked by eye); natural generation picks every state and size (shares are code, not measured).
+

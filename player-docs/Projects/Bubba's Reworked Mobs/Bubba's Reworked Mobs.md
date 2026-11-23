@@ -78,7 +78,13 @@ Drowned are rare, tough lurkers that wait in shallow water, grab anyone who turn
 
 *Main articles: [[Crypt Yards]], [[Gravestone]]*
 
-Fenced graveyards stand on dry, flat ground, with sleeping undead under their [[Gravestone|gravestones]]; some have a candlelit family vault below. Gravestones work like signs, and players can cut their own in a stonecutter.
+Fenced graveyards in every state of decay stand on dry, flat ground, their graves holding skeletons that never wake; many have a crypt below (a pauper's ossuary, a family vault or a noble crypt) whose sleepers do wake. Gravestones work like signs, and players can cut their own in a stonecutter.
+
+## Spiders
+
+*Main article: [[Spiders]]*
+
+Cobweb nests cling to the ceilings of tall cave rooms, with spiders sleeping upside down in them. Walk underneath and one drops on a thread; if it bites, it latches on and reels you up into the nest.
 
 ## Ancient Fabricators
 

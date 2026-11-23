@@ -29,7 +29,16 @@ Blocks that never generate naturally, such as planks, glass and bricks, are most
 
 ### Building cairns
 
-An **enderman cairn** is a twisting spire of purpur on a footing of end stone bricks, with end rods sprouting from its branches like flowers and offerings at its foot that depend on the biome: flowers, pumpkins, mushrooms, cactus and, rarely, TNT. Every cairn is different. A new cairn site looks like nothing much: a few offerings, such as flowers on moss, mushrooms or a pumpkin, set out a little too neatly. Some endermen arrive carrying an End block it is missing, each bringing a different one; others arrive empty-handed and clear grass, dirt or trees out of its way, or bring a block it wants if they happen to spot one nearby. Together they grow it to its full shape over two to four weeks of nights, starting with an end stone footing sunk into the ground. An enderman whose block can't go in yet waits by the cairn until the blocks below it are in place. Killed, an enderman drops the block it carries.
+An **enderman cairn** is a structure of End blocks (purpur, end stone bricks, end rods, stained glass) with offerings at its foot that depend on the biome: flowers, pumpkins, mushrooms, cactus and, rarely, TNT. Every cairn is different, and each takes one of seven forms:
+- **Chorus:** a twisting purpur spire of one to three trunks.
+- **Grove:** a thicket of three to five short twisting trunks on a wide footing.
+- **Spire:** one tall straight column with tiers of short arms tipped with end rods.
+- **Arch:** two columns joined across the top like a gateway, sometimes with glass hanging under the span.
+- **Canopy:** a thick trunk opening into a crown of branches, like a purpur tree.
+- **Henge:** a ring of end stone posts capped with purpur round a small spire.
+- **Leaning:** a tall stalk leaning far to one side, with a shorter one leaning the other way.
+
+Footings are round, square, cross- or diamond-shaped. Glass is magenta, purple or pink. Offerings lie in a ring, a cluster to one side, or a line leading away. A new cairn site looks like nothing much: a few offerings, such as flowers on moss, mushrooms or a pumpkin, set out a little too neatly. Some endermen arrive carrying an End block it is missing, each bringing a different one; others arrive empty-handed and clear grass, dirt or trees out of its way, or bring a block it wants if they happen to spot one nearby. Together they grow it to its full shape over two to six weeks of nights (bigger forms take longer), starting with an end stone footing sunk into the ground. An enderman whose block can't go in yet waits by the cairn until the blocks below it are in place. Killed, an enderman drops the block it carries.
 
 The tallest end rod of every cairn lies on its side and points toward the nearest stronghold.
 
