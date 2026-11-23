@@ -14,7 +14,8 @@ Mod id `bubbas_world_tweaks`. A small mod for world and environment features tha
 
 ## Open
 
-- How often a magma spot bubbles and erupts, the boost numbers, and whether the Nether's lava seas get magma placed under them by worldgen so geysers exist naturally there.
+- How often a magma spot bubbles and erupts, and the boost numbers.
+- **Worldgen: none needed** (owner, 2026-11-22). Vanilla's `ore_magma` already places magma blobs at y 27-36 in the Nether (4 per chunk), around the lava sea surface at y 31, so bubbles and geysers appear naturally along lava sea shores and shallows.
 
 ## Milestone test objectives
 
