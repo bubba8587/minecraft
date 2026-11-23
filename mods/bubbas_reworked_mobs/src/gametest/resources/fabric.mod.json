@@ -20,7 +20,8 @@
 			"io.github.bubba8587.bubbas_reworked_mobs.test.EndermanTotemsGameTest",
 			"io.github.bubba8587.bubbas_reworked_mobs.test.GravesGameTest",
 			"io.github.bubba8587.bubbas_reworked_mobs.test.MobFactoryGameTest",
-			"io.github.bubba8587.bubbas_reworked_mobs.test.DrownedGameTest"
+			"io.github.bubba8587.bubbas_reworked_mobs.test.DrownedGameTest",
+			"io.github.bubba8587.bubbas_reworked_mobs.test.SpiderGameTest"
 		],
 		"fabric-client-gametest": [
 			"io.github.bubba8587.bubbas_reworked_mobs.test.BubbasReworkedMobsClientGameTest",
@@ -32,7 +33,8 @@
 			"io.github.bubba8587.bubbas_reworked_mobs.test.DrownedClientGameTest",
 			"io.github.bubba8587.bubbas_reworked_mobs.test.GravesClientGameTest",
 			"io.github.bubba8587.bubbas_reworked_mobs.test.YardKindsClientGameTest",
-			"io.github.bubba8587.bubbas_reworked_mobs.test.FactoriesClientGameTest"
+			"io.github.bubba8587.bubbas_reworked_mobs.test.FactoriesClientGameTest",
+			"io.github.bubba8587.bubbas_reworked_mobs.test.SpiderClientGameTest"
 		]
 	},
 	"mixins": [

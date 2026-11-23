@@ -22,6 +22,9 @@ abstract class GrabbedHintMixin {
 		if (mc.player != null && mc.player.getVehicle() instanceof Drowned) {
 			return Component.translatable(DrownedPoses.GRABBED_HINT);
 		}
+		if (mc.player != null && mc.player.getVehicle() instanceof io.github.bubba8587.bubbas_reworked_mobs.grip.Gripper gripper) {
+			return Component.translatable(gripper.grabbedHintKey());
+		}
 		return original.call(key, args);
 	}
 }

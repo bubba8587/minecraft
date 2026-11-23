@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 abstract class HeldVictimPoseMixin {
 	@Inject(method = "extractHumanoidRenderState", at = @At("TAIL"))
 	private static void brm$standWhenHeld(LivingEntity entity, HumanoidRenderState state, float partialTicks, ItemModelResolver itemModelResolver, CallbackInfo ci) {
-		if (entity.getVehicle() instanceof Drowned) {
+		if (entity.getVehicle() instanceof Drowned || entity.getVehicle() instanceof io.github.bubba8587.bubbas_reworked_mobs.grip.Gripper) {
 			state.isPassenger = false;
 		}
 	}
