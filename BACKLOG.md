@@ -71,7 +71,7 @@ Left for next session:
   - render 20+ seeds per kind and size in a client test and look at every shot;
   - find what breaks (overlapping pieces, towers clipping outcrops, stairs or tunnels cut off, rooms breaking the surface, half-built pieces on chunk seams);
   - fix it, or narrow the ranges.
-  - Ask the owner for screenshots or coordinates of what they saw.
+  - **Owner's finding (2026-11-23):** it's mostly pieces placed on top of each other: towers on the stairs, rock and bone outcrops on the stairs. Fix: lay the camp out in a footprint plan before building. Reserve the stair and tunnel cells, plus a clear margin, first; then place each tower, outcrop, pike and lean-to only on free cells, re-rolling its spot or dropping it if none fits. Never draw two pieces over each other.
   - If it can't be fixed quickly, revert just the variety part and keep the seed mixing.
 - **Tests:** milestone tests for 8, 12 and 13; a client check that clicks every natural-world sign; a screenshot of a crypt niche with the sleeper inside it.
 - **Natural world camp signs:** they name the kind each biome should give, because camps only register when a player comes near.
