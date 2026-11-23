@@ -1,12 +1,17 @@
 {
   "block.bubbas_reworked_mobs.drowned_sleeper": "Sleeping Drowned",
+  "block.bubbas_reworked_mobs.drowned_sleeper.statue": "Drowned Statue",
   "block.bubbas_reworked_mobs.gravestone": "Gravestone",
   "block.bubbas_reworked_mobs.husk_sleeper": "Sleeping Husk",
+  "block.bubbas_reworked_mobs.husk_sleeper.statue": "Husk Statue",
   "block.bubbas_reworked_mobs.loot_display": "Loot on Display",
   "block.bubbas_reworked_mobs.loot_display.buried_hint": "It's buried. Dig it up with a shovel.",
   "block.bubbas_reworked_mobs.skeleton_sleeper": "Sleeping Skeleton",
+  "block.bubbas_reworked_mobs.skeleton_sleeper.statue": "Skeleton Statue",
   "block.bubbas_reworked_mobs.stray_sleeper": "Sleeping Stray",
+  "block.bubbas_reworked_mobs.stray_sleeper.statue": "Stray Statue",
   "block.bubbas_reworked_mobs.zombie_sleeper": "Sleeping Zombie",
+  "block.bubbas_reworked_mobs.zombie_sleeper.statue": "Zombie Statue",
   "bubbas_reworked_mobs.drowned.grabbed": "A drowned has you! Hit it hard and fast to break free",
   "bubbas_reworked_mobs.spider.cocooned": "Cocooned!",
   "bubbas_reworked_mobs.spider.grabbed": "A spider has you! Hit it hard and fast to break free",
@@ -33,5 +38,8 @@
   "item.bubbas_reworked_mobs.camp_map": "Monster Camp Explorer Map",
   "item.bubbas_reworked_mobs.fabricator_map": "Fabricator Explorer Map",
   "item.bubbas_reworked_mobs.graveyard_map": "Graveyard Explorer Map",
+  "item.bubbas_reworked_mobs.sleeper.form": "%s (%s)",
+  "item.bubbas_reworked_mobs.sleeper.pose.lying": "Lying",
+  "item.bubbas_reworked_mobs.sleeper.pose.sitting": "Sitting",
   "itemGroup.bubbas_reworked_mobs": "Bubba's Reworked Mobs"
 }

@@ -173,6 +173,13 @@ public class ModDataGenerator implements DataGeneratorEntrypoint {
 			builder.add(ModEntities.woken(UndeadVariant.STRAY), "Stray");
 			builder.add(ModItems.sleeper(UndeadVariant.DROWNED), "Sleeping Drowned");
 			builder.add(ModEntities.woken(UndeadVariant.DROWNED), "Drowned");
+			builder.add("item.bubbas_reworked_mobs.sleeper.form", "%s (%s)");
+			builder.add("item.bubbas_reworked_mobs.sleeper.pose.sitting", "Sitting");
+			builder.add("item.bubbas_reworked_mobs.sleeper.pose.lying", "Lying");
+			for (UndeadVariant variant : UndeadVariant.values()) {
+				String mob = Character.toUpperCase(variant.name().charAt(0)) + variant.name().substring(1).toLowerCase(java.util.Locale.ROOT);
+				builder.add(ModItems.sleeper(variant).getDescriptionId() + ".statue", mob + " Statue");
+			}
 			builder.add("item.bubbas_reworked_mobs.graveyard_map", "Graveyard Explorer Map");
 			builder.add("item.bubbas_reworked_mobs.camp_map", "Monster Camp Explorer Map");
 			builder.add("item.bubbas_reworked_mobs.fabricator_map", "Fabricator Explorer Map");

@@ -5,6 +5,7 @@ import io.github.bubba8587.bubbas_reworked_mobs.BubbasReworkedMobs;
 import io.github.bubba8587.bubbas_reworked_mobs.undead.SleeperPose;
 import io.github.bubba8587.bubbas_reworked_mobs.undead.UndeadVariant;
 import io.github.bubba8587.bubbas_reworked_mobs.undead.sleeper.SleeperBlock;
+import io.github.bubba8587.bubbas_reworked_mobs.undead.sleeper.SleeperItem;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.Registry;
@@ -25,17 +26,12 @@ public final class ModCreativeTabs {
 					.title(Component.translatable("itemGroup." + BubbasReworkedMobs.MOD_ID))
 					.displayItems((params, output) -> {
 						for (UndeadVariant variant : UndeadVariant.values()) {
-							output.accept(ModItems.sleeper(variant));
-							// Other poses as their own stacks (the item keeps the pose in minecraft:block_state).
-							for (SleeperPose pose : variant.poses().subList(1, variant.poses().size())) {
-								output.accept(withPose(new ItemStack(ModItems.sleeper(variant)), pose));
+							for (boolean statue : new boolean[] {false, true}) {
+								for (SleeperPose pose : variant.poses()) {
+									output.accept(SleeperItem.form(ModItems.sleeper(variant), pose, statue));
+								}
 							}
 						}
-						// One of the resting dead (a yard grave's skeleton that never wakes), for decoration.
-						ItemStack resting = withPose(new ItemStack(ModItems.sleeper(UndeadVariant.SKELETON)), SleeperPose.LYING);
-						resting.set(net.minecraft.core.component.DataComponents.BLOCK_STATE, resting.getOrDefault(net.minecraft.core.component.DataComponents.BLOCK_STATE,
-								net.minecraft.world.item.component.BlockItemStateProperties.EMPTY).with(io.github.bubba8587.bubbas_reworked_mobs.undead.sleeper.SleeperBlock.RESTING, true));
-						output.accept(resting);
 						output.accept(ModItems.GRAVESTONE);
 					})
 					.build());

@@ -6,6 +6,7 @@ import java.util.Map;
 
 import io.github.bubba8587.bubbas_reworked_mobs.BubbasReworkedMobs;
 import io.github.bubba8587.bubbas_reworked_mobs.undead.UndeadVariant;
+import io.github.bubba8587.bubbas_reworked_mobs.undead.sleeper.SleeperItem;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -14,8 +15,8 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 
 public final class ModItems {
-	/** Sleeper items: place a dormant undead (gear only if the stack carries a minecraft:container component). */
-	public static final Map<UndeadVariant, BlockItem> SLEEPERS = new EnumMap<>(UndeadVariant.class);
+	/** Sleeper items, one per kind: the form is minecraft:block_state (pose, resting), gear is minecraft:container. */
+	public static final Map<UndeadVariant, SleeperItem> SLEEPERS = new EnumMap<>(UndeadVariant.class);
 
 	// The Grave Talisman and the Totem of Warding moved to Bubba's Totems & Artifacts (specs/totems-artifacts.md, C6),
 	// which maps their old bubbas_reworked_mobs ids to its own.
@@ -24,7 +25,7 @@ public final class ModItems {
 		for (UndeadVariant variant : UndeadVariant.values()) {
 			ResourceKey<Item> key = ResourceKey.create(Registries.ITEM, BubbasReworkedMobs.id(variant.sleeperId()));
 			SLEEPERS.put(variant, Registry.register(BuiltInRegistries.ITEM, key,
-					new BlockItem(ModBlocks.sleeper(variant), new Item.Properties().useBlockDescriptionPrefix().stacksTo(16).setId(key))));
+					new SleeperItem(ModBlocks.sleeper(variant), new Item.Properties().useBlockDescriptionPrefix().stacksTo(16).setId(key))));
 		}
 	}
 
@@ -40,7 +41,7 @@ public final class ModItems {
 	private ModItems() {
 	}
 
-	public static BlockItem sleeper(UndeadVariant variant) {
+	public static SleeperItem sleeper(UndeadVariant variant) {
 		return SLEEPERS.get(variant);
 	}
 
