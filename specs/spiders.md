@@ -15,6 +15,7 @@ Owner's design (2026-11-22). Ordinary spiders stay **mostly vanilla**. What's ne
 - **The drop:** when a player walks underneath, a sleeper **drops fast, vertically oriented (head down), with a thread attached** up to the nest, to hit them once.
   - **It misses:** it **hangs on its thread for about a second** at the bottom of the drop (owner, 2026-11-22: the animation looks better), then the thread breaks and it becomes a **normal spider** on the ground.
   - **It lands the hit:** it **latches on** (owner: not expected to be very likely, since it has to actually hit). It reuses the drowned grab (`specs/drowned.md`, `drowned/DrownedMind`), but pulls **upward**: it reels the victim **up the thread into the nest**, where it keeps attacking among the cobwebs.
+- **Reeling backwards (owner, 2026-11-22):** a spider hauling a victim up climbs **rear-first**, facing down at its victim, and the **thread comes out of its abdomen** ("the string comes out of their butt"). The same goes for the drop and the dangle, and for a giant spider hauling livestock.
 - **The thread:** a visible line from the spider to the nest while it drops and while it reels. How it's drawn is technical; vanilla's lead and fishing-line rendering are the obvious models (B17).
 - What escapes a latch: the same rules as the drowned grab (hurting it enough, etc.). Builder adapts them and lists the choices.
 
