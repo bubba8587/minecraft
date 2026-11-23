@@ -22,6 +22,7 @@ Parked ideas and open items, newest first within each project. Agents add to it 
 - **Monster camps** (`specs/monster-camps.md`): Owner to playtest spacing (10 chunks, ~6 camps per km²) and leader numbers. Natural forest camps sit among uncleared trees (leaves crowd the towers); worth a look. Builder's calls to review: resting dead follow the yard climate (husks/strays), bogged hide fully underwater.
 
 ## Bubba's Totems & Artifacts (C6)
+- **Enderman broke a Beginning beacon's pyramid (owner playtest, 2026-11-23):** an enderman drawn to a Totem of the Beginning beacon took a block from the beacon's own pyramid. Owner recalls the enderman summoning was changed in a session on their PC (not in the repo as of 2026-11-24; check for unpushed work there first). The Beginning beacon now reverts blocks directly (2026-11-24), but endermen should never take beacon pyramid blocks (or any block that is part of a working beacon base) anywhere.
 - Warding open question (builder): should mobs holding a Totem of Warding pulse, and may woken undead pick one up (built as yes). `specs/totems-artifacts.md`.
 - **Statues:** every totem has an agent-made statue; person-made statue designs and the mod icon later (`docs/art-todo.md`).
 - **Totems built 2026-11-16** (Keeping, Gathering, Fortification, Growth, Seeking; `specs/totems-artifacts.md`): owner to review the builder's calls (Seeking signature blocks vs a picker screen, Gathering in a beacon, Growth strength and name, loot); the Gathering texture reads like gingerbread (art row).
