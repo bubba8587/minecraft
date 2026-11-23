@@ -25,5 +25,6 @@ public final class Graveyards {
 	}
 
 	public static void initialize() {
+		Wisps.initialize();
 	}
 }

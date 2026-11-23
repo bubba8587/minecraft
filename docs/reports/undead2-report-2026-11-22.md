@@ -73,3 +73,109 @@ Branch `undead-2` (worktree `../mc-undead2`), from develop. One section per step
 ### Code comments
 
 Per agent 1's relay of the owner rule (B38: comments are labels only), the comments and javadoc in the new undead-2 code (BackToSleep, FireWard, FireWardMixin, the UndeadTuning additions) were cut to short labels; their reasons are in this report.
+
+## 3. Drowned sleepers in shipwrecks (specs/undead.md)
+
+### Player-facing
+
+- New **drowned sleeper** (creative: "Sleeping Drowned"): the ship's drowned crew. It wakes like other sleepers (noise meter, gear kept) into a drowned, which then behaves like the reworked drowned (lurks in water).
+- **Shipwrecks** now have their crew lying or sitting **between decks**: each empty or flooded spot on a wooden floor with wood overhead within 4 blocks has a 12% chance of a sleeper (owner: they must be inside the boat, not outside on the sand). Full wrecks get a crew of several (a full ship in the test world had 7); broken fragments with little room inside mostly have none. Waterlogged where flooded.
+- Gear: 15% a trident, 15% a fishing rod, 10% a nautilus shell in the off hand, 25% a leather cap.
+- Sleepers now look like their mob: drowned sleepers wear the drowned's seaweed hair and rags, stray sleepers their ragged clothes (the outer layer was missing; owner spotted the drowned).
+- Item icon: a drowned head with its eyes shut, 16x and 32x (art-todo row updated).
+
+### Numbers
+
+| What | Value | Where |
+|---|---|---|
+| Chance per spot between decks | 12% | `UndeadTuning.SHIPWRECK_CREW_CHANCE` |
+| Trident / rod / shell / cap | 15% / 15% / 10% / 25% | `ShipwreckCrew.place` |
+
+### Spec facts
+
+- `UndeadVariant.DROWNED` (block, item, woken entity `WokenDrowned extends Drowned`, so the drowned mind mixins apply); tags `#woken_undead`, `#grabs_loot`, `#zombies`, `#burn_in_daylight`; particle texture prismarine; vanilla `DrownedRenderer` for the woken mob.
+- Placement: `mixin/ShipwreckCrewMixin` at every RETURN of `ShipwreckPieces.ShipwreckPiece.postProcess` (it has two exits; injecting only at TAIL missed every chunk after a wreck's first) calls `undead/ShipwreckCrew.place` over the piece box clipped to the chunk. Spots: `ShipwreckCrew.inHull` = air or water, sturdy wooden floor, wood within 4 above; one column only, so every chunk sees the same answer (a sideways check across chunk edges read unbuilt neighbours). Per-spot roll from vanilla's positional random (`XoroshiroRandomSource(seed).forkPositional().at(pos)`, seed = world seed ^ piece centre).
+- Sleeper outer layers: `PosedHumanoid` takes an optional outer layer (model layer and texture), posed like the body: drowned `ModelLayers.DROWNED_OUTER_LAYER` + `drowned_outer_layer.png`, stray `STRAY_OUTER_LAYER` + `stray_overlay.png`.
+
+### Tests
+
+- Milestone `ShipwreckCrewGameTest`: `shipwrecksHaveADrownedCrew` (a vanilla full shipwreck piece built as worldgen builds it has drowned sleepers), `drownedSleeperWakesAsADrowned`. Full milestone suite 148/148.
+- Client part `shipwrecks` (`ShipwreckClientGameTest`): checks the nearest natural shipwrecks of seed 20261116 (fails if any crew sleeper isn't between decks: one full wreck had 7, all inside; fragments 0); screenshots looked at: `drowned-compare` / `-close` (drowned sleepers sitting and lying beside a vanilla drowned, same look), `shipwreck-sleeper-0..2` (crew below deck). The variants part's `variants-sleepers` shows the stray sleepers with their clothes.
+
+## 4. Will-o'-wisps (specs/graveyards.md)
+
+### Player-facing
+
+- Faint, occasional **soul fire flames** (vanilla `soul_fire_flame`) lead you to crypt yards you haven't found yet:
+  - **Hints:** while a yard is loaded within **96 blocks**, now and then (about one every 8 seconds per yard) a single wisp appears **6-12 blocks from you toward the yard**, drifting that way.
+  - **Over the graves at night:** within **48 blocks**, wisps rise over the yard's graves now and then (about one every 2 seconds) and drift slowly toward the **crypt entrance** (the top of its stairs; the gate if the yard has no crypt).
+- **Cleared for good once found:** walking into a yard (anywhere inside its footprint) adds it to your own saved list; its wisps stop showing **for you**. Other players who haven't found it still see them; the server sends wisps only to players who haven't found that yard. The list survives death.
+
+### Numbers
+
+| What | Value | Where |
+|---|---|---|
+| Checked | every second | `GraveTuning.WISP_TICKS` |
+| Hint range / chance / distance | 96 blocks / 12% per check / 6-12 blocks from you | `WISP_RANGE`, `WISP_HINT_CHANCE`, `WISP_HINT_MIN`/`MAX` |
+| Night range / chance | 48 blocks / 50% per check | `WISP_NIGHT_RANGE`, `WISP_NIGHT_CHANCE` |
+| Yards looked for | 6 chunks round each player | `WISP_DISCOVER_CHUNKS` |
+
+### Spec facts
+
+- `grave/Wisps`: yards are found from the structure references of loaded chunks round each player (as camps are) and kept per level in memory (not saved: they're rediscovered from chunk data after a restart); the command build registers its yard by hand. Players: `level.getPlayers(EntitySelector.NO_SPECTATORS)`. Particles go only to the player concerned: `ServerLevel.sendParticles(ServerPlayer, ...)` with count 0 (the offsets give the drift).
+- Found yards: persistent player attachment `bubbas_reworked_mobs:found_yards` (a list of yard ids = start chunk), copied on death.
+- `CryptYardPiece.wispTarget()`: the top of the crypt stairs, or above the gate.
+
+### Tests
+
+- Milestone `WispsGameTest.walkingIntoAYardFindsIt`: a built yard is registered; a player outside hasn't found it; inside, it's found.
+- Client part `wisps` (`WispsClientGameTest`): at night from outside a built yard, wisps forced over the graves plus hints; `wisps-1` looked at (blue soul flames over the yard and toward it). Natural ones are much sparser (one at a time).
+- Full milestone suite 128/128 (develop's test cleanup merged several tests).
+
+## 5. Noble dead in gemmed armor (specs/graveyards.md)
+
+### Player-facing
+
+- **With Bubba's Infused Gems installed**, the sleepers of **noble crypts** (the armoured ones in full iron, chain or gold) wear **gemmed** gear: 1-2 gems in their armor, 1 in their weapon, infusion 2-4, tier 2-3 (a little richer than ordinary gemmed mob gear). Woken, they fight with those effects; rob or kill them and the gemmed pieces are the prize.
+- Without Infused Gems, nothing changes (no hard dependency).
+- In a test noble crypt 11 of 13 armoured sleepers carried gems: Infused Gems leaves some pieces without (its own rules on what takes a gem).
+
+### Spec facts
+
+- Data, not code, decides the gems: item modifier `data/bubbas_reworked_mobs/item_modifier/noble_finery.json` uses Infused Gems' own `bubbas_infused_gems:socket_random_gems` (armor 1-2, weapon 1; infusion [2,3,3,4], tier [2,2,3], any variant) and loads only with the mod (`fabric:load_conditions` `fabric:all_mods_loaded`).
+- `grave/NobleFinery.apply` runs it over a noble sleeper's gear when the crypt is built (`CryptYardPiece.Build.sleeper`, noble = armour chance 0.8 or more); if the modifier isn't loaded it does nothing. Loot context: chest param set with the sleeper's position; seeded per position.
+- New build option `-PwithGems` (Reworked Mobs) puts Infused Gems on the test game's classpath, like `-PwithBeacons`.
+
+### Tests
+
+- Milestone `NobleFineryGameTest.nobleDeadWearGemsOnlyWithInfusedGems`: a built noble crypt; without Infused Gems no gear carries its components; with `-PwithGems` most noble sleepers' gear does (11 of 13). Both runs pass; full milestone suite 129/129.
+- No screenshot: gemmed gear looks the same on a sleeper.
+
+## 6. Maps (specs/monster-camps.md "Maps")
+
+### Player-facing
+
+- **Cartographers** sell three new explorer maps (a compass plus emeralds, like vanilla's):
+  - **Graveyard Explorer Map** (journeyman, level 2): 8 emeralds, marks the nearest crypt yard with a red X.
+  - **Monster Camp Explorer Map** (journeyman, level 2): 8 emeralds, marks the nearest camp with a white X.
+  - **Fabricator Explorer Map** (expert, level 4): 20 emeralds, marks the **ancient city** of the nearest Ancient Fabricator; the Fabricator itself is about **150 blocks** from the X (every natural Fabricator sits that far from its city).
+- **Fabricator office chests** hold a Fabricator Explorer Map to the **next** one (it skips the city next to this Fabricator, which is already generated).
+- They join vanilla's trade pools for those levels (so a cartographer offers them now and then among its usual trades).
+
+### Owner question (open)
+
+- Owner (2026-11-22): "can we not have a vanilla map that points to a fabricator directly?" Not as things stand: vanilla explorer maps only find **structures**, and Fabricators are placed **features** beside their city. A marker structure sharing the city's placement would still point at the city chunk (vanilla locates by placement chunk). Choices: (1) X on the city, as built (pure vanilla); (2) make the Fabricator a real structure, after which vanilla maps, `/locate` and the Totem of Seeking point straight at it (bigger change, in the mob factory's code); (3) a small custom map function that points exactly (was built first, removed after the owner's "no new systems"). Owner chose (2), make Fabricators real structures (2026-11-22). **But a vanilla catch, found when checking how maps locate:** vanilla explorer maps (and `/locate`) mark a random-spread structure's **placement chunk** plus one fixed `locate_offset` shared by all structures of that type, not where its building ends up. Fabricators sit 150 blocks from their ancient city **at a random angle**, so as a structure sharing the city's placement the X would still land on the city. For the X to land exactly on the Fabricator, either (a) every Fabricator sits at the **same compass direction** and distance from its city (e.g. 150 blocks east; `locate_offset` then points at it), losing the random angle, or (b) Fabricators get their **own placement grid** and stop pairing with cities (breaks the tunnel-to-the-city design). (a) is fully vanilla but changes how Fabricators sit in the world and is mob-factory work: **for the owner to confirm (a), and for agent 1 to schedule.** Not built here; maps point at the city until then.
+
+### Spec facts
+
+- All data, vanilla systems: structure tags `bubbas_reworked_mobs:on_graveyard_maps` (crypt_yard), `on_camp_maps` (monster_camp), `on_fabricator_maps` (minecraft:ancient_city); villager trades `data/bubbas_reworked_mobs/villager_trade/cartographer/{graveyard,camp,fabricator}_map.json` (vanilla `exploration_map` + `filtered` on map id, `filled_map` with an `item_name`); added to `#minecraft:cartographer/level_2` and `level_4` (`replace: false`); office chest pools (`chests/fabricator_office`, `fabricator_office_with_gems`) use `exploration_map` with `skip_existing_chunks: true`. Map names in the lang file. (26.3 has no map colour component, so the maps keep the default look.)
+
+### Tests
+
+- Client part `maps` (`MapsClientGameTest`, seed 20261116): each trade, offered by a cartographer, makes a named map with a target: graveyard -208,-368; camp 80,0; Fabricator map's X at a city with its Fabricator 148 blocks away (fails if no Fabricator within 400 of the X). `maps-graveyard` looked at: the Graveyard Explorer Map in hand with its red X.
+- Full milestone suite 129/129.
+
+### Owner decision: Fabricators become real structures (2026-11-22, for agent 1 to schedule)
+
+- Owner: "fabricators are supposed to be real structures, it would be neat if they were near ancient cities but its not a requirement." So option (b): a Fabricator structure with **its own placement grid**; being near an ancient city is a nice-to-have, not a rule. Then vanilla explorer maps, `/locate` and the Totem of Seeking point straight at it, and the map trades and office chests here switch their destination tag `#bubbas_reworked_mobs:on_fabricator_maps` from `minecraft:ancient_city` to the Fabricator structure (a one-line data change).
+- Builder's proposed shape (mob-factory work, not started here): a `Structure` type `ancient_fabricator` with a random-spread structure set (spacing about the ancient cities' 24, own salt), biomes `#minecraft:has_structure/ancient_city` (deep dark) so they still tend to sit near cities; its piece builds today's `FactoryDesign`; when a city happens to be within reach (`findNearestMapStructure` on ancient cities at generation), the tunnel heads to it, else the Fabricator stands alone. `FabricatorSites` (cell-from-city computation, saved states, the locate command, the tick) moves to the structure starts as camps did (`specs/vanilla-subsystems.md`: structure references round players, saved state per start). Worlds already generated keep their old Fabricators unless the old feature stays registered for them; owner call.

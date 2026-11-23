@@ -96,6 +96,7 @@ public final class GraveyardCommand {
 		CryptYardPiece piece = new CryptYardPiece(seed, origin, width, depth, crypt, YardTrees.forBiome(level.getBiome(origin)), state, wealth,
 				YardKinds.Climate.of(level.getBiome(origin)));
 		ClippedBuild.buildNow(level, piece, gate);
+		Wisps.register(level, piece);
 		return piece;
 	}
 }
