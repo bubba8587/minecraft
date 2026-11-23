@@ -18,6 +18,7 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffectUtil;
+import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Pose;
@@ -227,7 +228,7 @@ public final class DrownedMind {
 
 	private void tickSeeking(Drowned drowned, ServerLevel level, long time) {
 		Player player = level.getNearestPlayer(drowned.getX(), drowned.getY(), drowned.getZ(), DrownedTuning.ACTIVATE_RANGE,
-				e -> !e.isSpectator());
+				EntitySelector.NO_SPECTATORS);
 		if (player == null && !(pinned && spot != null)) {
 			if (state != State.IDLE) {
 				enterIdle(drowned);
@@ -339,7 +340,7 @@ public final class DrownedMind {
 		if (seen || stared) {
 			return false;
 		}
-		Player player = level.getNearestPlayer(drowned.getX(), drowned.getY(), drowned.getZ(), DrownedTuning.ACTIVATE_RANGE, e -> !e.isSpectator());
+		Player player = level.getNearestPlayer(drowned.getX(), drowned.getY(), drowned.getZ(), DrownedTuning.ACTIVATE_RANGE, EntitySelector.NO_SPECTATORS);
 		if (player == null) {
 			return false;
 		}
@@ -366,7 +367,7 @@ public final class DrownedMind {
 
 	/** One senses scan while lurking: is it stared at, and is someone at the edge with their back turned? */
 	private @Nullable LivingEntity scan(Drowned drowned, ServerLevel level, LurkSpots.Spot s) {
-		if (!pinned && level.getNearestPlayer(drowned.getX(), drowned.getY(), drowned.getZ(), DrownedTuning.ACTIVATE_RANGE, e -> !e.isSpectator()) == null) {
+		if (!pinned && level.getNearestPlayer(drowned.getX(), drowned.getY(), drowned.getZ(), DrownedTuning.ACTIVATE_RANGE, EntitySelector.NO_SPECTATORS) == null) {
 			enterIdle(drowned);
 			return null;
 		}

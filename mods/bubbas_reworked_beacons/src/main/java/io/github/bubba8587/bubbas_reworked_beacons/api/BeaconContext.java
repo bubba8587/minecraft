@@ -4,6 +4,7 @@ package io.github.bubba8587.bubbas_reworked_beacons.api;
 import java.util.List;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
@@ -81,7 +82,7 @@ public final class BeaconContext {
 	/** Every living thing in the area (players and mobs; spectators left out). Looked up once, on first use. */
 	public List<LivingEntity> livingEntities() {
 		if (this.living == null) {
-			this.living = this.level.getEntitiesOfClass(LivingEntity.class, this.area, e -> e.isAlive() && !e.isSpectator());
+			this.living = this.level.getEntitiesOfClass(LivingEntity.class, this.area, EntitySelector.ENTITY_STILL_ALIVE.and(EntitySelector.NO_SPECTATORS));
 		}
 		return this.living;
 	}

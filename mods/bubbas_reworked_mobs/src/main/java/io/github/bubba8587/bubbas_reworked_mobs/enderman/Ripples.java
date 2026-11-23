@@ -17,6 +17,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.FluidTags;
+import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -210,7 +211,7 @@ public final class Ripples {
 				}
 			}
 			List<Entity> standing = level.getEntities((Entity) null, new AABB(x, lo, z, x + 1, hi + 1, z + 1),
-					e -> !(e instanceof ItemEntity) && !(e instanceof ExperienceOrb) && !e.isSpectator());
+					EntitySelector.NO_SPECTATORS.and(e -> !(e instanceof ItemEntity) && !(e instanceof ExperienceOrb)));
 			BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
 			// Ground where there was none, top down (so nothing above falls into the gap first).
 			for (int y = hi; y > Math.max(lo - 1, surface); y--) {

@@ -11,6 +11,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -59,7 +60,7 @@ public final class SleeperBreakout {
 			level.sendParticles(ParticleTypes.CLOUD, pos.getX() + 0.5, pos.getY() + 1.2, pos.getZ() + 0.5, 12, 0.8, 0.5, 0.8, 0.02);
 			// The puff of sand blinds anyone close for a moment.
 			for (Player player : level.getEntitiesOfClass(Player.class, new AABB(pos).inflate(UndeadTuning.HUSK_BLIND_RADIUS),
-					p -> !p.isSpectator() && !p.isCreative())) {
+					EntitySelector.NO_CREATIVE_OR_SPECTATOR)) {
 				player.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, UndeadTuning.HUSK_BLIND_TICKS, 0));
 			}
 		} else if (variant == UndeadVariant.STRAY) {

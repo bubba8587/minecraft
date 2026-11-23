@@ -19,6 +19,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
+import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
@@ -303,7 +304,7 @@ public class SpunWeb extends Entity {
 			discard();
 			return;
 		}
-		for (LivingEntity e : level.getEntitiesOfClass(LivingEntity.class, span(), e -> !(e instanceof Spider) && !e.isSpectator())) {
+		for (LivingEntity e : level.getEntitiesOfClass(LivingEntity.class, span(), EntitySelector.NO_SPECTATORS.and(e -> !(e instanceof Spider)))) {
 			if (touching(e)) {
 				// Exactly vanilla's cobweb (WebBlock.entityInside), Weaving included.
 				e.makeStuckInBlock(Blocks.COBWEB.defaultBlockState(), e.hasEffect(net.minecraft.world.effect.MobEffects.WEAVING)
