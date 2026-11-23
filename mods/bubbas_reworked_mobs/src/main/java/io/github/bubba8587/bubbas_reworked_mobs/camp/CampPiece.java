@@ -21,8 +21,11 @@ import net.minecraft.world.level.block.ChestBlock;
 import net.minecraft.world.level.block.LadderBlock;
 import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.SkullBlock;
+import net.minecraft.world.level.block.PointedDripstoneBlock;
 import net.minecraft.world.level.block.SlabBlock;
+import net.minecraft.world.level.block.StairBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.Half;
 import net.minecraft.world.level.block.state.properties.SlabType;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
@@ -73,8 +76,8 @@ public class CampPiece extends StructurePiece {
 
 	static BoundingBox box(BlockPos centre, CampTuning.Size size) {
 		// clearing plus edge outcrops (up to 3 past the radius), or the stair tunnel
-		int r = Math.max(size.radius + 3, size.maxRoomHalf + 10);
-		return new BoundingBox(centre.getX() - r, centre.getY() - 6, centre.getZ() - r, centre.getX() + r, centre.getY() + 18, centre.getZ() + r);
+		int r = Math.max(size.radius + 5, size.maxRoomHalf + 10);
+		return new BoundingBox(centre.getX() - r, centre.getY() - 6, centre.getZ() - r, centre.getX() + r, centre.getY() + 22, centre.getZ() + r);
 	}
 
 	public BlockPos centre() {
@@ -95,6 +98,9 @@ public class CampPiece extends StructurePiece {
 		for (Tower tower : plan.towers) {
 			spots.add(new BlockPos(tower.x, centre.getY() + tower.height + 1, tower.z));
 		}
+		if (plan.winding != null) {
+			spots.add(windingTop());
+		}
 		return spots;
 	}
 
@@ -111,7 +117,35 @@ public class CampPiece extends StructurePiece {
 
 	// --- the plan: everything decided from the seed, before the world is read ----------------------
 
-	private record Tower(int x, int z, int height, Direction ladder, boolean roof, int bannerCorner) {
+	private record Tower(int x, int z, int height, Direction ladder, boolean roof, int bannerCorner, Direction ramp, Direction bridge) {
+		boolean opens(Direction d) {
+			return d == ramp || d == bridge;
+		}
+	}
+
+	private record Bridge(Tower from, Direction dir, int length) {
+	}
+
+	private record Skull(int x, int z, Direction facing, long seed) {
+	}
+
+	private record Winding(int x, int z, int risers, int start, long seed) {
+	}
+
+	/** A cell out from a tower's platform edge: k steps out on side d (0 is the edge itself), row w (0, 1 the middle rows; -1, 2 beside them). */
+	private static int[] towerCell(int tx, int tz, Direction d, int k, int w) {
+		int x0 = tx - 1;
+		int z0 = tz - 1;
+		if (d.getAxis() == Direction.Axis.X) {
+			return new int[] { d == Direction.EAST ? x0 + 3 + k : x0 - k, z0 + 1 + w };
+		}
+		return new int[] { x0 + 1 + w, d == Direction.SOUTH ? z0 + 3 + k : z0 - k };
+	}
+
+	private static Footprint towerStrip(String what, int tx, int tz, Direction d, int k0, int k1, int w0, int w1) {
+		int[] a = towerCell(tx, tz, d, k0, w0);
+		int[] b = towerCell(tx, tz, d, k1, w1);
+		return new Footprint(what, Math.min(a[0], b[0]), Math.min(a[1], b[1]), Math.max(a[0], b[0]), Math.max(a[1], b[1]));
 	}
 
 	private record Spot(int x, int z, int size, long seed) {
@@ -142,6 +176,9 @@ public class CampPiece extends StructurePiece {
 		final List<Spot> outcrops = new ArrayList<>();
 		final List<Spot> pikes = new ArrayList<>();
 		final List<Spot> leanTos = new ArrayList<>();
+		final List<Bridge> bridges = new ArrayList<>();
+		Skull skull;
+		Winding winding;
 		final Direction stairs;
 		final boolean stairsClockwise;
 		final Direction chestSide;
@@ -192,6 +229,33 @@ public class CampPiece extends StructurePiece {
 			int bz = fz + stairs.getStepZ() * (h + 10) + side.getStepZ() * 2;
 			footprints.add(new Footprint("stairs", Math.min(ax, bx), Math.min(az, bz), Math.max(ax, bx), Math.max(az, bz)));
 			// then each piece on free cells only, its spot re-rolled until one fits, or dropped
+			// rare centrepieces of large camps: a skull rock at the edge, a winding tower
+			if (size == CampTuning.Size.LARGE && random.nextInt(3) == 0) {
+				long pieceSeed = random.nextLong();
+				for (int t = 0; t < TRIES; t++) {
+					double a = random.nextDouble() * Math.PI * 2.0;
+					int x = cx + (int) Math.round(Math.cos(a) * 10);
+					int z = cz + (int) Math.round(Math.sin(a) * 10);
+					if (claim(Footprint.around("skull", x, z, 6))) {
+						skull = new Skull(x, z, Direction.getApproximateNearest(cx - x, 0.0, cz - z), pieceSeed);
+						break;
+					}
+				}
+			}
+			if (size == CampTuning.Size.LARGE && random.nextInt(4) == 0) {
+				int risers = 12 + random.nextInt(3);
+				int start = random.nextInt(4);
+				long pieceSeed = random.nextLong();
+				for (int t = 0; t < TRIES; t++) {
+					double a = random.nextDouble() * Math.PI * 2.0;
+					int x = cx + (int) Math.round(Math.cos(a) * (r - 3));
+					int z = cz + (int) Math.round(Math.sin(a) * (r - 3));
+					if (claim(Footprint.around("winding tower", x, z, 3))) {
+						winding = new Winding(x, z, risers, start, pieceSeed);
+						break;
+					}
+				}
+			}
 			int leanToCount = 1 + random.nextInt(size == CampTuning.Size.SMALL ? 1 : 2);
 			double la = random.nextDouble() * Math.PI * 2.0;
 			for (int i = 0; i < leanToCount; i++) {
@@ -220,8 +284,14 @@ public class CampPiece extends StructurePiece {
 					double a = t == 0 ? base + (random.nextDouble() - 0.5) * 0.8 : random.nextDouble() * Math.PI * 2.0;
 					int x = cx + (int) Math.round(Math.cos(a) * (r - 2));
 					int z = cz + (int) Math.round(Math.sin(a) * (r - 2));
-					if (claim(new Footprint("tower", x - 2, z - 2, x + 3, z + 3))) {
-						towers.add(new Tower(x, z, height, ladder, true, corner));
+					Footprint own = new Footprint("tower", x - 2, z - 2, x + 3, z + 3);
+					if (claim(own)) {
+						Direction ramp = random.nextFloat() < RAMP_CHANCE ? ramp(random, x, z, height, cx, cz, r, own) : null;
+						Tower tower = new Tower(x, z, height, ladder, true, corner, ramp, null);
+						towers.add(tower);
+						if (size != CampTuning.Size.SMALL && random.nextFloat() < BRIDGE_CHANCE) {
+							twin(random, tower, own, cx, cz, r);
+						}
 						break;
 					}
 				}
@@ -270,10 +340,63 @@ public class CampPiece extends StructurePiece {
 			}
 		}
 
-		/** Adds the footprint when it keeps the margin from every planned one (a lean-to may open right onto the fire's seats). */
-		private boolean claim(Footprint footprint) {
+		static final float RAMP_CHANCE = 0.35F;
+		static final float BRIDGE_CHANCE = 0.4F;
+
+		/** A ramp of stairs from the ground up to a tower's platform, on a side whose foot stays in the clearing; null when none fits. */
+		private Direction ramp(RandomSource random, int x, int z, int height, int cx, int cz, int r, Footprint own) {
+			List<Direction> sides = new ArrayList<>(Direction.Plane.HORIZONTAL.stream().toList());
+			net.minecraft.util.Util.shuffle(sides, random);
+			for (Direction d : sides) {
+				int[] foot = towerCell(x, z, d, height, 0);
+				if (Math.hypot(foot[0] - cx, foot[1] - cz) <= r - 1 && claim(towerStrip("ramp", x, z, d, 2, height, 0, 1), own)) {
+					return d;
+				}
+			}
+			return null;
+		}
+
+		/** A second tower the same height a few blocks off one side of the first, a plank bridge between their platforms. */
+		private void twin(RandomSource random, Tower a, Footprint aFootprint, int cx, int cz, int r) {
+			List<Direction> sides = new ArrayList<>(Direction.Plane.HORIZONTAL.stream().toList());
+			net.minecraft.util.Util.shuffle(sides, random);
+			int gap = 4 + random.nextInt(4);
+			for (Direction d : sides) {
+				if (d == a.ramp) {
+					continue;
+				}
+				int bx = a.x + d.getStepX() * (4 + gap);
+				int bz = a.z + d.getStepZ() * (4 + gap);
+				if (Math.hypot(bx - cx, bz - cz) > r - 2) {
+					continue;
+				}
+				Footprint bFootprint = new Footprint("tower", bx - 2, bz - 2, bx + 3, bz + 3);
+				if (!claim(bFootprint)) {
+					continue;
+				}
+				if (!claim(towerStrip("bridge", a.x, a.z, d, 2, gap - 1, -1, 2), aFootprint, bFootprint)) {
+					footprints.remove(bFootprint);
+					continue;
+				}
+				Tower withBridge = new Tower(a.x, a.z, a.height, a.ladder, a.roof, a.bannerCorner, a.ramp, d);
+				towers.set(towers.indexOf(a), withBridge);
+				towers.add(new Tower(bx, bz, a.height, Direction.Plane.HORIZONTAL.getRandomDirection(random), true, random.nextInt(4), null, d.getOpposite()));
+				bridges.add(new Bridge(withBridge, d, gap));
+				return;
+			}
+		}
+
+		/**
+		 * Adds the footprint when it keeps the margin from every planned one (a lean-to may open right onto the fire's
+		 * seats; a ramp or bridge meets the towers it joins).
+		 */
+		private boolean claim(Footprint footprint, Footprint... joins) {
 			for (Footprint other : footprints) {
-				int margin = footprint.what().equals("lean-to") && other.what().equals("fire") ? 0 : MARGIN;
+				boolean joined = false;
+				for (Footprint j : joins) {
+					joined |= j == other;
+				}
+				int margin = joined || footprint.what().equals("lean-to") && other.what().equals("fire") ? 0 : MARGIN;
 				if (!footprint.clearOf(other, margin)) {
 					return false;
 				}
@@ -344,6 +467,18 @@ public class CampPiece extends StructurePiece {
 		fire(b, cx, cz);
 		for (Tower tower : plan.towers) {
 			tower(b, tower);
+			if (tower.ramp != null) {
+				ramp(b, tower);
+			}
+		}
+		for (Bridge bridge : plan.bridges) {
+			bridge(b, bridge);
+		}
+		if (plan.skull != null) {
+			skull(b, plan.skull);
+		}
+		if (plan.winding != null) {
+			winding(b, plan.winding);
 		}
 		for (Spot banner : plan.banners) {
 			standingBanner(b, banner.x, banner.z, plan.bannerRotation);
@@ -477,8 +612,9 @@ public class CampPiece extends StructurePiece {
 					}
 					continue;
 				}
-				if (ci == ladderCorner || (!corner && railGone[i])) {
-					continue; // where the ladder comes up, and gaps
+				Direction edgeSide = dx == 3 ? Direction.EAST : dx == 0 ? Direction.WEST : dz == 0 ? Direction.NORTH : Direction.SOUTH;
+				if (ci == ladderCorner || (!corner && (railGone[i] || t.opens(edgeSide)))) {
+					continue; // where the ladder, a ramp or a bridge comes up, and gaps
 				}
 				// Connected railing along the edge.
 				boolean alongX = dz == 0 || dz == 3;
@@ -500,6 +636,9 @@ public class CampPiece extends StructurePiece {
 		// The ladder: up the outer face of a corner post to its top.
 		int[] lc = corners[ladderCorner];
 		Direction out = ladderAlongX ? (lc[0] == 0 ? Direction.WEST : Direction.EAST) : (lc[1] == 0 ? Direction.NORTH : Direction.SOUTH);
+		if (out == t.bridge) {
+			out = !ladderAlongX ? (lc[0] == 0 ? Direction.WEST : Direction.EAST) : (lc[1] == 0 ? Direction.NORTH : Direction.SOUTH);
+		}
 		int lx = x0 + lc[0] + out.getStepX();
 		int lz = z0 + lc[1] + out.getStepZ();
 		int gl = b.ground(lx, lz);
@@ -510,6 +649,344 @@ public class CampPiece extends StructurePiece {
 				b.put(lx, y, lz, Blocks.LADDER.defaultBlockState().setValue(LadderBlock.FACING, out));
 			}
 		}
+	}
+
+	/** A ramp of stairs from the ground up to a tower's platform, 2 wide, on log stilts. */
+	private void ramp(ClippedBuild b, Tower t) {
+		int top = centre.getY() + t.height;
+		Direction d = t.ramp;
+		for (int w = 0; w <= 1; w++) {
+			for (int k = 1; k <= t.height; k++) {
+				int[] c = towerCell(t.x, t.z, d, k, w);
+				int y = top - k + 1;
+				int g = b.ground(c[0], c[1]);
+				if (g == Integer.MIN_VALUE) {
+					continue;
+				}
+				if (k % 2 == 1) {
+					for (int py = g + 1; py < y; py++) {
+						b.put(c[0], py, c[1], kind.log());
+					}
+				}
+				b.put(c[0], y, c[1], kind.woodStairs().setValue(StairBlock.FACING, d.getOpposite()));
+				b.clearAbove(c[0], y, c[1], 3);
+			}
+		}
+	}
+
+	/** A sagging plank bridge between two towers' platforms, chain rope railing between fence end posts. */
+	private void bridge(ClippedBuild b, Bridge bridge) {
+		Tower t = bridge.from;
+		int top = centre.getY() + t.height;
+		Direction d = bridge.dir;
+		int n = bridge.length;
+		for (int k = 1; k <= n; k++) {
+			boolean end = k == 1 || k == n;
+			boolean sag = k > 1 + n / 4 && k < n - n / 4;
+			for (int w = 0; w <= 1; w++) {
+				int[] c = towerCell(t.x, t.z, d, k, w);
+				b.put(c[0], top, c[1], sag ? kind.slab() : kind.planks());
+				b.clearAbove(c[0], top, c[1], 2);
+			}
+			for (int w : new int[] { -1, 2 }) {
+				int[] c = towerCell(t.x, t.z, d, k, w);
+				if (end) {
+					b.put(c[0], top, c[1], kind.fence());
+					b.put(c[0], top + 1, c[1], kind.fence());
+				} else {
+					b.put(c[0], top + 1, c[1], Blocks.IRON_CHAIN.defaultBlockState().setValue(RotatedPillarBlock.AXIS, d.getAxis()));
+				}
+			}
+		}
+	}
+
+	private static final double SKULL_RU = 5.2;
+	private static final double SKULL_RW = 5.5;
+	private static final double SKULL_RY = 7.4;
+	private static final double SKULL_WC = -0.5;
+
+	/** Across-and-depth term of the skull's shape: round at the back, a flatter face at the front. */
+	private static double skullFlat(int u, int w, double ru, double rw) {
+		double t = (w - SKULL_WC) / rw;
+		return sq(u / ru) + (w > SKULL_WC ? sq(sq(t)) : sq(t));
+	}
+
+	/** Skull rock cell, skull-local (u across, w toward the fire, dy up from the camp's ground): 0 outside, 1 shell, 2 hollow. */
+	private static int skullCell(int u, int w, int dy) {
+		double outer = skullFlat(u, w, SKULL_RU, SKULL_RW) + sq(dy / SKULL_RY);
+		if (outer > 1.0) {
+			return 0;
+		}
+		double inner = skullFlat(u, w, SKULL_RU - 1.3, SKULL_RW - 1.3) + sq(dy / (SKULL_RY - 1.4));
+		return inner < 1.0 && dy > 0 ? 2 : 1;
+	}
+
+	/** Openings in the skull's face: the mouth, the nose hole and the eye sockets. */
+	private static boolean skullOpening(int u, int w, int dy) {
+		int au = Math.abs(u);
+		return w >= 1 && (au <= 1 && dy >= 1 && dy <= 2 || au == 0 && dy == 3 || (au == 1 || au == 2) && (dy == 4 || dy == 5));
+	}
+
+	private static double sq(double v) {
+		return v * v;
+	}
+
+	/**
+	 * A big skull rock: a hollow dome of calcite and bone facing the fire, eye sockets and a nose hole, a mouth to walk
+	 * in by with dripstone fangs, a bone brow, a dark trodden floor with bones and a skull inside.
+	 */
+	private void skull(ClippedBuild b, Skull s) {
+		Direction f = s.facing;
+		Direction across = f.getClockWise();
+		int y0 = centre.getY();
+		for (int u = -6; u <= 6; u++) {
+			for (int w = -6; w <= 6; w++) {
+				if (skullCell(u, w, 0) == 0) {
+					continue;
+				}
+				int x = s.x + across.getStepX() * u + f.getStepX() * w;
+				int z = s.z + across.getStepZ() * u + f.getStepZ() * w;
+				b.clearCover(x, z, 20);
+				int g = b.ground(x, z);
+				if (g == Integer.MIN_VALUE) {
+					continue;
+				}
+				RandomSource cell = RandomSource.create(s.seed ^ (x * 73428767L) ^ (z * 912931L));
+				for (int y = g + 1; y < y0; y++) {
+					b.put(x, y, z, kind.rock(cell.nextFloat()));
+				}
+				for (int y = y0 + 1; y <= g; y++) {
+					b.put(x, y, z, Blocks.AIR.defaultBlockState());
+				}
+				boolean inside = skullCell(u, w, 1) == 2 || skullOpening(u, w, 1);
+				b.put(x, y0, z, inside ? fullBlock(kind.trodden(cell.nextFloat())) : kind.rock(cell.nextFloat()));
+				for (int dy = 1; dy <= 8; dy++) {
+					int y = y0 + dy;
+					int what = skullCell(u, w, dy);
+					float roll = cell.nextFloat();
+					if (what == 0) {
+						continue;
+					}
+					if (what == 2 || skullOpening(u, w, dy)) {
+						boolean fang = Math.abs(u) == 1 && dy == 2 && what == 1 && skullCell(u, w, 3) == 1 && !skullOpening(u, w, 3);
+						b.put(x, y, z, fang ? Blocks.POINTED_DRIPSTONE.defaultBlockState().setValue(PointedDripstoneBlock.TIP_DIRECTION, Direction.DOWN)
+								: Blocks.AIR.defaultBlockState());
+					} else if (w >= 1 && dy == 6 && Math.abs(u) <= 3 && skullCell(u, w + 1, dy) == 0) {
+						b.put(x, y, z, Blocks.BONE_BLOCK.defaultBlockState().setValue(RotatedPillarBlock.AXIS, across.getAxis())); // brow
+					} else if (w >= 1 && dy <= 2 && Math.abs(u) <= 3 && skullCell(u, w + 1, dy) == 0) {
+						b.put(x, y, z, Blocks.BONE_BLOCK.defaultBlockState()); // teeth
+					} else if (dy == 1) {
+						b.put(x, y, z, kind.rock(roll));
+					} else {
+						b.put(x, y, z, roll < 0.78F ? Blocks.CALCITE.defaultBlockState() : roll < 0.92F ? Blocks.BONE_BLOCK.defaultBlockState()
+								: Blocks.DIORITE.defaultBlockState());
+					}
+				}
+			}
+		}
+		// bones and a skull on the floor inside
+		RandomSource random = RandomSource.create(s.seed);
+		for (int i = 0; i < 3; i++) {
+			int u = (random.nextInt(3) - 1) * 2;
+			int w = -2 + random.nextInt(2);
+			int x = s.x + across.getStepX() * u + f.getStepX() * w;
+			int z = s.z + across.getStepZ() * u + f.getStepZ() * w;
+			b.put(x, y0 + 1, z, i == 0 ? kind.skull().setValue(SkullBlock.ROTATION, random.nextInt(16))
+					: Blocks.BONE_BLOCK.defaultBlockState().setValue(RotatedPillarBlock.AXIS, Direction.Axis.values()[random.nextInt(3)]));
+		}
+	}
+
+	/** The winding tower's ring: the 24 cells round its 5x5 core, clockwise from the start corner, as {dx, dz}. */
+	private static int[][] ring(int start) {
+		int[][] cells = new int[24][];
+		int i = 0;
+		int[][] corners = { { -3, -3 }, { 3, -3 }, { 3, 3 }, { -3, 3 } };
+		for (int side = 0; side < 4; side++) {
+			int[] c = corners[(side + start) % 4];
+			int[] n = corners[(side + start + 1) % 4];
+			int sx = Integer.signum(n[0] - c[0]);
+			int sz = Integer.signum(n[1] - c[1]);
+			for (int k = 1; k <= 6; k++) {
+				cells[i++] = new int[] { c[0] + sx * k, c[1] + sz * k };
+			}
+		}
+		return cells;
+	}
+
+	private static boolean ringCorner(int[] cell) {
+		return Math.abs(cell[0]) == 3 && Math.abs(cell[1]) == 3;
+	}
+
+	/** Each ring cell's tread height above the camp's ground (0 where no stair is). */
+	private static int[] ringHeights(Winding wt) {
+		int[] heights = new int[24];
+		int h = 0;
+		int[][] cells = ring(wt.start);
+		for (int i = 0; i < 24 && h < wt.risers; i++) {
+			if (!ringCorner(cells[i])) {
+				h++;
+			}
+			heights[i] = h;
+		}
+		return heights;
+	}
+
+	/** The last stair of the winding tower's ring. */
+	private static int ringLast(Winding wt) {
+		int[] heights = ringHeights(wt);
+		int last = 0;
+		for (int i = 0; i < 24; i++) {
+			if (heights[i] > 0) {
+				last = i;
+			}
+		}
+		return last;
+	}
+
+	/** The core cell a ring cell stands against. */
+	private static int[] ringInner(int[] cell) {
+		return new int[] { Integer.signum(cell[0]) * Math.min(2, Math.abs(cell[0])), Integer.signum(cell[1]) * Math.min(2, Math.abs(cell[1])) };
+	}
+
+	/**
+	 * A tall winding tower: a 5x5 log-and-plank core with floors inside, a stair that winds round the outside up to a
+	 * railed, roofed top, doorways off the stair onto the floors it passes.
+	 */
+	private void winding(ClippedBuild b, Winding wt) {
+		int cy = centre.getY();
+		int top = cy + wt.risers;
+		int[][] cells = ring(wt.start);
+		int[] heights = ringHeights(wt);
+		RandomSource random = RandomSource.create(wt.seed);
+		// core walls and floors
+		for (int dx = -2; dx <= 2; dx++) {
+			for (int dz = -2; dz <= 2; dz++) {
+				int x = wt.x + dx;
+				int z = wt.z + dz;
+				b.clearCover(x, z, 24);
+				int g = b.ground(x, z);
+				if (g == Integer.MIN_VALUE) {
+					continue;
+				}
+				boolean cornerPost = Math.abs(dx) == 2 && Math.abs(dz) == 2;
+				boolean wall = Math.abs(dx) == 2 || Math.abs(dz) == 2;
+				for (int y = Math.min(g + 1, cy); y < top; y++) {
+					boolean floor = y <= cy || (y - cy) % 5 == 0;
+					boolean band = wall && !cornerPost && y > cy && (y - cy) % 5 == 0;
+					boolean window = wall && (dx == 0 || dz == 0) && y > cy + 1 && (y - cy) % 5 == 2;
+					Direction.Axis along = Math.abs(dz) == 2 ? Direction.Axis.X : Direction.Axis.Z;
+					b.put(x, y, z, cornerPost ? kind.log() : band ? kind.log().trySetValue(RotatedPillarBlock.AXIS, along)
+							: window ? fence(along == Direction.Axis.X, along == Direction.Axis.Z, along == Direction.Axis.X, along == Direction.Axis.Z)
+							: wall || floor ? kind.planks() : Blocks.AIR.defaultBlockState());
+				}
+				b.put(x, top, z, cornerPost ? kind.log() : kind.planks());
+			}
+		}
+		// the stair round the outside, posts under its corner landings, doorways onto the floors it passes
+		for (int i = 0; i < 24; i++) {
+			if (heights[i] == 0) {
+				continue;
+			}
+			int x = wt.x + cells[i][0];
+			int z = wt.z + cells[i][1];
+			int y = cy + heights[i];
+			b.clearCover(x, z, 24);
+			int g = b.ground(x, z);
+			if (g == Integer.MIN_VALUE) {
+				continue;
+			}
+			if (ringCorner(cells[i])) {
+				for (int py = g + 1; py < y; py++) {
+					b.put(x, py, z, kind.log());
+				}
+				b.put(x, y, z, kind.planks());
+			} else {
+				int[] next = cells[(i + 1) % 24];
+				Direction up = Direction.getApproximateNearest(next[0] - cells[i][0], 0, next[1] - cells[i][1]);
+				b.put(x, y, z, kind.woodStairs().setValue(StairBlock.FACING, up));
+				if (y - 1 > g && random.nextInt(3) == 0) {
+					b.put(x, y - 1, z, kind.woodStairs().setValue(StairBlock.FACING, up.getOpposite()).setValue(StairBlock.HALF, Half.TOP));
+				}
+				int[] wall = ringInner(cells[i]);
+				if (y < top && (y - cy) % 5 == 0 && (Math.abs(wall[0]) <= 1 || Math.abs(wall[1]) <= 1)) {
+					b.put(wt.x + wall[0], y + 1, wt.z + wall[1], Blocks.AIR.defaultBlockState());
+					b.put(wt.x + wall[0], y + 2, wt.z + wall[1], Blocks.AIR.defaultBlockState());
+				}
+			}
+			b.clearAbove(x, y, z, 3);
+		}
+		// the top: railing round the rim (open where the stair arrives), roof posts and a slab roof
+		int[] arrive = ringInner(cells[ringLast(wt)]);
+		for (int dx = -2; dx <= 2; dx++) {
+			for (int dz = -2; dz <= 2; dz++) {
+				int x = wt.x + dx;
+				int z = wt.z + dz;
+				boolean rim = Math.abs(dx) == 2 || Math.abs(dz) == 2;
+				boolean cornerPost = Math.abs(dx) == 2 && Math.abs(dz) == 2;
+				boolean open = Math.abs(dx - arrive[0]) + Math.abs(dz - arrive[1]) <= 1;
+				if (cornerPost && !(dx == arrive[0] && dz == arrive[1])) {
+					for (int y = top + 1; y <= top + 3; y++) {
+						b.put(x, y, z, kind.fence());
+					}
+				} else if (rim && !open) {
+					boolean alongX = Math.abs(dz) == 2;
+					b.put(x, top + 1, z, fence(alongX, !alongX, alongX, !alongX));
+				}
+				b.put(x, top + 4, z, kind.slab());
+			}
+		}
+	}
+
+	/** The winding tower's top, one above the platform's middle (archer spot, tests). */
+	public BlockPos windingTop() {
+		return plan.winding == null ? null : new BlockPos(plan.winding.x, centre.getY() + plan.winding.risers + 1, plan.winding.z);
+	}
+
+	/** Ground just outside the winding tower's first stair (tests). */
+	public BlockPos windingFoot() {
+		if (plan.winding == null) {
+			return null;
+		}
+		int[][] cells = ring(plan.winding.start);
+		int[] first = cells[0];
+		int[] before = cells[23];
+		return new BlockPos(plan.winding.x + 2 * before[0] - first[0], centre.getY() + 1, plan.winding.z + 2 * before[1] - first[1]);
+	}
+
+	/** Inside the skull rock, and the ground before its mouth (tests); null without one. */
+	public BlockPos skullInside() {
+		return plan.skull == null ? null : new BlockPos(plan.skull.x, centre.getY() + 1, plan.skull.z);
+	}
+
+	public BlockPos skullMouth() {
+		if (plan.skull == null) {
+			return null;
+		}
+		Direction f = plan.skull.facing;
+		return new BlockPos(plan.skull.x + f.getStepX() * 6, centre.getY() + 1, plan.skull.z + f.getStepZ() * 6);
+	}
+
+	/** The first ramped tower: the ground at its ramp's foot and its platform (tests); null without one. */
+	public BlockPos[] rampEnds() {
+		for (Tower t : plan.towers) {
+			if (t.ramp != null) {
+				int[] foot = towerCell(t.x, t.z, t.ramp, t.height + 1, 0);
+				return new BlockPos[] { new BlockPos(foot[0], centre.getY() + 1, foot[1]), new BlockPos(t.x, centre.getY() + t.height + 1, t.z) };
+			}
+		}
+		return null;
+	}
+
+	/** The first bridge's two platforms (tests); null without one. */
+	public BlockPos[] bridgeEnds() {
+		if (plan.bridges.isEmpty()) {
+			return null;
+		}
+		Bridge bridge = plan.bridges.getFirst();
+		Tower a = bridge.from;
+		int y = centre.getY() + a.height + 1;
+		int[] far = towerCell(a.x, a.z, bridge.dir, bridge.length + 2, 0);
+		return new BlockPos[] { new BlockPos(a.x, y, a.z), new BlockPos(far[0], y, far[1]) };
 	}
 
 	/** The kind's fence, connected east, south, west and north as given (placed without neighbour updates, so set here). */
@@ -789,6 +1266,25 @@ public class CampPiece extends StructurePiece {
 					}
 					spots.add(new BlockPos(leanTo.x + along.getStepX() * k - facing.getStepX() * row, centre.getY() + 1,
 							leanTo.z + along.getStepZ() * k - facing.getStepZ() * row));
+				}
+			}
+		}
+		if (plan.skull != null) {
+			Direction f = plan.skull.facing;
+			Direction across = f.getClockWise();
+			for (int u = -2; u <= 2; u++) {
+				for (int w = -3; w <= 1; w++) {
+					if (skullCell(u, w, 1) == 2 && skullCell(u, w, 3) == 2) {
+						spots.add(new BlockPos(plan.skull.x + across.getStepX() * u + f.getStepX() * w, centre.getY() + 1,
+								plan.skull.z + across.getStepZ() * u + f.getStepZ() * w));
+					}
+				}
+			}
+		}
+		if (plan.winding != null) {
+			for (int dx = -1; dx <= 1; dx++) {
+				for (int dz = -1; dz <= 1; dz++) {
+					spots.add(windingTop().offset(dx, 0, dz));
 				}
 			}
 		}

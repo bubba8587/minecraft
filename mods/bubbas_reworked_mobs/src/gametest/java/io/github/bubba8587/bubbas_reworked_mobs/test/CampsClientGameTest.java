@@ -87,6 +87,54 @@ public class CampsClientGameTest implements FabricClientGameTest {
 					context.takeScreenshot("camp-" + kinds[i].id() + "-seed" + j + "-" + all[j].id());
 				}
 			}
+			// Large camps with each newer piece, two kinds each, from two angles and above.
+			String[] features = { "skull", "winding", "ramp", "bridge" };
+			CampKind[][] featureKinds = { { CampKind.SKELETON, CampKind.HUSK }, { CampKind.ZOMBIE, CampKind.STRAY }, { CampKind.BOGGED, CampKind.SKELETON },
+					{ CampKind.HUSK, CampKind.ZOMBIE } };
+			for (int fi = 0; fi < features.length; fi++) {
+				for (int ki = 0; ki < 2; ki++) {
+					CampKind kind = featureKinds[fi][ki];
+					BlockPos at = base.offset(fi * 50, 0, 200 + ki * 50);
+					int f = fi;
+					long seed = 0;
+					while (feature(new CampPiece(seed, at, kind, CampTuning.Size.LARGE), f) == null) {
+						seed++;
+					}
+					long s = seed;
+					tp(context, server, at.getX() + 0.5, at.getY() + 30, at.getZ() - 20.5, 0, 50);
+					sp.getConnection().waitForChunksRender();
+					CampPiece piece = server.computeOnServer(sv -> CampCommand.build(sv.overworld(), at, kind, CampTuning.Size.LARGE, s));
+					BlockPos p = feature(piece, f);
+					BlockPos c = piece.centre();
+					String name = "camp-" + features[fi] + "-" + kind.id();
+					tp(context, server, c.getX() + 0.5, c.getY() + 30, c.getZ() - 22.5, 0, 52);
+					context.takeScreenshot(name + "-above");
+					// the side the camera looks from: the skull's face, across a ramp or bridge, the tower from outside
+					Vec3 toward = switch (f) {
+						case 0 -> Vec3.atLowerCornerOf(c.subtract(p));
+						case 1 -> Vec3.atLowerCornerOf(p.subtract(c));
+						case 2 -> {
+							BlockPos[] e = piece.rampEnds();
+							yield new Vec3(-(e[0].getZ() - e[1].getZ()), 0, e[0].getX() - e[1].getX());
+						}
+						default -> {
+							BlockPos[] e = piece.bridgeEnds();
+							yield new Vec3(-(e[1].getZ() - e[0].getZ()), 0, e[1].getX() - e[0].getX());
+						}
+					};
+					toward = new Vec3(toward.x, 0, toward.z).normalize();
+					for (int a = 0; a < 2; a++) {
+						double ang = Math.atan2(toward.z, toward.x) + (a == 0 ? 0.0 : 0.9);
+						double dist = features[fi].equals("winding") ? 18.0 : 13.0;
+						double ex = p.getX() + 0.5 + Math.cos(ang) * dist;
+						double ez = p.getZ() + 0.5 + Math.sin(ang) * dist;
+						double ey = p.getY() + (features[fi].equals("winding") ? 4.0 : 3.0);
+						float yaw = (float) (Math.toDegrees(Math.atan2(p.getZ() + 0.5 - ez, p.getX() + 0.5 - ex)) - 90.0);
+						tp(context, server, ex, ey, ez, yaw, 8);
+						context.takeScreenshot(name + "-" + (a == 0 ? "front" : "side"));
+					}
+				}
+			}
 			// The skeleton camp's roster: a creative (not spectating) player nearby makes it appear.
 			BlockPos c = centres.getFirst();
 			server.runCommand("gamemode creative @p");
@@ -219,6 +267,19 @@ public class CampsClientGameTest implements FabricClientGameTest {
 		picks.sort((a, b) -> Double.compare(a.centre().distSqr(spawn), b.centre().distSqr(spawn)));
 		System.out.println("[camps] nearest of each kind: " + picks.stream().map(CampPiece::centre).toList());
 		return picks;
+	}
+
+	/** Where a camp's newer piece stands (0 skull rock, 1 winding tower, 2 ramp, 3 bridge), or null without one. */
+	private static BlockPos feature(CampPiece piece, int f) {
+		return switch (f) {
+			case 0 -> piece.skullInside();
+			case 1 -> piece.windingTop() == null ? null : piece.windingTop().below(6);
+			case 2 -> piece.rampEnds() == null ? null : piece.rampEnds()[0];
+			default -> {
+				BlockPos[] e = piece.bridgeEnds();
+				yield e == null ? null : new BlockPos((e[0].getX() + e[1].getX()) / 2, e[0].getY() - 3, (e[0].getZ() + e[1].getZ()) / 2);
+			}
+		};
 	}
 
 	private static void setup(TestServerContext server) {

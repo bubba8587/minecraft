@@ -58,10 +58,9 @@ Left for next session:
 - **4 worn Wither on mobs:** owner to say whether non-harmful worn rolls apply only in the test world or to every gemmed mob.
 - **5 full:** spiders really wander off the perch (vanilla stroll near the cocoon) and walk back to feed.
 - **6:** giant spiders haul prey to the centre of their own web (the spider has to remember its webs).
-- **7 rest:** skull-dome rock and bone caves (specs/monster-camps.md "Layout variety"), two-chamber rooms, camp loot themed per kind, screenshots of 6+ seeds per kind. The `camps` client part's `camp-room` camera still points at the old fixed room.
+- **7 rest:** skull rocks built 2026-11-23 (one form; bone caves and varied skull shapes open), two-chamber rooms, camp loot themed per kind, screenshots of 6+ seeds per kind. The `camps` client part's `camp-room` camera still points at the old fixed room.
 - **11:** the cairn yard and creeper grove backup copies still float at y 198. The quick fixes don't work: a far-away copy isn't loaded when the sign is clicked, and the builder pack is off in the finished world. Options: (a) structure templates (the yard is 51 wide, so two templates, plus copying the world's `generated/` folder), or (b) a small reset datapack left enabled.
 - **17 rest:** level rough high ground for camps (cut and fill or `terrain_adaptation`) instead of skipping anything over 6 blocks of slope.
-- **19 follow-up:** builders now set blocks down instead of waiting (done 2026-11-23). Owner to say whether "ring places can go" meant the vigil ring too (kept for now).
 - **20 follow-up:** camp footprint plan done (2026-11-23); towers sometimes bunch on one side of a camp.
 - **21 follow-up:** web hits follow the strands (done 2026-11-23); F3+B debug outline still shows the whole span box.
 - **22 follow-up:** gravestone edit screen matches the stone (done 2026-11-23); its title still reads "Edit Sign Message".

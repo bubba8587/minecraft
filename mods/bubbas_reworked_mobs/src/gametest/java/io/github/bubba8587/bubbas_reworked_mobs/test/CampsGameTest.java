@@ -311,6 +311,56 @@ public class CampsGameTest {
 		helper.succeed();
 	}
 
+	/** The skull rock: a zombie before its mouth can walk inside. */
+	@GameTest(structure = FIELD, maxTicks = 20)
+	public void skullRockCanBeWalkedInto(GameTestHelper helper) {
+		walkable(helper, CampKind.SKELETON, p -> p.skullInside() == null ? null : new BlockPos[] { p.skullMouth(), p.skullInside() }, "skull rock");
+	}
+
+	/** The winding tower: a zombie at the foot of its stair can climb it to the top. */
+	@GameTest(structure = FIELD, maxTicks = 20)
+	public void windingTowerCanBeClimbed(GameTestHelper helper) {
+		walkable(helper, CampKind.ZOMBIE, p -> p.windingTop() == null ? null : new BlockPos[] { p.windingFoot(), p.windingTop() }, "winding tower");
+	}
+
+	/** A tower ramp: a zombie at its foot can walk up onto the platform. */
+	@GameTest(structure = FIELD, maxTicks = 20)
+	public void towerRampCanBeClimbed(GameTestHelper helper) {
+		walkable(helper, CampKind.HUSK, CampPiece::rampEnds, "ramp");
+	}
+
+	/** A bridge: a zombie on one tower's platform can walk across to the other's. */
+	@GameTest(structure = FIELD, maxTicks = 20)
+	public void bridgeJoinsTwoTowers(GameTestHelper helper) {
+		walkable(helper, CampKind.STRAY, CampPiece::bridgeEnds, "bridge");
+	}
+
+	/** Builds the first large camp of this kind that has the piece, checks nothing in it would pop off and a zombie can path from one end to the other. */
+	private static void walkable(GameTestHelper helper, CampKind kind, java.util.function.Function<CampPiece, BlockPos[]> ends, String what) {
+		ServerLevel level = helper.getLevel();
+		BlockPos at = helper.absolutePos(new BlockPos(16, 8, 24));
+		long seed = 0;
+		while (ends.apply(new CampPiece(seed, at, kind, CampTuning.Size.LARGE)) == null) {
+			helper.assertTrue(++seed < 2000, "no large camp with a " + what);
+		}
+		CampPiece piece = CampCommand.build(level, at, kind, CampTuning.Size.LARGE, seed);
+		BlockPos[] e = ends.apply(piece);
+		List<String> loose = unsupported(level, piece.getBoundingBox());
+		helper.assertTrue(loose.isEmpty(), what + ": blocks that would pop off: " + loose.subList(0, Math.min(12, loose.size())));
+		Mob walker = net.minecraft.world.entity.EntityTypes.ZOMBIE.create(level, net.minecraft.world.entity.EntitySpawnReason.COMMAND);
+		walker.snapTo(e[0].getX() + 0.5, e[0].getY(), e[0].getZ() + 0.5, 0.0F, 0.0F);
+		level.addFreshEntity(walker);
+		long s = seed;
+		helper.runAfterDelay(1, () -> {
+			walker.setOnGround(true);
+			var path = walker.getNavigation().createPath(e[1], 0);
+			walker.discard();
+			helper.assertTrue(path != null && path.canReach(), what + " (seed " + s + ") should be walkable from " + e[0].toShortString() + " to "
+					+ e[1].toShortString() + ": " + (path == null ? "no path" : "ends at " + path.getEndNode()));
+			helper.succeed();
+		});
+	}
+
 	/** Blocks in the box that couldn't survive a block update where they are. */
 	static List<String> unsupported(ServerLevel level, BoundingBox box) {
 		List<String> loose = new ArrayList<>();

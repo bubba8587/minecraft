@@ -124,6 +124,16 @@ public enum CampKind {
 		};
 	}
 
+	/** Wooden stairs of ramps and the winding tower. */
+	public BlockState woodStairs() {
+		return switch (this) {
+			case SKELETON, STRAY -> Blocks.SPRUCE_STAIRS.defaultBlockState();
+			case ZOMBIE -> Blocks.DARK_OAK_STAIRS.defaultBlockState();
+			case HUSK -> Blocks.ACACIA_STAIRS.defaultBlockState();
+			case BOGGED -> Blocks.MANGROVE_STAIRS.defaultBlockState();
+		};
+	}
+
 	/** Stairs of the underground room's tunnel. */
 	public BlockState stairs() {
 		return switch (this) {
