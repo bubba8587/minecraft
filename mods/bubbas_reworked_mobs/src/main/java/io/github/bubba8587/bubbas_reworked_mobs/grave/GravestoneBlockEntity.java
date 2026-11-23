@@ -17,8 +17,8 @@ import net.minecraft.world.level.block.state.BlockState;
  * own type and narrower lines, since the stone's face is 12 pixels wide where a sign's board is 16.
  */
 public class GravestoneBlockEntity extends SignBlockEntity {
-	/** Line width in font pixels (a sign's is 90): what fits across the face at the sign's text scale. */
-	public static final int MAX_LINE_WIDTH = 60;
+	/** Line width in font pixels (a sign's is 90). */
+	public static final int MAX_LINE_WIDTH = GraveTextLayout.MAX_LINE_WIDTH;
 
 	public GravestoneBlockEntity(BlockPos pos, BlockState state) {
 		super(ModBlockEntities.GRAVESTONE, pos, state);
@@ -41,6 +41,6 @@ public class GravestoneBlockEntity extends SignBlockEntity {
 
 	@Override
 	public int getTextLineHeight() {
-		return 10;
+		return GraveTextLayout.LINE_HEIGHT;
 	}
 }

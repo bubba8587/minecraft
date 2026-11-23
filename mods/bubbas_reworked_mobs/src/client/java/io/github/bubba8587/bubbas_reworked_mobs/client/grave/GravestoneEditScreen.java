@@ -1,0 +1,48 @@
+// dte:C1,B15
+package io.github.bubba8587.bubbas_reworked_mobs.client.grave;
+
+import io.github.bubba8587.bubbas_reworked_mobs.BubbasReworkedMobs;
+import io.github.bubba8587.bubbas_reworked_mobs.grave.GraveTextLayout;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.screens.inventory.AbstractSignEditScreen;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.level.block.entity.SignBlockEntity;
+import net.minecraft.world.level.block.entity.SignTextSlot;
+import org.joml.Vector3f;
+import org.joml.Vector3fc;
+
+/** The gravestone's edit screen: the stone's front face, with the text laid out as {@link GravestoneRenderer} lays it. */
+public class GravestoneEditScreen extends AbstractSignEditScreen {
+	/** GUI pixels per block pixel. */
+	private static final int PIXEL = 9;
+	private static final Vector3fc TEXT_SCALE = new Vector3f(PIXEL / GraveTextLayout.FONT_PX_PER_BLOCK_PX, PIXEL / GraveTextLayout.FONT_PX_PER_BLOCK_PX, 1.0F);
+	/** Vanilla's shade for a north/south block face. */
+	private static final int FACE_SHADE = 0xFFCCCCCC;
+	private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(BubbasReworkedMobs.MOD_ID, "textures/block/gravestone.png");
+
+	public GravestoneEditScreen(SignBlockEntity sign, SignTextSlot slot, boolean shouldFilter) {
+		super(sign, slot, shouldFilter);
+	}
+
+	@Override
+	protected float getSignYOffset() {
+		return 115.0F;
+	}
+
+	@Override
+	protected void extractSignBackground(GuiGraphicsExtractor graphics) {
+		graphics.pose().scale(PIXEL, PIXEL);
+		graphics.pose().translate(-8.0F, GraveTextLayout.TEXT_CENTRE_Y - 16.0F);
+		for (int[] r : GraveTextLayout.FACE_RECTS) {
+			int w = r[2] - r[0];
+			int h = r[3] - r[1];
+			graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, r[0], 16 - r[3], r[0], 16 - r[3], w, h, 16, 16, FACE_SHADE);
+		}
+	}
+
+	@Override
+	protected Vector3fc getSignTextScale() {
+		return TEXT_SCALE;
+	}
+}

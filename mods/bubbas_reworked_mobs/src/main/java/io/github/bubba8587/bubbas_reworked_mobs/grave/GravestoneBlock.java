@@ -26,13 +26,13 @@ import org.jspecify.annotations.Nullable;
  * carries carved text). "Keep it simple, it should lift Signs" (owner): it is vanilla's standing sign in all but looks.
  * Text front and back, editing on placement, dyes, glow ink, honeycomb wax and the 16-way rotation all come from
  * {@link StandingSignBlock} and {@link SignBlockEntity} unchanged. What differs: its own stone {@link WoodType} (stone
- * sounds; the edit screen's background is {@code minecraft:textures/gui/signs/bubbas_gravestone.png}), its own block
+ * sounds), its own edit screen (GravestoneEditScreen, client), its own block
  * entity type (narrower lines to fit the stone's face), a headstone model, and a solid shape you can't walk through.
  */
 public class GravestoneBlock extends StandingSignBlock {
 	/**
 	 * The stone "wood type". Deliberately not registered with {@code WoodType.register}: registering would make vanilla
-	 * build sign sprite materials for it, which a gravestone doesn't use. Only its name (the edit screen background) and
+	 * build sign sprite materials for it, which a gravestone doesn't use. Only its
 	 * sounds are read.
 	 */
 	public static final WoodType STONE = new WoodType("bubbas_gravestone", BlockSetType.STONE, SoundType.STONE, SoundType.STONE,

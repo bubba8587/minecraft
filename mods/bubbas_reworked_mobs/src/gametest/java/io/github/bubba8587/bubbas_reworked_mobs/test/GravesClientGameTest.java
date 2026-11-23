@@ -140,6 +140,20 @@ public class GravesClientGameTest implements FabricClientGameTest {
 		context.takeScreenshot("graves-close" + suffix);
 		tp(context, server, x + 3.5, y - 0.1, z - 0.3, 180, 25);
 		context.takeScreenshot("graves-close-glow" + suffix);
+		// Edit screen vs. the placed stone, straight on at text height.
+		tp(context, server, x - 2.5, y - 1.15, z - 1.0, 180, 0);
+		context.takeScreenshot("graves-edit-stone" + suffix);
+		BlockPos epitaph = new BlockPos(x - 3, y, z - 3);
+		context.runOnClient(mc -> {
+			if (!(mc.level.getBlockEntity(epitaph) instanceof GravestoneBlockEntity stone)) {
+				throw new AssertionError("no client gravestone at " + epitaph);
+			}
+			mc.player.openTextEdit(stone, SignTextSlot.FRONT);
+		});
+		context.waitTicks(5);
+		context.takeScreenshot("graves-edit" + suffix);
+		context.runOnClient(mc -> mc.gui.setScreen(null));
+		context.waitTicks(2);
 		server.runCommand("time set 18000");
 		tp(context, server, x + 0.5, y + 0.4, z + 2.5, 180, 15);
 		context.takeScreenshot("graves-night" + suffix);

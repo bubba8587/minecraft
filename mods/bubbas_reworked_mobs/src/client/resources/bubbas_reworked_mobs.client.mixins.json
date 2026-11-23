@@ -8,6 +8,7 @@
 		"EntityRenderDispatcherAccessor",
 		"EntityRenderStateMeterMixin",
 		"GrabbedHintMixin",
+		"GravestoneEditScreenMixin",
 		"HeldVictimPoseMixin",
 		"LayItemPickMixin",
 		"MeterBarMixin",

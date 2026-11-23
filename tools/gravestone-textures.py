@@ -7,8 +7,6 @@ plinth. Agent-made, listed in docs/art-todo.md for the owner to redo or tweak; n
 
 Writes
   textures/block/gravestone.png (16x) and its Faithful-style 32x twin in the built-in 32x pack;
-  minecraft:textures/gui/signs/bubbas_gravestone.png, the edit screen's background (vanilla's sign screen reads it
-  from the stone "wood type" name), 24 x 26 like vanilla's;
   models/block/gravestone_rot_0..3.json (turned 0, 22.5, 45, 67.5 degrees, as vanilla's sign templates) and
   models/item/gravestone.json.
 
@@ -122,31 +120,6 @@ def stone_texture(scale, seed):
 	return img
 
 
-def gui_texture():
-	"""The edit screen's headstone, 24 x 26 (shown at 3.9x): crown, shoulder, body, a carved panel."""
-	rnd = random.Random(7)
-	img = Image.new("RGBA", (24, 26), (0, 0, 0, 0))
-	px = img.load()
-	for y in range(26):
-		for x in range(24):
-			inside = (y >= 4) or (y >= 2 and 2 <= x < 22) or (6 <= x < 18)
-			if not inside:
-				continue
-			col = shade(STONE, 1.0 + rnd.uniform(-0.05, 0.05))
-			edge = (x == 0 or x == 23 or y == 25 or (y == 4 and (x < 2 or x >= 22)) or (y == 2 and (x < 6 or x >= 18)) or y == 0
-					or (y < 4 and (x == 2 or x == 21)) or (y < 2 and (x == 6 or x == 17)))
-			if edge:
-				col = shade(STONE, 0.62)
-			px[x, y] = col + (255,)
-	for x in range(3, 21):
-		px[x, 6] = GROOVE + (255,)
-		px[x, 23] = LIGHT + (255,)
-	for y in range(6, 24):
-		px[3, y] = GROOVE + (255,)
-		px[20, y] = LIGHT + (255,)
-	return img
-
-
 def model(angle):
 	elements = []
 	for (frm, to) in ELEMENTS:
@@ -171,22 +144,6 @@ def main():
 		out = base / "textures" / "block"
 		out.mkdir(parents=True, exist_ok=True)
 		stone_texture(scale, 2026 + scale).save(out / "gravestone.png")
-	gui = RES / "assets" / "minecraft" / "textures" / "gui" / "signs"
-	gui.mkdir(parents=True, exist_ok=True)
-	gui_texture().save(gui / "bubbas_gravestone.png")
-	# 32x twin (48 x 52; the screen draws it at the same size): the same stone, doubled, with fresh grain.
-	gui32 = RES / "resourcepacks" / "bubbas_reworked_mobs_32x" / "assets" / "minecraft" / "textures" / "gui" / "signs"
-	gui32.mkdir(parents=True, exist_ok=True)
-	big = gui_texture().resize((48, 52), Image.NEAREST)
-	rnd = random.Random(11)
-	bp = big.load()
-	for y in range(52):
-		for x in range(48):
-			r, g, b, a = bp[x, y]
-			if a and (r, g, b) not in (GROOVE, LIGHT):
-				f = 1.0 + rnd.uniform(-0.04, 0.04)
-				bp[x, y] = clamp((r * f, g * f, b * f)) + (a,)
-	big.save(gui32 / "bubbas_gravestone.png")
 	models = ASSETS / "models"
 	(models / "block").mkdir(parents=True, exist_ok=True)
 	(models / "item").mkdir(parents=True, exist_ok=True)
@@ -201,7 +158,7 @@ def main():
 			"firstperson_righthand": {"rotation": [0, 225, 0], "translation": [0, 2, 0], "scale": [0.4, 0.4, 0.4]},
 			"firstperson_lefthand": {"rotation": [0, 225, 0], "translation": [0, 2, 0], "scale": [0.4, 0.4, 0.4]}}}
 	(models / "item" / "gravestone.json").write_text(json.dumps(item, indent=2) + "\n")
-	print("wrote gravestone textures (16x, 32x, gui) and models")
+	print("wrote gravestone textures (16x, 32x) and models")
 
 
 if __name__ == "__main__":

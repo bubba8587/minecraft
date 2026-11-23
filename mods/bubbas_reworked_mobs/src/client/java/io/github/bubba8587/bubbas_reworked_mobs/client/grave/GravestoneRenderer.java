@@ -2,6 +2,7 @@
 package io.github.bubba8587.bubbas_reworked_mobs.client.grave;
 
 import com.mojang.math.Axis;
+import io.github.bubba8587.bubbas_reworked_mobs.grave.GraveTextLayout;
 import com.mojang.math.Transformation;
 import net.minecraft.client.renderer.blockentity.AbstractSignRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
@@ -21,14 +22,13 @@ import org.jspecify.annotations.Nullable;
  * ordinary block model (models/block/gravestone_rot_*), as vanilla's signs are in 26.3.
  *
  * <p>Face geometry (block pixels, rotation 0): the stone's front is the south face at z = 10, its body from y 2 to 12
- * (a shoulder and crown step the top to 14), on a plinth. Text at the sign's own scale (1/96 block per font pixel), centred at y 7.5.
+ * (a shoulder and crown step the top to 14), on a plinth. Text layout: {@link GraveTextLayout}.
  */
 public class GravestoneRenderer extends AbstractSignRenderer<StandingSignRenderState> {
-	/** The face is 2 px in front of the block's centre; text sits just proud of it. */
-	private static final float FACE_OFFSET = 2.0F / 16.0F + 0.003F;
-	/** Text centre height relative to the block's centre (y 7.5 of 16, the panel's middle). */
-	private static final float TEXT_HEIGHT = 7.5F / 16.0F - 0.5F;
-	private static final float SCALE = 1.0F / 96.0F;
+	/** Text offsets from the block's centre, just proud of the face. */
+	private static final float FACE_OFFSET = (GraveTextLayout.FACE_Z - 8.0F) / 16.0F + 0.003F;
+	private static final float TEXT_HEIGHT = (GraveTextLayout.TEXT_CENTRE_Y - 8.0F) / 16.0F;
+	private static final float SCALE = 1.0F / (16.0F * GraveTextLayout.FONT_PX_PER_BLOCK_PX);
 
 	public GravestoneRenderer(BlockEntityRendererProvider.Context context) {
 		super(context);
