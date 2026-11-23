@@ -52,6 +52,12 @@ No new blocks (B15). New ids, so no old-id alias. Numbers all in `totems/TotemsT
 - No beacon use (per design).
 - **Prior art / overlap:** keep-inventory mods (Keep Inventory Always, Nice Keep Inventory, Keep Inventory Orbs; MIT/GPL), soulbound enchantments, and grave mods (Universal Graves, Gravestones, You're in Grave Danger). Graves are the closest in purpose: with a grave mod installed, a kept death simply has nothing to put in the grave (they compose). None offers a single-use found totem; no library needed (two small injections, hand-rolled because no library does it, B9).
 
+#### Gathering in a beacon: a floating ring (owner, 2026-11-22, replaces "into a chest below"; not built yet)
+
+- In a beacon, gathered items **float in a slowly rotating ring around the beacon** (no gravity, held in orbit at about the beacon's height, a radius of 1-2 blocks), instead of going into a chest below. It's meant to look cool.
+- Players collect them with **a simple sideways hopper into a chest**: a hopper next to the beacon whose pickup space the ring passes through takes items as they come round. Builder sets the ring's height and radius so one hopper placed beside the beacon works.
+- XP keeps gathering onto the top of the beacon. Ring size is capped (extra items wait where they lie until there's room).
+
 #### Totem of Gathering (`gathering/Gathering`, `TotemOfGatheringItem`, `compat/GatheringBeaconPayload`)
 
 - **Held:** every tick, dropped items within **8 blocks** (`GATHER_RADIUS`) fly to the holder at **0.3 blocks/tick** (`GATHER_SPEED`; about 1.5 s from 8 blocks), aimed at the holder's middle like XP orbs, then are picked up by the usual rules. At most 64 items per tick. Skipped: items the holder itself threw that are still on their pickup delay (so Q-dropping works), and items that can never be picked up (pickup delay 32767, displays/props). Someone else's fresh throw is pulled.
