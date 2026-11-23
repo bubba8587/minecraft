@@ -185,4 +185,11 @@ public class ReworkedMobsCoreGameTest {
 	public void spiderSleeperDropsLatchesAndReelsUp(GameTestHelper helper) {
 		new SpiderGameTest().sleeperDropsLatchesAndReelsUp(helper);
 	}
+
+	// --- monster camps (specs/monster-camps.md) ---
+
+	@GameTest(structure = CreeperGameTest.FIELD, maxTicks = 80)
+	public void campRosterAppearsWithALeader(GameTestHelper helper) {
+		new CampsGameTest().rosterAppearsWithALeader(helper);
+	}
 }

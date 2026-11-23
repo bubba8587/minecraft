@@ -71,9 +71,12 @@ public class CryptYardStructure extends Structure {
 			return Optional.empty();
 		}
 		BlockPos origin = new BlockPos(minX, Math.round(sum / 4.0F), minZ);
-		YardTrees trees = YardTrees.forBiome(context.biomeResolver().getNoiseBiome(QuartPos.fromBlock(minX + width / 2), QuartPos.fromBlock(origin.getY()),
-				QuartPos.fromBlock(minZ + depth / 2)));
-		return Optional.of(new GenerationStub(origin, builder -> builder.addPiece(new CryptYardPiece(seed, origin, width, depth, crypt, trees, state, wealth))));
+		var biome = context.biomeResolver().getNoiseBiome(QuartPos.fromBlock(minX + width / 2), QuartPos.fromBlock(origin.getY()),
+				QuartPos.fromBlock(minZ + depth / 2));
+		YardTrees trees = YardTrees.forBiome(biome);
+		YardKinds.Climate climate = YardKinds.Climate.of(biome);
+		return Optional.of(new GenerationStub(origin, builder -> builder.addPiece(new CryptYardPiece(seed, origin, width, depth, crypt, trees, state, wealth,
+				climate))));
 	}
 
 	private static int odd(int n) {

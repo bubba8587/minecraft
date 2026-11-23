@@ -55,6 +55,12 @@ public class SleeperRenderer implements BlockEntityRenderer<SleeperBlockEntity, 
 		variants.put(UndeadVariant.ZOMBIE, new PosedHumanoid<ZombieRenderState, ZombieModel<ZombieRenderState>>(context.entityModelSet(), equipment,
 				ZombieRenderState::new, Identifier.withDefaultNamespace("textures/entity/zombie/zombie.png"),
 				ModelLayers.ZOMBIE, ModelLayers.ZOMBIE_ARMOR, SleeperRenderer::zombieModel));
+		variants.put(UndeadVariant.HUSK, new PosedHumanoid<ZombieRenderState, ZombieModel<ZombieRenderState>>(context.entityModelSet(), equipment,
+				ZombieRenderState::new, Identifier.withDefaultNamespace("textures/entity/zombie/husk.png"),
+				ModelLayers.HUSK, ModelLayers.HUSK_ARMOR, SleeperRenderer::zombieModel));
+		variants.put(UndeadVariant.STRAY, new PosedHumanoid<SkeletonRenderState, SkeletonModel<SkeletonRenderState>>(context.entityModelSet(), equipment,
+				SkeletonRenderState::new, Identifier.withDefaultNamespace("textures/entity/skeleton/stray.png"),
+				ModelLayers.STRAY, ModelLayers.STRAY_ARMOR, SleeperRenderer::skeletonModel));
 	}
 
 	private static SkeletonModel<SkeletonRenderState> skeletonModel(ModelPart root, SleeperPose pose) {

@@ -26,6 +26,10 @@ abstract class MobFinalizeSpawnMixin {
 	private void brm$naturalEndermenStayVanilla(ServerLevelAccessor level, DifficultyInstance difficulty, EntitySpawnReason reason,
 			@Nullable SpawnGroupData groupData, CallbackInfoReturnable<SpawnGroupData> cir) {
 		boolean spawner = EntitySpawnReason.isSpawner(reason);
+		// Bogged from spawners (trial chambers) stay vanilla, like drowned: no lurking (bogged/BoggedLurk).
+		if (spawner && (Object) this instanceof net.minecraft.world.entity.monster.skeleton.Bogged bogged) {
+			bogged.addTag(io.github.bubba8587.bubbas_reworked_mobs.bogged.BoggedTuning.VANILLA_TAG);
+		}
 		if (this instanceof EndermanAccess access && (spawner || reason == EntitySpawnReason.NATURAL && !access.brm$isCairnSpawn())) {
 			access.brm$makeVanilla();
 		}

@@ -91,6 +91,14 @@ public final class UndeadTuning {
 	/** Sleepers hear a bell this far, as far as players hear it (its sound plays at volume 2: 32 blocks). */
 	public static final double BELL_RANGE = 32.0;
 
+	// --- husks and strays (owner, 2026-11-22) ------------------------------------------------------------
+	/** A husk bursting out of the sand blinds anyone within this many blocks... */
+	public static final double HUSK_BLIND_RADIUS = 4.0;
+	/** ...for this long (ticks; 2 s). */
+	public static final int HUSK_BLIND_TICKS = 40;
+	/** A stray's ice cracks this long (ticks; 1.5 s) before it breaks free: the warning. */
+	public static final int STRAY_CRACK_TICKS = 30;
+
 	private UndeadTuning() {
 	}
 

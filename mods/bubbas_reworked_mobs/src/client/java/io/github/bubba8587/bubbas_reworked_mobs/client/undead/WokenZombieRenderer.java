@@ -18,12 +18,25 @@ import net.minecraft.world.entity.monster.zombie.Zombie;
  * armor, so the armor shambles too. Babies keep vanilla's model.
  */
 public class WokenZombieRenderer extends AbstractZombieRenderer<Zombie, ZombieRenderState, ZombieModel<ZombieRenderState>> {
+	/** Its texture: the zombie's, or another undead's drawn on the same body (the husk's). Null keeps vanilla's choice. */
+	private final net.minecraft.resources.@org.jspecify.annotations.Nullable Identifier texture;
+
 	public WokenZombieRenderer(EntityRendererProvider.Context context) {
+		this(context, null);
+	}
+
+	public WokenZombieRenderer(EntityRendererProvider.Context context, net.minecraft.resources.@org.jspecify.annotations.Nullable Identifier texture) {
 		super(context,
 				new Shambling(context.bakeLayer(ModelLayers.ZOMBIE)),
 				new BabyZombieModel<>(context.bakeLayer(ModelLayers.ZOMBIE_BABY)),
 				ArmorModelSet.bake(ModelLayers.ZOMBIE_ARMOR, context.getModelSet(), Shambling::new),
 				ArmorModelSet.bake(ModelLayers.ZOMBIE_BABY_ARMOR, context.getModelSet(), BabyZombieModel::new));
+		this.texture = texture;
+	}
+
+	@Override
+	public net.minecraft.resources.Identifier getTextureLocation(ZombieRenderState state) {
+		return texture != null && !state.isBaby ? texture : super.getTextureLocation(state);
 	}
 
 	/**

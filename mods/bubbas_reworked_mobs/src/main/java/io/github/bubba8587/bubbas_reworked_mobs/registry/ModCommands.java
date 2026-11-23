@@ -21,6 +21,7 @@ public final class ModCommands {
 						.then(LootDisplayCommand.build(context))
 						.then(CairnCommand.build())
 						.then(FactoryCommand.build())
-						.then(io.github.bubba8587.bubbas_reworked_mobs.grave.GraveyardCommand.build())));
+						.then(io.github.bubba8587.bubbas_reworked_mobs.grave.GraveyardCommand.build())
+						.then(io.github.bubba8587.bubbas_reworked_mobs.camp.CampCommand.build())));
 	}
 }
