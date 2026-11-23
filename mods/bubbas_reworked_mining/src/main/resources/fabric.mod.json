@@ -1,0 +1,34 @@
+{
+	"schemaVersion": 1,
+	"id": "${mod_id}",
+	"version": "${version}",
+	"name": "Bubba's Reworked Mining",
+	"description": "",
+	"authors": [
+		"bubba8587"
+	],
+	"license": "MIT",
+	"icon": "assets/bubbas_reworked_mining/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"io.github.bubba8587.bubbas_reworked_mining.BubbasReworkedMining"
+		],
+		"client": [
+			"io.github.bubba8587.bubbas_reworked_mining.client.BubbasReworkedMiningClient"
+		]
+	},
+	"mixins": [
+		"bubbas_reworked_mining.mixins.json",
+		{
+			"config": "bubbas_reworked_mining.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=${loader_version}",
+		"minecraft": "~${minecraft_version}",
+		"java": ">=${java_version}",
+		"fabric-api": "*"
+	}
+}
