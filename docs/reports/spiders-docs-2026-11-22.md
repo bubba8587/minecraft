@@ -53,6 +53,7 @@ Step 1 (cave nests) was merged into specs/spiders.md. This is step 2, for the or
   - Snapped to the world grid at the loaded cobweb texture's texel size: 1/16 with vanilla, 1/32 with a 32x pack such as Faithful, so they always match the cobweb blocks beside them.
   - Coloured with the three colours of vanilla's cobweb texture.
   - Lit per pixel (sky and block light), refreshed every 2 s, with no glow floor. That fixed the yellow.
+- **The drop thread** (orchestrator, passing on the owner's rule): drawn the same way as the webs, as a crisp one-texel pixel line in the cobweb palette, lit by world light, taut from the spider's back to where it's tied in the nest. It replaces the smooth thin line. Shared code: `client/spider/PixelStrands`.
 - **(builder) How strands are chosen:**
   - Random rays from the site's centre find anchors on blocks.
   - Strands join pairs of anchors at least 2.5 apart, with a clear line between them, passing near the centre, so they cross each other.
