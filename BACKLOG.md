@@ -62,15 +62,17 @@ Parked ideas and open items, newest first within each project. Agents add to it 
    Owner to confirm whether that goes beyond the test world.
 5. **A spider waiting on cocooned prey keeps moving:** while a giant spider (and any spider that cocoons) waits to come back and feed, it wanders around near the cocoon and its webs, instead of standing still. Use vanilla's random-stroll goal kept within a home radius around the cocoon (`WaterAvoidingRandomStrollGoal` plus `restrictTo`, specs/vanilla-subsystems.md), on walls and ceilings too through Stormie's Spiders. It still returns to feed on time.
 6. **Spiders haul prey to the middle of their web:** a giant spider carries its catch to the centre of its own web, the middle of the spun-web span it made (between the trees it anchored to), and hangs the cocoon there. Today it uses the nearest web block. If it has no web of its own, the nearest web's centre; with none at all, as today. It needs the spider to remember its webs again: the 2026-11-22 cleanup removed an unused `sites` list from `GiantSpider`, which was what this needed. The cocoon hanging in the middle of the web should read clearly from below; check it in a screenshot.
-7. **Camp variety (owner, 2026-11-22):** the test world's five camps look nearly identical.
-   - **Cause:** `CampPiece` (and `FactoryDesign`, and the cairn design) seed vanilla's `LegacyRandomSource` directly (`RandomSource.create(seed)`), so close seeds (20261122..26 in the Showcase) give almost the same first rolls: tower angle, outcrops, pikes, lean-to. It's the same weakness the trading-pad fix solved. Natural camps get unrelated seeds, so they vary more, but they still share one kit of parts.
-   - **Plan:**
-     - (a) mix the seed before use (e.g. `RandomSupport.mixStafford13`), wherever a design is built from a site seed: camps, Fabricator designs, cairn designs. Note that this changes the layout of camps already registered but not yet built, which is fine in development.
-     - (b) **owner's direction for more variety:**
-       - **rock and bone caves:** large skull domes, inspired by Breath of the Wild's skull-rock camps; an original take in Minecraft blocks, not a copy;
-       - **varying counts of every element:** towers, lean-tos, outcrops, pikes and so on.
-       See specs/monster-camps.md "Layout variety".
-     - (c) the test world then uses well-spread seeds.
+7. **Camp variety, a big amount, parameterized (owner, 2026-11-22):** natural camps are samey too: always one tower, the stairs even on the same side, the lower room always the same size.
+   - **Cause, in part:** `CampPiece` (and `FactoryDesign`, and the cairn design) seed vanilla's `LegacyRandomSource` directly, so close seeds give almost the same first rolls. Mix the seed first (`RandomSupport.mixStafford13`), wherever a design is built from a site seed.
+   - **Parameterize every element** with its own roll per camp, within ranges per camp kind and size:
+     - number of towers (0-3), lean-tos and outcrops;
+     - pikes;
+     - the stair side and the stair direction;
+     - the lower room's size and shape (small cell to long hall, one or two chambers);
+     - where the room sits relative to the centre;
+     - fences, bones and decor density.
+   - **New camp forms:** rock and bone caves, large skull domes (specs/monster-camps.md "Layout variety").
+   - **Show the spread:** screenshots of at least six seeds per kind. The test world then uses well-spread seeds.
 8. **A Beginning beacon's endermen wrecked the beacon (owner, 2026-11-22):** the Totem of the Beginning in a beacon draws caretaker endermen to the area (`BeginningBeaconPayload` → `SleeperHook.drawEndermen`). One took a block from the beacon and broke it. Caretakers mend natural terrain against the worldgen target, so in the superflat test world a pyramid counts as "wrong" terrain.
    - **Fix:** caretakers never take or move:
      - a beacon or anything in `#minecraft:beacon_base_blocks`;
@@ -96,6 +98,15 @@ Parked ideas and open items, newest first within each project. Agents add to it 
 15. **Woken shipwreck drowned don't aggro, not even in water (owner, 2026-11-22):** a drowned sleeper wakes as a **plain vanilla drowned**, flagged vanilla the way spawner drowned are (`DrownedMixin` `brm$vanilla`, `VANILLA_KEY`). So none of our drowned rework applies to it. It keeps its gear and name, and our `WokenDrowned` type goes.
     - **No special targeting (owner):** vanilla rules only. One that wakes on a ship above the water by day may stay "confused", which is the accepted tradeoff.
     - **Test:** a drowned sleeper woken underwater next to a swimming player attacks them, and the woken mob is a vanilla-flagged `minecraft:drowned`.
+16. **Camps a bit too frequent (owner, 2026-11-22: "two bumps down"; from one camp you can usually see one or two more):** `worldgen/structure_set/monster_camps.json` is `spacing 10, separation 3` (chunks). Change it to about `spacing 14, separation 5`, roughly half as many camps. Restate the spacing in specs/monster-camps.md "How common".
+17. **Camps on high ground (owner, 2026-11-22: no height limits; they should spawn on mesa plateaus and the like).** Today there's no height cap, but `CampStructure` rejects ground that varies by more than 6 blocks across the camp (`MAX_SLOPE`) or sits below sea level - 1. The biome tag also leaves out the highlands (peaks, snowy slopes, windswept savanna and gravelly hills, stony shore). Plan:
+    - add the highland biomes;
+    - on rougher ground, level the footprint (cut and fill, or a vanilla `terrain_adaptation` such as `beard_thin`, as villages use) instead of skipping the spot;
+    - check plateaus in badlands and savanna plateaus in the natural world.
+18. **Crypt sleepers lie half inside the wall (owner, 2026-11-22):** sleepers in crypt niches render with half their body in the wall, so the lying pose doesn't fit the niche. Plan:
+    - check the niche depth against the lying model's length and its facing: lengthwise into the niche, or across it;
+    - fix the niche shape or the pose offset, so the whole body sits inside the niche;
+    - screenshot each crypt wealth's niches.
 
 ## Repo
 - **Multiplayer check (owner, 2026-11-22: "make sure these mods work in multiplayer"; light scan done, the rest is here).** Scan results:
