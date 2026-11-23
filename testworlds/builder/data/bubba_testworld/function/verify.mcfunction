@@ -1,7 +1,7 @@
 # Checks run on a copy of the finished world (tools/build-testworld.py verify step). Every setblock and display
 # command of the build is also checked automatically (the block and its state are there); these are the rest.
 forceload add -48 -48 47 95
-forceload add -48 96 47 175
+forceload add -48 96 47 259
 forceload add 48 -16 82 16
 forceload add -236 -12 -80 56
 scoreboard objectives add tw dummy
