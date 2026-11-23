@@ -87,6 +87,22 @@ public class TotemsClientGameTest implements FabricClientGameTest {
 			context.takeScreenshot("totems-hotbar-32x");
 			setPack(context, false);
 
+			// --- Beginning: the revert puff on the blocks a pulse changes (Reworked Mobs only) -----------------
+			if (net.fabricmc.loader.api.FabricLoader.getInstance().isModLoaded("bubbas_reworked_mobs")) {
+				for (int t = 0; t < 4; t++) {
+					int wave = t;
+					server.runOnServer(s -> {
+						java.util.Random random = new java.util.Random(wave);
+						for (int i = 0; i < 12; i++) {
+							BlockPos at = base.offset(random.nextInt(11) - 5, -1, 2 + random.nextInt(7));
+							io.github.bubba8587.bubbas_reworked_mobs.api.Endermen.revertEffect(s.overworld(), at);
+						}
+					});
+					context.waitTicks(4);
+				}
+				context.takeScreenshot("totems-beginning-pulse");
+			}
+
 			// --- Gathering: dropped items fly in ------------------------------------------------------------
 			server.runOnServer(s -> {
 				ServerPlayer p = s.getPlayerList().getPlayers().getFirst();

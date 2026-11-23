@@ -123,6 +123,20 @@ public final class TotemsTuning {
 			ResourceKey.create(net.minecraft.core.registries.Registries.LOOT_TABLE,
 					net.minecraft.resources.Identifier.fromNamespaceAndPath("bubbas_reworked_mobs", "chests/crypt_noble")), 0.25F);
 
+	// --- Totem of the Beginning pulse --------------------------------------------------------------------
+	/** Pulse: ground within this many blocks (a cylinder, as far up and down). */
+	public static final int BEGINNING_PULSE_RADIUS = 8;
+	/** Pulse: the ripple spreads one block every this many ticks (8 blocks in about 3 s). */
+	public static final int BEGINNING_PULSE_TICKS_PER_BLOCK = 7;
+	/** Pulse: cooldown after a use, shown with the item cooldown sweep. */
+	public static final int BEGINNING_PULSE_COOLDOWN_TICKS = 1200;
+	/** Pulse: chance each eligible block goes back. */
+	public static final float BEGINNING_PULSE_CHANCE = 0.12F;
+	/** Pulse: chance a mined-out ore spot gets its ore back (a tenth of terrain's). */
+	public static final float BEGINNING_PULSE_ORE_CHANCE = 0.012F;
+	/** Pulse: a block a pulse reverted can't be reverted again for this long (10 minutes). */
+	public static final int BEGINNING_PULSE_RECENT_TICKS = 12000;
+
 	private TotemsTuning() {
 	}
 }

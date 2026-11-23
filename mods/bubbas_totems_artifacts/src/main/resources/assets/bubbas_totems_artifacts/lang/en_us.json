@@ -22,6 +22,7 @@
   "item.bubbas_totems_artifacts.totem_of_seeking.seeks": "Seeks: %s",
   "item.bubbas_totems_artifacts.totem_of_seeking.unset": "Use on a structure's block to choose what to seek",
   "item.bubbas_totems_artifacts.totem_of_the_beginning": "Totem of the Beginning",
+  "item.bubbas_totems_artifacts.totem_of_the_beginning.use": "Use: the ground nearby slowly remembers how it began",
   "item.bubbas_totems_artifacts.totem_of_the_end": "Totem of the End",
   "item.bubbas_totems_artifacts.totem_of_warding": "Totem of Warding",
   "itemGroup.bubbas_totems_artifacts": "Bubba's Totems & Artifacts",

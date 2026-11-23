@@ -326,6 +326,9 @@ public final class EndermanJobGoal extends Goal {
 		placed = Block.updateFromNeighbourShapes(placed, level, pos);
 		level.setBlockAndUpdate(pos, placed);
 		level.gameEvent(GameEvent.BLOCK_PLACE, pos, GameEvent.Context.of(enderman, placed));
+		if (EndermanNexus.isInside(level, pos)) {
+			Ripples.revertEffect(level, pos);
+		}
 		enderman.setCarriedBlock(null);
 		mind.clear();
 	}
@@ -340,6 +343,9 @@ public final class EndermanJobGoal extends Goal {
 		}
 		level.removeBlock(pos, false);
 		level.gameEvent(GameEvent.BLOCK_DESTROY, pos, GameEvent.Context.of(enderman, real));
+		if (EndermanNexus.isInside(level, pos)) {
+			Ripples.revertEffect(level, pos);
+		}
 		enderman.setCarriedBlock(real);
 		mind.clear();
 		// Find where it goes straight away.

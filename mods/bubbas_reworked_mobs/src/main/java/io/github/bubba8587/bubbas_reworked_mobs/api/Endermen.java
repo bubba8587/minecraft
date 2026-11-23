@@ -67,6 +67,22 @@ public final class Endermen {
 	}
 
 	/**
+	 * Starts a pulse at {@code centre}: like {@link #restoreAround}, but each block only goes back with {@code chance}
+	 * ({@code oreChance} where the generated block is an ore, and ore only into air), never one a pulse reverted within
+	 * {@code recentTicks}, never an unbreakable block or one {@code player} may not touch (null: no player check). Each
+	 * reverted block puffs and sounds ({@link #revertEffect}). False when this level has no generated terrain.
+	 */
+	public static boolean pulseAround(ServerLevel level, BlockPos centre, int radius, int ticksPerBlock, float chance, float oreChance,
+			int recentTicks, @Nullable Player player) {
+		return Ripples.pulse(level, centre, radius, ticksPerBlock, new Ripples.Odds(chance, oreChance, recentTicks, player));
+	}
+
+	/** The revert effect on one block: a particle puff and a soft, low sound (throttled per level). */
+	public static void revertEffect(ServerLevel level, BlockPos pos) {
+		Ripples.revertEffect(level, pos);
+	}
+
+	/**
 	 * {@code area} draws caretaker endermen like a cairn nexus for {@code lifetimeTicks} (they spawn there and tidy the
 	 * ground). Like {@link #keepOut}: calling again refreshes {@code source}'s area, which lapses unless refreshed.
 	 */
