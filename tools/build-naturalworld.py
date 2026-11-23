@@ -45,7 +45,7 @@ def prepare(seed, jars):
         "online-mode=false\nwhite-list=false\nserver-port=25599\nspawn-protection=0\n"
         f"level-name=world\nlevel-seed={seed}\nlevel-type=minecraft\\:normal\n"
         "generate-structures=true\ngamemode=creative\ndifficulty=normal\n"
-        "view-distance=3\nsimulation-distance=3\nsync-chunk-writes=false\n")
+        "view-distance=3\nsimulation-distance=3\nsync-chunk-writes=false\npause-when-empty-seconds=-1\n")
     return mc, launcher, fapi
 
 
@@ -121,6 +121,29 @@ def load_around(s, examples):
     return ask(s, "bubbas_reworked_mobs camp list")
 
 
+def surface_y(s, x, z):
+    """The first free block above the surface at (x, z), read while its chunk is force-loaded, or None."""
+    ask(s, f"execute positioned {x} 0 {z} positioned over motion_blocking_no_leaves run summon minecraft:marker ~ ~ ~ {{Tags:[\"nwh\"]}}")
+    lines = ask(s, "data get entity @e[type=minecraft:marker,tag=nwh,limit=1] Pos[1]")
+    ask(s, "kill @e[type=minecraft:marker,tag=nwh]")
+    for l in lines:
+        m = re.search(r"has the following entity data: (-?[\d.]+)d", l)
+        if m:
+            return int(float(m.group(1)))
+    return None
+
+
+def with_heights(s, examples):
+    """Every example gets a fixed height, so its sign is a plain tp (a heightmap lookup at click time needs the chunk loaded)."""
+    out = []
+    for l1, l2, x, z, y in examples:
+        if y is None:
+            y = surface_y(s, x, z)
+            print(f"  {l1} {l2}: surface y {y}")
+        out.append((l1, l2, x, z, y))
+    return out
+
+
 def sign_cmd(dx, l1, l2, x, z, y=None):
     tp = (f"tp @s {x} {y + 1} {z}" if y is not None
           else f"execute positioned {x} 0 {z} positioned over motion_blocking_no_leaves run tp @s ~ ~1 ~")
@@ -136,10 +159,11 @@ def build(seed, jars, timeout):
     t0 = time.time()
     s = tw.Server(WORK, launcher, timeout)
     print(f"server up in {time.time() - t0:.0f}s; locating")
-    s.run([("rules", c) for c in ("gamerule spawn_mobs false", "gamerule advance_time false", "time set 1000",
+    s.run([("rules", c) for c in ("gamerule advance_time false", "time set 1000",
                                   "gamerule advance_weather false", "weather clear")], quiet=True)
     examples = find_examples(s)
     camps = load_around(s, examples)
+    examples = with_heights(s, examples)
     width = len(examples)
     # Spawn: a stone platform at world spawn (0, 0) with a sign per example in a row to the south.
     half = width + 1
