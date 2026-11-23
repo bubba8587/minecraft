@@ -1,0 +1,7 @@
+{
+  "type": "bubbas_reworked_mobs:nether_outpost",
+  "biomes": "#bubbas_reworked_mobs:has_structure/nether_outpost",
+  "spawn_overrides": {},
+  "step": "top_layer_modification",
+  "terrain_adaptation": "none"
+}

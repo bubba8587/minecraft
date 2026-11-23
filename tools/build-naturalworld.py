@@ -64,6 +64,8 @@ XZ = re.compile(r"\[(-?\d+), (?:~|-?\d+), (-?\d+)\]")
 
 CAMP_KINDS = ["skeleton", "zombie", "husk", "stray", "bogged"]
 CAMP_SIGN_OFFSET = 3
+NETHER = "Nether outpost"  # the one example in the Nether: its locate, loading and sign run there
+IN_NETHER = "execute in minecraft:the_nether "
 
 
 def check_camp_kinds(s, examples):
@@ -88,10 +90,10 @@ def locate_at(s, x, z, what):
     return None
 
 
-def mod_locate(s, sub, pattern, x=0, z=0):
+def mod_locate(s, sub, pattern, x=0, z=0, nether=False):
     """Our own locate commands (`<sub> locate`, or `sub` itself when it already says locate): (x, z), or (x, y, z) when the pattern also captures a height."""
     cmd = sub if " locate" in sub else f"{sub} locate"
-    for l in ask(s, f"execute positioned {x} 0 {z} run bubbas_reworked_mobs {cmd}"):
+    for l in ask(s, ("execute in minecraft:the_nether" if nether else "execute") + f" positioned {x} 0 {z} run bubbas_reworked_mobs {cmd}"):
         m = re.search(pattern, l)
         if m:
             g = [int(v) for v in m.groups()]
@@ -121,6 +123,9 @@ def find_examples(s):
     for kind in CAMP_KINDS:
         at = mod_locate(s, f"camp locate {kind}", rf"Nearest {kind} camp at (-?\d+) -?\d+ (-?\d+)")
         add("Camp", kind, at and (at[0], at[1] + CAMP_SIGN_OFFSET))
+    # The Nether outpost: located in the Nether (its height comes with it); the sign lands by the fire.
+    at = mod_locate(s, "camp locate piglin", r"Nearest piglin camp at (-?\d+) (-?\d+) (-?\d+)", nether=True)
+    add(NETHER, "(piglins)", at and (at[0], at[1], at[2] + CAMP_SIGN_OFFSET))
     add("Pillager", "outpost", locate_at(s, 0, 0, "structure minecraft:pillager_outpost"))
     add("Shipwreck", "with crew", locate_at(s, 0, 0, "structure minecraft:shipwreck"))
     add("Fabricator", "(ancient city)", mod_locate(s, "ancient_fabricator", r"pad at (-?\d+) (-?\d+) (-?\d+)"))
@@ -130,9 +135,30 @@ def find_examples(s):
     return out
 
 
+def wait_loaded_nether(s, x1, z1, x2, z2, secs=300):
+    """Like the test world server's wait_loaded, in the Nether."""
+    end = time.time() + secs
+    probe = [IN_NETHER + f"if loaded {x} 0 {z}" for x in (x1, x2) for z in (z1, z2)]
+    while time.time() < end:
+        start = len(s.log)
+        for c in probe:
+            s.raw(c)
+        s.raw("say nwmark-loaded")
+        s.read_until(lambda l: "nwmark-loaded" in l, 30)
+        if sum("Test passed" in l for l in s.log[start:]) == len(probe):
+            s.read_until(lambda l: False, 3)
+            return
+        s.read_until(lambda l: False, 1)
+    s.fail("forceloaded Nether chunks never finished loading")
+
+
 def load_around(s, examples):
-    for _, _, x, z, _ in examples:
+    for l1, _, x, z, _ in examples:
         box = (x - LOAD_RADIUS, z - LOAD_RADIUS, x + LOAD_RADIUS, z + LOAD_RADIUS)
+        if l1 == NETHER:
+            s._run([("load", IN_NETHER + "run forceload add %d %d %d %d" % box)], True, 40)
+            wait_loaded_nether(s, *box)
+            continue
         s._run([("load", "forceload add %d %d %d %d" % box)], True, 40)
         s.wait_loaded(*box, secs=300)  # fresh terrain far out generates slowly on a busy PC
     # Camps report their kind once their chunks have generated.
@@ -163,7 +189,8 @@ def with_heights(s, examples):
 
 
 def sign_cmd(dx, l1, l2, x, z, y=None):
-    tp = (f"tp @s {x} {y + 1} {z}" if y is not None
+    tp = (f"execute in minecraft:the_nether run tp @s {x} {y + 1} {z}" if l1 == NETHER
+          else f"tp @s {x} {y + 1} {z}" if y is not None
           else f"execute positioned {x} 0 {z} positioned over motion_blocking_no_leaves run tp @s ~ ~1 ~")
     return (f"execute positioned 0 0 0 positioned over motion_blocking_no_leaves run setblock ~{dx} ~ ~3 "
             f"minecraft:oak_sign[rotation=8]{{allow_op_features:1b,front_text:{{messages:["
@@ -197,7 +224,7 @@ def build(seed, jars, timeout):
     for i, (l1, l2, x, z, y) in enumerate(examples):
         cmds.append(("sign", sign_cmd(-width + 1 + 2 * i, l1, l2, x, z, y)))
     s.run(cmds)
-    s.run([("teardown", c) for c in ("forceload remove all", "save-all flush")], quiet=True)
+    s.run([("teardown", c) for c in ("forceload remove all", IN_NETHER + "run forceload remove all", "save-all flush")], quiet=True)
     s.stop()
     s.save_log()
     s.problems += s.errors()
@@ -211,8 +238,8 @@ def prune_regions(world):
     """Keeps only fully generated chunks: /locate leaves part-generated chunks (structure starts) all over the map,
     and they are most of the size. They'd finish generating if a player went there, so dropping them loses nothing."""
     kept = dropped = 0
-    for folder in ("region", "entities", "poi"):
-        d = world / "dimensions" / "minecraft" / "overworld" / folder
+    for dim, folder in [(d, f) for d in ("overworld", "the_nether") for f in ("region", "entities", "poi")]:
+        d = world / "dimensions" / "minecraft" / dim / folder
         full_region = {}
         for mca in sorted(d.glob("*.mca")) if d.is_dir() else []:
             raw = mca.read_bytes()

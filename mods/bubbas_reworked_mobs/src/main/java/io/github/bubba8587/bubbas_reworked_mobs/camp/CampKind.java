@@ -20,7 +20,7 @@ import net.minecraft.world.level.block.state.BlockState;
 
 /**
  * The kinds of monster camp (specs/monster-camps.md): skeletons and zombies, and the biome versions with the
- * same rules: husks in deserts, strays in snow, bogged in swamps. Each has its own mob, its own banner (readable from a
+ * same rules: husks in deserts, strays in snow, bogged in swamps; and the Nether outpost's piglins (camp/NetherOutpostStructure). Each has its own mob, its own banner (readable from a
  * distance) and its own materials.
  */
 public enum CampKind {
@@ -33,7 +33,9 @@ public enum CampKind {
 	STRAY(EntityTypes.STRAY, DyeColor.LIGHT_BLUE, List.of(new Layer(BannerPatterns.SKULL, DyeColor.WHITE), new Layer(BannerPatterns.TRIANGLES_TOP,
 			DyeColor.WHITE))),
 	BOGGED(EntityTypes.BOGGED, DyeColor.GRAY, List.of(new Layer(BannerPatterns.GRADIENT_UP, DyeColor.GREEN), new Layer(BannerPatterns.SKULL,
-			DyeColor.LIME)));
+			DyeColor.LIME))),
+	PIGLIN(EntityTypes.PIGLIN, DyeColor.BLACK, List.of(new Layer(BannerPatterns.PIGLIN, DyeColor.YELLOW), new Layer(BannerPatterns.TRIANGLES_BOTTOM,
+			DyeColor.ORANGE)));
 
 	/** One layer of a camp banner: a vanilla pattern in a colour. */
 	public record Layer(ResourceKey<BannerPattern> pattern, DyeColor color) {
@@ -70,6 +72,11 @@ public enum CampKind {
 		return this != ZOMBIE && this != HUSK;
 	}
 
+	/** The Nether outpost kind. */
+	public boolean nether() {
+		return this == PIGLIN;
+	}
+
 	/** The camp kind for a biome: husks in deserts and badlands, strays in snow, bogged in swamps, else skeletons or zombies. */
 	public static CampKind forBiome(Holder<Biome> biome, RandomSource random) {
 		boolean skeletons = random.nextBoolean(); // rolled always, so the stream doesn't depend on the biome
@@ -94,6 +101,7 @@ public enum CampKind {
 			case ZOMBIE -> Blocks.DARK_OAK_LOG.defaultBlockState();
 			case HUSK -> Blocks.STRIPPED_ACACIA_LOG.defaultBlockState();
 			case BOGGED -> Blocks.MANGROVE_LOG.defaultBlockState();
+			case PIGLIN -> Blocks.CRIMSON_STEM.defaultBlockState();
 		};
 	}
 
@@ -103,6 +111,7 @@ public enum CampKind {
 			case ZOMBIE -> Blocks.DARK_OAK_PLANKS.defaultBlockState();
 			case HUSK -> Blocks.ACACIA_PLANKS.defaultBlockState();
 			case BOGGED -> Blocks.MANGROVE_PLANKS.defaultBlockState();
+			case PIGLIN -> Blocks.CRIMSON_PLANKS.defaultBlockState();
 		};
 	}
 
@@ -112,6 +121,7 @@ public enum CampKind {
 			case ZOMBIE -> Blocks.DARK_OAK_SLAB.defaultBlockState();
 			case HUSK -> Blocks.ACACIA_SLAB.defaultBlockState();
 			case BOGGED -> Blocks.MANGROVE_SLAB.defaultBlockState();
+			case PIGLIN -> Blocks.POLISHED_BLACKSTONE_BRICK_SLAB.defaultBlockState();
 		};
 	}
 
@@ -121,6 +131,7 @@ public enum CampKind {
 			case ZOMBIE -> Blocks.DARK_OAK_FENCE.defaultBlockState();
 			case HUSK -> Blocks.ACACIA_FENCE.defaultBlockState();
 			case BOGGED -> Blocks.MANGROVE_FENCE.defaultBlockState();
+			case PIGLIN -> Blocks.NETHER_BRICK_FENCE.defaultBlockState();
 		};
 	}
 
@@ -131,6 +142,7 @@ public enum CampKind {
 			case ZOMBIE -> Blocks.DARK_OAK_STAIRS.defaultBlockState();
 			case HUSK -> Blocks.ACACIA_STAIRS.defaultBlockState();
 			case BOGGED -> Blocks.MANGROVE_STAIRS.defaultBlockState();
+			case PIGLIN -> Blocks.CRIMSON_STAIRS.defaultBlockState();
 		};
 	}
 
@@ -141,6 +153,7 @@ public enum CampKind {
 			case ZOMBIE -> Blocks.MOSSY_COBBLESTONE_STAIRS.defaultBlockState();
 			case HUSK -> Blocks.SANDSTONE_STAIRS.defaultBlockState();
 			case BOGGED -> Blocks.MUD_BRICK_STAIRS.defaultBlockState();
+			case PIGLIN -> Blocks.POLISHED_BLACKSTONE_BRICK_STAIRS.defaultBlockState();
 		};
 	}
 
@@ -158,6 +171,8 @@ public enum CampKind {
 					: Blocks.PACKED_ICE.defaultBlockState();
 			case BOGGED -> roll < 0.45F ? Blocks.MUD.defaultBlockState() : roll < 0.75F ? Blocks.PACKED_MUD.defaultBlockState()
 					: Blocks.COARSE_DIRT.defaultBlockState();
+			case PIGLIN -> roll < 0.4F ? Blocks.BLACKSTONE.defaultBlockState() : roll < 0.75F ? Blocks.NETHERRACK.defaultBlockState()
+					: roll < 0.9F ? Blocks.SOUL_SOIL.defaultBlockState() : Blocks.POLISHED_BLACKSTONE.defaultBlockState();
 		};
 	}
 
@@ -174,11 +189,16 @@ public enum CampKind {
 					: Blocks.DIORITE.defaultBlockState();
 			case BOGGED -> roll < 0.45F ? Blocks.MUD_BRICKS.defaultBlockState() : roll < 0.75F ? Blocks.MOSSY_COBBLESTONE.defaultBlockState()
 					: Blocks.PACKED_MUD.defaultBlockState();
+			case PIGLIN -> roll < 0.45F ? Blocks.POLISHED_BLACKSTONE_BRICKS.defaultBlockState() : roll < 0.6F ? Blocks.CRACKED_POLISHED_BLACKSTONE_BRICKS.defaultBlockState()
+					: roll < 0.88F ? Blocks.BLACKSTONE.defaultBlockState() : Blocks.GILDED_BLACKSTONE.defaultBlockState();
 		};
 	}
 
 	/** Skulls on the outcrops and pikes. */
 	public BlockState skull() {
+		if (this == PIGLIN) {
+			return Blocks.PIGLIN_HEAD.defaultBlockState();
+		}
 		return this == ZOMBIE || this == HUSK ? Blocks.ZOMBIE_HEAD.defaultBlockState() : Blocks.SKELETON_SKULL.defaultBlockState();
 	}
 
@@ -189,6 +209,33 @@ public enum CampKind {
 			case HUSK -> Blocks.DEAD_BUSH.defaultBlockState();
 			case STRAY -> Blocks.SNOW.defaultBlockState();
 			case BOGGED -> roll < 0.5F ? Blocks.BROWN_MUSHROOM.defaultBlockState() : Blocks.MOSS_CARPET.defaultBlockState();
+			case PIGLIN -> roll < 0.6F ? Blocks.CRIMSON_ROOTS.defaultBlockState() : Blocks.NETHER_SPROUTS.defaultBlockState();
 		};
+	}
+
+	/** The stone ring round the fire. */
+	public BlockState hearth() {
+		return this == PIGLIN ? Blocks.GILDED_BLACKSTONE.defaultBlockState() : Blocks.COBBLESTONE.defaultBlockState();
+	}
+
+	/** What juts from an outcrop: bones, or gold for piglins. */
+	public BlockState accent() {
+		return this == PIGLIN ? Blocks.GOLD_BLOCK.defaultBlockState() : Blocks.BONE_BLOCK.defaultBlockState();
+	}
+
+	/** A bridge's deck and its sagging middle. */
+	public BlockState deck(boolean sag) {
+		if (this == PIGLIN) {
+			return sag ? Blocks.NETHER_BRICK_SLAB.defaultBlockState() : Blocks.NETHER_BRICKS.defaultBlockState();
+		}
+		return sag ? slab() : planks();
+	}
+
+	/** The loot of the chest by the fire, and of the room's. */
+	public net.minecraft.resources.ResourceKey<net.minecraft.world.level.storage.loot.LootTable> loot(boolean room) {
+		if (this == PIGLIN) {
+			return room ? Camps.OUTPOST_ROOM_LOOT : Camps.OUTPOST_LOOT;
+		}
+		return room ? Camps.CAMP_ROOM_LOOT : Camps.CAMP_LOOT;
 	}
 }

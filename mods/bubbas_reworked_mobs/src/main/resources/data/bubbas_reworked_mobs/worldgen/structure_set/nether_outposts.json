@@ -1,0 +1,18 @@
+{
+  "placement": {
+    "type": "minecraft:random_spread",
+    "salt": 20261124,
+    "separation": 8,
+    "spacing": 22,
+    "exclusion_zone": {
+      "other_set": "minecraft:nether_complexes",
+      "chunk_count": 3
+    }
+  },
+  "structures": [
+    {
+      "structure": "bubbas_reworked_mobs:nether_outpost",
+      "weight": 1
+    }
+  ]
+}

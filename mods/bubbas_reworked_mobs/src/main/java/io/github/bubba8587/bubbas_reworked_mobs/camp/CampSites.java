@@ -232,6 +232,7 @@ public final class CampSites {
 	private static boolean discover(ServerLevel level, ChunkPos around) {
 		var structures = level.registryAccess().lookupOrThrow(Registries.STRUCTURE);
 		Structure camp = structures.getValue(Camps.CAMP_KEY);
+		Structure nether = structures.getValue(Camps.OUTPOST_KEY);
 		Structure outpost = structures.getValue(BuiltinStructures.PILLAGER_OUTPOST);
 		Sites sites = sites(level);
 		boolean found = false;
@@ -241,6 +242,9 @@ public final class CampSites {
 				LevelChunk chunk = level.getChunkSource().getChunkNow(cx, cz);
 				if (chunk == null) {
 					continue;
+				}
+				if (nether != null) {
+					found |= register(level, sites, nether, chunk.getReferencesForStructure(nether), false);
 				}
 				if (camp != null) {
 					found |= register(level, sites, camp, chunk.getReferencesForStructure(camp), false);
