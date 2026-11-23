@@ -143,9 +143,12 @@ public final class EndermanTuning {
 	public static final int TRADE_CHECK_TICKS = 20;
 	/** No player (not spectating) within this many blocks of the pad: the endermen come for the item. */
 	public static final double TRADE_QUIET_RANGE = 16.0;
+	/** An enderman stares at the offered item this long, plus up to the spread, before taking it. */
+	public static final int TRADE_STARE_MIN_TICKS = 40;
+	public static final int TRADE_STARE_SPREAD_TICKS = 40;
 	/** The answer comes back after this long, plus up to the spread. */
-	public static final int TRADE_RETURN_MIN_TICKS = 200;
-	public static final int TRADE_RETURN_SPREAD_TICKS = 400;
+	public static final int TRADE_RETURN_MIN_TICKS = 80;
+	public static final int TRADE_RETURN_SPREAD_TICKS = 120;
 
 	// --- cairn offerings (Totems & Artifacts' Totem of the Beginning, through api/Endermen) -----------------
 	/** The share of cairns (picked from each site's seed) whose endermen leave an offering once it is complete. */

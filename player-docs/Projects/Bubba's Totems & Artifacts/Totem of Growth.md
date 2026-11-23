@@ -19,7 +19,7 @@ Found in chests in jungle temples, igloos and shipwrecks.
 
 Held, crops, saplings and other growing plants within 8 blocks grow about three times as fast. In a reworked beacon, plants across its range grow two to five times as fast, more with a bigger pyramid.
 
-It also plants things. Every couple of seconds it may pick one dropped seed, crop, sapling or similar item in its range and plant it in a free spot close to where it lies, wherever that plant can grow. It never harvests anything.
+It also plants things. Every couple of seconds it may pick one dropped seed, crop, sapling or similar item in its range and plant it in a free spot close to where it lies, wherever that plant can grow. It never plants on top of another plant, so sugar cane, bamboo and cactus don't get stacked into towers. It never harvests anything.
 
 ## Statue
 

@@ -40,7 +40,14 @@ public final class CairnTrades {
 	public static final AttachmentType<Map<Long, Long>> TRADES = AttachmentRegistry.createPersistent(BubbasReworkedMobs.id("cairn_trades"),
 			Codec.unboundedMap(Codec.STRING.xmap(Long::parseLong, String::valueOf), Codec.LONG));
 
-	public static final ResourceKey<LootTable> TABLE = ResourceKey.create(Registries.LOOT_TABLE, BubbasReworkedMobs.id("gameplay/enderman_trade"));
+	/** Per site origin: the game time the staring enderman takes the item. */
+	public static final AttachmentType<Map<Long, Long>> STARES = AttachmentRegistry.createPersistent(BubbasReworkedMobs.id("cairn_trade_stares"),
+			Codec.unboundedMap(Codec.STRING.xmap(Long::parseLong, String::valueOf), Codec.LONG));
+
+	/** Entity tag of the enderman staring at an offered item. */
+	public static final String TAKER_TAG = BubbasReworkedMobs.MOD_ID + ".trade_taker";
+
+	public static final ResourceKey<LootTable> TABLE =ResourceKey.create(Registries.LOOT_TABLE, BubbasReworkedMobs.id("gameplay/enderman_trade"));
 	private static final long ANSWERED = -1L;
 
 	private CairnTrades() {
@@ -64,17 +71,34 @@ public final class CairnTrades {
 		}
 		long key = site.origin().asLong();
 		Map<Long, Long> trades = new HashMap<>(level.getAttachedOrElse(TRADES, Map.of()));
+		Map<Long, Long> stares = new HashMap<>(level.getAttachedOrElse(STARES, Map.of()));
 		Long state = trades.get(key);
+		Long stare = stares.get(key);
 		boolean item = LootDisplays.hasItemAt(level, spot);
 		if (state == null) {
+			if (stare != null) {
+				if (item && level.getGameTime() < stare) {
+					return Step.STARING;
+				}
+				stares.remove(key);
+				level.setAttached(STARES, Map.copyOf(stares));
+				sendTakersAway(level, spot);
+				if (!item) {
+					return Step.NONE;
+				}
+				take(level, key, spot, trades);
+				return Step.TAKEN;
+			}
 			if (!item || playerNear(level, spot)) {
 				return Step.NONE;
 			}
-			LootDisplays.takeForMob(level, spot);
-			vanishEffects(level, spot);
-			trades.put(key, level.getGameTime() + EndermanTuning.TRADE_RETURN_MIN_TICKS
-					+ level.getRandom().nextInt(EndermanTuning.TRADE_RETURN_SPREAD_TICKS + 1));
-			level.setAttached(TRADES, Map.copyOf(trades));
+			if (comeToStare(level, site, spot)) {
+				stares.put(key, level.getGameTime() + EndermanTuning.TRADE_STARE_MIN_TICKS
+						+ level.getRandom().nextInt(EndermanTuning.TRADE_STARE_SPREAD_TICKS + 1));
+				level.setAttached(STARES, Map.copyOf(stares));
+				return Step.STARING;
+			}
+			take(level, key, spot, trades);
 			return Step.TAKEN;
 		}
 		if (state == ANSWERED) {
@@ -93,9 +117,62 @@ public final class CairnTrades {
 		return Step.ANSWERED;
 	}
 
+	private static void take(ServerLevel level, long key, BlockPos spot, Map<Long, Long> trades) {
+		LootDisplays.takeForMob(level, spot);
+		vanishEffects(level, spot);
+		trades.put(key, level.getGameTime() + EndermanTuning.TRADE_RETURN_MIN_TICKS
+				+ level.getRandom().nextInt(EndermanTuning.TRADE_RETURN_SPREAD_TICKS + 1));
+		level.setAttached(TRADES, Map.copyOf(trades));
+	}
+
+	/** An enderman appears beside the pad and stands staring at the item; false when there's no room for one. */
+	private static boolean comeToStare(ServerLevel level, CairnSite site, BlockPos spot) {
+		Direction out = Direction.getApproximateNearest(spot.getX() - site.origin().getX(), 0, spot.getZ() - site.origin().getZ());
+		BlockPos stand = EndermanSpawning.spawnCell(level, spot.getX() + out.getStepX() * 2, spot.getY(), spot.getZ() + out.getStepZ() * 2);
+		if (stand == null) {
+			return false;
+		}
+		Enderman taker = NaturalSpawns.create(level, EntityTypes.ENDERMAN, stand.getX() + 0.5, stand.getY(), stand.getZ() + 0.5, out.getOpposite().toYRot());
+		if (taker == null) {
+			return false;
+		}
+		((EndermanAccess) taker).brm$markCairnSpawn();
+		((EndermanAccess) taker).brm$setHome(site.origin());
+		taker.addTag(TAKER_TAG);
+		taker.setNoAi(true);
+		lookAt(taker, spot);
+		level.addFreshEntity(taker);
+		level.sendParticles(ParticleTypes.PORTAL, taker.getX(), taker.getY() + 1.5, taker.getZ(), 40, 0.4, 1.0, 0.4, 0.3);
+		level.playSound(null, taker.blockPosition(), SoundEvents.ENDERMAN_TELEPORT, SoundSource.HOSTILE, 1.0F, 1.0F);
+		return true;
+	}
+
+	/** Body and head turned to the item on the pad, eyes down on it. */
+	private static void lookAt(Enderman taker, BlockPos spot) {
+		taker.lookAt(net.minecraft.commands.arguments.EntityAnchorArgument.Anchor.EYES, new net.minecraft.world.phys.Vec3(spot.getX() + 0.5, spot.getY() + 0.1, spot.getZ() + 0.5));
+		taker.setYBodyRot(taker.getYRot());
+		taker.setYHeadRot(taker.getYRot());
+	}
+
+	/** The endermen staring at a pad teleport away. */
+	private static void sendTakersAway(ServerLevel level, BlockPos spot) {
+		for (Enderman taker : level.getEntitiesOfClass(Enderman.class, new net.minecraft.world.phys.AABB(spot).inflate(4.0),
+				e -> e.entityTags().contains(TAKER_TAG))) {
+			level.sendParticles(ParticleTypes.PORTAL, taker.getX(), taker.getY() + 1.5, taker.getZ(), 40, 0.4, 1.0, 0.4, 0.3);
+			taker.discard();
+		}
+	}
+
 	/** What a check did. */
 	public enum Step {
-		NONE, TAKEN, ANSWERED
+		NONE, STARING, TAKEN, ANSWERED
+	}
+
+	/** For tests: the stare is over now. */
+	public static void hurryStare(ServerLevel level, CairnSite site) {
+		Map<Long, Long> stares = new HashMap<>(level.getAttachedOrElse(STARES, Map.of()));
+		stares.computeIfPresent(site.origin().asLong(), (k, v) -> level.getGameTime());
+		level.setAttached(STARES, Map.copyOf(stares));
 	}
 
 	/** For tests: the answer is due now. */

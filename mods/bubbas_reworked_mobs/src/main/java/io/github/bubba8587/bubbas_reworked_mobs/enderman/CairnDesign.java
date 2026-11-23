@@ -537,9 +537,11 @@ public final class CairnDesign {
 
 	/** The trade pad: a purpur plinth skirted by four end stone brick slabs, the item lying on top. */
 	private void buildTradePad(int reachOut) {
-		RandomSource padRandom = new LegacyRandomSource(seed ^ PAD_SALT);
+		RandomSource padRandom = new net.minecraft.world.level.levelgen.XoroshiroRandomSource(seed ^ PAD_SALT);
 		double start = padRandom.nextDouble() * Math.PI * 2.0;
-		for (int ring = 3; ring <= 5; ring++) {
+		int firstRing = padRandom.nextInt(3);
+		for (int r = 0; r < 3; r++) {
+			int ring = 3 + (firstRing + r) % 3;
 			for (int i = 0; i < 16; i++) {
 				double a = start + Math.PI * 2.0 * i / 16.0;
 				int x = (int) Math.round(Math.cos(a) * (reachOut + ring));

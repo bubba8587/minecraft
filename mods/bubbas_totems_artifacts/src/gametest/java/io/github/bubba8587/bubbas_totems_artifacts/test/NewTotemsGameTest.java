@@ -58,7 +58,7 @@ public class NewTotemsGameTest {
 		});
 	}
 
-	/** Core. */
+	/** Growth plants one dropped seed on farmland. */
 	@GameTest(structure = TestSupport.FIELD, maxTicks = 20)
 	public void growthPlantsDroppedSeeds(GameTestHelper helper) {
 		for (int x = 3; x <= 5; x++) {
@@ -82,6 +82,46 @@ public class NewTotemsGameTest {
 		}
 		helper.assertTrue(wheat == 1, "wheat planted " + wheat);
 		helper.assertFalse(Growth.plantable(new ItemStack(Items.DIRT)), "dirt counts as a seed");
+		helper.succeed();
+	}
+
+	/** Growth never plants on top of another plant: sugar cane, bamboo and cactus don't stack; a sapling still goes on dirt. */
+	@GameTest(structure = TestSupport.FIELD, maxTicks = 20)
+	public void growthNeverStacksPlants(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		helper.setBlock(new BlockPos(2, 0, 3), Blocks.SAND);
+		helper.setBlock(new BlockPos(1, 0, 3), Blocks.WATER);
+		helper.setBlock(new BlockPos(2, 1, 3), Blocks.SUGAR_CANE);
+		helper.setBlock(new BlockPos(6, 0, 3), Blocks.DIRT);
+		helper.setBlock(new BlockPos(6, 1, 3), Blocks.BAMBOO);
+		helper.setBlock(new BlockPos(10, 0, 3), Blocks.SAND);
+		helper.setBlock(new BlockPos(10, 1, 3), Blocks.CACTUS);
+		record Case(BlockPos top, ItemStack stack) {
+		}
+		java.util.List<Case> cases = java.util.List.of(new Case(new BlockPos(2, 2, 3), new ItemStack(Items.SUGAR_CANE, 8)),
+				new Case(new BlockPos(6, 2, 3), new ItemStack(Items.BAMBOO, 8)), new Case(new BlockPos(10, 2, 3), new ItemStack(Items.CACTUS, 8)));
+		for (Case c : cases) {
+			drop(helper, Vec3.atBottomCenterOf(c.top()).add(0, 0.05, 0), c.stack());
+			AABB box = new AABB(helper.absolutePos(c.top())).inflate(0.6);
+			for (int i = 0; i < 200; i++) {
+				Growth.plant(level, box);
+			}
+			helper.assertTrue(helper.getBlockState(c.top()).isAir(), c.stack().getItem() + " planted on its own kind: " + helper.getBlockState(c.top()));
+		}
+		helper.assertTrue(Growth.isPlant(Blocks.WHEAT.defaultBlockState()) && Growth.isPlant(Blocks.OAK_SAPLING.defaultBlockState())
+				&& Growth.isPlant(Blocks.POPPY.defaultBlockState()), "crops, saplings or flowers don't count as plants");
+		for (int x = 13; x <= 15; x++) {
+			for (int z = 7; z <= 9; z++) {
+				helper.setBlock(new BlockPos(x, 0, z), Blocks.DIRT);
+			}
+		}
+		ItemEntity sapling = drop(helper, new Vec3(14.5, 1.0, 8.5), new ItemStack(Items.OAK_SAPLING));
+		AABB saplingBox = new AABB(helper.absolutePos(new BlockPos(14, 1, 8))).inflate(1.5);
+		boolean planted = false;
+		for (int i = 0; i < 200 && !planted; i++) {
+			planted = Growth.plant(level, saplingBox);
+		}
+		helper.assertTrue(planted && !sapling.isAlive(), "the sapling was never planted on dirt");
 		helper.succeed();
 	}
 
