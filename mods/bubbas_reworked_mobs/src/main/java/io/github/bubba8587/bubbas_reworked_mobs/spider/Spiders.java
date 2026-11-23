@@ -25,6 +25,13 @@ public final class Spiders {
 			EntityType.Builder.<SpiderNest>of(SpiderNest::new, MobCategory.MISC).sized(0.5F, 0.5F).noSummon().clientTrackingRange(4)
 					.updateInterval(20));
 
+	public static final EntityType<GiantSpider> GIANT_SPIDER = register("giant_spider",
+			EntityType.Builder.of(GiantSpider::new, MobCategory.MONSTER).sized(1.4F, 0.9F).eyeHeight(0.65F).passengerAttachments(0.765F)
+					.clientTrackingRange(10).notInPeaceful());
+
+	public static final EntityType<SpunWeb> SPUN_WEB = register("spun_web",
+			EntityType.Builder.<SpunWeb>of(SpunWeb::new, MobCategory.MISC).sized(0.5F, 0.5F).clientTrackingRange(10).updateInterval(40));
+
 	public static final ResourceKey<PlacedFeature> NEST_FEATURE = ResourceKey.create(Registries.PLACED_FEATURE, BubbasReworkedMobs.id("spider_nest"));
 
 	private Spiders() {
@@ -37,6 +44,11 @@ public final class Spiders {
 
 	public static void initialize() {
 		FabricDefaultAttributeRegistry.register(NEST_SPIDER, Spider.createAttributes());
+		FabricDefaultAttributeRegistry.register(GIANT_SPIDER, GiantSpider.createAttributes());
+		net.minecraft.world.entity.SpawnPlacements.register(GIANT_SPIDER, net.minecraft.world.entity.SpawnPlacementTypes.ON_GROUND,
+				net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, GiantSpider::checkGiantSpawnRules);
+		BiomeModifications.addSpawn(BiomeSelectors.includeByKey(net.minecraft.world.level.biome.Biomes.OLD_GROWTH_PINE_TAIGA,
+				net.minecraft.world.level.biome.Biomes.OLD_GROWTH_SPRUCE_TAIGA), MobCategory.MONSTER, GIANT_SPIDER, SpiderTuning.GIANT_SPAWN_WEIGHT, 1, 1);
 		Registry.register(BuiltInRegistries.FEATURE_TYPE, BubbasReworkedMobs.id("spider_nest"), SpiderNestFeature.CODEC);
 		BiomeModifications.addFeature(BiomeSelectors.foundInOverworld(), GenerationStep.Decoration.UNDERGROUND_DECORATION, NEST_FEATURE);
 	}

@@ -178,4 +178,9 @@ public class ReworkedMobsCoreGameTest {
 	public void spiderSleeperDropsLatchesAndReelsUp(GameTestHelper helper) {
 		new SpiderGameTest().sleeperDropsLatchesAndReelsUp(helper);
 	}
+
+	@GameTest(structure = SpiderGameTest.ROOM)
+	public void giantSpiderIsLargeAndSpinsBetweenTrees(GameTestHelper helper) {
+		new GiantSpiderGameTest().giantIsLargeAndSpinsBetweenTrees(helper);
+	}
 }
