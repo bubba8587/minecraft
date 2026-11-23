@@ -22,7 +22,7 @@ Owner's design (2026-11-22). Ordinary spiders stay **mostly vanilla**. What's ne
 
 - Real designed webs, not just cobweb blocks: **large spans drawn as strands between distant anchor blocks**: radial spokes from a hub plus a spiral, a little sag, fine translucent white strands with a faint shine, torn and ragged in older webs. An entity type (not a block, so B15 doesn't apply; visual effects are fine as entities) with a custom renderer.
 - Used for the **cave nests** (spanning the top of the room round the cobweb core) and the **giant spider's webs between trees** (and the webs it spins as it roams).
-- Gameplay (builder proposes): walking through strands slows you a little (lighter than a cobweb block), and attacks, shears or fire cut them.
+- Gameplay: **strands slow you like a vanilla cobweb** (owner, 2026-11-22: same stuck movement), and attacks, shears or fire cut them.
 - It must stay cheap: culled when out of view, simple geometry, bounded strand counts.
 - Checked from several angles, in daylight and in a dark cave, at 16x and 32x. This is a showpiece: iterate on the look until it is genuinely striking.
 

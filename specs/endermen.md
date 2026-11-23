@@ -243,3 +243,8 @@ Seven forms picked by seed: chorus, grove, spire, arch, canopy, henge, leaning (
 - `:bubbas_reworked_mobs:build` passes (30 core); EndermanGameTest and EndermanTotemsGameTest milestone pass.
 - Client part `cairnforms` (`CairnFormsClientGameTest`): one finished cairn of each form plus three more seeds on a flat world, from the north-west: `cairn-form-<form>-<seed>` and `cairn-forms-row`, and it prints each one's block counts. I looked at all seven forms and the extra arch.
 
+## Trading at cairns (owner, 2026-11-22; design in progress, not built)
+
+- **Endermen trade at their cairns.** Each cairn has **an obvious trade block** as part of its design, where a player leaves something and the endermen answer with something they've gathered.
+- **Like piglin bartering:** the return is random from a table, **sometimes good and sometimes weird as hell** (owner).
+- Open: what they take, what the trade block is, how the answer arrives.
