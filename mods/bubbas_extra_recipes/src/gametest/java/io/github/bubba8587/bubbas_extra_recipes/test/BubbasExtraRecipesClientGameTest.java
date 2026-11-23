@@ -23,12 +23,7 @@ import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext;
 
-/**
- * Client game test (./gradlew :bubbas_extra_recipes:runClientGameTest). Screenshots go to
- * build/run/clientGameTest/screenshots/:
- * the Glider in the inventory with its tooltip; a player wearing it, standing and gliding, from the front and back;
- * synthetic (left) and natural (right) deepslate diamond ore side by side; then the Glider again with the 32x pack on.
- */
+/** Client game test. */
 @SuppressWarnings("UnstableApiUsage")
 public class BubbasExtraRecipesClientGameTest implements FabricClientGameTest {
 	private static final String PACK_32X = BubbasExtraRecipes.id(BubbasExtraRecipes.MOD_ID + "_32x").toString();
@@ -39,7 +34,6 @@ public class BubbasExtraRecipesClientGameTest implements FabricClientGameTest {
 			return;
 		}
 		context.getInput().resizeWindow(1280, 720);
-		// Leave 32x off at the start even if an earlier, interrupted run saved it in options.txt.
 		setPack(context, PACK_32X, false);
 		try (TestSingleplayerContext singleplayer = context.worldBuilder().create()) {
 			singleplayer.getConnection().waitForChunksRender();
@@ -79,7 +73,7 @@ public class BubbasExtraRecipesClientGameTest implements FabricClientGameTest {
 		context.setScreen(() -> null);
 	}
 
-	/** A player in survival on the ground, wearing the Glider, seen from behind and from the front. */
+	/** A player in survival on the ground. */
 	private static void wearing(ClientGameTestContext context, TestSingleplayerContext singleplayer) {
 		singleplayer.getServer().runOnServer(server -> {
 			ServerPlayer player = server.getPlayerList().getPlayers().getFirst();
@@ -98,7 +92,7 @@ public class BubbasExtraRecipesClientGameTest implements FabricClientGameTest {
 		context.runOnClient(mc -> mc.options.setCameraType(CameraType.FIRST_PERSON));
 	}
 
-	/** Teleport 40 blocks up, start gliding with the jump key (as a player would), then screenshot. */
+	/** Teleport 40 blocks up, start gliding with the jump key, then screenshot. */
 	private static void gliding(ClientGameTestContext context, TestSingleplayerContext singleplayer, CameraType camera, String shot) {
 		singleplayer.getServer().runOnServer(server -> {
 			ServerPlayer player = server.getPlayerList().getPlayers().getFirst();
@@ -117,7 +111,6 @@ public class BubbasExtraRecipesClientGameTest implements FabricClientGameTest {
 		context.runOnClient(mc -> mc.options.setCameraType(camera));
 		context.waitTicks(10);
 		context.takeScreenshot("bubbas_extra_recipes-" + shot);
-		// Land: back to the ground so the next step starts from a known place.
 		singleplayer.getServer().runOnServer(server -> {
 			ServerPlayer player = server.getPlayerList().getPlayers().getFirst();
 			player.stopFallFlying();
@@ -130,7 +123,7 @@ public class BubbasExtraRecipesClientGameTest implements FabricClientGameTest {
 		context.waitFor(mc -> mc.player.onGround() && !mc.player.isFallFlying());
 	}
 
-	/** Synthetic (west, left) and natural (east, right) deepslate diamond ore side by side on stone. */
+	/** Synthetic and natural deepslate diamond ore side by side on stone. */
 	private static void ores(ClientGameTestContext context, TestSingleplayerContext singleplayer) {
 		BlockPos ore = context.computeOnClient(mc -> mc.player.blockPosition().north(3).above());
 		BlockPos synth = ore.west();
@@ -178,7 +171,7 @@ public class BubbasExtraRecipesClientGameTest implements FabricClientGameTest {
 		return new double[] {(intField(screen, "leftPos") + slot.x + 8) * scale, (intField(screen, "topPos") + slot.y + 8) * scale};
 	}
 
-	// leftPos/topPos are protected; Minecraft 26.x is unobfuscated, so reflection by Mojang name is stable.
+	// leftPos/topPos are protected
 	private static int intField(AbstractContainerScreen<?> screen, String name) {
 		try {
 			Field f = AbstractContainerScreen.class.getDeclaredField(name);

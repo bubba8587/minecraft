@@ -24,10 +24,7 @@ public final class ModItems {
 	/** assets/bubbas_extra_recipes/equipment/glider.json: the wings drawn on the player. */
 	public static final ResourceKey<EquipmentAsset> GLIDER_ASSET = ResourceKey.create(EquipmentAssets.ROOT_ID, BubbasExtraRecipes.id("glider"));
 
-	/**
-	 * The Glider: an elytra-like chest item with the vanilla glider + equippable components and no durability.
-	 * Its weaker handling is in {@code glider/GliderHandling}.
-	 */
+	/** The Glider. */
 	public static final Item GLIDER = register("glider", new Item.Properties()
 			.stacksTo(1)
 			.rarity(Rarity.UNCOMMON)

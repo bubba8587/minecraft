@@ -29,11 +29,7 @@ import net.minecraft.world.phys.Vec3;
 
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 
-/**
- * The Glider (specs/extra-recipes-mod.md): its components, its recipe, and its flight against an elytra's from the
- * same start. Flight runs the game's own code: LivingEntity#updateFallFlyingMovement (called directly, it is a pure
- * step from the current velocity, look direction and gravity) and FireworkRocketEntity#tick with the rocket attached.
- */
+/** The Glider: its components. */
 public class GliderGameTest {
 	private static final Method FALL_FLYING_STEP;
 
@@ -91,7 +87,7 @@ public class GliderGameTest {
 		return player;
 	}
 
-	/** Velocity after {@code ticks} steps of the game's fall-flying movement. */
+	/** Velocity after ticks steps of the game's fall-flying movement. */
 	private static Vec3 glide(ServerPlayer player, Vec3 velocity, int ticks) throws ReflectiveOperationException {
 		for (int i = 0; i < ticks; i++) {
 			velocity = (Vec3) FALL_FLYING_STEP.invoke(player, velocity);
@@ -99,16 +95,15 @@ public class GliderGameTest {
 		return velocity;
 	}
 
-	/** Angle (degrees) between the horizontal velocity and the horizontal look direction. */
+	/** Angle between the horizontal velocity and the horizontal look direction. */
 	private static double headingError(ServerPlayer player, Vec3 v) {
 		Vec3 look = player.getLookAngle();
 		double a = Math.atan2(v.z, v.x) - Math.atan2(look.z, look.x);
 		return Math.abs(Math.toDegrees(Math.atan2(Math.sin(a), Math.cos(a))));
 	}
 
-	// Core test: registered by ExtraRecipesCoreGameTest (test-lite, specs/quality.md).
+	// Core test: registered by ExtraRecipesCoreGameTest
 	public void gliderTurnsSlowerThanElytra(GameTestHelper helper) throws ReflectiveOperationException {
-		// Flying east at 1 block/tick, looking north (yaw 180) and level: both turn toward north over 20 ticks.
 		Vec3 start = new Vec3(1.0, 0.0, 0.0);
 		ServerPlayer elytra = flier(helper, Items.ELYTRA, 180.0F, 0.0F, start);
 		ServerPlayer glider = flier(helper, ModItems.GLIDER, 180.0F, 0.0F, start);
@@ -120,16 +115,15 @@ public class GliderGameTest {
 		double eErr = headingError(elytra, e);
 		double gErr = headingError(glider, g);
 		helper.assertTrue(gErr > eErr + 10.0, "after 20 ticks: elytra is %.1f degrees off its look, glider %.1f".formatted(eErr, gErr));
-		// Vanilla blend 10 %/tick: the leftover sideways speed is about 0.9^20 * 0.99^20 = 0.10 of the start; glider 0.95^20 * 0.99^20 = 0.29.
+		// Vanilla blend 10 %/tick
 		helper.assertTrue(Math.abs(e.x) < 0.15 && Math.abs(g.x) > 0.22, "sideways speed left: elytra %.3f, glider %.3f".formatted(e.x, g.x));
-		// Lift and sink stay vanilla: the vertical speed is the same.
+		// Lift and sink stay vanilla: the vertical speed is the same
 		helper.assertTrue(Math.abs(e.y - g.y) < 1e-9, "vertical speed differs: elytra %.4f, glider %.4f".formatted(e.y, g.y));
 		helper.succeed();
 	}
 
 	@GameTest
 	public void rocketAddsLessSpeedToGlider(GameTestHelper helper) {
-		// Flying east slowly, looking east: a rocket attached for 8 ticks.
 		Vec3 start = new Vec3(0.3, 0.0, 0.0);
 		double elytraSpeed = rocketSpeed(helper, flier(helper, Items.ELYTRA, -90.0F, 0.0F, start), 8);
 		double gliderSpeed = rocketSpeed(helper, flier(helper, ModItems.GLIDER, -90.0F, 0.0F, start), 8);

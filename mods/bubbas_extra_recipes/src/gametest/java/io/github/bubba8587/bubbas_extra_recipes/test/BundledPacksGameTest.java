@@ -14,12 +14,9 @@ import net.minecraft.resources.Identifier;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 import net.fabricmc.loader.api.FabricLoader;
 
-/**
- * The jar carries the repo's Extra Recipes datapack as an always-enabled built-in data pack: with only this mod
- * installed (no datapack in the world), every recipe file of the pack is loaded.
- */
+/** The jar carries the repo's Extra Recipes datapack as an always-enabled built-in data pack. */
 public class BundledPacksGameTest {
-	// Core test: registered by ExtraRecipesCoreGameTest (test-lite, specs/quality.md).
+	// Core test: registered by ExtraRecipesCoreGameTest
 	public void bundledDatapackIsEnabledAndItsRecipesExist(GameTestHelper helper) throws IOException {
 		var selected = helper.getLevel().getServer().getPackRepository().getSelectedIds();
 		helper.assertTrue(selected.contains(BubbasExtraRecipes.DATAPACK_ID.toString()), "bundled datapack not enabled; selected: " + selected);

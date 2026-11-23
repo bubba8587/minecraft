@@ -31,7 +31,7 @@ Code: `mods/bubbas_extra_recipes` (package `io.github.bubba8587.bubbas_extra_rec
 ### Glider
 - `registry/ModItems.GLIDER`: plain `Item`, stack size 1, uncommon rarity (yellow name, below the elytra's purple: owner confirmed), components `minecraft:glider` and `minecraft:equippable` (chest, elytra equip sound, asset `bubbas_extra_recipes:glider`, no damage on hurt). No `max_damage`. In the Tools & Utilities creative tab after the elytra (owner confirmed).
 - Handling constants in `glider/GliderHandling` (apply only while the chest slot holds our Glider; everything else, including an elytra worn by the same player, is vanilla):
-  - `LivingEntityGliderMixin`: `@ModifyExpressionValue` on the two `0.1` constants in `LivingEntity#updateFallFlyingMovement` (the per-tick blend of horizontal velocity toward the look direction). Glider: `0.03` (was `0.05`; owner asked for worse handling, same speed). Lift, gravity and drag untouched.
+  - `LivingEntityGliderMixin`: `@ModifyExpressionValue` on the two `0.1` constants (used once each for x and z) in `LivingEntity#updateFallFlyingMovement` (the per-tick blend of horizontal velocity toward the look direction). Glider: `0.03` (was `0.05`; owner asked for worse handling, same speed). Lift, gravity and drag untouched.
   - `FireworkRocketGliderMixin`: `@WrapOperation` on the first `Vec3#add(DDD)` in `FireworkRocketEntity#tick`, the boost to the attached fall-flying entity (`look*0.1 + (look*1.5 - v)*0.5`). Glider: the 0.1 push and the 1.5 target speed are scaled by `GLIDER_ROCKET_POWER = 0.6`, so a rocket both accelerates less and tops out at about 60 % of an elytra's rocket speed (about 1.0 instead of 1.7 blocks/tick). Owner confirmed this starting strength.
   - Movement runs on the client for the local player and on the server for everything else; both mixins are common code, so both sides agree.
 - Recipe `data/bubbas_extra_recipes/recipe/glider.json` (mod data, not the datapack): the old `elytra2` shape, result `bubbas_extra_recipes:glider`.
@@ -42,6 +42,12 @@ Code: `mods/bubbas_extra_recipes` (package `io.github.bubba8587.bubbas_extra_rec
 - The datapack's `blast2diamond` result carries `minecraft:block_state {synthetic:"true"}` next to its `item_name` (packcheck's table row checks it; the datapack alone still loads clean and the ore still mines like natural ore without the mod: packcheck `ItemKeyedDropsGameTest.syntheticOreFromBlastingPlacesPlainOre`).
 - Mod data: `data/minecraft/loot_table/blocks/deepslate_diamond_ore.json` (a `match_block` `synthetic=true` child sends to the synthetic table; the other two children are vanilla's unchanged; re-check on each Minecraft update) and `data/bubbas_extra_recipes/loot_table/blocks/synthetic_diamond_ore.json` (one `alternatives`: silk touch → the ore item with the same `item_name` and `block_state` as the recipe result; otherwise `random_chance 0.25` → one diamond with `explosion_decay` only, so Fortune adds nothing).
 - Pick-block on synthetic ore gives plain ore (as refmod; creative only).
+- Technique notes (moved from code comments, B38):
+  - `BlockExtraPropertyMixin` wraps the `createBlockStateDefinition` call in the `Block` constructor rather than injecting into the method, so it also works for blocks whose override doesn't call super. It recognises the block by the id in its `Properties`, which `Blocks.register` sets before construction (`BlockPropertiesAccessor`).
+  - `StateDefinition#any()` is the first state and `BooleanProperty` lists `true` first, so the mixin sets `synthetic=false` as the default explicitly. Otherwise worldgen, `/setblock` and old saves would give synthetic ore.
+  - `SyntheticOre` is loaded while `Blocks` is initialising, so it must not touch any registry.
+  - XP is code, not loot data, hence `DropExperienceBlockMixin`.
+  - Why the handshake: an added property shifts every block state id after that block. Fabric's registry sync rebuilds state ids from each side's own blocks and sends nothing when no registry has modded entries, so a client without the property would join and decode chunks with shifted ids.
 - **Reopen if:** Minecraft adds more data-driven blocks, or lets blocks without a block entity carry item data. Then the added `synthetic` property moves to pure data and merges back toward vanilla (see `docs/knowledge/item-keyed-block-drops.md`, Reopen if).
 
 ### Tests

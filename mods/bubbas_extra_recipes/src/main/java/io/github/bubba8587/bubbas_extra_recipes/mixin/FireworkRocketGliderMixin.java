@@ -12,12 +12,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 
-/**
- * Weaker rocket boost on the Glider. The first {@code Vec3#add(double, double, double)} in
- * {@code FireworkRocketEntity#tick} is the boost given to the fall-flying entity the rocket is attached to
- * ({@code movement.add(look * 0.1 + (look * 1.5 - movement) * 0.5)}); with our Glider worn the boost is recomputed with
- * {@link GliderHandling#GLIDER_ROCKET_POWER}.
- */
+/** Weaker rocket boost on the Glider. */
 @Mixin(FireworkRocketEntity.class)
 public abstract class FireworkRocketGliderMixin {
 	@Shadow
