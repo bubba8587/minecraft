@@ -29,6 +29,10 @@ Owner's design (2026-11-22), building on the earlier idea in `docs/research/camp
 - Started from images of Breath of the Wild's monster camps for the feel (owner: "look at images of it to start"; Minecraft's blocks make ours different anyway): **scant wooden lookout towers, ladders, campfires (soul campfires fit), bone-and-skull rock outcrops** built from Minecraft blocks (bone blocks, skulls, stone).
 - Sizes and layouts vary. All deterministic from the seed.
 
+## How common (owner, 2026-11-22)
+
+- **Not crazy frequent, but frequent enough to replace natural spawns for grinding mobs.** Natural surface spawning is cut to 15 %, so re-armable camps are where players farm skeletons and zombies. A player should usually find a camp of each type within a reasonable walk. Builder states the spacing (camps per 1000x1000 blocks, typical distance to the nearest of each type).
+
 ## Open
 
 - Camp loot, spacing and biomes, the trigger range, roster sizes, the leader's numbers.
