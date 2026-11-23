@@ -23,6 +23,7 @@ public final class ModCommands {
 						.then(FactoryCommand.build())
 						.then(io.github.bubba8587.bubbas_reworked_mobs.grave.GraveyardCommand.build())
 						.then(io.github.bubba8587.bubbas_reworked_mobs.camp.CampCommand.build())
+						.then(io.github.bubba8587.bubbas_reworked_mobs.traderpost.TraderPostCommand.build())
 						.then(io.github.bubba8587.bubbas_reworked_mobs.spider.SpiderCommand.build())));
 	}
 }

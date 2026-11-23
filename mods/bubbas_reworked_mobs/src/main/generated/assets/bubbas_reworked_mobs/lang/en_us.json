@@ -42,5 +42,7 @@
   "item.bubbas_reworked_mobs.sleeper.pose.lying": "Lying",
   "item.bubbas_reworked_mobs.sleeper.pose.prone": "Face Down",
   "item.bubbas_reworked_mobs.sleeper.pose.sitting": "Sitting",
-  "itemGroup.bubbas_reworked_mobs": "Bubba's Reworked Mobs"
+  "itemGroup.bubbas_reworked_mobs": "Bubba's Reworked Mobs",
+  "sign.bubbas_reworked_mobs.trader_post.line1": "Trader Post",
+  "sign.bubbas_reworked_mobs.trader_post.line2": "All welcome"
 }

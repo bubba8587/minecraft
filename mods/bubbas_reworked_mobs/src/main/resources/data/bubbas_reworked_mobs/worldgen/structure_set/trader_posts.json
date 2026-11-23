@@ -1,0 +1,18 @@
+{
+  "placement": {
+    "type": "minecraft:random_spread",
+    "salt": 20261124,
+    "separation": 6,
+    "spacing": 18,
+    "exclusion_zone": {
+      "other_set": "minecraft:villages",
+      "chunk_count": 3
+    }
+  },
+  "structures": [
+    {
+      "structure": "bubbas_reworked_mobs:trader_post",
+      "weight": 1
+    }
+  ]
+}
