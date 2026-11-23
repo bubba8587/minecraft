@@ -51,6 +51,7 @@ public class BubbasReworkedMobs implements ModInitializer {
 		io.github.bubba8587.bubbas_reworked_mobs.display.HandPlacing.initialize();
 		io.github.bubba8587.bubbas_reworked_mobs.grave.Graveyards.initialize();
 		io.github.bubba8587.bubbas_reworked_mobs.camp.Camps.initialize();
+		io.github.bubba8587.bubbas_reworked_mobs.traderpost.TraderPosts.initialize();
 		io.github.bubba8587.bubbas_reworked_mobs.factory.Fabricators.initialize();
 		Drowneds.initialize();
 		io.github.bubba8587.bubbas_reworked_mobs.spider.Spiders.initialize();

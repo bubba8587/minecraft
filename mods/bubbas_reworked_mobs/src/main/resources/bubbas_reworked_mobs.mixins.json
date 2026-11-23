@@ -23,6 +23,8 @@
 		"SpawnStateMixin",
 		"StormieDeactivatedSpiderMixin",
 		"TridentRiptideMixin",
+		"TraderLlamaTetherMixin",
+		"WanderingTraderSpawnerMixin",
 		"WardenJukeboxMixin"
 	],
 	"injectors": {

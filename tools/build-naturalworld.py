@@ -127,6 +127,8 @@ def find_examples(s):
     at = mod_locate(s, "camp locate piglin", r"Nearest piglin camp at (-?\d+) (-?\d+) (-?\d+)", nether=True)
     add(NETHER, "(piglins)", at and (at[0], at[1], at[2] + CAMP_SIGN_OFFSET))
     add("Pillager", "outpost", locate_at(s, 0, 0, "structure minecraft:pillager_outpost"))
+    # Trader post: our locate gives the plaza centre and its height (open ground between the stall and the fire).
+    add("Trader post", "(wandering trader)", mod_locate(s, "trader_post locate", r"Nearest trader post at (-?\d+) (-?\d+) (-?\d+)"))
     add("Shipwreck", "with crew", locate_at(s, 0, 0, "structure minecraft:shipwreck"))
     add("Fabricator", "(ancient city)", mod_locate(s, "ancient_fabricator", r"pad at (-?\d+) (-?\d+) (-?\d+)"))
     add("Cairn", "(endermen)", mod_locate(s, "cairn", r"Cairn site at (-?\d+) -?\d+ (-?\d+)"))

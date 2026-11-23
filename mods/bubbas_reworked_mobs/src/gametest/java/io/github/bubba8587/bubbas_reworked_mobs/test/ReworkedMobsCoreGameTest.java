@@ -100,4 +100,9 @@ public class ReworkedMobsCoreGameTest {
 	public void campRosterAppearsWithALeader(GameTestHelper helper) {
 		new CampsGameTest().rosterAppearsWithALeader(helper);
 	}
+
+	@GameTest(structure = CampsGameTest.FIELD, maxTicks = 60)
+	public void traderArrivesAtAPostWithLlamasPenned(GameTestHelper helper) {
+		new TraderPostGameTest().traderArrivesWithLlamasPenned(helper);
+	}
 }
