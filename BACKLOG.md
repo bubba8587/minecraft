@@ -21,6 +21,7 @@ Parked ideas and open items, newest first within each project. Agents add to it 
 - **Infinite jukebox** (owner, 2026-11-16): in current snapshots; when we move to that release, make the Ancient Fabricator office jukebox loop with it.
 - **Slime merging** (owner: decent idea, not now): slimes that bump into each other merge.
 - **Blood moon** (owner, 2026-11-16): on hold, no change.
+- **Monster camps** (owner, 2026-11-22; design in `specs/monster-camps.md`, not built): skeleton and zombie camps (biome versions), banners as key blocks (break all to clear, replace one to re-arm), a larger tougher leader, registered per world; pillager outposts stop when all their banners are broken. Open: refill timing until the blood moon.
 - Later parts: **monster camps and the blood moon** (structures with fixed rosters and key blocks, a 7-day blood moon that respawns uncleared structures, red-sky effects; owner's earlier idea with integration notes in `docs/research/camps-blood-moon-idea.md`).
 
 ## Bubba's Totems & Artifacts (C6)
