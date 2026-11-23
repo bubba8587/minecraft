@@ -691,7 +691,7 @@ BOSSES = [
     ("Gale", "Wind Burst mace", "juggles you", boss_cmd("piglin_brute", "Gale", 120,
         armor("golden", ["speed"] * 3) + ",mainhand:" + gemmed("mace", ["wind_charged", "wind_charged"]), extra=",IsImmuneToZombification:1b")),
     ("Plague", "Poison, Hunger", "and Wither", boss_cmd("wither_skeleton", "Plague", 120,
-        armor("chainmail", ["poison"] * 3) + ",mainhand:" + gemmed("netherite_sword", ["poison", "hunger"]))),
+        armor("chainmail", ["resistance"] * 3) + ",mainhand:" + gemmed("netherite_sword", ["poison", "hunger"]))),
     ("Phantom", "invisible, with", "Darkness hits", boss_cmd("zombie", "Phantom", 100,
         armor("netherite", ["invisibility"] * 3) + ",mainhand:" + gemmed("netherite_sword", ["darkness", "darkness"]))),
     ("Stalker", "silent, unseen;", "by 2 sleepers", boss_cmd("husk", "Stalker", 100,
