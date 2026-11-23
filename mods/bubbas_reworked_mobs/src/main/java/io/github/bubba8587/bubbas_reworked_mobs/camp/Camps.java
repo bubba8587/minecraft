@@ -23,6 +23,7 @@ public final class Camps {
 			(StructurePieceType.ContextlessType) CampPiece::new);
 	public static final ResourceKey<Structure> CAMP_KEY = ResourceKey.create(Registries.STRUCTURE, BubbasReworkedMobs.id("monster_camp"));
 	public static final ResourceKey<LootTable> CAMP_LOOT = ResourceKey.create(Registries.LOOT_TABLE, BubbasReworkedMobs.id("chests/monster_camp"));
+	public static final ResourceKey<LootTable> CAMP_ROOM_LOOT = ResourceKey.create(Registries.LOOT_TABLE, BubbasReworkedMobs.id("chests/camp_room"));
 
 	private Camps() {
 	}

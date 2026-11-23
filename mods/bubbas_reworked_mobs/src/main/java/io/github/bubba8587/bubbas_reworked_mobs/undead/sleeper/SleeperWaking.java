@@ -95,17 +95,19 @@ public final class SleeperWaking {
 	 * niche), then one up, then diagonals. If there is none it stays where it woke.
 	 */
 	static void stepOutIfStuck(ServerLevel level, Monster mob, BlockPos pos) {
-		if (level.noCollision(mob, mob.getBoundingBox())) {
+		if (level.noBlockCollision(mob, mob.getBoundingBox())) {
 			return;
 		}
-		int[][] offsets = {{1, 0, 0}, {-1, 0, 0}, {0, 0, 1}, {0, 0, -1}, {0, 1, 0}, {1, 1, 0}, {-1, 1, 0}, {0, 1, 1}, {0, 1, -1},
-				{1, 0, 1}, {1, 0, -1}, {-1, 0, 1}, {-1, 0, -1}};
-		for (int[] o : offsets) {
-			double x = pos.getX() + 0.5 + o[0];
-			double y = pos.getY() + o[1];
-			double z = pos.getZ() + 0.5 + o[2];
-			if (level.noCollision(mob, mob.getDimensions(mob.getPose()).makeBoundingBox(x, y, z))) {
-				mob.snapTo(x, y, z, mob.getYRot(), mob.getXRot());
+		// whole body clear of blocks (other mobs don't count), nearest first, standing on something
+		for (BlockPos at : BlockPos.withinManhattan(pos, 2)) {
+			if (at.equals(pos)) {
+				continue;
+			}
+			double x = at.getX() + 0.5;
+			double z = at.getZ() + 0.5;
+			if (level.noBlockCollision(mob, mob.getDimensions(mob.getPose()).makeBoundingBox(x, at.getY(), z))
+					&& !level.getBlockState(at.below()).getCollisionShape(level, at.below()).isEmpty()) {
+				mob.snapTo(x, at.getY(), z, mob.getYRot(), mob.getXRot());
 				return;
 			}
 		}

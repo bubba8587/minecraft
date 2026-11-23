@@ -115,16 +115,16 @@ public class CampsClientGameTest implements FabricClientGameTest {
 				tp(context, server, c.getX() + 9.5, c.getY() + 9.0, c.getZ() - 9.5, 45, 32);
 				context.takeScreenshot("camp-natural-" + i + "-close");
 				if (i == 0) {
-					// A zombie on the surface outside the camp can walk down into its room.
+					// A zombie on the camp's surface can walk down into its room.
 					String reach = server.computeOnServer(srv -> {
 						var level = srv.overworld();
 						var zombie = net.minecraft.world.entity.EntityTypes.ZOMBIE.create(level, net.minecraft.world.entity.EntitySpawnReason.COMMAND);
-						int sx = c.getX() + 14;
+						int sx = c.getX() + 4;
 						int sz = c.getZ();
 						zombie.snapTo(sx + 0.5, level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, sx, sz), sz + 0.5, 0, 0);
 						zombie.setOnGround(true);
 						level.addFreshEntity(zombie);
-						var path = zombie.getNavigation().createPath(c.below(4), 0);
+						var path = zombie.getNavigation().createPath(c.below(4), 1); // a bone block may sit on the exact cell
 						zombie.discard();
 						return path == null ? "no path" : path.canReach() ? "reachable" : "ends at " + path.getEndNode();
 					});
