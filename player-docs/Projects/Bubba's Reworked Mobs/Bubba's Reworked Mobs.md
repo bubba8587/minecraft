@@ -74,6 +74,18 @@ Endermen slowly put the overworld back the way it first generated and build twis
 
 Drowned are rare, tough lurkers that wait in shallow water, grab anyone who turns their back to the water, and drag them under to drown. Hard, fast hits break their grip.
 
+## Crypt yards and gravestones
+
+*Main articles: [[Crypt Yards]], [[Gravestone]]*
+
+Fenced graveyards in every state of decay stand on dry, flat ground, their graves holding skeletons that never wake; many have a crypt below (a pauper's ossuary, a family vault or a noble crypt) whose sleepers do wake. Gravestones work like signs, and players can cut their own in a stonecutter.
+
+## Spiders
+
+*Main article: [[Spiders]]*
+
+Cobweb nests cling to the ceilings of tall cave rooms, with spiders sleeping upside down in them. Walk underneath and one drops on a thread; if it bites, it latches on and reels you up into the nest.
+
 ## Ancient Fabricators
 
 *Main article: [[Ancient Fabricators]]*
@@ -96,7 +108,7 @@ Game rules control the spawn cut and watcher creepers, and an operator command p
 
 The mod installs like any Fabric mod (see [[Installing Fabric Mods]]) and is needed on both the server and every player's game.
 
-In this test version sleeping undead do not generate in the world yet. They are in the creative inventory under the **Bubba's Reworked Mobs** tab (a lying zombie is its own entry), and every feature can be tried in the [[Bubba Test World]].
+Sleeping undead generate in [[Crypt Yards]] and their crypts. They are in the creative inventory under the **Bubba's Reworked Mobs** tab (a lying zombie is its own entry), and every feature can be tried in the [[Bubba Test World]].
 
 ## Textures
 

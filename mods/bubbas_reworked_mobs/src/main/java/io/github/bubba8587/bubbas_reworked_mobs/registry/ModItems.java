@@ -28,6 +28,15 @@ public final class ModItems {
 		}
 	}
 
+	/** Gravestone block item (placing opens the text editor, like a sign); stacks to 16 like signs. */
+	public static final BlockItem GRAVESTONE;
+
+	static {
+		ResourceKey<Item> key = ResourceKey.create(Registries.ITEM, BubbasReworkedMobs.id("gravestone"));
+		GRAVESTONE = Registry.register(BuiltInRegistries.ITEM, key,
+				new BlockItem(ModBlocks.GRAVESTONE, new Item.Properties().useBlockDescriptionPrefix().stacksTo(16).setId(key)));
+	}
+
 	private ModItems() {
 	}
 

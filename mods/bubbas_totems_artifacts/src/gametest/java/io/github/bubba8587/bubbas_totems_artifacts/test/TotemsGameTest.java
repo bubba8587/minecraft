@@ -388,6 +388,9 @@ public class TotemsGameTest {
 		for (Map.Entry<Item, Map<ResourceKey<LootTable>, Float>> totem : TotemsLoot.all().entrySet()) {
 			for (Map.Entry<ResourceKey<LootTable>, Float> table : totem.getValue().entrySet()) {
 				LootTable loot = level.getServer().reloadableRegistries().getLootTable(table.getKey());
+				if (loot == LootTable.EMPTY) {
+					continue; // another mod's table (Reworked Mobs' crypts) that isn't installed in this run
+				}
 				int found = 0;
 				int rolls = 300;
 				for (int i = 0; i < rolls; i++) {

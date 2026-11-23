@@ -78,9 +78,11 @@ public class ModDataGenerator implements DataGeneratorEntrypoint {
 						.add(LootItem.lootTableItem(block)
 								.when(MatchTool.toolMatches(ItemPredicate.Builder.item().of(items, ModTags.SLEEPER_HARVEST_TOOLS)))
 								.when(hasSilkTouch())
-								.apply(CopyBlockState.copyState(block).copy(SleeperBlock.POSE))
+								.apply(CopyBlockState.copyState(block).copy(SleeperBlock.POSE).copy(SleeperBlock.RESTING))
 								.otherwise(LootItem.lootTableItem(variant.remains())))));
 			}
+			// Gravestones drop themselves (mined with a pickaxe, like stone).
+			dropSelf(ModBlocks.GRAVESTONE);
 		}
 	}
 
@@ -93,6 +95,7 @@ public class ModDataGenerator implements DataGeneratorEntrypoint {
 		protected void addTags(HolderLookup.Provider registries) {
 			// Buried loot digs faster with a shovel (the other placements break at once anyway).
 			builder(BlockTags.MINEABLE_WITH_SHOVEL).add(ModBlocks.LOOT_DISPLAY.builtInRegistryHolder().key());
+			builder(BlockTags.MINEABLE_WITH_PICKAXE).add(ModBlocks.GRAVESTONE.builtInRegistryHolder().key());
 		}
 	}
 
@@ -162,6 +165,7 @@ public class ModDataGenerator implements DataGeneratorEntrypoint {
 			builder.add(ModEntities.woken(UndeadVariant.ZOMBIE), "Zombie");
 			builder.add(ModCreativeTabs.MAIN_KEY, "Bubba's Reworked Mobs");
 			builder.add(ModBlocks.LOOT_DISPLAY, "Loot on Display");
+			builder.add(ModBlocks.GRAVESTONE, "Gravestone");
 			builder.add(LootDisplays.BURIED_HINT, "It's buried. Dig it up with a shovel.");
 			String display = "commands." + BubbasReworkedMobs.MOD_ID + ".display.";
 			builder.add(display + "success", "Put %s on display (%s) at %s, %s, %s");
@@ -195,6 +199,19 @@ public class ModDataGenerator implements DataGeneratorEntrypoint {
 			particleOnly(gen, ModBlocks.sleeper(UndeadVariant.ZOMBIE), TextureMapping.getBlockTexture(Blocks.MUD));
 			// Loot on display: the renderer draws the item; break particles are neutral iron.
 			particleOnly(gen, ModBlocks.LOOT_DISPLAY, TextureMapping.getBlockTexture(Blocks.IRON_BLOCK));
+			// Gravestones: 16 rotations like a standing sign, from four hand-made models (models/block/gravestone_rot_0..3,
+			// turned 0, 22.5, 45 and 67.5 degrees) each turned by quarter turns, as vanilla's sign blockstates are.
+			gen.blockStateOutput.accept(net.minecraft.client.data.models.blockstates.MultiVariantGenerator.dispatch(ModBlocks.GRAVESTONE)
+					.with(net.minecraft.client.data.models.blockstates.PropertyDispatch.initial(net.minecraft.world.level.block.StandingSignBlock.ROTATION)
+							.generate(rotation -> {
+								var variant = BlockModelGenerators.plainVariant(io.github.bubba8587.bubbas_reworked_mobs.BubbasReworkedMobs.id("block/gravestone_rot_" + rotation % 4));
+								return switch (rotation / 4) {
+									case 1 -> variant.with(BlockModelGenerators.Y_ROT_90);
+									case 2 -> variant.with(BlockModelGenerators.Y_ROT_180);
+									case 3 -> variant.with(BlockModelGenerators.Y_ROT_270);
+									default -> variant;
+								};
+							})));
 		}
 
 		private static void particleOnly(BlockModelGenerators gen, Block block, Material particle) {
@@ -207,6 +224,9 @@ public class ModDataGenerator implements DataGeneratorEntrypoint {
 			for (UndeadVariant variant : UndeadVariant.values()) {
 				gen.generateFlatItem(ModItems.sleeper(variant), ModelTemplates.FLAT_ITEM);
 			}
+			// The gravestone item shows the stone itself (models/item/gravestone, hand-made).
+			gen.itemModelOutput.accept(ModItems.GRAVESTONE,
+					net.minecraft.client.data.models.model.ItemModelUtils.plainModel(io.github.bubba8587.bubbas_reworked_mobs.BubbasReworkedMobs.id("item/gravestone")));
 		}
 	}
 }

@@ -19,6 +19,7 @@ What stays in Reworked Mobs (`specs/undead.md`): sleepers, the hearing/disturban
 
 - Many totems work both **held** (personal, small) and **in a beacon** (area).
 - Any rhythm (e.g. a held pulse) shows with vanilla's item cooldown sweep (B19 noHiddenCooldowns); vanilla mechanics first (B17); mobs and players treated the same (B18).
+- **No overlap with Infused Gems (owner, 2026-11-22):** a totem never does what a gem effect already does (e.g. no Totem of Silence: the Silence gem exists). Check `specs/effect-gems.md` before proposing a totem.
 - Fortification must stop explosion block damage only, never via the mobGriefing rule (that would also stop villager farming).
 
 ## The five new totems (design agreed with the owner, 2026-11-16)
@@ -130,7 +131,7 @@ Four new payload classes, one per totem, all under the existing entrypoint `bubb
 
 ### Not built / left for later
 
-- **Totem statues for the new totems:** the shared statue block still supports Warding only (sneak-use of a new totem places nothing). Adding them = switch on `TotemType`'s `totem` property and five statue models; worth doing together with the owner's statue designs.
+- **Totem statues for every totem:** built 2026-11-22 (owner: "generate initial statue for all totems"); see Totem statue below.
 - Seeking "next structure" (see above); a GUI picker instead of signature blocks if the owner prefers.
 - Name for Growth still open (owner).
 
@@ -203,7 +204,7 @@ Owner-approved design, handed over by the orchestrator. Player-facing descriptio
 14. **Kin covers eye contact for every enderman** (vanilla, Nether and End too), and Reworked Mobs' cairn anger. Hitting an enderman still makes that one fight you (vanilla); the others near a cairn stay calm.
 15. **Rarity RARE** (aqua name), one step above the other totems' UNCOMMON, since one is a once-ever cairn gift and the other is single-use terrain repair.
 16. **End city chance 5 %** (the Totem of Keeping is 8 % in the same table).
-17. **No totem statue** for either (only Warding has one; the spec waits for the owner's statue designs).
+17. ~~No totem statue~~ Statues added for both (2026-11-22, see Totem statue).
 
 #### Tests and milestone objectives
 
@@ -292,12 +293,13 @@ Owner's goal (2026-11-15): mob-free zones without spamming torches. Owner decisi
 ### Totem statue (block, B15 exception)
 
 - `bubbas_totems_artifacts:totem_statue` ("Totem Statue"). **B15 reason (owner-approved, 2026-11-16):** one shared block for every totem, so a found totem can be set down as decoration.
-- **Placing (owner-approved, 2026-11-16):** sneak and use a Totem of Warding on a block (sneaking, so holding a totem for its pulse never places it by accident; without sneaking the click does nothing). The statue faces the player and the totem is used up (creative keeps it). The Grave Talisman is not a totem and has no statue.
+- **Placing (owner-approved, 2026-11-16; every totem since 2026-11-22):** sneak and use any totem on a block (sneaking, so holding a totem for its pulse never places it by accident; without sneaking the click does nothing). The statue faces the player and the totem is used up (creative keeps it). The Grave Talisman is not a totem and has no statue.
 - **Inert:** no pulse, ward or beacon effect; no block entity, no ticking.
 - **Breaking** (any tool, pickaxe fastest, strength 1) drops the totem back; pistons pop it off as its totem. Shape: 10x10 footprint, 14 high (plinth and column).
-- **Which totem:** `statue/TotemType` (an extensible enum). Minecraft refuses a one-value block-state property, so while Warding is the only totem the `totem` property is left off and every statue is a warding statue. With a second totem the property switches on, existing statues load as warding (the default), and blockstate variants and loot conditions get one entry per type (see `TotemStatueBlock`'s javadoc).
-- **Art:** scripted placeholder at 16x and 32x (`tools-local/make_statue_textures.py`): stone plinth and column with the totem's sprite carved on the front and a glowing rune line on the sides. Listed in `docs/art-todo.md`; the owner will design the statues.
-
+- **Which totem:** `statue/TotemType`: WARDING (first, so it's the default and statues saved before the `totem` property load as warding), KEEPING, GATHERING, FORTIFICATION, GROWTH, SEEKING, BEGINNING, END, with `forItem(Item)`. `statue/StatueTotemItem` is an `Item` whose `useOn` places the statue when sneaking (PASS otherwise, so `use()` still runs); Keeping and Fortification are `StatueTotemItem`s, Gathering, Growth, the Beginning and the End extend it, Seeking checks sneaking first, Warding keeps its own `useOn`. **Sneak-use always places the statue** (builder's choice): a sneaking Totem of the End doesn't teleport, the Beginning doesn't ripple, Seeking doesn't pick a structure.
+- **Loot (26.3 format):** one pool, an `alternatives` entry with one item per totem, each with `"condition": {"type": "minecraft:all_of", "terms": [survives_explosion, match_block {state: {totem}}]}`. The pre-26.x `conditions` / `block_state_property` keys are silently ignored by 26.3 (they made every statue drop all eight totems).
+- **Art (initial, 2026-11-22; owner will redesign):** generated by `tools-local/make_statue_textures.py` (`main()` Warding's hooded figure, unchanged; `write_others()` the seven new ones). Builder's choices: one generic figure for the seven (body, arms, head, chest emblem) on Warding's plinth, told apart by per-totem tops and emblems in each item's palette: Fortification's helm brim, Growth's leaf crown and blossom, Seeking's gold band, the Beginning's grass cap, the End's purpur crown with four spikes; Gathering raises its hands, Keeping hugs a deeper chest. Glowing parts: the Beginning's and the End's eyes (light 12), Fortification's visor (10). 16x and 32x (`pixelart.render32`); rows in `docs/art-todo.md`.
+- **Tests:** core `endStatuePlacesWithoutTeleportingAndDropsItsTotem`; milestone `TotemStatueGameTest.everyStatueDropsItsTotemAndOldOnesLoadAsWarding`; client part `statues` (row, close pairs, night, each at 32x too).
 ### Tooling
 
 `tools/install-to-modrinth.ps1`, `tools/build-testworld.py` (`MODS`) and `mods/testworldshots` (`modsUnderTest`) include this mod; the test world builder names `bubbas_totems_artifacts:totem_of_warding` (the saved world's old-id totems load through the alias). No mod icon yet; it must be person-made (B14).
@@ -305,7 +307,7 @@ Owner's goal (2026-11-15): mob-free zones without spamming torches. Owner decisi
 ## Open questions (owner)
 
 - Mob holders: should mobs holding a totem pulse, and may woken undead pick one up? (built as yes, agent's choice)
-- The talisman's name and how it's found (grave/crypt loot once worldgen exists).
+- The talisman's name. Found: Reworked Mobs' family vault chests (`bubbas_reworked_mobs:chests/crypt_family`), 15 % (`TotemsTuning.TALISMAN_LOOT`, keyed by table id, no dependency; added 2026-11-22); more crypts to come.
 
 ## Milestone test objectives
 

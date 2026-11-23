@@ -31,6 +31,12 @@ public final class ModCreativeTabs {
 								output.accept(withPose(new ItemStack(ModItems.sleeper(variant)), pose));
 							}
 						}
+						// One of the resting dead (a yard grave's skeleton that never wakes), for decoration.
+						ItemStack resting = withPose(new ItemStack(ModItems.sleeper(UndeadVariant.SKELETON)), SleeperPose.LYING);
+						resting.set(net.minecraft.core.component.DataComponents.BLOCK_STATE, resting.getOrDefault(net.minecraft.core.component.DataComponents.BLOCK_STATE,
+								net.minecraft.world.item.component.BlockItemStateProperties.EMPTY).with(io.github.bubba8587.bubbas_reworked_mobs.undead.sleeper.SleeperBlock.RESTING, true));
+						output.accept(resting);
+						output.accept(ModItems.GRAVESTONE);
 					})
 					.build());
 

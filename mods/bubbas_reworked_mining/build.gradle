@@ -1,0 +1,8 @@
+plugins {
+	id 'net.fabricmc.fabric-loom'
+}
+apply from: rootProject.file('gradle/fabric-mod.gradle')
+
+dependencies {
+	// Extra mod dependencies go here; see docs/knowledge/libraries.md.
+}

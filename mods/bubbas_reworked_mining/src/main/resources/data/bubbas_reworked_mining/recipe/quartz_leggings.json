@@ -1,0 +1,15 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"category": "equipment",
+	"key": {
+		"X": "#bubbas_reworked_mining:quartz_tool_materials"
+	},
+	"pattern": [
+		"XXX",
+		"X X",
+		"X X"
+	],
+	"result": {
+		"id": "bubbas_reworked_mining:quartz_leggings"
+	}
+}

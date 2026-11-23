@@ -38,6 +38,9 @@ public final class SleeperWaking {
 	 * @return the mob, or null if nothing spawned
 	 */
 	public static @Nullable Monster wake(ServerLevel level, BlockPos pos, BlockState state, SleeperBlockEntity sleeper) {
+		if (SleeperBlock.isResting(state)) {
+			return null; // the resting dead never wake, however they're asked
+		}
 		if (!(state.getBlock() instanceof SleeperBlock block)) {
 			return null;
 		}
@@ -70,6 +73,7 @@ public final class SleeperWaking {
 		unused.clear();
 		level.setBlock(pos, state.getValue(SleeperBlock.WATERLOGGED) ? Blocks.WATER.defaultBlockState() : Blocks.AIR.defaultBlockState(),
 				Block.UPDATE_ALL);
+		stepOutIfStuck(level, mob, pos);
 		// Only a survival or adventure player who woke it becomes its target. A sleeper woken by another mob (the
 		// awaken chain, a villager's or creeper's footsteps) wakes without a target: before this, chain-woken undead
 		// went for the undead that woke them and the horde fought itself.
@@ -80,6 +84,29 @@ public final class SleeperWaking {
 		mob.playAmbientSound();
 		emitAwaken(level, mob);
 		return mob;
+	}
+
+	/**
+	 * A sleeper lying somewhere lower than its mob is tall (a crypt wall niche under a slab, a shallow grave under a
+	 * stone) wakes into a box that overlaps blocks: it wouldn't suffocate (its eyes clear a half slab) but it would be
+	 * stuck. It steps out to the nearest free spot instead: beside it on the same level first (the open side of a
+	 * niche), then one up, then diagonals. If there is none it stays where it woke.
+	 */
+	static void stepOutIfStuck(ServerLevel level, Monster mob, BlockPos pos) {
+		if (level.noCollision(mob, mob.getBoundingBox())) {
+			return;
+		}
+		int[][] offsets = {{1, 0, 0}, {-1, 0, 0}, {0, 0, 1}, {0, 0, -1}, {0, 1, 0}, {1, 1, 0}, {-1, 1, 0}, {0, 1, 1}, {0, 1, -1},
+				{1, 0, 1}, {1, 0, -1}, {-1, 0, 1}, {-1, 0, -1}};
+		for (int[] o : offsets) {
+			double x = pos.getX() + 0.5 + o[0];
+			double y = pos.getY() + o[1];
+			double z = pos.getZ() + 0.5 + o[2];
+			if (level.noCollision(mob, mob.getDimensions(mob.getPose()).makeBoundingBox(x, y, z))) {
+				mob.snapTo(x, y, z, mob.getYRot(), mob.getXRot());
+				return;
+			}
+		}
 	}
 
 	/** Chain waking: neighbours hear this through the normal listener path; at most {@link UndeadTuning#AWAKEN_CAP} wake per event. */

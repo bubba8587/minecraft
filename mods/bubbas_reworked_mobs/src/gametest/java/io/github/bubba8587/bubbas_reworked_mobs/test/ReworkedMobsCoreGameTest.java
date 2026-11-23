@@ -130,6 +130,13 @@ public class ReworkedMobsCoreGameTest {
 		new EndermanTotemsGameTest().rippleRestoresGroundButNotBuilds(helper);
 	}
 
+	// --- graveyards (specs/graveyards.md) ---
+
+	@GameTest(structure = EndermanGameTest.FIELD, maxTicks = 20)
+	public void graveyardStonesWithoutNamesAndSleepers(GameTestHelper helper) {
+		new GravesGameTest().yardHasStonesWithoutNamesAndSleepers(helper);
+	}
+
 	// --- drowned (specs/drowned.md) ---
 
 	@GameTest(environment = "bubbas_reworked_mobs-test:drowned_grab", structure = DrownedGameTest.FIELD, maxTicks = 300)
