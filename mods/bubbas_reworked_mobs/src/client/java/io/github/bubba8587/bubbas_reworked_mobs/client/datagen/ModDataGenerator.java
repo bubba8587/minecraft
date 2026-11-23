@@ -225,6 +225,22 @@ public class ModDataGenerator implements DataGeneratorEntrypoint {
 							})));
 		}
 
+		private static final com.mojang.math.Transformation SKULL_TRANSFORM = new com.mojang.math.Transformation(
+				new org.joml.Vector3f(0.5F, 0.0F, 0.5F), new org.joml.Quaternionf().rotationX((float) Math.PI), null, null);
+
+		private static net.minecraft.client.renderer.special.SkullSpecialRenderer.Unbaked head(UndeadVariant variant) {
+			var skeleton = net.minecraft.world.level.block.SkullBlock.Types.SKELETON;
+			var zombie = net.minecraft.world.level.block.SkullBlock.Types.ZOMBIE;
+			return switch (variant) {
+				case SKELETON -> new net.minecraft.client.renderer.special.SkullSpecialRenderer.Unbaked(skeleton);
+				case ZOMBIE -> new net.minecraft.client.renderer.special.SkullSpecialRenderer.Unbaked(zombie);
+				case HUSK -> new net.minecraft.client.renderer.special.SkullSpecialRenderer.Unbaked(zombie,
+						java.util.Optional.of(net.minecraft.resources.Identifier.withDefaultNamespace("zombie/husk")), 0.0F);
+				case STRAY -> new net.minecraft.client.renderer.special.SkullSpecialRenderer.Unbaked(skeleton,
+						java.util.Optional.of(net.minecraft.resources.Identifier.withDefaultNamespace("skeleton/stray")), 0.0F);
+			};
+		}
+
 		private static void particleOnly(BlockModelGenerators gen, Block block, Material particle) {
 			gen.blockStateOutput.accept(BlockModelGenerators.createSimpleBlock(block,
 					BlockModelGenerators.plainVariant(ModelTemplates.PARTICLE_ONLY.create(block, TextureMapping.particle(particle), gen.modelOutput))));
@@ -232,8 +248,10 @@ public class ModDataGenerator implements DataGeneratorEntrypoint {
 
 		@Override
 		public void generateItemModels(ItemModelGenerators gen) {
+			// Sleeper icons: vanilla mob heads
 			for (UndeadVariant variant : UndeadVariant.values()) {
-				gen.generateFlatItem(ModItems.sleeper(variant), ModelTemplates.FLAT_ITEM);
+				gen.itemModelOutput.accept(ModItems.sleeper(variant), net.minecraft.client.data.models.model.ItemModelUtils.specialModel(
+						net.minecraft.client.data.models.model.ModelLocationUtils.decorateItemModelLocation("template_skull"), SKULL_TRANSFORM, head(variant)));
 			}
 			// The gravestone item shows the stone itself (models/item/gravestone, hand-made).
 			gen.itemModelOutput.accept(ModItems.GRAVESTONE,

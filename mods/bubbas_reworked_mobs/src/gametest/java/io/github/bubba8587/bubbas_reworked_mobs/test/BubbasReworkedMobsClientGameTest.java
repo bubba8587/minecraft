@@ -102,10 +102,34 @@ public class BubbasReworkedMobsClientGameTest implements FabricClientGameTest {
 					new AABB(base.offset(-3, 0, 4)).inflate(1.0), e -> e.getType() == ModEntities.woken(UndeadVariant.ZOMBIE)).isEmpty());
 			view(context, server, x - 2.5, y, z + 1.5, 0.0F, 15.0F, "woken-zombie");
 
+			sleeperIcons(context, server, base);
+
 			if (ClientTests.run("displays")) {
 				lootDisplays(context, server, base);
 			}
 		}
+	}
+
+	/** Sleeper items as vanilla heads: in the hotbar and hand, dropped, and in item frames. */
+	private static void sleeperIcons(ClientGameTestContext context, TestServerContext server, BlockPos base) {
+		String[] kinds = {"skeleton", "zombie", "husk", "stray"};
+		for (int i = 0; i < kinds.length; i++) {
+			server.runCommand("item replace entity @p hotbar.%d with %s:%s_sleeper".formatted(i, ID, kinds[i]));
+		}
+		BlockPos wall = base.offset(-8, 0, 6);
+		server.runCommand("fill %d %d %d %d %d %d minecraft:stone".formatted(wall.getX(), wall.getY(), wall.getZ(), wall.getX() + 4, wall.getY() + 2, wall.getZ()));
+		for (int i = 0; i < kinds.length; i++) {
+			server.runCommand("summon minecraft:item_frame %d %d %d {Facing:2b,Fixed:1b,Item:{id:\"%s:%s_sleeper\",count:1}}"
+					.formatted(wall.getX() + i, wall.getY() + 1, wall.getZ() - 1, ID, kinds[i]));
+			server.runCommand("summon minecraft:item %d.5 %d %d.5 {NoGravity:1b,PickupDelay:32767,Age:-32768,Item:{id:\"%s:%s_sleeper\",count:1}}"
+					.formatted(wall.getX() + i, wall.getY(), wall.getZ() - 2, ID, kinds[i]));
+		}
+		context.waitTicks(10);
+		context.runOnClient(mc -> mc.player.getInventory().setSelectedSlot(2)); // husk in hand
+		view(context, server, wall.getX() + 2.0, wall.getY() - 0.2, wall.getZ() - 4.5, 0.0F, 10.0F, "sleeper-icons-frames-hotbar");
+		context.runOnClient(mc -> mc.player.getInventory().setSelectedSlot(3)); // stray in hand
+		view(context, server, wall.getX() + 1.5, wall.getY() + 0.3, wall.getZ() - 3.2, 0.0F, 35.0F, "sleeper-icons-dropped-close");
+		context.runOnClient(mc -> mc.player.getInventory().setSelectedSlot(8));
 	}
 
 	/**

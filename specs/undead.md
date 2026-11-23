@@ -11,7 +11,7 @@ Dormant undead are real blocks, not entities or display-entity pseudo-blocks. Th
 - Modeled on vanilla's copper golem statue: block + block entity, **no ticker**. Blockstate: `facing`, `pose`, `waterlogged`. Block entity holds the gear as the vanilla `minecraft:container` component, a lazy gear loot table (rolled on first interaction or wake), a wake cooldown and who woke it.
 - Rendering, planned before release (hybrid): the body is a baked block model per pose (part of the chunk mesh, free per frame; 26.3 block models allow free per-element rotation). A block entity renderer draws only armor and held items, only when the sleeper has gear and is within 32 blocks. Pose models and renderer poses are generated from one Java pose table by datagen so they never drift apart. Armor in the renderer needs one client accessor mixin for the equipment asset manager.
 - Lying sleepers are one block with an overhanging model (collision stays one block).
-- First playable version (built): the block entity renderer draws the whole sleeper with the vanilla mob model and texture as placeholder art, one baked model per pose, and reuses vanilla's own `HumanoidArmorLayer` and `ItemInHandLayer` for gear (they only need a `RenderLayerParent`, so armor, trims, dye and glint come free). Poses are part rotations applied after the vanilla model's `setupAnim` (`SleeperPoses`, the pose table), so armor models pose identically. The block's own model is particle-only. The hybrid baked-body version and our own 16x/32x body textures come before release. Sleeper item icons are agent-made heads with shut eyes (`tools-local/make_sleeper_icons.py`, listed in `docs/art-todo.md`).
+- First playable version (built): the block entity renderer draws the whole sleeper with the vanilla mob model and texture as placeholder art, one baked model per pose, and reuses vanilla's own `HumanoidArmorLayer` and `ItemInHandLayer` for gear (they only need a `RenderLayerParent`, so armor, trims, dye and glint come free). Poses are part rotations applied after the vanilla model's `setupAnim` (`SleeperPoses`, the pose table), so armor models pose identically. The block's own model is particle-only. The hybrid baked-body version and our own 16x/32x body textures come before release. Sleeper item icons are vanilla's own mob head item models (owner, 2026-11-22): `minecraft:special` with the `minecraft:head` model, base `item/template_skull` and vanilla's skull transform, generated in `ModDataGenerator`. Skeleton and zombie use their kinds; the husk is the zombie head with texture override `minecraft:zombie/husk` and the stray the skeleton head with `minecraft:skeleton/stray` (the override resolves to `textures/entity/<path>.png`). No texture of our own, nothing for `docs/art-todo.md`.
 - Code layout: one block class, one block entity type and one renderer serve every variant; a variant is one `UndeadVariant` entry (block + item `<name>_sleeper`, entity `woken_<name>`) plus one entry in the renderer's client table.
 
 ## Hearing and waking
@@ -123,7 +123,6 @@ A sleeper lying somewhere lower than its mob is tall (a crypt wall niche under a
 
 #### Art
 
-- `tools-local/make_sleeper_icons.py`: four sleeper item icons at 16x and 32x; row added to `docs/art-todo.md`.
 
 ## Loot on display (shared block)
 
