@@ -109,4 +109,26 @@ public final class CampBanners {
 		}
 		return found;
 	}
+
+	/**
+	 * Whether a lit campfire or soul campfire stands in the box (owner, "Lighting a fire quiets a camp"), or null when
+	 * part of the box isn't loaded. Campfires are block entities too, so this reads the same maps as the banner check.
+	 */
+	public static @Nullable Boolean litFireIn(ServerLevel level, BoundingBox box) {
+		for (int cx = box.minX() >> 4; cx <= box.maxX() >> 4; cx++) {
+			for (int cz = box.minZ() >> 4; cz <= box.maxZ() >> 4; cz++) {
+				LevelChunk chunk = level.getChunkSource().getChunkNow(cx, cz);
+				if (chunk == null) {
+					return null;
+				}
+				for (var entry : chunk.getBlockEntities().entrySet()) {
+					if (entry.getValue() instanceof net.minecraft.world.level.block.entity.CampfireBlockEntity fire && box.isInside(entry.getKey())
+							&& fire.getBlockState().getValueOrElse(net.minecraft.world.level.block.CampfireBlock.LIT, false)) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
 }

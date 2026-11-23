@@ -30,6 +30,7 @@ public final class CampSite {
 			Codec.BOOL.optionalFieldOf("spawned", false).forGetter(s -> s.spawned),
 			Codec.BOOL.optionalFieldOf("armed", true).forGetter(s -> s.armed),
 			Codec.BOOL.optionalFieldOf("rearmed", false).forGetter(s -> s.rearmed),
+			Codec.BOOL.optionalFieldOf("quiet", false).forGetter(s -> s.quiet),
 			UUIDUtil.CODEC.listOf().optionalFieldOf("members", List.of()).forGetter(s -> s.members)).apply(i, CampSite::new));
 
 	final long id;
@@ -45,10 +46,12 @@ public final class CampSite {
 	boolean armed;
 	/** A banner was put back after the camp was cleared of them: the next reset check is sure to reset. */
 	boolean rearmed;
+	/** A lit campfire burns in the camp (as last seen while a player was near): no roster, no reset. */
+	boolean quiet;
 	final List<UUID> members;
 
 	private CampSite(long id, Optional<String> kind, BoundingBox box, BlockPos centre, int size, List<BlockPos> towers, List<BlockPos> ground,
-			boolean spawned, boolean armed, boolean rearmed, List<UUID> members) {
+			boolean spawned, boolean armed, boolean rearmed, boolean quiet, List<UUID> members) {
 		this.id = id;
 		this.kind = kind.map(k -> CampKind.valueOf(k.toUpperCase(java.util.Locale.ROOT))).orElse(null);
 		this.box = box;
@@ -59,18 +62,19 @@ public final class CampSite {
 		this.spawned = spawned;
 		this.armed = armed;
 		this.rearmed = rearmed;
+		this.quiet = quiet;
 		this.members = new ArrayList<>(members);
 	}
 
 	/** A camp, from its piece. */
 	static CampSite camp(long id, CampPiece piece, List<BlockPos> towers, List<BlockPos> ground) {
 		return new CampSite(id, Optional.of(piece.kind().id()), piece.getBoundingBox(), piece.centre(), piece.size().ordinal(), towers, ground, false, true,
-				false, List.of());
+				false, false, List.of());
 	}
 
 	/** A pillager outpost. */
 	static CampSite outpost(long id, BoundingBox box) {
-		return new CampSite(id, Optional.empty(), box, box.getCenter(), 0, List.of(), List.of(), false, true, false, List.of());
+		return new CampSite(id, Optional.empty(), box, box.getCenter(), 0, List.of(), List.of(), false, true, false, false, List.of());
 	}
 
 	public long id() {
@@ -101,6 +105,11 @@ public final class CampSite {
 	/** Whether one of its banners stands (as last seen while a player was near). */
 	public boolean armed() {
 		return armed;
+	}
+
+	/** Whether a lit campfire burns in it (it's quiet: no roster, no reset). */
+	public boolean quiet() {
+		return quiet;
 	}
 
 	/** Whether its roster has appeared since it last reset. */

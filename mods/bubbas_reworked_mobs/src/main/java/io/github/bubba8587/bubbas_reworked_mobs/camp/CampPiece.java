@@ -34,7 +34,7 @@ import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceSeriali
  * is read (so every chunk it spans builds its part of the same camp); each column then follows the ground there.
  *
  * <p>A round clearing of trodden ground (coarse dirt and gravel; sand, snow or mud by kind) with weeds at its edge; a
- * soul campfire in the middle ringed by log seats, a chest of camp loot beside it; scrappy lookout towers (log posts,
+ * cold (unlit) soul campfire in the middle ringed by log seats (owner: camps are dark, no light at all), a chest of camp loot beside it; scrappy lookout towers (log posts,
  * a patchy plank platform with fence railing, a ladder, a banner on a corner post); standing banners about the camp;
  * bone-and-skull rock outcrops and skulls on pikes at the edge; in medium and large camps a lean-to over bedrolls.
  */
@@ -221,12 +221,12 @@ public class CampPiece extends StructurePiece {
 				|| state.is(Blocks.STONE) || state.is(Blocks.GRASS_BLOCK) || state.is(Blocks.PODZOL) || state.is(Blocks.MYCELIUM);
 	}
 
-	/** The soul campfire, a stone ring round it, log seats on three sides and the loot chest. */
+	/** The unlit soul campfire (camps have no light, owner 2026-11-22), a stone ring round it, log seats on three sides and the loot chest. */
 	private void fire(ClippedBuild b, int cx, int cz) {
 		int g = b.ground(cx, cz);
 		if (g != Integer.MIN_VALUE) {
 			b.put(cx, g, cz, Blocks.COBBLESTONE.defaultBlockState());
-			b.put(cx, g + 1, cz, Blocks.SOUL_CAMPFIRE.defaultBlockState().setValue(CampfireBlock.LIT, true));
+			b.put(cx, g + 1, cz, Blocks.SOUL_CAMPFIRE.defaultBlockState().setValue(CampfireBlock.LIT, false));
 			b.clearAbove(cx, g + 1, cz, 4);
 		}
 		for (Direction side : Direction.Plane.HORIZONTAL) {

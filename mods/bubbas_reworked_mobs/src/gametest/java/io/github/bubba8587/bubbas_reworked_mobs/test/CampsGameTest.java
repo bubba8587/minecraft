@@ -159,4 +159,45 @@ public class CampsGameTest {
 		helper.assertTrue(Boolean.TRUE.equals(CampSites.recheck(level, outpost)) && !CampSites.disarmedOutpostAt(level, inside), "banner back: armed again");
 		helper.succeed();
 	}
+
+	/**
+	 * Lighting a fire quiets a camp (owner): with a lit campfire in its area the roster doesn't appear and the camp
+	 * doesn't reset; put the fire out and both work again.
+	 */
+	@GameTest(structure = FIELD, maxTicks = 120)
+	public void aLitFireQuietsTheCamp(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		CampPiece piece = camp(helper, CampKind.SKELETON, 17L);
+		CampSite site = site(helper, piece);
+		BlockPos fire = piece.centre().offset(-4, 1, 3);
+		level.setBlock(fire, Blocks.CAMPFIRE.defaultBlockState().setValue(net.minecraft.world.level.block.CampfireBlock.LIT, true), 3);
+		CampSites.recheck(level, site);
+		helper.assertTrue(site.quiet(), "a lit campfire in the camp quiets it");
+		helper.assertTrue(piece.getBoundingBox().isInside(fire), "the fire is inside the camp");
+		ServerPlayer player = SleeperNoiseGameTest.survivalPlayer(helper);
+		Vec3 at = helper.absoluteVec(new Vec3(1.5, 1.0, 1.5));
+		player.snapTo(at.x, at.y, at.z, 0.0F, 0.0F);
+		helper.runAfterDelay(45, () -> {
+			helper.assertTrue(!site.spawned(), "no roster while the fire burns");
+			// Quiet camps don't reset either: a cleared, armed camp stays cleared.
+			level.setBlock(fire, Blocks.CAMPFIRE.defaultBlockState().setValue(net.minecraft.world.level.block.CampfireBlock.LIT, false), 3);
+		});
+		helper.runAfterDelay(90, () -> {
+			helper.assertTrue(!site.quiet() && site.spawned(), "fire out: the roster appears");
+			helper.getLevel().getServer().getPlayerList().remove(player);
+			for (var uuid : site.members()) {
+				Entity e = level.getEntity(uuid);
+				if (e != null) {
+					e.discard();
+				}
+			}
+			helper.runAfterDelay(2, () -> {
+				level.setBlock(fire, Blocks.CAMPFIRE.defaultBlockState().setValue(net.minecraft.world.level.block.CampfireBlock.LIT, true), 3);
+				CampSites.recheck(level, site);
+				CampSites.resetCheck(level, true);
+				helper.assertTrue(site.spawned(), "a quiet camp doesn't reset");
+				helper.succeed();
+			});
+		});
+	}
 }

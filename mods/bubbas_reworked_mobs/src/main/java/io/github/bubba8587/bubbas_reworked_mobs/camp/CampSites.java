@@ -38,6 +38,7 @@ import org.jspecify.annotations.Nullable;
  * <li>once a day, a camp whose roster is dead and whose banner stands <b>resets</b> with chance
  * {@link CampTuning#RESET_CHANCE}, only while nobody is within {@link CampTuning#AWAY_RANGE}; a camp re-armed by
  * putting a banner back resets at the next check for sure;</li>
+ * <li>a lit campfire anywhere in a camp's box <b>quiets</b> it while it burns: no roster, no reset (owner);</li>
  * <li>a pillager outpost with no banner standing spawns no pillagers ({@link #disarmedOutpostAt}).</li>
  * </ul>
  */
@@ -149,8 +150,15 @@ public final class CampSites {
 					site.armed = stands;
 					changed = true;
 				}
+				if (!site.isOutpost()) {
+					Boolean fire = CampBanners.litFireIn(level, site.box);
+					if (fire != null && fire != site.quiet) {
+						site.quiet = fire;
+						changed = true;
+					}
+				}
 			}
-			if (!site.isOutpost() && site.armed && !site.spawned && near <= CampTuning.TRIGGER_RANGE
+			if (!site.isOutpost() && site.armed && !site.quiet && !site.spawned && near <= CampTuning.TRIGGER_RANGE
 					&& level.getChunkSource().getChunkNow(site.centre.getX() >> 4, site.centre.getZ() >> 4) != null) {
 				CampRoster.spawn(level, site);
 				changed = true;
@@ -163,7 +171,7 @@ public final class CampSites {
 		} else if (day != sites.lastDay) {
 			sites.lastDay = day;
 			for (CampSite site : sites.byId.values()) {
-				if (!site.isOutpost() && site.spawned && site.members.isEmpty() && site.armed && nearest(players, site.centre) > CampTuning.AWAY_RANGE
+				if (!site.isOutpost() && site.spawned && site.members.isEmpty() && site.armed && !site.quiet && nearest(players, site.centre) > CampTuning.AWAY_RANGE
 						&& (site.rearmed || level.getRandom().nextFloat() < CampTuning.RESET_CHANCE)) {
 					site.spawned = false;
 					site.rearmed = false;
@@ -183,7 +191,7 @@ public final class CampSites {
 	public static int resetCheck(ServerLevel level, boolean sure) {
 		int reset = 0;
 		for (CampSite site : sites(level).byId.values()) {
-			if (!site.isOutpost() && site.spawned && site.members.isEmpty() && site.armed
+			if (!site.isOutpost() && site.spawned && site.members.isEmpty() && site.armed && !site.quiet
 					&& (sure || site.rearmed || level.getRandom().nextFloat() < CampTuning.RESET_CHANCE)) {
 				site.spawned = false;
 				site.rearmed = false;
@@ -194,7 +202,7 @@ public final class CampSites {
 		return reset;
 	}
 
-	/** Re-reads whether a camp's banners stand now (tests, the command); null when its box isn't loaded. */
+	/** Re-reads whether a camp's banners stand (and whether a fire burns in it) now (tests, the command); null when its box isn't loaded. */
 	public static @Nullable Boolean recheck(ServerLevel level, CampSite site) {
 		Boolean stands = CampBanners.standsIn(level, site.box, site.kind);
 		if (stands != null && stands != site.armed) {
@@ -202,8 +210,12 @@ public final class CampSites {
 				site.rearmed = true;
 			}
 			site.armed = stands;
-			save(level);
 		}
+		Boolean fire = site.isOutpost() ? Boolean.FALSE : CampBanners.litFireIn(level, site.box);
+		if (fire != null) {
+			site.quiet = fire;
+		}
+		save(level);
 		return stands;
 	}
 
