@@ -18,11 +18,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-/**
- * Adds {@link HangingBeacon#UPSIDE_DOWN} to the vanilla beacon while it is constructed (B15: a new state of the
- * existing block, docs/knowledge/item-keyed-block-drops.md approach C), keeps {@code false} its default, and
- * places it upside down against the underside of a block, like a hanging lantern.
- */
+/** Adds UPSIDE_DOWN to the vanilla beacon while it is constructed. */
 @Mixin(Block.class)
 public abstract class BlockExtraPropertyMixin {
 	@WrapOperation(method = "<init>", at = @At(value = "INVOKE",
@@ -36,13 +32,13 @@ public abstract class BlockExtraPropertyMixin {
 		}
 	}
 
-	/** BooleanProperty lists {@code true} first, so without this every beacon would default to upside down. */
+	/** Keeps upside_down=false as the default state. */
 	@ModifyVariable(method = "registerDefaultState", at = @At("HEAD"), argsOnly = true)
 	private BlockState bubbas_reworked_beacons$uprightByDefault(BlockState state) {
 		return state.hasProperty(HangingBeacon.UPSIDE_DOWN) ? state.setValue(HangingBeacon.UPSIDE_DOWN, false) : state;
 	}
 
-	/** The beacon doesn't override placement, so {@code Block}'s is the one it uses. */
+	/** Hangs a beacon placed against the underside of a block. */
 	@Inject(method = "getStateForPlacement", at = @At("RETURN"), cancellable = true)
 	private void bubbas_reworked_beacons$hangFromCeiling(BlockPlaceContext context, CallbackInfoReturnable<BlockState> cir) {
 		BlockState state = cir.getReturnValue();

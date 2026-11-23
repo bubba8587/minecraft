@@ -1,7 +1,7 @@
 // dte:C5
 package io.github.bubba8587.bubbas_reworked_beacons.api;
 
-/** How a beacon reaches its area (specs/reworked-beacons.md, Range). */
+/** How a beacon reaches its area. */
 public enum BeaconMode {
 	/** Idle: no pyramid, no clear sky and no pair, or no working item. */
 	IDLE,

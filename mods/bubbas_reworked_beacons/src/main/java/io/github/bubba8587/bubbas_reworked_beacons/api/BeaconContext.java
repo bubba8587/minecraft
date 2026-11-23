@@ -9,11 +9,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import org.jspecify.annotations.Nullable;
 
-/**
- * One beacon as a payload sees it: where it is, how it reaches (sky or paired), its pyramid size, the power cap
- * that size gives and the area it covers. The static helpers are the beacon's rules, public so other mods' tests
- * can use the same numbers (specs/reworked-beacons.md).
- */
+/** One beacon as a payload sees it. */
 public final class BeaconContext {
 	/** Ticks between pulses: vanilla's 4 seconds. */
 	public static final int PULSE_TICKS = 80;
@@ -39,7 +35,7 @@ public final class BeaconContext {
 		return this.level;
 	}
 
-	/** The beacon holding the item (the floor beacon of a pair). */
+	/** The beacon holding the item. */
 	public BlockPos pos() {
 		return this.pos;
 	}
@@ -48,7 +44,7 @@ public final class BeaconContext {
 		return this.mode;
 	}
 
-	/** Pyramid layers, 1 to 4 (for a pair, the smaller of its two pyramids). */
+	/** Pyramid layers, 1 to 4. */
 	public int levels() {
 		return this.levels;
 	}
@@ -73,12 +69,12 @@ public final class BeaconContext {
 		return this.area;
 	}
 
-	/** Vanilla's effect length for this pyramid, (9 + 2 x layers) seconds, so effects overlap the next pulse. */
+	/** Vanilla's effect length for this pyramid, in ticks. */
 	public int effectDurationTicks() {
 		return (9 + this.levels * 2) * 20;
 	}
 
-	/** Every living thing in the area (players and mobs; spectators left out). Looked up once, on first use. */
+	/** Every living thing in the area. */
 	public List<LivingEntity> livingEntities() {
 		if (this.living == null) {
 			this.living = this.level.getEntitiesOfClass(LivingEntity.class, this.area, e -> e.isAlive() && !e.isSpectator());
@@ -86,7 +82,7 @@ public final class BeaconContext {
 		return this.living;
 	}
 
-	/** Pyramid layers to Gem Power cap: 1 layer I, 2 up to III, 3 up to V, 4 VI (0 for no pyramid). */
+	/** Pyramid layers to Gem Power cap: 1 layer I, 2 up to III, 3 up to V, 4 VI. */
 	public static int powerCapFor(int levels) {
 		return switch (Math.max(0, Math.min(levels, 4))) {
 			case 0 -> 0;
@@ -107,19 +103,12 @@ public final class BeaconContext {
 		return 3 * skyRange(levels);
 	}
 
-	/** Vanilla's area exactly: {@code new AABB(pos).inflate(range).expandTowards(0, height, 0)}. */
+	/** Vanilla's beacon area. */
 	public static AABB skyArea(Level level, BlockPos pos, int levels) {
 		return new AABB(pos).inflate(skyRange(levels)).expandTowards(0.0, level.getHeight(), 0.0);
 	}
 
-	/**
-	 * A pair's area: square, {@link #pairedRange} out sideways from the floor beacon, from 10 blocks below the
-	 * floor pyramid to 10 blocks above the ceiling pyramid (both ends inclusive, in blocks).
-	 *
-	 * @param floor the floor beacon, whose pyramid of {@code floorLevels} layers is below it
-	 * @param ceilingY the upside-down beacon's y, whose pyramid of {@code ceilingLevels} layers is above it
-	 * @param levels the smaller of the two pyramids, which sets the range
-	 */
+	/** A pair's area. */
 	public static AABB pairedArea(BlockPos floor, int floorLevels, int ceilingY, int ceilingLevels, int levels) {
 		int r = pairedRange(levels);
 		int minY = floor.getY() - floorLevels - 10;

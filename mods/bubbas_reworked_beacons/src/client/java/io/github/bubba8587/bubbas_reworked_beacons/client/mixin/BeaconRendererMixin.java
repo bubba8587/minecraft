@@ -17,10 +17,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-/**
- * A paired beam (specs/reworked-beacons.md: the pair's status light) ends inside the upside-down beacon instead of
- * running on to the sky like vanilla's last beam section.
- */
+/** A paired beam ends inside the upside-down beacon. */
 @Mixin(BeaconRenderer.class)
 public abstract class BeaconRendererMixin {
 	@Inject(method = "extract", at = @At("TAIL"))

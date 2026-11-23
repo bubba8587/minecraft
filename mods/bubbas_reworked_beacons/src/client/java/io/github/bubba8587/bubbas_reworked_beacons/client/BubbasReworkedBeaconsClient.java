@@ -10,7 +10,7 @@ import net.minecraft.client.gui.screens.MenuScreens;
 public class BubbasReworkedBeaconsClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
-		// The upside-down beacon adds a block state: tell the server this client has it, or it turns the client away.
+		// The upside-down beacon adds a block state
 		ClientConfigurationNetworking.registerGlobalReceiver(ExtraStatesHandshake.TYPE, (payload, context) -> { });
 		MenuScreens.register(ModMenus.BEACON, BeaconItemScreen::new);
 	}

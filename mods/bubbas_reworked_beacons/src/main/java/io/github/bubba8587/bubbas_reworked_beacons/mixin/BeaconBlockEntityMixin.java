@@ -34,10 +34,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-/**
- * The reworked beacon (specs/reworked-beacons.md): one kept item instead of powers and payment, the pair state,
- * and vanilla's powers switched off. Vanilla still scans the sky beam and counts the pyramid.
- */
+/** The reworked beacon: one kept item instead of powers and payment. */
 @Mixin(BeaconBlockEntity.class)
 public abstract class BeaconBlockEntityMixin extends BlockEntity implements ReworkedBeacon {
 	@Unique
@@ -126,7 +123,6 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements Rewo
 		this.bubba$gap = gap;
 		this.bubba$ceilingLevels = ceilingLevels;
 		if (this.bubba$isPaired()) {
-			// The status light: one white beam from this beacon into the upside-down one, ending there.
 			if (this.bubba$pairBeam.size() != 1 || this.bubba$pairBeam.getFirst().getHeight() != gap + 1) {
 				BeaconBeamOwner.Section s = new BeaconBeamOwner.Section(0xFFFFFFFF);
 				for (int i = 0; i < gap; i++) {

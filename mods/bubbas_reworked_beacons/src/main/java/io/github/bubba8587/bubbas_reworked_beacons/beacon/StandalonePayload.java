@@ -18,12 +18,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
-/**
- * Reworked Beacons alone (specs/reworked-beacons.md, Standalone): the payment is a gem base item and it is the
- * power choice. The pyramid needed follows vanilla's power order, except Regeneration works from 3 layers; a
- * 4-layer pyramid upgrades the power to level II. Registered under the payload entrypoint like any other mod's
- * items, at the lowest priority.
- */
+/** Reworked Beacons alone: the payment is a gem base item and it is the power choice. */
 public class StandalonePayload implements BeaconPayload {
 	/** One vanilla power bought by a payment item, and the pyramid it needs. */
 	public record Power(Holder<MobEffect> effect, int requiredLevels) {
@@ -37,7 +32,7 @@ public class StandalonePayload implements BeaconPayload {
 			Items.PRISMARINE_SHARD, new Power(MobEffects.STRENGTH, 3),
 			Items.NETHER_STAR, new Power(MobEffects.REGENERATION, 3));
 
-	/** 4 layers: level II (amplifier 1). */
+	/** 4 layers: level II. */
 	public static int amplifierFor(int levels) {
 		return levels >= 4 ? 1 : 0;
 	}
@@ -64,7 +59,6 @@ public class StandalonePayload implements BeaconPayload {
 		if (p == null) {
 			return List.of();
 		}
-		// Vanilla's potion tooltip words: "Speed", "Speed II", in the effect category's colour.
 		MutableComponent name = Component.translatable(p.effect().value().getDescriptionId());
 		int amp = amplifierFor(context.levels());
 		MutableComponent line = amp > 0

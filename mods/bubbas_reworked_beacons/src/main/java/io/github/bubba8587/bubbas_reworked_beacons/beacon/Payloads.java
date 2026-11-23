@@ -13,7 +13,7 @@ import org.jspecify.annotations.Nullable;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.entrypoint.EntrypointContainer;
 
-/** Every {@link BeaconPayload} from the {@value BeaconPayload#ENTRYPOINT} entrypoint, loaded on first use. */
+/** Every BeaconPayload from the ENTRYPOINT entrypoint, loaded on first use. */
 public final class Payloads {
 	private static @Nullable List<BeaconPayload> all;
 
@@ -41,7 +41,7 @@ public final class Payloads {
 		return all;
 	}
 
-	/** The payload that handles this stack, or null if none does (the slot then refuses it). */
+	/** The payload that handles this stack, or null if none does. */
 	public static @Nullable BeaconPayload find(ItemStack stack) {
 		if (stack.isEmpty()) {
 			return null;

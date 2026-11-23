@@ -8,7 +8,7 @@ import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-/** The block id that {@code Blocks.register} sets with {@code setId} before the block is constructed. */
+/** The block id that Blocks.register sets with setId before the block is constructed. */
 @Mixin(BlockBehaviour.Properties.class)
 public interface BeaconBlockPropertiesAccessor {
 	@Accessor("id")

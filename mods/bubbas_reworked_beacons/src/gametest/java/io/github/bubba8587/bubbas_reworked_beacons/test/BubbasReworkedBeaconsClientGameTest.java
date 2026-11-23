@@ -18,12 +18,7 @@ import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext;
 
-/**
- * Client game test (milestone; one part: {@code -PclientTests=beacons}). Screenshots in
- * build/run/clientGameTest/screenshots/: a sky beacon's beam, its screen with an amethyst shard, a paired beam in
- * a closed stone room (floor beacon and upside-down beacon), and the paired beacon's screen with a payload capped
- * by its pyramid.
- */
+/** Client game test. */
 @SuppressWarnings("UnstableApiUsage")
 public class BubbasReworkedBeaconsClientGameTest implements FabricClientGameTest {
 	private static final int Y = 150;
@@ -42,7 +37,7 @@ public class BubbasReworkedBeaconsClientGameTest implements FabricClientGameTest
 			BlockPos pairFloor = pair.below(2);
 			build(sp, sky, pair);
 
-			// Sky beacon: stand 8 blocks south, look up the beam.
+			// Sky beacon: stand 8 blocks south, look up the beam
 			stand(sp, sky.south(8));
 			context.waitFor(mc -> beamUp(mc, sky), 600);
 			context.getInput().lookAt(180.0F, -35.0F);
@@ -51,7 +46,6 @@ public class BubbasReworkedBeaconsClientGameTest implements FabricClientGameTest
 
 			openScreen(context, sp, sky, "bubbas_reworked_beacons-screen-sky-amethyst");
 
-			// Pair: inside a closed stone room, floor beacon and upside-down beacon joined by the beam.
 			stand(sp, pair.south(7).below(3));
 			context.waitFor(mc -> beamUp(mc, pairFloor), 600);
 			context.getInput().lookAt(180.0F, -25.0F);
@@ -63,12 +57,11 @@ public class BubbasReworkedBeaconsClientGameTest implements FabricClientGameTest
 	}
 
 	private static void build(TestSingleplayerContext sp, BlockPos sky, BlockPos pair) {
-		// Sky beacon on a 1-layer iron pyramid, an amethyst shard in it.
 		cmd(sp, "fill %d %d %d %d %d %d minecraft:iron_block", sky.getX() - 1, Y - 1, sky.getZ() - 1, sky.getX() + 1, Y - 1, sky.getZ() + 1);
 		cmd(sp, "setblock %d %d %d minecraft:beacon", sky.getX(), Y, sky.getZ());
 		cmd(sp, "fill %d %d %d %d %d %d minecraft:glass", sky.getX() - 1, Y - 1, sky.getZ() + 6, sky.getX() + 1, Y - 1, sky.getZ() + 9);
 
-		// A closed stone room around the pair: floor 146, ceiling 158.
+		// A closed stone room around the pair: floor 146, ceiling 158
 		int x = pair.getX(), z = pair.getZ();
 		cmd(sp, "fill %d %d %d %d %d %d minecraft:stone hollow", x - 9, Y - 4, z - 9, x + 9, Y + 8, z + 9);
 		cmd(sp, "fill %d %d %d %d %d %d minecraft:iron_block", x - 1, Y - 3, z - 1, x + 1, Y - 3, z + 1);
@@ -77,7 +70,6 @@ public class BubbasReworkedBeaconsClientGameTest implements FabricClientGameTest
 		cmd(sp, "setblock %d %d %d minecraft:beacon[upside_down=true]", x, Y + 6, z);
 		sp.getServer().runOnServer(server -> {
 			setItem(server, sky, new ItemStack(Items.AMETHYST_SHARD));
-			// The test mod's Gem Power V payload, capped to I by the 1-layer pyramids.
 			setItem(server, new BlockPos(x, Y - 2, z), new ItemStack(Items.ECHO_SHARD));
 			ServerPlayer player = server.getPlayerList().getPlayers().getFirst();
 			player.setGameMode(GameType.CREATIVE);

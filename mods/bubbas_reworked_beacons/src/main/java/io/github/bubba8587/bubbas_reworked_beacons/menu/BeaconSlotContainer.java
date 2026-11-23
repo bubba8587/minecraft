@@ -9,11 +9,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BeaconBlockEntity;
 
-/**
- * The beacon's one slot, read and written straight through to the block entity, so two players with the screen
- * open see the same item (no copies). Not a {@code Container} on the block entity itself: that would let hoppers
- * fill beacons.
- */
+/** The beacon's one slot. */
 public class BeaconSlotContainer implements Container {
 	private final BeaconBlockEntity be;
 
@@ -78,7 +74,6 @@ public class BeaconSlotContainer implements Container {
 	@Override
 	public void setChanged() {
 		this.be.setChanged();
-		// The area follows the item: gone now, back on the next pulse with the new item.
 		if (this.be.getLevel() != null && !this.be.getLevel().isClientSide()) {
 			BeaconAreas.remove(this.be.getLevel(), this.be.getBlockPos());
 		}
