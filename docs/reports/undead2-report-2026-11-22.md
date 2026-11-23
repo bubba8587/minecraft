@@ -131,3 +131,22 @@ Per agent 1's relay of the owner rule (B38: comments are labels only), the comme
 - Milestone `WispsGameTest.walkingIntoAYardFindsIt`: a built yard is registered; a player outside hasn't found it; inside, it's found.
 - Client part `wisps` (`WispsClientGameTest`): at night from outside a built yard, wisps forced over the graves plus hints; `wisps-1` looked at (blue soul flames over the yard and toward it). Natural ones are much sparser (one at a time).
 - Full milestone suite 128/128 (develop's test cleanup merged several tests).
+
+## 5. Noble dead in gemmed armor (specs/graveyards.md)
+
+### Player-facing
+
+- **With Bubba's Infused Gems installed**, the sleepers of **noble crypts** (the armoured ones in full iron, chain or gold) wear **gemmed** gear: 1-2 gems in their armor, 1 in their weapon, infusion 2-4, tier 2-3 (a little richer than ordinary gemmed mob gear). Woken, they fight with those effects; rob or kill them and the gemmed pieces are the prize.
+- Without Infused Gems, nothing changes (no hard dependency).
+- In a test noble crypt 11 of 13 armoured sleepers carried gems: Infused Gems leaves some pieces without (its own rules on what takes a gem).
+
+### Spec facts
+
+- Data, not code, decides the gems: item modifier `data/bubbas_reworked_mobs/item_modifier/noble_finery.json` uses Infused Gems' own `bubbas_infused_gems:socket_random_gems` (armor 1-2, weapon 1; infusion [2,3,3,4], tier [2,2,3], any variant) and loads only with the mod (`fabric:load_conditions` `fabric:all_mods_loaded`).
+- `grave/NobleFinery.apply` runs it over a noble sleeper's gear when the crypt is built (`CryptYardPiece.Build.sleeper`, noble = armour chance 0.8 or more); if the modifier isn't loaded it does nothing. Loot context: chest param set with the sleeper's position; seeded per position.
+- New build option `-PwithGems` (Reworked Mobs) puts Infused Gems on the test game's classpath, like `-PwithBeacons`.
+
+### Tests
+
+- Milestone `NobleFineryGameTest.nobleDeadWearGemsOnlyWithInfusedGems`: a built noble crypt; without Infused Gems no gear carries its components; with `-PwithGems` most noble sleepers' gear does (11 of 13). Both runs pass; full milestone suite 129/129.
+- No screenshot: gemmed gear looks the same on a sleeper.

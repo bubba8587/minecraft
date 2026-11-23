@@ -1,0 +1,33 @@
+{
+  "fabric:load_conditions": [
+    {
+      "condition": "fabric:all_mods_loaded",
+      "values": [
+        "bubbas_infused_gems"
+      ]
+    }
+  ],
+  "type": "minecraft:sequence",
+  "functions": [
+    {
+      "type": "bubbas_infused_gems:socket_random_gems",
+      "gear": "armor",
+      "count": {
+        "type": "minecraft:uniform",
+        "min": 1,
+        "max": 2
+      },
+      "infusion": [2, 3, 3, 4],
+      "tier": [2, 2, 3],
+      "variant": "any"
+    },
+    {
+      "type": "bubbas_infused_gems:socket_random_gems",
+      "gear": "weapon",
+      "count": 1,
+      "infusion": [2, 3, 3, 4],
+      "tier": [2, 2, 3],
+      "variant": "any"
+    }
+  ]
+}

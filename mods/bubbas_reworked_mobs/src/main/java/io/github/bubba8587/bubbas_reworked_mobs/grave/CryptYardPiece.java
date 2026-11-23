@@ -830,7 +830,14 @@ public class CryptYardPiece extends StructurePiece {
 						sleeper.setGear(EquipmentSlot.HEAD, new ItemStack(metal < 0.5F ? Items.CHAINMAIL_HELMET : Items.IRON_HELMET));
 					}
 				}
+				if (noble) {
+					NobleFinery.apply(level.getLevel(), sleeper, new BlockPos(x, y, z), seedOf(x, y, z));
+				}
 			}
+		}
+
+		private static long seedOf(int x, int y, int z) {
+			return BlockPos.asLong(x, y, z) * 0x9E3779B97F4A7C15L + 0x6E0B1EL;
 		}
 
 		/**

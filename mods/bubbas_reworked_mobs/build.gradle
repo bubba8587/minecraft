@@ -12,6 +12,9 @@ apply from: rootProject.file('gradle/stormies-spiders.gradle')
 // their beam and run the heart in the `factories` client test and the game tests.
 evaluationDependsOn(':bubbas_reworked_beacons')
 def beaconsJar = files(rootProject.project(':bubbas_reworked_beacons').tasks.named('jar').flatMap { it.archiveFile })
+// -PwithGems puts Bubba's Infused Gems on the game's classpath: noble crypt sleepers' gear then gets gems (grave/NobleFinery).
+evaluationDependsOn(':bubbas_infused_gems')
+def gemsJar = files(rootProject.project(':bubbas_infused_gems').tasks.named('jar').flatMap { it.archiveFile })
 dependencies {
 	// Extra mod dependencies go here; see docs/knowledge/libraries.md.
 	// Stormie's Spiders (required; gradle/stormies-spiders.gradle): compiled against here, loaded in dev runs by that
@@ -21,6 +24,9 @@ dependencies {
 	gametestCompileOnly project(':bubbas_reworked_beacons')
 	if (providers.gradleProperty('withBeacons').isPresent()) {
 		runtimeOnly beaconsJar
+	}
+	if (providers.gradleProperty('withGems').isPresent()) {
+		runtimeOnly gemsJar
 	}
 }
 
