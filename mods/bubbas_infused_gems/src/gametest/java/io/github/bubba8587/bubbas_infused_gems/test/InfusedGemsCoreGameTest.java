@@ -47,8 +47,8 @@ public class InfusedGemsCoreGameTest {
 		new GemsCommandGameTest().gemsCommandListsCombinedEffects(helper);
 	}
 
-	@GameTest(maxTicks = 400)
-	public void everyListedTableSometimesHoldsGems(GameTestHelper helper) {
-		new LootGameTest().everyListedTableSometimesHoldsGems(helper);
+	@GameTest
+	public void listedTablesKeepTheirLootAndHoldGems(GameTestHelper helper) {
+		new LootGameTest().listedTablesKeepTheirLootAndHoldGems(helper);
 	}
 }

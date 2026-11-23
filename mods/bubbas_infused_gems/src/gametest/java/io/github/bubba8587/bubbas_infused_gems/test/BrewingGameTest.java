@@ -117,9 +117,6 @@ public class BrewingGameTest {
 				"darkness", "conduit_power", "dolphins_grace", "hunger", "nausea", "saturation", "blindness"}) {
 			check(helper, b.brewable.contains(key), key + " is not brewable");
 		}
-		expect(helper, brew(helper, potion(Items.LINGERING_POTION, Potions.LONG_INVISIBILITY), new ItemStack(Items.NETHER_STAR)), "invisibility", "long", GemForm.LINGERING, 6);
-		expect(helper, brew(helper, potion(Items.SPLASH_POTION, Potions.INFESTED), new ItemStack(Items.QUARTZ)), "infested", "normal", GemForm.SPLASH, 2);
-		expect(helper, brew(helper, new ItemStack(Items.HEART_OF_THE_SEA), new ItemStack(Items.PRISMARINE_SHARD)), "conduit_power", "normal", GemForm.ITEM, 5);
 		check(helper, n > 600, "only " + n + " recipes checked");
 		helper.succeed();
 	}

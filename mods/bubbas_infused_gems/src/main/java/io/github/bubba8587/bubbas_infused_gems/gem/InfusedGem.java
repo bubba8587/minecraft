@@ -62,10 +62,6 @@ public record InfusedGem(Holder<MobEffect> effect, String variant, GemForm form,
 		return variant * b.infusion(this.infusion).factor();
 	}
 
-	public InfusedGem withForm(GemForm form) {
-		return new InfusedGem(this.effect, this.variant, form, this.infusion);
-	}
-
 	@Override
 	public void addToTooltip(Item.TooltipContext context, Consumer<Component> out, TooltipFlag flag, DataComponentGetter components) {
 		// One short line (owner): the name already has the effect, Infusion and form; no how-to lines.

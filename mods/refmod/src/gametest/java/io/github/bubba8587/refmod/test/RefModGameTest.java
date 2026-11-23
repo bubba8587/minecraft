@@ -76,7 +76,7 @@ public class RefModGameTest {
 
 	// --- 2. Item + data component -------------------------------------------------------------
 
-	@GameTest
+	// Core test: registered by RefModCoreGameTest (test-lite, specs/quality.md).
 	public void tallyStickCountsUses(GameTestHelper helper) {
 		Player player = helper.makeMockServerPlayer(GameType.SURVIVAL);
 		ItemStack stack = new ItemStack(ModItems.TALLY_STICK);
@@ -142,7 +142,7 @@ public class RefModGameTest {
 
 	// --- 6. Block entity ----------------------------------------------------------------------
 
-	@GameTest(maxTicks = 60)
+	// Core test: registered by RefModCoreGameTest (test-lite, specs/quality.md).
 	public void counterBlockCountsSavesAndSyncs(GameTestHelper helper) {
 		helper.setBlock(POS, ModBlocks.COUNTER_BLOCK);
 		helper.runAfterDelay(30, () -> {
@@ -288,7 +288,7 @@ public class RefModGameTest {
 
 	// --- 14. Datagen outputs: recipe, loot table, item tag ------------------------------------
 
-	@GameTest
+	// Core test: registered by RefModCoreGameTest (test-lite, specs/quality.md).
 	public void datagenRecipeLootAndTagLoad(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
 		CraftingInput input = CraftingInput.of(1, 1, List.of(new ItemStack(Items.COBBLESTONE)));

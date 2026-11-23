@@ -28,8 +28,4 @@ public enum GemForm implements StringRepresentable {
 	public String getSerializedName() {
 		return this.name;
 	}
-
-	public GemForm next() {
-		return this == LINGERING || this == ITEM ? this : values()[this.ordinal() + 1];
-	}
 }

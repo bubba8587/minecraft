@@ -35,6 +35,9 @@ public class BubbasExtraRecipesClientGameTest implements FabricClientGameTest {
 
 	@Override
 	public void runTest(ClientGameTestContext context) {
+		if (!ClientTests.run("glider")) {
+			return;
+		}
 		context.getInput().resizeWindow(1280, 720);
 		// Leave 32x off at the start even if an earlier, interrupted run saved it in options.txt.
 		setPack(context, PACK_32X, false);

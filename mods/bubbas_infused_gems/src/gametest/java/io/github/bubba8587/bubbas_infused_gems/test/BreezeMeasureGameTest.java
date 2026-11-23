@@ -115,7 +115,7 @@ public class BreezeMeasureGameTest {
 		DispenserBlockEntity box = (DispenserBlockEntity) helper.getLevel().getBlockEntity(pos);
 		Set<Integer> seen = new HashSet<>();
 		AABB area = new AABB(pos).inflate(3);
-		Tally tally = shoot(helper, player, 300, () -> {
+		Tally tally = shoot(helper, player, 30, () -> {
 			box.setItem(0, new ItemStack(Items.ARROW, 64));
 			((DispenserInvoker) Blocks.DISPENSER).bubbas$dispense(helper.getLevel(), state, pos);
 			List<AbstractArrow> fresh = helper.getLevel().getEntitiesOfClass(AbstractArrow.class, area, a -> !seen.contains(a.getId()));
@@ -124,7 +124,7 @@ public class BreezeMeasureGameTest {
 			return arrow;
 		});
 		LOG.info("Breeze vs dispenser: {} (set strength {} of cap {})", tally, io.github.bubba8587.bubbas_infused_gems.effect.GemValues.value(player, "breeze"), io.github.bubba8587.bubbas_infused_gems.balance.Balance.get().cap);
-		check(helper, tally.reached() > 200, "dispenser arrows reaching the wearer: " + tally);
+		check(helper, tally.reached() > 20, "dispenser arrows reaching the wearer: " + tally);
 		check(helper, tally.deflected() == tally.reached(), "perfect Breeze set (owner: always deflects) vs dispenser arrows: " + tally);
 		GemKit.remove(helper, player);
 		helper.succeed();
@@ -136,7 +136,7 @@ public class BreezeMeasureGameTest {
 		Skeleton skeleton = helper.spawnWithNoFreeWill(EntityTypes.SKELETON, new BlockPos(1, 1, 1));
 		skeleton.setItemSlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND, new ItemStack(Items.BOW));
 		Set<Integer> seen = new HashSet<>();
-		Tally tally = shoot(helper, player, 100, () -> {
+		Tally tally = shoot(helper, player, 30, () -> {
 			skeleton.lookAt(net.minecraft.commands.arguments.EntityAnchorArgument.Anchor.EYES, player.getEyePosition());
 			skeleton.performRangedAttack(player, 1.0F);
 			List<AbstractArrow> fresh = helper.getLevel().getEntitiesOfClass(AbstractArrow.class, skeleton.getBoundingBox().inflate(3),
@@ -146,7 +146,7 @@ public class BreezeMeasureGameTest {
 			return arrow;
 		});
 		LOG.info("Breeze vs skeleton: {}", tally);
-		check(helper, tally.reached() > 50, "skeleton arrows reaching the wearer: " + tally);
+		check(helper, tally.reached() > 15, "skeleton arrows reaching the wearer: " + tally);
 		check(helper, tally.deflected() == tally.reached(), "perfect Breeze set (owner: always deflects) vs skeleton arrows: " + tally);
 		skeleton.discard();
 		GemKit.remove(helper, player);

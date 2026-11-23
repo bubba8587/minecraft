@@ -91,7 +91,7 @@ public record GemTotals(Map<String, Double> totals, Map<String, Integer> drawbac
 	/** Weapon factor; an unknown (modded) weapon counts as iron. */
 	public static double weaponFactor(ItemStack stack) {
 		String m = weaponMaterial(stack);
-		return Balance.get().weaponMaterials.getOrDefault(m == null ? "iron" : m, 0.87);
+		return Balance.get().weaponMaterials.getOrDefault(m, Balance.get().weaponMaterials.get("iron"));
 	}
 
 	/**

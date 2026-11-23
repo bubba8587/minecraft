@@ -56,8 +56,8 @@ Client (milestone: `runClientGameTest -PmilestoneTests`, screenshots in `build/r
 
 Test-lite policy (`specs/quality.md`, Test suites): `ExtraRecipesCoreGameTest` runs on every build and push; the rest is the milestone suite (release tags, manual CI dispatch, `-PmilestoneTests`). What each part proves:
 
-- Core (`ExtraRecipesCoreGameTest`, 4): the bundled datapack is on and its recipes load; the Glider recipe crafts one Glider; the Glider turns slower than an elytra; synthetic ore uses its own loot table and gives no XP.
-- `GliderGameTest` (milestone part): the Glider has the glider and equippable components and no durability; a rocket adds less speed to it than to an elytra.
+- Core (`ExtraRecipesCoreGameTest`, 3): the bundled datapack is on and its recipes load; the Glider turns slower than an elytra; synthetic ore uses its own loot table and gives no XP.
+- `GliderGameTest` (milestone part): the Glider has the glider and equippable components and no durability; the Glider recipe crafts one Glider; a rocket adds less speed to it than to an elytra.
 - `SyntheticOreGameTest` (milestone part): the `synthetic` property exists with natural as the default, natural ore keeps vanilla drops, Fortune and XP, synthetic ore drops a diamond about one time in four over 2000 fixed-seed rolls, pick-block gives plain ore, saves with and without the property load.
 - Client (screenshots listed above): the Glider's tooltip, worn standing and gliding from both sides (and the client agrees it can glide), synthetic vs natural ore, the bundled resource pack on by default, a modded client passes the handshake.
 

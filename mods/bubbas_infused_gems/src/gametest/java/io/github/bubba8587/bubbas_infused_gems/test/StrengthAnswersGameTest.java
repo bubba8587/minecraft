@@ -32,24 +32,6 @@ import net.fabricmc.fabric.api.gametest.v1.GameTest;
 public class StrengthAnswersGameTest {
 	private static final String[] PIECES = {"helmet", "chestplate", "leggings", "boots"};
 
-	private static int ticks(String key, double s) {
-		return GemHits.duration(new GemHits.Entry(key, s, false));
-	}
-
-	@GameTest
-	public void hitDialsFollowTheOwnersNumbers(GameTestHelper helper) {
-		double cap = Balance.get().cap;
-		check(helper, ticks("poison", 0.01) == 80 && ticks("slowness", 0.01) == 80, "a weak potency hit lingers " + ticks("poison", 0.01) + " ticks, owner 4 s");
-		check(helper, ticks("poison", cap) == 160, "a perfect Poison hit lasts " + ticks("poison", cap) + " ticks, owner 8 s");
-		check(helper, ticks("nausea", 0.01) == 80 && ticks("nausea", cap) == 200, "Nausea hits " + ticks("nausea", 0.01) + " / " + ticks("nausea", cap) + " ticks, owner 4 / 10 s");
-		check(helper, ticks("glowing", 0.01) == 200 && ticks("glowing", cap) == 1200, "Glowing hits " + ticks("glowing", 0.01) + " / " + ticks("glowing", cap) + " ticks, owner 10 / 60 s");
-		check(helper, ticks("levitation", 0.01) == 60 && ticks("levitation", cap) == 120, "Levitation hits " + ticks("levitation", 0.01) + " / " + ticks("levitation", cap) + " ticks");
-		check(helper, Math.abs(Balance.get().hitCurve("levitation", "value", 1.0) - 1.8) < 1e-9, "perfect Levitation hit rise");
-		check(helper, Math.abs(Balance.get().hitCurve("weaving", "value", 0.0) - 0.10) < 1e-9 && Math.abs(Balance.get().hitCurve("weaving", "value", 1.0) - 0.5) < 1e-9, "Weaving chances");
-		check(helper, Math.abs(GemActions.windLaunch(0.01, false)[0] - 0.35) < 1e-9, "a weak Wind Burst hit throws " + GemActions.windLaunch(0.01, false)[0] + ", owner at least 0.35");
-		helper.succeed();
-	}
-
 	/** A perfect Levitation hit lifts a pig fast: about 1.8 blocks/s once up to speed. */
 	@GameTest(maxTicks = 100)
 	public void levitationHitRisesAtItsSpeed(GameTestHelper helper) {

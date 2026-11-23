@@ -124,8 +124,35 @@ public class LootGameTest {
 		return null;
 	}
 
-	/** Every listed vanilla table still rolls its own loot and now sometimes adds a gem, at about the model's chance. */
+	/**
+	 * Core smoke test: every place in the model is hooked into its vanilla table, and a few fixed-seed rolls of each
+	 * still give vanilla loot, with gems turning up somewhere. The rates: everyListedTableSometimesHoldsGems.
+	 */
 	// Core test: registered by InfusedGemsCoreGameTest (test-lite, specs/quality.md).
+	public void listedTablesKeepTheirLootAndHoldGems(GameTestHelper helper) {
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		int places = Balance.get().raw.getAsJsonObject("loot_inject").size();
+		check(helper, GemLoot.injected().size() == places && places >= 40, "listed tables " + GemLoot.injected().size() + " of " + places);
+		int withGems = 0;
+		for (Identifier vanilla : GemLoot.injected().keySet()) {
+			String id = vanilla.toString();
+			LootTable t = table(helper, id);
+			LootParams p = params(helper, t, standIn(helper, id), player);
+			int vanillaItems = 0;
+			for (int seed = 1; seed <= 8; seed++) {
+				List<ItemStack> items = t.getRandomItems(p, (long) seed * 7919L);
+				withGems += gems(items).isEmpty() ? 0 : 1;
+				vanillaItems += (int) items.stream().filter(st -> !st.has(ModComponents.GEM) && !st.has(ModComponents.SOCKETED_GEMS)).count();
+			}
+			check(helper, vanillaItems > 0 || id.contains("elder_guardian"), id + ": vanilla loot gone");
+		}
+		check(helper, withGems > 0, "no gems in any listed table");
+		GemKit.remove(helper, player);
+		helper.succeed();
+	}
+
+	/** Every listed vanilla table still rolls its own loot and now sometimes adds a gem, at about the model's chance. */
+	@GameTest(maxTicks = 400)
 	public void everyListedTableSometimesHoldsGems(GameTestHelper helper) {
 		ServerPlayer player = helper.makeMockServerPlayerInLevel();
 		Map<String, Double> chance = new HashMap<>();
@@ -266,26 +293,25 @@ public class LootGameTest {
 		helper.succeed();
 	}
 
-	private static String gearKind = "armor";
-
-	private static boolean gearSlot(EquipmentSlot slot, Mob mob) {
+	/** An armor slot ("armor") or a hand slot (anything else). */
+	private static boolean gearSlot(EquipmentSlot slot, String gearKind) {
 		return gearKind.equals("armor") ? slot.getType() == EquipmentSlot.Type.HUMANOID_ARMOR : slot.getType() == EquipmentSlot.Type.HAND;
 	}
 
-	private static int gemmedPieces(Mob mob) {
+	private static int gemmedPieces(Mob mob, String gearKind) {
 		int n = 0;
 		for (EquipmentSlot slot : EquipmentSlot.values()) {
-			if (gearSlot(slot, mob) && Sockets.hasGems(mob.getItemBySlot(slot))) {
+			if (gearSlot(slot, gearKind) && Sockets.hasGems(mob.getItemBySlot(slot))) {
 				n++;
 			}
 		}
 		return n;
 	}
 
-	private static int pieces(Mob mob) {
+	private static int pieces(Mob mob, String gearKind) {
 		int n = 0;
 		for (EquipmentSlot slot : EquipmentSlot.values()) {
-			if (gearSlot(slot, mob) && Sockets.slots(mob.getItemBySlot(slot)) > 0) {
+			if (gearSlot(slot, gearKind) && Sockets.slots(mob.getItemBySlot(slot)) > 0) {
 				n++;
 			}
 		}
@@ -309,7 +335,7 @@ public class LootGameTest {
 		rates.put("vindicator/weapon", 0.01);
 		for (String key : rates.keySet()) {
 			String who = key.split("/")[0];
-			gearKind = key.split("/")[1];
+			String gearKind = key.split("/")[1];
 			Mob mob = switch (who) {
 				case "zombie" -> helper.spawnWithNoFreeWill(EntityTypes.ZOMBIE, new BlockPos(1, 1, 1));
 				case "skeleton" -> helper.spawnWithNoFreeWill(EntityTypes.SKELETON, new BlockPos(1, 1, 1));
@@ -328,8 +354,8 @@ public class LootGameTest {
 					mob.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(i % 2 == 0 ? Items.GOLDEN_SWORD : Items.CROSSBOW));
 				}
 				((MobEquipmentInvoker) mob).bubbas$populate(RandomSource.create(i), hard);
-				total += pieces(mob);
-				gemmed += gemmedPieces(mob);
+				total += pieces(mob, gearKind);
+				gemmed += gemmedPieces(mob, gearKind);
 				if (who.equals("piglin")) {
 					for (EquipmentSlot slot : EquipmentSlot.values()) {
 						for (Gem g : Sockets.list(mob.getItemBySlot(slot))) {
@@ -343,7 +369,6 @@ public class LootGameTest {
 					key + ": " + gemmed + " gemmed of " + total + " pieces (" + rate + "), model " + rates.get(key));
 			mob.discard();
 		}
-		gearKind = "armor";
 		// Ominous trial spawner mobs: vanilla's trial chamber equipment tables get gems too, armor and weapons (model 10 % per piece).
 		Zombie wearer = helper.spawnWithNoFreeWill(EntityTypes.ZOMBIE, new BlockPos(3, 1, 1));
 		List<ItemStack> trial = new ArrayList<>(roll(helper, "minecraft:equipment/trial_chamber_melee", 500, wearer, null));
@@ -368,7 +393,6 @@ public class LootGameTest {
 		var level = helper.getLevel();
 		Mob mob = helper.spawnWithNoFreeWill(EntityTypes.VINDICATOR, new BlockPos(1, 1, 1));
 		((net.minecraft.world.entity.raid.Raider) mob).setCurrentRaid(new net.minecraft.world.entity.raid.Raid(mob.blockPosition(), Difficulty.HARD));
-		gearKind = "weapon";
 		int total = 0;
 		int gemmed = 0;
 		for (int i = 0; i < 6000 && total < 3000; i++) {
@@ -376,10 +400,9 @@ public class LootGameTest {
 				mob.setItemSlot(slot, ItemStack.EMPTY);
 			}
 			((net.minecraft.world.entity.raid.Raider) mob).applyRaidBuffs(level, 1, false);
-			total += pieces(mob);
-			gemmed += gemmedPieces(mob);
+			total += pieces(mob, "weapon");
+			gemmed += gemmedPieces(mob, "weapon");
 		}
-		gearKind = "armor";
 		double rate = gemmed / (double) Math.max(total, 1);
 		check(helper, total > 1000 && rate > 0.07 * 0.6 && rate < 0.07 * 1.5, "raid vindicator weapons: " + gemmed + " gemmed of " + total + " (" + rate + "), model 0.07");
 		((net.minecraft.world.entity.raid.Raider) mob).setCurrentRaid(null);
