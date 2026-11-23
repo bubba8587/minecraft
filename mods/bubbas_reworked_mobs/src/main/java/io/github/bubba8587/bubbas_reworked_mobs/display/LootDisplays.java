@@ -5,9 +5,9 @@ import java.util.function.Predicate;
 
 import io.github.bubba8587.bubbas_reworked_mobs.BubbasReworkedMobs;
 import io.github.bubba8587.bubbas_reworked_mobs.registry.ModBlocks;
+import io.github.bubba8587.bubbas_reworked_mobs.world.LoadedBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.SectionPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -20,7 +20,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
@@ -75,36 +74,16 @@ public final class LootDisplays {
 		return true;
 	}
 
-	/**
-	 * The nearest loot display holding an item whose block centre is within {@code range} of {@code centre}. Walks the
-	 * block entities of the (already loaded) chunks in range rather than every block position, so it costs the
-	 * number of block entities nearby, not the volume. Never loads chunks.
-	 */
+	/** The nearest loot display holding an item within {@code range} of {@code centre}, in loaded chunks. */
 	public static @Nullable BlockPos findNearest(ServerLevel level, Vec3 centre, double range, Predicate<LootDisplayBlockEntity> allowed) {
-		double rangeSqr = range * range;
 		@Nullable BlockPos best = null;
 		double bestSqr = Double.MAX_VALUE;
-		int minX = SectionPos.blockToSectionCoord(centre.x - range);
-		int maxX = SectionPos.blockToSectionCoord(centre.x + range);
-		int minZ = SectionPos.blockToSectionCoord(centre.z - range);
-		int maxZ = SectionPos.blockToSectionCoord(centre.z + range);
-		for (int cx = minX; cx <= maxX; cx++) {
-			for (int cz = minZ; cz <= maxZ; cz++) {
-				LevelChunk chunk = level.getChunkSource().getChunkNow(cx, cz);
-				if (chunk == null) {
-					continue;
-				}
-				for (BlockEntity entity : chunk.getBlockEntities().values()) {
-					if (!(entity instanceof LootDisplayBlockEntity display) || display.isRemoved() || display.getItem().isEmpty()) {
-						continue;
-					}
-					BlockPos pos = display.getBlockPos();
-					double distSqr = centre.distanceToSqr(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
-					if (distSqr <= rangeSqr && distSqr < bestSqr && allowed.test(display)) {
-						best = pos;
-						bestSqr = distSqr;
-					}
-				}
+		for (LootDisplayBlockEntity display : LoadedBlockEntities.near(level, LootDisplayBlockEntity.class, centre, range)) {
+			BlockPos pos = display.getBlockPos();
+			double distSqr = centre.distanceToSqr(Vec3.atCenterOf(pos));
+			if (!display.getItem().isEmpty() && distSqr < bestSqr && allowed.test(display)) {
+				best = pos;
+				bestSqr = distSqr;
 			}
 		}
 		return best;

@@ -111,8 +111,6 @@ public final class SpiderTuning {
 	/** Cap: no spinning when this many spun webs are already within AREA_RADIUS (so a forest isn't buried). */
 	public static final int AREA_WEB_CAP = 5;
 	public static final int AREA_RADIUS = 12;
-	/** Webs (larder sites) one giant remembers. */
-	public static final int SITES_REMEMBERED = 8;
 
 	/** Little spiders: summoned when it's hurt, this many, at most this many alive near it, then a cooldown. */
 	public static final int SPIDERLINGS_PER_CALL = 2;

@@ -29,6 +29,9 @@ import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.SkullBlock;
 import net.minecraft.world.level.block.SculkShriekerBlock;
+import net.minecraft.world.level.block.entity.SculkShriekerBlockEntity;
+import net.minecraft.world.level.levelgen.structure.BoundingBox;
+import io.github.bubba8587.bubbas_reworked_mobs.world.LoadedBlockEntities;
 import net.minecraft.world.level.block.StairBlock;
 import net.minecraft.world.level.block.WallBlock;
 import net.minecraft.world.level.block.WeepingVinesBlock;
@@ -2193,16 +2196,16 @@ public final class FactoryDesign {
 				}
 			}
 		}
-		BlockPos a = toWorld(origin, new BlockPos(MIN_X, MIN_Y, MIN_Z), rotation);
-		BlockPos b = toWorld(origin, new BlockPos(MAX_X, MAX_Y, MAX_Z), rotation);
-		for (BlockPos pos : BlockPos.betweenClosed(a, b)) {
-			BlockState state = level.getBlockState(pos);
+		// shriekers: no Warden summons
+		BoundingBox area = BoundingBox.fromCorners(toWorld(origin, new BlockPos(MIN_X, MIN_Y, MIN_Z), rotation),
+				toWorld(origin, new BlockPos(MAX_X, MAX_Y, MAX_Z), rotation));
+		for (SculkShriekerBlockEntity shrieker : LoadedBlockEntities.inLoading(level, SculkShriekerBlockEntity.class, area)) {
+			BlockState state = shrieker.getBlockState();
 			if (state.is(Blocks.SCULK_SHRIEKER) && state.getValue(SculkShriekerBlock.CAN_SUMMON)) {
-				level.setBlock(pos, state.setValue(SculkShriekerBlock.CAN_SUMMON, false), flags);
+				level.setBlock(shrieker.getBlockPos(), state.setValue(SculkShriekerBlock.CAN_SUMMON, false), flags);
 			}
 		}
-		// The office jukebox plays music disc 13 (eerie; owner: "a weird music disc that's always playing"; vanilla's
-		// infinite jukebox, coming in current snapshots, will keep it going).
+		// office jukebox: disc 13
 		if (level.getBlockEntity(toWorld(origin, this.jukebox, rotation)) instanceof net.minecraft.world.level.block.entity.JukeboxBlockEntity box
 				&& box.getTheItem().isEmpty()) {
 			box.setTheItem(new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.MUSIC_DISC_13));

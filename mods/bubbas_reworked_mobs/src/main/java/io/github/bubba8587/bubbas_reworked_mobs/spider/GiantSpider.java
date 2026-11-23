@@ -87,7 +87,6 @@ public class GiantSpider extends Spider implements Gripper {
 	private Vec3 backOff = Vec3.ZERO;
 	private static final net.minecraft.network.syncher.EntityDataAccessor<Boolean> DATA_UNDER =
 			net.minecraft.network.syncher.SynchedEntityData.defineId(GiantSpider.class, net.minecraft.network.syncher.EntityDataSerializers.BOOLEAN);
-	private final List<BlockPos> sites = new ArrayList<>();
 	private float grip;
 	private int sentGrip = -1;
 	private int taskTicks;
@@ -203,10 +202,6 @@ public class GiantSpider extends Spider implements Gripper {
 		return larder;
 	}
 
-	public List<BlockPos> sites() {
-		return sites;
-	}
-
 	/** What it snatches: passive animals on the ground, not tamed, not riding or ridden. */
 	public static boolean snatchable(LivingEntity e) {
 		if (!(e instanceof Animal animal) || !e.isAlive() || e.isPassenger() || e.isVehicle() || e.isInvisible()) {
@@ -236,6 +231,9 @@ public class GiantSpider extends Spider implements Gripper {
 	}
 
 	private void tickRoam(ServerLevel level) {
+		if (catchHeld == null && isVehicle()) {
+			ejectPassengers(); // a catch left riding it by a reload
+		}
 		if ((tickCount + getId()) % 20 == 0 && getTarget() instanceof Player player) {
 			lure(level, player);
 		}
@@ -496,49 +494,22 @@ public class GiantSpider extends Spider implements Gripper {
 		return null;
 	}
 
-	/** The base of the nearest tree trunk (a log column at least LARDER_HEIGHT_MIN tall) within {@code range}. */
+	/** The base of the nearest tree trunk at least LARDER_HEIGHT_MIN tall within {@code range}. */
 	private @Nullable BlockPos nearestTrunk(ServerLevel level, int range) {
-		List<BlockPos> found = trunksWithin(level, range, SpiderTuning.LARDER_HEIGHT_MIN);
-		return found.isEmpty() ? null : found.getFirst();
+		return level.findBlocksInBoxByManhattanDistance(blockPosition(), range, 3).filterState(state -> state.is(BlockTags.LOGS))
+				.findFirst((pos, state) -> trunkBase(level, pos, SpiderTuning.LARDER_HEIGHT_MIN)).orElse(null);
 	}
 
-	/**
-	 * Bases of log columns at least {@code minHeight} tall within {@code range} blocks, nearest first. Scans for a log
-	 * with no log under it between 3 below and 3 above its feet (no heightmaps: overhangs and canopies don't fool it).
-	 */
-	private List<BlockPos> trunksWithin(ServerLevel level, int range, int minHeight) {
-		List<BlockPos> out = new ArrayList<>();
-		BlockPos centre = blockPosition();
-		BlockPos.MutableBlockPos p = new BlockPos.MutableBlockPos();
-		for (int dx = -range; dx <= range; dx++) {
-			for (int dz = -range; dz <= range; dz++) {
-				for (int dy = -3; dy <= 3; dy++) {
-					p.set(centre.getX() + dx, centre.getY() + dy, centre.getZ() + dz);
-					if (!level.getBlockState(p).is(BlockTags.LOGS) || level.getBlockState(p.below()).is(BlockTags.LOGS)) {
-						continue;
-					}
-					BlockPos base = p.immutable();
-					int h = 1;
-					while (h < 40 && level.getBlockState(base.above(h)).is(BlockTags.LOGS)) {
-						h++;
-					}
-					if (h >= minHeight) {
-						out.add(base);
-					}
-					break;
-				}
-			}
+	/** Whether {@code pos} is the bottom log of a log column at least {@code minHeight} tall. */
+	private static boolean trunkBase(ServerLevel level, BlockPos pos, int minHeight) {
+		if (level.getBlockState(pos.below()).is(BlockTags.LOGS)) {
+			return false;
 		}
-		out.sort((u, v) -> Double.compare(u.distToCenterSqr(position()), v.distToCenterSqr(position())));
-		return out;
-	}
-
-	private void remember(BlockPos site) {
-		sites.remove(site);
-		sites.add(0, site.immutable());
-		while (sites.size() > SpiderTuning.SITES_REMEMBERED) {
-			sites.remove(sites.size() - 1);
+		int h = 1;
+		while (h < minHeight && level.getBlockState(pos.above(h)).is(BlockTags.LOGS)) {
+			h++;
 		}
+		return h >= minHeight;
 	}
 
 	/** Spins a web between two nearby trunks at canopy height. Returns its strand count, 0 if none (tests). */
@@ -575,7 +546,6 @@ public class GiantSpider extends Spider implements Gripper {
 				SpunWeb web = SpunWeb.spin(level, hub, BlockPos.containing(hub).asLong(), SpiderTuning.TREE_WEB_RAYS, 0.2,
 						SpiderTuning.TREE_WEB_REACH, extra, SpiderTuning.TREE_WEB_STRANDS, 0.0F, SpiderTuning.TREE_WEB_TIE_OFFS);
 				if (web != null) {
-					remember(BlockPos.containing(hub));
 					playSound(SoundEvents.SPIDER_STEP, 0.6F, 0.5F);
 					return web.strands().size();
 				}
@@ -584,9 +554,16 @@ public class GiantSpider extends Spider implements Gripper {
 		return 0;
 	}
 
-	/** Bases of tree trunks tall enough to string a web between, near it. */
+	/** Bases of tree trunks tall enough to string a web between, nearest first. */
 	private List<BlockPos> trunks(ServerLevel level) {
-		return trunksWithin(level, SpiderTuning.SPIN_SEARCH, SpiderTuning.LARDER_HEIGHT_MAX + 1);
+		List<BlockPos> out = new ArrayList<>();
+		level.findBlocksInBoxByManhattanDistance(blockPosition(), SpiderTuning.SPIN_SEARCH, 3).filterState(state -> state.is(BlockTags.LOGS))
+				.forEach((pos, state) -> {
+					if (trunkBase(level, pos, SpiderTuning.LARDER_HEIGHT_MAX + 1)) {
+						out.add(pos.immutable());
+					}
+				});
+		return out;
 	}
 
 	/** Webs already round here (spun webs near it): the cap that keeps a forest from being buried. */
@@ -679,16 +656,10 @@ public class GiantSpider extends Spider implements Gripper {
 	}
 
 	@Override
-	protected void addAdditionalSaveData(ValueOutput output) {
-		super.addAdditionalSaveData(output);
-		output.store("WebSites", BlockPos.CODEC.listOf(), List.copyOf(sites));
-	}
-
-	@Override
 	protected void readAdditionalSaveData(ValueInput input) {
 		super.readAdditionalSaveData(input);
-		sites.clear();
-		input.read("WebSites", BlockPos.CODEC.listOf()).ifPresent(sites::addAll);
+		// tasks aren't saved: it reloads roaming, on the ground
+		setNoGravity(false);
 	}
 
 	/** Spawn rule: monster rules, and no other giant within GIANT_SPACING (how many roam a forest). */

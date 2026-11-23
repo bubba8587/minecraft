@@ -350,12 +350,8 @@ public class SpunWeb extends Entity {
 	}
 
 	private static boolean fireAt(ServerLevel level, BlockPos pos) {
-		for (BlockPos p : BlockPos.betweenClosed(pos.offset(-1, -1, -1), pos.offset(1, 1, 1))) {
-			if (level.getBlockState(p).is(BlockTags.FIRE) || level.getFluidState(p).is(net.minecraft.tags.FluidTags.LAVA)) {
-				return true;
-			}
-		}
-		return false;
+		return level.getBlockStatesIfLoaded(new AABB(pos.getX() - 1, pos.getY() - 1, pos.getZ() - 1, pos.getX() + 1, pos.getY() + 1, pos.getZ() + 1))
+				.anyMatch(state -> state.is(BlockTags.FIRE) || state.getFluidState().is(net.minecraft.tags.FluidTags.LAVA));
 	}
 
 	private void burn(ServerLevel level) {
@@ -374,6 +370,11 @@ public class SpunWeb extends Entity {
 	@Override
 	public boolean isAttackable() {
 		return true;
+	}
+
+	@Override
+	public boolean canBePickedFromInside() {
+		return false;
 	}
 
 	@Override
@@ -412,8 +413,8 @@ public class SpunWeb extends Entity {
 		if (level() instanceof ServerLevel level) {
 			held.hurtAndBreak(1, player, hand);
 			level.playSound(null, getX(), getY(), getZ(), SoundEvents.SHEEP_SHEAR, SoundSource.PLAYERS, 0.8F, 1.4F);
-			// The string falls from the cut, where the player's aim met the web (like shearing a sheep).
-			Vec3 cut = location == null ? position() : location;
+			// string drops at the cut (location is relative to the web)
+			Vec3 cut = location == null ? position() : position().add(location);
 			level.addFreshEntity(new ItemEntity(level, cut.x, cut.y, cut.z,
 					new ItemStack(Items.STRING, SpiderTuning.WEB_SHEAR_STRING)));
 			discard();
