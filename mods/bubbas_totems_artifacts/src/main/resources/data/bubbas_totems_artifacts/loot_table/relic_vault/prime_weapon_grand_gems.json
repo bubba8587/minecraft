@@ -1,0 +1,84 @@
+{
+  "fabric:load_conditions": [
+    {
+      "condition": "fabric:all_mods_loaded",
+      "values": [
+        "bubbas_infused_gems"
+      ]
+    }
+  ],
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:netherite_sword",
+          "weight": 3,
+          "modifier": [
+            {
+              "type": "minecraft:enchant_with_levels",
+              "levels": {
+                "type": "minecraft:uniform",
+                "min": 30,
+                "max": 39
+              },
+              "options": "#minecraft:on_random_loot"
+            },
+            {
+              "type": "bubbas_infused_gems:socket_random_gems",
+              "count": 2,
+              "gear": "weapon",
+              "infusion": [
+                3,
+                3,
+                4
+              ],
+              "tier": [
+                2,
+                3,
+                3
+              ],
+              "variant": "normal",
+              "prefer_harmful": 0.75
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:netherite_axe",
+          "weight": 2,
+          "modifier": [
+            {
+              "type": "minecraft:enchant_with_levels",
+              "levels": {
+                "type": "minecraft:uniform",
+                "min": 30,
+                "max": 39
+              },
+              "options": "#minecraft:on_random_loot"
+            },
+            {
+              "type": "bubbas_infused_gems:socket_random_gems",
+              "count": 2,
+              "gear": "weapon",
+              "infusion": [
+                3,
+                3,
+                4
+              ],
+              "tier": [
+                2,
+                3,
+                3
+              ],
+              "variant": "normal",
+              "prefer_harmful": 0.75
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

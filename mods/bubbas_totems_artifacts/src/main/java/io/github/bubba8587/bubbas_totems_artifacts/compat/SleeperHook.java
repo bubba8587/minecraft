@@ -94,6 +94,11 @@ public interface SleeperHook {
 		return false;
 	}
 
+	/** Plants {@code stack} point-down on a Reworked Mobs loot display at {@code pos}; false without that mod. */
+	default boolean placeStuckDisplay(net.minecraft.world.level.LevelAccessor level, BlockPos pos, net.minecraft.core.Direction facing, ItemStack stack) {
+		return false;
+	}
+
 	/** A sitting skeleton sleeper in {@code gear} at {@code pos}; false without Reworked Mobs. */
 	default boolean placeSittingSleeper(net.minecraft.world.level.LevelAccessor level, BlockPos pos, net.minecraft.core.Direction facing,
 			java.util.Map<net.minecraft.world.entity.EquipmentSlot, ItemStack> gear) {

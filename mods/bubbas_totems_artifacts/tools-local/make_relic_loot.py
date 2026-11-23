@@ -80,6 +80,27 @@ def guard_gear():
 		]}
 
 
+# kind: (weapon, weight) entries, enchanting levels, Infused Gems sockets (count, infusion, tier)
+PRIME_WEAPONS = {
+	"grand": ([("minecraft:netherite_sword", 3), ("minecraft:netherite_axe", 2)], (30, 39), (2, [3, 3, 4], [2, 3, 3])),
+	"small": ([("minecraft:diamond_sword", 3), ("minecraft:diamond_axe", 2)], (20, 30), (1, [2, 3, 3], [1, 2, 2])),
+	"crypt": ([("minecraft:diamond_sword", 1), ("minecraft:diamond_axe", 1)], (15, 25), (1, [2, 2, 3], [1, 2])),
+}
+
+
+def prime_weapon(kind, gems):
+	weapons, levels, (count, infusion, tier) = PRIME_WEAPONS[kind]
+	mods = [enchanted(levels)]
+	if gems:
+		mods.append({"type": "bubbas_infused_gems:socket_random_gems", "count": count, "gear": "weapon", "infusion": infusion, "tier": tier,
+			"variant": "normal", "prefer_harmful": 0.75})
+	entries = [{"type": "minecraft:item", "name": w, "weight": n, "modifier": mods if len(mods) > 1 else mods[0]} for w, n in weapons]
+	table = {"type": "minecraft:chest", "pools": [{"rolls": 1, "entries": entries}]}
+	if gems:
+		table = {"fabric:load_conditions": [{"condition": "fabric:all_mods_loaded", "values": ["bubbas_infused_gems"]}], **table}
+	return table
+
+
 def main():
 	for name, args in KINDS.items():
 		path = OUT / "chests" / f"{name}.json"
@@ -88,6 +109,10 @@ def main():
 	path = OUT / "relic_vault" / "guard_gear.json"
 	path.parent.mkdir(parents=True, exist_ok=True)
 	path.write_text(json.dumps(guard_gear(), indent=2) + "\n")
+	for kind in PRIME_WEAPONS:
+		for gems in (False, True):
+			path = OUT / "relic_vault" / f"prime_weapon_{kind}{'_gems' if gems else ''}.json"
+			path.write_text(json.dumps(prime_weapon(kind, gems), indent=2) + "\n")
 
 
 if __name__ == "__main__":

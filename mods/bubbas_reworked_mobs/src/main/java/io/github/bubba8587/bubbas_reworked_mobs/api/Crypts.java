@@ -62,7 +62,16 @@ public final class Crypts {
 
 	/** Puts {@code stack} on display lying on the floor at {@code pos} (worldgen or live). */
 	public static boolean placeDisplay(LevelAccessor level, BlockPos pos, Direction facing, ItemStack stack) {
-		level.setBlock(pos, ModBlocks.LOOT_DISPLAY.defaultBlockState().setValue(LootDisplayBlock.PLACEMENT, DisplayPlacement.GROUND)
+		return display(level, pos, facing, stack, DisplayPlacement.GROUND);
+	}
+
+	/** Puts {@code stack} (a weapon or tool) on display planted point-down, upright, at {@code pos} (worldgen or live). */
+	public static boolean placeStuckDisplay(LevelAccessor level, BlockPos pos, Direction facing, ItemStack stack) {
+		return display(level, pos, facing, stack, DisplayPlacement.STUCK);
+	}
+
+	private static boolean display(LevelAccessor level, BlockPos pos, Direction facing, ItemStack stack, DisplayPlacement placement) {
+		level.setBlock(pos, ModBlocks.LOOT_DISPLAY.defaultBlockState().setValue(LootDisplayBlock.PLACEMENT, placement)
 				.setValue(LootDisplayBlock.FACING, facing), Block.UPDATE_CLIENTS);
 		if (level.getBlockEntity(pos) instanceof LootDisplayBlockEntity display) {
 			display.setItem(stack);

@@ -292,6 +292,106 @@ public class MobFactoryGameTest {
 	}
 
 	/**
+	 * The office's harmful-gem pool rolls about 1 chest in 3: the real table with Infused Gems, else the pool's
+	 * condition read from the table file.
+	 */
+	@GameTest
+	public void officeGemPoolRollsOneInThree(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		var params = new net.minecraft.world.level.storage.loot.LootParams.Builder(level)
+				.withParameter(net.minecraft.world.level.storage.loot.parameters.LootContextParams.ORIGIN, net.minecraft.world.phys.Vec3.ZERO)
+				.create(net.minecraft.world.level.storage.loot.parameters.LootContextParamSets.CHEST);
+		int tries = 900;
+		int hits = 0;
+		if (io.github.bubba8587.bubbas_reworked_mobs.factory.FabricatorLink.gemsLoaded()) {
+			var table = level.getServer().reloadableRegistries().getLootTable(io.github.bubba8587.bubbas_reworked_mobs.factory.FabricatorLoot.OFFICE_WITH_GEMS);
+			var gemItem = net.minecraft.core.registries.BuiltInRegistries.ITEM.getValue(net.minecraft.resources.Identifier.parse("bubbas_infused_gems:gem"));
+			for (int i = 0; i < tries; i++) {
+				if (table.getRandomItems(params).stream().anyMatch(s -> s.is(gemItem))) {
+					hits++;
+				}
+			}
+		} else {
+			var file = io.github.bubba8587.bubbas_reworked_mobs.BubbasReworkedMobs.id("loot_table/chests/fabricator_office_with_gems.json");
+			com.google.gson.JsonObject json;
+			try (var reader = level.getServer().getResourceManager().openAsReader(file)) {
+				json = com.google.gson.JsonParser.parseReader(reader).getAsJsonObject();
+			} catch (java.io.IOException e) {
+				throw helper.assertionException(net.minecraft.network.chat.Component.literal("can't read " + file + ": " + e));
+			}
+			com.google.gson.JsonObject gemPool = null;
+			for (var pool : json.getAsJsonArray("pools")) {
+				if (pool.toString().contains("bubbas_infused_gems:gem")) {
+					gemPool = pool.getAsJsonObject();
+				}
+			}
+			helper.assertTrue(gemPool != null && gemPool.has("condition"), "the gem pool has a 26.3 \"condition\": " + gemPool);
+			var ops = level.registryAccess().createSerializationContext(com.mojang.serialization.JsonOps.INSTANCE);
+			var condition = net.minecraft.world.level.storage.loot.predicates.LootItemCondition.DIRECT_CODEC.parse(ops, gemPool.get("condition")).getOrThrow();
+			var context = new net.minecraft.world.level.storage.loot.LootContext.Builder(params).create(java.util.Optional.empty());
+			for (int i = 0; i < tries; i++) {
+				if (condition.test(context)) {
+					hits++;
+				}
+			}
+		}
+		helper.assertTrue(hits > tries * 0.25 && hits < tries * 0.42, "the gem pool rolls about 1 in 3: " + hits + " of " + tries);
+		helper.succeed();
+	}
+
+	/**
+	 * No loot table or item modifier of ours uses a pre-26.x key ("conditions" lists, "functions"/"function" outside a
+	 * sequence), which 26.3 silently ignores.
+	 */
+	@GameTest
+	public void lootFilesUseCurrentKeys(GameTestHelper helper) {
+		var manager = helper.getLevel().getServer().getResourceManager();
+		List<String> bad = new java.util.ArrayList<>();
+		int files = 0;
+		for (String dir : List.of("loot_table", "item_modifier")) {
+			for (var entry : manager.listResources(dir, id -> id.getPath().endsWith(".json")).entrySet()) {
+				if (!entry.getKey().getNamespace().startsWith("bubbas_")) {
+					continue;
+				}
+				files++;
+				try (var reader = entry.getValue().openAsReader()) {
+					legacyKeys(com.google.gson.JsonParser.parseReader(reader), entry.getKey().toString(), bad);
+				} catch (java.io.IOException e) {
+					bad.add(entry.getKey() + ": " + e);
+				}
+			}
+		}
+		helper.assertTrue(files > 10, "found our loot files (" + files + ")");
+		helper.assertTrue(bad.isEmpty(), "old loot keys: " + bad);
+		helper.succeed();
+	}
+
+	private static void legacyKeys(com.google.gson.JsonElement element, String where, List<String> bad) {
+		if (element.isJsonArray()) {
+			element.getAsJsonArray().forEach(e -> legacyKeys(e, where, bad));
+			return;
+		}
+		if (!element.isJsonObject()) {
+			return;
+		}
+		var object = element.getAsJsonObject();
+		if (object.has("function")) {
+			bad.add(where + ": \"function\"");
+		}
+		if (object.has("functions") && !(object.has("type") && object.get("type").getAsString().equals("minecraft:sequence"))) {
+			bad.add(where + ": \"functions\"");
+		}
+		if (object.has("conditions") && object.get("conditions").isJsonArray()) {
+			bad.add(where + ": \"conditions\"");
+		}
+		for (var entry : object.entrySet()) {
+			if (!entry.getKey().equals("fabric:load_conditions")) {
+				legacyKeys(entry.getValue(), where, bad);
+			}
+		}
+	}
+
+	/**
 	 * The Fabricator chest tables (specs/mob-factory.md): rejects and buried chests both roll items, reject armor and
 	 * weapons come out damaged (the 26.3 "modifier" key works), and every office chest holds valuables and a treasure.
 	 * No Fabricator needed: the tables are rolled directly.

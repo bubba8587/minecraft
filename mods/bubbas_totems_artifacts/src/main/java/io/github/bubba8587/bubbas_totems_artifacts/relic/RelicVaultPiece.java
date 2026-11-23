@@ -8,7 +8,8 @@ import java.util.Map;
 
 import io.github.bubba8587.bubbas_totems_artifacts.BubbasTotemsArtifacts;
 import io.github.bubba8587.bubbas_totems_artifacts.compat.SleeperHook;
-import io.github.bubba8587.bubbas_totems_artifacts.registry.ModItems;
+import io.github.bubba8587.bubbas_totems_artifacts.statue.TotemStatueBlock;
+import io.github.bubba8587.bubbas_totems_artifacts.statue.TotemType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
@@ -308,14 +309,47 @@ public class RelicVaultPiece extends StructurePiece {
 		}
 	}
 
+	/** What a vault's pedestal holds. */
+	public enum Prime {
+		/** A totem statue facing the door; breaking it gives the totem. */
+		STATUE,
+		/** A fine enchanted weapon on display. */
+		WEAPON
+	}
+
+	/** What this vault's pedestal holds (fixed by its seed). */
+	public Prime prime() {
+		return primeRandom().nextFloat() < RelicTuning.PRIME_STATUE_CHANCE ? Prime.STATUE : Prime.WEAPON;
+	}
+
+	/** The statue's totem, when {@link #prime()} is a statue (fixed by its seed; the Beginning and the End only in grand vaults). */
+	public TotemType primeStatue() {
+		RandomSource random = primeRandom();
+		random.nextFloat();
+		List<TotemType> types = new ArrayList<>(List.of(TotemType.values()));
+		if (kind != Kind.GRAND) {
+			types.remove(TotemType.BEGINNING);
+			types.remove(TotemType.END);
+		}
+		return types.get(random.nextInt(types.size()));
+	}
+
+	private RandomSource primeRandom() {
+		return RandomSource.create(RandomSupport.mixStafford13(seed ^ 0x9E3D5A1L));
+	}
+
 	/** The prime loot on the pedestal, and (with Reworked Mobs) its sitting guard. */
 	private void prime(Build b, RandomSource random) {
 		BlockPos top = pedestal();
-		ItemStack item = primeItem(random);
-		if (b.inside(top.getX(), top.getY(), top.getZ())) {
-			if (!SleeperHook.get().placeDisplay(b.level, top, Direction.NORTH, item)) {
-				GlowItemFrame frame = new GlowItemFrame(b.level.getLevel(), top, Direction.UP);
-				frame.setItem(item, false);
+		if (prime() == Prime.STATUE) {
+			b.put(top.getX(), top.getY(), top.getZ(), TotemStatueBlock.stateFor(primeStatue()).setValue(TotemStatueBlock.FACING, Direction.NORTH));
+		} else {
+			ItemStack weapon = RelicLoot.primeWeapon(b.level, kind, random, top);
+			BlockPos front = top.below().north();
+			if (b.inside(top.getX(), top.getY(), top.getZ()) && !SleeperHook.get().placeStuckDisplay(b.level, top, Direction.NORTH, weapon)
+					&& b.inside(front.getX(), front.getY(), front.getZ())) {
+				GlowItemFrame frame = new GlowItemFrame(b.level.getLevel(), front, Direction.NORTH);
+				frame.setItem(weapon, false);
 				b.level.addFreshEntity(frame);
 			}
 		}
@@ -323,19 +357,6 @@ public class RelicVaultPiece extends StructurePiece {
 		if (kind != Kind.CRYPT && b.inside(guard.getX(), guard.getY(), guard.getZ())) {
 			SleeperHook.get().placeSittingSleeper(b.level, guard, Direction.WEST, guardGear(b, random));
 		}
-	}
-
-	private ItemStack primeItem(RandomSource random) {
-		List<Item> totems = new ArrayList<>(List.of(ModItems.TOTEM_OF_KEEPING, ModItems.TOTEM_OF_GATHERING, ModItems.TOTEM_OF_FORTIFICATION,
-				ModItems.TOTEM_OF_GROWTH, ModItems.TOTEM_OF_SEEKING, ModItems.TOTEM_OF_HERDING, ModItems.TOTEM_OF_CLEAR_SKIES, ModItems.TOTEM_OF_WARDING));
-		if (kind == Kind.GRAND) {
-			totems.add(ModItems.TOTEM_OF_THE_BEGINNING);
-			totems.add(ModItems.TOTEM_OF_THE_END);
-		}
-		if (kind == Kind.CRYPT && random.nextBoolean()) {
-			return new ItemStack(Items.ENCHANTED_GOLDEN_APPLE);
-		}
-		return new ItemStack(totems.get(random.nextInt(totems.size())));
 	}
 
 	private Map<EquipmentSlot, ItemStack> guardGear(Build b, RandomSource random) {

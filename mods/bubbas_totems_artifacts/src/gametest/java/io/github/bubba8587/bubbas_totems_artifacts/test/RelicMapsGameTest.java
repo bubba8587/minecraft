@@ -16,7 +16,10 @@ import io.github.bubba8587.bubbas_totems_artifacts.relic.RelicTuning;
 import io.github.bubba8587.bubbas_totems_artifacts.relic.RelicVaultPiece;
 import io.github.bubba8587.bubbas_totems_artifacts.relic.RelicVaultPlacement;
 import io.github.bubba8587.bubbas_totems_artifacts.relic.Relics;
+import io.github.bubba8587.bubbas_totems_artifacts.registry.ModBlocks;
 import io.github.bubba8587.bubbas_totems_artifacts.registry.ModItems;
+import io.github.bubba8587.bubbas_totems_artifacts.statue.TotemStatueBlock;
+import io.github.bubba8587.bubbas_totems_artifacts.statue.TotemType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
@@ -195,12 +198,88 @@ public class RelicMapsGameTest {
 			AABB box = AABB.of(piece.getBoundingBox());
 			int stands = level.getEntitiesOfClass(ArmorStand.class, box).size();
 			int cushions = level.getEntitiesOfClass(Cushion.class, box).size();
-			boolean prime = !level.getEntitiesOfClass(GlowItemFrame.class, box).isEmpty() || !level.getBlockState(piece.pedestal()).isAir();
+			boolean prime = primeShown(level, piece);
 			helper.assertTrue(stands >= 1 && cushions >= 2 && prime, kind + ": " + stands + " stands, " + cushions + " cushions, prime shown " + prime);
 			level.getEntitiesOfClass(net.minecraft.world.entity.Entity.class, box.inflate(1), e -> !(e instanceof net.minecraft.world.entity.player.Player))
 					.forEach(net.minecraft.world.entity.Entity::discard);
 		}
 		helper.assertTrue(RelicTuning.NAMED_DEPTH > 6 + 2, "named vaults aren't deeper than crypts");
+		helper.succeed();
+	}
+
+	/** The pedestal holds its prime: the statue (facing the door), or the weapon on a display or in a glow frame on the pedestal's front. */
+	static boolean primeShown(ServerLevel level, RelicVaultPiece piece) {
+		BlockPos top = piece.pedestal();
+		BlockState state = level.getBlockState(top);
+		if (piece.prime() == RelicVaultPiece.Prime.STATUE) {
+			return state.is(ModBlocks.TOTEM_STATUE) && TotemStatueBlock.type(state) == piece.primeStatue()
+					&& state.getValue(TotemStatueBlock.FACING) == net.minecraft.core.Direction.NORTH;
+		}
+		return primeWeapon(level, piece).isEnchanted();
+	}
+
+	/** The weapon on display on the pedestal (empty when none). */
+	static ItemStack primeWeapon(ServerLevel level, RelicVaultPiece piece) {
+		BlockPos top = piece.pedestal();
+		if (TestSupport.withMobs()) {
+			return Mobs.stuckDisplay(level, top);
+		}
+		return level.getEntitiesOfClass(GlowItemFrame.class, new AABB(top.below().north()), f -> f.getDirection() == net.minecraft.core.Direction.NORTH).stream()
+				.map(GlowItemFrame::getItem).findFirst().orElse(ItemStack.EMPTY);
+	}
+
+	/** Reworked Mobs' classes, named only here (loaded only with -PwithMobs). */
+	private static final class Mobs {
+		static ItemStack stuckDisplay(ServerLevel level, BlockPos pos) {
+			return level.getBlockEntity(pos) instanceof io.github.bubba8587.bubbas_reworked_mobs.display.LootDisplayBlockEntity display
+					&& level.getBlockState(pos).getValue(io.github.bubba8587.bubbas_reworked_mobs.display.LootDisplayBlock.PLACEMENT)
+							== io.github.bubba8587.bubbas_reworked_mobs.display.DisplayPlacement.STUCK ? display.getItem() : ItemStack.EMPTY;
+		}
+	}
+
+	/**
+	 * The pedestal holds a totem statue about half the time, else a fine weapon (netherite in grand vaults, diamond
+	 * otherwise); the Beginning and the End only stand in grand vaults; breaking a statue gives its totem.
+	 */
+	public void pedestalHoldsStatueOrWeapon(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		BlockPos door = helper.absolutePos(new BlockPos(16, 1, 14));
+		for (RelicVaultPiece.Kind kind : RelicVaultPiece.Kind.values()) {
+			int statues = 0;
+			long statueSeed = -1;
+			long weaponSeed = -1;
+			for (long seed = 0; seed < 400; seed++) {
+				RelicVaultPiece piece = new RelicVaultPiece(kind, A, door, seed);
+				if (piece.prime() == RelicVaultPiece.Prime.STATUE) {
+					statues++;
+					statueSeed = statueSeed < 0 ? seed : statueSeed;
+					TotemType type = piece.primeStatue();
+					helper.assertTrue(kind == RelicVaultPiece.Kind.GRAND || type != TotemType.BEGINNING && type != TotemType.END,
+							kind + ": a " + type + " statue outside a grand vault");
+				} else {
+					weaponSeed = weaponSeed < 0 ? seed : weaponSeed;
+				}
+			}
+			helper.assertTrue(statues > 150 && statues < 250, kind + ": " + statues + " statues in 400 vaults");
+			for (long seed : new long[] { statueSeed, weaponSeed }) {
+				RelicVaultPiece piece = new RelicVaultPiece(kind, A, door, seed);
+				piece.buildNow(level);
+				helper.assertTrue(primeShown(level, piece), kind + " seed " + seed + ": the " + piece.prime() + " isn't on the pedestal");
+				if (piece.prime() == RelicVaultPiece.Prime.STATUE) {
+					BlockPos top = piece.pedestal();
+					List<ItemStack> drops = net.minecraft.world.level.block.Block.getDrops(level.getBlockState(top), level, top, null);
+					helper.assertTrue(drops.stream().anyMatch(d -> d.is(piece.primeStatue().item())), kind + ": breaking the statue gives " + drops);
+				} else {
+					ItemStack weapon = primeWeapon(level, piece);
+					boolean netherite = weapon.is(Items.NETHERITE_SWORD) || weapon.is(Items.NETHERITE_AXE);
+					boolean diamond = weapon.is(Items.DIAMOND_SWORD) || weapon.is(Items.DIAMOND_AXE);
+					helper.assertTrue(kind == RelicVaultPiece.Kind.GRAND ? netherite : diamond, kind + ": the prime weapon is " + weapon);
+				}
+				AABB box = AABB.of(piece.getBoundingBox());
+				level.getEntitiesOfClass(net.minecraft.world.entity.Entity.class, box.inflate(1), e -> !(e instanceof net.minecraft.world.entity.player.Player))
+						.forEach(net.minecraft.world.entity.Entity::discard);
+			}
+		}
 		helper.succeed();
 	}
 
@@ -271,6 +350,11 @@ public class RelicMapsGameTest {
 			return;
 		}
 		Crypt.check(helper);
+	}
+
+	@GameTest(structure = CRYPT_FIELD, maxTicks = 20)
+	public void pedestalHoldsStatueOrWeaponTest(GameTestHelper helper) {
+		pedestalHoldsStatueOrWeapon(helper);
 	}
 
 	@GameTest(maxTicks = 40)

@@ -176,3 +176,62 @@ shreds that lead to one fixed seeded site per name; ours adds the collect-and-co
 3. 35% of noble crypts with a vault, and 45% totem chance per grand vault chest (about 3 totems plus the prime one per
    grand vault): tune after play.
 4. Vanilla `/locate` can't find relic vaults; add our own locate command, or have the Totem of Seeking learn them?
+
+## Update: the pedestal's prime, and the old-form loot tables (vault fix, 2026-11-24)
+
+Owner: a totem item lying on the pedestal isn't cool. Replaced (supersedes "Prime loot on the pedestal" in the vault table
+and the player bullet about "a quartz pedestal with the vault's prime treasure (a totem) on show").
+
+### Player-facing
+- Each vault's pedestal now holds either a **totem statue** facing the door (break it to take the totem; it is still the
+  vault's prize, and it works as a statue if you leave it) or a **fine weapon on display**: with Reworked Mobs planted
+  point-down on the pedestal, without it in a glow item frame on the pedestal's front. About half the vaults have each.
+- Grand (/9) vaults: a netherite sword or axe, heavily enchanted; or a statue of any totem, including the Beginning and
+  the End. Small (/4) and crypt vaults: a diamond sword or axe; or a statue of any totem except the Beginning and the End.
+  With Infused Gems the weapon carries gems (two on a grand vault's, one otherwise; mostly harmful-to-target gems).
+- The sitting skeleton guard (Reworked Mobs) still sits beside the pedestal. Crypt vaults no longer show an enchanted
+  golden apple.
+
+### Spec facts
+- `RelicVaultPiece.prime()` (STATUE or WEAPON) and `primeStatue()` come from the vault's seed alone (their own random),
+  so tests and commands can tell what a vault holds before it's built. `RelicTuning.PRIME_STATUE_CHANCE` = 0.5.
+- Statue: `TotemStatueBlock.stateFor(type)` with FACING north (toward the door), on the pedestal's top cell.
+- Weapon: loot tables `loot_table/relic_vault/prime_weapon_<small|grand|crypt>.json` (enchant_with_levels, options
+  `#minecraft:on_random_loot`; grand netherite 30-39, small diamond 20-30, crypt diamond 15-25), and `_gems` twins
+  (same plus Infused Gems' `socket_random_gems`, gear weapon, prefer_harmful 0.75; load only with Infused Gems) picked
+  when Gems is loaded (`RelicLoot.primeWeapon`). All six written by `tools-local/make_relic_loot.py`.
+- Reworked Mobs `api/Crypts` gained `placeStuckDisplay(level, pos, facing, stack)` (loot display, placement STUCK);
+  Totems reaches it through `SleeperHook.placeStuckDisplay`. Without Reworked Mobs: a glow item frame on the north face
+  of the pedestal block.
+
+### Old-form loot JSON fixed (Reworked Mobs)
+- `chests/fabricator_office_with_gems.json`: the harmful-gem pool's `"conditions": [{"condition": ...}]` is now
+  `"condition": {"type": "minecraft:random_chance", "chance": 0.3333}` (26.3 ignored the old key, so the pool rolled
+  every time).
+- `chests/nether_outpost.json`, `chests/nether_outpost_room.json`: every entry used `"functions": [{"function":
+  "minecraft:set_count"}]`, which 26.3 ignores, so every stack in Nether outpost chests came out as 1. Now
+  `"modifier": {"type": "minecraft:set_count", ...}`. Player-facing: Nether outpost chests now give the stated stack
+  sizes (gold nuggets 3-12 and so on).
+- Grep found no other old-form loot tables or item modifiers in any mod (item modifiers' `"functions"` inside a
+  `minecraft:sequence` is current; advancement criteria `"conditions"` are a different, current format).
+
+### Tests
+- Reworked Mobs `MobFactoryGameTest` (milestone): `officeGemPoolRollsOneInThree` (with Infused Gems rolls the real table
+  900 times; without it decodes the pool's `condition` from the table file and tests it 900 times; 25%-42% passes) and
+  `lootFilesUseCurrentKeys` (every `bubbas_*` loot table and item modifier on the server: no `"function"`, no
+  `"functions"` outside a sequence, no `"conditions"` list). Both fail on the old file (checked).
+- Totems `RelicMapsGameTest.pedestalHoldsStatueOrWeapon` (milestone): about half of 400 seeds give a statue per kind;
+  Beginning/End statues only in grand vaults; a built statue vault has the statue facing north and breaking it drops the
+  totem; a built weapon vault shows an enchanted netherite (grand) or diamond weapon (display with -PwithMobs, glow frame
+  without). The core vault test now checks the prime the seed says.
+- Milestone test objective lines for the spec: "pedestal holds statue or weapon (as above)"; Reworked Mobs: "office gem
+  pool about 1 in 3; no old-form loot keys in our files".
+- Client part `relics`: new shots relics-vault-grand-pedestal-close (weapon) and relics-vault-small-pedestal(-close)
+  (statue); the grand vault is built with a weapon seed and the small one with a statue seed.
+
+### Found along the way
+- Server game tests' skip-if-unchanged check doesn't tell a -PwithMobs run from a plain one: a Totems run without
+  -PwithMobs was skipped after a passing -PwithMobs run (needed -PrerunGametests). Worth keying the fingerprint on the
+  with* flags (`gradle/fabric-mod.gradle`).
+- Flaky in Reworked Mobs milestone runs (passed on rerun, untouched here): `GiantSpiderGameTest.leavesItsPerchAndComesBackToFeed`
+  ("only wandered 1.0"), and once with -PwithGems `CampsGameTest.exposedCampMobsSeekShade`.

@@ -119,6 +119,15 @@ final class ReworkedMobsSleepers implements SleeperHook {
 	}
 
 	@Override
+	public boolean placeStuckDisplay(net.minecraft.world.level.LevelAccessor level, BlockPos pos, net.minecraft.core.Direction facing, ItemStack stack) {
+		try {
+			return io.github.bubba8587.bubbas_reworked_mobs.api.Crypts.placeStuckDisplay(level, pos, facing, stack);
+		} catch (LinkageError e) {
+			return false;
+		}
+	}
+
+	@Override
 	public boolean placeSittingSleeper(net.minecraft.world.level.LevelAccessor level, BlockPos pos, net.minecraft.core.Direction facing,
 			java.util.Map<net.minecraft.world.entity.EquipmentSlot, ItemStack> gear) {
 		try {

@@ -26,7 +26,7 @@ import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContex
 /**
  * Relic maps and vaults by eye (client part {@code relics}): shreds in the inventory with a tooltip (relics-tooltip,
  * -32x), the finished map in hand (relics-map), a grand vault from the door, the back and the side (relics-vault-*),
- * a small vault (relics-vault-small), and with -PwithMobs a noble crypt's vault: the crypt's far wall, the stair behind
+ * the grand vault's pedestal with a weapon and the small one's with a totem statue (-pedestal, -pedestal-close), and with -PwithMobs a noble crypt's vault: the crypt's far wall, the stair behind
  * it and the vault (relics-crypt-*).
  */
 @SuppressWarnings("UnstableApiUsage")
@@ -58,8 +58,8 @@ public class RelicsClientGameTest implements FabricClientGameTest {
 			BlockPos base = context.computeOnClient(mc -> mc.player.blockPosition());
 			server.runCommand("gamemode spectator @p");
 			server.runCommand("effect give @p minecraft:night_vision infinite 0 true");
-			vault(context, sp, server, RelicVaultPiece.Kind.GRAND, new BlockPos(base.getX(), Y, base.getZ() + 40));
-			vault(context, sp, server, RelicVaultPiece.Kind.SMALL, new BlockPos(base.getX() + 40, Y, base.getZ() + 40));
+			vault(context, sp, server, RelicVaultPiece.Kind.GRAND, RelicVaultPiece.Prime.WEAPON, new BlockPos(base.getX(), Y, base.getZ() + 40));
+			vault(context, sp, server, RelicVaultPiece.Kind.SMALL, RelicVaultPiece.Prime.STATUE, new BlockPos(base.getX() + 40, Y, base.getZ() + 40));
 			if (TestSupport.withMobs()) {
 				Mobs.crypt(context, sp, server, base.getX() - 60, base.getZ());
 			}
@@ -104,11 +104,17 @@ public class RelicsClientGameTest implements FabricClientGameTest {
 		context.takeScreenshot("relics-map");
 	}
 
-	private static void vault(ClientGameTestContext context, TestSingleplayerContext sp, TestServerContext server, RelicVaultPiece.Kind kind, BlockPos door) {
+	private static void vault(ClientGameTestContext context, TestSingleplayerContext sp, TestServerContext server, RelicVaultPiece.Kind kind,
+			RelicVaultPiece.Prime prime, BlockPos door) {
 		tp(context, server, door.getX() + 0.5, door.getY() + 30, door.getZ() - 10, 0, 60);
 		context.waitTicks(10);
+		long seed = 7L;
+		while (new RelicVaultPiece(kind, "wondrous_crab", door, seed).prime() != prime) {
+			seed++;
+		}
+		long chosen = seed;
 		RelicVaultPiece piece = server.computeOnServer(s -> {
-			RelicVaultPiece p = new RelicVaultPiece(kind, "wondrous_crab", door, 7L);
+			RelicVaultPiece p = new RelicVaultPiece(kind, "wondrous_crab", door, chosen);
 			p.buildNow(s.overworld());
 			return p;
 		});
@@ -125,12 +131,20 @@ public class RelicsClientGameTest implements FabricClientGameTest {
 			context.takeScreenshot(name + "-back");
 			tp(context, server, door.getX() - hw + 0.7, door.getY() + 1.4, c.getZ() + 0.5, -90, 10);
 			context.takeScreenshot(name + "-side");
-			tp(context, server, ped.getX() + 0.5, ped.getY() + 0.6, ped.getZ() - 1.5, 0, 25);
-			context.takeScreenshot(name + "-pedestal");
+			pedestal(context, server, ped, name);
 			BlockPos top = piece.stairTop();
 			tp(context, server, top.getX() + 0.5, top.getY() + 1.2, top.getZ() + 0.5, 0, 35);
 			context.takeScreenshot(name + "-stair");
+		} else {
+			pedestal(context, server, ped, name);
 		}
+	}
+
+	private static void pedestal(ClientGameTestContext context, TestServerContext server, BlockPos ped, String name) {
+		tp(context, server, ped.getX() + 0.5, ped.getY() + 0.6, ped.getZ() - 1.5, 0, 25);
+		context.takeScreenshot(name + "-pedestal");
+		tp(context, server, ped.getX() - 0.8, ped.getY() - 0.7, ped.getZ() - 0.8, -45, 22);
+		context.takeScreenshot(name + "-pedestal-close");
 	}
 
 	private static void tp(ClientGameTestContext context, TestServerContext server, double x, double y, double z, float yaw, float pitch) {

@@ -23,6 +23,8 @@ public final class RelicTuning {
 	public static final int NAMED_DEPTH = 20;
 	/** Steps in a vault's stair (it climbs this far toward the surface, then stops). */
 	public static final int STAIR_STEPS = 7;
+	/** A vault's pedestal holds a totem statue this often (else a fine weapon on display). */
+	public static final float PRIME_STATUE_CHANCE = 0.5F;
 	/** Chance a noble crypt has a vault behind its far wall. */
 	public static final float NOBLE_CRYPT_VAULT_CHANCE = 0.35F;
 

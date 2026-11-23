@@ -74,6 +74,21 @@ public final class RelicLoot {
 		});
 	}
 
+	/** The weapon shown on a vault's pedestal: enchanted, and gemmed with Infused Gems. */
+	public static ItemStack primeWeapon(WorldGenLevel level, RelicVaultPiece.Kind kind, RandomSource random, net.minecraft.core.BlockPos pos) {
+		MinecraftServer server = level.getServer();
+		if (server == null) {
+			return new ItemStack(net.minecraft.world.item.Items.DIAMOND_SWORD);
+		}
+		String name = "relic_vault/prime_weapon_" + kind.name().toLowerCase(java.util.Locale.ROOT)
+				+ (FabricLoader.getInstance().isModLoaded(GEMS_MOD) ? "_gems" : "");
+		LootTable table = server.reloadableRegistries().getLootTable(ResourceKey.create(Registries.LOOT_TABLE, BubbasTotemsArtifacts.id(name)));
+		LootParams params = new LootParams.Builder(level.getLevel())
+				.withParameter(net.minecraft.world.level.storage.loot.parameters.LootContextParams.ORIGIN, net.minecraft.world.phys.Vec3.atCenterOf(pos))
+				.create(LootContextParamSets.CHEST);
+		return table.getRandomItems(params, random).stream().findFirst().orElseGet(() -> new ItemStack(net.minecraft.world.item.Items.DIAMOND_SWORD));
+	}
+
 	/** The vault guard's gemmed pieces by slot (empty without Infused Gems). */
 	public static Map<EquipmentSlot, ItemStack> gemmedGear(WorldGenLevel level, RandomSource random) {
 		Map<EquipmentSlot, ItemStack> gear = new EnumMap<>(EquipmentSlot.class);

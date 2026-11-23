@@ -1,0 +1,82 @@
+{
+  "fabric:load_conditions": [
+    {
+      "condition": "fabric:all_mods_loaded",
+      "values": [
+        "bubbas_infused_gems"
+      ]
+    }
+  ],
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:diamond_sword",
+          "weight": 1,
+          "modifier": [
+            {
+              "type": "minecraft:enchant_with_levels",
+              "levels": {
+                "type": "minecraft:uniform",
+                "min": 15,
+                "max": 25
+              },
+              "options": "#minecraft:on_random_loot"
+            },
+            {
+              "type": "bubbas_infused_gems:socket_random_gems",
+              "count": 1,
+              "gear": "weapon",
+              "infusion": [
+                2,
+                2,
+                3
+              ],
+              "tier": [
+                1,
+                2
+              ],
+              "variant": "normal",
+              "prefer_harmful": 0.75
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:diamond_axe",
+          "weight": 1,
+          "modifier": [
+            {
+              "type": "minecraft:enchant_with_levels",
+              "levels": {
+                "type": "minecraft:uniform",
+                "min": 15,
+                "max": 25
+              },
+              "options": "#minecraft:on_random_loot"
+            },
+            {
+              "type": "bubbas_infused_gems:socket_random_gems",
+              "count": 1,
+              "gear": "weapon",
+              "infusion": [
+                2,
+                2,
+                3
+              ],
+              "tier": [
+                1,
+                2
+              ],
+              "variant": "normal",
+              "prefer_harmful": 0.75
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
