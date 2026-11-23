@@ -16,12 +16,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 
-/**
- * The mining curve's speed (specs/reworked-mining.md "The curve"). Vanilla: tool speed, plus Efficiency's flat bonus,
- * then Haste, Mining Fatigue, the block_break_speed attribute (Infused Gems' Haste gems), water and air. Here the
- * tool speed gets the tier factor and the Efficiency multiplier, and vanilla's flat Efficiency bonus is taken back out
- * for tools on the curve; everything after it (Haste, gems) still multiplies on top.
- */
+/** The mining curve's speed. */
 @Mixin(Player.class)
 public abstract class PlayerMixin {
 	@Shadow

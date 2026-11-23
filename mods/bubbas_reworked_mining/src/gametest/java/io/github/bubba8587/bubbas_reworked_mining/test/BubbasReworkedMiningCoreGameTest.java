@@ -28,10 +28,7 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 
-/**
- * Core smoke tests (test-lite, specs/quality.md "Test suites"): one per main mechanic of Reworked Mining. Everything
- * finer is a milestone objective in specs/reworked-mining.md.
- */
+/** Core smoke tests: one per main mechanic of Reworked Mining. */
 public class BubbasReworkedMiningCoreGameTest {
 	private static Holder<Enchantment> enchantment(GameTestHelper helper, ResourceKey<Enchantment> key) {
 		Registry<Enchantment> registry = helper.getLevel().registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
@@ -76,7 +73,7 @@ public class BubbasReworkedMiningCoreGameTest {
 		helper.succeed();
 	}
 
-	/** Wear: an iron pickaxe loses the tuned durability per deepslate block, and wood can't harvest deepslate. */
+	/** Wear: an iron pickaxe loses the tuned durability per deepslate block. */
 	@GameTest
 	public void deepslateWearsToolsAndWoodCantHarvestIt(GameTestHelper helper) {
 		ServerPlayer player = helper.makeMockServerPlayerInLevel();
@@ -93,7 +90,7 @@ public class BubbasReworkedMiningCoreGameTest {
 		helper.succeed();
 	}
 
-	/** Finds: stone sometimes drops a find, at the tuned odds with Fortune III; Silk Touch never does. */
+	/** Finds: stone sometimes drops a find, at the tuned odds with Fortune III. */
 	@GameTest
 	public void findsFromStoneButNotWithSilkTouch(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
@@ -147,13 +144,13 @@ public class BubbasReworkedMiningCoreGameTest {
 		helper.succeed();
 	}
 
-	/** Unbreaking is stronger; True Unbreaking stops all wear, is found only, and can't join Mending. */
+	/** Unbreaking is stronger. */
 	@GameTest
 	public void unbreakingStrongerAndTrueUnbreakingIsTotal(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
 		int points = 14000;
 		int kept = EnchantmentHelper.processDurabilityChange(level, tool(helper, new ItemStack(Items.IRON_PICKAXE), Enchantments.UNBREAKING, 3), points);
-		float expected = points / 7.0F; // 1/7 kept at III (vanilla 1/4)
+		float expected = points / 7.0F;
 		helper.assertTrue(kept > expected * 0.85F && kept < expected * 1.15F, "Unbreaking III kept " + kept + " of " + points + ", expected about " + expected);
 
 		Holder<Enchantment> trueUnbreaking = enchantment(helper, ModEnchantments.TRUE_UNBREAKING);

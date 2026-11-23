@@ -33,13 +33,9 @@ import net.minecraft.world.level.storage.loot.providers.number.ints.UniformGener
 import net.fabricmc.fabric.api.loot.v3.LootTableEvents;
 import net.fabricmc.fabric.api.loot.v3.LootTableSource;
 
-/**
- * Loot additions (specs/reworked-mining.md): rare finds on stone and deepslate, and True Unbreaking books in a
- * few rare chests. Each is one extra pool added to the vanilla table (vanilla's pools untouched); a table a datapack
- * replaced is left alone. Odds and weights are in {@link MiningTuning}.
- */
+/** Loot additions: rare finds on stone and deepslate. */
 public final class MiningLoot {
-	/** Stone-type blocks that can give finds (builder's list), and deepslate. Placed blocks count too (owner, 2026-11-22). */
+	/** Stone-type blocks that can give finds, and deepslate. */
 	public static final Set<String> STONE_IDS = Set.of("minecraft:stone", "minecraft:granite", "minecraft:diorite",
 			"minecraft:andesite", "minecraft:tuff");
 	public static final Set<String> DEEPSLATE_IDS = Set.of("minecraft:deepslate");

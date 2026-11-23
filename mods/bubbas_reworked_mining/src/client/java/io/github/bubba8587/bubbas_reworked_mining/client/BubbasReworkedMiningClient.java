@@ -10,7 +10,6 @@ import net.minecraft.network.chat.Component;
 public class BubbasReworkedMiningClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
-		// 32x textures (Faithful style) as an optional built-in resource pack: specs/textures.md.
 		FabricLoader.getInstance().getModContainer(BubbasReworkedMining.MOD_ID).ifPresent(mod ->
 			ResourceLoader.registerBuiltinPack(BubbasReworkedMining.id(BubbasReworkedMining.MOD_ID + "_32x"), mod,
 				Component.literal("Bubba's Reworked Mining 32x (Faithful style)"), PackActivationType.NORMAL));

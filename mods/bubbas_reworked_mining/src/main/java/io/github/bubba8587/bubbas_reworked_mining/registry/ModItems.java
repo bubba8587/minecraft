@@ -24,11 +24,7 @@ import net.minecraft.world.item.equipment.EquipmentAssets;
 
 import net.fabricmc.fabric.api.creativetab.v1.CreativeModeTabEvents;
 
-/**
- * The quartz set (specs/reworked-mining.md "Quartz tools and armor"): items, not blocks (B15). Iron-level for what it
- * can harvest (so ancient debris stays diamond-only), on the mining curve as its own tier with a Nether speed bonus
- * ({@code tier/quartz} item tag, {@link MiningTuning#QUARTZ}). Made and repaired with quartz blocks.
- */
+/** The quartz set: items, not blocks. */
 public final class ModItems {
 	/** Quartz blocks: what the set is crafted from and repaired with. */
 	public static final TagKey<Item> QUARTZ_MATERIALS = TagKey.create(Registries.ITEM, BubbasReworkedMining.id("quartz_tool_materials"));
@@ -43,7 +39,7 @@ public final class ModItems {
 					ArmorType.BODY, MiningTuning.QUARTZ_ARMOR_CHESTPLATE),
 			MiningTuning.QUARTZ_ARMOR_ENCHANTABILITY, SoundEvents.ARMOR_EQUIP_IRON, 0.0F, 0.0F, QUARTZ_MATERIALS, QUARTZ_ASSET);
 
-	// Attack damage and speed as vanilla's iron tools.
+	// Attack damage and speed as vanilla's iron tools
 	public static final Item QUARTZ_SWORD = register("quartz_sword", new Item.Properties().sword(QUARTZ_TOOL, 3.0F, -2.4F));
 	public static final Item QUARTZ_SHOVEL = register("quartz_shovel", new Item.Properties().shovel(QUARTZ_TOOL, 1.5F, -3.0F));
 	public static final Item QUARTZ_PICKAXE = register("quartz_pickaxe", new Item.Properties().pickaxe(QUARTZ_TOOL, 1.0F, -2.8F));
@@ -71,7 +67,7 @@ public final class ModItems {
 	}
 
 	public static void initialize() {
-		// Next to vanilla's iron gear in the creative tabs.
+		// Next to vanilla's iron gear in the creative tabs
 		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.TOOLS_AND_UTILITIES)
 				.register(output -> output.insertAfter(Items.IRON_HOE, QUARTZ_SHOVEL, QUARTZ_PICKAXE, QUARTZ_AXE, QUARTZ_HOE));
 		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.COMBAT).register(output -> {

@@ -108,6 +108,7 @@ What that means in seconds (on the ground, no Haste): iron on deepslate is about
 #### How it's built (for the spec, not for players)
 
 - Speed: a mixin on `Player.getDestroySpeed` multiplies the held tool's speed by its tier factor and Efficiency multiplier, and takes vanilla's flat Efficiency modifier (`minecraft:enchantment.efficiency/mainhand` on `mining_efficiency`) back out for tools on the curve. Haste, Mining Fatigue, `block_break_speed` (gems), water and air apply after it, as in vanilla. It runs on both sides, and both sides read only synced data (tags, components).
+  - Like vanilla's Efficiency, the curve leaves the speed alone when the tool isn't meant for the block (speed 1, the hand's). A tool in no tier tag stays exactly vanilla.
 - Wear: a mixin on `Item.mineBlock` replaces the Tool component's damage-per-block on harsh blocks. It still goes through `hurtAndBreak`, so Unbreaking rolls for every point.
 - Wood/gold can't harvest deepslate: data only (`#harsh_deepslate` added to `minecraft:incorrect_for_wooden_tool` and `incorrect_for_gold_tool`).
 - Stronger Unbreaking: Fabric `EnchantmentEvents.MODIFY_WITH_LOOKUP` appends a second `remove_binomial` item-damage effect to vanilla Unbreaking. Vanilla's file is untouched.
