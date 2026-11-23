@@ -31,6 +31,7 @@ Parked ideas and open items, newest first within each project. Agents add to it 
 - **Totem ideas dropped** (owner, 2026-11-16): Fold (animal breeding), Stillness (no despawning).
 
 ## Bubba's Extra Recipes
+- **Renewability (owner, 2026-11-24):** trades and barters don't count. Still open: a deepslate recipe (owner undecided). Candidates noted: lapis, crying obsidian, gilded blackstone, end stone/netherrack (dimension-only). Horse armor and sponge: skipped. The andesite quartz loop (+1 quartz per cycle) stays as is (owner).
 - Person-made mod icon (none yet).
 - Real Glider art (16x and 32x, made by a person).
 
