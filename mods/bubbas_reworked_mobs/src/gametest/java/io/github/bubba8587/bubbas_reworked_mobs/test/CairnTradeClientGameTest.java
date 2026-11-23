@@ -53,6 +53,22 @@ public class CairnTradeClientGameTest implements FabricClientGameTest {
 			if (spot == null) {
 				throw new AssertionError("the test cairn has no trade pad");
 			}
+			// A second cairn: its pad sits somewhere else around it
+			BlockPos second = origin.offset(40, 0, 0);
+			server.runCommand("fill %d %d %d %d %d %d minecraft:air".formatted(second.getX() - 14, second.getY(), second.getZ() - 14,
+					second.getX() + 14, second.getY() + 24, second.getZ() + 14));
+			server.runCommand("fill %d %d %d %d %d %d minecraft:grass_block".formatted(second.getX() - 14, second.getY() - 1, second.getZ() - 14,
+					second.getX() + 14, second.getY() - 1, second.getZ() + 14));
+			BlockPos secondSpot = server.computeOnServer(s -> {
+				CairnSite site = CairnSites.addSite(s.overworld(), second, 11L);
+				site.buildAll(s.overworld());
+				return site.tradeSpot();
+			});
+			System.out.println("[trading] pad offsets: " + spot.subtract(origin) + " and " + (secondSpot == null ? "none" : secondSpot.subtract(second)));
+			view(context, server, Vec3.atBottomCenterOf(origin).add(0.01, 30, 0), Vec3.atBottomCenterOf(origin));
+			context.takeScreenshot("trade-pad-cairn-a-above");
+			view(context, server, Vec3.atBottomCenterOf(second).add(0.01, 30, 0), Vec3.atBottomCenterOf(second));
+			context.takeScreenshot("trade-pad-cairn-b-above");
 			Vec3 out = Vec3.atCenterOf(spot).subtract(Vec3.atCenterOf(origin)).multiply(1, 0, 1).normalize();
 			Vec3 stand = Vec3.atBottomCenterOf(spot.below()).add(out.scale(2.5));
 
@@ -88,8 +104,16 @@ public class CairnTradeClientGameTest implements FabricClientGameTest {
 			server.runCommand("gamemode spectator @p");
 			server.runCommand("tp @p %d %d %d".formatted(origin.getX(), origin.getY() + 40, origin.getZ() - 30));
 			context.waitTicks(5);
+			String staring = server.computeOnServer(s -> CairnTrades.step(s.overworld(), CairnSites.covering(s.overworld(), origin)).toString());
+			if (!staring.equals("STARING")) {
+				throw new AssertionError("no enderman came to stare: " + staring);
+			}
+			context.waitTicks(10);
+			view(context, server, Vec3.atBottomCenterOf(spot).add(out.scale(-3.0)).add(0, 2.2, 0).add(out.cross(new Vec3(0, 1, 0)).scale(3.0)), Vec3.atCenterOf(spot).add(out.scale(1.0)).add(0, 1.0, 0));
+			context.takeScreenshot("trade-enderman-staring");
 			String step = server.computeOnServer(s -> {
 				CairnSite site = CairnSites.covering(s.overworld(), origin);
+				CairnTrades.hurryStare(s.overworld(), site);
 				CairnTrades.Step taken = CairnTrades.step(s.overworld(), site);
 				CairnTrades.hurry(s.overworld(), site);
 				return taken + " " + CairnTrades.step(s.overworld(), site);

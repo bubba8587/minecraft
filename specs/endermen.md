@@ -263,8 +263,9 @@ Seven forms picked by seed: chorus, grove, spire, arch, canopy, henge, leaning (
   - The endermen build and repair it like the rest of the cairn.
   - Existing cairns get one too: their endermen add it, so a finished cairn counts as unfinished until the pad is in.
 - **Trading:**
-  - Lay any item on the plinth (sneak + middle click). Once no player is within 16 blocks, the endermen take it: it vanishes with portal particles and the teleport sound.
-  - 10-30 s later **(builder)**, an enderman teleports in beside the pad, holding its answer, and lays it on the plinth.
+  - Lay any item on the plinth (sneak + middle click). Once no player is within 16 blocks, an enderman teleports in beside the pad and **stands staring at the item for 2-4 s** (owner, 2026-11-22), then takes it: it vanishes with portal particles and the teleport sound.
+  - **4-10 s later** (owner, 2026-11-22: "return quicker"; was 10-30 s), an enderman teleports in beside the pad, holding its answer, and lays it on the plinth.
+  - **Each cairn's pad sits in its own place** around it (owner, 2026-11-22: they were all in the same spot): the direction and the distance (3-5 blocks past the cairn's reach) come from the cairn's seed.
   - What you give doesn't matter: the answer is pure random (owner).
   - The answer stays until you pick it up; it is never taken back as a new trade.
   - No trading while the cairn is warded.
@@ -279,13 +280,16 @@ Seven forms picked by seed: chorus, grove, spire, arch, canopy, henge, leaning (
 
 #### How it's built
 
-- **Pad:** `CairnDesign.buildTradePad`, run last with its own random stream (`seed ^ PAD_SALT`), so existing cairns' forms and offerings don't change.
-  - It tries 16 angles at reach + 3 to + 5, on flat ground (the centre and its four neighbours at the same height, within 1 of the origin's), clear of every design block.
+- **Pad:** `CairnDesign.buildTradePad`, run last with its own random stream, so existing cairns' forms and offerings don't change.
+  - The stream is `XoroshiroRandomSource(seed ^ PAD_SALT)`, which mixes the seed. It was a `LegacyRandomSource`, whose first roll barely changes between nearby seeds, so small seeds (the test world's 11, 22, 33) all put their pad in the same place. Changing it moved the pads of existing cairns: their endermen build the new pad, and the old one stays as decoration.
+  - The same weakness remains in the cairn design itself (`new LegacyRandomSource(seed)`): small hand-picked seeds tend to get the same form (11, 22, 33 and 44 are all canopies). Natural sites use full random seeds, so they're fine. For the test world, use large or mixed seeds to get variety. It's left as is, because mixing it would redesign every existing cairn.
+  - It starts at a random ring (3, 4 or 5 past the reach) and tries 16 angles from a random start, then the other rings, on flat ground (the centre and its four neighbours at the same height, within 1 of the origin's), clear of every design block.
   - The position comes out as `CairnDesign.designed(...)` → `Designed(blocks, tradeSpot)`; `CairnSite.tradeSpot()` returns it. `CairnDesign.design(...)` is unchanged for its other callers.
 - **Trades:** `enderman/CairnTrades`.
   - Saved level attachment `bubbas_reworked_mobs:cairn_trades`, a map from site origin to the answer's due time, or "answered".
   - Ticked every 20 ticks for sites near players (`CairnSites.nearPlayers`), not on the game test server.
   - "No player near" is `getNearestPlayer(..., EntitySelector.NO_SPECTATORS)` within 16.
+  - **The stare:** the first check that finds an item with nobody near spawns a "taker" enderman (`NaturalSpawns.create`, a cairn spawn homed on the site) on a spawn cell 2 out from the pad. It has no AI, the entity tag `bubbas_reworked_mobs.trade_taker`, and is turned with vanilla's `Entity.lookAt` to look at the item. The take time is saved in the level attachment `bubbas_reworked_mobs:cairn_trade_stares`. When the time comes, the taker is discarded with portal particles and the item is taken. If the item is gone before then (a player took it back), the taker leaves and nothing is traded. With no spawn cell free, the item is taken at once.
   - Taking uses `LootDisplays.takeForMob`.
   - The answer: a courier enderman spawned (`NaturalSpawns.create`) on a spawn cell 2 out from the pad. It's marked as a cairn spawn with the site as home, holds the rolled item in its main hand, and lays it with `HandPlacing.lay`, the same path players use (owner: "the enderman should place it using our place-item mod mechanism"). With no spawn cell free, the item is laid without a courier.
   - The roll is `LootContextParamSets.PIGLIN_BARTER` with the enderman as `THIS_ENTITY`; an empty roll gives a poppy.
@@ -293,16 +297,19 @@ Seven forms picked by seed: chorus, grove, spire, arch, canopy, henge, leaning (
   - `lay(level, placer, target, stack)` splits one item off, places a `GROUND` display facing the placer, plays the item-frame add sound and emits a `BLOCK_PLACE` game event.
   - `canLayAt`: air or still water, over a floor that holds a display.
   - Players: client mixin `LayItemPickMixin` on `Minecraft.pickBlockOrEntity` (sneaking, item in hand, a block aimed at) sends the C2S payload `bubbas_reworked_mobs:lay_item`. The server checks block reach, `mayInteract` and `mayUseItemAt`.
-- **Tuning (`EndermanTuning`):** `TRADE_CHECK_TICKS` 20, `TRADE_QUIET_RANGE` 16, `TRADE_RETURN_MIN_TICKS` 200, `TRADE_RETURN_SPREAD_TICKS` 400.
+- **Tuning (`EndermanTuning`):** `TRADE_CHECK_TICKS` 20, `TRADE_QUIET_RANGE` 16, `TRADE_STARE_MIN_TICKS` 40, `TRADE_STARE_SPREAD_TICKS` 40 (a 2-4 s stare), `TRADE_RETURN_MIN_TICKS` 80, `TRADE_RETURN_SPREAD_TICKS` 120 (back in 4-10 s).
 
 #### Tests
 
-- **Core:** `cairnTradePadTakesAndAnswers`. A built cairn has a pad (purpur under the spot, the spot not a design block). An item on it is taken, isn't answered early, is answered once due, and the answer isn't taken back; an empty pad does nothing.
+- **Core:** `cairnTradePadTakesAndAnswers`. A built cairn has a pad (purpur under the spot, the spot not a design block). An item on it brings one enderman that looks at it and doesn't take it while it stares. It's taken once the stare is over and the enderman leaves. It isn't answered early, is answered once due, and the answer isn't taken back. An empty pad does nothing.
 - **Milestone:**
+  - `tradePadsSitInDifferentPlaces`: ten cairns, including the test world's seeds 11, 22, 33 and 44, have pads at different offsets (all ten differ), and all seven cairn forms get a pad.
   - `tradeTableAlwaysAnswers`: 400 rolls, never empty, more than 15 kinds.
   - `heldItemLaysOnTheGround`: one at a time, not on top of a display, not in mid-air.
 - **Client part `trading`** (`-PclientTests=trading`), real key presses:
+  - `trade-pad-cairn-a-above`, `trade-pad-cairn-b-above`: two cairns (seeds 2026 and 11) from above, each with its pad in its own spot;
   - `trade-pad`;
+  - `trade-enderman-staring`: the enderman beside the pad, its head bowed toward the offered rotten flesh;
   - `trade-offered`: a survival player sneaks and middle-clicks rotten flesh onto the plinth, 5 → 4 in hand;
   - `trade-answered`: the courier enderman and its answer on the plinth;
   - `laid-on-grass`: an apple laid on grass, and a plain middle click lays nothing.
@@ -313,4 +320,4 @@ Seven forms picked by seed: chorus, grove, spire, arch, canopy, henge, leaning (
 
 - Owner to playtest the numbers (all in `EndermanTuning`), the cairn pace and the vigil refill.
 - Owner to review the builder's choices (first build 1-13, cairn forms 1-4); in particular whether builders' carried End blocks should vanish on death (choice 13) and whether canopy cairns are too slow to finish (forms choice 2).
-- Trading at cairns (builder's choices to review): the answer table, the pad's look (purpur plinth with end stone brick slabs), the 10-30 s wait, the 16-block "nobody near" range, and existing finished cairns counting as unfinished until their pad is built.
+- Trading at cairns (builder's choices to review): the answer table, the pad's look (purpur plinth with end stone brick slabs), the 2-4 s stare and the 4-10 s return, the 16-block "nobody near" range, and existing finished cairns counting as unfinished until their pad is built.

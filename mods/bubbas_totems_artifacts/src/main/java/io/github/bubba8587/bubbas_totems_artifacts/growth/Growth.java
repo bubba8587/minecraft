@@ -78,7 +78,7 @@ public final class Growth {
 		int reach = TotemsTuning.PLANT_REACH;
 		for (BlockPos pos : BlockPos.randomBetweenClosed(random, 32, from.getX() - reach, from.getY() - 3, from.getZ() - reach,
 				from.getX() + reach, from.getY() + 1, from.getZ() + reach)) {
-			if (level.getBlockState(pos).isAir() && plant.canSurvive(level, pos)) {
+			if (level.getBlockState(pos).isAir() && !isPlant(level.getBlockState(pos.below())) && plant.canSurvive(level, pos)) {
 				level.setBlock(pos, plant, Block.UPDATE_ALL);
 				seed.getItem().shrink(1);
 				if (seed.getItem().isEmpty()) {
@@ -90,6 +90,12 @@ public final class Growth {
 			}
 		}
 		return false;
+	}
+
+	/** Whether a block is a plant (nothing is planted on top of one). */
+	public static boolean isPlant(BlockState state) {
+		return state.is(BOOSTED) || state.is(net.minecraft.tags.BlockTags.FLOWERS)
+				|| state.getBlock() instanceof net.minecraft.world.level.block.VegetationBlock;
 	}
 
 	/** The held totem's box around {@code centre}. */
