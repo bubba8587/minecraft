@@ -49,7 +49,6 @@ Nothing is released yet: every mod is 0.1.0 in `develop`.
 - built: camp shade and underground room ([§](monster-camps.md#as-built-2026-11-22))
 - built: a lit fire quiets a camp ([§](monster-camps.md#lighting-a-fire-quiets-a-camp-owner-2026-11-22))
 - built: pillager outposts as camps ([§](monster-camps.md#pillager-outposts-become-camps-too-owner))
-- designed: alarm bells and the outpost raid horn ([§](monster-camps.md#alarms-owner-2026-11-22-designed-not-built))
 - in progress (undead-2, last): maps from cartographers to our places ([§](monster-camps.md#maps-owner-2026-11-22-in-progress-agent-2-after-its-other-undead-work))
 
 **Spiders** ([spec](spiders.md))

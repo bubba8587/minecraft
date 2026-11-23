@@ -1,7 +1,7 @@
 <!-- dte:C1,B15,B17 -->
 # Reworked Mobs: monster camps (spec)
 
-**Status:** built 2026-11-22: camps, banner keys, leaders, daily resets, a lit fire quiets a camp, shade and the underground room, pillager outposts. Designed, not built: alarm bells and the outpost raid horn. In progress (agent 2, after its other undead work): maps from cartographers.
+**Status:** built 2026-11-22: camps, banner keys, leaders, daily resets, a lit fire quiets a camp, shade and the underground room, pillager outposts. In progress (agent 2, after its other undead work): maps from cartographers.
 
 Owner's design (2026-11-22), building on the earlier idea in `docs/research/camps-blood-moon-idea.md`. Decisions made since win where they differ (the 15 % spawn cut stays; **no blood moon**, owner 2026-11-22).
 
@@ -22,10 +22,9 @@ Owner's design (2026-11-22), building on the earlier idea in `docs/research/camp
 
 - **A lit campfire (or soul campfire) inside a camp's area disables it** while it burns: the roster doesn't spawn and the camp doesn't reset. It's the fire ward idea (`specs/undead.md`, in progress) applied to the whole camp, and the way to shut a camp down **without breaking its banners**. Put the fire out (water, shovel) or break it, and the camp works again. It only quiets camps whose mobs fear fire (all of ours do).
 
-## Alarms (owner, 2026-11-22; designed, not built)
+## Alarms: dropped (owner, 2026-11-22)
 
-- **Skeleton and zombie camps have an alarm bell.** The first monster to spot a player runs to ring it, waking the whole camp and any sleepers in earshot (bells are already loud to sleepers, `specs/undead.md`). Kill the ringer first or break the bell to keep the element of surprise.
-- **Pillager outposts sound the raid horn instead** (vanilla's `event.raid.horn` sound), with the same effect.
+- Camp alarm bells, and the raid horn for outposts, were designed and then dropped by the owner ("i dont think we should do camp alarm bells"). Camps have no alarm.
 
 ## Refilling (owner, 2026-11-22)
 
