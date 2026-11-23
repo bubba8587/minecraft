@@ -104,6 +104,7 @@ public final class GraveyardCommand {
 				piece.postProcess(level, level.structureManager(), level.getChunkSource().getGenerator(), level.getRandom(), chunkBox, chunk, gate);
 			}
 		}
+		Wisps.register(level, piece);
 		return piece;
 	}
 }

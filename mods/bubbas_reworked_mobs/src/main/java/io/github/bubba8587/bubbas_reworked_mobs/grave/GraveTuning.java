@@ -28,6 +28,24 @@ public final class GraveTuning {
 	public static final ResourceKey<LootTable> CRYPT_PAUPER_LOOT = ResourceKey.create(Registries.LOOT_TABLE, BubbasReworkedMobs.id("chests/crypt_pauper"));
 	public static final ResourceKey<LootTable> CRYPT_NOBLE_LOOT = ResourceKey.create(Registries.LOOT_TABLE, BubbasReworkedMobs.id("chests/crypt_noble"));
 
+	// --- will-o-wisps ------------------------------------------------------------------------------------
+	/** Ticks between wisp checks. */
+	public static final int WISP_TICKS = 20;
+	/** Hint range (blocks to the yard's centre). */
+	public static final double WISP_RANGE = 96.0;
+	/** Hint chance per yard per check. */
+	public static final float WISP_HINT_CHANCE = 0.12F;
+	/** Hint distance from the player, nearest. */
+	public static final double WISP_HINT_MIN = 6.0;
+	/** Hint distance from the player, farthest. */
+	public static final double WISP_HINT_MAX = 12.0;
+	/** Night wisps range (blocks to the yard's centre). */
+	public static final double WISP_NIGHT_RANGE = 48.0;
+	/** Night wisp chance per yard per check. */
+	public static final float WISP_NIGHT_CHANCE = 0.5F;
+	/** Chunks round each player searched for yards. */
+	public static final int WISP_DISCOVER_CHUNKS = 6;
+
 	private GraveTuning() {
 	}
 }

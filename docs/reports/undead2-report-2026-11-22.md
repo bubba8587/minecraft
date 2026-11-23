@@ -101,3 +101,33 @@ Per agent 1's relay of the owner rule (B38: comments are labels only), the comme
 
 - Milestone `ShipwreckCrewGameTest`: `shipwrecksHaveADrownedCrew` (a vanilla full shipwreck piece built as worldgen builds it has drowned sleepers), `drownedSleeperWakesAsADrowned`. Full milestone suite 148/148.
 - Client part `shipwrecks` (`ShipwreckClientGameTest`): checks the nearest natural shipwrecks of seed 20261116 (fails if any crew sleeper isn't between decks: one full wreck had 7, all inside; fragments 0); screenshots looked at: `drowned-compare` / `-close` (drowned sleepers sitting and lying beside a vanilla drowned, same look), `shipwreck-sleeper-0..2` (crew below deck). The variants part's `variants-sleepers` shows the stray sleepers with their clothes.
+
+## 4. Will-o'-wisps (specs/graveyards.md)
+
+### Player-facing
+
+- Faint, occasional **soul fire flames** (vanilla `soul_fire_flame`) lead you to crypt yards you haven't found yet:
+  - **Hints:** while a yard is loaded within **96 blocks**, now and then (about one every 8 seconds per yard) a single wisp appears **6-12 blocks from you toward the yard**, drifting that way.
+  - **Over the graves at night:** within **48 blocks**, wisps rise over the yard's graves now and then (about one every 2 seconds) and drift slowly toward the **crypt entrance** (the top of its stairs; the gate if the yard has no crypt).
+- **Cleared for good once found:** walking into a yard (anywhere inside its footprint) adds it to your own saved list; its wisps stop showing **for you**. Other players who haven't found it still see them; the server sends wisps only to players who haven't found that yard. The list survives death.
+
+### Numbers
+
+| What | Value | Where |
+|---|---|---|
+| Checked | every second | `GraveTuning.WISP_TICKS` |
+| Hint range / chance / distance | 96 blocks / 12% per check / 6-12 blocks from you | `WISP_RANGE`, `WISP_HINT_CHANCE`, `WISP_HINT_MIN`/`MAX` |
+| Night range / chance | 48 blocks / 50% per check | `WISP_NIGHT_RANGE`, `WISP_NIGHT_CHANCE` |
+| Yards looked for | 6 chunks round each player | `WISP_DISCOVER_CHUNKS` |
+
+### Spec facts
+
+- `grave/Wisps`: yards are found from the structure references of loaded chunks round each player (as camps are) and kept per level in memory (not saved: they're rediscovered from chunk data after a restart); the command build registers its yard by hand. Players: `level.getPlayers(EntitySelector.NO_SPECTATORS)`. Particles go only to the player concerned: `ServerLevel.sendParticles(ServerPlayer, ...)` with count 0 (the offsets give the drift).
+- Found yards: persistent player attachment `bubbas_reworked_mobs:found_yards` (a list of yard ids = start chunk), copied on death.
+- `CryptYardPiece.wispTarget()`: the top of the crypt stairs, or above the gate.
+
+### Tests
+
+- Milestone `WispsGameTest.walkingIntoAYardFindsIt`: a built yard is registered; a player outside hasn't found it; inside, it's found.
+- Client part `wisps` (`WispsClientGameTest`): at night from outside a built yard, wisps forced over the graves plus hints; `wisps-1` looked at (blue soul flames over the yard and toward it). Natural ones are much sparser (one at a time).
+- Full milestone suite 128/128 (develop's test cleanup merged several tests).

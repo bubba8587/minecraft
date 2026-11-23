@@ -180,6 +180,11 @@ public class CryptYardPiece extends StructurePiece {
 	}
 
 	/** Whether this yard has stairs down to a crypt. */
+	/** Where wisps lead: the top of the crypt stairs, or the gate without a crypt. */
+	public BlockPos wispTarget() {
+		return crypt ? new BlockPos(gateX(origin, width), origin.getY() + 1, stairsZ(origin, depth)) : gate().above();
+	}
+
 	public boolean hasCrypt() {
 		return crypt;
 	}
