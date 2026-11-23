@@ -79,6 +79,7 @@ Left for next session:
   - (c) shears and fire keep working on the strand you aim at.
   - Ask the owner what they ran into (can't hit things behind it, can't cut it, odd outlines?), so the test covers it.
   - **Test:** a player can hit a block and a mob through the gaps between strands, and cutting works only when aiming at a strand.
+- **22, the gravestone's edit screen doesn't line up with its text (owner, 2026-11-23).** The gravestone reuses the sign system, so editing opens vanilla's standard sign editor, which draws a sign board with its own line positions. Those don't match where `GravestoneRenderer` draws the text on the stone. Fix: a gravestone edit screen, a subclass of vanilla's `AbstractSignEditScreen` the way `HangingSignEditScreen` is, that draws the gravestone face with the lines at the same offsets, scale and line count as the world renderer. Open it for gravestones only, and share one set of text-layout constants between the two. **Test:** a client screenshot of the editor next to the placed stone, with the same text in the same places.
 - **Tests:** milestone tests for 8, 12 and 13; a client check that clicks every natural-world sign; a screenshot of a crypt niche with the sleeper inside it.
 - **Natural world camp signs:** they name the kind each biome should give, because camps only register when a player comes near.
 - **Side effect to know:** mixing design seeds changed the form of every cairn, camp, crypt yard and Fabricator that isn't built yet, including half-built cairns in existing worlds.
