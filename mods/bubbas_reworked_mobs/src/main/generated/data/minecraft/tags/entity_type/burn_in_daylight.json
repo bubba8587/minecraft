@@ -1,5 +1,7 @@
 {
   "values": [
-    "#bubbas_reworked_mobs:woken_undead"
+    "bubbas_reworked_mobs:woken_skeleton",
+    "bubbas_reworked_mobs:woken_zombie",
+    "bubbas_reworked_mobs:woken_stray"
   ]
 }

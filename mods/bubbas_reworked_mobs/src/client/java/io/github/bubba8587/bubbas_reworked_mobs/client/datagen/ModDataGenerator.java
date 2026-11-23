@@ -126,12 +126,15 @@ public class ModDataGenerator implements DataGeneratorEntrypoint {
 		protected void addTags(HolderLookup.Provider registries) {
 			ResourceKey<EntityType<?>> skeleton = key(UndeadVariant.SKELETON);
 			ResourceKey<EntityType<?>> zombie = key(UndeadVariant.ZOMBIE);
-			builder(ModTags.WOKEN_UNDEAD).add(skeleton, zombie);
-			builder(ModTags.GRABS_LOOT).add(skeleton, zombie);
+			ResourceKey<EntityType<?>> husk = key(UndeadVariant.HUSK);
+			ResourceKey<EntityType<?>> stray = key(UndeadVariant.STRAY);
+			builder(ModTags.WOKEN_UNDEAD).add(skeleton, zombie, husk, stray);
+			builder(ModTags.GRABS_LOOT).add(skeleton, zombie, husk, stray);
 			// #skeletons and #zombies feed #minecraft:undead (smite, potions, wither targeting).
-			builder(EntityTypeTags.SKELETONS).add(skeleton);
-			builder(EntityTypeTags.ZOMBIES).add(zombie);
-			builder(EntityTypeTags.BURN_IN_DAYLIGHT).addTag(ModTags.WOKEN_UNDEAD);
+			builder(EntityTypeTags.SKELETONS).add(skeleton, stray);
+			builder(EntityTypeTags.ZOMBIES).add(zombie, husk);
+			// Husks don't burn by day (vanilla), so the daylight tag lists the others, not the whole woken tag.
+			builder(EntityTypeTags.BURN_IN_DAYLIGHT).add(skeleton, zombie, stray);
 			builder(EntityTypeTags.NO_ANGER_FROM_WIND_CHARGE).addTag(ModTags.WOKEN_UNDEAD);
 			builder(ModTags.DOES_NOT_WAKE_SLEEPERS).forceAddTag(EntityTypeTags.UNDEAD);
 		}
@@ -163,6 +166,10 @@ public class ModDataGenerator implements DataGeneratorEntrypoint {
 			builder.add(ModItems.sleeper(UndeadVariant.ZOMBIE), "Sleeping Zombie");
 			builder.add(ModEntities.woken(UndeadVariant.SKELETON), "Skeleton");
 			builder.add(ModEntities.woken(UndeadVariant.ZOMBIE), "Zombie");
+			builder.add(ModItems.sleeper(UndeadVariant.HUSK), "Sleeping Husk");
+			builder.add(ModItems.sleeper(UndeadVariant.STRAY), "Sleeping Stray");
+			builder.add(ModEntities.woken(UndeadVariant.HUSK), "Husk");
+			builder.add(ModEntities.woken(UndeadVariant.STRAY), "Stray");
 			builder.add(ModCreativeTabs.MAIN_KEY, "Bubba's Reworked Mobs");
 			builder.add(ModBlocks.LOOT_DISPLAY, "Loot on Display");
 			builder.add(ModBlocks.GRAVESTONE, "Gravestone");
@@ -192,6 +199,8 @@ public class ModDataGenerator implements DataGeneratorEntrypoint {
 			// The renderer draws the sleeper; the block model only gives the break particles.
 			particleOnly(gen, ModBlocks.sleeper(UndeadVariant.SKELETON), TextureMapping.getBlockTexture(Blocks.BONE_BLOCK, "_side"));
 			particleOnly(gen, ModBlocks.sleeper(UndeadVariant.ZOMBIE), TextureMapping.getBlockTexture(Blocks.MUD));
+			particleOnly(gen, ModBlocks.sleeper(UndeadVariant.HUSK), TextureMapping.getBlockTexture(Blocks.SAND));
+			particleOnly(gen, ModBlocks.sleeper(UndeadVariant.STRAY), TextureMapping.getBlockTexture(Blocks.PACKED_ICE));
 			// Loot on display: the renderer draws the item; break particles are neutral iron.
 			particleOnly(gen, ModBlocks.LOOT_DISPLAY, TextureMapping.getBlockTexture(Blocks.IRON_BLOCK));
 			// Gravestones: 16 rotations like a standing sign, from four hand-made models (models/block/gravestone_rot_0..3,

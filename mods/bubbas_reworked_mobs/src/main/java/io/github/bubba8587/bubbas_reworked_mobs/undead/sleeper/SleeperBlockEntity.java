@@ -150,6 +150,11 @@ public class SleeperBlockEntity extends BlockEntity implements GameEventListener
 		if (SleeperBlock.isResting(getBlockState())) {
 			return; // the resting dead never wake
 		}
+		// A stray frozen in ice cracks it first, the warning, and breaks free a moment later (SleeperBreakout).
+		if (!wakePending && getBlockState().getBlock() instanceof SleeperBlock block && block.variant() == io.github.bubba8587.bubbas_reworked_mobs.undead.UndeadVariant.STRAY) {
+			SleeperBreakout.crack(level, worldPosition);
+			delay = Math.max(delay, io.github.bubba8587.bubbas_reworked_mobs.undead.UndeadTuning.STRAY_CRACK_TICKS);
+		}
 		wakePending = true;
 		wakeSource = source;
 		waker = wakerId;

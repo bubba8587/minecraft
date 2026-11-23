@@ -65,14 +65,17 @@ public class CryptYardPiece extends StructurePiece {
 	private final YardKinds.State state;
 	/** Its crypt's wealth (meaningful with a crypt). */
 	private final YardKinds.Wealth wealth;
+	/** Its climate: which undead lie here (husks in deserts, strays in snow). */
+	private final YardKinds.Climate climate;
 
 	public CryptYardPiece(long seed, BlockPos origin, int width, int depth, boolean crypt, YardTrees trees) {
-		this(seed, origin, width, depth, crypt, trees, YardKinds.State.OVERGROWN, YardKinds.Wealth.FAMILY);
+		this(seed, origin, width, depth, crypt, trees, YardKinds.State.OVERGROWN, YardKinds.Wealth.FAMILY, YardKinds.Climate.TEMPERATE);
 	}
 
 	public CryptYardPiece(long seed, BlockPos origin, int width, int depth, boolean crypt, YardTrees trees, YardKinds.State state,
-			YardKinds.Wealth wealth) {
+			YardKinds.Wealth wealth, YardKinds.Climate climate) {
 		super(Graveyards.CRYPT_YARD_PIECE, 0, box(origin, width, depth, crypt, wealth));
+		this.climate = climate;
 		this.state = state;
 		this.wealth = wealth;
 		this.seed = seed;
@@ -94,6 +97,7 @@ public class CryptYardPiece extends StructurePiece {
 		// Yards saved before step 2 had no state or wealth: they were overgrown family yards.
 		this.state = YardKinds.State.values()[Math.floorMod(tag.getIntOr("State", YardKinds.State.OVERGROWN.ordinal()), YardKinds.State.values().length)];
 		this.wealth = YardKinds.Wealth.values()[Math.floorMod(tag.getIntOr("Wealth", YardKinds.Wealth.FAMILY.ordinal()), YardKinds.Wealth.values().length)];
+		this.climate = YardKinds.Climate.values()[Math.floorMod(tag.getIntOr("Climate", YardKinds.Climate.TEMPERATE.ordinal()), YardKinds.Climate.values().length)];
 	}
 
 	@Override
@@ -106,6 +110,7 @@ public class CryptYardPiece extends StructurePiece {
 		tag.putInt("Trees", trees.ordinal());
 		tag.putInt("State", state.ordinal());
 		tag.putInt("Wealth", wealth.ordinal());
+		tag.putInt("Climate", climate.ordinal());
 	}
 
 	// --- the vault's size and place (beyond the stairs, under the ground south of the yard) -------------
@@ -198,6 +203,10 @@ public class CryptYardPiece extends StructurePiece {
 
 	public YardKinds.State state() {
 		return state;
+	}
+
+	public YardKinds.Climate climate() {
+		return climate;
 	}
 
 	public YardKinds.Wealth wealth() {
@@ -457,7 +466,9 @@ public class CryptYardPiece extends StructurePiece {
 				b.put(x, py - 1, z, soil < 0.6F ? Blocks.COARSE_DIRT.defaultBlockState() : Blocks.MUD.defaultBlockState());
 				continue;
 			}
-			b.put(x, py, z, soil < 0.65F ? Blocks.COARSE_DIRT.defaultBlockState() : Blocks.ROOTED_DIRT.defaultBlockState());
+			b.put(x, py, z, climate == YardKinds.Climate.DESERT ? Blocks.SAND.defaultBlockState()
+					: climate == YardKinds.Climate.SNOWY ? Blocks.SNOW_BLOCK.defaultBlockState()
+					: soil < 0.65F ? Blocks.COARSE_DIRT.defaultBlockState() : Blocks.ROOTED_DIRT.defaultBlockState());
 			if (plant < state.flowers) {
 				b.put(x, py + 1, z, trees.flower(plot));
 			} else if (plant < state.flowers + 0.25F) {
@@ -468,7 +479,7 @@ public class CryptYardPiece extends StructurePiece {
 		// The sleeper, under the plot, lying with its head at the stone.
 		if (sleeper) {
 			// The resting dead (owner, 2026-11-22): a yard grave holds a skeleton that never wakes, often in dyed leather.
-			b.restingSkeleton(x, sleeperY, head - 1, plot);
+			b.resting(x, sleeperY, head - 1, climate.resting(), plot);
 		}
 		// Something buried with them, showing in the plot's far end.
 		if (buried && !open && state != YardKinds.State.SUNKEN) {
@@ -554,8 +565,9 @@ public class CryptYardPiece extends StructurePiece {
 				b.put(wx + side, floor, z, bricks(random));
 				b.put(wx, floor + 1, z, Blocks.STONE_BRICK_SLAB.defaultBlockState());
 				if (random.nextFloat() < 0.8F) {
-					UndeadVariant variant = random.nextFloat() < 0.6F ? UndeadVariant.SKELETON : UndeadVariant.ZOMBIE;
+					UndeadVariant variant = climate.crypt(random.nextFloat(), 0.6F);
 					b.sleeper(wx, floor, z, variant, SleeperPose.LYING, side < 0 ? Direction.EAST : Direction.WEST, random, true);
+					b.encase(wx, floor, z, variant);
 				}
 			}
 		}
@@ -613,8 +625,9 @@ public class CryptYardPiece extends StructurePiece {
 					int y = floor + level * 2;
 					b.put(wx, y, z, Blocks.AIR.defaultBlockState());
 					if (roll < 0.85F || level == 1) {
-						UndeadVariant variant = who < 0.7F ? UndeadVariant.SKELETON : UndeadVariant.ZOMBIE;
+						UndeadVariant variant = climate.crypt(who, 0.7F);
 						b.sleeper(wx, y, z, variant, SleeperPose.LYING, side < 0 ? Direction.EAST : Direction.WEST, random, false, 0.4F);
+						b.encase(wx, y, z, variant);
 					}
 				}
 			}
@@ -702,7 +715,7 @@ public class CryptYardPiece extends StructurePiece {
 		}
 		b.put(gate, floor, mid - 1, Blocks.CHISELED_STONE_BRICKS.defaultBlockState());
 		b.put(gate, floor, mid + 1, Blocks.POLISHED_ANDESITE.defaultBlockState());
-		b.sleeper(gate, floor, mid, random.nextFloat() < 0.6F ? UndeadVariant.SKELETON : UndeadVariant.ZOMBIE, SleeperPose.LYING, Direction.NORTH,
+		b.sleeper(gate, floor, mid, climate.crypt(random.nextFloat(), 0.6F), SleeperPose.LYING, Direction.NORTH,
 				random, true, 1.0F);
 		b.put(gate, floor + 2, mid - 1, Blocks.CANDLE.defaultBlockState().setValue(CandleBlock.CANDLES, 3).setValue(CandleBlock.LIT, true));
 		// The family's chests at the far wall.
@@ -721,7 +734,7 @@ public class CryptYardPiece extends StructurePiece {
 					b.put(x, floor, wz, Blocks.AIR.defaultBlockState());
 					b.put(x, floor + 1, wz, Blocks.POLISHED_ANDESITE_SLAB.defaultBlockState());
 					if (roll < 0.85F) {
-						b.sleeper(x, floor, wz, random.nextFloat() < 0.5F ? UndeadVariant.SKELETON : UndeadVariant.ZOMBIE, SleeperPose.LYING,
+						b.sleeper(x, floor, wz, climate.crypt(random.nextFloat(), 0.5F), SleeperPose.LYING,
 								wz < mid ? Direction.SOUTH : Direction.NORTH, random, true, 0.85F);
 					}
 				}
@@ -859,9 +872,9 @@ public class CryptYardPiece extends StructurePiece {
 			put(x, y, z, block.defaultBlockState().setValue(SleeperBlock.POSE, pose).setValue(SleeperBlock.FACING, facing));
 			if (level.getBlockEntity(new BlockPos(x, y, z)) instanceof SleeperBlockEntity sleeper) {
 				boolean noble = armour >= 0.8F;
-				if (variant == UndeadVariant.SKELETON && weaponRoll < 0.5F) {
+				if (variant.isSkeleton() && weaponRoll < 0.5F) {
 					sleeper.setGear(EquipmentSlot.MAINHAND, new ItemStack(Items.BOW));
-				} else if (variant == UndeadVariant.ZOMBIE && weaponRoll < (noble ? 0.6F : 0.25F)) {
+				} else if (!variant.isSkeleton() && weaponRoll < (noble ? 0.6F : 0.25F)) {
 					sleeper.setGear(EquipmentSlot.MAINHAND, new ItemStack(noble ? (weaponKind < 0.5F ? Items.IRON_SWORD : Items.IRON_AXE)
 							: weaponKind < 0.5F ? Items.STONE_SWORD : Items.IRON_SHOVEL));
 				}
@@ -880,8 +893,23 @@ public class CryptYardPiece extends StructurePiece {
 			}
 		}
 
-		/** One of the resting dead: a skeleton lying in a yard grave that never wakes, usually in muted dyed leather. */
-		void restingSkeleton(int x, int y, int z, RandomSource random) {
+		/**
+		 * Covers a crypt niche's sleeper with what it lies in: sand over a husk, clear ice over a stray (SleeperBreakout
+		 * clears it when it wakes). Others keep their slab.
+		 */
+		void encase(int x, int y, int z, UndeadVariant variant) {
+			if (variant == UndeadVariant.HUSK) {
+				put(x, y + 1, z, Blocks.SAND.defaultBlockState());
+			} else if (variant == UndeadVariant.STRAY) {
+				put(x, y + 1, z, Blocks.ICE.defaultBlockState()); // clear: you see it frozen inside
+			}
+		}
+
+		/**
+		 * One of the resting dead: a skeleton kind (a skeleton, or a husk in the desert, a stray in snow) lying in a yard
+		 * grave that never wakes, usually in muted dyed leather.
+		 */
+		void resting(int x, int y, int z, UndeadVariant variant, RandomSource random) {
 			float dressed = random.nextFloat();
 			int colour = BURIAL_COLOURS[random.nextInt(BURIAL_COLOURS.length)];
 			float legs = random.nextFloat();
@@ -890,7 +918,7 @@ public class CryptYardPiece extends StructurePiece {
 			if (!inside(x, y, z)) {
 				return;
 			}
-			put(x, y, z, ModBlocks.sleeper(UndeadVariant.SKELETON).defaultBlockState().setValue(SleeperBlock.POSE, SleeperPose.LYING)
+			put(x, y, z, ModBlocks.sleeper(variant).defaultBlockState().setValue(SleeperBlock.POSE, SleeperPose.LYING)
 					.setValue(SleeperBlock.FACING, Direction.NORTH).setValue(SleeperBlock.RESTING, true));
 			if (level.getBlockEntity(new BlockPos(x, y, z)) instanceof SleeperBlockEntity sleeper) {
 				if (dressed < GraveTuning.RESTING_LEATHER_CHANCE) {
@@ -903,7 +931,7 @@ public class CryptYardPiece extends StructurePiece {
 						sleeper.setGear(EquipmentSlot.FEET, dyed(Items.LEATHER_BOOTS, colour));
 					}
 				}
-				if (bow < 0.15F) {
+				if (bow < 0.15F && variant.isSkeleton()) {
 					sleeper.setGear(EquipmentSlot.MAINHAND, new ItemStack(Items.BOW));
 				}
 			}

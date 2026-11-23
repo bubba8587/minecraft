@@ -91,6 +91,43 @@ public final class YardKinds {
 		}
 	}
 
+	/**
+	 * The yard's climate, from its biome (owner, 2026-11-22: graveyards and crypts in deserts and snow use husks and
+	 * strays): which undead lie in it and what they are buried or frozen in.
+	 */
+	public enum Climate {
+		TEMPERATE, DESERT, SNOWY;
+
+		public static Climate of(net.minecraft.core.Holder<net.minecraft.world.level.biome.Biome> biome) {
+			if (biome.is(net.minecraft.world.level.biome.Biomes.DESERT) || biome.is(net.minecraft.tags.BiomeTags.IS_BADLANDS)) {
+				return DESERT;
+			}
+			return biome.value().getBaseTemperature() < 0.15F ? SNOWY : TEMPERATE;
+		}
+
+		/** The resting dead of a yard grave here (always the skeleton kind, owner): a skeleton, a husk in the desert, a stray in snow. */
+		public io.github.bubba8587.bubbas_reworked_mobs.undead.UndeadVariant resting() {
+			return switch (this) {
+				case DESERT -> io.github.bubba8587.bubbas_reworked_mobs.undead.UndeadVariant.HUSK;
+				case SNOWY -> io.github.bubba8587.bubbas_reworked_mobs.undead.UndeadVariant.STRAY;
+				case TEMPERATE -> io.github.bubba8587.bubbas_reworked_mobs.undead.UndeadVariant.SKELETON;
+			};
+		}
+
+		/** A crypt sleeper here, from one roll in [0, 1) and the share of skeleton kinds in this crypt. */
+		public io.github.bubba8587.bubbas_reworked_mobs.undead.UndeadVariant crypt(float roll, float skeletons) {
+			return switch (this) {
+				// Deserts: mostly husks, some skeletons. Snow: mostly strays, some zombies.
+				case DESERT -> roll < 0.7F ? io.github.bubba8587.bubbas_reworked_mobs.undead.UndeadVariant.HUSK
+						: io.github.bubba8587.bubbas_reworked_mobs.undead.UndeadVariant.SKELETON;
+				case SNOWY -> roll < 0.7F ? io.github.bubba8587.bubbas_reworked_mobs.undead.UndeadVariant.STRAY
+						: io.github.bubba8587.bubbas_reworked_mobs.undead.UndeadVariant.ZOMBIE;
+				case TEMPERATE -> roll < skeletons ? io.github.bubba8587.bubbas_reworked_mobs.undead.UndeadVariant.SKELETON
+						: io.github.bubba8587.bubbas_reworked_mobs.undead.UndeadVariant.ZOMBIE;
+			};
+		}
+	}
+
 	/** A crypt's wealth (specs/graveyards.md): each with its own layout, sleepers and loot table. */
 	public enum Wealth {
 		/** A cramped dug tunnel lined with niches: bone, cobble and dirt, many sleepers with little gear, poor loot. */

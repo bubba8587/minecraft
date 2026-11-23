@@ -58,8 +58,9 @@ public class GravesGameTest {
 			} else if (state.getBlock() instanceof SleeperBlock sleeperBlock) {
 				sleepers++;
 				// The resting dead (owner, 2026-11-22): a yard grave holds a skeleton that never wakes.
-				helper.assertTrue(sleeperBlock.variant() == io.github.bubba8587.bubbas_reworked_mobs.undead.UndeadVariant.SKELETON && SleeperBlock.isResting(state),
-						"a yard grave's sleeper should be a resting skeleton: " + state);
+				// (a skeleton, or by climate a husk in deserts and a stray in snow).
+				helper.assertTrue(sleeperBlock.variant() == piece.climate().resting() && SleeperBlock.isResting(state),
+						"a yard grave's sleeper should be the resting " + piece.climate().resting() + " of a " + piece.climate() + " yard: " + state);
 			}
 		}
 		helper.assertTrue(stones >= 2, "expected a few gravestones, found " + stones);

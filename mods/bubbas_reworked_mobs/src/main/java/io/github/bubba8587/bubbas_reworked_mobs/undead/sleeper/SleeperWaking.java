@@ -65,6 +65,8 @@ public final class SleeperWaking {
 				mob.setGuaranteedDrop(slot);
 			}
 		}
+		// Buried and frozen sleepers burst out of the sand or ice they lie in first (SleeperBreakout).
+		SleeperBreakout.breakOut(level, pos, block.variant());
 		if (!level.addFreshEntity(mob)) {
 			return null;
 		}

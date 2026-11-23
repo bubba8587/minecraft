@@ -93,7 +93,8 @@ public final class GraveyardCommand {
 			YardKinds.Wealth wealth) {
 		int ground = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, gate.getX(), gate.getZ()) - 1;
 		BlockPos origin = new BlockPos(gate.getX() - width / 2, ground, gate.getZ());
-		CryptYardPiece piece = new CryptYardPiece(seed, origin, width, depth, crypt, YardTrees.forBiome(level.getBiome(origin)), state, wealth);
+		CryptYardPiece piece = new CryptYardPiece(seed, origin, width, depth, crypt, YardTrees.forBiome(level.getBiome(origin)), state, wealth,
+				YardKinds.Climate.of(level.getBiome(origin)));
 		BoundingBox box = piece.getBoundingBox();
 		for (int cx = box.minX() >> 4; cx <= box.maxX() >> 4; cx++) {
 			for (int cz = box.minZ() >> 4; cz <= box.maxZ() >> 4; cz++) {

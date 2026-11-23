@@ -4,7 +4,9 @@ package io.github.bubba8587.bubbas_reworked_mobs.undead;
 import java.util.List;
 import java.util.function.Supplier;
 
+import io.github.bubba8587.bubbas_reworked_mobs.undead.entity.WokenHusk;
 import io.github.bubba8587.bubbas_reworked_mobs.undead.entity.WokenSkeleton;
+import io.github.bubba8587.bubbas_reworked_mobs.undead.entity.WokenStray;
 import io.github.bubba8587.bubbas_reworked_mobs.undead.entity.WokenZombie;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
@@ -28,7 +30,17 @@ public enum UndeadVariant {
 	ZOMBIE("zombie", List.of(SleeperPose.SITTING, SleeperPose.LYING), SoundType.MUD, MapColor.COLOR_GREEN, Items.ROTTEN_FLESH,
 			() -> EntityType.Builder.<WokenZombie>of(WokenZombie::new, MobCategory.MONSTER).sized(0.6F, 1.95F).eyeHeight(1.74F)
 					.passengerAttachments(2.0125F).ridingOffset(-0.7F).clientTrackingRange(8).notInPeaceful(),
-			UndeadTuning::wokenZombieAttributes);
+			UndeadTuning::wokenZombieAttributes),
+	/** Deserts (owner, 2026-11-22): lies buried in sand and bursts out in a puff of it that briefly blinds. */
+	HUSK("husk", List.of(SleeperPose.LYING, SleeperPose.SITTING), SoundType.SAND, MapColor.SAND, Items.ROTTEN_FLESH,
+			() -> EntityType.Builder.<WokenHusk>of(WokenHusk::new, MobCategory.MONSTER).sized(0.6F, 1.95F).eyeHeight(1.74F)
+					.passengerAttachments(2.075F).ridingOffset(-0.7F).clientTrackingRange(8).notInPeaceful(),
+			UndeadTuning::wokenZombieAttributes),
+	/** Snow (owner, 2026-11-22): lies frozen in ice or packed snow that cracks as a warning before it breaks free. */
+	STRAY("stray", List.of(SleeperPose.LYING, SleeperPose.SITTING), SoundType.BONE_BLOCK, MapColor.SNOW, Items.BONE,
+			() -> EntityType.Builder.of(WokenStray::new, MobCategory.MONSTER).sized(0.6F, 1.99F).eyeHeight(1.74F).ridingOffset(-0.7F)
+					.clientTrackingRange(8).notInPeaceful(),
+			UndeadTuning::wokenSkeletonAttributes);
 
 	private final String name;
 	private final List<SleeperPose> poses;
@@ -71,7 +83,14 @@ public enum UndeadVariant {
 		return switch (this) {
 			case SKELETON -> net.minecraft.sounds.SoundEvents.SKELETON_AMBIENT;
 			case ZOMBIE -> net.minecraft.sounds.SoundEvents.ZOMBIE_AMBIENT;
+			case HUSK -> net.minecraft.sounds.SoundEvents.HUSK_AMBIENT;
+			case STRAY -> net.minecraft.sounds.SoundEvents.STRAY_AMBIENT;
 		};
+	}
+
+	/** Whether its woken mob is a skeleton (bow, arrows) rather than a zombie. */
+	public boolean isSkeleton() {
+		return this == SKELETON || this == STRAY;
 	}
 
 	public SoundType sound() {

@@ -21,16 +21,31 @@ import net.minecraft.world.item.Items;
  */
 public class WokenSkeletonRenderer extends HumanoidMobRenderer<Skeleton, SkeletonRenderState, SkeletonModel<SkeletonRenderState>> {
 	private static final Identifier TEXTURE = Identifier.withDefaultNamespace("textures/entity/skeleton/skeleton.png");
+	private final Identifier texture;
 
 	public WokenSkeletonRenderer(EntityRendererProvider.Context context) {
-		super(context, new Reaching(context.bakeLayer(ModelLayers.SKELETON)), 0.5F);
-		this.addLayer(new HumanoidArmorLayer<>(this, ArmorModelSet.bake(ModelLayers.SKELETON_ARMOR, context.getModelSet(), Reaching::new),
-				context.getEquipmentRenderer()));
+		this(context, ModelLayers.SKELETON, ModelLayers.SKELETON_ARMOR, TEXTURE);
+	}
+
+	private WokenSkeletonRenderer(EntityRendererProvider.Context context, net.minecraft.client.model.geom.ModelLayerLocation body,
+			ArmorModelSet<net.minecraft.client.model.geom.ModelLayerLocation> armor, Identifier texture) {
+		super(context, new Reaching(context.bakeLayer(body)), 0.5F);
+		this.addLayer(new HumanoidArmorLayer<>(this, ArmorModelSet.bake(armor, context.getModelSet(), Reaching::new), context.getEquipmentRenderer()));
+		this.texture = texture;
+	}
+
+	/** The woken stray: the stray's body and texture, with its ragged clothes over it (vanilla's StrayRenderer layer). */
+	public static WokenSkeletonRenderer stray(EntityRendererProvider.Context context) {
+		WokenSkeletonRenderer renderer = new WokenSkeletonRenderer(context, ModelLayers.STRAY, ModelLayers.STRAY_ARMOR,
+				Identifier.withDefaultNamespace("textures/entity/skeleton/stray.png"));
+		renderer.addLayer(new net.minecraft.client.renderer.entity.layers.SkeletonClothingLayer<>(renderer, context.getModelSet(), ModelLayers.STRAY_OUTER_LAYER,
+				Identifier.withDefaultNamespace("textures/entity/skeleton/stray_overlay.png")));
+		return renderer;
 	}
 
 	@Override
 	public Identifier getTextureLocation(SkeletonRenderState state) {
-		return TEXTURE;
+		return texture;
 	}
 
 	@Override
