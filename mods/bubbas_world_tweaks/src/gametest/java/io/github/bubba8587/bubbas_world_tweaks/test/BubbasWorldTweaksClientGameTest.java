@@ -5,6 +5,8 @@ import io.github.bubba8587.bubbas_world_tweaks.lava.LavaGeysers;
 import io.github.bubba8587.bubbas_world_tweaks.lava.ModParticles;
 import net.minecraft.client.gui.screens.worldselection.WorldCreationUiState;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.GeyserParticleOptions;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.packs.repository.PackRepository;
 
 import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
@@ -12,7 +14,7 @@ import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestServerContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext;
 
-/** Lava bubbles and a lava geyser by eye. */
+/** Lava bubbles and a lava geyser by eye, at 16x and 32x. */
 @SuppressWarnings("UnstableApiUsage")
 public class BubbasWorldTweaksClientGameTest implements FabricClientGameTest {
 	private static final String PACK_32X = "bubbas_world_tweaks:bubbas_world_tweaks_32x";
@@ -35,42 +37,63 @@ public class BubbasWorldTweaksClientGameTest implements FabricClientGameTest {
 			server.runCommand("gamemode spectator @p");
 			server.runCommand("tp @p %d %d %d".formatted(x, y + 6, z));
 			context.waitTicks(5);
-			server.runCommand("fill %d %d %d %d %d %d minecraft:netherrack".formatted(x - 6, y - 3, z - 6, x + 6, y, z + 6));
+			server.runCommand("fill %d %d %d %d %d %d minecraft:netherrack".formatted(x - 6, y - 3, z - 6, x + 12, y, z + 6));
 			server.runCommand("fill %d %d %d %d %d %d minecraft:magma_block".formatted(x - 4, y - 3, z - 4, x + 4, y - 3, z + 4));
 			server.runCommand("fill %d %d %d %d %d %d minecraft:lava".formatted(x - 4, y - 2, z - 4, x + 4, y, z + 4));
-			server.runCommand("fill %d %d %d %d %d %d minecraft:air".formatted(x - 6, y + 1, z - 6, x + 6, y + 14, z + 6));
+			server.runCommand("fill %d %d %d %d %d %d minecraft:air".formatted(x - 6, y + 1, z - 6, x + 12, y + 16, z + 6));
+			// Vanilla's sulfur geyser beside the pool, erupting through a water pit
+			server.runCommand("setblock %d %d %d minecraft:potent_sulfur[state=continuous]".formatted(x + 8, y - 3, z));
+			server.runCommand("fill %d %d %d %d %d %d minecraft:water".formatted(x + 8, y - 2, z, x + 8, y, z));
 			context.waitTicks(40);
 
 			for (boolean x32 : new boolean[] {false, true}) {
 				setPack(context, x32);
 				String sfx = x32 ? "-32x" : "";
 				hud(context, false);
-				context.runOnClient(mc -> mc.player.snapTo(x + 0.5, y + 3.0, z - 4.5, 0.0F, 38.0F));
-				for (int wave = 0; wave < 3; wave++) {
-					context.runOnClient(mc -> {
-						var random = mc.level.getRandom();
-						for (int i = 0; i < 18; i++) {
-							mc.level.addParticle(ModParticles.LAVA_BUBBLE, x - 3.5 + random.nextDouble() * 7.0, y + 0.9,
-									z - 3.0 + random.nextDouble() * 6.0, 0.0, 0.0, 0.0);
-						}
-					});
-					context.waitTicks(6);
-				}
-				context.takeScreenshot("lava-bubbles" + sfx);
-				context.runOnClient(mc -> mc.player.snapTo(x + 0.5, y + 1.6, z - 1.8, 0.0F, 55.0F));
-				context.waitTicks(4);
-				context.takeScreenshot("lava-bubbles-close" + sfx);
 
-				server.runOnServer(s -> LavaGeysers.erupt(s.overworld(), new BlockPos(x, y, z)));
-				context.waitTicks(25);
-				context.runOnClient(mc -> mc.player.snapTo(x + 0.5, y + 4.0, z - 9.5, 0.0F, -12.0F));
+				// One bubble close up, from above and from the side
+				context.runOnClient(mc -> mc.player.snapTo(x + 0.5, y + 1.6, z - 0.5, 0.0F, 40.0F));
+				bubbles(context, x + 0.1, x + 0.9, y, z, z + 0.7, 3, 4);
+				context.waitTicks(12);
+				context.takeScreenshot("lava-bubble-close" + sfx);
+				context.runOnClient(mc -> mc.player.snapTo(x + 0.5, y + 1.05, z - 0.8, 0.0F, 8.0F));
+				bubbles(context, x - 0.6, x + 1.6, y, z + 0.6, z + 1.6, 3, 4);
+				context.waitTicks(12);
+				context.takeScreenshot("lava-bubble-side" + sfx);
+
+				// A bubbling magma patch, medium distance
+				context.runOnClient(mc -> mc.player.snapTo(x + 0.5, y + 4.0, z - 5.5, 0.0F, 38.0F));
+				for (int wave = 0; wave < 3; wave++) {
+					bubbles(context, x - 3.5, x + 3.5, y, z - 3.0, z + 3.0, 18, 6);
+				}
+				context.takeScreenshot("lava-bubbles-patch" + sfx);
+
+				// Our lava geyser next to vanilla's sulfur geyser
+				server.runOnServer(s -> LavaGeysers.erupt(s.overworld(), new BlockPos(x + 2, y, z)));
+				for (int puff = 0; puff < 3; puff++) {
+					context.runOnClient(mc -> mc.level.addParticle(new GeyserParticleOptions(ParticleTypes.GEYSER, 3), x + 8.5, y + 1.0, z + 0.5,
+							0.0, 0.0, 0.0));
+					context.waitTicks(15);
+				}
+				context.runOnClient(mc -> mc.player.snapTo(x + 5.0, y + 5.0, z - 14.0, 0.0F, -8.0F));
 				context.waitTicks(3);
-				context.takeScreenshot("lava-geyser" + sfx);
-				context.waitTicks(110);
+				context.takeScreenshot("lava-geyser-vs-sulfur" + sfx);
+				context.waitTicks(80);
 				hud(context, true);
 			}
 			setPack(context, false);
 		}
+	}
+
+	private static void bubbles(ClientGameTestContext context, double x0, double x1, int y, double z0, double z1, int count, int wait) {
+		context.runOnClient(mc -> {
+			var random = mc.level.getRandom();
+			for (int i = 0; i < count; i++) {
+				mc.level.addParticle(ModParticles.LAVA_BUBBLE, x0 + random.nextDouble() * (x1 - x0), y + 0.9,
+						z0 + random.nextDouble() * (z1 - z0), 0.0, 0.0, 0.0);
+			}
+		});
+		context.waitTicks(wait);
 	}
 
 	private static void hud(ClientGameTestContext context, boolean shown) {
