@@ -122,6 +122,9 @@ public class SleeperBlockEntity extends BlockEntity implements GameEventListener
 
 	/** Adds noise to the meter (after decaying it to now) and returns the new value. */
 	public float disturb(long gameTime, float points) {
+		if (SleeperBlock.isResting(getBlockState())) {
+			return 0.0F; // the resting dead hear nothing
+		}
 		disturbance = getDisturbance(gameTime) + points;
 		disturbanceTime = gameTime;
 		setChanged();
@@ -144,6 +147,9 @@ public class SleeperBlockEntity extends BlockEntity implements GameEventListener
 
 	/** Marks the sleeper as waking and schedules the tick that turns it into a mob. */
 	public void scheduleWake(ServerLevel level, @Nullable Vec3 source, @Nullable UUID wakerId, int delay) {
+		if (SleeperBlock.isResting(getBlockState())) {
+			return; // the resting dead never wake
+		}
 		wakePending = true;
 		wakeSource = source;
 		waker = wakerId;

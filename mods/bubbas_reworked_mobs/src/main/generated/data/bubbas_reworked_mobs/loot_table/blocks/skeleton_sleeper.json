@@ -27,7 +27,8 @@
                 "type": "minecraft:copy_state",
                 "block": "bubbas_reworked_mobs:skeleton_sleeper",
                 "properties": [
-                  "pose"
+                  "pose",
+                  "resting"
                 ]
               },
               "name": "bubbas_reworked_mobs:skeleton_sleeper"

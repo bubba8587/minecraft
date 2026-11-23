@@ -42,8 +42,10 @@ public final class WardingTuning {
 			BuiltInLootTables.WOODLAND_MANSION, 0.20F,
 			BuiltInLootTables.ANCIENT_CITY, 0.12F,
 			BuiltInLootTables.TRIAL_CHAMBERS_REWARD, 0.08F,
-			BuiltInLootTables.TRIAL_CHAMBERS_REWARD_OMINOUS, 0.15F);
-	// TODO(crypts): graveyard and crypt chests get a pool here once worldgen builds them (specs/undead.md "Warding").
+			BuiltInLootTables.TRIAL_CHAMBERS_REWARD_OMINOUS, 0.15F,
+			// Bubba's Reworked Mobs' noble crypts (specs/graveyards.md), keyed by id: without that mod the table never exists.
+			ResourceKey.create(net.minecraft.core.registries.Registries.LOOT_TABLE,
+					net.minecraft.resources.Identifier.fromNamespaceAndPath("bubbas_reworked_mobs", "chests/crypt_noble")), 0.12F);
 
 	private WardingTuning() {
 	}

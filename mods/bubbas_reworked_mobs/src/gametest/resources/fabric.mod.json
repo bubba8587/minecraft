@@ -31,6 +31,7 @@
 			"io.github.bubba8587.bubbas_reworked_mobs.test.CairnFormsClientGameTest",
 			"io.github.bubba8587.bubbas_reworked_mobs.test.DrownedClientGameTest",
 			"io.github.bubba8587.bubbas_reworked_mobs.test.GravesClientGameTest",
+			"io.github.bubba8587.bubbas_reworked_mobs.test.YardKindsClientGameTest",
 			"io.github.bubba8587.bubbas_reworked_mobs.test.FactoriesClientGameTest"
 		]
 	},
