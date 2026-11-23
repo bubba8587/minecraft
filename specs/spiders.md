@@ -18,14 +18,20 @@ Owner's design (2026-11-22). Ordinary spiders stay **mostly vanilla**. What's ne
 - **A large variant:** an **extra-large spider** (vanilla's `scale` attribute, so vanilla size properties), in **old-growth taiga** (owner: "the tall forest biome with the brown grass").
 - **Webs between the trees:** cobweb spans strung between trunks in the canopy and between trees, marking their territory.
 - Owner's reference: a giant spider lair in a dark forest (the classic fantasy giant-spider lair). Inspiration only, not a recreation of anything.
+- **Size (owner): "not too giant."** Roughly 1.5-2x a vanilla spider (builder tunes; it must still fit between the trees).
+- **It roams** the old forest. It doesn't sit in one lair.
+- **It spins new webs** as it goes: cobweb spans between nearby trunks and in the canopy, so its territory fills in over time (capped, so a forest isn't buried).
+- **It snatches livestock** (passive mobs: sheep, pigs, cows, chickens, goats...) and hauls them up into its webs, where they're stuck and it feeds. This reuses the grab, pulling up into the web.
+- **Livestock is a distraction (owner):** it goes for a nearby animal before a player, so players can bait or lure it with livestock.
+- **In a fight it summons little spiders**: smaller and weaker than vanilla spiders (owner). Builder tunes how many and how often, with a cap.
 
 ## Open
 
-- What a giant spider does differently (owner to decide): lair and roster, how it fights, whether it ambushes from the canopy like the cave nests, its drops.
+- Giant spider: what it drops, how many roam a forest, what it does by day, and whether webs it spins are ever cleared.
 - Numbers: nest spacing, the trigger area under the nest, drop speed, latch odds, reel speed, nest refill rate.
 
 ## Milestone test objectives
 
 - Nests generate only at the tops of tall cave rooms, made of cobwebs.
 - A player walking under a nest makes a sleeper drop on its thread. A miss turns it into a normal spider. A hit latches and reels the player up into the nest.
-- Giant spiders spawn only in old-growth taiga, at the larger scale, with webs between the trees.
+- Giant spiders spawn only in old-growth taiga, at the larger scale. They spin webs between trees as they roam, snatch nearby livestock into their webs before going for players, and summon small, weak spiders when fought.
