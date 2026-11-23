@@ -1,0 +1,7 @@
+{
+  "type": "bubbas_reworked_mobs:monster_camp",
+  "biomes": "#bubbas_reworked_mobs:has_structure/monster_camp",
+  "spawn_overrides": {},
+  "step": "top_layer_modification",
+  "terrain_adaptation": "none"
+}

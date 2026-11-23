@@ -775,74 +775,9 @@ public class CryptYardPiece extends StructurePiece {
 	// --- placing, clipped to the chunk being generated -------------------------------------------------
 
 	/** Puts blocks only inside the chunk being generated; reads the ground the same way in every chunk. */
-	private static final class Build {
-		private final WorldGenLevel level;
-		private final BoundingBox chunk;
-
+	private static final class Build extends io.github.bubba8587.bubbas_reworked_mobs.worldgen.ClippedBuild {
 		Build(WorldGenLevel level, BoundingBox chunk) {
-			this.level = level;
-			this.chunk = chunk;
-		}
-
-		boolean inside(int x, int y, int z) {
-			return chunk.isInside(x, y, z);
-		}
-
-		/**
-		 * The ground of this column: the top block that isn't a tree, a plant or air, or MIN_VALUE when the column isn't
-		 * in this chunk or the ground is under water. Read the same way in every chunk (the yard is built after trees,
-		 * which it clears).
-		 */
-		int ground(int x, int z) {
-			if (x < chunk.minX() || x > chunk.maxX() || z < chunk.minZ() || z > chunk.maxZ()) {
-				return Integer.MIN_VALUE;
-			}
-			BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos(x, level.getHeight(Heightmap.Types.WORLD_SURFACE_WG, x, z) - 1, z);
-			while (pos.getY() > level.getMinY() && cover(level.getBlockState(pos))) {
-				pos.move(0, -1, 0);
-			}
-			return level.getFluidState(pos).isEmpty() ? pos.getY() : Integer.MIN_VALUE;
-		}
-
-		/** Trees and plants standing on the ground (cleared out of a yard), and air. */
-		static boolean cover(BlockState state) {
-			return state.isAir() || state.is(net.minecraft.tags.BlockTags.LOGS) || state.is(net.minecraft.tags.BlockTags.LEAVES)
-					|| state.is(net.minecraft.tags.BlockTags.REPLACEABLE) || state.is(Blocks.VINE) || state.is(Blocks.BEE_NEST)
-					|| state.is(Blocks.MUSHROOM_STEM) || state.is(Blocks.BROWN_MUSHROOM_BLOCK) || state.is(Blocks.RED_MUSHROOM_BLOCK)
-					|| state.is(net.minecraft.tags.BlockTags.FLOWERS) || state.is(Blocks.SWEET_BERRY_BUSH) || state.is(Blocks.PUMPKIN);
-		}
-
-		/** Clears trees and plants from the ground up to {@code height} above it, in this column. */
-		void clearCover(int x, int z, int height) {
-			int g = ground(x, z);
-			if (g == Integer.MIN_VALUE) {
-				return;
-			}
-			for (int y = g + 1; y <= g + height; y++) {
-				if (inside(x, y, z) && !level.getBlockState(new BlockPos(x, y, z)).isAir() && cover(level.getBlockState(new BlockPos(x, y, z)))) {
-					put(x, y, z, Blocks.AIR.defaultBlockState());
-				}
-			}
-		}
-
-		void put(int x, int y, int z, BlockState state) {
-			if (inside(x, y, z)) {
-				level.setBlock(new BlockPos(x, y, z), state, Block.UPDATE_CLIENTS);
-			}
-		}
-
-		void putIfAir(int x, int y, int z, BlockState state) {
-			if (inside(x, y, z) && level.getBlockState(new BlockPos(x, y, z)).isAir()) {
-				put(x, y, z, state);
-			}
-		}
-
-		void clearAbove(int x, int y, int z, int height) {
-			for (int dy = 1; dy <= height; dy++) {
-				if (inside(x, y + dy, z) && !level.getBlockState(new BlockPos(x, y + dy, z)).isAir()) {
-					put(x, y + dy, z, Blocks.AIR.defaultBlockState());
-				}
-			}
+			super(level, chunk);
 		}
 
 		void text(int x, int y, int z, SignText text) {

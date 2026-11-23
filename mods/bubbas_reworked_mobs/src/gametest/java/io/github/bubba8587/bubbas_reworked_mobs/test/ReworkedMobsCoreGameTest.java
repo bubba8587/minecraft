@@ -180,4 +180,11 @@ public class ReworkedMobsCoreGameTest {
 	public void fabricatorBreakingTheSpawnerStopsIt(GameTestHelper helper) {
 		new MobFactoryGameTest().breakingTheHiddenSpawnerStopsItForGood(helper);
 	}
+
+	// --- monster camps (specs/monster-camps.md) ---
+
+	@GameTest(structure = CreeperGameTest.FIELD, maxTicks = 80)
+	public void campRosterAppearsWithALeader(GameTestHelper helper) {
+		new CampsGameTest().rosterAppearsWithALeader(helper);
+	}
 }

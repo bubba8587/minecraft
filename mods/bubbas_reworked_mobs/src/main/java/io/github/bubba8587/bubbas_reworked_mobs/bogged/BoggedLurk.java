@@ -34,7 +34,7 @@ import org.jspecify.annotations.Nullable;
  * degrees from where they look), or anyone who comes within {@link BoggedTuning#TOO_CLOSE}: it stands and its normal AI
  * takes over (poison arrows). After the fight it goes back to hiding.</li>
  * </ul>
- * One mind per bogged, server only, not saved (it finds a spot again after a reload). Spawner bogged (trial chambers)
+ * Camp bogged (camp/CampRoster) keep to their camp and don't lurk. One mind per bogged, server only, not saved (it finds a spot again after a reload). Spawner bogged (trial chambers)
  * stay vanilla, as the owner decided for drowned and spawners.
  */
 public final class BoggedLurk {
@@ -68,7 +68,8 @@ public final class BoggedLurk {
 	}
 
 	public static void tick(ServerLevel level, Bogged bogged) {
-		if (bogged.isNoAi() || bogged.isPassenger() || bogged.entityTags().contains(BoggedTuning.VANILLA_TAG)) {
+		if (bogged.isNoAi() || bogged.isPassenger() || bogged.entityTags().contains(BoggedTuning.VANILLA_TAG)
+				|| bogged.entityTags().contains(io.github.bubba8587.bubbas_reworked_mobs.camp.CampTuning.CAMP_TAG)) {
 			return;
 		}
 		Mind mind = MINDS.computeIfAbsent(bogged, b -> new Mind());
