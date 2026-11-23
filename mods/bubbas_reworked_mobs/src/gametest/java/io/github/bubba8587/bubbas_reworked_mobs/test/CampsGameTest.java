@@ -13,6 +13,11 @@ import io.github.bubba8587.bubbas_reworked_mobs.camp.CampSite;
 import io.github.bubba8587.bubbas_reworked_mobs.camp.CampSites;
 import io.github.bubba8587.bubbas_reworked_mobs.camp.CampTuning;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -58,6 +63,30 @@ public class CampsGameTest {
 			}
 		}
 		return found;
+	}
+
+	/** Every camp biome gives its kind: husks in desert and badlands, bogged in swamps, strays in every snowy one, else skeleton or zombie. */
+	@GameTest(structure = FIELD, maxTicks = 1)
+	public void campKindFollowsTheBiome(GameTestHelper helper) {
+		var biomes = helper.getLevel().registryAccess().lookupOrThrow(Registries.BIOME);
+		Object[][] cases = {
+				{ Biomes.DESERT, CampKind.HUSK }, { Biomes.BADLANDS, CampKind.HUSK }, { Biomes.WOODED_BADLANDS, CampKind.HUSK },
+				{ Biomes.ERODED_BADLANDS, CampKind.HUSK }, { Biomes.SWAMP, CampKind.BOGGED }, { Biomes.MANGROVE_SWAMP, CampKind.BOGGED },
+				{ Biomes.SNOWY_PLAINS, CampKind.STRAY }, { Biomes.SNOWY_TAIGA, CampKind.STRAY }, { Biomes.ICE_SPIKES, CampKind.STRAY },
+				{ Biomes.GROVE, CampKind.STRAY }, { Biomes.SNOWY_SLOPES, CampKind.STRAY }, { Biomes.JAGGED_PEAKS, CampKind.STRAY },
+				{ Biomes.FROZEN_PEAKS, CampKind.STRAY }, { Biomes.PLAINS, null }, { Biomes.FOREST, null }, { Biomes.TAIGA, null },
+				{ Biomes.SAVANNA, null }, { Biomes.WINDSWEPT_HILLS, null }, { Biomes.STONY_PEAKS, null }, { Biomes.CHERRY_GROVE, null } };
+		RandomSource random = RandomSource.create(1);
+		for (Object[] c : cases) {
+			@SuppressWarnings("unchecked")
+			var key = (ResourceKey<Biome>) c[0];
+			for (int i = 0; i < 8; i++) {
+				CampKind kind = CampKind.forBiome(biomes.getOrThrow(key), random);
+				boolean ok = c[1] == null ? kind == CampKind.SKELETON || kind == CampKind.ZOMBIE : kind == c[1];
+				helper.assertTrue(ok, "%s gave a %s camp".formatted(key.identifier(), kind.id()));
+			}
+		}
+		helper.succeed();
 	}
 
 	/** Core. A survival player within range makes the roster appear: a small camp's three and one larger, tougher, better-geared leader. */

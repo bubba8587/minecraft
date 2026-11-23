@@ -62,6 +62,23 @@ def ask(s, cmd, secs=180):
 XZ = re.compile(r"\[(-?\d+), (?:~|-?\d+), (-?\d+)\]")
 
 
+CAMP_KINDS = ["skeleton", "zombie", "husk", "stray", "bogged"]
+CAMP_SIGN_OFFSET = 3
+
+
+def check_camp_kinds(s, examples):
+    """Every camp sign's camp, read back from its generated chunk, is of the kind the sign names; logs each, records failures."""
+    for l1, l2, x, z, _ in examples:
+        if l1 != "Camp":
+            continue
+        cx, cz = x, z - CAMP_SIGN_OFFSET
+        again = mod_locate(s, f"camp locate {l2}", rf"Nearest {l2} camp at (-?\d+) -?\d+ (-?\d+)", cx, cz)
+        ok = again == (cx, cz)
+        print(f"  camp sign {l2}: camp at {cx} {cz} " + ("confirmed " + l2 if ok else f"NOT {l2} (nearest {l2}: {again})"))
+        if not ok:
+            s.problems.append(f"camp sign {l2} does not lead to a {l2} camp at {cx} {cz}")
+
+
 def locate_at(s, x, z, what):
     """`locate <what>` from (x, z): the found (x, z), or None."""
     for l in ask(s, f"execute positioned {x} 0 {z} run locate {what}"):
@@ -72,8 +89,9 @@ def locate_at(s, x, z, what):
 
 
 def mod_locate(s, sub, pattern, x=0, z=0):
-    """Our own `locate` subcommands: (x, z), or (x, z, y) when the pattern also captures a height."""
-    for l in ask(s, f"execute positioned {x} 0 {z} run bubbas_reworked_mobs {sub} locate"):
+    """Our own locate commands (`<sub> locate`, or `sub` itself when it already says locate): (x, z), or (x, y, z) when the pattern also captures a height."""
+    cmd = sub if " locate" in sub else f"{sub} locate"
+    for l in ask(s, f"execute positioned {x} 0 {z} run bubbas_reworked_mobs {cmd}"):
         m = re.search(pattern, l)
         if m:
             g = [int(v) for v in m.groups()]
@@ -98,11 +116,11 @@ def find_examples(s):
     # Crypt yards: the nearest three from spread-out starting points (each yard's crypt wealth is rolled per yard).
     for i, (x, z) in enumerate([(0, 0), (1200, 0), (-1200, 1200), (0, -1200)]):
         add("Crypt yard", f"#{i + 1}", locate_at(s, x, z, "structure bubbas_reworked_mobs:crypt_yard"))
-    # Camps: kind follows the climate, so start from a biome of each.
-    for kind, biome in [("skeleton/zombie", "minecraft:plains"), ("skeleton/zombie", "minecraft:forest"),
-                        ("husk", "minecraft:desert"), ("stray", "minecraft:snowy_plains"), ("bogged", "minecraft:swamp")]:
-        b = locate_at(s, 0, 0, f"biome {biome}")
-        add("Camp", kind, b and locate_at(s, b[0], b[1], "structure bubbas_reworked_mobs:monster_camp"))
+    # Camps: our own locate reads each camp's kind from its structure start, so a sign names a camp of that kind.
+    # The sign lands CAMP_SIGN_OFFSET blocks south of the fire, not on it.
+    for kind in CAMP_KINDS:
+        at = mod_locate(s, f"camp locate {kind}", rf"Nearest {kind} camp at (-?\d+) -?\d+ (-?\d+)")
+        add("Camp", kind, at and (at[0], at[1] + CAMP_SIGN_OFFSET))
     add("Pillager", "outpost", locate_at(s, 0, 0, "structure minecraft:pillager_outpost"))
     add("Shipwreck", "with crew", locate_at(s, 0, 0, "structure minecraft:shipwreck"))
     add("Fabricator", "(ancient city)", mod_locate(s, "ancient_fabricator", r"pad at (-?\d+) (-?\d+) (-?\d+)"))
@@ -163,6 +181,7 @@ def build(seed, jars, timeout):
                                   "gamerule advance_weather false", "weather clear")], quiet=True)
     examples = find_examples(s)
     camps = load_around(s, examples)
+    check_camp_kinds(s, examples)
     examples = with_heights(s, examples)
     width = len(examples)
     # Spawn: a stone platform at world spawn (0, 0) with a sign per example in a row to the south.

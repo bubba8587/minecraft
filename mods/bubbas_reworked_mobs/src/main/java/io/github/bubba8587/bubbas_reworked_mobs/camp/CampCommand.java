@@ -8,7 +8,15 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import io.github.bubba8587.bubbas_reworked_mobs.BubbasReworkedMobs;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.chunk.ChunkAccess;
+import net.minecraft.world.level.chunk.status.ChunkStatus;
+import net.minecraft.world.level.levelgen.structure.StructureStart;
+import net.minecraft.world.level.levelgen.structure.placement.RandomSpreadStructurePlacement;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.levelgen.Heightmap;
@@ -16,7 +24,7 @@ import net.minecraft.world.level.levelgen.Heightmap;
 /**
  * {@code /bubbas_reworked_mobs camp build <kind> <size> [seed]} builds a camp centred where you stand and registers it
  * (its roster appears when you're in range, as for a natural camp). {@code camp reset} runs the daily reset check now (whoever is near),
- * sure to reset every cleared, armed camp nobody is near; {@code camp list} lists the registered camps.
+ * sure to reset every cleared, armed camp nobody is near; {@code camp locate <kind>} finds the nearest natural camp of a kind; {@code camp list} lists the registered camps.
  */
 public final class CampCommand {
 	private CampCommand() {
@@ -32,6 +40,7 @@ public final class CampCommand {
 					c.getSource().sendSuccess(() -> Component.literal("Reset " + n + " camp(s)."), true);
 					return n;
 				}))
+				.then(Commands.literal("locate").then(Commands.argument("kind", StringArgumentType.word()).executes(CampCommand::locate)))
 				.then(Commands.literal("list").executes(c -> {
 					var all = CampSites.all(c.getSource().getLevel());
 					for (CampSite site : all) {
@@ -41,6 +50,69 @@ public final class CampCommand {
 					}
 					return all.size();
 				}));
+	}
+
+	private static int locate(CommandContext<CommandSourceStack> c) {
+		CampKind kind;
+		try {
+			kind = CampKind.valueOf(StringArgumentType.getString(c, "kind").toUpperCase(java.util.Locale.ROOT));
+		} catch (IllegalArgumentException e) {
+			c.getSource().sendFailure(Component.literal("Kinds: skeleton, zombie, husk, stray, bogged."));
+			return 0;
+		}
+		BlockPos at = BlockPos.containing(c.getSource().getPosition());
+		CampPiece piece = nearest(c.getSource().getLevel(), at, kind, LOCATE_RADIUS);
+		if (piece == null) {
+			c.getSource().sendFailure(Component.literal("No %s camp within %d blocks.".formatted(kind.id(), LOCATE_RADIUS)));
+			return 0;
+		}
+		BlockPos o = piece.centre();
+		c.getSource().sendSuccess(() -> Component.literal("Nearest %s camp at %d %d %d, %d blocks away.".formatted(kind.id(),
+				o.getX(), o.getY(), o.getZ(), (int) Math.sqrt(o.distSqr(at)))), false);
+		return 1;
+	}
+
+	private static final int LOCATE_RADIUS = 6144;
+
+	/** The nearest natural camp of {@code kind} within {@code radius} (horizontal), read from structure starts; or null. */
+	public static CampPiece nearest(ServerLevel level, BlockPos at, CampKind kind, int radius) {
+		var structure = level.registryAccess().lookupOrThrow(Registries.STRUCTURE).getValue(Camps.CAMP_KEY);
+		var set = level.registryAccess().lookupOrThrow(Registries.STRUCTURE_SET).getValue(
+				ResourceKey.create(Registries.STRUCTURE_SET, BubbasReworkedMobs.id("monster_camps")));
+		if (structure == null || set == null || !(set.placement() instanceof RandomSpreadStructurePlacement placement)) {
+			return null;
+		}
+		long seed = level.getSeed();
+		int cell = placement.spacing() * 16;
+		int gx0 = Math.floorDiv(at.getX(), cell);
+		int gz0 = Math.floorDiv(at.getZ(), cell);
+		int rings = radius / cell + 1;
+		CampPiece best = null;
+		double bestD = (double) radius * radius;
+		for (int ring = 0; ring <= rings; ring++) {
+			if (best != null && (double) (ring - 1) * cell * (ring - 1) * cell > bestD) {
+				break;
+			}
+			for (int gx = gx0 - ring; gx <= gx0 + ring; gx++) {
+				for (int gz = gz0 - ring; gz <= gz0 + ring; gz++) {
+					if (Math.max(Math.abs(gx - gx0), Math.abs(gz - gz0)) != ring) {
+						continue;
+					}
+					ChunkPos chunk = placement.getPotentialStructureChunk(seed, gx * placement.spacing(), gz * placement.spacing());
+					ChunkAccess access = level.getChunk(chunk.x(), chunk.z(), ChunkStatus.STRUCTURE_STARTS, true);
+					StructureStart start = access == null ? null : access.getStartForStructure(structure);
+					if (start != null && start.isValid() && start.getPieces().getFirst() instanceof CampPiece piece && piece.kind() == kind) {
+						double dx = piece.centre().getX() - at.getX();
+						double dz = piece.centre().getZ() - at.getZ();
+						if (dx * dx + dz * dz < bestD) {
+							bestD = dx * dx + dz * dz;
+							best = piece;
+						}
+					}
+				}
+			}
+		}
+		return best;
 	}
 
 	private static int place(CommandContext<CommandSourceStack> c, long seed) {
