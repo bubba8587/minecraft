@@ -858,8 +858,7 @@ public class CampPiece extends StructurePiece {
 					if (what == 0) {
 						continue;
 					}
-					b.put(x, y, z, what == 2 ? Blocks.AIR.defaultBlockState() : what == 3 ? Blocks.COAL_BLOCK.defaultBlockState()
-							: roll < 0.9F ? Blocks.CALCITE.defaultBlockState() : Blocks.BONE_BLOCK.defaultBlockState());
+					b.put(x, y, z, what == 2 ? Blocks.AIR.defaultBlockState() : skullBone(u, w, dy, roll, across.getAxis()));
 				}
 			}
 		}
