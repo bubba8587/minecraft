@@ -54,4 +54,49 @@ public class TotemStatueGameTest {
 		helper.getLevel().getServer().getPlayerList().remove(player);
 		helper.succeed();
 	}
+
+	/**
+	 * Core. Every totem has a statue now: sneak-using a Totem of the End on the floor sets down an End statue (and
+	 * doesn't teleport the player), and breaking it gives the Totem of the End back.
+	 */
+	public void endStatuePlacesWithoutTeleportingAndDropsItsTotem(GameTestHelper helper) {
+		ServerPlayer player = TestSupport.survivalPlayer(helper);
+		BlockPos floor = new BlockPos(2, 0, 2);
+		helper.setBlock(floor, Blocks.STONE);
+		Vec3 at = helper.absoluteVec(new Vec3(2.5, 1.0, 5.5));
+		player.snapTo(at.x, at.y, at.z, 180.0F, 45.0F);
+		player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(ModItems.TOTEM_OF_THE_END));
+		BlockHitResult hit = new BlockHitResult(helper.absoluteVec(new Vec3(2.5, 1.0, 2.5)), Direction.UP, helper.absolutePos(floor), false);
+		player.setShiftKeyDown(true);
+		player.getMainHandItem().useOn(new UseOnContext(player, InteractionHand.MAIN_HAND, hit));
+		BlockState placed = helper.getBlockState(floor.above());
+		helper.assertTrue(placed.is(ModBlocks.TOTEM_STATUE) && TotemStatueBlock.type(placed) == TotemType.END, "no End statue placed: " + placed);
+		helper.assertTrue(player.position().distanceTo(at) < 1.0E-6, "sneak-placing the statue teleported the player");
+		List<ItemStack> drops = Block.getDrops(placed, helper.getLevel(), helper.absolutePos(floor.above()), null);
+		helper.assertTrue(drops.size() == 1 && drops.getFirst().is(ModItems.TOTEM_OF_THE_END), "statue drops " + drops);
+		helper.getLevel().getServer().getPlayerList().remove(player);
+		helper.succeed();
+	}
+
+	/**
+	 * Every totem's statue drops its own totem, and a statue saved before the {@code totem} property existed (only its
+	 * facing) loads as a warding statue.
+	 */
+	@net.fabricmc.fabric.api.gametest.v1.GameTest(maxTicks = 5)
+	public void everyStatueDropsItsTotemAndOldOnesLoadAsWarding(GameTestHelper helper) {
+		for (TotemType type : TotemType.values()) {
+			BlockState state = TotemStatueBlock.stateFor(type);
+			List<ItemStack> drops = Block.getDrops(state, helper.getLevel(), helper.absolutePos(new BlockPos(1, 1, 1)), null);
+			helper.assertTrue(drops.size() == 1 && drops.getFirst().is(type.item()), type + " statue drops " + drops);
+		}
+		net.minecraft.nbt.CompoundTag old = new net.minecraft.nbt.CompoundTag();
+		old.putString("id", "bubbas_totems_artifacts:totem_statue");
+		net.minecraft.nbt.CompoundTag props = new net.minecraft.nbt.CompoundTag();
+		props.putString("facing", "east");
+		old.put("properties", props);
+		BlockState loaded = net.minecraft.nbt.NbtUtils.readBlockState(helper.getLevel().holderLookup(net.minecraft.core.registries.Registries.BLOCK), old);
+		helper.assertTrue(loaded.is(ModBlocks.TOTEM_STATUE) && TotemStatueBlock.type(loaded) == TotemType.WARDING
+				&& loaded.getValue(TotemStatueBlock.FACING) == Direction.EAST, "an old statue loaded as " + loaded);
+		helper.succeed();
+	}
 }

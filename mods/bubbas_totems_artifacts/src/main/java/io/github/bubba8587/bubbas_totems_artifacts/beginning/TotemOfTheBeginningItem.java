@@ -23,7 +23,7 @@ import net.minecraft.world.level.Level;
  * to (the Nether, the End), using it does nothing and it isn't used up. In a beacon (compat/BeginningBeaconPayload)
  * the area draws endermen that tidy it. Found only as a cairn's offering.
  */
-public class TotemOfTheBeginningItem extends Item {
+public class TotemOfTheBeginningItem extends io.github.bubba8587.bubbas_totems_artifacts.statue.StatueTotemItem {
 	public TotemOfTheBeginningItem(Properties properties) {
 		super(properties);
 	}

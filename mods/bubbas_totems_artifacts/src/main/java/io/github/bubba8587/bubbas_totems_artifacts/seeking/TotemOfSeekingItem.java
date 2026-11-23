@@ -44,6 +44,11 @@ public class TotemOfSeekingItem extends Item {
 
 	@Override
 	public InteractionResult useOn(UseOnContext context) {
+		// Sneaking sets it down as its statue; otherwise it chooses what to seek.
+		if (context.getPlayer() != null && context.getPlayer().isSecondaryUseActive()) {
+			return io.github.bubba8587.bubbas_totems_artifacts.statue.TotemStatueBlock.placeFrom(context,
+					io.github.bubba8587.bubbas_totems_artifacts.statue.TotemType.SEEKING);
+		}
 		Level level = context.getLevel();
 		Optional<SeekingTypes.SeekType> type = SeekingTypes.forBlock(level.getBlockState(context.getClickedPos()));
 		if (type.isEmpty()) {

@@ -11,7 +11,7 @@ import net.minecraft.world.item.ItemStack;
 import org.jspecify.annotations.Nullable;
 
 /** Totem of Gathering, held in either hand: dropped items nearby fly to the holder (gathering/Gathering). */
-public class TotemOfGatheringItem extends Item {
+public class TotemOfGatheringItem extends io.github.bubba8587.bubbas_totems_artifacts.statue.StatueTotemItem {
 	private static final Held HELD = new Held();
 
 	public TotemOfGatheringItem(Properties properties) {

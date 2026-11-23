@@ -117,4 +117,9 @@ public class BubbasTotemsArtifactsCoreGameTest {
 	public void endLandingRules(GameTestHelper helper) {
 		new BeginningEndGameTest().endLandingRules(helper);
 	}
+
+	@GameTest(structure = TestSupport.FIELD, maxTicks = 20)
+	public void endStatuePlacesWithoutTeleportingAndDropsItsTotem(GameTestHelper helper) {
+		new TotemStatueGameTest().endStatuePlacesWithoutTeleportingAndDropsItsTotem(helper);
+	}
 }

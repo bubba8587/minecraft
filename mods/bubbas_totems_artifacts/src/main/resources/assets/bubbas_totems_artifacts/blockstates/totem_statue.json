@@ -1,8 +1,124 @@
 {
 	"variants": {
-		"facing=north": {"model": "bubbas_totems_artifacts:block/totem_statue_warding"},
-		"facing=east": {"model": "bubbas_totems_artifacts:block/totem_statue_warding", "y": 90},
-		"facing=south": {"model": "bubbas_totems_artifacts:block/totem_statue_warding", "y": 180},
-		"facing=west": {"model": "bubbas_totems_artifacts:block/totem_statue_warding", "y": 270}
+		"facing=north,totem=warding": {
+			"model": "bubbas_totems_artifacts:block/totem_statue_warding"
+		},
+		"facing=east,totem=warding": {
+			"model": "bubbas_totems_artifacts:block/totem_statue_warding",
+			"y": 90
+		},
+		"facing=south,totem=warding": {
+			"model": "bubbas_totems_artifacts:block/totem_statue_warding",
+			"y": 180
+		},
+		"facing=west,totem=warding": {
+			"model": "bubbas_totems_artifacts:block/totem_statue_warding",
+			"y": 270
+		},
+		"facing=north,totem=keeping": {
+			"model": "bubbas_totems_artifacts:block/totem_statue_keeping"
+		},
+		"facing=east,totem=keeping": {
+			"model": "bubbas_totems_artifacts:block/totem_statue_keeping",
+			"y": 90
+		},
+		"facing=south,totem=keeping": {
+			"model": "bubbas_totems_artifacts:block/totem_statue_keeping",
+			"y": 180
+		},
+		"facing=west,totem=keeping": {
+			"model": "bubbas_totems_artifacts:block/totem_statue_keeping",
+			"y": 270
+		},
+		"facing=north,totem=gathering": {
+			"model": "bubbas_totems_artifacts:block/totem_statue_gathering"
+		},
+		"facing=east,totem=gathering": {
+			"model": "bubbas_totems_artifacts:block/totem_statue_gathering",
+			"y": 90
+		},
+		"facing=south,totem=gathering": {
+			"model": "bubbas_totems_artifacts:block/totem_statue_gathering",
+			"y": 180
+		},
+		"facing=west,totem=gathering": {
+			"model": "bubbas_totems_artifacts:block/totem_statue_gathering",
+			"y": 270
+		},
+		"facing=north,totem=fortification": {
+			"model": "bubbas_totems_artifacts:block/totem_statue_fortification"
+		},
+		"facing=east,totem=fortification": {
+			"model": "bubbas_totems_artifacts:block/totem_statue_fortification",
+			"y": 90
+		},
+		"facing=south,totem=fortification": {
+			"model": "bubbas_totems_artifacts:block/totem_statue_fortification",
+			"y": 180
+		},
+		"facing=west,totem=fortification": {
+			"model": "bubbas_totems_artifacts:block/totem_statue_fortification",
+			"y": 270
+		},
+		"facing=north,totem=growth": {
+			"model": "bubbas_totems_artifacts:block/totem_statue_growth"
+		},
+		"facing=east,totem=growth": {
+			"model": "bubbas_totems_artifacts:block/totem_statue_growth",
+			"y": 90
+		},
+		"facing=south,totem=growth": {
+			"model": "bubbas_totems_artifacts:block/totem_statue_growth",
+			"y": 180
+		},
+		"facing=west,totem=growth": {
+			"model": "bubbas_totems_artifacts:block/totem_statue_growth",
+			"y": 270
+		},
+		"facing=north,totem=seeking": {
+			"model": "bubbas_totems_artifacts:block/totem_statue_seeking"
+		},
+		"facing=east,totem=seeking": {
+			"model": "bubbas_totems_artifacts:block/totem_statue_seeking",
+			"y": 90
+		},
+		"facing=south,totem=seeking": {
+			"model": "bubbas_totems_artifacts:block/totem_statue_seeking",
+			"y": 180
+		},
+		"facing=west,totem=seeking": {
+			"model": "bubbas_totems_artifacts:block/totem_statue_seeking",
+			"y": 270
+		},
+		"facing=north,totem=beginning": {
+			"model": "bubbas_totems_artifacts:block/totem_statue_beginning"
+		},
+		"facing=east,totem=beginning": {
+			"model": "bubbas_totems_artifacts:block/totem_statue_beginning",
+			"y": 90
+		},
+		"facing=south,totem=beginning": {
+			"model": "bubbas_totems_artifacts:block/totem_statue_beginning",
+			"y": 180
+		},
+		"facing=west,totem=beginning": {
+			"model": "bubbas_totems_artifacts:block/totem_statue_beginning",
+			"y": 270
+		},
+		"facing=north,totem=end": {
+			"model": "bubbas_totems_artifacts:block/totem_statue_end"
+		},
+		"facing=east,totem=end": {
+			"model": "bubbas_totems_artifacts:block/totem_statue_end",
+			"y": 90
+		},
+		"facing=south,totem=end": {
+			"model": "bubbas_totems_artifacts:block/totem_statue_end",
+			"y": 180
+		},
+		"facing=west,totem=end": {
+			"model": "bubbas_totems_artifacts:block/totem_statue_end",
+			"y": 270
+		}
 	}
 }
