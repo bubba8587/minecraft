@@ -50,6 +50,17 @@ Parked ideas and open items, newest first within each project. Agents add to it 
 - Builder's choices awaiting the owner's look are marked in `specs/reworked-beacons.md`.
 - Player docs: a gem-in-beacon screen screenshot (client test) once the beacon screen is final.
 
+## Playtest fixes queued (owner, 2026-11-22; plan only until the owner finishes playtesting)
+
+1. **Camp lower room loot:** a small chest in each camp's underground room. Use a new loot table `bubbas_reworked_mobs:chests/camp_room`, modest and themed per camp kind (arrows and bones for skeletons, rotten flesh and iron bits for zombies, plus a little gold and an occasional book). Add it to `CampPiece` and the camp spec.
+2. **Camp stairs end on a full block:** the bottom step of the room stairs must land on a full collision block. The bogged camp puts mud there, which is 14/16 tall, and mobs get stuck on it. Fix: whatever block the camp kind uses as its floor material, the landing under the last stair is always a full block (mud bricks or packed mud for bogged). Check every camp kind, and the crypt stairs too.
+3. **Crypt wake-ups spawn mobs into roofs:** the wake spot checks the block at the feet but not the head. Fix: when a sleeper wakes (and in `SleeperWaking.stepOutIfStuck`), test the mob's whole bounding box with `level.noCollision(mob, box)` at the target, not one block. A lying sleeper in a one-high niche must step out to a spot with two clear blocks. Add a milestone test: a sleeper in a one-high crypt niche wakes standing in open air, never inside the ceiling.
+4. **Worn Wither hurts its wearer every tick:** the owner noticed it on gemmed mobs. It's "not wrong, just really annoying for the test world." Vanilla Wither hurts every `40 >> amplifier` ticks, so a strong gem means damage every tick. Plan:
+   - check that the worn Wither amplifier follows the gem curve as intended;
+   - for mob gear in the test world, and probably for noble finery, roll only effects that don't harm the wearer (no worn Wither, Poison, Hunger, Instant Damage), keeping those for weapons.
+
+   Owner to confirm whether that goes beyond the test world.
+
 ## Repo
 - **Multiplayer check (owner, 2026-11-22: "make sure these mods work in multiplayer"; light scan done, the rest is here).** Scan results:
   - No client classes are used in common code.
