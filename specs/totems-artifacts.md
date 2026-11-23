@@ -306,7 +306,7 @@ Owner's goal (2026-11-15): mob-free zones without spamming torches. Owner decisi
 ## Open questions (owner)
 
 - Mob holders: should mobs holding a totem pulse, and may woken undead pick one up? (built as yes, agent's choice)
-- The talisman's name and how it's found (grave/crypt loot once worldgen exists).
+- The talisman's name. Found: Reworked Mobs' family vault chests (`bubbas_reworked_mobs:chests/crypt_family`), 15 % (`TotemsTuning.TALISMAN_LOOT`, keyed by table id, no dependency; added 2026-11-22); more crypts to come.
 
 ## Milestone test objectives
 
