@@ -99,7 +99,7 @@ public class SleeperBlock extends BaseEntityBlock implements SimpleWaterloggedBl
 
 	@Override
 	protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-		return state.getValue(POSE) == SleeperPose.LYING ? LYING_SHAPE : SITTING_SHAPE;
+		return state.getValue(POSE).isFlat() ? LYING_SHAPE : SITTING_SHAPE;
 	}
 
 	/** Robbing: an empty hand takes one item (weapon first, then armor top-down) and may wake the sleeper. */

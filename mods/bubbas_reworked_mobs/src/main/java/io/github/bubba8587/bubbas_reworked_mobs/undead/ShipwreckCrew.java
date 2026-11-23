@@ -38,8 +38,9 @@ public final class ShipwreckCrew {
 			boolean water = !here.getFluidState().isEmpty();
 			Direction facing = Direction.Plane.HORIZONTAL.getRandomDirection(cell);
 			boolean sitting = cell.nextFloat() < 0.3F && open(level, pos.above());
+			SleeperPose flat = cell.nextFloat() < UndeadTuning.SHIPWRECK_FACE_DOWN_SHARE ? SleeperPose.PRONE : SleeperPose.LYING;
 			level.setBlock(pos, ModBlocks.sleeper(UndeadVariant.DROWNED).defaultBlockState()
-					.setValue(SleeperBlock.POSE, sitting ? SleeperPose.SITTING : SleeperPose.LYING).setValue(SleeperBlock.FACING, facing)
+					.setValue(SleeperBlock.POSE, sitting ? SleeperPose.SITTING : flat).setValue(SleeperBlock.FACING, facing)
 					.setValue(SleeperBlock.WATERLOGGED, water), Block.UPDATE_CLIENTS);
 			if (level.getBlockEntity(pos) instanceof SleeperBlockEntity sleeper) {
 				float gear = cell.nextFloat();

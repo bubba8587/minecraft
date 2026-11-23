@@ -136,7 +136,7 @@ public final class BackToSleep extends MoveToBlockGoal {
 		}
 		boolean water = level.getBlockState(at).is(Blocks.WATER);
 		Direction facing = Direction.fromYRot(mob.getYRot());
-		if (pose == SleeperPose.LYING) {
+		if (pose.isFlat()) {
 			for (Direction side : Direction.Plane.HORIZONTAL) {
 				if (free(level, at.relative(side))) {
 					facing = side;

@@ -24,26 +24,26 @@ import net.minecraft.world.level.material.MapColor;
  * table ({@code SleeperRenderer}) and the lang/texture lists in datagen.
  */
 public enum UndeadVariant {
-	SKELETON("skeleton", List.of(SleeperPose.SITTING, SleeperPose.LYING), SoundType.BONE_BLOCK, MapColor.QUARTZ, Items.BONE,
+	SKELETON("skeleton", List.of(SleeperPose.SITTING, SleeperPose.LYING, SleeperPose.PRONE), SoundType.BONE_BLOCK, MapColor.QUARTZ, Items.BONE,
 			() -> EntityType.Builder.of(WokenSkeleton::new, MobCategory.MONSTER).sized(0.6F, 1.99F).eyeHeight(1.74F).ridingOffset(-0.7F)
 					.clientTrackingRange(8).notInPeaceful(),
 			UndeadTuning::wokenSkeletonAttributes),
-	ZOMBIE("zombie", List.of(SleeperPose.SITTING, SleeperPose.LYING), SoundType.MUD, MapColor.COLOR_GREEN, Items.ROTTEN_FLESH,
+	ZOMBIE("zombie", List.of(SleeperPose.SITTING, SleeperPose.LYING, SleeperPose.PRONE), SoundType.MUD, MapColor.COLOR_GREEN, Items.ROTTEN_FLESH,
 			() -> EntityType.Builder.<WokenZombie>of(WokenZombie::new, MobCategory.MONSTER).sized(0.6F, 1.95F).eyeHeight(1.74F)
 					.passengerAttachments(2.0125F).ridingOffset(-0.7F).clientTrackingRange(8).notInPeaceful(),
 			UndeadTuning::wokenZombieAttributes),
 	/** Deserts: lies buried in sand and bursts out in a puff of it that briefly blinds. */
-	HUSK("husk", List.of(SleeperPose.LYING, SleeperPose.SITTING), SoundType.SAND, MapColor.SAND, Items.ROTTEN_FLESH,
+	HUSK("husk", List.of(SleeperPose.LYING, SleeperPose.SITTING, SleeperPose.PRONE), SoundType.SAND, MapColor.SAND, Items.ROTTEN_FLESH,
 			() -> EntityType.Builder.<WokenHusk>of(WokenHusk::new, MobCategory.MONSTER).sized(0.6F, 1.95F).eyeHeight(1.74F)
 					.passengerAttachments(2.075F).ridingOffset(-0.7F).clientTrackingRange(8).notInPeaceful(),
 			UndeadTuning::wokenZombieAttributes),
 	/** Shipwrecks: the ship's crew. */
-	DROWNED("drowned", List.of(SleeperPose.LYING, SleeperPose.SITTING), SoundType.WET_GRASS, MapColor.WATER, Items.ROTTEN_FLESH,
+	DROWNED("drowned", List.of(SleeperPose.LYING, SleeperPose.SITTING, SleeperPose.PRONE), SoundType.WET_GRASS, MapColor.WATER, Items.ROTTEN_FLESH,
 			() -> EntityType.Builder.<WokenDrowned>of(WokenDrowned::new, MobCategory.MONSTER).sized(0.6F, 1.95F).eyeHeight(1.74F)
 					.passengerAttachments(2.075F).ridingOffset(-0.7F).clientTrackingRange(8).notInPeaceful(),
 			UndeadTuning::wokenZombieAttributes),
 	/** Snow: lies frozen in ice or packed snow that cracks as a warning before it breaks free. */
-	STRAY("stray", List.of(SleeperPose.LYING, SleeperPose.SITTING), SoundType.BONE_BLOCK, MapColor.SNOW, Items.BONE,
+	STRAY("stray", List.of(SleeperPose.LYING, SleeperPose.SITTING, SleeperPose.PRONE), SoundType.BONE_BLOCK, MapColor.SNOW, Items.BONE,
 			() -> EntityType.Builder.of(WokenStray::new, MobCategory.MONSTER).sized(0.6F, 1.99F).eyeHeight(1.74F).ridingOffset(-0.7F)
 					.clientTrackingRange(8).notInPeaceful(),
 			UndeadTuning::wokenSkeletonAttributes);

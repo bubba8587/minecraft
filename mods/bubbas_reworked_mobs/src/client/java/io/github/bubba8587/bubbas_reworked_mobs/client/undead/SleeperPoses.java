@@ -29,6 +29,12 @@ public final class SleeperPoses {
 						0.0F, 0.0F, 0.08F, 0.0F, 0.0F, -0.08F,
 						0.0F, 0.02F, 0.03F, 0.0F, -0.02F, -0.03F);
 			}
+			case PRONE -> {
+				// Face down, cheek to the floor, arms at its sides (the weapon arm turned so a held item lies flat), legs a little apart.
+				set(model, 0.0F, -0.5F, 0.0F, 0.0F,
+						0.0F, 1.57F, 0.1F, 0.0F, 0.0F, -0.1F,
+						0.0F, 0.0F, 0.08F, 0.0F, 0.0F, -0.06F);
+			}
 		}
 	}
 
@@ -53,6 +59,12 @@ public final class SleeperPoses {
 			case LYING -> {
 				// Feet toward the front, head toward the back, lying on its back; the body overhangs half a block each way.
 				poseStack.translate(0.0F, 0.25F, -1.0F);
+				poseStack.rotateDegrees(Axis.XP, 90.0F);
+			}
+			case PRONE -> {
+				// The lying placement turned over about the body's long axis: same footprint, face to the floor.
+				poseStack.translate(0.0F, 0.25F, -1.0F);
+				poseStack.rotateDegrees(Axis.ZP, 180.0F);
 				poseStack.rotateDegrees(Axis.XP, 90.0F);
 			}
 		}

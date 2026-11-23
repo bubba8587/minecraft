@@ -88,16 +88,11 @@ public final class WardFleeGoal extends Goal {
 	public boolean canUse() {
 		Vec3 pos = null;
 		if (scared()) {
-			pos = DefaultRandomPos.getPosAway(mob, 16, 7, scarer.position());
-			if (pos != null && scarer.distanceToSqr(pos) < scarer.distanceToSqr(mob)) {
-				pos = null;
-			}
+			pos = fleeTarget();
 		}
 		if (pos == null && leaving()) {
-			pos = DefaultRandomPos.getPosTowards(mob, 16, 7, exitPoint(ward, mob.position()), Math.PI / 2);
-			Path out = pos == null ? null : mob.getNavigation().createPath(pos.x, pos.y, pos.z, 0);
-			Node end = out == null ? null : out.getEndNode();
-			if (end == null || ward.contains(end.x + 0.5, end.y + 0.5, end.z + 0.5)) {
+			Path out = wayOut();
+			if (out == null) {
 				trappedUntil = now() + WardingTuning.TRAPPED_RECHECK_TICKS;
 				return false;
 			}
@@ -109,6 +104,34 @@ public final class WardFleeGoal extends Goal {
 		}
 		path = mob.getNavigation().createPath(pos.x, pos.y, pos.z, 0);
 		return path != null;
+	}
+
+	/** A path that ends outside the ward, from a few vanilla positions toward the nearest side, or null. */
+	private @Nullable Path wayOut() {
+		Vec3 exit = exitPoint(ward, mob.position());
+		for (int i = 0; i < WardingTuning.FLEE_TRIES; i++) {
+			Vec3 pos = DefaultRandomPos.getPosTowards(mob, 16, 7, exit, Math.PI / 2);
+			Path out = pos == null ? null : mob.getNavigation().createPath(pos.x, pos.y, pos.z, 0);
+			Node end = out == null ? null : out.getEndNode();
+			if (end != null && !ward.contains(end.x + 0.5, end.y + 0.5, end.z + 0.5)) {
+				return out;
+			}
+		}
+		return null;
+	}
+
+	/** The farthest from the scarer of a few vanilla flee positions, or null if none gets farther away. */
+	private @Nullable Vec3 fleeTarget() {
+		Vec3 best = null;
+		double bestDistance = scarer.distanceToSqr(mob);
+		for (int i = 0; i < WardingTuning.FLEE_TRIES; i++) {
+			Vec3 pos = DefaultRandomPos.getPosAway(mob, 16, 7, scarer.position());
+			if (pos != null && scarer.distanceToSqr(pos) > bestDistance) {
+				best = pos;
+				bestDistance = scarer.distanceToSqr(pos);
+			}
+		}
+		return best;
 	}
 
 	@Override

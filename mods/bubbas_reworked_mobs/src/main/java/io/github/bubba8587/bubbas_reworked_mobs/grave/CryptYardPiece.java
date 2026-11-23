@@ -895,8 +895,12 @@ public class CryptYardPiece extends StructurePiece {
 			float armourRoll = random.nextFloat();
 			float metal = random.nextFloat();
 			float enchant = random.nextFloat();
+			float faceDown = random.nextFloat();
 			if (!inside(x, y, z)) {
 				return;
+			}
+			if (pose == SleeperPose.LYING && faceDown < io.github.bubba8587.bubbas_reworked_mobs.undead.UndeadTuning.CRYPT_FACE_DOWN_SHARE) {
+				pose = SleeperPose.PRONE;
 			}
 			SleeperBlock block = ModBlocks.sleeper(variant);
 			put(x, y, z, block.defaultBlockState().setValue(SleeperBlock.POSE, pose).setValue(SleeperBlock.FACING, facing));
@@ -952,10 +956,12 @@ public class CryptYardPiece extends StructurePiece {
 			float legs = random.nextFloat();
 			float boots = random.nextFloat();
 			float bow = random.nextFloat();
+			float faceDown = random.nextFloat();
 			if (!inside(x, y, z)) {
 				return;
 			}
-			put(x, y, z, ModBlocks.sleeper(variant).defaultBlockState().setValue(SleeperBlock.POSE, SleeperPose.LYING)
+			put(x, y, z, ModBlocks.sleeper(variant).defaultBlockState()
+					.setValue(SleeperBlock.POSE, faceDown < io.github.bubba8587.bubbas_reworked_mobs.undead.UndeadTuning.RESTING_FACE_DOWN_SHARE ? SleeperPose.PRONE : SleeperPose.LYING)
 					.setValue(SleeperBlock.FACING, Direction.NORTH).setValue(SleeperBlock.RESTING, true));
 			if (level.getBlockEntity(new BlockPos(x, y, z)) instanceof SleeperBlockEntity sleeper) {
 				if (dressed < GraveTuning.RESTING_LEATHER_CHANCE) {

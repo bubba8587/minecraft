@@ -132,6 +132,21 @@ public class TotemsClientGameTest implements FabricClientGameTest {
 			context.takeScreenshot("totems-gathering-ring-later");
 			server.runCommand("kill @e[type=item]");
 			server.runCommand("kill @e[type=experience_orb]");
+
+			// --- Gathering statue ring: items within its radius circle the statue ---
+			server.runCommand("fill %d %d %d %d %d %d minecraft:air".formatted(ringBeacon.getX() - 6, ringBeacon.getY(), ringBeacon.getZ() - 4, ringBeacon.getX() + 6, ringBeacon.getY() + 4, ringBeacon.getZ() + 6));
+			server.runOnServer(s -> s.overworld().setBlockAndUpdate(ringBeacon,
+					io.github.bubba8587.bubbas_totems_artifacts.statue.TotemStatueBlock.stateFor(io.github.bubba8587.bubbas_totems_artifacts.statue.TotemType.GATHERING)));
+			for (int i = 0; i < drops.length; i++) {
+				double angle = 2 * Math.PI * i / drops.length;
+				server.runCommand("summon item %.2f %d %.2f {Item:{id:\"%s\",count:1},Motion:[0.0,0.0,0.0]}".formatted(ringBeacon.getX() + 0.5 + Math.cos(angle) * 4.0,
+						ringBeacon.getY(), ringBeacon.getZ() + 0.5 + Math.sin(angle) * 4.0, drops[i]));
+			}
+			server.runCommand("tp @p %.1f %.1f %.1f 0 35".formatted(ringBeacon.getX() + 0.5, ringBeacon.getY() + 2.2, ringBeacon.getZ() - 2.2));
+			context.waitTicks(90);
+			context.takeScreenshot("totems-gathering-statue-ring");
+			server.runCommand("setblock %d %d %d minecraft:air".formatted(ringBeacon.getX(), ringBeacon.getY(), ringBeacon.getZ()));
+			server.runCommand("kill @e[type=item]");
 			server.runCommand("gamemode survival @p");
 
 			// --- Seeking: points at the nearest structure, checked against vanilla's /locate ---------------

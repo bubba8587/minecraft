@@ -35,8 +35,8 @@ public class CryptWardsGameTest {
 			return;
 		}
 		BlockPos statue = new BlockPos(3, 1, 8);
-		BlockPos near = statue.east(TotemsTuning.WARD_STATUE_RADIUS);
-		BlockPos far = statue.east(TotemsTuning.WARD_STATUE_RADIUS + 2);
+		BlockPos near = statue.east(TotemsTuning.STATUE_RADIUS);
+		BlockPos far = statue.east(TotemsTuning.STATUE_RADIUS + 2);
 		helper.setBlock(statue, TotemStatueBlock.stateFor(TotemType.WARDING));
 		TestSupport.Mobs.sleeper(helper, near);
 		TestSupport.Mobs.sleeper(helper, far);
@@ -158,7 +158,7 @@ public class CryptWardsGameTest {
 		/** Every sleeper within a statue's ward box is kept asleep. */
 		static void checkAsleep(GameTestHelper helper, List<BlockPos> statues) {
 			ServerLevel level = helper.getLevel();
-			int r = TotemsTuning.WARD_STATUE_RADIUS;
+			int r = TotemsTuning.STATUE_RADIUS;
 			int checked = 0;
 			for (BlockPos statue : statues) {
 				for (BlockPos pos : BlockPos.betweenClosed(statue.offset(-r, -r, -r), statue.offset(r, r, r))) {

@@ -18,6 +18,8 @@ public final class WardingTuning {
 	public static final int FLEE_TICKS = 100;
 	/** A fleeing monster keeps running while closer than this to the holder (a cat scares creepers within 6). */
 	public static final double FLEE_KEEP_AWAY = 12.0;
+	/** Positions tried per pick: fleeing takes the farthest from the holder, leaving a ward the first that gets out. */
+	public static final int FLEE_TRIES = 6;
 	/** Flee speed (vanilla creeper-from-cat: 1.0 walking, 1.2 when the cat is within 7 blocks). */
 	public static final double FLEE_WALK_SPEED = 1.0;
 	public static final double FLEE_SPRINT_SPEED = 1.2;

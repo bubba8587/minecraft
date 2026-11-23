@@ -1,7 +1,7 @@
 // dte:C6,B15
 package io.github.bubba8587.bubbas_totems_artifacts.statue;
 
-import io.github.bubba8587.bubbas_totems_artifacts.gathering.Gathering;
+import io.github.bubba8587.bubbas_totems_artifacts.gathering.GatheringRing;
 import io.github.bubba8587.bubbas_totems_artifacts.totems.TotemAreas;
 import io.github.bubba8587.bubbas_totems_artifacts.totems.TotemsTuning;
 import io.github.bubba8587.bubbas_totems_artifacts.warding.Wards;
@@ -33,7 +33,7 @@ public final class StatueEffects {
 
 	/** The statue's area for its type. */
 	public static AABB area(BlockPos pos, TotemType type) {
-		return type == TotemType.WARDING ? new AABB(pos).inflate(TotemsTuning.WARD_STATUE_RADIUS) : area(pos);
+		return area(pos);
 	}
 
 	/** One pulse of the statue at pos. */
@@ -43,7 +43,8 @@ public final class StatueEffects {
 		int life = TotemsTuning.STATUE_PULSE_TICKS + 20;
 		switch (type) {
 			case WARDING -> Wards.put(level, source, area, true, life);
-			case GATHERING -> Gathering.intoChest(level, pos);
+			case GATHERING -> GatheringRing.put(level, pos, area, life,
+					TotemsTuning.STATUE_RING_RADIUS, TotemsTuning.STATUE_RING_HEIGHT);
 			case FORTIFICATION -> TotemAreas.put(level, TotemAreas.Kind.FORTIFICATION, source, area, 1, life);
 			case GROWTH -> TotemAreas.put(level, TotemAreas.Kind.GROWTH, source, area, TotemsTuning.GROWTH_STATUE_EXTRA, life);
 			case HERDING -> TotemAreas.put(level, TotemAreas.Kind.HERDING, source, area, 1, life);

@@ -25,7 +25,10 @@ public final class ModItems {
 		for (UndeadVariant variant : UndeadVariant.values()) {
 			ResourceKey<Item> key = ResourceKey.create(Registries.ITEM, BubbasReworkedMobs.id(variant.sleeperId()));
 			SLEEPERS.put(variant, Registry.register(BuiltInRegistries.ITEM, key,
-					new SleeperItem(ModBlocks.sleeper(variant), new Item.Properties().useBlockDescriptionPrefix().stacksTo(16).setId(key))));
+					new SleeperItem(ModBlocks.sleeper(variant), new Item.Properties().useBlockDescriptionPrefix().stacksTo(16)
+							.component(net.minecraft.core.component.DataComponents.TOOLTIP_DISPLAY, net.minecraft.world.item.component.TooltipDisplay.DEFAULT
+									.withHidden(net.minecraft.core.component.DataComponents.BLOCK_STATE, true))
+							.setId(key))));
 		}
 	}
 
@@ -35,7 +38,10 @@ public final class ModItems {
 	static {
 		ResourceKey<Item> key = ResourceKey.create(Registries.ITEM, BubbasReworkedMobs.id("gravestone"));
 		GRAVESTONE = Registry.register(BuiltInRegistries.ITEM, key,
-				new BlockItem(ModBlocks.GRAVESTONE, new Item.Properties().useBlockDescriptionPrefix().stacksTo(16).setId(key)));
+				new BlockItem(ModBlocks.GRAVESTONE, new Item.Properties().useBlockDescriptionPrefix().stacksTo(16)
+							.component(net.minecraft.core.component.DataComponents.TOOLTIP_DISPLAY, net.minecraft.world.item.component.TooltipDisplay.DEFAULT
+									.withHidden(net.minecraft.core.component.DataComponents.BLOCK_STATE, true))
+							.setId(key)));
 	}
 
 	private ModItems() {
