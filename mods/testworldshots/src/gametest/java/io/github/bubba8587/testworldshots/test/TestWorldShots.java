@@ -80,7 +80,7 @@ public class TestWorldShots implements FabricClientGameTest {
 	/**
 	 * Whether this part of the tour runs: `-PclientTests=cairns,creepers` photographs only those stations (each part
 	 * still loads the world, ~20 s); without the property (or with -PmilestoneTests alone) every part runs. Parts: hub,
-	 * preview, creepers, cairns, graveyard, loot, arena, crafting, tower, gems, grounds.
+	 * preview, creepers, cairns, graveyard, loot, arena, crafting, tower, gems, grounds, showcase.
 	 */
 	private static boolean part(String name) {
 		String only = System.getProperty("bubba.clientTests", "").trim();
@@ -199,6 +199,21 @@ public class TestWorldShots implements FabricClientGameTest {
 		}
 		if (part("grounds")) {
 			grounds();
+		}
+		if (part("showcase")) {
+			// Showcase (far south): totems strip, lava and geyser, then the plateau's yards, camps and spiders.
+			shot("showcase_strip", -16, -55, 95, -36, -60.5, 101);
+			shot("showcase_lava", 18, -56, 92, 18, -61.5, 100.5);
+			shot("showcase_geyser", 34, -56, 93, 34, -61.5, 100);
+			shot("showcase_crypt_row", 0.5, -28, 98, 0.5, -52, 128);
+			shot("showcase_noble_yard", 30, -42, 104, 30, -52, 132);
+			shot("showcase_pauper_yard", -32, -46, 106, -32, -52, 122);
+			shot("showcase_yard_states", 0.5, -34, 158, 0.5, -52, 180);
+			shot("showcase_camps", 0.5, -34, 194, 0.5, -52, 212);
+			shot("showcase_camp_skeleton", -34, -45, 199, -34, -51, 212);
+			shot("showcase_camp_bogged", 39, -45, 199, 39, -51, 212);
+			shot("showcase_nest_cave", 27, -49.4, 241, 27, -41, 247);
+			shot("showcase_giant_grove", -33, -47, 233, -33, -46, 246);
 		}
 	}
 
