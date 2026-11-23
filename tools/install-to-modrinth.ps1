@@ -3,7 +3,7 @@
 #
 #   pwsh tools/install-to-modrinth.ps1                      # profile "mod testing"
 #   pwsh tools/install-to-modrinth.ps1 -Profile "other"     # another profile (must be Fabric on the repo's Minecraft version)
-#   pwsh tools/install-to-modrinth.ps1 -ResetWorld          # also write over the test world with a fresh copy (no old copy kept)
+#   pwsh tools/install-to-modrinth.ps1 -ResetWorld          # also write over the test worlds (flat and natural) with fresh copies (no old copy kept)
 #
 # Also copies the test world (testworlds/bubba-test-world) into the profile's saves as "Bubba Test World" when missing,
 # and the owner's own game settings (tools/sync-minecraft-settings.ps1).
@@ -85,6 +85,26 @@ if (Test-Path (Join-Path $pristine "level.dat")) {
 	}
 } else {
 	Write-Output "No test world built yet (python tools/build-testworld.py); skipped."
+}
+
+# The natural test world (specs/testworld.md "Natural world"): the same, as its own save "Bubba Natural World".
+$naturalPristine = Join-Path $root "testworldsubba-natural-world"
+$naturalCopy = Join-Path $saves "Bubba Natural World"
+if (Test-Path (Join-Path $naturalPristine "level.dat")) {
+	New-Item -ItemType Directory -Force $saves | Out-Null
+	if ($ResetWorld -and (Test-Path $naturalCopy)) {
+		Remove-Item $naturalCopy -Recurse -Force
+		Write-Output "Wrote over your natural test world with a fresh copy"
+	}
+	if (-not (Test-Path $naturalCopy)) {
+		Copy-Item $naturalPristine $naturalCopy -Recurse
+		Write-Output "Natural test world copied to saves\Bubba Natural World"
+	} else {
+		$new = Join-Path $naturalPristine "SPOTS.txt"; $have = Join-Path $naturalCopy "SPOTS.txt"
+		if ((Test-Path $new) -and (-not (Test-Path $have) -or (Get-Item $new).LastWriteTime -gt (Get-Item $have).LastWriteTime)) {
+			Write-Output "Note: a newer natural test world has been built. Your copy was kept; run with -ResetWorld to write over it."
+		}
+	}
 }
 
 # The owner's own game settings (keybinds, video, sound) into the profile.

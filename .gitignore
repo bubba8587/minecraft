@@ -24,3 +24,6 @@ decisions/.obsidian/workspace.json
 mods/*/src/main/generated/.cache/
 player-docs/.obsidian/workspace*.json
 .claude/worktrees/
+
+# Natural test world: rebuilt from its seed by tools/build-naturalworld.py (~7.5 MB), not committed
+testworlds/bubba-natural-world/

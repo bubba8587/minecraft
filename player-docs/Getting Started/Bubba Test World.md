@@ -2,7 +2,7 @@
 
 This tutorial describes the **Bubba Test World**, a ready-made creative world with stations for trying the projects' features, and how to get a fresh copy of it.
 
-Some features have no station yet: [[Spiders]], [[Crypt Yards]], [[Monster Camps]], [[Drowned]], [[Ancient Fabricators]], the totems other than the [[Totem of Warding]], and [[Bubba's Reworked Mining]]. They can be tried with commands or in a normal world.
+Some features have no station yet: [[Drowned]], [[Ancient Fabricators]] and [[Bubba's Reworked Mining]]. The drowned's shipwrecks and an Ancient Fabricator are in the **Bubba Natural World** (below).
 
 ## Getting the world
 
@@ -30,6 +30,11 @@ The world appears in the world list of the "mod testing" profile after an instal
 | Creeper grove | Far east, past the gem workshop: a clearing with trees and a wall, one [[Creepers|creeper]] peeking from cover and one on open ground. Signs give snowballs and a bow, switch game mode, and put the grove back after an explosion. |
 | Cairn preview | North-east of the spawn point: a single hand-built enderman cairn on a small hill, to look at; no endermen tend it. |
 | Cairns and endermen | Far west; the **Cairns** sign at the spawn point teleports there. Three finished [[Endermen|enderman cairns]], and a yard where builder endermen finish a cairn and caretakers jump farmland back to dirt, take down a dirt pillar and fill a pit. A ring of endermen stands vigil around a finished cairn. A sign puts the yard back, another brings new endermen. |
+| Showcase | Far south, past the boss arena (a sign at the spawn point points there). A chest of every totem with seeds for Growth, an animal pen for Herding, a lava pool and a sulfur geyser for [[Bubba's World Tweaks]]. Up the stairs on a stone hill: a [[Crypt Yards|crypt yard]] with each kind of crypt (pauper, family, noble) and yards in every state of decay, a [[Monster Camps|camp]] of every kind, a cave with a [[Spiders|spider nest]], and a grove with a giant spider and its webs. |
+
+## Bubba Natural World
+
+A second world from normal world generation, installed next to the test world. Signs on a platform at the spawn point teleport to a natural example of each: crypt yards, a camp of each kind, a pillager outpost, a shipwreck with its sleeping crew, an [[Ancient Fabricators|Ancient Fabricator]], an enderman cairn, and an old-growth taiga where giant spiders live. It's a creative world with cheats on; time stands at morning and nothing spawns on its own.
 
 ## Gem testing grounds
 
