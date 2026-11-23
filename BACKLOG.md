@@ -60,7 +60,6 @@ Left for next session:
 - **6:** giant spiders haul prey to the centre of their own web (the spider has to remember its webs).
 - **7 rest:** skull-dome rock and bone caves (specs/monster-camps.md "Layout variety"), two-chamber rooms, camp loot themed per kind, screenshots of 6+ seeds per kind. The `camps` client part's `camp-room` camera still points at the old fixed room.
 - **11:** the cairn yard and creeper grove backup copies still float at y 198. The quick fixes don't work: a far-away copy isn't loaded when the sign is clicked, and the builder pack is off in the finished world. Options: (a) structure templates (the yard is 51 wide, so two templates, plus copying the world's `generated/` folder), or (b) a small reset datapack left enabled.
-- **12 check:** the Warden was already excluded from the teleporter by type, so find what the owner actually saw.
 - **17 rest:** level rough high ground for camps (cut and fill or `terrain_adaptation`) instead of skipping anything over 6 blocks of slope.
 - **Tests:** milestone tests for 8, 12 and 13; a client check that clicks every natural-world sign; a screenshot of a crypt niche with the sleeper inside it.
 - **Natural world camp signs:** they name the kind each biome should give, because camps only register when a player comes near.
