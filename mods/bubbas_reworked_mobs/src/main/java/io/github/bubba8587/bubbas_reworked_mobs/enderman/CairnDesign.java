@@ -86,7 +86,7 @@ public final class CairnDesign {
 
 	private CairnDesign(long seed, IntBinaryOperator groundAt) {
 		this.seed = seed;
-		this.random = new LegacyRandomSource(seed);
+		this.random = new LegacyRandomSource(net.minecraft.world.level.levelgen.RandomSupport.mixStafford13(seed));
 		this.groundAt = groundAt;
 	}
 

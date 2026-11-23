@@ -51,6 +51,8 @@ Dormant undead are real blocks, not entities or display-entity pseudo-blocks. Th
 
 ## Waking in tight spots (2026-11-22)
 
+- **Whole body, blocks only (2026-11-22, owner playtest: some woke into roofs):** `SleeperWaking.stepOutIfStuck` checks the mob's full bounding box against blocks only (`noBlockCollision`, so other mobs don't make a spot look blocked), and searches nearest first within 2 blocks (`BlockPos.withinManhattan`), including down, for a spot with ground under it. Crypt niches are two blocks deep, so a lying sleeper (2 long, centred on its block) no longer lies half in the wall.
+
 A sleeper lying somewhere lower than its mob is tall (a crypt wall niche under a slab, a shallow grave) used to wake into a box overlapping blocks: no suffocation (eyes clear a half slab) but stuck. `SleeperWaking.stepOutIfStuck` now moves it to the nearest free spot: beside it on the same level first (a niche's open side), then one up, then diagonals; with none it stays. Milestone test `BubbasReworkedMobsGameTest.sleeperInANicheStepsOutWhenItWakes`.
 
 ## Drowned sleepers in shipwrecks (owner, 2026-11-22; built)

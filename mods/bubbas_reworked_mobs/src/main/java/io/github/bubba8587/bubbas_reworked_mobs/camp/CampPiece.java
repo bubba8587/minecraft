@@ -73,7 +73,7 @@ public class CampPiece extends StructurePiece {
 
 	static BoundingBox box(BlockPos centre, CampTuning.Size size) {
 		// clearing plus edge outcrops (up to 3 past the radius), or the stair tunnel
-		int r = Math.max(size.radius + 3, (size == CampTuning.Size.LARGE ? 3 : 2) + 8);
+		int r = Math.max(size.radius + 3, size.maxRoomHalf + 10);
 		return new BoundingBox(centre.getX() - r, centre.getY() - 6, centre.getZ() - r, centre.getX() + r, centre.getY() + 18, centre.getZ() + r);
 	}
 
@@ -122,46 +122,82 @@ public class CampPiece extends StructurePiece {
 		final List<Spot> banners = new ArrayList<>();
 		final List<Spot> outcrops = new ArrayList<>();
 		final List<Spot> pikes = new ArrayList<>();
-		final Spot leanTo;
+		final List<Spot> leanTos = new ArrayList<>();
 		final Direction stairs;
+		final boolean stairsClockwise;
 		final Direction chestSide;
 		final double spawnAngle;
 		final int bannerRotation;
+		final int roomHalfX;
+		final int roomHalfZ;
+		final int roomDx;
+		final int roomDz;
 
 		Plan(long seed, BlockPos centre, CampTuning.Size size) {
-			RandomSource random = RandomSource.create(seed);
+			RandomSource random = RandomSource.create(net.minecraft.world.level.levelgen.RandomSupport.mixStafford13(seed));
 			int r = size.radius;
 			double towerAngle = random.nextDouble() * Math.PI * 2.0;
-			for (int i = 0; i < size.towers; i++) {
-				double a = towerAngle + i * (Math.PI * (0.8 + random.nextDouble() * 0.4));
-				int d = r - 2; // clear of the fire's seats; the 4x4 stays inside the box
+			int towerCount = random.nextInt(size.maxTowers + 1);
+			for (int i = 0; i < towerCount; i++) {
+				double a = towerAngle + i * (Math.PI * 2.0 / towerCount) + (random.nextDouble() - 0.5) * 0.8;
+				int d = r - 2;
 				towers.add(new Tower(centre.getX() + (int) Math.round(Math.cos(a) * d), centre.getZ() + (int) Math.round(Math.sin(a) * d),
-						5 + random.nextInt(3), Direction.Plane.HORIZONTAL.getRandomDirection(random), true, random.nextInt(4))); // roofed: the lookout's shade
+						5 + random.nextInt(3), Direction.Plane.HORIZONTAL.getRandomDirection(random), true, random.nextInt(4)));
 			}
-			// The first banner flies from the first tower; the rest stand about the camp.
-			for (int i = 1; i < size.banners; i++) {
+			// banners: the first flies from the first tower when there is one
+			for (int i = towers.isEmpty() ? 0 : 1; i < size.banners; i++) {
 				double a = random.nextDouble() * Math.PI * 2.0;
 				int d = 3 + random.nextInt(Math.max(1, r - 4));
 				banners.add(new Spot(centre.getX() + (int) Math.round(Math.cos(a) * d), centre.getZ() + (int) Math.round(Math.sin(a) * d), 0,
 						random.nextLong()));
 			}
-			for (int i = 0; i < size.outcrops; i++) {
+			int outcropCount = random.nextInt(size.outcrops + 2);
+			for (int i = 0; i < outcropCount; i++) {
 				double a = random.nextDouble() * Math.PI * 2.0;
 				int d = r - 2 + random.nextInt(2);
 				outcrops.add(new Spot(centre.getX() + (int) Math.round(Math.cos(a) * d), centre.getZ() + (int) Math.round(Math.sin(a) * d),
 						1 + random.nextInt(2), random.nextLong()));
 			}
-			int pikeCount = 1 + random.nextInt(size.outcrops + 1);
+			int pikeCount = random.nextInt(size.outcrops + 3);
 			for (int i = 0; i < pikeCount; i++) {
 				double a = random.nextDouble() * Math.PI * 2.0;
 				int d = r - 1;
 				pikes.add(new Spot(centre.getX() + (int) Math.round(Math.cos(a) * d), centre.getZ() + (int) Math.round(Math.sin(a) * d), 0, random.nextLong()));
 			}
+			int leanToCount = 1 + random.nextInt(size == CampTuning.Size.SMALL ? 1 : 2);
 			double la = random.nextDouble() * Math.PI * 2.0;
-			leanTo = new Spot(centre.getX() + (int) Math.round(Math.cos(la) * (r - 3)), centre.getZ() + (int) Math.round(Math.sin(la) * (r - 3)), 0,
-					random.nextLong());
-			// The underground room's stairs come up on the side away from the first tower.
-			stairs = Direction.getApproximateNearest(-Math.cos(towerAngle), 0.0, -Math.sin(towerAngle));
+			for (int i = 0; i < leanToCount; i++) {
+				double a = la + i * Math.PI * (0.7 + random.nextDouble() * 0.6);
+				leanTos.add(new Spot(centre.getX() + (int) Math.round(Math.cos(a) * (r - 3)), centre.getZ() + (int) Math.round(Math.sin(a) * (r - 3)), 0,
+						random.nextLong()));
+			}
+			// the room: size, shape and offset; its stairs come up on any side but the first tower's
+			Direction towerSide = towers.isEmpty() ? null : Direction.getApproximateNearest(towers.getFirst().x - centre.getX(), 0.0,
+					towers.getFirst().z - centre.getZ());
+			Direction pick;
+			do {
+				pick = Direction.Plane.HORIZONTAL.getRandomDirection(random);
+			} while (pick == towerSide);
+			stairs = pick;
+			// toward the stairs the room keeps the old reach, so the tunnel still surfaces inside the clearing
+			int max = size.maxRoomHalf;
+			int reach = size == CampTuning.Size.LARGE ? 3 : 2;
+			boolean alongX = stairs.getAxis() == Direction.Axis.X;
+			int hx = 1 + random.nextInt(alongX ? reach : max);
+			int hz = 1 + random.nextInt(alongX ? max : reach);
+			int dx = random.nextInt(3) - 1;
+			int dz = random.nextInt(3) - 1;
+			if (alongX && dx * stairs.getStepX() > 0) {
+				dx = 0;
+			}
+			if (!alongX && dz * stairs.getStepZ() > 0) {
+				dz = 0;
+			}
+			roomHalfX = hx;
+			roomHalfZ = hz;
+			roomDx = dx;
+			roomDz = dz;
+			stairsClockwise = random.nextBoolean();
 			chestSide = Direction.Plane.HORIZONTAL.getRandomDirection(random);
 			spawnAngle = random.nextDouble() * Math.PI * 2.0;
 			bannerRotation = random.nextInt(16);
@@ -184,7 +220,7 @@ public class CampPiece extends StructurePiece {
 				if (d > r + 0.5) {
 					continue;
 				}
-				RandomSource column = RandomSource.create(seed ^ (x * 341873128712L) ^ (z * 132897987541L));
+				RandomSource column = RandomSource.create(net.minecraft.world.level.levelgen.RandomSupport.mixStafford13(seed) ^ (x * 341873128712L) ^ (z * 132897987541L));
 				float tread = column.nextFloat();
 				float what = column.nextFloat();
 				float weed = column.nextFloat();
@@ -214,10 +250,17 @@ public class CampPiece extends StructurePiece {
 		for (Spot pike : plan.pikes) {
 			pike(b, pike);
 		}
-		leanTo(b, plan.leanTo);
+		for (Spot leanTo : plan.leanTos) {
+			leanTo(b, leanTo);
+		}
 		if (roomFloor() > level.getMinY()) {
 			room(b); // (a superflat world is too shallow for it)
 		}
+	}
+
+	/** A floor block mobs can't sink into: mud becomes packed mud. */
+	private static BlockState fullBlock(BlockState state) {
+		return state.is(Blocks.MUD) ? Blocks.PACKED_MUD.defaultBlockState() : state;
 	}
 
 	private static boolean natural(BlockState state) {
@@ -262,7 +305,7 @@ public class CampPiece extends StructurePiece {
 		int gc = b.ground(x, z);
 		if (gc != Integer.MIN_VALUE && b.inside(x, gc + 1, z)) {
 			b.put(x, gc + 1, z, Blocks.CHEST.defaultBlockState().setValue(ChestBlock.FACING, plan.chestSide.getOpposite()));
-			RandomizableContainer.setBlockEntityLootTable(b.level(), RandomSource.create(seed ^ 0xC4E57L), new BlockPos(x, gc + 1, z), Camps.CAMP_LOOT);
+			RandomizableContainer.setBlockEntityLootTable(b.level(), RandomSource.create(net.minecraft.world.level.levelgen.RandomSupport.mixStafford13(seed) ^ 0xC4E57L), new BlockPos(x, gc + 1, z), Camps.CAMP_LOOT);
 		}
 	}
 
@@ -272,7 +315,7 @@ public class CampPiece extends StructurePiece {
 	 * post, sometimes a slab roof on fence posts, and the camp's banner flying from another post.
 	 */
 	private void tower(ClippedBuild b, Tower t) {
-		RandomSource random = RandomSource.create(seed ^ (t.x * 31L + t.z) ^ 0x70E7L);
+		RandomSource random = RandomSource.create(net.minecraft.world.level.levelgen.RandomSupport.mixStafford13(seed) ^ (t.x * 31L + t.z) ^ 0x70E7L);
 		int top = centre.getY() + t.height;
 		int x0 = t.x - 1;
 		int z0 = t.z - 1;
@@ -463,17 +506,18 @@ public class CampPiece extends StructurePiece {
 	/** The foot of the room's stair tunnel, outside the room: a cell to stand in at its i-th stair (tests). */
 	public BlockPos tunnelStep(int i) {
 		int h = roomHalf();
-		return centre.relative(plan.stairs, h + 1 + i).atY(roomFloor() + i + 1);
+		return roomCentre().relative(plan.stairs, h + 1 + i).atY(roomFloor() + i + 1);
 	}
 
 	/** The lean-to's front middle (screenshots, tests). */
 	public BlockPos leanToSpot() {
-		return new BlockPos(plan.leanTo.x, centre.getY() + 1, plan.leanTo.z);
+		Spot first = plan.leanTos.getFirst();
+		return new BlockPos(first.x, centre.getY() + 1, first.z);
 	}
 
-	/** Which way the lean-to opens: toward the fire. */
-	private Direction leanToFacing() {
-		return Direction.getApproximateNearest(centre.getX() - plan.leanTo.x, 0.0, centre.getZ() - plan.leanTo.z);
+	/** Which way a lean-to opens: toward the fire. */
+	private Direction leanToFacing(Spot spot) {
+		return Direction.getApproximateNearest(centre.getX() - spot.x, 0.0, centre.getZ() - spot.z);
 	}
 
 	/**
@@ -483,7 +527,7 @@ public class CampPiece extends StructurePiece {
 	private void leanTo(ClippedBuild b, Spot spot) {
 		RandomSource random = RandomSource.create(spot.seed);
 		boolean grey = random.nextBoolean();
-		Direction facing = leanToFacing();
+		Direction facing = leanToFacing(spot);
 		Direction along = facing.getClockWise();
 		int roofY = centre.getY() + 4; // three blocks of headroom
 		for (int k = -1; k <= 1; k++) {
@@ -516,9 +560,13 @@ public class CampPiece extends StructurePiece {
 
 	// --- the underground room ---------------------------------------------------------------------
 
-	/** The room's interior half-width (5x5 in small and medium camps, 7x7 in large). */
+	/** The room's interior half-width toward the stairs. */
 	private int roomHalf() {
-		return size == CampTuning.Size.LARGE ? 3 : 2;
+		return plan.stairs.getAxis() == Direction.Axis.X ? plan.roomHalfX : plan.roomHalfZ;
+	}
+
+	private BlockPos roomCentre() {
+		return centre.offset(plan.roomDx, 0, plan.roomDz);
 	}
 
 	/** The room's floor block level (its air is the three above). */
@@ -533,33 +581,43 @@ public class CampPiece extends StructurePiece {
 	 */
 	private void room(ClippedBuild b) {
 		int h = roomHalf();
+		int hx = plan.roomHalfX;
+		int hz = plan.roomHalfZ;
 		int floor = roomFloor();
-		int cx = centre.getX();
-		int cz = centre.getZ();
+		int cx = roomCentre().getX();
+		int cz = roomCentre().getZ();
 		Direction out = plan.stairs;
-		Direction side = out.getClockWise();
+		Direction side = plan.stairsClockwise ? out.getClockWise() : out.getCounterClockWise();
 		Direction.Axis beams = out.getAxis() == Direction.Axis.X ? Direction.Axis.Z : Direction.Axis.X;
-		for (int dx = -h - 1; dx <= h + 1; dx++) {
-			for (int dz = -h - 1; dz <= h + 1; dz++) {
+		for (int dx = -hx - 1; dx <= hx + 1; dx++) {
+			for (int dz = -hz - 1; dz <= hz + 1; dz++) {
 				int x = cx + dx;
 				int z = cz + dz;
-				boolean wall = Math.abs(dx) == h + 1 || Math.abs(dz) == h + 1;
-				RandomSource cell = RandomSource.create(seed ^ (x * 73428767L) ^ (z * 912931L) ^ 0x900DL);
+				boolean wall = Math.abs(dx) == hx + 1 || Math.abs(dz) == hz + 1;
+				RandomSource cell = RandomSource.create(net.minecraft.world.level.levelgen.RandomSupport.mixStafford13(seed) ^ (x * 73428767L) ^ (z * 912931L) ^ 0x900DL);
 				float roll = cell.nextFloat();
 				float wallRoll = cell.nextFloat();
-				b.put(x, floor, z, wall ? kind.rock(roll) : kind.trodden(roll));
+				b.put(x, floor, z, wall ? kind.rock(roll) : fullBlock(kind.trodden(roll)));
 				for (int y = floor + 1; y <= floor + 3; y++) {
 					b.put(x, y, z, wall ? kind.rock(wallRoll) : Blocks.AIR.defaultBlockState());
 				}
 				boolean beam = !wall && Math.floorMod(out.getAxis() == Direction.Axis.X ? dx : dz, 2) == 0;
 				b.put(x, floor + 4, z, wall ? kind.rock(roll) : beam ? kind.log().trySetValue(RotatedPillarBlock.AXIS, beams) : kind.planks());
-				boolean corner = Math.abs(dx) == h && Math.abs(dz) == h;
+				boolean corner = Math.abs(dx) == hx && Math.abs(dz) == hz;
 				if (corner && roll < 0.7F) {
 					b.put(x, floor + 3, z, Blocks.COBWEB.defaultBlockState());
 				} else if (!wall && !corner && roll < 0.06F) {
 					b.put(x, floor + 1, z, Blocks.BONE_BLOCK.defaultBlockState());
 				}
 			}
+		}
+		// room chest: the far side from the stairs, in a corner
+		int chestX = cx - out.getStepX() * h + (side.getStepX() != 0 ? -side.getStepX() * hx : 0);
+		int chestZ = cz - out.getStepZ() * h + (side.getStepZ() != 0 ? -side.getStepZ() * hz : 0);
+		if (b.inside(chestX, floor + 1, chestZ)) {
+			b.put(chestX, floor + 1, chestZ, Blocks.CHEST.defaultBlockState().setValue(ChestBlock.FACING, out));
+			RandomizableContainer.setBlockEntityLootTable(b.level(), RandomSource.create(net.minecraft.world.level.levelgen.RandomSupport.mixStafford13(seed) ^ 0x500DL), new BlockPos(chestX, floor + 1, chestZ),
+					Camps.CAMP_ROOM_LOOT);
 		}
 		// The stair tunnel: from the room's edge up to the ground, 2 wide, walled either side.
 		for (int w = 0; w <= 1; w++) {
@@ -570,7 +628,7 @@ public class CampPiece extends StructurePiece {
 				if (i >= 1 && i <= 5) {
 					b.put(x, step, z, kind.stairs().setValue(net.minecraft.world.level.block.StairBlock.FACING, out));
 				} else if (i == 0) {
-					b.put(x, step, z, kind.trodden(0.1F));
+					b.put(x, step, z, fullBlock(kind.trodden(0.1F)));
 				}
 				int clearTo = i >= 3 ? Math.max(step + 3, centre.getY() + 2) : step + 3;
 				for (int y = step + 1; y <= clearTo; y++) {
@@ -585,6 +643,18 @@ public class CampPiece extends StructurePiece {
 				}
 			}
 		}
+		// the tunnel's mouth: trees and plants cleared round it, back to the clearing
+		for (int i = 3; i <= 9; i++) {
+			for (int w = -1; w <= 2; w++) {
+				b.clearCover(cx + out.getStepX() * (h + 1 + i) + side.getStepX() * w, cz + out.getStepZ() * (h + 1 + i) + side.getStepZ() * w, 20);
+			}
+		}
+		for (int i = 0; i <= h + 1; i++) {
+			for (int w = -1; w <= 2; w++) {
+				b.clearCover(centre.getX() + out.getStepX() * (size.radius + i) + side.getStepX() * w,
+						centre.getZ() + out.getStepZ() * (size.radius + i) + side.getStepZ() * w, 20);
+			}
+		}
 	}
 
 	/**
@@ -594,21 +664,23 @@ public class CampPiece extends StructurePiece {
 	 */
 	public List<BlockPos> shadeSpots() {
 		List<BlockPos> spots = new ArrayList<>();
-		int h = roomHalf();
-		for (int dx = -h; dx <= h; dx++) {
-			for (int dz = -h; dz <= h; dz++) {
-				spots.add(new BlockPos(centre.getX() + dx, roomFloor() + 1, centre.getZ() + dz));
+		BlockPos room = roomCentre();
+		for (int dx = -plan.roomHalfX; dx <= plan.roomHalfX; dx++) {
+			for (int dz = -plan.roomHalfZ; dz <= plan.roomHalfZ; dz++) {
+				spots.add(new BlockPos(room.getX() + dx, roomFloor() + 1, room.getZ() + dz));
 			}
 		}
-		Direction facing = leanToFacing();
-		Direction along = facing.getClockWise();
-		for (int k = -1; k <= 1; k++) {
-			for (int row = 0; row <= 1; row++) {
-				if (row == 0 && k != 0) {
-					continue;
+		for (Spot leanTo : plan.leanTos) {
+			Direction facing = leanToFacing(leanTo);
+			Direction along = facing.getClockWise();
+			for (int k = -1; k <= 1; k++) {
+				for (int row = 0; row <= 1; row++) {
+					if (row == 0 && k != 0) {
+						continue;
+					}
+					spots.add(new BlockPos(leanTo.x + along.getStepX() * k - facing.getStepX() * row, centre.getY() + 1,
+							leanTo.z + along.getStepZ() * k - facing.getStepZ() * row));
 				}
-				spots.add(new BlockPos(plan.leanTo.x + along.getStepX() * k - facing.getStepX() * row, centre.getY() + 1,
-						plan.leanTo.z + along.getStepZ() * k - facing.getStepZ() * row));
 			}
 		}
 		for (Tower t : plan.towers) {

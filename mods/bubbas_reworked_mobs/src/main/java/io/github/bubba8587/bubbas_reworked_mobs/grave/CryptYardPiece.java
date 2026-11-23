@@ -171,11 +171,11 @@ public class CryptYardPiece extends StructurePiece {
 				b.clearCover(x, z, 24);
 			}
 		}
-		fence(b, RandomSource.create(seed ^ 0xFE11CEL));
-		path(b, RandomSource.create(seed ^ 0x9A7AL));
-		graves(b, RandomSource.create(seed ^ 0x6A4E5L));
+		fence(b, RandomSource.create(net.minecraft.world.level.levelgen.RandomSupport.mixStafford13(seed) ^ 0xFE11CEL));
+		path(b, RandomSource.create(net.minecraft.world.level.levelgen.RandomSupport.mixStafford13(seed) ^ 0x9A7AL));
+		graves(b, RandomSource.create(net.minecraft.world.level.levelgen.RandomSupport.mixStafford13(seed) ^ 0x6A4E5L));
 		if (crypt) {
-			vault(b, RandomSource.create(seed ^ 0xC4F97L));
+			vault(b, RandomSource.create(net.minecraft.world.level.levelgen.RandomSupport.mixStafford13(seed) ^ 0xC4F97L));
 		}
 	}
 
@@ -248,7 +248,7 @@ public class CryptYardPiece extends StructurePiece {
 		int gate = gateX(origin, width);
 		Set<Long> bars = new java.util.LinkedHashSet<>();
 		Set<Long> posts = new java.util.LinkedHashSet<>();
-		int lanternSide = RandomSource.create(seed ^ 0x1A7E2L).nextBoolean() ? 2 : -2;
+		int lanternSide = RandomSource.create(net.minecraft.world.level.levelgen.RandomSupport.mixStafford13(seed) ^ 0x1A7E2L).nextBoolean() ? 2 : -2;
 		for (int x = minX(); x <= maxX(); x++) {
 			for (int z = minZ(); z <= maxZ(); z++) {
 				boolean edge = x == minX() || x == maxX() || z == minZ() || z == maxZ();
@@ -360,7 +360,7 @@ public class CryptYardPiece extends StructurePiece {
 		}
 		// One or two grave spots hold a tree instead (none in deserts), picked from the seed.
 		Set<Long> treeSlots = new HashSet<>();
-		RandomSource treeRandom = RandomSource.create(seed ^ 0x7EE5L);
+		RandomSource treeRandom = RandomSource.create(net.minecraft.world.level.levelgen.RandomSupport.mixStafford13(seed) ^ 0x7EE5L);
 		int treeCount = trees == YardTrees.NONE || slots.isEmpty() ? 0 : treeRandom.nextFloat() < 0.35F ? 2 : treeRandom.nextFloat() < 0.75F ? 1 : 0;
 		for (int i = 0; i < treeCount; i++) {
 			int[] slot = slots.get(treeRandom.nextInt(slots.size()));
@@ -368,7 +368,7 @@ public class CryptYardPiece extends StructurePiece {
 		}
 		for (int[] slot : slots) {
 			if (treeSlots.contains(BlockPos.asLong(slot[0], 0, slot[1]))) {
-				tree(b, slot[0], slot[1] - 1, RandomSource.create(seed ^ BlockPos.asLong(slot[0], 0, slot[1])));
+				tree(b, slot[0], slot[1] - 1, RandomSource.create(net.minecraft.world.level.levelgen.RandomSupport.mixStafford13(seed) ^ BlockPos.asLong(slot[0], 0, slot[1])));
 			} else {
 				grave(b, random, slot[0], slot[1]);
 			}
@@ -567,8 +567,10 @@ public class CryptYardPiece extends StructurePiece {
 			for (int side = -1; side <= 1; side += 2) {
 				int wx = gate + side * (VAULT_HALF_WIDTH + 1);
 				b.put(wx, floor, z, Blocks.AIR.defaultBlockState());
-				b.put(wx + side, floor, z, bricks(random));
+				b.put(wx + side, floor, z, Blocks.AIR.defaultBlockState());
+				b.put(wx + side * 2, floor, z, bricks(random));
 				b.put(wx, floor + 1, z, Blocks.STONE_BRICK_SLAB.defaultBlockState());
+				b.put(wx + side, floor + 1, z, Blocks.STONE_BRICK_SLAB.defaultBlockState());
 				if (random.nextFloat() < 0.8F) {
 					UndeadVariant variant = climate.crypt(random.nextFloat(), 0.6F);
 					b.sleeper(wx, floor, z, variant, SleeperPose.LYING, side < 0 ? Direction.EAST : Direction.WEST, random, true);
@@ -629,6 +631,7 @@ public class CryptYardPiece extends StructurePiece {
 					int wx = gate + side * 2;
 					int y = floor + level * 2;
 					b.put(wx, y, z, Blocks.AIR.defaultBlockState());
+					b.put(wx + side, y, z, Blocks.AIR.defaultBlockState());
 					if (roll < 0.85F || level == 1) {
 						UndeadVariant variant = climate.crypt(who, 0.7F);
 						b.sleeper(wx, y, z, variant, SleeperPose.LYING, side < 0 ? Direction.EAST : Direction.WEST, random, false, 0.4F);
@@ -736,8 +739,11 @@ public class CryptYardPiece extends StructurePiece {
 				int x = gate + side * k;
 				for (int wz : new int[] { mid - 2, mid + 2 }) {
 					float roll = random.nextFloat();
+					int back = wz < mid ? wz - 1 : wz + 1;
 					b.put(x, floor, wz, Blocks.AIR.defaultBlockState());
+					b.put(x, floor, back, Blocks.AIR.defaultBlockState());
 					b.put(x, floor + 1, wz, Blocks.POLISHED_ANDESITE_SLAB.defaultBlockState());
+					b.put(x, floor + 1, back, Blocks.POLISHED_ANDESITE_SLAB.defaultBlockState());
 					if (roll < 0.85F) {
 						b.sleeper(x, floor, wz, climate.crypt(random.nextFloat(), 0.5F), SleeperPose.LYING,
 								wz < mid ? Direction.SOUTH : Direction.NORTH, random, true, 0.85F);

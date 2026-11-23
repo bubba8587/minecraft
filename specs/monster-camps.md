@@ -40,7 +40,11 @@ Owner's design (2026-11-22), building on the earlier idea in `docs/research/camp
 - **No campfires or other fire, and no light at all (owner, 2026-11-22): camps are dark.** Fire would ward their own monsters (`specs/undead.md` "Fire as a weak ward") and would make camps too easy to find and see. Dead (unlit) campfires as decoration are fine.
 - Sizes and layouts vary. All deterministic from the seed.
 
-## Layout variety (owner, 2026-11-22; designed, not built)
+## Layout variety (owner, 2026-11-22; parameters built 2026-11-22, skull domes designed)
+
+- **Built:** the plan seed is mixed first (`RandomSupport.mixStafford13`), so close seeds no longer share a layout. Per camp: 0 to `maxTowers` towers (small 1, medium 2, large 3) spread round the clearing; 0 to outcrops+1 outcrops; 0 to outcrops+2 pikes; 1-2 lean-tos (1 in small camps); the stairs on any side but the first tower's, turning either way; the room 1 to `maxRoomHalf` half-wide across (small 2, medium 3, large 4), keeping the old reach toward the stairs (2, large 3) so the tunnel still surfaces, shifted up to a block off centre (never toward the stairs). With no tower, the first banner stands on the ground. The tunnel's mouth is cleared of trees back to the clearing. Room floors and the stair landing are always full blocks (mud becomes packed mud). Each room has a small chest (`chests/camp_room`: bones, arrows, flesh, coal, nuggets, string, sometimes an ingot, emerald, golden carrots or a book).
+- **Highland biomes** added to `has_structure/monster_camp`: windswept gravelly hills and savanna, snowy slopes, stony, jagged and frozen peaks, stony shore. Rough ground is still skipped (`MAX_SLOPE` 6); levelling it is open.
+
 
 - **Rock and bone caves: large skull domes** as a camp form, inspired by Breath of the Wild's skull-rock camps. Use it as a starting point, not something to copy (owner: "you wouldn't be able to copy them directly anyway"). Build it from Minecraft blocks: a big dome shaped like a skull, from bone blocks, calcite, stone and tuff, with eye-socket openings and a mouth entrance. The roster lives inside, dark, as camps are.
 - **Varying numbers of every element:** towers, lean-tos, outcrops, pikes and the rest. Each camp picks its own count of each (zero is allowed where it reads well), so no two camps share a layout. Large camps can have several towers.
@@ -108,7 +112,7 @@ Owner's design (2026-11-22), building on the earlier idea in `docs/research/camp
 
 ### Frequency
 
-Structure set `monster_camps`: random spread, **spacing 10 chunks, separation 3**, kept **4 chunks clear of villages** (vanilla outposts do the same; a first run had a camp cutting through a village house). A camp needs fairly flat ground (rise of at most 6 across it), a dry centre and its biome at the centre and four corners, so only about 15% of tries make a camp.
+Structure set `monster_camps`: random spread, **spacing 14 chunks, separation 5** (was 10/3; owner 2026-11-22: "two bumps down", about half as many), kept **4 chunks clear of villages** (vanilla outposts do the same; a first run had a camp cutting through a village house). A camp needs fairly flat ground (rise of at most 6 across it), a dry centre and its biome at the centre and four corners, so only about 15% of tries make a camp.
 
 Measured by the client part `camps` (seed 20261116, every placement cell within 2048 blocks of spawn, 16.8 km²):
 - **5.9 camps per 1000 x 1000 blocks**: skeleton 2.6, zombie 2.7 per km²; husk, stray and bogged 0.2 each (they depend on how much desert, snow and swamp there is; this seed has little near spawn).
@@ -153,6 +157,6 @@ Measured by the client part `camps` (seed 20261116, every placement cell within 
 
 ## Open
 
-- **Playtest numbers:** spacing (10 chunks, about 6 camps per km²), trigger range, roster sizes, the leader, camp loot: starting values above.
+- **Playtest numbers:** spacing (14 chunks, roughly half the old 3.2 camps per km²), trigger range, roster sizes, the leader, camp loot: starting values above.
 - **Natural forest camps** sit among uncleared trees (leaves crowd the towers); worth a look.
 - **Builder's calls to review:** the Builder's choices list above (camp bogged don't lurk, re-arming waits for the next daily check, rosters show for creative players).

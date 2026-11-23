@@ -129,7 +129,7 @@ public final class FactoryDesign {
 		this.seed = seed;
 		this.mob = mob;
 		this.city = city;
-		this.random = RandomSource.create(seed);
+		this.random = RandomSource.create(net.minecraft.world.level.levelgen.RandomSupport.mixStafford13(seed));
 		for (int i = 0; i < this.phase.length; i++) {
 			this.phase[i] = this.random.nextDouble() * Math.PI * 2.0;
 		}

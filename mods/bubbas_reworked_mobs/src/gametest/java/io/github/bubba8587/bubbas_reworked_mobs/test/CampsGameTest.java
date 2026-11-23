@@ -214,8 +214,8 @@ public class CampsGameTest {
 				above++;
 			}
 		}
-		helper.assertTrue(room >= 20, "most of the small camp's 5x5 room should be usable shade (a few cells hold bones), found " + room);
-		helper.assertTrue(above >= 4, "shade above ground (lean-to, towers), found " + above);
+		helper.assertTrue(room >= 4, "the room should be usable shade, found " + room);
+		helper.assertTrue(above >= 2, "shade above ground (lean-tos, towers), found " + above);
 		// A zombie on the tunnel's stairs can walk down into the room. (The tunnel surfaces just past this small test
 		// field's barrier wall; the whole walk from the surface is checked on a natural camp in the client part camps.)
 		Mob walker = net.minecraft.world.entity.EntityTypes.ZOMBIE.create(level, net.minecraft.world.entity.EntitySpawnReason.COMMAND);

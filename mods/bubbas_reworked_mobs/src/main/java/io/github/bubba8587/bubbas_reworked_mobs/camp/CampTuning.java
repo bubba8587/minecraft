@@ -5,23 +5,25 @@ import net.minecraft.util.RandomSource;
 
 /** Numbers for monster camps (specs/monster-camps.md). Builder's starting values, for the owner to playtest. */
 public final class CampTuning {
-	/** Camp sizes: clearing radius, roster (not counting the leader), towers, banners, outcrops, chance of each. */
+	/** Camp sizes: clearing radius, roster (not counting the leader), most towers, banners, outcrops, largest room half-width, chance of each. */
 	public enum Size {
-		SMALL(6, 3, 1, 1, 1, 0.45F),
-		MEDIUM(8, 5, 1, 2, 2, 0.35F),
-		LARGE(11, 7, 2, 3, 3, 0.20F);
+		SMALL(6, 3, 1, 1, 1, 2, 0.45F),
+		MEDIUM(8, 5, 2, 2, 2, 3, 0.35F),
+		LARGE(11, 7, 3, 3, 3, 4, 0.20F);
 
 		public final int radius;
 		public final int roster;
-		public final int towers;
+		public final int maxTowers;
 		public final int banners;
 		public final int outcrops;
+		public final int maxRoomHalf;
 		final float weight;
 
-		Size(int radius, int roster, int towers, int banners, int outcrops, float weight) {
+		Size(int radius, int roster, int maxTowers, int banners, int outcrops, int maxRoomHalf, float weight) {
 			this.radius = radius;
 			this.roster = roster;
-			this.towers = towers;
+			this.maxTowers = maxTowers;
+			this.maxRoomHalf = maxRoomHalf;
 			this.banners = banners;
 			this.outcrops = outcrops;
 			this.weight = weight;
