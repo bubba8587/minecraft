@@ -63,10 +63,10 @@ Left for next session:
 - **17 rest:** level rough high ground for camps (cut and fill or `terrain_adaptation`) instead of skipping anything over 6 blocks of slope.
 - **19, builder endermen stand still almost all night (owner, 2026-11-23),** then teleport out at dawn, sometimes without placing their block.
   - **Likely cause:** `EndermanJobGoal.plan`. A builder whose block can't go in yet ("the blocks under it are still missing") takes the WAIT job: it stands in the cairn's ring and rechecks every second. If the block below it never arrives (that builder despawned or failed, or no builder carries it), every builder above it waits all night. The new caretaker rule from item 8 could also refuse a spot. Confirm with a test that spawns builders for a half-built cairn and logs each one's job over a night.
-  - **Plan:**
-    - waiting builders don't freeze: they place what they can, otherwise do caretaker work nearby (vanilla stroll near the cairn);
-    - if the block they need underneath has no builder, one of them fetches it, or the cairn spawns a builder for it;
-    - a builder still holding its block near dawn sets it at the nearest valid spot, or drops it at the cairn, instead of leaving with it.
+  - **Owner's direction (2026-11-23):** a builder whose block can't go in yet **just sets it down somewhere nearby** (on valid ground near the cairn, not on the cairn or the pad) and carries on. No waiting job. Later endermen pick it up and move it into place when it fits, through the existing take-and-deliver system.
+    - Check that the take side really finds blocks the cairn needs lying near it, and add that if it doesn't.
+    - The WAIT job and ring places can go.
+    - **Test:** builders arriving out of order with blocks for a half-built cairn finish it over one or two nights, with no builder standing idle.
 - **20, camp generation broken by the variety change (owner, 2026-11-23: "a lot of broken camp generation caused by the variety tweaks").** Helper A's merge (`8956912`) varied tower counts, stair side and turn, and the room's width and offset; it was tested only on a few seeds. First thing next session:
   - render 20+ seeds per kind and size in a client test and look at every shot;
   - find what breaks (overlapping pieces, towers clipping outcrops, stairs or tunnels cut off, rooms breaking the surface, half-built pieces on chunk seams);
