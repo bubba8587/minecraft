@@ -286,7 +286,7 @@ public final class CairnSites {
 		Holder<Biome> biome = generator.getBiomeSource().createUncachedResolver(randomState)
 				.getNoiseBiome(QuartPos.fromBlock(origin.getX()), QuartPos.fromBlock(origin.getY()), QuartPos.fromBlock(origin.getZ()));
 		Direction pointer = strongholdDirection(level, origin, seed);
-		return new CairnSite(origin, seed, pointer, CairnDesign.design(seed, offerings(biome), pointer, groundAt));
+		return new CairnSite(origin, seed, pointer, CairnDesign.designed(seed, offerings(biome), pointer, groundAt));
 	}
 
 	static CairnDesign.Offerings offerings(Holder<Biome> biome) {

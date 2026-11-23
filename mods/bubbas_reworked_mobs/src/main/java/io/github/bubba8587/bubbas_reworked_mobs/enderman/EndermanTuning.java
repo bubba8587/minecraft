@@ -138,6 +138,15 @@ public final class EndermanTuning {
 	/** Breaking a cairn block, or hitting an enderman near a site, angers endermen within this distance. */
 	public static final double ANGER_RADIUS = 24.0;
 
+	// --- trading at cairns ---
+	/** Trade pad check interval. */
+	public static final int TRADE_CHECK_TICKS = 20;
+	/** No player (not spectating) within this many blocks of the pad: the endermen come for the item. */
+	public static final double TRADE_QUIET_RANGE = 16.0;
+	/** The answer comes back after this long, plus up to the spread. */
+	public static final int TRADE_RETURN_MIN_TICKS = 200;
+	public static final int TRADE_RETURN_SPREAD_TICKS = 400;
+
 	// --- cairn offerings (Totems & Artifacts' Totem of the Beginning, through api/Endermen) -----------------
 	/** The share of cairns (picked from each site's seed) whose endermen leave an offering once it is complete. */
 	public static final float OFFERING_SHARE = 0.15F;

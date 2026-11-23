@@ -41,6 +41,8 @@ public final class Endermen {
 		ServerTickEvents.END_LEVEL_TICK.register(EndermanHoles::tick);
 		Object registerGifts = CairnGifts.GIFTS; // registers the attachment before any level loads
 		ServerTickEvents.END_LEVEL_TICK.register(CairnGifts::tick);
+		Object registerTrades = CairnTrades.TRADES;
+		ServerTickEvents.END_LEVEL_TICK.register(CairnTrades::tick);
 		ServerTickEvents.END_LEVEL_TICK.register(EndermanNexus::tick);
 		ServerTickEvents.END_LEVEL_TICK.register(Ripples::tick);
 		PlayerBlockBreakEvents.AFTER.register((level, player, pos, state, blockEntity) -> {

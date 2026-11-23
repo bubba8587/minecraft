@@ -26,8 +26,15 @@ public final class CairnSite {
 	private final List<BlockPos> order = new ArrayList<>();
 	private final Long2ObjectOpenHashMap<BlockState> blocks = new Long2ObjectOpenHashMap<>();
 	private final BoundingBox box;
+	private final @Nullable BlockPos tradeSpot;
 
 	CairnSite(BlockPos origin, long seed, Direction pointer, List<Map.Entry<BlockPos, BlockState>> design) {
+		this(origin, seed, pointer, new CairnDesign.Designed(design, null));
+	}
+
+	CairnSite(BlockPos origin, long seed, Direction pointer, CairnDesign.Designed designed) {
+		List<Map.Entry<BlockPos, BlockState>> design = designed.blocks();
+		this.tradeSpot = designed.tradeSpot() == null ? null : origin.offset(designed.tradeSpot());
 		this.origin = origin;
 		this.seed = seed;
 		this.pointer = pointer;
@@ -52,6 +59,11 @@ public final class CairnSite {
 	/** The horizontal direction of the nearest stronghold (the tallest end rod points this way). */
 	public Direction pointer() {
 		return pointer;
+	}
+
+	/** Where an item lies on the trade pad, or null when the cairn has none. */
+	public @Nullable BlockPos tradeSpot() {
+		return tradeSpot;
 	}
 
 	public BoundingBox box() {

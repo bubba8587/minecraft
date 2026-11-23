@@ -9,6 +9,7 @@
 		"EntityRenderStateMeterMixin",
 		"GrabbedHintMixin",
 		"HeldVictimPoseMixin",
+		"LayItemPickMixin",
 		"MeterBarMixin",
 		"StormieClimberRenderMixin"
 	],
