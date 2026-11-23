@@ -54,17 +54,17 @@ public class BubbasWorldTweaksClientGameTest implements FabricClientGameTest {
 				// One bubble close up, from above and from the side
 				context.runOnClient(mc -> mc.player.snapTo(x + 0.5, y + 1.6, z - 0.5, 0.0F, 40.0F));
 				bubbles(context, x + 0.1, x + 0.9, y, z, z + 0.7, 3, 4);
-				context.waitTicks(12);
+				context.waitTicks(40);
 				context.takeScreenshot("lava-bubble-close" + sfx);
 				context.runOnClient(mc -> mc.player.snapTo(x + 0.5, y + 1.05, z - 0.8, 0.0F, 8.0F));
 				bubbles(context, x - 0.6, x + 1.6, y, z + 0.6, z + 1.6, 3, 4);
-				context.waitTicks(12);
+				context.waitTicks(40);
 				context.takeScreenshot("lava-bubble-side" + sfx);
 
 				// A bubbling magma patch, medium distance
 				context.runOnClient(mc -> mc.player.snapTo(x + 0.5, y + 4.0, z - 5.5, 0.0F, 38.0F));
 				for (int wave = 0; wave < 3; wave++) {
-					bubbles(context, x - 3.5, x + 3.5, y, z - 3.0, z + 3.0, 18, 6);
+					bubbles(context, x - 3.5, x + 3.5, y, z - 3.0, z + 3.0, 2, 20);
 				}
 				context.takeScreenshot("lava-bubbles-patch" + sfx);
 

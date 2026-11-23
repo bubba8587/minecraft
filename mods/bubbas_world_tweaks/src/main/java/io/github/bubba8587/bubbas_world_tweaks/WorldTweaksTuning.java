@@ -9,11 +9,11 @@ public final class WorldTweaksTuning {
 	/** How deep under a lava surface a magma block still makes it bubble. */
 	public static final int MAGMA_DEPTH = 4;
 	/** Chance per lava display tick that a bubble rises. */
-	public static final float BUBBLE_CHANCE = 0.18F;
+	public static final float BUBBLE_CHANCE = 0.006F;
 	/** A bubble swells for this many ticks (plus up to BUBBLE_LIFE_SPREAD more), then pops over POP_TICKS. */
-	public static final int BUBBLE_SWELL_TICKS = 16;
-	public static final int BUBBLE_LIFE_SPREAD = 8;
-	public static final int BUBBLE_POP_TICKS = 5;
+	public static final int BUBBLE_SWELL_TICKS = 50;
+	public static final int BUBBLE_LIFE_SPREAD = 30;
+	public static final int BUBBLE_POP_TICKS = 6;
 	/** The plop. */
 	public static final float PLOP_PITCH = 0.5F;
 	public static final float PLOP_VOLUME = 0.55F;

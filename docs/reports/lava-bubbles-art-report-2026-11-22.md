@@ -18,3 +18,13 @@ Branch `lava-bubbles-art`, off develop. This was owner feedback: the bubbles loo
   - `lava-geyser-vs-sulfur`: our geyser beside vanilla's geyser particle over a water pit. A `potent_sulfur[state=continuous]` block alone didn't erupt in the test, so the shot spawns vanilla's `GEYSER` particle there.
 - **Rows in `docs/art-todo.md` updated:** the bubble row now describes the new method, and a soot plume row was added. texcheck OK.
 - **Still open:** the bubbles now blend in so well that from a medium distance they're subtle. That's by design, per the feedback; it's easy to brighten if the owner wants them more visible.
+
+## Slower and sparser (owner: "much too fast and frequent. lava bubbles should be slow and sparse")
+
+| What | Was | Now |
+|---|---|---|
+| `BUBBLE_CHANCE` per lava display tick over magma | 0.18 (about 12 bubbles a second over a 9x9 pool) | 0.006 (about one every 2 s over the same pool) |
+| Swell `BUBBLE_SWELL_TICKS` + `BUBBLE_LIFE_SPREAD` | 16 + 0-8 ticks (about 1 s) | 50 + 0-30 ticks (2.5-4 s) |
+| Pop `BUBBLE_POP_TICKS` | 5 | 6 |
+
+The client shots spawn their own bubbles, so they don't show the rate; the owner judges that in play. Core 4/4.
