@@ -172,7 +172,7 @@ public enum CampKind {
 		return this == ZOMBIE || this == HUSK ? Blocks.ZOMBIE_HEAD.defaultBlockState() : Blocks.SKELETON_SKULL.defaultBlockState();
 	}
 
-	/** A scrap of plant life round the camp's edge, or null. */
+	/** A scrap of plant life round the camp's edge. */
 	public BlockState weed(float roll) {
 		return switch (this) {
 			case SKELETON, ZOMBIE -> roll < 0.5F ? Blocks.SHORT_GRASS.defaultBlockState() : Blocks.FERN.defaultBlockState();

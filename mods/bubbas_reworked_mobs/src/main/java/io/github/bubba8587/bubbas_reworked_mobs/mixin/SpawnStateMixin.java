@@ -17,11 +17,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-/**
- * The natural monster cap cut. {@code canSpawn} is the per-mob test natural spawning runs after a position and mob
- * were picked (and only there), so the cut sees the mob type and position: biome spawns get the scaled cap, structure
- * spawn lists keep vanilla's. Vanilla's random creeper spawns are blocked here too (watchers replace them, specs/creepers.md), and so are overworld enderman spawns (cairn sites replace them, specs/endermen.md); structure spawns keep them. Injecting at HEAD and only ever returning false composes with other spawn mods.
- */
+/** Natural monster cap cut and the natural creeper block (specs/undead.md "monster cap", specs/creepers.md). */
 @Mixin(targets = "net.minecraft.world.level.NaturalSpawner$SpawnState")
 abstract class SpawnStateMixin {
 	@Shadow

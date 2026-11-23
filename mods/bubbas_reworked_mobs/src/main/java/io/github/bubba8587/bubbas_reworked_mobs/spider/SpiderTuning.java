@@ -89,8 +89,6 @@ public final class SpiderTuning {
 	public static final int GIANT_SPAWN_WEIGHT = 12;
 	public static final double GIANT_SPACING = 48.0;
 
-	/** Livestock: how far it notices an animal to snatch, and how close an animal must be to lure it off a player. */
-	public static final double SNATCH_RANGE = 16.0;
 	public static final double LURE_RADIUS = 10.0;
 	/** A player who hurt it in the last this many ticks isn't dropped for livestock. */
 	public static final int LURE_IGNORED_AFTER_HURT_TICKS = 100;

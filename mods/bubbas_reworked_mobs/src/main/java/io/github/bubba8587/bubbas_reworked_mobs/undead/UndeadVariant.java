@@ -61,10 +61,6 @@ public enum UndeadVariant {
 		this.attributes = attributes;
 	}
 
-	public String variantName() {
-		return name;
-	}
-
 	public String sleeperId() {
 		return name + "_sleeper";
 	}

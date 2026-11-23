@@ -187,17 +187,6 @@ public final class CairnSite {
 		return null;
 	}
 
-	/** The lowest missing block that can be placed now, or null (the cairn is complete or nothing is reachable). */
-	public @Nullable BlockPos nextBuildable(ServerLevel level) {
-		for (BlockPos pos : order) {
-			BlockState want = blocks.get(pos.asLong());
-			if (level.isLoaded(pos) && !TerrainKinds.matches(level.getBlockState(pos), want) && canPlace(level, pos, want)) {
-				return pos;
-			}
-		}
-		return null;
-	}
-
 	/** The lowest missing, placeable spot that wants {@code carried}'s block, or null. */
 	public @Nullable BlockPos spotFor(ServerLevel level, BlockState carried) {
 		for (BlockPos pos : order) {

@@ -34,7 +34,6 @@ import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import io.github.bubba8587.bubbas_reworked_mobs.world.LoadedBlockEntities;
 import net.minecraft.world.level.block.StairBlock;
 import net.minecraft.world.level.block.WallBlock;
-import net.minecraft.world.level.block.WeepingVinesBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
@@ -43,18 +42,7 @@ import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.block.state.properties.SlabType;
 import org.jspecify.annotations.Nullable;
 
-/**
- * An Ancient Fabricator's whole build (the mob factory of specs/mob-factory.md; owner's name, 2026-11-16), worked out from a seed and the factory's mob: a pure function,
- * so worldgen can later place it chunk by chunk. Local coordinates: the origin is the first air block above the
- * middle of the platform; +z is the front (the entrance tunnel), -z the back (the face wall), +x the Warden's tower.
- *
- * <p>Parts, back to front: a squashed dome cavern (radius about 21, floor 8 below the platform, 22 high in the
- * middle) lined with sculk; the <b>ceiling growth</b> (a 5-block mass of bone, basalt and wart with hanging spikes,
- * shroomlight bulbs and weeping vines; the inert spawner buried in it, the upside-down beacon set into it); the
- * <b>platform</b> (deepslate tiles on brick pillars, lit redstone lamps, the floor beacon on an iron inlay, the
- * teleporter pad, candles, sensors); the <b>face wall</b> (the mob's 8 x 8 face at 2 blocks a pixel,
- * {@link FactoryFaces}); the Warden's <b>tower</b> with its window, ledge and stairs down; and a tunnel out front.
- */
+/** An Ancient Fabricator's whole build from a seed and mob, in local coordinates (specs/mob-factory.md). */
 public final class FactoryDesign {
 	// Bounds of the local grid.
 	private static final int MIN_X = -34;
@@ -147,11 +135,6 @@ public final class FactoryDesign {
 		}
 	}
 
-	/** The design for this seed and mob (deterministic), with the old winding tunnel out of the front. */
-	public static FactoryDesign design(long seed, Mob mob) {
-		return design(seed, mob, null);
-	}
-
 	/**
 	 * The design for this seed and mob, its entrance tunnel running to an ancient city whose centre is at {@code city}
 	 * (local coordinates; null for the plain winding tunnel). Deterministic.
@@ -219,18 +202,6 @@ public final class FactoryDesign {
 		return this.timerLamps;
 	}
 
-	public List<BlockPos> chests() {
-		return this.chests;
-	}
-
-	public Mob mob() {
-		return this.mob;
-	}
-
-	public long seed() {
-		return this.seed;
-	}
-
 	/** Local position of the buried spawner. */
 	public BlockPos spawner() {
 		return this.spawner;
@@ -244,12 +215,12 @@ public final class FactoryDesign {
 		return this.ceilingBeacon;
 	}
 
-	/** Where the Warden stands (feet), local. It looks toward -x, out of its window. */
 	/** Local position of the office jukebox. */
 	public BlockPos jukebox() {
 		return this.jukebox;
 	}
 
+	/** Where the Warden stands (feet), local; it looks toward -x. */
 	public BlockPos wardenSpot() {
 		return this.warden;
 	}
@@ -577,16 +548,6 @@ public final class FactoryDesign {
 		}
 		if (!nearBeam(x0, z0, 1.5) && isOpen(x0, y, z0)) {
 			solid(x0, y, z0, hash(x0, y, z0, 36) < 0.2 ? Blocks.CRYING_OBSIDIAN.defaultBlockState() : Blocks.WARPED_WART_BLOCK.defaultBlockState());
-		}
-	}
-
-	private void hangVines(int x, int y, int z, int length) {
-		for (int i = 0; i < length; i++) {
-			if (!isOpen(x, y - i - 1, z) || i == length - 1) {
-				attach(x, y - i, z, Blocks.WEEPING_VINES.defaultBlockState().setValue(WeepingVinesBlock.AGE, 25));
-				return;
-			}
-			attach(x, y - i, z, Blocks.WEEPING_VINES_PLANT.defaultBlockState());
 		}
 	}
 

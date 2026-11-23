@@ -145,7 +145,7 @@ public class GiantSpiderGameTest {
 		SpunWeb second = level.getEntitiesOfClass(SpunWeb.class, room(helper)).getFirst();
 		player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.SHEARS));
 		Vec3 cutAt = second.position().add(second.strands().getFirst().a().lerp(second.strands().getFirst().b(), 0.5));
-		second.interact(player, InteractionHand.MAIN_HAND, cutAt);
+		second.interact(player, InteractionHand.MAIN_HAND, cutAt.subtract(second.position())); // vanilla sends it relative
 		helper.assertTrue(second.isRemoved(), "shears didn't cut it");
 		// The string falls from the cut.
 		int string = level.getEntitiesOfClass(ItemEntity.class, new AABB(cutAt, cutAt).inflate(1.0), e -> e.getItem().is(Items.STRING)).stream()

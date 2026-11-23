@@ -39,7 +39,7 @@ import net.fabricmc.fabric.api.loot.v3.LootTableSource;
  * replaced is left alone. Odds and weights are in {@link MiningTuning}.
  */
 public final class MiningLoot {
-	/** Stone-type blocks that can give finds (builder's list), and deepslate. Placed blocks count too (owner, 2026-11-22). */
+	/** Stone-type blocks that can give finds, and deepslate. */
 	public static final Set<String> STONE_IDS = Set.of("minecraft:stone", "minecraft:granite", "minecraft:diorite",
 			"minecraft:andesite", "minecraft:tuff");
 	public static final Set<String> DEEPSLATE_IDS = Set.of("minecraft:deepslate");

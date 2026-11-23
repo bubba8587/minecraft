@@ -76,18 +76,14 @@ public final class MiningTuning {
 	 */
 	public static final float[] EFFICIENCY_MULTIPLIER = {1.0F, 1.5F, 2.1F, 2.8F, 3.5F, 4.25F};
 
-	/**
-	 * Stronger Unbreaking: after vanilla's own chance, each point of durability loss is cancelled again with this
-	 * chance. Index = level - 1. Tools then keep a point with odds 1/3, 1/5, 1/7 at I, II, III (vanilla: 1/2, 1/3,
-	 * 1/4); armor gets the same extra roll on top of vanilla's weaker armor odds.
-	 */
+	/** Extra durability-loss cancel chance on top of vanilla Unbreaking, by level - 1. */
 	public static final float[] UNBREAKING_EXTRA_CANCEL = {0.333F, 0.40F, 0.43F};
 
-	// Rare finds from natural stone and deepslate (never placed blocks, never with Silk Touch).
+	// Rare finds from stone and deepslate.
 
-	/** Chance of a find per natural stone-type block, by Fortune level (index 0 = no Fortune). Each level doubles. */
+	/** Chance of a find per stone-type block, by Fortune level (index 0 = no Fortune). */
 	public static final float[] STONE_FIND_CHANCE = {0.005F, 0.010F, 0.020F, 0.040F};
-	/** The same for natural deepslate: slightly better. */
+	/** The same for deepslate. */
 	public static final float[] DEEPSLATE_FIND_CHANCE = {0.008F, 0.016F, 0.032F, 0.064F};
 
 	/** What a find is: relative weights. Nuggets come as 1 to {@link #NUGGET_MAX}. */

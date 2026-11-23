@@ -372,8 +372,4 @@ public final class EndermanJobGoal extends Goal {
 		return null;
 	}
 
-	/** For tests: plan right now, ignoring the search interval. */
-	public boolean planNow() {
-		return enderman.level() instanceof ServerLevel level && allowed(level) && plan(level);
-	}
 }

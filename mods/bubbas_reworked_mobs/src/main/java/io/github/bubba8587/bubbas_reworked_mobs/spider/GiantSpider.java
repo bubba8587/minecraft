@@ -194,14 +194,6 @@ public class GiantSpider extends Spider implements Gripper {
 		return task;
 	}
 
-	public @Nullable LivingEntity catchHeld() {
-		return catchHeld;
-	}
-
-	public @Nullable BlockPos larder() {
-		return larder;
-	}
-
 	/** What it snatches: passive animals on the ground, not tamed, not riding or ridden. */
 	public static boolean snatchable(LivingEntity e) {
 		if (!(e instanceof Animal animal) || !e.isAlive() || e.isPassenger() || e.isVehicle() || e.isInvisible()) {

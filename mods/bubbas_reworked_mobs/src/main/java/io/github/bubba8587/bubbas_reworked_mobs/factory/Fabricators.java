@@ -502,7 +502,4 @@ public final class Fabricators {
 		return FabricatorLink.beaconsLoaded();
 	}
 
-	static boolean modLoaded(String id) {
-		return FabricLoader.getInstance().isModLoaded(id);
-	}
 }

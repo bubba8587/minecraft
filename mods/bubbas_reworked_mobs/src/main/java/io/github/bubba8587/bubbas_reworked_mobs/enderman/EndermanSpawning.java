@@ -26,23 +26,7 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.AABB;
 import org.jspecify.annotations.Nullable;
 
-/**
- * Where overworld endermen come from (D2, E2, specs/endermen.md): mostly cairn sites (the nexus), plus vanilla's
- * random spawns at the monster cap's low rate. A site spawns while a player is within
- * SITE_ACTIVE_RANGE: slowly while its cairn is a stub, faster as it fills in (chance and cap rise with the share
- * standing), much faster once it matches its design, and faster the more of its endermen are already about (left alone it snowballs; killing them slows it, tearing the cairn down drops it
- * back to the unfinished rate). A ward over the site's centre stops it. New endermen arrive carrying the lowest of the
- * cairn's missing blocks that no enderman there carries yet (builders; one that can't go in yet waits by the cairn), carrying the original block for a hole nearby, or empty-handed (repairers).
- *
- * <p>Vanilla's spawn rules still apply to each spot: the biome must list endermen, the spot must pass the enderman's
- * spawn placement and darkness rules, and spawn_monsters and peaceful turn it off (spawn_mobs doesn't). Everything follows
- * the game rule {@code bubbas_reworked_mobs:cairn_endermen} (off: cairns spawn nothing). Vanilla's random overworld
- * enderman spawns stay, at the monster cap cut every monster gets (owner, 2026-11-16: a small natural rate); those
- * arrive empty-handed and tend the land around where they show up.
- *
- * <p>Cost: every SPAWN_INTERVAL ticks, per active site (not per player or block): one entity box query, one pass over
- * its design (about 40-120 block reads) and, when it spawns, up to SPAWN_TRIES column probes.
- */
+/** Cairn-site enderman spawning (specs/endermen.md "Spawning"). */
 public final class EndermanSpawning {
 	private EndermanSpawning() {
 	}

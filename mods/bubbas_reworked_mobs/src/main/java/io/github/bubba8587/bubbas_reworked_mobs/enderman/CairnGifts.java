@@ -30,25 +30,13 @@ import org.jspecify.annotations.Nullable;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
 
-/**
- * What a cairn gives, once ever per site (items from another mod, set through api/Endermen: Bubba's Totems &
- * Artifacts' Totem of the Beginning). Without a supplier nothing is given and nothing is marked, so
- * installing that mod later still finds every gift waiting.
- * <ul>
- * <li><b>Offering:</b> the endermen of a complete cairn picked from its seed ({@link EndermanTuning#OFFERING_SHARE})
- * leave one item lying at its foot, on Reworked Mobs' loot display (a player takes it with an empty hand). Once
- * ever: the site is marked when it's laid, so breaking, rebuilding or completing the cairn again never lays another,
- * and the item isn't part of the target world (endermen neither re-place nor take it: a display has a block entity).</li>
- * </ul>
- * No reward for completing a cairn (owner, 2026-11-22). The mark is saved with the level ({@link #GIFTS}, by site origin).
- */
+/** Cairn offerings: one item, once ever per picked site (specs/endermen.md "Cairn gifts"). */
 public final class CairnGifts {
-	/** Sites whose offering was laid, by origin ({@code granted}: the removed completion gift, still read from old saves). */
-	public record Given(List<Long> offered, List<Long> granted) {
+	/** Sites whose offering was laid, by origin. */
+	public record Given(List<Long> offered) {
 		static final Codec<Given> CODEC = RecordCodecBuilder.create(i -> i.group(
-				Codec.LONG.listOf().optionalFieldOf("offered", List.of()).forGetter(Given::offered),
-				Codec.LONG.listOf().optionalFieldOf("granted", List.of()).forGetter(Given::granted)).apply(i, Given::new));
-		static final Given NONE = new Given(List.of(), List.of());
+				Codec.LONG.listOf().optionalFieldOf("offered", List.of()).forGetter(Given::offered)).apply(i, Given::new));
+		static final Given NONE = new Given(List.of());
 	}
 
 	public static final AttachmentType<Given> GIFTS = AttachmentRegistry.createPersistent(BubbasReworkedMobs.id("cairn_gifts"), Given.CODEC);
@@ -79,7 +67,7 @@ public final class CairnGifts {
 		Given given = level.getAttachedOrElse(GIFTS, Given.NONE);
 		List<Long> offered = new ArrayList<>(given.offered());
 		offered.add(site.origin().asLong());
-		level.setAttached(GIFTS, new Given(List.copyOf(offered), given.granted()));
+		level.setAttached(GIFTS, new Given(List.copyOf(offered)));
 	}
 
 	static void tick(ServerLevel level) {
