@@ -68,6 +68,12 @@ public class GiantSpider extends Spider implements Gripper {
 	/** Marks the little spiders it calls, to count them. */
 	public static final String SPIDERLING_TAG = "bubbas_reworked_mobs.spiderling";
 
+	/** Its task and larder, synced so the client can pose a haul and draw its thread. */
+	private static final net.minecraft.network.syncher.EntityDataAccessor<Byte> DATA_TASK =
+			net.minecraft.network.syncher.SynchedEntityData.defineId(GiantSpider.class, net.minecraft.network.syncher.EntityDataSerializers.BYTE);
+	private static final net.minecraft.network.syncher.EntityDataAccessor<java.util.Optional<BlockPos>> DATA_LARDER =
+			net.minecraft.network.syncher.SynchedEntityData.defineId(GiantSpider.class, net.minecraft.network.syncher.EntityDataSerializers.OPTIONAL_BLOCK_POS);
+
 	private Task task = Task.ROAM;
 	private @Nullable LivingEntity catchHeld;
 	private @Nullable BlockPos larder;
@@ -81,6 +87,33 @@ public class GiantSpider extends Spider implements Gripper {
 	public GiantSpider(EntityType<? extends GiantSpider> type, Level level) {
 		super(type, level);
 		spinCooldown = SpiderTuning.SPIN_INTERVAL_MIN;
+	}
+
+	@Override
+	protected void defineSynchedData(net.minecraft.network.syncher.SynchedEntityData.Builder builder) {
+		super.defineSynchedData(builder);
+		builder.define(DATA_TASK, (byte) Task.ROAM.ordinal());
+		builder.define(DATA_LARDER, java.util.Optional.empty());
+	}
+
+	/** The task as both sides see it. */
+	public Task syncedTask() {
+		return Task.values()[entityData.get(DATA_TASK)];
+	}
+
+	/** Climbing a trunk with a catch: posed rear first, facing down at it, thread from its abdomen to the web (owner). */
+	public boolean haulingUp() {
+		return syncedTask() == Task.CLIMB;
+	}
+
+	public java.util.Optional<BlockPos> syncedLarder() {
+		return entityData.get(DATA_LARDER);
+	}
+
+	private void setTask(Task t) {
+		task = t;
+		entityData.set(DATA_TASK, (byte) t.ordinal());
+		entityData.set(DATA_LARDER, t == Task.ROAM ? java.util.Optional.empty() : java.util.Optional.ofNullable(larder));
 	}
 
 	public static AttributeSupplier.Builder createAttributes() {
@@ -219,7 +252,7 @@ public class GiantSpider extends Spider implements Gripper {
 		catchHeld = prey;
 		larder = site;
 		grip = SpiderTuning.GRIP_START;
-		task = Task.HAUL;
+		setTask(Task.HAUL);
 		taskTicks = 0;
 		setTarget(null);
 		swingForAttack(InteractionHand.MAIN_HAND);
@@ -237,7 +270,7 @@ public class GiantSpider extends Spider implements Gripper {
 		double dz = below.z - getZ();
 		if (dx * dx + dz * dz < Mth.square(getBbWidth() * 0.5 + 1.2)) {
 			getNavigation().stop();
-			task = Task.CLIMB;
+			setTask(Task.CLIMB);
 			setNoGravity(true);
 			return;
 		}
@@ -273,7 +306,7 @@ public class GiantSpider extends Spider implements Gripper {
 		}
 		prey.teleportTo(site.x, site.y + 0.05, site.z);
 		catchHeld = prey;
-		task = Task.FEED;
+		setTask(Task.FEED);
 		taskTicks = 0;
 		playSound(SoundEvents.SPIDER_STEP, 1.0F, 0.7F);
 	}
@@ -317,7 +350,8 @@ public class GiantSpider extends Spider implements Gripper {
 	}
 
 	private void endTask() {
-		task = Task.ROAM;
+		larder = null;
+		setTask(Task.ROAM);
 		catchHeld = null;
 		larder = null;
 		taskTicks = 0;
@@ -520,9 +554,12 @@ public class GiantSpider extends Spider implements Gripper {
 		return false;
 	}
 
-	/** The catch hangs under its body. */
+	/** The catch rides its back on the ground; while it climbs rear first it hangs below its head. */
 	@Override
 	protected Vec3 getPassengerAttachmentPoint(Entity passenger, EntityDimensions dimensions, float scale) {
+		if (haulingUp()) {
+			return new Vec3(0.0, dimensions.height() * 0.5 - dimensions.width() * 0.5 - passenger.getBbHeight(), 0.0);
+		}
 		return new Vec3(0.0, dimensions.height() * 0.15, 0.0);
 	}
 

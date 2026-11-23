@@ -91,6 +91,22 @@ public class SpiderGameTest {
 		});
 	}
 
+	/** A missed drop from a 14-high nest leaves the released spider at full health (no fall damage from the drop: owner bug). */
+	@GameTest(structure = ROOM, maxTicks = 140)
+	public void aMissedDropTakesNoFallDamage(GameTestHelper helper) {
+		NestSpider spider = nest(helper);
+		player(helper, 4.5 + 2.2, 4.5);
+		helper.runAfterDelay(100, () -> {
+			helper.assertTrue(spider.isRemoved(), "nest spider still there: " + spider.phase());
+			List<Spider> spiders = helper.getLevel().getEntitiesOfClass(Spider.class, new AABB(helper.absolutePos(BlockPos.ZERO)).inflate(12.0),
+					s -> s.getType() == EntityTypes.SPIDER);
+			helper.assertTrue(spiders.size() == 1, "vanilla spiders: " + spiders.size());
+			Spider released = spiders.getFirst();
+			helper.assertTrue(released.getHealth() == released.getMaxHealth(), "released spider hurt: " + released.getHealth() + "/" + released.getMaxHealth());
+			helper.succeed();
+		});
+	}
+
 	/** Hitting a spider that holds you loosens its grip; at 0 it lets go and becomes a vanilla spider. */
 	@GameTest(structure = ROOM, maxTicks = 300)
 	public void hitsBreakTheGrip(GameTestHelper helper) {

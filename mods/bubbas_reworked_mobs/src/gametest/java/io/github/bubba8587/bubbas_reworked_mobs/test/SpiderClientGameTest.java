@@ -102,7 +102,8 @@ public class SpiderClientGameTest implements FabricClientGameTest {
 			context.waitTicks(30);
 
 			// --- the latch: a pig under another one is dropped on, latched and reeled up -------------------
-			server.runCommand("summon minecraft:pig %d.5 %d %d.5 {NoAI:1b,Silent:1b,Tags:[\"spider_shot_pig\"]}".formatted(x - 1, y, z - 1));
+			// Right under the sleeper at (x - 0.5, z - 0.5). (Not "%d.5" with x - 1: for negative x that formats a block off.)
+			server.runCommand("summon minecraft:pig %.2f %d %.2f {NoAI:1b,Silent:1b,Tags:[\"spider_shot_pig\"]}".formatted(x - 0.5, y, z - 0.5));
 			server.runCommand("effect give @e[tag=spider_shot_pig] minecraft:resistance infinite 4 true");
 			context.waitTicks(3);
 			onServer(server, level -> {
@@ -119,6 +120,40 @@ public class SpiderClientGameTest implements FabricClientGameTest {
 			context.takeScreenshot("spider-held");
 			tp(context, server, x - 0.5, y + 0.5, z - 6.5, 0.0F, -50.0F);
 			context.takeScreenshot("spider-held-below");
+
+			// --- Stormie's Spiders: a spider walks up the wall and across the ceiling ---------------------------
+			server.runCommand("fill %d %d %d %d %d %d minecraft:stone".formatted(x + 10, y, z - 10, x + 10, y + 15, z + 10));
+			// Prey up on a ledge, at night: vanilla spiders hunt iron golems in the dark, so they climb to it.
+			server.runCommand("time set midnight");
+			server.runCommand("fill %d %d %d %d %d %d minecraft:stone".formatted(x + 8, y + 9, z + 5, x + 9, y + 9, z + 8));
+			server.runCommand("summon minecraft:iron_golem %.2f %d %.2f {NoAI:1b,Silent:1b,Invulnerable:1b}".formatted(x + 8.5, y + 10, z + 6.5));
+			onServer(server, level -> {
+				for (net.minecraft.world.entity.monster.spider.Spider sp2 : level.getEntitiesOfClass(net.minecraft.world.entity.monster.spider.Spider.class,
+						new AABB(x - 30, y - 30, z - 30, x + 30, y + 30, z + 30), sp2 -> sp2.getType() == net.minecraft.world.entity.EntityTypes.SPIDER)) {
+					sp2.discard();
+				}
+				for (int i = 0; i < 2; i++) {
+					net.minecraft.world.entity.monster.spider.Spider climber = net.minecraft.world.entity.EntityTypes.SPIDER.create(level, EntitySpawnReason.COMMAND);
+					climber.snapTo(x + 8.5, y, z - 2.5 + i * 4, 90.0F, 0.0F);
+					climber.setPersistenceRequired();
+					climber.setSilent(true);
+					climber.addTag("stormie_climber_" + i);
+					level.addFreshEntity(climber);
+					// One to a spot high on the wall, one across the ceiling.
+					boolean ok = i == 0 ? climber.getNavigation().moveTo(x + 9.5, y + 8.0, z - 2.5, 1.0)
+							: climber.getNavigation().moveTo(x + 5.5, top, z + 1.5, 1.0);
+					System.out.println("[spider-shot] stormie path " + i + " " + ok + " nav " + climber.getNavigation().getClass().getSimpleName());
+				}
+				return null;
+			});
+			context.waitTicks(160);
+			System.out.println("[spider-shot] stormie " + onServer(server, level -> level.getEntitiesOfClass(net.minecraft.world.entity.monster.spider.Spider.class,
+					new AABB(x - 30, y - 30, z - 30, x + 30, y + 30, z + 30), sp2 -> sp2.getType() == net.minecraft.world.entity.EntityTypes.SPIDER)
+					.stream().map(sp2 -> sp2.entityTags() + "@" + sp2.position()).toList()));
+			tp(context, server, x + 1.5, y + 4.0, z - 3.5, -60.0F, -35.0F);
+			context.takeScreenshot("spider-stormie-ceiling-and-wall");
+			tp(context, server, x + 4.5, y + 6.5, z - 3.0, -90.0F, 0.0F);
+			context.takeScreenshot("spider-stormie-wall");
 		}
 	}
 

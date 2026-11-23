@@ -9,7 +9,8 @@
 		"EntityRenderStateMeterMixin",
 		"GrabbedHintMixin",
 		"HeldVictimPoseMixin",
-		"MeterBarMixin"
+		"MeterBarMixin",
+		"StormieClimberRenderMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

@@ -101,6 +101,33 @@ public class WebsClientGameTest implements FabricClientGameTest {
 				context.takeScreenshot("web-trees-angle" + sfx);
 			}
 			setPack(context, false);
+			// A giant hauling a pig up a trunk rear first, the thread from its abdomen to the web (owner).
+			server.runCommand("summon minecraft:pig %.2f %d %.2f {NoAI:1b,Silent:1b,Tags:[\"web_shot_pig\"]}".formatted(ax + 2.5, y, tz - 1.5));
+			context.waitTicks(3);
+			onServer(server, level -> {
+				GiantSpider hauler = Spiders.GIANT_SPIDER.create(level, EntitySpawnReason.COMMAND);
+				hauler.snapTo(ax + 2.0, y, tz + 0.5, 90.0F, 0.0F);
+				hauler.setSilent(true);
+				level.addFreshEntity(hauler);
+				net.minecraft.world.entity.animal.pig.Pig pig = level.getEntitiesOfClass(net.minecraft.world.entity.animal.pig.Pig.class,
+						new AABB(ax - 2, y - 1, tz - 4, ax + 6, y + 3, tz + 3)).getFirst();
+				if (!hauler.snatch(level, pig)) {
+					throw new AssertionError("the giant didn't snatch the pig");
+				}
+				return null;
+			});
+			for (int i = 0; i < 200; i++) {
+				boolean up = onServer(server, level -> level.getEntitiesOfClass(GiantSpider.class, new AABB(ax - 3, y - 1, tz - 4, ax + 6, y + 12, tz + 4),
+						g -> g.haulingUp() && g.getY() > y + 3.2).size() == 1);
+				if (up) {
+					break;
+				}
+				context.waitTick();
+			}
+			System.out.println("[web-shot] " + onServer(server, level -> level.getEntitiesOfClass(GiantSpider.class, new AABB(ax - 3, y - 1, tz - 4, ax + 6, y + 12, tz + 4))
+					.stream().map(g -> g.syncedTask() + "@" + g.position() + " larder " + g.syncedLarder() + " noAi " + g.isNoAi()).toList()));
+			tp(context, server, ax - 4.5, y + 4.0, tz - 4.0, -45.0F, 0.0F);
+			context.takeScreenshot("giant-haul-rear-first");
 			// A torn, old web.
 			onServer(server, level -> {
 				webs(level, x, y, z).forEach(w -> w.setTear(0.6F));

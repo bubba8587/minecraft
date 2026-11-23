@@ -14,8 +14,8 @@ import net.minecraft.world.phys.Vec3;
 
 /**
  * A nest spider (specs/spiders.md "Cave nests"): vanilla's spider model and texture (B17), posed by phase. Asleep it
- * hangs upside down from the ceiling (vanilla's upside-down flip); dropping it points head down; reeling and holding
- * it points head up, climbing its thread. The thread is a line from its back to where it's tied in the nest, drawn
+ * hangs upside down from the ceiling (vanilla's upside-down flip); off the ceiling it points head down: it drops face
+ * first, and climbs back up its thread rear first, facing the victim below it (owner). The thread is a line from its back to where it's tied in the nest, drawn
  * in pixel art like the spun webs (crisp texels in the cobweb palette, lit by world light), while it drops, dangles,
  * reels and holds.
  */
@@ -65,7 +65,9 @@ public class NestSpiderRenderer extends SpiderRenderer<NestSpider> {
 		// Vertical, pivoting about its middle: head down while it drops, head up while it climbs the thread.
 		float half = state.boundingBoxHeight * 0.5F / entityScale;
 		poseStack.translate(0.0F, half, 0.0F);
-		poseStack.rotateDegrees(Axis.XP, phase == NestSpider.Phase.DROPPING || phase == NestSpider.Phase.DANGLING ? -90.0F : 90.0F);
+		// Head down in every phase off the ceiling: it drops face first and climbs back up rear first, facing its victim
+		// below, the thread coming out of its abdomen (owner, 2026-11-22).
+		poseStack.rotateDegrees(Axis.XP, -90.0F);
 		poseStack.translate(0.0F, -half, 0.0F);
 	}
 

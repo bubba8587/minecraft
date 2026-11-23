@@ -48,7 +48,7 @@ import net.minecraft.world.phys.shapes.CollisionContext;
  * ends). Seeded from the site, so the same site gives the same tangle. No blocks (B15): a nest's or a larder's cobweb
  * blocks are the core, this is the span round it.
  * <ul>
- * <li>Moving through the strands slows you a little (less than a cobweb block); spiders aren't slowed.</li>
+ * <li>Moving through the strands sticks you like a cobweb block does (owner); spiders aren't slowed.</li>
  * <li>Hits tear it ({@link SpiderTuning#WEB_HITS_TO_CUT} bring it down); shears cut it cleanly for string; fire burns it.</li>
  * <li>It tears a little more as it ages.</li>
  * </ul>
@@ -305,7 +305,9 @@ public class SpunWeb extends Entity {
 		}
 		for (LivingEntity e : level.getEntitiesOfClass(LivingEntity.class, span(), e -> !(e instanceof Spider) && !e.isSpectator())) {
 			if (touching(e)) {
-				e.makeStuckInBlock(Blocks.COBWEB.defaultBlockState(), new Vec3(SpiderTuning.WEB_SLOW, 0.75, SpiderTuning.WEB_SLOW));
+				// Exactly vanilla's cobweb (WebBlock.entityInside), Weaving included.
+				e.makeStuckInBlock(Blocks.COBWEB.defaultBlockState(), e.hasEffect(net.minecraft.world.effect.MobEffects.WEAVING)
+						? SpiderTuning.WEB_STUCK_WEAVING : SpiderTuning.WEB_STUCK);
 			}
 		}
 		if ((tickCount + getId()) % 20 == 0) {

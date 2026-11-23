@@ -25,3 +25,8 @@ dependencies {
 		runtimeOnly beaconsJar
 	}
 }
+
+// Reworked Mobs requires Stormie's Spiders: with -PwithMobs it's loaded too (gradle/stormies-spiders.gradle).
+if (providers.gradleProperty('withMobs').isPresent()) {
+	apply from: rootProject.file('gradle/stormies-spiders.gradle')
+}

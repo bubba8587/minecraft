@@ -30,6 +30,7 @@ import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
 import org.jspecify.annotations.Nullable;
+import win.demistorm.stormiespiders.common.entity.mob.Orientation;
 
 /**
  * A spider of a cave nest (specs/spiders.md "Cave nests"). It sleeps hanging upside down in the cobwebs, like the
@@ -151,6 +152,10 @@ public class NestSpider extends Spider implements Gripper {
 		if (!(level() instanceof ServerLevel level)) {
 			return;
 		}
+		if (phase() != Phase.SLEEPING) {
+			// On its thread it isn't falling: nothing may carry over as fall damage when the thread snaps (owner bug).
+			resetFallDistance();
+		}
 		switch (phase()) {
 			case SLEEPING -> setDeltaMovement(Vec3.ZERO);
 			case DROPPING -> tickDrop(level);
@@ -216,12 +221,14 @@ public class NestSpider extends Spider implements Gripper {
 			held.stopRiding();
 		}
 		noPhysics = false;
+		resetFallDistance();
 		Meters.sync(this, Meters.GRIP, 0.0F, sentGrip, SpiderTuning.GRIP_FULL);
 		playSound(SoundEvents.SPIDER_STEP, 1.0F, 1.6F);
 		convertTo(EntityTypes.SPIDER, ConversionParams.single(this, true, true), spider -> {
 			spider.setNoAi(false);
 			spider.setNoGravity(false);
 			spider.setPersistenceRequired();
+			spider.resetFallDistance(); // only a real fall after release hurts
 			if (held instanceof Player player && grabbable(held)) {
 				spider.setTarget(player);
 			}
@@ -301,6 +308,34 @@ public class NestSpider extends Spider implements Gripper {
 	@Override
 	public Vec3 getDismountLocationForPassenger(LivingEntity passenger) {
 		return passenger.position();
+	}
+
+	// --- Stormie's Spiders (required: spiders walk on walls and ceilings) ----------------------------------
+	// Its climbing is mixed into vanilla's Spider, so this class gets it too. While it's a nest spider (asleep, dropping,
+	// dangling, reeling, holding) it poses itself, so it reports upright with no attachment: Stormie's neither moves it
+	// onto a surface nor rotates its model. Once it misses or lets go it becomes a vanilla spider and climbs like any.
+	// These override methods Stormie's adds to Spider at runtime (same signatures), hence no @Override.
+
+	private static final Orientation UPRIGHT = Orientation.fromNormal(new Vec3(0.0, 1.0, 0.0));
+
+	public Orientation calculateOrientation(float partialTicks) {
+		return UPRIGHT;
+	}
+
+	public Orientation getOrientation() {
+		return UPRIGHT;
+	}
+
+	public float getAttachmentOffset(net.minecraft.core.Direction.Axis axis, float partialTicks) {
+		return 0.0F;
+	}
+
+	public float getVerticalOffset(float partialTicks) {
+		return 0.0F;
+	}
+
+	public boolean canAttachToSide(net.minecraft.core.Direction side) {
+		return false;
 	}
 
 	@Override

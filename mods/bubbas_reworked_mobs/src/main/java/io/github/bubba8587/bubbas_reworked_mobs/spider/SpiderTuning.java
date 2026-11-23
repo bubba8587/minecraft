@@ -120,8 +120,9 @@ public final class SpiderTuning {
 
 	// --- spun webs (owner, 2026-11-22: "something really outstanding looking") ---------------------------
 
-	/** Movement through the strands is multiplied by this (a cobweb block is 0.25): a little slower. */
-	public static final double WEB_SLOW = 0.7;
+	/** Movement through the strands: exactly a cobweb block's (owner, 2026-11-22: "slow you like normal cobwebs do"). */
+	public static final net.minecraft.world.phys.Vec3 WEB_STUCK = new net.minecraft.world.phys.Vec3(0.25, 0.05F, 0.25);
+	public static final net.minecraft.world.phys.Vec3 WEB_STUCK_WEAVING = new net.minecraft.world.phys.Vec3(0.5, 0.25, 0.5);
 	/** Hits to bring one down, how torn each hit leaves it, and string from a clean cut with shears. */
 	public static final int WEB_HITS_TO_CUT = 3;
 	public static final float WEB_TEAR_PER_HIT = 0.25F;

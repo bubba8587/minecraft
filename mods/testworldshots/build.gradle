@@ -6,6 +6,8 @@ plugins {
 	id 'net.fabricmc.fabric-loom'
 }
 apply from: rootProject.file('gradle/fabric-mod.gradle')
+// Reworked Mobs requires Stormie's Spiders (loaded as a mod by this script).
+apply from: rootProject.file('gradle/stormies-spiders.gradle')
 
 // The mods under test, as their built jars on the game's classpath (Fabric Loader finds a fabric.mod.json in
 // each jar and loads it as a mod, the same as in a Modrinth profile). Gradle builds the jars first.
