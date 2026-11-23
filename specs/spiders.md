@@ -3,6 +3,11 @@
 
 Owner's design (2026-11-22). Ordinary spiders stay **mostly vanilla**. What's new is a ceiling ambush in caves, and a giant variant in old forests.
 
+## Walls and ceilings (owner, 2026-11-22)
+
+- **Spiders walk on walls and ceilings** through **Stormie's Spiders** (Modrinth `stormies-spiders`, LGPL-2.1+, on 26.3, a fork of Spiders 2.0): a **required dependency** of Reworked Mobs (owner chose the dependency over building our own, B9). It goes in `fabric.mod.json` `depends` and the Modrinth version's dependency list.
+- Our spiders must play well with it: nest sleepers stay still until they drop; a spider that becomes normal after a missed drop scuttles off up the walls or across the ceiling; giant spiders climb trunks and along branches to their webs.
+
 ## Cave nests
 
 - **A web nest clings to the ceiling of tall cave rooms** (worldgen). It's **decently common**, and only at the **top of tall rooms**, so there's a long drop under it. Cobweb blocks for the sticky core (owner: string looks bad in game), plus the spun webs below.
