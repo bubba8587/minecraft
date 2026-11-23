@@ -13,6 +13,7 @@ All projects target the latest full release of Minecraft. *See also: [[Version S
 | [[Bubba's Infused Gems]] | Fabric mod | Potions brewed into gems, enchanted and socketed into armor and weapons for permanent effects. |
 | [[Bubba's Reworked Beacons]] | Fabric mod | Beacons with one item slot instead of fixed powers, and paired beacons that work underground. |
 | [[Bubba's Totems & Artifacts]] | Fabric mod | Found artifacts: the Grave Talisman, which glows near undead, and the Totem of Warding, which keeps monsters away; totems can be set down as statues. |
+| [[Bubba's Reworked Mining]] | Fabric mod | A steep tool curve from slow bare tools to an enchanted machine, rare finds in stone, True Unbreaking, and quartz gear for the Nether. |
 
 Each project has a folder in `Projects/`: an overview page named after the project, plus a page per topic.
 
