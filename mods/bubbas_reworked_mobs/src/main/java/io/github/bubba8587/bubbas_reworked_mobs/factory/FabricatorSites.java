@@ -170,7 +170,7 @@ public final class FabricatorSites {
 	public static List<FabricatorSite> near(ServerLevel level, BlockPos pos, int radius) {
 		List<FabricatorSite> found = new ArrayList<>();
 		for (FabricatorSite site : extra(level)) {
-			if (site.origin().distSqr(pos) <= (double) radius * radius) {
+			if (horizontalDistSqr(site.origin(), pos) <= (double) radius * radius) {
 				found.add(site);
 			}
 		}

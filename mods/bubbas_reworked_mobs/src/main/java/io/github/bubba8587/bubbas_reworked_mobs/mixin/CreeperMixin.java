@@ -91,6 +91,7 @@ abstract class CreeperMixin extends Monster implements CreeperAccess {
 				}
 			}
 		}
+		getNavigation().setRequiredPathLength(16.0F); // vanilla's default, raised by the watch goal
 	}
 
 	@Override

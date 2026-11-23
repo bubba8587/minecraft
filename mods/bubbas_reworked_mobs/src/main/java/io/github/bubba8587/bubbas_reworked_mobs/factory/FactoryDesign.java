@@ -2075,26 +2075,25 @@ public final class FactoryDesign {
 		int flags = Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE;
 		BooleanProperty upsideDown = upsideDownProperty();
 		BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
-		for (Map<BlockPos, BlockState> pass : List.of(this.blocks, this.attached)) {
-			for (Map.Entry<BlockPos, BlockState> e : pass.entrySet()) {
-				BlockPos local = e.getKey();
-				BlockPos r = local.rotate(rotation);
-				pos.set(origin.getX() + r.getX(), origin.getY() + r.getY(), origin.getZ() + r.getZ());
-				if (box != null && !box.isInside(pos) || level.isOutsideBuildHeight(pos)) {
-					continue;
-				}
-				BlockState state = e.getValue();
-				if (state == SEAL) {
-					if (!level.getFluidState(pos).isEmpty()) {
-						level.setBlock(pos, Blocks.DEEPSLATE.defaultBlockState(), flags);
-					}
-					continue;
-				}
-				if (local.equals(this.ceilingBeacon) && upsideDown != null) {
-					state = state.setValue(upsideDown, true);
-				}
-				level.setBlock(pos, state.rotate(rotation), flags);
+		List<Map.Entry<BlockPos, BlockState>> entries = entriesFor(origin, rotation, box);
+		for (Map.Entry<BlockPos, BlockState> e : entries) {
+			BlockPos local = e.getKey();
+			BlockPos r = local.rotate(rotation);
+			pos.set(origin.getX() + r.getX(), origin.getY() + r.getY(), origin.getZ() + r.getZ());
+			if (box != null && !box.isInside(pos) || level.isOutsideBuildHeight(pos)) {
+				continue;
 			}
+			BlockState state = e.getValue();
+			if (state == SEAL) {
+				if (!level.getFluidState(pos).isEmpty()) {
+					level.setBlock(pos, Blocks.DEEPSLATE.defaultBlockState(), flags);
+				}
+				continue;
+			}
+			if (local.equals(this.ceilingBeacon) && upsideDown != null) {
+				state = state.setValue(upsideDown, true);
+			}
+			level.setBlock(pos, state.rotate(rotation), flags);
 		}
 		for (BlockPos chest : this.chests) {
 			BlockPos at = toWorld(origin, chest, rotation);
@@ -2112,14 +2111,12 @@ public final class FactoryDesign {
 				}
 			}
 		}
-		// Walls settle their connections.
-		for (Map<BlockPos, BlockState> pass : List.of(this.blocks, this.attached)) {
-			for (Map.Entry<BlockPos, BlockState> e : pass.entrySet()) {
-				if (e.getValue().getBlock() instanceof WallBlock || e.getValue().getBlock() instanceof IronBarsBlock) {
-					BlockPos at = toWorld(origin, e.getKey(), rotation);
-					if (box == null || box.isInside(at)) {
-						level.setBlock(at, Block.updateFromNeighbourShapes(level.getBlockState(at), level, at), flags);
-					}
+		// walls settle their connections
+		for (Map.Entry<BlockPos, BlockState> e : entries) {
+			if (e.getValue().getBlock() instanceof WallBlock || e.getValue().getBlock() instanceof IronBarsBlock) {
+				BlockPos at = toWorld(origin, e.getKey(), rotation);
+				if (box == null || box.isInside(at)) {
+					level.setBlock(at, Block.updateFromNeighbourShapes(level.getBlockState(at), level, at), flags);
 				}
 			}
 		}
@@ -2135,6 +2132,38 @@ public final class FactoryDesign {
 				patch.place(level, generator, r, at);
 			}
 		}
+	}
+
+	/** Entries by world chunk, for the last origin and rotation placed (worldgen places one site chunk by chunk). */
+	private record ChunkIndex(BlockPos origin, Rotation rotation,
+			it.unimi.dsi.fastutil.longs.Long2ObjectMap<List<Map.Entry<BlockPos, BlockState>>> byChunk) {
+	}
+
+	private volatile @Nullable ChunkIndex chunkIndex;
+
+	/** The entries that can fall inside {@code box}: blocks then attached, in placing order. */
+	private List<Map.Entry<BlockPos, BlockState>> entriesFor(BlockPos origin, Rotation rotation,
+			net.minecraft.world.level.levelgen.structure.@Nullable BoundingBox box) {
+		if (box == null || box.minX() >> 4 != box.maxX() >> 4 || box.minZ() >> 4 != box.maxZ() >> 4) {
+			List<Map.Entry<BlockPos, BlockState>> all = new java.util.ArrayList<>(this.blocks.size() + this.attached.size());
+			all.addAll(this.blocks.entrySet());
+			all.addAll(this.attached.entrySet());
+			return all;
+		}
+		ChunkIndex index = this.chunkIndex;
+		if (index == null || !index.origin.equals(origin) || index.rotation != rotation) {
+			var byChunk = new it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap<List<Map.Entry<BlockPos, BlockState>>>();
+			for (Map<BlockPos, BlockState> pass : List.of(this.blocks, this.attached)) {
+				for (Map.Entry<BlockPos, BlockState> e : pass.entrySet()) {
+					BlockPos r = e.getKey().rotate(rotation);
+					long key = net.minecraft.world.level.ChunkPos.pack((origin.getX() + r.getX()) >> 4, (origin.getZ() + r.getZ()) >> 4);
+					byChunk.computeIfAbsent(key, k -> new java.util.ArrayList<>()).add(e);
+				}
+			}
+			index = new ChunkIndex(origin.immutable(), rotation, byChunk);
+			this.chunkIndex = index;
+		}
+		return index.byChunk.getOrDefault(net.minecraft.world.level.ChunkPos.pack(box.minX() >> 4, box.minZ() >> 4), List.of());
 	}
 
 	/**
