@@ -60,6 +60,7 @@ Parked ideas and open items, newest first within each project. Agents add to it 
    - for mob gear in the test world, and probably for noble finery, roll only effects that don't harm the wearer (no worn Wither, Poison, Hunger, Instant Damage), keeping those for weapons.
 
    Owner to confirm whether that goes beyond the test world.
+5. **A spider waiting on cocooned prey keeps moving:** while a giant spider (and any spider that cocoons) waits to come back and feed, it wanders around near the cocoon and its webs, instead of standing still. Use vanilla's random-stroll goal kept within a home radius around the cocoon (`WaterAvoidingRandomStrollGoal` plus `restrictTo`, specs/vanilla-subsystems.md), on walls and ceilings too through Stormie's Spiders. It still returns to feed on time.
 
 ## Repo
 - **Multiplayer check (owner, 2026-11-22: "make sure these mods work in multiplayer"; light scan done, the rest is here).** Scan results:
