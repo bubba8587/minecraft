@@ -11,12 +11,12 @@ modrinth:
 > |---|---|
 > | **Type** | Datapack; optional Fabric mod |
 > | **Minecraft** | 26.3 |
-> | **Version** | Datapack 1.0.0; mod 0.1.0 |
+> | **Version** | Datapack 1.1.0; mod 0.1.0 |
 > | **Requires** | Nothing (datapack); Fabric API (mod) |
 > | **Side** | Server only (datapack); client and server (mod) |
 > | **Status** | Active |
 
-**Bubba's Extra Recipes** is a datapack that adds a handful of recipes for awkward or grindy items: renewable sand, quartz and glowstone dust, a way to make tridents, and uses for rotten flesh and spare charcoal. It also comes as an optional Fabric mod that adds the Glider and Synthetic Diamond Ore.
+**Bubba's Extra Recipes** is a datapack that adds a handful of recipes for awkward or grindy items: renewable sand, red sand, clay, calcite, tuff, smooth basalt, quartz and glowstone dust, a way to make tridents, and uses for rotten flesh and spare charcoal. It also comes as an optional Fabric mod that adds the Glider and Synthetic Diamond Ore.
 
 ## Recipes
 
@@ -46,6 +46,7 @@ The pack works in plain vanilla and alongside other recipe mods and datapacks, s
 | Version | Changes |
 |---|---|
 | Datapack 1.0.0 | Made for Minecraft 26.3 from the original recipe set for 26.1. The pack no longer has its own saddle recipe (vanilla's is used), and its former elytra recipe now makes the Glider in the companion mod. |
+| Datapack 1.1.0 | Added recipes for clay (mud and sand), red sand (sand and an iron nugget), and blast furnace recipes for calcite (bone block), tuff (cobbled deepslate) and smooth basalt (basalt). |
 | Mod 0.1.0 | Added the companion mod, with [[The Glider]] and [[Synthetic Diamond Ore]]. |
 
 ## See also

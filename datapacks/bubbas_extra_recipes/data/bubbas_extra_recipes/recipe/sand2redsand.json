@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "sss",
+    "sns",
+    "sss"
+  ],
+  "key": {
+    "s": "minecraft:sand",
+    "n": "minecraft:iron_nugget"
+  },
+  "result": {
+    "id": "minecraft:red_sand",
+    "count": 8
+  }
+}

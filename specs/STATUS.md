@@ -133,7 +133,7 @@ Nothing is released yet: every mod is 0.1.0 in `develop`.
 - built: quartz tools and armor for the Nether ([§](reworked-mining.md#quartz-tools-and-armor-owner-2026-11-22))
 
 ## Bubba's Extra Recipes ([datapack spec](extra-recipes.md), [mod spec](extra-recipes-mod.md))
-- built: datapack with 11 recipes ([§](extra-recipes.md))
+- built: datapack 1.1.0 with 16 recipes ([§](extra-recipes.md))
 - built: companion mod bundling the datapack and 16x/32x packs ([§](extra-recipes-mod.md#bundled-packs))
 - built: the Glider ([§](extra-recipes-mod.md#glider))
 - built: Synthetic Diamond Ore ([§](extra-recipes-mod.md#synthetic-diamond-ore))

@@ -61,6 +61,11 @@ public class PackcheckGameTest {
 		crafting("trident", Items.TRIDENT, 1, null, List.of(),
 			grid(Map.of('#', Items.PRISMARINE_SHARD, 'P', Items.PRISMARINE_CRYSTALS, '/', Items.STICK),
 				"###", "P/P", "P/P")),
+		crafting("mud2clay", Items.CLAY_BALL, 4, null, List.of(),
+			grid(Map.of('m', Items.MUD, 's', Items.SAND), "ms ", "   ", "   "),
+			grid(Map.of('m', Items.MUD, 's', Items.RED_SAND), "   ", " s ", "  m")),
+		crafting("sand2redsand", Items.RED_SAND, 8, null, List.of(),
+			grid(Map.of('s', Items.SAND, 'n', Items.IRON_NUGGET), "sss", "sns", "sss")),
 		// block_state {synthetic:"true"}: read by the companion mod (specs/extra-recipes-mod.md); ignored without it.
 		cooking(RecipeType.BLASTING, "blast2diamond", Items.DEEPSLATE_DIAMOND_ORE, "Synthetic Diamond Ore", List.of(), 4000, 5.0F,
 			Items.COAL_BLOCK).withBlockState(Map.of("synthetic", "true")),
@@ -70,6 +75,12 @@ public class PackcheckGameTest {
 			Items.ANDESITE, Items.DIORITE, Items.GRANITE),
 		cooking(RecipeType.BLASTING, "cobble2gravel", Items.GRAVEL, null, List.of(), 200, 0.0F,
 			Items.COBBLESTONE),
+		cooking(RecipeType.BLASTING, "bone2calcite", Items.CALCITE, null, List.of(), 200, 0.1F,
+			Items.BONE_BLOCK),
+		cooking(RecipeType.BLASTING, "deepslate2tuff", Items.TUFF, null, List.of(), 200, 0.1F,
+			Items.COBBLED_DEEPSLATE),
+		cooking(RecipeType.BLASTING, "basalt2smooth", Items.SMOOTH_BASALT, null, List.of(), 200, 0.1F,
+			Items.BASALT),
 		cooking(RecipeType.BLASTING, "ironnugget", Items.IRON_NUGGET, null, List.of(), 500, 0.1F,
 			Items.STONE),
 		cooking(RecipeType.SMOKING, "orgglo", Items.GLOWSTONE_DUST, "Organic Glowstone Dust", List.of(), 200, 0.1F,
@@ -96,6 +107,11 @@ public class PackcheckGameTest {
 	@GameTest public void blastToSand(GameTestHelper helper) { check(helper, "blast2sand"); }
 	@GameTest public void blastQuartz(GameTestHelper helper) { check(helper, "blast_quartz"); }
 	@GameTest public void cobbleToGravel(GameTestHelper helper) { check(helper, "cobble2gravel"); }
+	@GameTest public void mudToClay(GameTestHelper helper) { check(helper, "mud2clay"); }
+	@GameTest public void sandToRedSand(GameTestHelper helper) { check(helper, "sand2redsand"); }
+	@GameTest public void boneToCalcite(GameTestHelper helper) { check(helper, "bone2calcite"); }
+	@GameTest public void deepslateToTuff(GameTestHelper helper) { check(helper, "deepslate2tuff"); }
+	@GameTest public void basaltToSmooth(GameTestHelper helper) { check(helper, "basalt2smooth"); }
 	@GameTest public void ironNugget(GameTestHelper helper) { check(helper, "ironnugget"); }
 	@GameTest public void organicGlowstone(GameTestHelper helper) { check(helper, "orgglo"); }
 	@GameTest public void rottenFleshLeather(GameTestHelper helper) { check(helper, "rotleather"); }
