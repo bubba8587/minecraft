@@ -12,16 +12,20 @@ import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.animal.pig.Pig;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.spider.Spider;
+import net.minecraft.world.entity.projectile.ProjectileUtil;
+import net.minecraft.world.entity.projectile.arrow.Arrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
@@ -132,6 +136,49 @@ public class GiantSpiderGameTest {
 		int string = level.getEntitiesOfClass(ItemEntity.class, new AABB(cutAt, cutAt).inflate(1.0), e -> e.getItem().is(Items.STRING)).stream()
 				.mapToInt(e -> e.getItem().getCount()).sum();
 		helper.assertValueEqual(string, SpiderTuning.WEB_SHEAR_STRING, "string from shears");
+		helper.succeed();
+	}
+
+	/** The crosshair, a swing and an arrow pass through the gaps between strands to a block or mob, and hit a strand they aim at. */
+	@GameTest(environment = SpiderGameTest.ENV, structure = SpiderGameTest.ROOM)
+	public void webHitsOnlyTheStrands(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		SpunWeb web = Spiders.SPUN_WEB.create(level, EntitySpawnReason.COMMAND);
+		Vec3 hub = helper.absoluteVec(new Vec3(4.5, 5.0, 4.5));
+		web.setPos(hub.x, hub.y, hub.z);
+		web.setStrands(List.of(new SpunWeb.Strand(new Vec3(-4, -1.5, 0), new Vec3(4, -1.5, 0)),
+				new SpunWeb.Strand(new Vec3(-4, 1.5, 0), new Vec3(4, 1.5, 0)),
+				new SpunWeb.Strand(new Vec3(-4, 0, -4), new Vec3(-4, 0, 4))));
+		level.addFreshEntity(web);
+		helper.setBlock(new BlockPos(4, 5, 8), Blocks.STONE);
+		ServerPlayer player = TestPlayers.survival(helper);
+		Vec3 eye = hub.add(0, 0, -2.5); // inside the web's span, between strands
+		Vec3 gapTo = hub.add(0, 0, 3.4); // the stone, straight through the gap
+		Vec3 strandTo = hub.add(0, 1.5 * 5.9 / 2.5, 3.4); // through the top strand
+		AABB search = new AABB(eye, gapTo).inflate(4.0);
+		helper.assertTrue(ProjectileUtil.getEntityHitResult(player, eye, gapTo, search, EntitySelector.CAN_BE_PICKED, 100.0) == null,
+				"the crosshair hits the web through a gap");
+		EntityHitResult aimed = ProjectileUtil.getEntityHitResult(player, eye, strandTo, search, EntitySelector.CAN_BE_PICKED, 100.0);
+		helper.assertTrue(aimed != null && aimed.getEntity() == web, "aiming at a strand misses it");
+		helper.assertTrue(Math.abs(aimed.getLocation().z - hub.z) < 0.5, "hit away from the strand: " + aimed.getLocation().subtract(hub));
+		Vec3 outside = hub.add(0, 0, -5.0); // outside the span, looking in
+		helper.assertTrue(ProjectileUtil.getEntityHitResult(player, outside, gapTo, search.minmax(new AABB(outside, outside)), EntitySelector.CAN_BE_PICKED, 100.0) == null,
+				"the crosshair hits the web box from outside");
+
+		Pig pig = EntityTypes.PIG.create(level, EntitySpawnReason.COMMAND);
+		pig.snapTo(hub.x, hub.y - 0.4, hub.z + 2.0, 0.0F, 0.0F);
+		pig.setNoAi(true);
+		level.addFreshEntity(pig);
+		EntityHitResult mob = ProjectileUtil.getEntityHitResult(player, eye, gapTo, search, EntitySelector.CAN_BE_PICKED, 100.0);
+		helper.assertTrue(mob != null && mob.getEntity() == pig, "a mob behind a gap can't be hit: " + (mob == null ? null : mob.getEntity()));
+
+		Arrow arrow = new Arrow(EntityTypes.ARROW, level);
+		arrow.setPos(eye.x, eye.y, eye.z);
+		EntityHitResult shot = ProjectileUtil.getEntityHitResult(level, arrow, outside, gapTo, search.minmax(new AABB(outside, outside)), e -> e == web, 0.3F);
+		helper.assertTrue(shot == null, "an arrow through a gap hits the web");
+		Vec3 low = hub.add(0, -1.5, 0);
+		EntityHitResult shotAt = ProjectileUtil.getEntityHitResult(level, arrow, low.add(0, 0, -5), low.add(0, 0, 3), search.inflate(3.0), e -> e == web, 0.3F);
+		helper.assertTrue(shotAt != null && shotAt.getEntity() == web, "an arrow along the strand's line misses it");
 		helper.succeed();
 	}
 }

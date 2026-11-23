@@ -89,6 +89,11 @@ public class ReworkedMobsCoreGameTest {
 		new SpiderGameTest().sleeperDropsLatchesAndReelsUp(helper);
 	}
 
+	@GameTest(environment = SpiderGameTest.ENV, structure = SpiderGameTest.ROOM)
+	public void spunWebHitsOnlyTheStrands(GameTestHelper helper) {
+		new GiantSpiderGameTest().webHitsOnlyTheStrands(helper);
+	}
+
 	// --- monster camps (specs/monster-camps.md) ---
 
 	@GameTest(structure = CampsGameTest.FIELD, maxTicks = 80)

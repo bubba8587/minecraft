@@ -18,6 +18,7 @@
 		"MobPersistenceAccessor",
 		"PlayerGripMixin",
 		"ProjectileUtilGripMixin",
+		"ProjectileUtilWebMixin",
 		"SpawnStateMixin",
 		"StormieDeactivatedSpiderMixin",
 		"TridentRiptideMixin",

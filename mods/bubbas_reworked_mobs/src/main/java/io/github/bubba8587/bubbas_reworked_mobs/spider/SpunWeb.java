@@ -4,6 +4,7 @@ package io.github.bubba8587.bubbas_reworked_mobs.spider;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.Random;
 
 import net.minecraft.core.BlockPos;
@@ -15,6 +16,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
@@ -154,7 +156,7 @@ public class SpunWeb extends Entity {
 		if (strandCache == null || strandCache.isEmpty()) {
 			return super.makeBoundingBox(pos);
 		}
-		// Pickable over its whole span, so a swing at the strands hits it.
+		// Search and culling box only; hits test the strands (strandClip).
 		return strandBox(pos, strandCache).inflate(0.15);
 	}
 
@@ -286,6 +288,44 @@ public class SpunWeb extends Entity {
 		Vec3 ab = b.subtract(a);
 		double t = Math.max(0.0, Math.min(1.0, p.subtract(a).dot(ab) / ab.lengthSqr()));
 		return p.distanceTo(a.add(ab.scale(t)));
+	}
+
+	/**
+	 * Where the segment {@code from}-{@code to} (world space) first passes within {@link SpiderTuning#WEB_PICK_RADIUS}
+	 * of a strand, or empty if it misses them all.
+	 */
+	public Optional<Vec3> strandClip(Vec3 from, Vec3 to) {
+		Vec3 p = from.subtract(position());
+		Vec3 d = to.subtract(from);
+		double len2 = d.lengthSqr();
+		if (len2 < 1.0E-12) {
+			return Optional.empty();
+		}
+		double r2 = SpiderTuning.WEB_PICK_RADIUS * SpiderTuning.WEB_PICK_RADIUS;
+		double best = Double.MAX_VALUE;
+		for (Strand s : strands()) {
+			Vec3 e = s.b.subtract(s.a);
+			Vec3 w = p.subtract(s.a);
+			double ee = e.lengthSqr();
+			double de = d.dot(e);
+			double dw = d.dot(w);
+			double ew = e.dot(w);
+			double denom = len2 * ee - de * de;
+			double t = denom > 1.0E-9 ? Mth.clamp((de * ew - ee * dw) / denom, 0.0, 1.0) : 0.0;
+			double u = ee > 1.0E-9 ? Mth.clamp((ew + t * de) / ee, 0.0, 1.0) : 0.0;
+			t = Mth.clamp((u * de - dw) / len2, 0.0, 1.0);
+			Vec3 gap = w.add(d.scale(t)).subtract(e.scale(u));
+			double g2 = gap.lengthSqr();
+			if (g2 <= r2) {
+				// Back up along the ray to where it enters the strand's radius.
+				double back = Math.sqrt(Math.max(0.0, r2 - g2) / len2);
+				double entry = Math.max(0.0, t - back);
+				if (entry < best) {
+					best = entry;
+				}
+			}
+		}
+		return best == Double.MAX_VALUE ? Optional.empty() : Optional.of(from.add(d.scale(best)));
 	}
 
 	// --- tick: slowing, fire, ageing --------------------------------------------------------------------

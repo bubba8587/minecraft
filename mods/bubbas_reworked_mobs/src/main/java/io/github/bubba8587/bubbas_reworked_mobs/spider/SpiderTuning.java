@@ -127,6 +127,8 @@ public final class SpiderTuning {
 	public static final int WEB_HITS_TO_CUT = 3;
 	public static final float WEB_TEAR_PER_HIT = 0.25F;
 	public static final int WEB_SHEAR_STRING = 2;
+	/** How close a crosshair, swing or projectile must pass to a strand to hit it. */
+	public static final double WEB_PICK_RADIUS = 0.3;
 	/** Ageing: torn up to WEB_AGE_TEAR_MAX over this many ticks (five in-game days). */
 	public static final int WEB_AGE_TICKS_TO_TATTERS = 24000 * 5;
 	public static final float WEB_AGE_TEAR_MAX = 0.45F;
