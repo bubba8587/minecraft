@@ -18,3 +18,7 @@ Found in chests in shipwreck map rooms, buried treasure, big ocean ruins and car
 ## Usage
 
 Used on a structure's typical block (for example mossy cobblestone for a jungle temple, or a hay bale for a village), it remembers that kind of structure and points to the nearest one like a compass; it spins when none is found. In a reworked beacon, every compass held in the beacon's range points there too.
+
+## Statue
+
+Sneaking and using the totem on a block sets it down as a [[Totem Statue]] instead of using it. Mining the statue gives the totem back.

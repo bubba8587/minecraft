@@ -40,6 +40,10 @@ A landing spot is safe when the player fits there and it has no lava, fire, camp
 
 The player is taken off any mount first, keeps facing the same way and takes no fall damage from the jump. An enderman's teleport sound and portal particles mark both ends.
 
+## Statue
+
+Sneaking and using the totem on a block sets it down as a [[Totem Statue]] instead of using it. Mining the statue gives the totem back.
+
 ## Textures
 
 An end stone figure with a purpur crown, an enderman's dark face and magenta eyes, and an ender pearl on its chest. Placeholder art in this early version.

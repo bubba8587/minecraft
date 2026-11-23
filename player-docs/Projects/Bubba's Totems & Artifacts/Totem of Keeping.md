@@ -18,3 +18,7 @@ Found in chests in ancient cities, end cities, stronghold libraries and woodland
 ## Usage
 
 Carried anywhere in the inventory, it is used up when its holder dies, and the holder keeps all items, armor and experience, as with the `keep_inventory` game rule. It does nothing in a beacon.
+
+## Statue
+
+Sneaking and using the totem on a block sets it down as a [[Totem Statue]] instead of using it. Mining the statue gives the totem back.

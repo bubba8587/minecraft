@@ -36,6 +36,10 @@ The totem works only in the Overworld and only with [[Bubba's Reworked Mobs]] in
 
 In a [[Bubba's Reworked Beacons]] beacon (any pyramid), the beacon's area draws [[Endermen|caretaker endermen]] the way a cairn does. They appear there at night and tidy the ground back toward how it was generated. The beacon screen reads "Endermen come to tend the ground". Without [[Bubba's Reworked Mobs]] the beacon does not accept the totem.
 
+## Statue
+
+Sneaking and using the totem on a block sets it down as a [[Totem Statue]] instead of using it. Mining the statue gives the totem back.
+
 ## Textures
 
 A stone figure wearing a cap of grass, with purple eyes and a small grass block on its chest. Placeholder art in this early version.
