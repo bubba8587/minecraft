@@ -19,6 +19,7 @@ What stays in Reworked Mobs (`specs/undead.md`): sleepers, the hearing/disturban
 
 - Many totems work both **held** (personal, small) and **in a beacon** (area).
 - Any rhythm (e.g. a held pulse) shows with vanilla's item cooldown sweep (B19 noHiddenCooldowns); vanilla mechanics first (B17); mobs and players treated the same (B18).
+- **No overlap with Infused Gems (owner, 2026-11-22):** a totem never does what a gem effect already does (e.g. no Totem of Silence: the Silence gem exists). Check `specs/effect-gems.md` before proposing a totem.
 - Fortification must stop explosion block damage only, never via the mobGriefing rule (that would also stop villager farming).
 
 ## The five new totems (design agreed with the owner, 2026-11-16)
