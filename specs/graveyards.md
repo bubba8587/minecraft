@@ -112,6 +112,12 @@ Owner's design (2026-11-22). Part 1's worldgen (`specs/undead.md` "Worldgen"): t
 - Totems: `totemsAreFoundInLoot` passes standalone (crypt table skipped) and with `-PwithMobs`.
 - Not yet tested (objectives): a crypt generates under a natural yard with its chest and niche sleepers (needs a deeper test field; checked by eye in the client part); crypt yards generate in each breakdown state (step 2); the gravestone's edit screen opens on placement (vanilla path, not exercised by a test).
 
+## Noble crypt loot (agent's call, owner 2026-11-22: "do whatever you like with the noble crypt loot")
+
+- The noble crypts are the endgame dungeon find. On top of the base table (gold, emeralds, iron, a golden apple, diamonds, enchanted books and gear) a second pool gives **1-2 burial goods**: a level 25-35 enchanted book, a worn but strongly enchanted diamond sword or chestplate, an enchanted golden helmet or chestplate, rarely an enchanted golden apple, a totem of undying or disc 13.
+- **True Unbreaking books: 20 % per noble chest** with Bubba's Reworked Mining (its main source; ancient cities 4 %, End cities 3 %, bastions and ominous vaults 5 %).
+- Grave Talisman 25 % and Totem of Warding 12 % per noble chest with Totems & Artifacts (unchanged).
+
 ## Milestone test objectives
 
 - A gravestone places with any of the 16 rotations, takes text front and back, keeps it through save and load, and drops itself.

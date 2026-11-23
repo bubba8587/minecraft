@@ -53,6 +53,11 @@ Dormant undead are real blocks, not entities or display-entity pseudo-blocks. Th
 
 A sleeper lying somewhere lower than its mob is tall (a crypt wall niche under a slab, a shallow grave) used to wake into a box overlapping blocks: no suffocation (eyes clear a half slab) but stuck. `SleeperWaking.stepOutIfStuck` now moves it to the nearest free spot: beside it on the same level first (a niche's open side), then one up, then diagonals; with none it stays. Milestone test `BubbasReworkedMobsGameTest.sleeperInANicheStepsOutWhenItWakes`.
 
+## Fire as a weak ward (owner idea, 2026-11-22, not built)
+
+- A lit **campfire** (and soul campfire) or plain **fire** works as a **weak ward**: hostile mobs are reluctant to come close (a few blocks), like a small, soft version of the Totem of Warding (`specs/totems-artifacts.md`). It is a deterrent, not a wall. Details (radius, which mobs, whether a hunting mob still pushes through) to be proposed.
+- Light already makes sleepers harder to wake (above), so a campfire also helps keep a crypt asleep.
+
 ## Undead variants (owner, 2026-11-22)
 
 - **Husks** (deserts) and **strays** (snow) become sleepers too, for crypts and camps. Husks lie buried in sand and burst out in a puff of sand that briefly blinds you (particles plus a short effect). Strays lie frozen in ice or packed snow that cracks as a warning before they break free.

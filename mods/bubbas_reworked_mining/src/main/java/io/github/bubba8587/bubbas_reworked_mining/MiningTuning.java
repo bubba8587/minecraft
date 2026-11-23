@@ -108,7 +108,10 @@ public final class MiningTuning {
 			chest("chests/ancient_city"), 0.04F,
 			chest("chests/end_city_treasure"), 0.03F,
 			chest("chests/bastion_treasure"), 0.05F,
-			chest("chests/trial_chambers/reward_ominous_rare"), 0.05F);
+			chest("chests/trial_chambers/reward_ominous_rare"), 0.05F,
+			// Bubba's Reworked Mobs' noble crypts: the main place to find one (agent's call, owner 2026-11-22). Keyed by
+			// that mod's table id, so nothing depends on it: without it the table never exists.
+			ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath("bubbas_reworked_mobs", "chests/crypt_noble")), 0.20F);
 
 	private static ResourceKey<LootTable> chest(String path) {
 		return ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace(path));
