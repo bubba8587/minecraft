@@ -247,4 +247,5 @@ Seven forms picked by seed: chorus, grove, spire, arch, canopy, henge, leaning (
 
 - **Endermen trade at their cairns.** Each cairn has **an obvious trade block** as part of its design, where a player leaves something and the endermen answer with something they've gathered.
 - **Like piglin bartering:** the return is random from a table, **sometimes good and sometimes weird as hell** (owner).
-- Open: what they take, what the trade block is, how the answer arrives.
+- **They take anything at all** (owner): a way to get rid of junk and maybe get something better back, or not.
+- Open: what the trade block is, how the answer arrives, whether what you give shapes what comes back.
