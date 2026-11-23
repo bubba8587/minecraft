@@ -86,4 +86,16 @@ public class BubbasTotemsArtifactsCoreGameTest {
 	public void statuesPulseTheirArea(GameTestHelper helper) {
 		new NewTotemsGameTest().statuesPulseTheirArea(helper);
 	}
+
+	// --- relic maps and vaults (bodies in RelicMapsGameTest) ---
+
+	@GameTest
+	public void relicShredsCombineOnlySameNameAndSize(GameTestHelper helper) {
+		new RelicMapsGameTest().shredsCombineOnlySameNameAndSize(helper);
+	}
+
+	@GameTest(structure = TestSupport.NS + ":crypt_field", maxTicks = 20)
+	public void relicVaultBuildsSealedWithPartwayStair(GameTestHelper helper) {
+		new RelicMapsGameTest().vaultBuildsSealedWithPartwayStair(helper);
+	}
 }

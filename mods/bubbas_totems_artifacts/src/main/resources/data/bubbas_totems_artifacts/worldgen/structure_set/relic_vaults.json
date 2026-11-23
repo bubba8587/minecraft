@@ -1,0 +1,11 @@
+{
+  "placement": {
+    "type": "bubbas_totems_artifacts:relic_sites"
+  },
+  "structures": [
+    {
+      "structure": "bubbas_totems_artifacts:relic_vault",
+      "weight": 1
+    }
+  ]
+}

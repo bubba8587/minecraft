@@ -1,0 +1,7 @@
+{
+  "type": "bubbas_totems_artifacts:relic_vault",
+  "biomes": "#minecraft:is_overworld",
+  "spawn_overrides": {},
+  "step": "underground_structures",
+  "terrain_adaptation": "none"
+}

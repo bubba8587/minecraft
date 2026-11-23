@@ -275,6 +275,21 @@ public class CryptYardPiece extends StructurePiece {
 		return crypt;
 	}
 
+	/** This yard's own seed (everything in it is decided from it). */
+	public long seed() {
+		return seed;
+	}
+
+	/** A noble crypt's far wall, its middle at floor height; null for any other yard. */
+	public @org.jspecify.annotations.Nullable BlockPos nobleFarWall() {
+		if (!crypt || wealth != YardKinds.Wealth.NOBLE) {
+			return null;
+		}
+		int floor = origin.getY() - GraveTuning.CRYPT_DEPTH + 1;
+		int start = stairsZ(origin, depth) + (origin.getY() - floor) + 2;
+		return new BlockPos(gateX(origin, width), floor, start + NOBLE_ENTRY + NOBLE_CHAMBER);
+	}
+
 	/** The middle of the vault's floor (feet height), for previews and tests; meaningful only with a crypt. */
 	public BlockPos vaultCentre() {
 		int floor = origin.getY() - GraveTuning.CRYPT_DEPTH + 1;

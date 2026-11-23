@@ -46,6 +46,7 @@ public class BubbasTotemsArtifacts implements ModInitializer {
 		io.github.bubba8587.bubbas_totems_artifacts.gathering.GatheringRing.initialize();
 		StructureSeeker.initialize();
 		TotemsLoot.initialize();
+		io.github.bubba8587.bubbas_totems_artifacts.relic.Relics.initialize();
 		// Reworked Mobs' cairns offer the Totem of the Beginning, and its endermen know the End's holder as kin. The Totem
 		// of the End is found only in the End (owner, 2026-11-22: no reward for completing a cairn).
 		SleeperHook.get().setUpEndermen(() -> new ItemStack(ModItems.TOTEM_OF_THE_BEGINNING), TotemOfTheEndItem::held);

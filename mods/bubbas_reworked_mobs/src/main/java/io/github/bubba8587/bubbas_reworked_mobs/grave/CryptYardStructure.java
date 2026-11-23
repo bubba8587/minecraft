@@ -75,8 +75,11 @@ public class CryptYardStructure extends Structure {
 				QuartPos.fromBlock(minZ + depth / 2));
 		YardTrees trees = YardTrees.forBiome(biome);
 		YardKinds.Climate climate = YardKinds.Climate.of(biome);
-		return Optional.of(new GenerationStub(origin, builder -> builder.addPiece(new CryptYardPiece(seed, origin, width, depth, crypt, trees, state, wealth,
-				climate))));
+		return Optional.of(new GenerationStub(origin, builder -> {
+			CryptYardPiece piece = new CryptYardPiece(seed, origin, width, depth, crypt, trees, state, wealth, climate);
+			builder.addPiece(piece);
+			io.github.bubba8587.bubbas_reworked_mobs.api.Crypts.attachments(piece).forEach(builder::addPiece);
+		}));
 	}
 
 	private static int odd(int n) {
