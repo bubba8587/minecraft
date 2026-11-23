@@ -11,7 +11,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Container;
-import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.level.block.BarrelBlock;
@@ -32,11 +31,9 @@ import org.jspecify.annotations.Nullable;
  * within the same 8 blocks, so the totem leaves them to it. Items the holder just threw (still on their pickup delay) and items that can never be
  * picked up (displays) are left alone. Players and mobs alike (B18).
  *
- * <p><b>In a beacon</b> ({@link #intoChest}, every pulse): dropped items in the beacon's area go into the nearest chest
- * or barrel under the beacon (the 3x3 column below it, down through the pyramid to
- * {@link TotemsTuning#GATHER_CHEST_DEPTH_BELOW_PYRAMID} blocks below its bottom layer; nearest first), as a hopper would
- * put them in, and XP orbs are gathered onto the beacon, where they wait for someone to collect them. No chest or
- * barrel: nothing happens.
+ * <p><b>In a beacon:</b> {@link GatheringRing}.
+ *
+ * <p><b>As a statue:</b> {@link #intoChest}.
  */
 public final class Gathering {
 	private Gathering() {
@@ -78,36 +75,22 @@ public final class Gathering {
 		return Math.min(pulled, TotemsTuning.GATHER_MAX_ITEMS_PER_TICK);
 	}
 
-	/** The nearest chest or barrel under the beacon at {@code beacon} with a pyramid of {@code levels}, or null. */
-	public static @Nullable BlockPos chestUnder(ServerLevel level, BlockPos beacon, int levels) {
-		int depth = Math.max(1, levels) + TotemsTuning.GATHER_CHEST_DEPTH_BELOW_PYRAMID;
-		BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
-		for (int dy = 1; dy <= depth; dy++) {
-			// Straight below first, then the sides, then the corners.
-			for (int ring = 0; ring <= 2; ring++) {
-				for (int dx = -1; dx <= 1; dx++) {
-					for (int dz = -1; dz <= 1; dz++) {
-						if (Math.abs(dx) + Math.abs(dz) != ring) {
-							continue;
-						}
-						pos.set(beacon.getX() + dx, beacon.getY() - dy, beacon.getZ() + dz);
-						BlockState state = level.getBlockState(pos);
-						if (state.getBlock() instanceof ChestBlock || state.getBlock() instanceof BarrelBlock) {
-							return pos.immutable();
-						}
-					}
-				}
+	/** A chest or barrel touching pos, or null. */
+	public static @Nullable BlockPos chestBeside(ServerLevel level, BlockPos pos) {
+		for (net.minecraft.core.Direction d : new net.minecraft.core.Direction[] {net.minecraft.core.Direction.DOWN, net.minecraft.core.Direction.NORTH,
+				net.minecraft.core.Direction.SOUTH, net.minecraft.core.Direction.WEST, net.minecraft.core.Direction.EAST, net.minecraft.core.Direction.UP}) {
+			BlockPos at = pos.relative(d);
+			BlockState state = level.getBlockState(at);
+			if (state.getBlock() instanceof ChestBlock || state.getBlock() instanceof BarrelBlock) {
+				return at;
 			}
 		}
 		return null;
 	}
 
-	/**
-	 * One beacon pulse: items in {@code area} into the chest or barrel under the beacon, XP orbs onto the beacon.
-	 * Returns how many item entities were (at least partly) stored.
-	 */
-	public static int intoChest(ServerLevel level, BlockPos beacon, int levels, AABB area) {
-		BlockPos chestPos = chestUnder(level, beacon, levels);
+	/** Gathering statue: nearby drops into a touching chest or barrel; returns how many were stored. */
+	public static int intoChest(ServerLevel level, BlockPos statue) {
+		BlockPos chestPos = chestBeside(level, statue);
 		if (chestPos == null) {
 			return 0;
 		}
@@ -115,29 +98,15 @@ public final class Gathering {
 		if (chest == null) {
 			return 0;
 		}
+		AABB area = new AABB(statue).inflate(TotemsTuning.GATHER_STATUE_RADIUS);
 		int stored = 0;
-		int seen = 0;
 		for (ItemEntity item : level.getEntitiesOfClass(ItemEntity.class, area, item -> pullable(item, null))) {
-			if (seen++ >= TotemsTuning.GATHER_BEACON_MAX_PER_PULSE) {
-				break;
-			}
 			int before = item.getItem().getCount();
 			Vec3 from = item.position();
 			HopperBlockEntity.addItem(chest, item);
 			if (!item.isAlive() || item.getItem().getCount() < before) {
 				stored++;
 				level.sendParticles(ParticleTypes.REVERSE_PORTAL, from.x, from.y + 0.2, from.z, 6, 0.15, 0.15, 0.15, 0.02);
-			}
-		}
-		Vec3 onBeacon = Vec3.atBottomCenterOf(beacon.above());
-		int orbs = 0;
-		for (ExperienceOrb orb : level.getEntitiesOfClass(ExperienceOrb.class, area, ExperienceOrb::isAlive)) {
-			if (orbs++ >= TotemsTuning.GATHER_BEACON_MAX_PER_PULSE) {
-				break;
-			}
-			if (orb.distanceToSqr(onBeacon) > 1.0) {
-				orb.teleportTo(onBeacon.x, onBeacon.y + 0.1, onBeacon.z);
-				orb.setDeltaMovement(Vec3.ZERO);
 			}
 		}
 		if (stored > 0) {

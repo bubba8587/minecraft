@@ -122,4 +122,31 @@ public class BubbasTotemsArtifactsCoreGameTest {
 	public void endStatuePlacesWithoutTeleportingAndDropsItsTotem(GameTestHelper helper) {
 		new TotemStatueGameTest().endStatuePlacesWithoutTeleportingAndDropsItsTotem(helper);
 	}
+
+	// --- 2026-11-22: Gathering ring, Growth planting, Herding, Clear Skies, statues (bodies in NewTotemsGameTest) ---
+
+	@GameTest(structure = TestSupport.FIELD, maxTicks = 300)
+	public void gatheringRingFeedsASideHopper(GameTestHelper helper) {
+		new NewTotemsGameTest().gatheringRingFeedsASideHopper(helper);
+	}
+
+	@GameTest(structure = TestSupport.FIELD, maxTicks = 20)
+	public void growthPlantsDroppedSeeds(GameTestHelper helper) {
+		new NewTotemsGameTest().growthPlantsDroppedSeeds(helper);
+	}
+
+	@GameTest(structure = TestSupport.FIELD, maxTicks = 20)
+	public void herdingPastureKeepsLivestockIn(GameTestHelper helper) {
+		new NewTotemsGameTest().herdingPastureKeepsLivestockIn(helper);
+	}
+
+	@GameTest(structure = TestSupport.FIELD, maxTicks = 20)
+	public void clearSkiesKeepsRainOff(GameTestHelper helper) {
+		new NewTotemsGameTest().clearSkiesKeepsRainOff(helper);
+	}
+
+	@GameTest(structure = TestSupport.FIELD, maxTicks = 40)
+	public void statuesPulseTheirArea(GameTestHelper helper) {
+		new NewTotemsGameTest().statuesPulseTheirArea(helper);
+	}
 }

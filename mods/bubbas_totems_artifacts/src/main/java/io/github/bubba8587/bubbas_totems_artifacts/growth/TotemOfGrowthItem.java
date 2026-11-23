@@ -22,6 +22,9 @@ public class TotemOfGrowthItem extends io.github.bubba8587.bubbas_totems_artifac
 	public void inventoryTick(ItemStack stack, ServerLevel level, Entity owner, @Nullable EquipmentSlot slot) {
 		if (Held.inHand(owner, slot) && HELD.firstThisTick(owner, level.getGameTime())) {
 			Growth.boost(level, Growth.heldBox(owner.blockPosition()), TotemsTuning.GROWTH_HELD_EXTRA);
+			if ((level.getGameTime() + owner.getId()) % TotemsTuning.PLANT_CHECK_TICKS == 0) {
+				Growth.plant(level, Growth.heldBox(owner.blockPosition()));
+			}
 		}
 	}
 }

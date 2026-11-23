@@ -46,7 +46,7 @@ public class StatuesClientGameTest implements FabricClientGameTest {
 			TotemType[] types = TotemType.values();
 			for (int i = 0; i < types.length; i++) {
 				server.runCommand("setblock %d %d %d bubbas_totems_artifacts:totem_statue[facing=south,totem=%s]".formatted(
-						x - 7 + 2 * i, y, z - 3, types[i].getSerializedName()));
+						x - 9 + 2 * i, y, z - 3, types[i].getSerializedName()));
 			}
 			context.waitTicks(10);
 			shots(context, server, x, y, z, "");
@@ -60,9 +60,9 @@ public class StatuesClientGameTest implements FabricClientGameTest {
 		server.runCommand("time set noon");
 		tp(context, server, x + 0.5, y + 1.0, z + 6.5, 180, 15);
 		context.takeScreenshot("statues-row" + suffix);
-		// Close up, two at a time (statues 2i and 2i+1 stand at x - 7 + 4i and x - 5 + 4i).
-		for (int pair = 0; pair < 4; pair++) {
-			tp(context, server, x - 5.5 + 4 * pair, y - 0.75, z - 0.6, 180, 12);
+		// Close up, two at a time
+		for (int pair = 0; pair < 5; pair++) {
+			tp(context, server, x - 7.5 + 4 * pair, y - 0.75, z - 0.6, 180, 12);
 			context.takeScreenshot("statues-close-" + pair + suffix);
 		}
 		server.runCommand("time set 18000");

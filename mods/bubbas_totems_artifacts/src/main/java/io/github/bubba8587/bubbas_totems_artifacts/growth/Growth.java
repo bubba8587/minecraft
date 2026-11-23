@@ -49,8 +49,47 @@ public final class Growth {
 		ServerTickEvents.END_LEVEL_TICK.register(level -> {
 			for (TotemAreas.Area area : TotemAreas.all(level, TotemAreas.Kind.GROWTH)) {
 				boost(level, area.box(), area.strength());
+				if ((level.getGameTime() + area.box().hashCode()) % TotemsTuning.PLANT_CHECK_TICKS == 0) {
+					plant(level, area.box());
+				}
 			}
 		});
+	}
+
+	/** Whether Growth plants this dropped stack. */
+	public static boolean plantable(net.minecraft.world.item.ItemStack stack) {
+		return stack.getItem() instanceof net.minecraft.world.item.BlockItem blockItem && blockItem.getBlock().defaultBlockState().is(BOOSTED);
+	}
+
+	/** Growth planting: maybe plant one dropped seed in box; returns whether it did. */
+	public static boolean plant(ServerLevel level, AABB box) {
+		RandomSource random = level.getRandom();
+		if (random.nextFloat() >= TotemsTuning.PLANT_CHANCE) {
+			return false;
+		}
+		java.util.List<net.minecraft.world.entity.item.ItemEntity> seeds = level.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, box,
+				item -> item.isAlive() && plantable(item.getItem()));
+		if (seeds.isEmpty()) {
+			return false;
+		}
+		net.minecraft.world.entity.item.ItemEntity seed = seeds.get(random.nextInt(seeds.size()));
+		BlockState plant = ((net.minecraft.world.item.BlockItem) seed.getItem().getItem()).getBlock().defaultBlockState();
+		BlockPos from = seed.blockPosition();
+		int reach = TotemsTuning.PLANT_REACH;
+		for (BlockPos pos : BlockPos.randomBetweenClosed(random, 32, from.getX() - reach, from.getY() - 3, from.getZ() - reach,
+				from.getX() + reach, from.getY() + 1, from.getZ() + reach)) {
+			if (level.getBlockState(pos).isAir() && plant.canSurvive(level, pos)) {
+				level.setBlock(pos, plant, Block.UPDATE_ALL);
+				seed.getItem().shrink(1);
+				if (seed.getItem().isEmpty()) {
+					seed.discard();
+				}
+				level.playSound(null, pos, plant.getSoundType().getPlaceSound(), net.minecraft.sounds.SoundSource.BLOCKS, 1.0F, 1.0F);
+				level.sendParticles(ParticleTypes.HAPPY_VILLAGER, pos.getX() + 0.5, pos.getY() + 0.3, pos.getZ() + 0.5, 6, 0.3, 0.2, 0.3, 0.0);
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/** The held totem's box around {@code centre}. */

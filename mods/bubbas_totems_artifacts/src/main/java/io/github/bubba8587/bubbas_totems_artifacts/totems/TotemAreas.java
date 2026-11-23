@@ -14,14 +14,15 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.phys.AABB;
 
 /**
- * Active totem areas set by beacons (Fortification: no explosion block damage; Growth: faster growth), the same idea
+ * Active totem areas set by beacons and statues (Fortification: no explosion block damage; Growth: faster growth;
+ * Herding: a pasture; Clear Skies: no weather), the same idea
  * as Warding's {@code Wards}: each source (a beacon position) puts its box with a lifetime and refreshes it on every
  * pulse, so a beacon that stops, breaks or unloads lapses on its own with no cleanup hook. Nothing here depends on
  * Bubba's Reworked Beacons. Server thread only; one map lookup when a level has no areas.
  */
 public final class TotemAreas {
 	public enum Kind {
-		FORTIFICATION, GROWTH
+		FORTIFICATION, GROWTH, HERDING, CLEAR_SKIES
 	}
 
 	/** One area; {@code strength} is what the kind makes of it (Growth: extra random ticks per vanilla tick). */

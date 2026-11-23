@@ -20,10 +20,20 @@ public final class TotemsTuning {
 	public static final double GATHER_SPEED = 0.3;
 	/** Held: at most this many items are pulled per tick (the nearest are not sorted; it only bounds the work). */
 	public static final int GATHER_MAX_ITEMS_PER_TICK = 64;
-	/** Beacon: at most this many items (and as many XP orbs) move per pulse. */
-	public static final int GATHER_BEACON_MAX_PER_PULSE = 256;
-	/** Beacon: how far below the beacon's bottom pyramid layer a chest or barrel still counts as "under" it. */
-	public static final int GATHER_CHEST_DEPTH_BELOW_PYRAMID = 6;
+	/** Beacon ring: radius and height above the beacon's base. */
+	public static final double RING_RADIUS = 1.25;
+	public static final double RING_HEIGHT = 1.05;
+	/** Ticks per turn of the ring. */
+	public static final int RING_PERIOD_TICKS = 100;
+	/** Ring join speed (blocks a tick) and size limit. */
+	public static final double RING_FLY_SPEED = 0.4;
+	public static final int RING_MAX_MEMBERS = 48;
+	/** Ticks between ring collection checks. */
+	public static final int RING_COLLECT_TICKS = 10;
+	/** XP release distance to a player. */
+	public static final double RING_XP_RELEASE_DISTANCE = 2.5;
+	/** Gathering statue radius. */
+	public static final double GATHER_STATUE_RADIUS = 3.0;
 
 	// --- Fortification ---------------------------------------------------------------------------------
 	/** Held: blocks within this many blocks of the holder are not broken by explosions. */
@@ -41,6 +51,10 @@ public final class TotemsTuning {
 	public static final int GROWTH_BEACON_EXTRA_PER_LAYER = 1;
 	/** Upper bound on extra random-tick samples per area per tick (a full 4-layer sky beacon needs about 2000). */
 	public static final int GROWTH_MAX_SAMPLES_PER_TICK = 2048;
+	/** Growth planting: check interval, chance, reach. */
+	public static final int PLANT_CHECK_TICKS = 40;
+	public static final float PLANT_CHANCE = 0.35F;
+	public static final int PLANT_REACH = 3;
 
 	// --- Seeking ---------------------------------------------------------------------------------------
 	/** How often (ticks) a held Totem of Seeking asks for its target. */
@@ -66,6 +80,18 @@ public final class TotemsTuning {
 	/** Used: the cooldown after a teleport (ticks; 4 s), shown with the item cooldown sweep. */
 	public static final int END_COOLDOWN_TICKS = 80;
 
+	// --- Herding, Clear Skies -------------------------------------------------------------
+	/** Pasture: range of a herder who can lead livestock out. */
+	public static final double HERD_LEAD_OUT_RANGE = 10.0;
+
+	// --- statues -------------------------------------------------------------------------
+	/** Statue area radius. */
+	public static final int STATUE_RADIUS = 3;
+	/** Statue pulse interval. */
+	public static final int STATUE_PULSE_TICKS = 20;
+	/** Growth statue extra random ticks. */
+	public static final int GROWTH_STATUE_EXTRA = 1;
+
 	// --- beacons ---------------------------------------------------------------------------------------
 	/** A beacon's Fortification or Growth area lasts this long after its last pulse (one pulse, 80, plus a second). */
 	public static final int AREA_LIFETIME_TICKS = 100;
@@ -73,6 +99,16 @@ public final class TotemsTuning {
 	public static final int SEEK_COMPASS_LIFETIME_TICKS = 100;
 
 	// --- where they are found (additive pools, one totem at this chance per chest) -------------------
+	/** Totem of Herding loot. */
+	public static final Map<ResourceKey<LootTable>, Float> HERDING_LOOT = Map.of(
+			BuiltInLootTables.VILLAGE_SHEPHERD, 0.12F,
+			BuiltInLootTables.VILLAGE_BUTCHER, 0.08F,
+			BuiltInLootTables.VILLAGE_TANNERY, 0.08F);
+	/** Totem of Clear Skies loot. */
+	public static final Map<ResourceKey<LootTable>, Float> CLEAR_SKIES_LOOT = Map.of(
+			BuiltInLootTables.IGLOO_CHEST, 0.12F,
+			BuiltInLootTables.VILLAGE_DESERT_HOUSE, 0.06F,
+			BuiltInLootTables.SHIPWRECK_SUPPLY, 0.05F);
 	/** Totem of Keeping: rare and deep (a Totem of Undying for your things). */
 	public static final Map<ResourceKey<LootTable>, Float> KEEPING_LOOT = Map.of(
 			BuiltInLootTables.ANCIENT_CITY, 0.06F,

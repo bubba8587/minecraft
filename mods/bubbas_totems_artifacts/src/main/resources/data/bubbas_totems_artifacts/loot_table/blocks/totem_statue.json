@@ -157,6 +157,44 @@
 									}
 								]
 							}
+						},
+						{
+							"type": "minecraft:item",
+							"name": "bubbas_totems_artifacts:totem_of_herding",
+							"condition": {
+								"type": "minecraft:all_of",
+								"terms": [
+									{
+										"type": "minecraft:survives_explosion"
+									},
+									{
+										"type": "minecraft:match_block",
+										"blocks": "bubbas_totems_artifacts:totem_statue",
+										"state": {
+											"totem": "herding"
+										}
+									}
+								]
+							}
+						},
+						{
+							"type": "minecraft:item",
+							"name": "bubbas_totems_artifacts:totem_of_clear_skies",
+							"condition": {
+								"type": "minecraft:all_of",
+								"terms": [
+									{
+										"type": "minecraft:survives_explosion"
+									},
+									{
+										"type": "minecraft:match_block",
+										"blocks": "bubbas_totems_artifacts:totem_statue",
+										"state": {
+											"totem": "clear_skies"
+										}
+									}
+								]
+							}
 						}
 					]
 				}

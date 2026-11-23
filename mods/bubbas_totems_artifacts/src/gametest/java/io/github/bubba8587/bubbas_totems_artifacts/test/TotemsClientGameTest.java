@@ -60,7 +60,7 @@ public class TotemsClientGameTest implements FabricClientGameTest {
 
 			// --- all five in the hotbar (slot 1 selected and empty) -------------------------------------------
 			Item[] totems = {ModItems.TOTEM_OF_KEEPING, ModItems.TOTEM_OF_GATHERING, ModItems.TOTEM_OF_FORTIFICATION, ModItems.TOTEM_OF_GROWTH,
-					ModItems.TOTEM_OF_SEEKING, ModItems.TOTEM_OF_WARDING, ModItems.TOTEM_OF_THE_BEGINNING, ModItems.TOTEM_OF_THE_END};
+					ModItems.TOTEM_OF_HERDING, ModItems.TOTEM_OF_CLEAR_SKIES, ModItems.TOTEM_OF_THE_BEGINNING, ModItems.TOTEM_OF_THE_END};
 			context.runOnClient(mc -> mc.player.getInventory().setSelectedSlot(0));
 			server.runOnServer(s -> {
 				ServerPlayer p = s.getPlayerList().getPlayers().getFirst();
@@ -108,6 +108,31 @@ public class TotemsClientGameTest implements FabricClientGameTest {
 			context.waitTicks(60);
 			context.takeScreenshot("totems-gathering-after");
 			server.runCommand("kill @e[type=item]");
+
+			// --- Gathering ring round a beacon, a side hopper into a chest ---
+			server.runOnServer(s -> s.getPlayerList().getPlayers().getFirst().setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY));
+			server.runCommand("gamemode spectator @p");
+			BlockPos ringBeacon = base.offset(0, 0, 5);
+			server.runCommand("fill %d %d %d %d %d %d minecraft:air".formatted(ringBeacon.getX() - 6, ringBeacon.getY(), ringBeacon.getZ() - 4, ringBeacon.getX() + 6, ringBeacon.getY() + 4, ringBeacon.getZ() + 6));
+			server.runCommand("setblock %d %d %d minecraft:beacon".formatted(ringBeacon.getX(), ringBeacon.getY(), ringBeacon.getZ()));
+			server.runCommand("setblock %d %d %d minecraft:hopper[facing=east]".formatted(ringBeacon.getX() + 1, ringBeacon.getY(), ringBeacon.getZ()));
+			server.runCommand("setblock %d %d %d minecraft:chest".formatted(ringBeacon.getX() + 2, ringBeacon.getY(), ringBeacon.getZ()));
+			for (int i = 0; i < drops.length; i++) {
+				double angle = 2 * Math.PI * i / drops.length;
+				server.runCommand("summon item %.2f %d %.2f {Item:{id:\"%s\",count:1},Motion:[0.0,0.0,0.0]}".formatted(ringBeacon.getX() + 0.5 + Math.cos(angle) * 5.0,
+						ringBeacon.getY(), ringBeacon.getZ() + 0.5 + Math.sin(angle) * 5.0, drops[i]));
+			}
+			server.runCommand("summon experience_orb %d %d %d {Value:7}".formatted(ringBeacon.getX() - 4, ringBeacon.getY(), ringBeacon.getZ() + 3));
+			server.runOnServer(s -> io.github.bubba8587.bubbas_totems_artifacts.gathering.GatheringRing.put(s.overworld(), ringBeacon,
+					new net.minecraft.world.phys.AABB(ringBeacon).inflate(8.0), 400));
+			server.runCommand("tp @p %.1f %d %.1f 0 30".formatted(ringBeacon.getX() + 0.5, ringBeacon.getY() + 3, ringBeacon.getZ() - 3.0));
+			context.waitTicks(30);
+			context.takeScreenshot("totems-gathering-ring");
+			context.waitTicks(17);
+			context.takeScreenshot("totems-gathering-ring-later");
+			server.runCommand("kill @e[type=item]");
+			server.runCommand("kill @e[type=experience_orb]");
+			server.runCommand("gamemode survival @p");
 
 			// --- Seeking: points at the nearest structure, checked against vanilla's /locate ---------------
 			BlockPos target = server.computeOnServer(s -> {

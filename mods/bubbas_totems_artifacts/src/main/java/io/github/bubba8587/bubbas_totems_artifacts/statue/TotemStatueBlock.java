@@ -3,6 +3,8 @@ package io.github.bubba8587.bubbas_totems_artifacts.statue;
 
 import io.github.bubba8587.bubbas_totems_artifacts.registry.ModBlocks;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.advancements.triggers.CriteriaTriggers;
 import net.minecraft.sounds.SoundSource;
@@ -26,7 +28,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 /**
  * A totem set down as a statue (owner, 2026-11-16; B15 exception: one shared block for every totem, the owner's
- * request). Purely decorative: no pulse, no ward, no beacon effect, no block entity, no ticking. Mining it drops the
+ * request). Pulses its area effect: statue/StatueEffects. Mining it drops the
  * totem back (loot table blocks/totem_statue). Placed from the totem item by sneaking and using it on a block
  * ({@link #placeFrom}).
  *
@@ -64,6 +66,35 @@ public class TotemStatueBlock extends HorizontalDirectionalBlock {
 	public static BlockState stateFor(TotemType type) {
 		BlockState state = ModBlocks.TOTEM_STATUE.defaultBlockState();
 		return HAS_TYPES ? state.setValue(TOTEM, type) : state;
+	}
+
+	@Override
+	protected void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston) {
+		if (!level.isClientSide() && StatueEffects.pulses(type(state))) {
+			level.scheduleTick(pos, this, 1);
+		}
+	}
+
+	@Override
+	protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+		TotemType type = type(state);
+		if (StatueEffects.pulses(type)) {
+			StatueEffects.pulse(level, pos, type);
+			level.scheduleTick(pos, this, io.github.bubba8587.bubbas_totems_artifacts.totems.TotemsTuning.STATUE_PULSE_TICKS);
+		}
+	}
+
+	@Override
+	protected boolean isRandomlyTicking(BlockState state) {
+		return StatueEffects.pulses(type(state));
+	}
+
+	@Override
+	protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+		// Restart a missing pulse
+		if (!level.getBlockTicks().hasScheduledTick(pos, this)) {
+			level.scheduleTick(pos, this, 1);
+		}
 	}
 
 	@Override
