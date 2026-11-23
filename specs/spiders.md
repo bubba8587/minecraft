@@ -27,6 +27,15 @@ Owner's design (2026-11-22). Ordinary spiders stay **mostly vanilla**. What's ne
 - It must stay cheap: culled when out of view, simple geometry, bounded strand counts.
 - Checked from several angles, in daylight and in a dark cave, at 16x and 32x. This is a showpiece: iterate on the look until it is genuinely striking.
 
+## Cocoons (owner, 2026-11-22)
+
+- **A victim reeled into a nest is cocooned, not bitten to death.** The spider wraps it and **poisons** it while it does (vanilla Poison can't kill: it stops at half a heart). It applies to players and livestock alike, and to the giant spider's livestock too.
+- A cocooned victim can't move. The spider **backs off and waits**, then comes back later to feed (attack).
+- **Breaking free (owner): attack the cocoon from inside.** Each swing weakens it, and a sword or shears cut faster than a bare hand.
+- **Others can cut a victim out** from outside, with attacks or shears, freeing a friend or a cocooned animal alive.
+- **Cocooned livestock make their distress sounds loudly and often**, so you can hear a snatched animal from a distance and go after it.
+- The cocoon's look: wrapped in the same crisp, pixel-art silk as the spun webs, hanging from the nest or the giant spider's web.
+
 ## Giant spiders (owner, 2026-11-22)
 
 - **A large variant:** an **extra-large spider** (vanilla's `scale` attribute, so vanilla size properties), in **old-growth taiga** (owner: "the tall forest biome with the brown grass").
