@@ -248,4 +248,5 @@ Seven forms picked by seed: chorus, grove, spire, arch, canopy, henge, leaning (
 - **Endermen trade at their cairns.** Each cairn has **an obvious trade block** as part of its design, where a player leaves something and the endermen answer with something they've gathered.
 - **Like piglin bartering:** the return is random from a table, **sometimes good and sometimes weird as hell** (owner).
 - **They take anything at all** (owner): a way to get rid of junk and maybe get something better back, or not.
-- Open: what the trade block is, how the answer arrives, whether what you give shapes what comes back.
+- **The trade spot uses our loot-on-display** (owner): the item lies right on the ground, the way the Totem of the Beginning offering does (`display/LootDisplays`, `DisplayPlacement.GROUND`; `specs/undead.md` "Loot on display"). Each cairn's design has a marked spot by its foot (a small End-block pad, builder's design) where a survival player can lay any item from their hand. Players otherwise can't place displays in survival (ops only), so this spot is the exception. The endermen's answer appears on the same spot for the player to pick up.
+- Open: how soon the answer comes, and whether what you give shapes what comes back.
