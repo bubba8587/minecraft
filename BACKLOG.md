@@ -61,6 +61,12 @@ Left for next session:
 - **7 rest:** skull-dome rock and bone caves (specs/monster-camps.md "Layout variety"), two-chamber rooms, camp loot themed per kind, screenshots of 6+ seeds per kind. The `camps` client part's `camp-room` camera still points at the old fixed room.
 - **11:** the cairn yard and creeper grove backup copies still float at y 198. The quick fixes don't work: a far-away copy isn't loaded when the sign is clicked, and the builder pack is off in the finished world. Options: (a) structure templates (the yard is 51 wide, so two templates, plus copying the world's `generated/` folder), or (b) a small reset datapack left enabled.
 - **17 rest:** level rough high ground for camps (cut and fill or `terrain_adaptation`) instead of skipping anything over 6 blocks of slope.
+- **19, builder endermen stand still almost all night (owner, 2026-11-23),** then teleport out at dawn, sometimes without placing their block.
+  - **Likely cause:** `EndermanJobGoal.plan`. A builder whose block can't go in yet ("the blocks under it are still missing") takes the WAIT job: it stands in the cairn's ring and rechecks every second. If the block below it never arrives (that builder despawned or failed, or no builder carries it), every builder above it waits all night. The new caretaker rule from item 8 could also refuse a spot. Confirm with a test that spawns builders for a half-built cairn and logs each one's job over a night.
+  - **Plan:**
+    - waiting builders don't freeze: they place what they can, otherwise do caretaker work nearby (vanilla stroll near the cairn);
+    - if the block they need underneath has no builder, one of them fetches it, or the cairn spawns a builder for it;
+    - a builder still holding its block near dawn sets it at the nearest valid spot, or drops it at the cairn, instead of leaving with it.
 - **Tests:** milestone tests for 8, 12 and 13; a client check that clicks every natural-world sign; a screenshot of a crypt niche with the sleeper inside it.
 - **Natural world camp signs:** they name the kind each biome should give, because camps only register when a player comes near.
 - **Side effect to know:** mixing design seeds changed the form of every cairn, camp, crypt yard and Fabricator that isn't built yet, including half-built cairns in existing worlds.
