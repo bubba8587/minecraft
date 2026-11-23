@@ -20,7 +20,8 @@ import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContex
  * looks back) stands 11 blocks from a one-log tree with the creeper behind it. Screenshots:
  * creeper-peek (from just behind the stand: half behind the trunk, eyes out), creeper-peek-side (from the side, its
  * place beside the trunk); then the player takes the stand's place: creeper-hidden (looked at: ~95 % behind the
- * trunk), and creeper-caught (the player looks away until it eases back out, then turns straight back).
+ * trunk), and creeper-caught (the player looks away until it eases back out, then turns straight back). Last, with the
+ * show_meters game rule on, creeper-startle-bar: a startled creeper's red meter above its head.
  */
 @SuppressWarnings("UnstableApiUsage")
 public class CreeperClientGameTest implements FabricClientGameTest {
@@ -86,6 +87,26 @@ public class CreeperClientGameTest implements FabricClientGameTest {
 			server.runCommand("tp @p %.2f %d %.2f 0 0".formatted(x + 0.5, y, z - 0.5));
 			context.waitFor(mc -> Math.abs(net.minecraft.util.Mth.wrapDegrees(mc.player.getYRot())) < 1.0F);
 			context.takeScreenshot("creeper-caught");
+
+			// A creeper's startle meter, red above its head (show_meters), on a second creeper hit twice.
+			server.runCommand("kill @e[tag=%s]".formatted(TAG));
+			server.runCommand("gamerule bubbas_reworked_mobs:show_meters true");
+			server.runCommand("summon minecraft:creeper %d.5 %d %d.5 {PersistenceRequired:1b,Silent:1b,NoAI:1b,Rotation:[180f,0f],Tags:[\"%s_bar\"]}".formatted(x - 4, y, z + 4, TAG));
+			context.waitTicks(3);
+			for (int hit = 0; hit < 2; hit++) {
+				server.runOnServer(s -> {
+					var level = s.overworld();
+					for (Entity e : level.getAllEntities()) {
+						if (e instanceof Creeper c && e.entityTags().contains(TAG + "_bar")) {
+							c.hurtServer(level, level.damageSources().playerAttack(level.players().getFirst()), 0.1F);
+						}
+					}
+				});
+				context.waitTicks(12);
+			}
+			server.runCommand("gamemode spectator @p");
+			tp(context, server, x - 3.5, y + 0.4, z + 0.5, 0.0F, 0.0F);
+			context.takeScreenshot("creeper-startle-bar");
 		}
 	}
 
