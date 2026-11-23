@@ -12,3 +12,4 @@ function bubba_testworld:grounds
 function bubba_testworld:cairn
 function bubba_testworld:creepers
 function bubba_testworld:cairns
+function bubba_testworld:showcase
