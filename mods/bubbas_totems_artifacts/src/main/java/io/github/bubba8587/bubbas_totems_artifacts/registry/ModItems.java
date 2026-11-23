@@ -35,7 +35,7 @@ public final class ModItems {
 	/** Totem of Keeping (keeping/Keeping): carried, used up on death to keep everything. */
 	public static final Item TOTEM_OF_KEEPING = registerNew("totem_of_keeping", io.github.bubba8587.bubbas_totems_artifacts.statue.StatueTotemItem::new, totem());
 
-	/** Totem of Gathering (gathering/Gathering): held, pulls dropped items; in a beacon, into a chest below. */
+	/** Totem of Gathering (gathering/Gathering): held, pulls dropped items; in a beacon, a ring round it. */
 	public static final Item TOTEM_OF_GATHERING = registerNew("totem_of_gathering", TotemOfGatheringItem::new, totem());
 
 	/** Totem of Fortification (fortification/Fortification): held or in a beacon, explosions break no blocks. */
@@ -56,6 +56,14 @@ public final class ModItems {
 	/** Totem of the End (end/TotemOfTheEndItem): held, endermen treat you as kin; used, teleports you where you aim. */
 	public static final Item TOTEM_OF_THE_END = registerNew("totem_of_the_end", TotemOfTheEndItem::new,
 			new Item.Properties().stacksTo(1).rarity(Rarity.RARE));
+
+	// Herding and Clear Skies (owner, 2026-11-22; specs/totems-artifacts.md).
+
+	/** Totem of Herding (herding/Herding): held, livestock follow you; in a beacon or as a statue, a pasture. */
+	public static final Item TOTEM_OF_HERDING = registerNew("totem_of_herding", io.github.bubba8587.bubbas_totems_artifacts.herding.TotemOfHerdingItem::new, totem());
+
+	/** Totem of Clear Skies (skies/ClearSkies): used, ends a storm; in a beacon or as a statue, no weather in the area. */
+	public static final Item TOTEM_OF_CLEAR_SKIES = registerNew("totem_of_clear_skies", io.github.bubba8587.bubbas_totems_artifacts.skies.TotemOfClearSkiesItem::new, totem());
 
 	private ModItems() {
 	}

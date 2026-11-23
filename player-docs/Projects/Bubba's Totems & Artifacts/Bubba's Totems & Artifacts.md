@@ -38,18 +38,20 @@ A found item that makes nearby monsters run away while held, and in a beacon fro
 ## More totems
 
 - [[Totem of Keeping]]: saves its holder's belongings once.
-- [[Totem of Gathering]]: pulls in dropped items.
+- [[Totem of Gathering]]: pulls in dropped items; in a beacon, items and experience circle it for a hopper to collect.
 - [[Totem of Fortification]]: stops explosions from breaking blocks.
-- [[Totem of Growth]]: makes plants grow faster.
+- [[Totem of Growth]]: makes plants grow faster and plants dropped seeds.
 - [[Totem of Seeking]]: points toward a chosen kind of structure.
 - [[Totem of the Beginning]]: returns the ground around its user to how it was first generated (single use; needs Bubba's Reworked Mobs).
 - [[Totem of the End]]: endermen treat its holder as one of their own; teleports its user to the block they aim at.
+- [[Totem of Herding]]: animals follow its holder; in a beacon, they stay in the area.
+- [[Totem of Clear Skies]]: ends a storm; in a beacon, keeps rain, snow and lightning off the area.
 
 ## Totem statues
 
 *Main article: [[Totem Statue]]*
 
-Sneaking and using a totem on a block sets it down as a decorative statue. Mining the statue gives the totem back.
+Sneaking and using a totem on a block sets it down as a statue, which gives a small version of the totem's effect around it. Mining the statue gives the totem back.
 
 ## Installation
 
@@ -72,7 +74,7 @@ The mod requires Fabric API and works on its own. Two of Bubba's mods add to it 
 | Installed with | Adds |
 |---|---|
 | [[Bubba's Reworked Mobs]] | The Grave Talisman also senses [[Sleeping Undead|sleeping undead]]; the Totem of Warding calms sleeping undead, and a full ward keeps them asleep. [[Endermen|Enderman cairns]] sometimes offer the [[Totem of the Beginning]], and the Totem of the Beginning works only with this mod. |
-| [[Bubba's Reworked Beacons]] | The Totem of Warding fits in a [[Beacon|beacon]] and wards its area. The Totem of the Beginning in a beacon draws endermen to tend its area (with Bubba's Reworked Mobs). |
+| [[Bubba's Reworked Beacons]] | Totems fit in a [[Beacon|beacon]] and work across its area: the Totem of Warding wards it, Gathering makes its item ring, Herding keeps animals in, Clear Skies keeps the weather off. The Totem of the Beginning in a beacon draws endermen to tend its area (with Bubba's Reworked Mobs). |
 
 ## History
 

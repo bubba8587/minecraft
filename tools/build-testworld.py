@@ -34,7 +34,7 @@ NS = "bubba_testworld"
 OUT = ROOT / "testworlds" / "bubba-test-world"
 WORLD_NAME = "Bubba Test World"
 VERBOSE = False  # --verbose: print every command and its reply
-MODS = ["bubbas_reworked_mobs", "bubbas_extra_recipes", "bubbas_infused_gems", "bubbas_reworked_beacons", "bubbas_totems_artifacts", "bubbas_reworked_mining"]
+MODS = ["bubbas_reworked_mobs", "bubbas_extra_recipes", "bubbas_infused_gems", "bubbas_reworked_beacons", "bubbas_totems_artifacts", "bubbas_reworked_mining", "bubbas_world_tweaks"]
 # Bedrock, two dirt, grass: the classic superflat. The ground's top is y=-61, so stations stand on y=-60.
 FLAT = ('{"layers":[{"block":"minecraft:bedrock","height":1},{"block":"minecraft:dirt","height":2},'
         '{"block":"minecraft:grass_block","height":1}],"biome":"minecraft:plains","lakes":false,"features":false}')

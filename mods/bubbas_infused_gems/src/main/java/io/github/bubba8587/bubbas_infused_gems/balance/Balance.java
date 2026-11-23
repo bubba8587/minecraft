@@ -9,7 +9,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -41,7 +40,6 @@ public final class Balance {
 	public final double weaponSplit;
 	public final List<Infusion> infusions = new ArrayList<>();
 	public final Map<String, Double> armorMaterials = new LinkedHashMap<>();
-	public final Set<String> helmetOnly;
 	public final Map<Integer, Double> run = new LinkedHashMap<>();
 	public final Map<String, Double> weaponMaterials = new LinkedHashMap<>();
 	public final Map<String, Double> grades = new LinkedHashMap<>();
@@ -57,7 +55,6 @@ public final class Balance {
 	/** Open-question defaults the owner may change (balance.json "rules"). */
 	public final boolean strongerApplies;
 	/** Gem inversion (owner): the reagent, and the weakest potion variant factor (to read a gem's grade back). */
-	public final String inversionReagent;
 	public final double variantMin;
 	public final boolean undeadInversion;
 
@@ -86,7 +83,7 @@ public final class Balance {
 	}
 
 	public record EffectData(String key, String name, boolean good, String role, String hitKind, double levelOne,
-			Map<String, Variant> variants, String source, int hitTicks, int hitAmplifier, List<String> otherPool,
+			Map<String, Variant> variants, String source, int hitTicks, List<String> otherPool,
 			int hitFloorTicks, double hitFloorHealHp, double hitFloorExhaustion, List<String> drawbackPool, List<Double> drawbackWeights, List<Double> otherWeights, List<Attr> wornAttributes, JsonObject worn, double hitUnit, List<String> opposites,
 			int wornAmplifier, String id, Map<String, Double> parts, int color, double wornCap) {
 		public boolean wornFlag(String name) {
@@ -160,7 +157,6 @@ public final class Balance {
 					i.get("item").getAsString(), i.get("factor").getAsDouble()));
 		}
 		o.getAsJsonObject("armor_materials").entrySet().forEach(e -> this.armorMaterials.put(e.getKey(), e.getValue().getAsDouble()));
-		this.helmetOnly = strings(o.getAsJsonArray("helmet_only")).stream().collect(Collectors.toUnmodifiableSet());
 		o.getAsJsonObject("run").entrySet().forEach(e -> this.run.put(Integer.parseInt(e.getKey()), e.getValue().getAsDouble()));
 		o.getAsJsonObject("weapon_materials").entrySet().forEach(e -> this.weaponMaterials.put(e.getKey(), e.getValue().getAsDouble()));
 		o.getAsJsonObject("grades").entrySet().forEach(e -> this.grades.put(e.getKey(), e.getValue().getAsDouble()));
@@ -180,7 +176,6 @@ public final class Balance {
 		this.gemEffects = this.effects.values().stream().filter(e -> !e.role().equals("negative")).map(EffectData::key).toList();
 		JsonObject rules = o.getAsJsonObject("rules");
 		this.strongerApplies = rules.get("gem_vs_potion").getAsString().equals("stronger");
-		this.inversionReagent = o.getAsJsonObject("inversion").get("reagent").getAsString();
 		this.variantMin = o.getAsJsonObject("inversion").get("variant_min").getAsDouble();
 		this.undeadInversion = rules.get("undead_inversion").getAsBoolean();
 
@@ -211,7 +206,7 @@ public final class Balance {
 		}
 		return new EffectData(key, e.get("name").getAsString(), e.get("good").getAsBoolean(), e.get("role").getAsString(),
 				e.get("hit_kind").getAsString(), e.get("level_one").getAsDouble(), Map.copyOf(variants), str(e, "source"),
-				hit == null ? 0 : hit.get("ticks").getAsInt(), hit == null ? 0 : hit.get("amplifier").getAsInt(),
+				hit == null ? 0 : hit.get("ticks").getAsInt(),
 				list(e, "other_pool"), hit == null ? 0 : hit.get("floor_ticks").getAsInt(),
 				hit == null ? 0.0 : hit.get("floor_heal_hp").getAsDouble(), hit == null ? 0.0 : hit.get("floor_exhaustion").getAsDouble(),
 				list(e, "drawback_pool"), doubles(e, "drawback_weights"), doubles(e, "other_weights"), List.copyOf(attrs), worn,

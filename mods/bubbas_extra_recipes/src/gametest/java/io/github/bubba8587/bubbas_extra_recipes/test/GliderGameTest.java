@@ -60,7 +60,7 @@ public class GliderGameTest {
 		helper.succeed();
 	}
 
-	// Core test: registered by ExtraRecipesCoreGameTest (test-lite, specs/quality.md).
+	@GameTest
 	public void gliderRecipeCraftsOneGlider(GameTestHelper helper) {
 		var key = ResourceKey.create(Registries.RECIPE, BubbasExtraRecipes.id("glider"));
 		RecipeHolder<?> holder = helper.getLevel().recipeAccess().byKey(key).orElse(null);

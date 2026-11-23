@@ -27,27 +27,17 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import org.jspecify.annotations.Nullable;
 
-/**
- * The Totem of Seeking (specs/totems-artifacts.md): points like a compass to the nearest structure of one type, the
- * way an explorer map leads to one. Use it on a structure's signature block ({@link SeekingTypes}) to choose the type.
- *
- * <p>Pointing is vanilla's lodestone compass (B17): the totem carries a {@code minecraft:lodestone_tracker} (untracked)
- * aimed at the structure, and its item model is a {@code minecraft:compass} dispatch on that target; with no target
- * (nothing chosen, still searching the first time, nothing in this dimension) the needle spins like a compass in the
- * Nether. Anywhere in the inventory, like a compass, every {@link TotemsTuning#SEEK_UPDATE_TICKS} it asks
- * {@link StructureSeeker} (cached, spread over ticks) for the nearest one from where its holder is.
- */
-public class TotemOfSeekingItem extends Item {
+/** The Totem of Seeking. */
+public class TotemOfSeekingItem extends io.github.bubba8587.bubbas_totems_artifacts.statue.StatueTotemItem {
 	public TotemOfSeekingItem(Properties properties) {
 		super(properties);
 	}
 
 	@Override
 	public InteractionResult useOn(UseOnContext context) {
-		// Sneaking sets it down as its statue; otherwise it chooses what to seek.
-		if (context.getPlayer() != null && context.getPlayer().isSecondaryUseActive()) {
-			return io.github.bubba8587.bubbas_totems_artifacts.statue.TotemStatueBlock.placeFrom(context,
-					io.github.bubba8587.bubbas_totems_artifacts.statue.TotemType.SEEKING);
+		InteractionResult statue = super.useOn(context);
+		if (statue != InteractionResult.PASS) {
+			return statue;
 		}
 		Level level = context.getLevel();
 		Optional<SeekingTypes.SeekType> type = SeekingTypes.forBlock(level.getBlockState(context.getClickedPos()));
@@ -80,7 +70,7 @@ public class TotemOfSeekingItem extends Item {
 		}
 	}
 
-	/** Aims {@code stack} at the nearest structure of its type from {@code from}, when the answer is in. */
+	/** Aims stack at the nearest structure of its type from from, when the answer is in. */
 	public static void update(ItemStack stack, ServerLevel level, BlockPos from) {
 		Optional<SeekingTypes.SeekType> type = SeekingTypes.byId(stack.get(ModComponents.SEEKING_TYPE));
 		if (type.isEmpty()) {
@@ -88,12 +78,12 @@ public class TotemOfSeekingItem extends Item {
 		}
 		Optional<BlockPos> found = StructureSeeker.lookup(level, type.get(), from);
 		if (found == null) {
-			return; // still searching: keep the old target meanwhile
+			return;
 		}
 		pointAt(stack, level, found.orElse(null));
 	}
 
-	/** Points a compass-like stack at {@code target} in {@code level}, or (null) lets it spin. Changes nothing when already so. */
+	/** Points a compass-like stack at target in level, or (null) lets it spin. */
 	public static void pointAt(ItemStack stack, ServerLevel level, @Nullable BlockPos target) {
 		LodestoneTracker tracker = new LodestoneTracker(Optional.ofNullable(target).map(pos -> GlobalPos.of(level.dimension(), pos)), false);
 		if (!tracker.equals(stack.get(DataComponents.LODESTONE_TRACKER))) {

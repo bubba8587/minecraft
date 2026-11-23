@@ -25,7 +25,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * fail). So sleepers, loot displays, dropped items and barrier-free areas of earlier tests sat right next to later
  * ones: a leftover sleeper 5 blocks away heard a later test and woke, a later mob walked off for a leftover display
  * (notice range 8), a mock player left by a failed test drew natural spawns and targets. Each test now starts next
- * to empty air.
+ * to empty air. Anything a test registered with {@code TestCleanup} (outside its area) is cleaned up here too.
  */
 @Mixin(GameTestInfo.class)
 abstract class TestAreaCleanupMixin {
@@ -35,10 +35,15 @@ abstract class TestAreaCleanupMixin {
 	@Inject(method = "tick", at = @At("RETURN"))
 	private void brmTest$cleanWhenDone(GameTestRunner runner, CallbackInfo ci) {
 		GameTestInfo self = (GameTestInfo) (Object) this;
-		if (this.brmTest$cleaned || !self.isDone() || self.getTestBlockPos() == null) {
+		if (this.brmTest$cleaned || !self.isDone()) {
 			return;
 		}
 		this.brmTest$cleaned = true;
+		// What the test put outside its area (a far-off Fabricator site, forced chunks, players there): pass or fail.
+		io.github.bubba8587.bubbas_reworked_mobs.test.TestCleanup.run(self);
+		if (self.getTestBlockPos() == null) {
+			return;
+		}
 		ServerLevel level = self.getLevel();
 		BoundingBox box = self.getTestInstanceBlockEntity().getTestBoundingBox();
 		AABB area = AABB.of(box).inflate(2.0);

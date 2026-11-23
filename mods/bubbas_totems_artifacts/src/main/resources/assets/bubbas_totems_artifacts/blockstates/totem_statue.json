@@ -119,6 +119,36 @@
 		"facing=west,totem=end": {
 			"model": "bubbas_totems_artifacts:block/totem_statue_end",
 			"y": 270
+		},
+		"facing=north,totem=herding": {
+			"model": "bubbas_totems_artifacts:block/totem_statue_herding"
+		},
+		"facing=east,totem=herding": {
+			"model": "bubbas_totems_artifacts:block/totem_statue_herding",
+			"y": 90
+		},
+		"facing=south,totem=herding": {
+			"model": "bubbas_totems_artifacts:block/totem_statue_herding",
+			"y": 180
+		},
+		"facing=west,totem=herding": {
+			"model": "bubbas_totems_artifacts:block/totem_statue_herding",
+			"y": 270
+		},
+		"facing=north,totem=clear_skies": {
+			"model": "bubbas_totems_artifacts:block/totem_statue_clear_skies"
+		},
+		"facing=east,totem=clear_skies": {
+			"model": "bubbas_totems_artifacts:block/totem_statue_clear_skies",
+			"y": 90
+		},
+		"facing=south,totem=clear_skies": {
+			"model": "bubbas_totems_artifacts:block/totem_statue_clear_skies",
+			"y": 180
+		},
+		"facing=west,totem=clear_skies": {
+			"model": "bubbas_totems_artifacts:block/totem_statue_clear_skies",
+			"y": 270
 		}
 	}
 }

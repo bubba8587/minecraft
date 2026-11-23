@@ -66,6 +66,25 @@ public class SocketingGameTest {
 		}
 		check(helper, socket(menu, chest, SPEED).isEmpty(), "a 4th gem fits armor");
 		check(helper, menu.hasRecipeError() || menu.getSlot(3).getItem().isEmpty(), "full armor still offered a result");
+		ItemStack sword = socket(menu, socket(menu, new ItemStack(Items.IRON_SWORD), POISON), POISON);
+		check(helper, Sockets.list(sword).size() == 2 && socket(menu, sword, POISON).isEmpty(), "a sword holds " + Sockets.list(sword).size() + " gems, or a 3rd fits");
+		// Taking the result uses up the gem and the base.
+		menu.getSlot(SmithingMenu.BASE_SLOT).set(new ItemStack(Items.IRON_HELMET));
+		menu.getSlot(SmithingMenu.ADDITIONAL_SLOT).set(GemKit.item(SPEED));
+		ItemStack result = menu.getSlot(3).getItem();
+		menu.getSlot(3).onTake(player, result);
+		check(helper, menu.getSlot(SmithingMenu.ADDITIONAL_SLOT).getItem().isEmpty(), "gem not used up");
+		check(helper, result.get(ModComponents.SOCKETED_GEMS).gems().getFirst().equals(SPEED), "socketed the wrong gem");
+		menu.removed(player);
+		GemKit.remove(helper, player);
+		helper.succeed();
+	}
+
+	/** Every weapon kind takes two gems and no more; tools and elytras take none. */
+	@GameTest
+	public void everyWeaponKindTakesTwoGems(GameTestHelper helper) {
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		SmithingMenu menu = smithing(helper, player);
 		for (Item weapon : List.of(Items.IRON_SWORD, Items.DIAMOND_AXE, Items.NETHERITE_SPEAR, Items.MACE, Items.TRIDENT, Items.BOW, Items.CROSSBOW)) {
 			ItemStack w = new ItemStack(weapon);
 			w = socket(menu, w, POISON);
@@ -75,13 +94,6 @@ public class SocketingGameTest {
 		}
 		check(helper, socket(menu, new ItemStack(Items.IRON_PICKAXE), SPEED).isEmpty(), "a pickaxe took a gem");
 		check(helper, socket(menu, new ItemStack(Items.ELYTRA), SPEED).isEmpty(), "an elytra took a gem");
-		// Taking the result uses up the gem and the base.
-		menu.getSlot(SmithingMenu.BASE_SLOT).set(new ItemStack(Items.IRON_HELMET));
-		menu.getSlot(SmithingMenu.ADDITIONAL_SLOT).set(GemKit.item(SPEED));
-		ItemStack result = menu.getSlot(3).getItem();
-		menu.getSlot(3).onTake(player, result);
-		check(helper, menu.getSlot(SmithingMenu.ADDITIONAL_SLOT).getItem().isEmpty(), "gem not used up");
-		check(helper, result.get(ModComponents.SOCKETED_GEMS).gems().getFirst().equals(SPEED), "socketed the wrong gem");
 		menu.removed(player);
 		GemKit.remove(helper, player);
 		helper.succeed();

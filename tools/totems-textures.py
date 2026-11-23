@@ -205,6 +205,54 @@ END = check([
 ])
 END_MAT = {**{k: "stone" for k in "123456"}, **{k: "purpur" for k in "pq"}, "k": "face", "m": "eye", "M": "eye", **{k: "pearl" for k in "tTw"}}
 
+# --- Herding: spruce wood, a woolly ram's head with curled horns, a gold bell on the chest (2026-11-22) ------
+HERD_PAL = {**shades((30, 20, 10), (58, 40, 22), (82, 58, 32), (106, 76, 44), (130, 96, 58), (156, 118, 74), (184, 144, 96)),
+	"W": (236, 234, 224), "w": (196, 192, 180), "h": (120, 100, 76), "H": (168, 146, 114), "e": (26, 18, 12),
+	"a": (122, 76, 18), "b": (200, 146, 42), "B": (240, 202, 84), "c": (255, 244, 176)}
+HERDING = check([
+	"................",
+	"................",
+	"...hH.WWWW.Hh...",
+	"..h..WWwwWW..h..",
+	"..H.oWWWWWwo.H..",
+	"...ho54e4e2oh...",
+	"....o544332o....",
+	"....o443321o....",
+	".oooo5bBBb1oooo.",
+	"o56655bBcb22221o",
+	"o54544bbbb32211o",
+	".oooo4abba1oooo.",
+	"...o54433221o...",
+	"....o543321o....",
+	"...o65544321o...",
+	"...oooooooooo...",
+])
+HERD_MAT = {**{k: "wood" for k in "123456"}, **{k: "wool" for k in "Ww"}, **{k: "horn" for k in "hH"}, "e": "eye",
+	**{k: "gold" for k in "abBc"}}
+
+# --- Clear Skies: pale calcite, a gold sun crown of rays, a patch of blue sky on the chest (2026-11-22) -------
+SKY_PAL = {**shades((58, 60, 72), (124, 126, 138), (156, 158, 170), (186, 188, 198), (210, 212, 220), (230, 232, 238), (250, 250, 252)),
+	"y": (226, 160, 34), "Y": (255, 222, 96), "k": (56, 116, 200), "s": (74, 146, 226), "S": (146, 204, 250)}
+CLEAR_SKIES = check([
+	"......y..y......",
+	"..y..yYYYYy..y..",
+	"...yYooooooYy...",
+	"....o566543o....",
+	"...o56654332o...",
+	"...o54k44k22o...",
+	"...o54433322o...",
+	"....o443321o....",
+	".oooo5sSss1oooo.",
+	"o56655sYYs22221o",
+	"o54544sYYs32211o",
+	".oooo4SssS1oooo.",
+	"...o54433221o...",
+	"....o543321o....",
+	"...o65544321o...",
+	"...oooooooooo...",
+])
+SKY_MAT = {**{k: "stone" for k in "123456"}, **{k: "gold" for k in "yY"}, "k": "eye", **{k: "sky" for k in "sS"}}
+
 
 def dial_centre(grid):
 	"""Centre of the dial face (the 'y' pixels), in 16x pixel units (edges, so 8.0 is between pixels 7 and 8)."""
@@ -249,6 +297,8 @@ def main():
 		("totem_of_growth", GROWTH, GROWTH_PAL, GROWTH_MAT, ("wood", "leaf"), 14),
 		("totem_of_the_beginning", BEGINNING, BEGIN_PAL, BEGIN_MAT, ("stone", "grass"), 16),
 		("totem_of_the_end", END, END_PAL, END_MAT, ("stone",), 17),
+		("totem_of_herding", HERDING, HERD_PAL, HERD_MAT, ("wood", "wool"), 18),
+		("totem_of_clear_skies", CLEAR_SKIES, SKY_PAL, SKY_MAT, ("stone",), 19),
 	]
 	for name, grid, pal, mat, grain, seed in plain:
 		write(name, render(grid, pal), render32(grid, pal, mat, inner={"o": "1"}, grain=grain, seed=seed))

@@ -259,6 +259,12 @@ def _statues():
 	_put(g, R_HEAD_FRONT, ["kkkkkk", "kMkkMk", "kkkkkk", "kkkkkk"])
 	_put(g, R_EMBLEM, ["tTt", "TwT", "tTt"])
 	defs["end"] = (TT.END_PAL, TT.END_MAT, ("stone",), g, ["qppq", "pqqp", "qppq", "pqqp", "qppq", "pqqp"], ["eyes"])
+	# Herding: spruce, a woolly ram's head (wool cap, curled horns either side), a gold bell on the chest.
+	g = _shade_grid(28); _eyes(g, "e"); _put(g, R_EMBLEM, ["bBb", "BcB", "aba"])
+	defs["herding"] = (TT.HERD_PAL, TT.HERD_MAT, ("wood", "wool"), g, ["WWwW", "WwWW", "wWWw", "hHhH", "HhhH", "hhHh"], [])
+	# Clear Skies: pale calcite, blue eyes, blue sky with the sun on the chest, a gold sun crown of rays.
+	g = _shade_grid(29); _eyes(g, "k"); _put(g, R_EMBLEM, ["sSs", "SYS", "sSs"])
+	defs["clear_skies"] = (TT.SKY_PAL, TT.SKY_MAT, ("stone",), g, ["YyYy", "yYyY", "YyYy", "yYyY", "YyYy", "yYyY"], [])
 	for name, (pal, mat, grain, grid, topper, glow) in defs.items():
 		if topper:
 			_put(grid, R_TOPPER, topper)
@@ -315,6 +321,16 @@ def statue_model(name, glow):
 		el.append(box([5, 13, 5], [11, 13.5, 11], {**ring, "up": ts}))
 		for x, z in ((5, 5), (10, 5), (5, 10), (10, 10)):
 			el.append(box([x, 13.5, z], [x + 1, 15.5, z + 1], {d: tf for d in (*sides, "up")}))
+	elif name == "herding":  # a wool cap and a curled ram's horn either side of the head
+		el.append(box([5, 13, 5], [11, 14, 11], {**{d: face([12, 10, 16, 11], F) for d in sides}, "up": face([12, 10, 16, 13], F)}))
+		hf = face([12, 13, 16, 16], F)
+		for x0, x1 in ((3.5, 5), (11, 12.5)):
+			el.append(box([x0, 10, 6.5], [x1, 13, 9.5], {d: hf for d in (*sides, "up", "down")}))
+			el.append(box([x0, 9, 5.5], [x1, 10.5, 7], {d: hf for d in (*sides, "up", "down")}))
+	elif name == "clear_skies":  # a gold sun crown: a band and rays all round
+		el.append(box([5, 13, 5], [11, 13.5, 11], {**ring, "up": ts}))
+		for x, z, h in ((7.5, 4.5, 3), (7.5, 10.5, 2.5), (4.5, 7.5, 2.5), (10.5, 7.5, 2.5), (5, 5, 2), (10, 5, 2), (5, 10, 2), (10, 10, 2)):
+			el.append(box([x, 13.5, z], [x + 1, 13.5 + h, z + 1], {d: tf for d in (*sides, "up")}))
 	# Glowing parts, just proud of the face.
 	if "eyes" in glow:
 		for x, u in ((6, 1), (9, 4)):
@@ -329,10 +345,11 @@ def statue_model(name, glow):
 	}
 
 
-ORDER = ["warding", "keeping", "gathering", "fortification", "growth", "seeking", "beginning", "end"]
+ORDER = ["warding", "keeping", "gathering", "fortification", "growth", "seeking", "beginning", "end", "herding", "clear_skies"]
 ITEMS = {"warding": "totem_of_warding", "keeping": "totem_of_keeping", "gathering": "totem_of_gathering",
 	"fortification": "totem_of_fortification", "growth": "totem_of_growth", "seeking": "totem_of_seeking",
-	"beginning": "totem_of_the_beginning", "end": "totem_of_the_end"}
+	"beginning": "totem_of_the_beginning", "end": "totem_of_the_end", "herding": "totem_of_herding",
+	"clear_skies": "totem_of_clear_skies"}
 
 
 def write_others():

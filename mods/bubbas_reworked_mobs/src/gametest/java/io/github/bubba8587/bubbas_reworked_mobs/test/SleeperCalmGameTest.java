@@ -20,10 +20,12 @@ import net.minecraft.world.level.block.state.properties.BellAttachType;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
+import net.fabricmc.fabric.api.gametest.v1.GameTest;
+
 /**
  * What calms or stirs sleepers here (specs/undead.md "Warding"): strong light, bells, and the api/Sleepers hook other
- * mods use (Bubba's Totems & Artifacts' Totem of Warding and Grave Talisman). All core, run through
- * ReworkedMobsCoreGameTest.
+ * mods use (Bubba's Totems & Artifacts' Totem of Warding and Grave Talisman). Milestone, but the api/Sleepers test is
+ * core (through ReworkedMobsCoreGameTest), and the light test runs through SleeperNoiseGameTest.
  */
 public class SleeperCalmGameTest {
 	private static SleeperBlockEntity sleeper(GameTestHelper helper, BlockPos pos) {
@@ -36,14 +38,12 @@ public class SleeperCalmGameTest {
 		return helper.getLevel().getGameTime();
 	}
 
-	/** Core part: a sleeper in the dark takes noise in full (reads the real light; 0 is the light engine's default). */
-	public void darkSleeperAtFullSensitivity(GameTestHelper helper) {
-		SleeperBlockEntity sleeper = sleeper(helper, new BlockPos(4, 1, 4));
-		helper.assertTrue(sleeper.effectiveSensitivity(helper.getLevel()) == 1.0F, "dark sleeper not at full sensitivity");
-	}
-
 	/** Milestone: with a glowstone block next to it (light 14) a sleeper takes noise x0.7, through the real light engine. */
 	public void strongLightCalmsSleepers(GameTestHelper helper) {
+		// The rule (block light at the calm level or more: x0.7; below it, or dark, none), then the real thing.
+		helper.assertTrue(SleeperBlockEntity.lightCalm(UndeadTuning.LIGHT_CALM_LEVEL) == UndeadTuning.LIGHT_CALM_FACTOR, "light at the calm level should calm");
+		helper.assertTrue(SleeperBlockEntity.lightCalm(UndeadTuning.LIGHT_CALM_LEVEL - 1) == 1.0F, "light below it should not");
+		helper.assertTrue(SleeperBlockEntity.lightCalm(0) == 1.0F, "dark should not");
 		BlockPos pos = new BlockPos(4, 1, 4);
 		SleeperBlockEntity sleeper = sleeper(helper, pos);
 		helper.assertTrue(sleeper.effectiveSensitivity(helper.getLevel()) == 1.0F, "dark sleeper not at full sensitivity");
@@ -95,9 +95,10 @@ public class SleeperCalmGameTest {
 	}
 
 	/**
-	 * Core. A bell rung 14 blocks away (beyond the 12 where ordinary noise fades out) wakes a sleeper; one 23 blocks away
+	 * A bell rung 14 blocks away (beyond the 12 where ordinary noise fades out) wakes a sleeper; one 23 blocks away
 	 * only stirs (the bell's own linear falloff, 32 blocks), and the bell's plain vibration is not counted twice.
 	 */
+	@GameTest(environment = "bubbas_reworked_mobs-test:warding_bell", structure = "bubbas_reworked_mobs-test:hearing_field", maxTicks = 20)
 	public void bellsAreLoudToSleepers(GameTestHelper helper) {
 		BlockPos bell = new BlockPos(0, 1, 8);
 		helper.setBlock(bell, Blocks.BELL.defaultBlockState().setValue(BellBlock.ATTACHMENT, BellAttachType.FLOOR));
@@ -113,7 +114,7 @@ public class SleeperCalmGameTest {
 	}
 
 	/**
-	 * Core. The api/Sleepers hook: calm takes points off sleepers in range only; keepAsleep zeroes the sensitivity of
+	 * Core (the contract other mods rely on). The api/Sleepers hook: calm takes points off sleepers in range only; keepAsleep zeroes the sensitivity of
 	 * sleepers inside its area until released (or until it lapses); isSleeper and nearestSqr find sleepers.
 	 */
 	public void apiCalmsSensesAndKeepsSleepersAsleep(GameTestHelper helper) {

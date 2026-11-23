@@ -17,7 +17,9 @@ Found in chests in mineshafts, dungeons and pillager outposts.
 
 ## Usage
 
-Held, it pulls dropped items within 8 blocks to its holder. In a reworked beacon with a chest or barrel under the beacon (below its pyramid), it sends every dropped item in the beacon's range into that chest, and experience gathers on top of the beacon. Without a chest it does nothing.
+Held, it pulls dropped items within 8 blocks to its holder.
+
+In a reworked beacon, dropped items and experience anywhere in the beacon's range fly to the beacon and circle it in a slowly turning ring just above its top. A hopper placed against any side of the beacon, leading into a chest, catches the items as they come round. Items in the ring never despawn. Experience stays in the ring until a player walks up to the beacon. The ring holds up to 48 things; when the beacon stops, it falls apart after a few seconds.
 
 ## Statue
 

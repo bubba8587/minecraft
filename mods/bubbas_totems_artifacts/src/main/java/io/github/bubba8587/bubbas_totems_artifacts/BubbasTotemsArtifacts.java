@@ -11,7 +11,6 @@ import io.github.bubba8587.bubbas_totems_artifacts.registry.ModCreativeTabs;
 import io.github.bubba8587.bubbas_totems_artifacts.registry.ModItems;
 import io.github.bubba8587.bubbas_totems_artifacts.seeking.StructureSeeker;
 import io.github.bubba8587.bubbas_totems_artifacts.totems.TotemsLoot;
-import io.github.bubba8587.bubbas_totems_artifacts.warding.WardingLoot;
 import io.github.bubba8587.bubbas_totems_artifacts.warding.Wards;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
@@ -40,10 +39,11 @@ public class BubbasTotemsArtifacts implements ModInitializer {
 		ModItems.initialize();
 		ModCreativeTabs.initialize();
 		Wards.initialize();
-		WardingLoot.initialize();
 		// The five totems of 2026-11-16 (Gathering and Fortification need no setup of their own).
 		Keeping.initialize();
 		Growth.initialize();
+		io.github.bubba8587.bubbas_totems_artifacts.skies.ClearSkies.initialize();
+		io.github.bubba8587.bubbas_totems_artifacts.gathering.GatheringRing.initialize();
 		StructureSeeker.initialize();
 		TotemsLoot.initialize();
 		// Reworked Mobs' cairns offer the Totem of the Beginning, and its endermen know the End's holder as kin. The Totem

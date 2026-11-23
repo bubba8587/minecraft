@@ -11,7 +11,7 @@ apply from: rootProject.file('gradle/stormies-spiders.gradle')
 
 // The mods under test, as their built jars on the game's classpath (Fabric Loader finds a fabric.mod.json in
 // each jar and loads it as a mod, the same as in a Modrinth profile). Gradle builds the jars first.
-def modsUnderTest = ['bubbas_reworked_mobs', 'bubbas_extra_recipes', 'bubbas_infused_gems', 'bubbas_reworked_beacons', 'bubbas_totems_artifacts', 'bubbas_reworked_mining']
+def modsUnderTest = ['bubbas_reworked_mobs', 'bubbas_extra_recipes', 'bubbas_infused_gems', 'bubbas_reworked_beacons', 'bubbas_totems_artifacts', 'bubbas_reworked_mining', 'bubbas_world_tweaks']
 // Configure those projects first so their jar tasks exist whichever project Gradle configures first.
 modsUnderTest.each { evaluationDependsOn(":${it}") }
 def modJars = files(modsUnderTest.collect { m -> rootProject.project(":${m}").tasks.named('jar').flatMap { it.archiveFile } })

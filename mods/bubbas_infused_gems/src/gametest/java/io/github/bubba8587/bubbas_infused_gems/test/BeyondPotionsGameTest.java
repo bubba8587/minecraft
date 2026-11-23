@@ -126,6 +126,13 @@ public class BeyondPotionsGameTest {
 		Zombie stranger = helper.spawnWithNoFreeWill(EntityTypes.ZOMBIE, new BlockPos(5, 1, 5));
 		slime.setTarget(stranger);
 		check(helper, slime.getTarget() == null, "an Oozing slime took a target (it should be neutral)");
+		// The cap counts only slimes near the owner, and slimes are never saved (left-behind ones dissolve).
+		check(helper, GemActions.ownedSlimes(helper.getLevel(), player) == cap, "nearby cap: " + GemActions.ownedSlimes(helper.getLevel(), player));
+		check(helper, !slime.shouldBeSaved(), "an Oozing slime would be saved with its chunk");
+		slime.discard();
+		check(helper, GemActions.ownedSlimes(helper.getLevel(), player) == cap - 1, "a removed slime still counts");
+		player.teleportTo(player.getX() + 300, player.getY(), player.getZ());
+		check(helper, GemActions.ownedSlimes(helper.getLevel(), player) == 0, "left-behind slimes still count: " + GemActions.ownedSlimes(helper.getLevel(), player));
 		GemKit.remove(helper, player);
 		helper.succeed();
 	}

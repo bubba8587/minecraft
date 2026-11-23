@@ -23,7 +23,9 @@
 			"io.github.bubba8587.bubbas_totems_artifacts.compat.FortificationBeaconPayload",
 			"io.github.bubba8587.bubbas_totems_artifacts.compat.GrowthBeaconPayload",
 			"io.github.bubba8587.bubbas_totems_artifacts.compat.SeekingBeaconPayload",
-			"io.github.bubba8587.bubbas_totems_artifacts.compat.BeginningBeaconPayload"
+			"io.github.bubba8587.bubbas_totems_artifacts.compat.BeginningBeaconPayload",
+			"io.github.bubba8587.bubbas_totems_artifacts.compat.HerdingBeaconPayload",
+			"io.github.bubba8587.bubbas_totems_artifacts.compat.ClearSkiesBeaconPayload"
 		]
 	},
 	"mixins": [

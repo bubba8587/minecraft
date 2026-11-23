@@ -31,10 +31,15 @@ public class WardingBeaconGameTest {
 		helper.assertTrue(WithBeacons.accepts(), "the payload doesn't accept the totem");
 		helper.assertTrue(Wards.blocksNaturalSpawn(level, EntityTypes.ZOMBIE, near), "1-layer ward lets a zombie spawn 15 blocks out");
 		helper.assertFalse(Wards.blocksNaturalSpawn(level, EntityTypes.ZOMBIE, far), "1-layer ward (range 20) reaches 45 blocks");
-		helper.assertFalse(Wards.keepsSleepersAsleep(level, near), "1-layer ward keeps sleepers asleep");
 		WithBeacons.pulse(helper, beacon, 4);
 		helper.assertTrue(Wards.blocksNaturalSpawn(level, EntityTypes.ZOMBIE, far), "4-layer ward (range 50) misses 45 blocks out");
-		helper.assertTrue(Wards.keepsSleepersAsleep(level, near), "4-layer ward doesn't keep sleepers asleep");
+		if (TestSupport.withMobs()) {
+			BlockPos sleeper = new BlockPos(3, 1, 3);
+			TestSupport.Mobs.sleeper(helper, sleeper);
+			helper.assertTrue(TestSupport.Mobs.sensitivity(helper, sleeper) == 0.0F, "4-layer ward doesn't keep sleepers asleep");
+			WithBeacons.pulse(helper, beacon, 1);
+			helper.assertTrue(TestSupport.Mobs.sensitivity(helper, sleeper) == 1.0F, "1-layer ward keeps sleepers asleep");
+		}
 		Wards.remove(level, beacon);
 		helper.succeed();
 	}

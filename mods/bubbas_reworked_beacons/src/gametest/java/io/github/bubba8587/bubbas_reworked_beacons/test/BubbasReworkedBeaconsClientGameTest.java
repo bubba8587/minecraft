@@ -30,6 +30,9 @@ public class BubbasReworkedBeaconsClientGameTest implements FabricClientGameTest
 
 	@Override
 	public void runTest(ClientGameTestContext context) {
+		if (!ClientTests.run("beacons")) {
+			return;
+		}
 		context.getInput().resizeWindow(1280, 720);
 		try (TestSingleplayerContext sp = context.worldBuilder().create()) {
 			sp.getConnection().waitForChunksRender();

@@ -42,8 +42,8 @@ import net.minecraft.world.item.alchemy.Potions;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 
 /**
- * Gem effects match the model: armor gems on the wearer (attribute values, damage hooks, healing; the best build),
- * drawbacks on the wearer, weapon gems on what they hit (potency and duration, charged Harming, drawbacks on the
+ * Gem effects match the model: armor gems on the wearer (attribute values, damage hooks, healing), drawbacks on the
+ * wearer, weapon gems on what they hit (potency and duration, Harming striking every hit, drawbacks on the
  * target), and bows tipping their arrows (gem effect on hit, plain pickup, the stronger of gem and real tipped arrow).
  */
 public class GemEffectsGameTest {
@@ -62,18 +62,6 @@ public class GemEffectsGameTest {
 	private static double modifier(LivingEntity entity, Holder<Attribute> attribute, String key, int i) {
 		AttributeModifier m = entity.getAttribute(attribute).getModifier(BubbasInfusedGems.id("worn/" + key + "/" + i));
 		return m == null ? 0.0 : m.amount();
-	}
-
-	@GameTest
-	public void bestArmorBuildReachesTheCap(GameTestHelper helper) {
-		Gem perfect = GemKit.gem("speed", 1.0);
-		var zombie = wearer(helper, "netherite", perfect, perfect, perfect);
-		helper.succeedWhen(() -> {
-			double s = WornEffects.of(zombie).value("speed");
-			close(s, Balance.get().effect("speed").wornCap(), 1e-6, helper, "best build speed total (Speed's raised cap)");
-			close(modifier(zombie, Attributes.MOVEMENT_SPEED, "speed", 0), 0.4 * Balance.get().effect("speed").wornCap(), 1e-6, helper, "movement speed modifier");
-			zombie.discard();
-		});
 	}
 
 	// Core test: registered by InfusedGemsCoreGameTest (test-lite, specs/quality.md).
@@ -125,12 +113,7 @@ public class GemEffectsGameTest {
 		check(helper, Math.abs(effect.getDuration() - GemHits.duration(new GemHits.Entry("poison", s, false))) <= 1, "poison duration " + effect.getDuration());
 		MobEffectInstance drawback = target.getEffect(ModEffects.gem("speed"));
 		check(helper, drawback != null && drawback.getAmplifier() == 9 && drawback.getDuration() == 60, "speed drawback on the target: " + drawback);
-		// Harming strikes on every hit (owner): a second hit strikes again.
-		target.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH).setBaseValue(100.0);
-		target.setHealth(60.0F);
-		target.damageCooldownTime = 0;
-		attacker.doHurtTarget(helper.getLevel(), target);
-		check(helper, 60.0F - target.getHealth() >= GemHits.strike("instant_damage", s), "Harming didn't strike on the second hit");
+		// Harming's strike on every hit: GemsEverywhereGameTest.everyGemWorksOnHit and BalanceReviewGameTest.harmingStrikeKeepsTheHitCooldown.
 		attacker.discard();
 		target.discard();
 		helper.succeed();

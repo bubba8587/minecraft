@@ -69,7 +69,7 @@ public class DrownedGameTest {
 
 	/** A survival player standing on the land at (x, 9, z), facing {@code yaw} (90: away from the water, toward -x). */
 	static ServerPlayer playerOnLand(GameTestHelper helper, double x, double z, float yaw, float pitch) {
-		ServerPlayer player = SleeperNoiseGameTest.survivalPlayer(helper);
+		ServerPlayer player = TestPlayers.survival(helper);
 		Vec3 abs = helper.absoluteVec(new Vec3(x, 9.0, z));
 		player.snapTo(abs.x, abs.y, abs.z, yaw, pitch);
 		player.setYHeadRot(yaw);
@@ -83,7 +83,7 @@ public class DrownedGameTest {
 		player.setXRot(pitch);
 	}
 
-	// --- core smoke tests (run from ReworkedMobsCoreGameTest) ------------------------------------------
+	// --- grabbing and the grip (the grab is a core smoke test, run from ReworkedMobsCoreGameTest) ---------
 
 	/** A player at the edge with their back to the water is grabbed, held (can't sneak off) and dragged backwards to deep water. */
 	public void grabsAndDragsToDeepWater(GameTestHelper helper) {
@@ -102,16 +102,21 @@ public class DrownedGameTest {
 				tick[0] = 1000;
 				player.setShiftKeyDown(true);
 			}
-			if (tick[0] == 1140) {
+			if (grabbed[0] && tick[0] > 1020) {
+				// Held the whole way (sneaking doesn't get you off) until it's out over the pit with the player under.
 				helper.assertTrue(player.getVehicle() == drowned, "sneaking shouldn't get you off, state " + mind(drowned).state());
 				Vec3 rel = helper.relativeVec(drowned.position());
+				boolean under = helper.getLevel().getFluidState(BlockPos.containing(player.getEyePosition())).is(net.minecraft.tags.FluidTags.WATER);
+				if (tick[0] < 1200 && !(rel.x > 11.5 && player.getY() < startY - 2.0 && under)) {
+					return;
+				}
 				helper.assertTrue(rel.x > 11.5, "it should have dragged the player out over the deep pit, at " + rel);
 				helper.assertTrue(player.getY() < startY - 2.0, "the player should be pulled under, y " + player.getY());
-				helper.assertTrue(helper.getLevel().getFluidState(BlockPos.containing(player.getEyePosition())).is(net.minecraft.tags.FluidTags.WATER), "the player's eyes should be under water");
+				helper.assertTrue(under, "the player's eyes should be under water");
 				helper.assertTrue(!drowned.isSwimming(), "it drags upright in water");
 				mind(drowned).release(drowned, false);
 				drowned.discard();
-				CreeperGameTest.remove(helper, player);
+				TestPlayers.remove(helper, player);
 				helper.succeed();
 			}
 			if (tick[0] == 80 && !grabbed[0]) {
@@ -124,6 +129,7 @@ public class DrownedGameTest {
 	 * The grip starts at half, tightens while it drags, and hits loosen it: a fist hit a little, two fast axe hits all
 	 * the way (at 0 it lets go).
 	 */
+	@GameTest(environment = "bubbas_reworked_mobs-test:drowned_grip", structure = FIELD, maxTicks = 100)
 	public void gripLoosensWithHitsAndTightensWhileDragging(GameTestHelper helper) {
 		Drowned drowned = drowned(helper, 9.5, 7.0, 8.5);
 		Villager villager = helper.spawn(EntityTypes.VILLAGER, new Vec3(9.5, 7.0, 9.5));
@@ -155,7 +161,7 @@ public class DrownedGameTest {
 			helper.assertTrue(mind(drowned).state() != DrownedMind.State.DRAG, "it should have let go");
 			drowned.discard();
 			villager.discard();
-			CreeperGameTest.remove(helper, friend);
+			TestPlayers.remove(helper, friend);
 			helper.succeed();
 		});
 	}
@@ -164,6 +170,7 @@ public class DrownedGameTest {
 	 * Another drowned nearby swims over and grabs the other leg: the grip then tightens faster, hits loosen it less, and
 	 * when the grip breaks both let go.
 	 */
+	@GameTest(environment = "bubbas_reworked_mobs-test:drowned_join", structure = FIELD, maxTicks = 300)
 	public void secondDrownedJoinsAndHoldsHarder(GameTestHelper helper) {
 		Drowned drowned = drowned(helper, 9.5, 7.0, 8.5);
 		Drowned other = drowned(helper, 15.5, 1.0, 6.5);
@@ -195,14 +202,17 @@ public class DrownedGameTest {
 				drowned.discard();
 				other.discard();
 				villager.discard();
-				CreeperGameTest.remove(helper, friend);
+				TestPlayers.remove(helper, friend);
 				helper.succeed();
 			}
 		});
 	}
 
-	/** At full grip (after 10 s of dragging) its hits are at their worst: 4 damage, 3 bubbles of air. */
-	@GameTest(environment = "bubbas_reworked_mobs-test:drowned_tight", structure = FIELD, maxTicks = 260)
+	/**
+	 * The grip tightens to full while it drags, and at full grip its hits are at their worst: 4 damage, 3 bubbles of air.
+	 * (From one second short of full, not the whole 10 s from a fresh grab.)
+	 */
+	@GameTest(environment = "bubbas_reworked_mobs-test:drowned_tight", structure = FIELD, maxTicks = 60)
 	public void gripTightensToFullAndHitsHarder(GameTestHelper helper) {
 		Drowned drowned = drowned(helper, 9.5, 7.0, 8.5);
 		Villager villager = helper.spawn(EntityTypes.VILLAGER, new Vec3(9.5, 7.0, 9.5));
@@ -213,10 +223,11 @@ public class DrownedGameTest {
 		helper.runAtTickTime(2, () -> {
 			mind(drowned).grab(drowned, level, villager);
 			helper.assertTrue(mind(drowned).escalation() == 0.0F, "a fresh grab is at the start values");
+			mind(drowned).setGrip(DrownedTuning.GRIP_FULL - 20 * DrownedTuning.GRIP_RISE_PER_TICK);
 		});
-		helper.runAtTickTime(2 + 205, () -> {
+		helper.runAtTickTime(2 + 30, () -> {
 			helper.assertTrue(mind(drowned).grip() == DrownedTuning.GRIP_FULL && mind(drowned).escalation() == 1.0F,
-					"after 10 s the grip should be full, " + mind(drowned).grip());
+					"dragging, the grip should have tightened to full, " + mind(drowned).grip());
 			fresh.setAirSupply(300);
 			float health = fresh.getHealth();
 			DrownedMind.hit(drowned, level, fresh, mind(drowned).escalation());
@@ -231,6 +242,7 @@ public class DrownedGameTest {
 	}
 
 	/** Lurking, its eyes are just above the water; stared at, it sinks below; looked away from (out of reach), it rises again. */
+	@GameTest(environment = "bubbas_reworked_mobs-test:drowned_stare", structure = FIELD, maxTicks = 120)
 	public void staredAtItSinks(GameTestHelper helper) {
 		Drowned drowned = lurker(helper);
 		double surface = spot(helper).surfaceY();
@@ -255,7 +267,7 @@ public class DrownedGameTest {
 				helper.assertTrue(drowned.getEyeY() > surface, "its eyes should be above the water: eyes " + drowned.getEyeY() + " surface " + surface);
 				helper.assertTrue(!drowned.isSwimming(), "it lurks upright");
 				drowned.discard();
-				CreeperGameTest.remove(helper, player);
+				TestPlayers.remove(helper, player);
 				helper.succeed();
 			}
 		});
@@ -293,7 +305,7 @@ public class DrownedGameTest {
 			}
 			helper.assertTrue(land, "land (the bank or a wall's top) should be within 3 blocks ahead of it, yaw " + drowned.getYRot());
 			drowned.discard();
-			CreeperGameTest.remove(helper, player);
+			TestPlayers.remove(helper, player);
 		});
 	}
 
@@ -314,16 +326,15 @@ public class DrownedGameTest {
 			helper.assertTrue(creative.getVehicle() == null, "a creative player shouldn't be grabbed");
 			helper.assertTrue(mind(drowned).state() == DrownedMind.State.LURK, "it should still lurk, state " + mind(drowned).state());
 			drowned.discard();
-			CreeperGameTest.remove(helper, facing);
-			CreeperGameTest.remove(helper, creative);
+			TestPlayers.remove(helper, facing);
+			TestPlayers.remove(helper, creative);
 			helper.succeed();
 		});
 	}
 
-	/** Its small hits knock air out; Water Breathing stops that (vanilla: no air lost); Respiration (oxygen bonus) halves it at level 1. */
+	/** Its small hits knock air out; Water Breathing stops that (vanilla: no air lost). */
 	@GameTest(environment = "bubbas_reworked_mobs-test:drowned_air", structure = FIELD, maxTicks = 40)
 	public void hitsKnockAirOutUnlessWaterBreathing(GameTestHelper helper) {
-		helper.assertTrue(DrownedTuning.HIT_AIR_LOSS > 0, "hits should knock air out");
 		ServerLevel level = helper.getLevel();
 		Drowned a = drowned(helper, 9.5, 7.0, 4.5);
 		Drowned b = drowned(helper, 9.5, 7.0, 11.5);

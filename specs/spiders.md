@@ -181,9 +181,10 @@ Player-facing: `player-docs/Projects/Bubba's Reworked Mobs/Spiders.md`. Numbers 
 
 #### Tests
 
-- **Core:** `giantSpiderIsLargeAndSpinsBetweenTrees`.
+- **Milestone** (moved out of core 2026-11-22): `giantIsLargeAndSpinsBetweenTrees`.
 - **Milestone (`GiantSpiderGameTest`):**
-  - `snatchesLivestockIntoItsWeb`: a pig is hauled up into a cobweb larder and the giant feeds.
+  - The snatch is checked in `CocoonGameTest.spiderComesBackToFeed`: a pig is hauled up into a cobweb larder and cocooned there, the giant waits, then feeds.
+  - `livestockLuresItOffAPlayer`: hunting a player, it switches to a pig close by (or snatches it).
   - `livestockLuresItOffAPlayer`.
   - `hurtCallsLittleSpiders`: 2, then 0 during the cooldown; small and weak.
   - `websSlowAndCut`: touching a strand slows; 3 hits cut it; shears give 2 string at the player.
@@ -199,7 +200,7 @@ Player-facing: `player-docs/Projects/Bubba's Reworked Mobs/Spiders.md`. Numbers 
 
 ### Stormie's Spiders, rear-first reel, fall fix (spiders branch)
 
-- **Fall-damage fix:** the released spider takes no fall damage (fall distance reset on the thread and at release); milestone test `aMissedDropTakesNoFallDamage`.
+- **Fall-damage fix:** the released spider takes no fall damage (fall distance reset on the thread and at release); checked in `aMissTurnsItIntoAVanillaSpider` (the released spider lands at full health).
 - **Stormie's Spiders is wired in.**
   - Reworked Mobs now declares `"depends": {"stormiespiders": ">=3.3.1"}`, and the build compiles against it.
   - `gradle/stormies-spiders.gradle` is pinned to the Modrinth version ID `jTOAPFV5`. Pinning matters because `3.3.1-fabric` is also the version number of a 1.21.1 build, and Modrinth's maven serves that one.

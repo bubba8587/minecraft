@@ -20,11 +20,6 @@ public class ExtraRecipesCoreGameTest {
 	}
 
 	@GameTest
-	public void gliderRecipeCraftsOneGlider(GameTestHelper helper) {
-		new GliderGameTest().gliderRecipeCraftsOneGlider(helper);
-	}
-
-	@GameTest
 	public void gliderTurnsSlowerThanElytra(GameTestHelper helper) throws ReflectiveOperationException {
 		new GliderGameTest().gliderTurnsSlowerThanElytra(helper);
 	}

@@ -16,16 +16,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 
-/**
- * Vanilla's flee behavior (AvoidEntityGoal, the goal that makes creepers run from cats and skeletons from wolves),
- * for monsters scared by a Totem of Warding: run from the holder of a pulsing totem for a few seconds, or walk out of
- * a ward they were found in. Same picks as vanilla (DefaultRandomPos 16 out, 7 up and down; walk 1.0, sprint 1.2
- * within 7 blocks). AvoidEntityGoal itself can't be reused: it only flees from entities a monster could target, which
- * leaves out creative players and other monsters holding a totem.
- *
- * <p>Not added to every mob: {@link #of} adds it the first time a monster is scared, at priority 0 with the MOVE flag,
- * so it overrides attacking and wandering while it runs and is idle otherwise.
- */
+/** Vanilla's flee behavior. */
 public final class WardFleeGoal extends Goal {
 	private static final Map<PathfinderMob, WardFleeGoal> GOALS = new WeakHashMap<>();
 
@@ -51,10 +42,7 @@ public final class WardFleeGoal extends Goal {
 		});
 	}
 
-	/**
-	 * Whether the mob runs on goals (zombies, skeletons, creepers, spiders, endermen...). Brain-driven monsters
-	 * (piglins, hoglins, the warden, breezes) have no goals, and a goal would fight their brain for the navigation.
-	 */
+	/** Whether the mob runs on goals (zombies, skeletons, creepers, spiders, endermen...). */
 	public static boolean isGoalDriven(PathfinderMob mob) {
 		return GOALS.containsKey(mob) || !((MobAccessor) mob).bta$goalSelector().getAvailableGoals().isEmpty();
 	}
@@ -65,13 +53,13 @@ public final class WardFleeGoal extends Goal {
 		return goal != null && goal.scarer != null && mob.level().getGameTime() < goal.scaredUntil;
 	}
 
-	/** Run from {@code scarer} until {@code until} (game time). */
+	/** Run from scarer until until (game time). */
 	public void scare(Entity scarer, long until) {
 		this.scarer = scarer;
 		this.scaredUntil = until;
 	}
 
-	/** Walk out of {@code area} until {@code until} (game time); the ward sweep refreshes it while the mob is inside. */
+	/** Walk out of area until until (game time). */
 	public void leave(AABB area, long until) {
 		this.ward = area;
 		this.leaveUntil = until;
@@ -90,12 +78,7 @@ public final class WardFleeGoal extends Goal {
 		return ward != null && now() < leaveUntil && now() >= trappedUntil && ward.contains(mob.position());
 	}
 
-	/**
-	 * Inside a ward with no way out (an enclosed room under a beacon pair): it stops trying to leave, and the ward stops
-	 * pushing it, for TRAPPED_RECHECK_TICKS, then looks for a way out again. Before (2026-11-16, owner: "stuck
-	 * running/jittering" in an enclosed beacon ward) it walked to one spot after another inside the room, pressed into
-	 * the wall by the ward's push, and never fought.
-	 */
+	/** Inside a ward with no way out (an enclosed room under a beacon pair). */
 	public static boolean isTrapped(PathfinderMob mob) {
 		WardFleeGoal goal = GOALS.get(mob);
 		return goal != null && mob.level().getGameTime() < goal.trappedUntil;
@@ -115,7 +98,6 @@ public final class WardFleeGoal extends Goal {
 			Path out = pos == null ? null : mob.getNavigation().createPath(pos.x, pos.y, pos.z, 0);
 			Node end = out == null ? null : out.getEndNode();
 			if (end == null || ward.contains(end.x + 0.5, end.y + 0.5, end.z + 0.5)) {
-				// No walk that ends outside the ward: trapped.
 				trappedUntil = now() + WardingTuning.TRAPPED_RECHECK_TICKS;
 				return false;
 			}
@@ -153,18 +135,9 @@ public final class WardFleeGoal extends Goal {
 	/** A point a few blocks outside the box through its nearest side (walking mobs leave sideways, never up or down). */
 	static Vec3 exitPoint(AABB box, Vec3 from) {
 		double margin = 3.0;
-		double[] distances = {from.x - box.minX, box.maxX - from.x, from.z - box.minZ, box.maxZ - from.z};
-		int best = 0;
-		for (int i = 1; i < distances.length; i++) {
-			if (distances[i] < distances[best]) {
-				best = i;
-			}
-		}
-		return switch (best) {
-			case 0 -> new Vec3(box.minX - margin, from.y, from.z);
-			case 1 -> new Vec3(box.maxX + margin, from.y, from.z);
-			case 2 -> new Vec3(from.x, from.y, box.minZ - margin);
-			default -> new Vec3(from.x, from.y, box.maxZ + margin);
-		};
+		Vec3 out = WardBarrier.exitNormal(box, from, false);
+		double x = out.x < 0 ? box.minX - margin : out.x > 0 ? box.maxX + margin : from.x;
+		double z = out.z < 0 ? box.minZ - margin : out.z > 0 ? box.maxZ + margin : from.z;
+		return new Vec3(x, from.y, z);
 	}
 }

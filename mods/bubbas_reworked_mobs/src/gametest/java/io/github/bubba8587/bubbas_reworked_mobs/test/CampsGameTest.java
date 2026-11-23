@@ -66,7 +66,7 @@ public class CampsGameTest {
 		CampSite site = site(helper, piece);
 		helper.assertTrue(site.armed() && !site.spawned(), "a new camp is armed and waiting");
 		helper.assertTrue(!banners(helper.getLevel(), piece.getBoundingBox()).isEmpty(), "the camp should fly at least one banner");
-		ServerPlayer player = SleeperNoiseGameTest.survivalPlayer(helper);
+		ServerPlayer player = TestPlayers.survival(helper);
 		Vec3 at = helper.absoluteVec(new Vec3(2.5, 8.0, 2.5));
 		player.snapTo(at.x, at.y, at.z, 0.0F, 0.0F);
 		helper.succeedWhen(() -> {
@@ -96,8 +96,8 @@ public class CampsGameTest {
 	}
 
 	/**
-	 * Breaking every banner stops a cleared camp for good (it never resets); putting one of its banners back in the
-	 * area re-arms it, and it resets at the next check.
+	 * Breaking every banner stops a cleared camp for good (it never resets); a banner of another kind put in the area
+	 * doesn't arm it, but putting one of its own banners back re-arms it, and it resets at the next check.
 	 */
 	@GameTest(structure = FIELD, maxTicks = 40)
 	public void bannersAreTheKey(GameTestHelper helper) {
@@ -115,8 +115,12 @@ public class CampsGameTest {
 			helper.assertTrue(site.members().isEmpty(), "the roster's removal is counted: " + site.members().size());
 			CampSites.resetCheck(level, true);
 			helper.assertTrue(site.spawned(), "a camp with no banner never resets");
-			// Put a zombie camp banner back at the edge of the camp.
+			// A skeleton camp's banner at the edge of this zombie camp doesn't count.
 			BlockPos edge = piece.centre().offset(4, 1, 0);
+			level.setBlock(edge, CampBanners.standing(CampKind.SKELETON).defaultBlockState(), 3);
+			CampBanners.paint(level.getBlockEntity(edge), CampKind.SKELETON, level.registryAccess());
+			helper.assertTrue(Boolean.FALSE.equals(CampSites.recheck(level, site)) && !site.armed(), "another kind's banner doesn't arm it");
+			// Its own kind's banner put back there does.
 			level.setBlock(edge, CampBanners.standing(CampKind.ZOMBIE).defaultBlockState().setValue(BannerBlock.ROTATION, 0), 3);
 			CampBanners.paint(level.getBlockEntity(edge), CampKind.ZOMBIE, level.registryAccess());
 			helper.assertTrue(Boolean.TRUE.equals(CampSites.recheck(level, site)) && site.armed(), "a banner put back re-arms it");
@@ -124,22 +128,6 @@ public class CampsGameTest {
 			helper.assertTrue(!site.spawned(), "re-armed, it resets at the next check");
 			helper.succeed();
 		});
-	}
-
-	/** A banner of another kind doesn't arm a camp. */
-	@GameTest(structure = FIELD)
-	public void otherBannersDontCount(GameTestHelper helper) {
-		ServerLevel level = helper.getLevel();
-		CampPiece piece = camp(helper, CampKind.STRAY, 13L);
-		CampSite site = site(helper, piece);
-		for (BlockPos banner : banners(level, piece.getBoundingBox())) {
-			level.setBlock(banner, Blocks.AIR.defaultBlockState(), 3);
-		}
-		BlockPos edge = piece.centre().offset(4, 1, 0);
-		level.setBlock(edge, CampBanners.standing(CampKind.SKELETON).defaultBlockState(), 3);
-		CampBanners.paint(level.getBlockEntity(edge), CampKind.SKELETON, level.registryAccess());
-		helper.assertTrue(Boolean.FALSE.equals(CampSites.recheck(level, site)), "a skeleton banner doesn't arm a stray camp");
-		helper.succeed();
 	}
 
 	/** An outpost with every banner broken spawns no pillagers; putting one back restores them. */
@@ -175,7 +163,7 @@ public class CampsGameTest {
 		CampSites.recheck(level, site);
 		helper.assertTrue(site.quiet(), "a lit campfire in the camp quiets it");
 		helper.assertTrue(piece.getBoundingBox().isInside(fire), "the fire is inside the camp");
-		ServerPlayer player = SleeperNoiseGameTest.survivalPlayer(helper);
+		ServerPlayer player = TestPlayers.survival(helper);
 		Vec3 at = helper.absoluteVec(new Vec3(2.5, 8.0, 2.5));
 		player.snapTo(at.x, at.y, at.z, 0.0F, 0.0F);
 		helper.runAfterDelay(45, () -> {
@@ -276,18 +264,27 @@ public class CampsGameTest {
 
 	/**
 	 * Every block of a built camp can stay where it is: nothing that needs support (ladders, banners, carpets, plants,
-	 * skulls) is placed without it, so no block update pops it off. One camp of each kind.
+	 * skulls) is placed without it, so no block update pops it off. And camps are dark (owner, 2026-11-22: no fire, no
+	 * light at all): no block in one gives off light. One camp of each kind.
 	 */
 	@GameTest(structure = FIELD, maxTicks = 20)
 	public void everyCampBlockIsSupported(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
 		List<String> loose = new ArrayList<>();
+		List<String> lit = new ArrayList<>();
 		long seed = 31L;
 		for (CampKind kind : CampKind.values()) {
 			CampPiece piece = CampCommand.build(level, helper.absolutePos(CENTRE), kind, CampTuning.Size.SMALL, seed++);
 			loose.addAll(unsupported(level, piece.getBoundingBox()));
+			BoundingBox box = piece.getBoundingBox();
+			for (BlockPos pos : BlockPos.betweenClosed(box.minX(), box.minY(), box.minZ(), box.maxX(), box.maxY(), box.maxZ())) {
+				if (level.getBlockState(pos).getLightEmission() > 0) {
+					lit.add(level.getBlockState(pos).getBlock().getDescriptionId().replaceFirst("^.*[.]", "") + "@" + pos.toShortString());
+				}
+			}
 		}
 		helper.assertTrue(loose.isEmpty(), "blocks that would pop off: " + loose.subList(0, Math.min(12, loose.size())));
+		helper.assertTrue(lit.isEmpty(), "camps are dark, but these give off light: " + lit.subList(0, Math.min(12, lit.size())));
 		helper.succeed();
 	}
 

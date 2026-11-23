@@ -81,9 +81,9 @@ public class GravesClientGameTest implements FabricClientGameTest {
 	}
 
 	/**
-	 * Yards in a real world (default preset, seed 20261116): the nearest naturally generated crypt yard from above and
-	 * from its gate (yard-natural-*), then a yard with a crypt built by the command beside spawn (yard-built-*) and the
-	 * inside of its vault (crypt-vault and crypt-vault-back with night vision, crypt-vault-dark without: candlelight only).
+	 * A yard in a real world (default preset, seed 20261116): the nearest naturally generated crypt yard from above and
+	 * from its gate (yard-natural-*). Built yards of every kind and their crypts are the {@code yards} part
+	 * (YardKindsClientGameTest).
 	 */
 	private static void yards(ClientGameTestContext context) {
 		try (TestSingleplayerContext sp = context.worldBuilder()
@@ -127,54 +127,6 @@ public class GravesClientGameTest implements FabricClientGameTest {
 			context.takeScreenshot("yard-natural-above");
 			tp(context, server, found.getX() + 0.5, ground + 4, found.getZ() - 14.5, 0, 20);
 			context.takeScreenshot("yard-natural-gate");
-
-			// A yard with a crypt, built on the nearest plains (open ground, so it shows from above).
-			BlockPos gate = server.computeOnServer(s -> {
-				var level = s.overworld();
-				// The flattest of a few plains spots near spawn (the command builds anywhere; natural yards need flat ground).
-				BlockPos best = null;
-				int bestSlope = Integer.MAX_VALUE;
-				for (int i = 0; i < 8; i++) {
-					BlockPos from = level.getRespawnData().pos().offset(i * 160 - 560, 0, (i % 3) * 200 - 200);
-					var plains = level.findClosestBiome3d(b -> b.is(net.minecraft.world.level.biome.Biomes.PLAINS), from, 1600, 32, 64);
-					if (plains == null) {
-						continue;
-					}
-					BlockPos p = plains.getFirst();
-					int slope = slope(level, p.getX(), p.getZ());
-					if (slope < bestSlope) {
-						bestSlope = slope;
-						best = p;
-					}
-				}
-				if (best == null) {
-					throw new AssertionError("no plains near spawn");
-				}
-				return best;
-			});
-			System.out.println("[graves] built yard on plains at " + gate.toShortString());
-			tp(context, server, gate.getX() + 0.5, 140, gate.getZ() - 10.5, 0, 45);
-			sp.getConnection().waitForChunksRender();
-			var piece = server.computeOnServer(s -> io.github.bubba8587.bubbas_reworked_mobs.grave.GraveyardCommand.build(s.overworld(), gate, true, 77L));
-			BlockPos g = piece.gate();
-			context.waitTicks(20);
-			tp(context, server, g.getX() + 0.5, g.getY() + 20, g.getZ() - 9.5, 0, 55);
-			context.takeScreenshot("yard-built-above");
-			tp(context, server, g.getX() + 0.5, g.getY() + 3, g.getZ() - 4.5, 0, 15);
-			context.takeScreenshot("yard-built-gate");
-			tp(context, server, g.getX() + 0.5, g.getY() + 1.2, g.getZ() + 2.5, 0, 15);
-			context.takeScreenshot("yard-built-inside");
-			tp(context, server, g.getX() - 6.5, g.getY() + 1.6, g.getZ() + 5.5, 225, 20);
-			context.takeScreenshot("yard-built-rows");
-			BlockPos vault = piece.vaultCentre();
-			server.runCommand("effect give @p minecraft:night_vision infinite 0 true");
-			tp(context, server, vault.getX() + 0.5, vault.getY() + 0.2, vault.getZ() - 3.5, 0, 10);
-			context.takeScreenshot("crypt-vault");
-			tp(context, server, vault.getX() + 0.5, vault.getY() + 0.2, vault.getZ() + 3.5, 180, 10);
-			context.takeScreenshot("crypt-vault-back");
-			server.runCommand("effect clear @p");
-			tp(context, server, vault.getX() + 0.5, vault.getY() + 0.2, vault.getZ() - 3.5, 0, 10);
-			context.takeScreenshot("crypt-vault-dark");
 		}
 	}
 
@@ -196,27 +148,6 @@ public class GravesClientGameTest implements FabricClientGameTest {
 	private static void tp(ClientGameTestContext context, TestServerContext server, double x, double y, double z, float yaw, float pitch) {
 		server.runCommand(String.format(java.util.Locale.ROOT, "tp @p %.2f %.2f %.2f %.1f %.1f", x, y, z, yaw, pitch));
 		context.waitTicks(15);
-	}
-
-	/** Height difference over a yard-sized square south of (x, z) (generator heights, no chunks loaded). */
-	private static int slope(net.minecraft.server.level.ServerLevel level, int x, int z) {
-		var gen = level.getChunkSource().getGenerator();
-		int low = Integer.MAX_VALUE;
-		int high = Integer.MIN_VALUE;
-		for (int dx = -9; dx <= 9; dx += 6) {
-			for (int dz = 0; dz <= 36; dz += 6) {
-				int h = gen.getBaseHeight(x + dx, z + dz, net.minecraft.world.level.levelgen.Heightmap.Types.WORLD_SURFACE_WG, level,
-						level.getChunkSource().randomState());
-				int floor = gen.getBaseHeight(x + dx, z + dz, net.minecraft.world.level.levelgen.Heightmap.Types.OCEAN_FLOOR_WG, level,
-						level.getChunkSource().randomState());
-				if (floor != h) {
-					return Integer.MAX_VALUE; // water there
-				}
-				low = Math.min(low, h);
-				high = Math.max(high, h);
-			}
-		}
-		return high - low;
 	}
 
 	private static List<Component> lines(Component a, Component b, Component c, Component d) {

@@ -36,6 +36,9 @@ public class PackcheckClientGameTest implements FabricClientGameTest {
 
 	@Override
 	public void runTest(ClientGameTestContext context) {
+		if (!ClientTests.run("packcheck")) {
+			return;
+		}
 		context.getInput().resizeWindow(1280, 720);
 		try (TestSingleplayerContext singleplayer = context.worldBuilder().create()) {
 			singleplayer.getConnection().waitForChunksRender();

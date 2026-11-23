@@ -21,7 +21,9 @@ public enum TotemType implements StringRepresentable {
 	GROWTH("growth", () -> ModItems.TOTEM_OF_GROWTH),
 	SEEKING("seeking", () -> ModItems.TOTEM_OF_SEEKING),
 	BEGINNING("beginning", () -> ModItems.TOTEM_OF_THE_BEGINNING),
-	END("end", () -> ModItems.TOTEM_OF_THE_END);
+	END("end", () -> ModItems.TOTEM_OF_THE_END),
+	HERDING("herding", () -> ModItems.TOTEM_OF_HERDING),
+	CLEAR_SKIES("clear_skies", () -> ModItems.TOTEM_OF_CLEAR_SKIES);
 
 	private final String name;
 	private final Supplier<Item> item;

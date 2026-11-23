@@ -28,6 +28,8 @@ public final class ModCreativeTabs {
 						output.accept(ModItems.TOTEM_OF_SEEKING);
 						output.accept(ModItems.TOTEM_OF_THE_BEGINNING);
 						output.accept(ModItems.TOTEM_OF_THE_END);
+						output.accept(ModItems.TOTEM_OF_HERDING);
+						output.accept(ModItems.TOTEM_OF_CLEAR_SKIES);
 					})
 					.build());
 

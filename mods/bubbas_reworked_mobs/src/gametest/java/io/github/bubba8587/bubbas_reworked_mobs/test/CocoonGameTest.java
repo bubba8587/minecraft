@@ -55,12 +55,12 @@ public class CocoonGameTest {
 	/** A player cuts their way out faster with a sword than with a bare hand. */
 	@GameTest(environment = SpiderGameTest.ENV, structure = SpiderGameTest.ROOM)
 	public void swordCutsFreeFasterThanAHand(GameTestHelper helper) {
-		ServerPlayer bare = SleeperNoiseGameTest.survivalPlayer(helper);
+		ServerPlayer bare = TestPlayers.survival(helper);
 		Vec3 p = at(helper, 2.5, 6.0, 2.5);
 		bare.snapTo(p.x, p.y, p.z, 0.0F, 0.0F);
 		int hand = hitsToFree(helper, bare, wrap(helper, bare));
 
-		ServerPlayer armed = SleeperNoiseGameTest.survivalPlayer(helper);
+		ServerPlayer armed = TestPlayers.survival(helper);
 		Vec3 q = at(helper, 6.5, 6.0, 6.5);
 		armed.snapTo(q.x, q.y, q.z, 0.0F, 0.0F);
 		armed.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.IRON_SWORD));
@@ -75,7 +75,7 @@ public class CocoonGameTest {
 		ServerLevel level = helper.getLevel();
 		Pig pig = pig(helper, 4.5, 4.5);
 		SilkCocoon cocoon = wrap(helper, pig);
-		ServerPlayer rescuer = SleeperNoiseGameTest.survivalPlayer(helper);
+		ServerPlayer rescuer = TestPlayers.survival(helper);
 		rescuer.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.SHEARS));
 		cocoon.interact(rescuer, InteractionHand.MAIN_HAND, cocoon.position());
 		helper.assertTrue(!cocoon.isRemoved(), "one shear cut freed it at once");
@@ -89,20 +89,30 @@ public class CocoonGameTest {
 		helper.succeed();
 	}
 
-	/** The poison of a cocoon never kills: a pig on its last hearts, wrapped for a long while, is still alive. */
-	@GameTest(environment = SpiderGameTest.ENV, structure = SpiderGameTest.ROOM, maxTicks = 400)
+	/** The poison of a cocoon never kills: a pig on its last hearts is poisoned down to half a heart and stays there. */
+	@GameTest(environment = SpiderGameTest.ENV, structure = SpiderGameTest.ROOM, maxTicks = 240)
 	public void poisonNeverKills(GameTestHelper helper) {
 		Pig pig = pig(helper, 4.5, 4.5);
 		pig.setHealth(3.0F);
 		wrap(helper, pig);
-		helper.runAfterDelay(300, () -> {
+		long[] low = {-1};
+		helper.onEachTick(() -> {
+			if (low[0] < 0 && pig.isAlive() && pig.getHealth() <= 1.0F) {
+				low[0] = helper.getTick();
+			}
+		});
+		// Down to its last half heart, then two more poison ticks' worth (25 ticks each) without dying.
+		helper.succeedWhen(() -> {
 			helper.assertTrue(pig.isAlive(), "the poison killed it");
+			helper.assertTrue(low[0] >= 0 && helper.getTick() >= low[0] + 60, "health " + pig.getHealth());
 			helper.assertTrue(pig.getHealth() > 0.0F && pig.getHealth() <= 1.0F, "health " + pig.getHealth());
-			helper.succeed();
 		});
 	}
 
-	/** After its wait, the giant comes back to its cocooned pig and bites it. */
+	/**
+	 * A snatched pig is hauled up a trunk and cocooned there; the giant backs off and waits by it, and after its wait
+	 * it comes back to its cocooned pig and bites it.
+	 */
 	@GameTest(environment = SpiderGameTest.ENV, structure = SpiderGameTest.ROOM, maxTicks = 500)
 	public void spiderComesBackToFeed(GameTestHelper helper) {
 		for (int y = 1; y <= 12; y++) {
@@ -118,10 +128,14 @@ public class CocoonGameTest {
 		Vec3 p = at(helper, 3.5, 1.0, 3.0);
 		pig.snapTo(p.x, p.y, p.z, 0.0F, 0.0F);
 		level.addFreshEntity(pig);
+		double floor = p.y;
 		helper.assertTrue(giant.snatch(level, pig), "no snatch");
+		helper.assertTrue(pig.getVehicle() == giant, "pig not held");
 		boolean[] skipped = {false};
 		helper.onEachTick(() -> {
 			if (!skipped[0] && giant.task() == GiantSpider.Task.WAIT) {
+				helper.assertTrue(pig.getVehicle() instanceof SilkCocoon, "pig not cocooned: " + pig.getVehicle());
+				helper.assertTrue(pig.getY() > floor + 2.5, "pig only " + (pig.getY() - floor) + " up");
 				helper.assertTrue(pig.getLastHurtByMob() == null, "bitten before the wait was over");
 				giant.endWait();
 				skipped[0] = true;

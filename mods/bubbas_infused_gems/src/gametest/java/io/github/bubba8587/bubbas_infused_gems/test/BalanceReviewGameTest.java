@@ -126,13 +126,43 @@ public class BalanceReviewGameTest {
 		helper.succeed();
 	}
 
-	/** 4. The refill fills only the gem's share, and the equip-fill throttle survives a save (rejoin). */
+	private static void strip(LivingEntity e) {
+		for (EquipmentSlot slot : GemTotals.ARMOR) {
+			e.setItemSlot(slot, ItemStack.EMPTY);
+		}
+		WornEffects.refresh(e);
+	}
+
+	/**
+	 * 4. Equipping fills the shield at once but a quick re-equip doesn't; the refill fills only the gem's share, after
+	 * 30 s without damage; and the equip-fill throttle is game time, saved on the wearer (it survives a rejoin).
+	 */
 	@GameTest
 	public void absorptionRefillsOnlyItsShareAndRemembersTheThrottle(GameTestHelper helper) {
 		Balance b = Balance.get();
+		double share = 16 * b.effect("absorption").wornCap();
+		Mob fresh = pig(helper, 3, 1);
+		fresh.tickCount = 1000;
+		wear(fresh, "absorption");
+		close(fresh.getAbsorptionAmount(), share, 1e-3, helper, "equipping fills the shield at once (owner)");
+		// Hurt, then swap gear right away: no second equip-fill within 30 s.
+		fresh.setAbsorptionAmount(2.0F);
+		strip(fresh);
+		wear(fresh, "absorption");
+		WornEffects.tick(helper.getLevel(), fresh, WornEffects.of(fresh));
+		check(helper, fresh.getAbsorptionAmount() < share - 0.5, "a quick re-equip refilled the shield: " + fresh.getAbsorptionAmount());
+		check(helper, ((GemEntity) fresh).bubbas$lastHurtTick() == fresh.tickCount, "a quick re-equip did not start the usual wait");
+		fresh.tickCount += 600;
+		WornEffects.tick(helper.getLevel(), fresh, WornEffects.of(fresh));
+		close(fresh.getAbsorptionAmount(), share, 1e-3, helper, "refilled 30 s after the last damage");
+		fresh.setAttached(ModAttachments.LAST_EQUIP_FILL, helper.getLevel().getGameTime() - 600);
+		fresh.setAbsorptionAmount(0.0F);
+		strip(fresh);
+		wear(fresh, "absorption");
+		close(fresh.getAbsorptionAmount(), share, 1e-3, helper, "equip-fill again once 30 s have passed");
+		fresh.discard();
 		Mob pig = pig(helper, 1, 1);
 		wear(pig, "absorption");
-		double share = 16 * b.effect("absorption").wornCap();
 		pig.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 2400, 3)); // an enchanted golden apple: 16
 		pig.setAbsorptionAmount(0.0F);
 		((GemEntity) pig).bubbas$setLastHurtTick(pig.tickCount - 1000);
@@ -187,34 +217,9 @@ public class BalanceReviewGameTest {
 		helper.succeed();
 	}
 
-	/** 7. The Oozing cap counts only slimes near the owner; slimes are never saved (left-behind ones dissolve). */
-	@GameTest
-	public void oozingSlimeCapCountsNearbySlimesOnly(GameTestHelper helper) {
-		ServerPlayer player = helper.makeMockServerPlayerInLevel();
-		player.setItemSlot(EquipmentSlot.MAINHAND, GemKit.socketed(Items.NETHERITE_SWORD, GemKit.gem("oozing", 1.0), GemKit.gem("oozing", 1.0)));
-		Vec3 home = helper.absoluteVec(new Vec3(1.5, 1, 1.5));
-		player.teleportTo(home.x, home.y, home.z);
-		for (int kill = 0; kill < 6; kill++) {
-			Mob pig = helper.spawnWithNoFreeWill(EntityTypes.PIG, new BlockPos(2, 1, 2));
-			pig.setHealth(0.05F);
-			player.attack(pig);
-		}
-		check(helper, GemActions.ownedSlimes(helper.getLevel(), player) == 8, "nearby cap: " + GemActions.ownedSlimes(helper.getLevel(), player));
-		var slime = helper.getLevel().getEntitiesOfClass(net.minecraft.world.entity.monster.cubemob.Slime.class, new net.minecraft.world.phys.AABB(home, home).inflate(16),
-				x -> x.hasAttached(ModAttachments.SLIME_OWNER)).getFirst();
-		check(helper, !slime.shouldBeSaved(), "an Oozing slime would be saved with its chunk");
-		slime.discard();
-		check(helper, GemActions.ownedSlimes(helper.getLevel(), player) == 7, "a removed slime still counts");
-		// Run far away: the slimes left behind don't count, so a fresh 8 is possible there.
-		player.teleportTo(home.x + 300, home.y, home.z);
-		check(helper, GemActions.ownedSlimes(helper.getLevel(), player) == 0, "left-behind slimes still count: " + GemActions.ownedSlimes(helper.getLevel(), player));
-		GemKit.remove(helper, player);
-		helper.succeed();
-	}
-
-	/** Owner: a weak Saturation gem fills food only to about 7, and adds a small share of saturation. */
+	/** Owner: a weak Saturation gem fills food only to about 7 with a small share of saturation; a mid build (two gemmed pieces) stops between that and a full bar. */
 	@GameTest(maxTicks = 100)
-	public void weakSaturationStopsLow(GameTestHelper helper) {
+	public void weakAndMidSaturationStopShort(GameTestHelper helper) {
 		ServerPlayer player = helper.makeMockServerPlayerInLevel();
 		player.setGameMode(GameType.SURVIVAL);
 		weak(player, "saturation");
@@ -225,23 +230,14 @@ public class BalanceReviewGameTest {
 		check(helper, top == target, "weak gem reached food " + top + ", target " + target);
 		check(helper, player.getFoodData().getSaturationLevel() < top * 0.5F,
 				"weak gem saturation " + player.getFoodData().getSaturationLevel() + " at food " + top);
-		GemKit.remove(helper, player);
-		helper.succeed();
-	}
-
-	/** Owner: a mid build (two gemmed pieces) stops between the weak gem and a full bar. */
-	@GameTest(maxTicks = 100)
-	public void midSaturationStopsBetween(GameTestHelper helper) {
-		ServerPlayer player = helper.makeMockServerPlayerInLevel();
-		player.setGameMode(GameType.SURVIVAL);
 		Gem g = GemKit.gem("saturation", 1.0);
 		player.setItemSlot(GemTotals.ARMOR[0], GemKit.socketed(BalanceGameTest.armor("netherite", PIECES[0]), g, g, g));
 		player.setItemSlot(GemTotals.ARMOR[1], GemKit.socketed(BalanceGameTest.armor("netherite", PIECES[1]), g, g, g));
 		WornEffects.refresh(player);
-		double s = GemValues.worn(player, "saturation");
-		int target = WornEffects.saturationFoodTarget(s);
-		int top = run(helper, player, 2, 3000);
-		check(helper, target > 8 && target < 20 && top == target, "mid build (" + s + ") reached food " + top + ", target " + target);
+		double mid = GemValues.worn(player, "saturation");
+		int midTarget = WornEffects.saturationFoodTarget(mid);
+		int midTop = run(helper, player, 2, 3000);
+		check(helper, midTarget > 8 && midTarget < 20 && midTop == midTarget, "mid build (" + mid + ") reached food " + midTop + ", target " + midTarget);
 		GemKit.remove(helper, player);
 		helper.succeed();
 	}

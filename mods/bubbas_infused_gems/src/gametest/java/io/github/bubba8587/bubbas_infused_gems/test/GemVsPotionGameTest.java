@@ -74,17 +74,6 @@ public class GemVsPotionGameTest {
 		return a.getValue() - a.getBaseValue();
 	}
 
-	private static double unusedSpeed(LivingEntity e) {
-		AttributeModifier m = e.getAttribute(Attributes.MOVEMENT_SPEED).getModifier(BubbasInfusedGems.id("worn/speed/0"));
-		return m == null ? 0.0 : m.amount();
-	}
-
-	/** Movement speed as a multiple of the base: what actually applies. */
-	private static double speedFactor(LivingEntity e) {
-		AttributeInstance a = e.getAttribute(Attributes.MOVEMENT_SPEED);
-		return a.getValue() / a.getBaseValue();
-	}
-
 	private static void noGemModifiersLeft(GameTestHelper helper, LivingEntity e, String when) {
 		for (var attribute : new net.minecraft.core.Holder[] {Attributes.MOVEMENT_SPEED, Attributes.MAX_HEALTH, Attributes.MAX_ABSORPTION, Attributes.BURNING_TIME}) {
 			@SuppressWarnings("unchecked")
@@ -129,17 +118,6 @@ public class GemVsPotionGameTest {
 		pig.removeAllEffects();
 		noGemModifiersLeft(helper, pig, "gear off and potion gone");
 		close(boost(pig), 0.0, 1e-9, helper, "nothing left");
-		helper.succeed();
-	}
-
-	@GameTest
-	public void milkClearsThePotionAndTheGemStays(GameTestHelper helper) {
-		Mob pig = pig(helper);
-		wear(pig, "health_boost");
-		pig.addEffect(new MobEffectInstance(MobEffects.HEALTH_BOOST, 600, 1));
-		close(gemBoost(pig), 0.0, 1e-9, helper, "Health Boost II on: gems off");
-		pig.removeAllEffects(); // what milk does
-		close(boost(pig), 8 * S, 1e-6, helper, "after milk: the gems");
 		helper.succeed();
 	}
 

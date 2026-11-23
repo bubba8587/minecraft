@@ -12,8 +12,9 @@ All projects target the latest full release of Minecraft. *See also: [[Version S
 | [[Bubba's Reworked Mobs]] | Fabric mod | Dormant undead, graveyards, monster camps, and reworked creepers, drowned, spiders and endermen. |
 | [[Bubba's Infused Gems]] | Fabric mod | Potions brewed into gems, enchanted and socketed into armor and weapons for permanent effects. |
 | [[Bubba's Reworked Beacons]] | Fabric mod | Beacons with one item slot instead of fixed powers, and paired beacons that work underground. |
-| [[Bubba's Totems & Artifacts]] | Fabric mod | Found artifacts: the Grave Talisman and eight totems, many of which also work in a beacon; totems can be set down as statues. |
+| [[Bubba's Totems & Artifacts]] | Fabric mod | Found artifacts: the Grave Talisman and ten totems, many of which also work in a beacon; totems set down as statues give a small version of their effect. |
 | [[Bubba's Reworked Mining]] | Fabric mod | A steep tool curve from slow bare tools to an enchanted machine, rare finds in stone, True Unbreaking, and quartz gear for the Nether. |
+| [[Bubba's World Tweaks]] | Fabric mod | Small touches to the world: bubbling lava, lava geysers, and geyser updrafts to ride. |
 
 Each project has a folder in `Projects/`: an overview page named after the project, plus a page per topic.
 
@@ -28,9 +29,9 @@ Each project has a folder in `Projects/`: an overview page named after the proje
 
 **[[Bubba's Totems & Artifacts]]**
 - The [[Grave Talisman]] glows near undead; the [[Totem of Warding]] keeps monsters away.
-- [[Totem of Keeping|Keeping]], [[Totem of Gathering|Gathering]], [[Totem of Fortification|Fortification]], [[Totem of Growth|Growth]] and [[Totem of Seeking|Seeking]]; most also work in a beacon.
+- [[Totem of Keeping|Keeping]], [[Totem of Gathering|Gathering]], [[Totem of Fortification|Fortification]], [[Totem of Growth|Growth]], [[Totem of Seeking|Seeking]], [[Totem of Herding|Herding]] and [[Totem of Clear Skies|Clear Skies]]; most also work in a beacon.
 - The [[Totem of the Beginning]] restores the land; the [[Totem of the End]] makes endermen kin and teleports.
-- Any totem can be set down as a [[Totem Statue]].
+- Any totem can be set down as a [[Totem Statue]], which gives a small version of its effect.
 
 **[[Bubba's Infused Gems]]**
 - [[Making Infused Gems|Brew potions into gems]], [[Enchanting Gems|enchant]] them and [[Socketing Gems|socket]] them into gear.
@@ -41,6 +42,9 @@ Each project has a folder in `Projects/`: an overview page named after the proje
 
 **[[Bubba's Reworked Mining]]**
 - A steep [[Mining Curve]] from slow bare tools to an enchanted machine, [[Rare Finds]] in plain stone, the [[True Unbreaking]] book, and [[Quartz Tools and Armor]] for the Nether.
+
+**[[Bubba's World Tweaks]]**
+- [[Lava Bubbles and Geysers]]: lava bubbles over magma, erupts as black-smoke geysers, and lifts and speeds up anyone circling a geyser.
 
 **[[Bubba's Extra Recipes]]**
 - A [[Recipe List]] for awkward or grindy items, as a datapack.

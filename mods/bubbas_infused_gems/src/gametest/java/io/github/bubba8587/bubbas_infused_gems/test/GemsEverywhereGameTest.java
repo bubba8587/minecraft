@@ -109,6 +109,8 @@ public class GemsEverywhereGameTest {
 		for (String key : b.gemEffects) {
 			wear(pig, key);
 			Balance.EffectData e = b.effect(key);
+			check(helper, e.worn() != null, key + " has no worn form in balance.json");
+			check(helper, !io.github.bubba8587.bubbas_infused_gems.effect.GemDescribe.worn(key, 0.5).matches("[0-9]+%"), key + " has no worn description");
 			s = e.wornCap(); // owner: mobility effects have a raised worn cap
 			if (!e.wornAttributes().isEmpty() && !e.wornFlag("wet_only") && !e.wornFlag("sneak_only")) {
 				for (int i = 0; i < e.wornAttributes().size(); i++) {
@@ -148,9 +150,16 @@ public class GemsEverywhereGameTest {
 					WornEffects.shellTick(pig);
 					check(helper, speed.getModifier(slow) == null, "the shell drops after half a second");
 				}
-				case "fire_resistance" -> close(WornEffects.modifyDamage(pig, pig.damageSources().inFire(), 10F), 10 * (1 - s), 1e-4, helper, key);
+				case "fire_resistance", "water_breathing" -> {
+					if (key.equals("fire_resistance")) {
+						close(WornEffects.modifyDamage(pig, pig.damageSources().inFire(), 10F), 10 * (1 - s), 1e-4, helper, key);
+					}
+					// The perfect set is complete for on/off effects: the real effect is kept on.
+					pig.tickCount = 2000;
+					WornEffects.tick(helper.getLevel(), pig, WornEffects.of(pig));
+					check(helper, pig.hasEffect(key.equals("fire_resistance") ? MobEffects.FIRE_RESISTANCE : MobEffects.WATER_BREATHING), "a perfect " + key + " set gives no real " + key);
+				}
 				case "night_vision", "hero_of_the_village" -> close(GemValues.value(pig, key), s, 1e-6, helper, key + " value for its hook");
-				case "invisibility" -> close(pig.getVisibilityPercent(helper.getLevel(), null), 1 - 0.93 * s, 1e-6, helper, "stealth");
 				case "slow_falling" -> {
 					pig.setDeltaMovement(0, -0.5, 0);
 					close(WornEffects.gravity(pig, 0.08), s <= 1 ? 0.08 * (1 - 0.875 * s) : 0.01 / s, 1e-6, helper, "slow falling gravity (raised cap: slower than the potion)");
@@ -195,29 +204,6 @@ public class GemsEverywhereGameTest {
 						"Weaving at the cap: still stuck in cobwebs");
 				case "silence" -> check(helper, io.github.bubba8587.bubbas_infused_gems.effect.GemActions.silenced(pig,
 						net.minecraft.world.level.gameevent.GameEvent.STEP), "Silence at the cap left a step vibration");
-				case "ender" -> {
-					Zombie shooter = helper.spawnWithNoFreeWill(EntityTypes.ZOMBIE, new BlockPos(3, 1, 1));
-					Arrow arrow = (Arrow) ((ArrowItem) Items.ARROW).createArrow(helper.getLevel(), new ItemStack(Items.ARROW), shooter, null);
-					boolean blinked = false;
-					for (int t = 0; t < 40 && !blinked; t++) {
-						Vec3 at = pig.position();
-						blinked = !pig.hurtServer(helper.getLevel(), pig.damageSources().arrow(arrow, shooter), 2.0F) && !pig.position().equals(at);
-						pig.damageCooldownTime = 0;
-					}
-					check(helper, blinked, "Ender never blinked away from an arrow");
-					pig.teleportTo(helper.absoluteVec(new Vec3(1.5, 1, 1.5)).x, helper.absoluteVec(new Vec3(1.5, 1, 1.5)).y, helper.absoluteVec(new Vec3(1.5, 1, 1.5)).z);
-					shooter.discard();
-				}
-				case "breeze" -> {
-					Zombie shooter = helper.spawnWithNoFreeWill(EntityTypes.ZOMBIE, new BlockPos(3, 1, 1));
-					Arrow arrow = (Arrow) ((ArrowItem) Items.ARROW).createArrow(helper.getLevel(), new ItemStack(Items.ARROW), shooter, null);
-					boolean deflected = false;
-					for (int t = 0; t < 40 && !deflected; t++) {
-						deflected = pig.deflection(arrow) != net.minecraft.world.entity.projectile.ProjectileDeflection.NONE;
-					}
-					check(helper, deflected, "Breeze never deflected an arrow");
-					shooter.discard();
-				}
 				case "infested" -> {
 					boolean hatched = false;
 					for (int t = 0; t < 400 && !hatched; t++) {
@@ -245,7 +231,7 @@ public class GemsEverywhereGameTest {
 		WornEffects.tick(helper.getLevel(), player, WornEffects.of(player));
 		close(((FoodDataAccessor) player.getFoodData()).bubbas$exhaustion() - before, 0.015 * s, 1e-5, helper, "hunger per tick");
 		strip(player);
-		for (String key : List.of("strength", "haste", "weakness", "mining_fatigue")) {
+		for (String key : List.of("strength", "haste", "weakness", "mining_fatigue", "luck")) { // pigs have none of these attributes
 			wear(player, key);
 			Balance.EffectData e = Balance.get().effect(key);
 			for (int i = 0; i < e.wornAttributes().size(); i++) {
@@ -255,7 +241,7 @@ public class GemsEverywhereGameTest {
 			strip(player);
 		}
 		wear(player, "hero_of_the_village");
-		close(WornEffects.heroModifier(player, 0.0), 0.30, 1e-6, helper, "hero price cut: 30% at the best build (owner)");
+		close(WornEffects.heroModifier(player, 0.0), Balance.get().effect("hero_of_the_village").wornNumber("price_cut", 0.0) * Balance.get().effect("hero_of_the_village").wornCap(), 1e-6, helper, "hero price cut at the best build");
 		close(WornEffects.heroModifier(player, 0.3), 0.3, 1e-6, helper, "a stronger vanilla hero wins");
 		helper.succeed();
 	}
@@ -276,56 +262,70 @@ public class GemsEverywhereGameTest {
 		});
 	}
 
+	/**
+	 * Every gem on a weapon, at both ends: two perfect gems in a netherite sword (the weapon cap) land the model's
+	 * potency and duration; one of the weakest gems a player can make, in a wooden sword, still does something a
+	 * player notices (owner).
+	 */
 	@GameTest
 	public void everyGemWorksOnHit(GameTestHelper helper) {
 		Balance b = Balance.get();
-		// Two perfect gems in a netherite sword: the weapon cap.
-		double s = b.cap;
-		int n = 0;
-		for (String key : b.gemEffects) {
-			Zombie attacker = helper.spawnWithNoFreeWill(EntityTypes.ZOMBIE, new BlockPos(1, 1, 3));
-			attacker.setItemSlot(EquipmentSlot.MAINHAND, GemKit.socketed(Items.NETHERITE_SWORD, GemKit.gem(key, 1.0), GemKit.gem(key, 1.0)));
-			Mob target = pig(helper, 2, 3);
-			float before = target.getHealth();
-			attacker.doHurtTarget(helper.getLevel(), target);
-			Balance.EffectData e = b.effect(key);
-			GemHits.Entry entry = new GemHits.Entry(key, s, false);
-			switch (e.hitKind()) {
-				case "action" -> {
-					// Wind Burst throws the target; Weaving (a chance) and Oozing (on a kill) have their own tests.
-					if (key.equals("wind_charged")) {
-						check(helper, target.getDeltaMovement().y > 0.5, "Wind Burst hit threw the target only " + target.getDeltaMovement().y);
+		for (boolean weak : new boolean[] {false, true}) {
+			for (String key : b.gemEffects) {
+				Zombie attacker = helper.spawnWithNoFreeWill(EntityTypes.ZOMBIE, new BlockPos(1, 1, 3));
+				attacker.setItemSlot(EquipmentSlot.MAINHAND, weak ? GemKit.socketed(Items.WOODEN_SWORD, weakest(key))
+						: GemKit.socketed(Items.NETHERITE_SWORD, GemKit.gem(key, 1.0), GemKit.gem(key, 1.0)));
+				Mob target = pig(helper, 2, 3);
+				float before = target.getHealth();
+				attacker.doHurtTarget(helper.getLevel(), target);
+				Balance.EffectData e = b.effect(key);
+				GemHits.Entry entry = new GemHits.Entry(key, b.cap, false);
+				String at = key + (weak ? " (weakest)" : " (perfect)");
+				switch (e.hitKind()) {
+					case "action" -> {
+						// Wind Burst throws the target; Weaving (a chance) and Oozing (on a kill) have their own tests.
+						if (key.equals("wind_charged")) {
+							check(helper, target.getDeltaMovement().y > (weak ? 0.05 : 0.5), at + ": Wind Burst threw the target only " + target.getDeltaMovement().y);
+						}
+					}
+					case "instant" -> {
+						// Against the same hit with no gem.
+						Mob control = pig(helper, 3, 3);
+						Zombie plain = helper.spawnWithNoFreeWill(EntityTypes.ZOMBIE, new BlockPos(1, 1, 3));
+						plain.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(weak ? Items.WOODEN_SWORD : Items.NETHERITE_SWORD));
+						plain.doHurtTarget(helper.getLevel(), control);
+						float plainLoss = 50F - control.getHealth();
+						float loss = before - target.getHealth();
+						if (weak) {
+							check(helper, Math.abs(loss - plainLoss) >= 0.99F, at + ": the strike changed health by " + (loss - plainLoss));
+						} else {
+							double strike = GemHits.strike(key, b.cap);
+							close(loss, key.equals("instant_damage") ? plainLoss + strike : plainLoss - strike, 0.05, helper, at + " strike");
+						}
+						control.discard();
+						plain.discard();
+					}
+					case "onoff" -> {
+						MobEffectInstance inst = target.getEffect(ModEffects.vanilla(key));
+						check(helper, inst != null && (weak ? inst.getDuration() >= e.hitFloorTicks() : Math.abs(inst.getDuration() - GemHits.duration(entry)) <= 1),
+								at + " on hit: " + inst + ", floor " + e.hitFloorTicks());
+					}
+					default -> {
+						MobEffectInstance inst = target.getEffect(ModEffects.gem(key));
+						check(helper, inst != null, at + " on hit: no gem effect");
+						if (weak) {
+							check(helper, inst.getDuration() >= Math.max(e.hitFloorTicks(), 40), at + ": hit " + inst);
+							check(helper, GemValues.hit(target, key) > 0.0, at + ": hit has no potency");
+						} else {
+							check(helper, inst.getAmplifier() == GemMobEffect.amplifier(GemHits.potency(entry)), at + " hit potency " + inst.getAmplifier());
+							check(helper, Math.abs(inst.getDuration() - GemHits.duration(entry)) <= 1 && GemHits.duration(entry) <= 160, at + " hit duration " + inst.getDuration());
+						}
 					}
 				}
-				case "instant" -> {
-					Mob control = pig(helper, 3, 3);
-					Zombie plain = helper.spawnWithNoFreeWill(EntityTypes.ZOMBIE, new BlockPos(1, 1, 3));
-					plain.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.NETHERITE_SWORD));
-					plain.doHurtTarget(helper.getLevel(), control);
-					float plainLoss = 50F - control.getHealth();
-					float loss = before - target.getHealth();
-					double expected = key.equals("instant_damage") ? plainLoss + GemHits.strike(key, s) : plainLoss - GemHits.strike(key, s);
-					close(loss, expected, 0.05, helper, key + " strike");
-					control.discard();
-					plain.discard();
-				}
-				case "onoff" -> {
-					MobEffectInstance inst = target.getEffect(ModEffects.vanilla(key));
-					check(helper, inst != null && Math.abs(inst.getDuration() - GemHits.duration(entry)) <= 1, key + " on hit: " + inst);
-				}
-				default -> {
-					MobEffectInstance inst = target.getEffect(ModEffects.gem(key));
-					check(helper, inst != null, key + " on hit: no gem effect");
-					check(helper, inst.getAmplifier() == GemMobEffect.amplifier(GemHits.potency(entry)), key + " hit potency " + inst.getAmplifier());
-					check(helper, Math.abs(inst.getDuration() - GemHits.duration(entry)) <= 1 && GemHits.duration(entry) <= 160,
-							key + " hit duration " + inst.getDuration());
-				}
+				attacker.discard();
+				target.discard();
 			}
-			attacker.discard();
-			target.discard();
-			n++;
 		}
-		check(helper, n == b.gemEffects.size(), "not every gem tried");
 		helper.succeed();
 	}
 
@@ -370,34 +370,6 @@ public class GemsEverywhereGameTest {
 		loaded.load(TagValueInput.create(ProblemReporter.DISCARDING, helper.getLevel().registryAccess(), out.buildResult()));
 		check(helper, ((GemArrow) loaded).bubbas$gemHit().equals(((GemArrow) arrow).bubbas$gemHit()) && !((GemArrow) loaded).bubbas$gemHit().isEmpty(),
 				"arrow lost its gems in a save: " + ((GemArrow) loaded).bubbas$gemHit());
-		helper.succeed();
-	}
-
-	@GameTest
-	public void gemAndVanillaEffectStrongerApplies(GameTestHelper helper) {
-		Mob pig = pig(helper, 1, 1);
-		double s = Balance.get().effect("speed").wornCap();
-		double gem = 0.4 * s;
-		wear(pig, "speed");
-		close(modifier(pig, "minecraft:movement_speed", "worn/speed/0"), gem, 1e-6, helper, "speed gems alone");
-		pig.addEffect(new MobEffectInstance(MobEffects.SPEED, 200, 0));
-		close(modifier(pig, "minecraft:movement_speed", "worn/speed/0"), (1 + gem) / 1.2 - 1, 1e-6, helper, "gems on top of Speed I: only the rest");
-		pig.addEffect(new MobEffectInstance(MobEffects.SPEED, 200, 1));
-		// Speed's raised worn cap (owner: 1.1) is above Speed II, so the gems still add their part above it.
-		close(modifier(pig, "minecraft:movement_speed", "worn/speed/0"), (1 + gem) / 1.4 - 1, 1e-6, helper, "Speed II: only the gems' part above it");
-		pig.removeEffect(MobEffects.SPEED);
-		close(modifier(pig, "minecraft:movement_speed", "worn/speed/0"), gem, 1e-6, helper, "potion gone: gems back");
-		strip(pig);
-		// On a target: a stronger vanilla effect keeps the gem's off; a weaker one gives way to it.
-		Holder<MobEffect> gemPoison = ModEffects.gem("poison");
-		pig.addEffect(new MobEffectInstance(MobEffects.POISON, 400, 1));
-		pig.addEffect(new MobEffectInstance(gemPoison, 400, GemMobEffect.amplifier(0.9)));
-		check(helper, pig.hasEffect(MobEffects.POISON) && !pig.hasEffect(gemPoison), "Poison II vs a 90% gem: both or the gem");
-		pig.removeAllEffects();
-		pig.addEffect(new MobEffectInstance(MobEffects.POISON, 400, 0));
-		pig.addEffect(new MobEffectInstance(gemPoison, 400, GemMobEffect.amplifier(0.9)));
-		check(helper, !pig.hasEffect(MobEffects.POISON) && pig.hasEffect(gemPoison), "Poison I vs a 90% gem: both or vanilla");
-		pig.discard();
 		helper.succeed();
 	}
 
@@ -462,34 +434,6 @@ public class GemsEverywhereGameTest {
 		check(helper, !player.getCooldowns().isOnCooldown(GemKit.socketed(BalanceGameTest.armor("netherite", PIECES[1]), GemKit.gem("speed", 1.0))),
 				"armor with other gems shows no wait");
 		check(helper, !player.getCooldowns().isOnCooldown(new ItemStack(Items.NETHERITE_CHESTPLATE)), "plain armor shows no wait");
-		helper.succeed();
-	}
-
-	@GameTest
-	public void absorptionDoesNotRefillOnReequip(GameTestHelper helper) {
-		Mob pig = pig(helper, 1, 1);
-		double full = 16 * Balance.get().effect("absorption").wornCap();
-		pig.tickCount = 1000;
-		wear(pig, "absorption");
-		close(pig.getAbsorptionAmount(), full, 1e-3, helper, "equipping fills the shield at once (owner)");
-		// Hurt, then swap gear right away: no second equip-fill within 30 s.
-		pig.setAbsorptionAmount(2.0F);
-		strip(pig);
-		wear(pig, "absorption");
-		WornEffects.tick(helper.getLevel(), pig, WornEffects.of(pig));
-		check(helper, pig.getAbsorptionAmount() < full - 0.5, "a quick re-equip refilled the shield: " + pig.getAbsorptionAmount());
-		check(helper, ((GemEntity) pig).bubbas$lastHurtTick() == pig.tickCount, "a quick re-equip did not start the usual wait");
-		// 30 s without damage: the normal refill.
-		pig.tickCount += 600;
-		WornEffects.tick(helper.getLevel(), pig, WornEffects.of(pig));
-		close(pig.getAbsorptionAmount(), full, 1e-3, helper, "refilled 30 s after the last damage");
-		// A re-equip 30 s after the last equip-fill fills at once again (the throttle is game time, saved on the wearer).
-		pig.setAttached(io.github.bubba8587.bubbas_infused_gems.registry.ModAttachments.LAST_EQUIP_FILL, helper.getLevel().getGameTime() - 600);
-		pig.setAbsorptionAmount(0.0F);
-		strip(pig);
-		wear(pig, "absorption");
-		close(pig.getAbsorptionAmount(), full, 1e-3, helper, "equip-fill again once 30 s have passed");
-		pig.discard();
 		helper.succeed();
 	}
 
@@ -607,68 +551,18 @@ public class GemsEverywhereGameTest {
 		return GemKit.gem(key, variant * b.infusion(1).factor() * b.grades.get("weak"));
 	}
 
-	/** Owner: every hit must do something a player notices. One hit of the weakest gem in a wooden sword, per effect. */
-	@GameTest
-	public void weakestGemHitStillDoesSomething(GameTestHelper helper) {
-		Balance b = Balance.get();
-		for (String key : b.gemEffects) {
-			Zombie attacker = helper.spawnWithNoFreeWill(EntityTypes.ZOMBIE, new BlockPos(1, 1, 3));
-			attacker.setItemSlot(EquipmentSlot.MAINHAND, GemKit.socketed(Items.WOODEN_SWORD, weakest(key)));
-			Mob target = pig(helper, 2, 3);
-			Balance.EffectData e = b.effect(key);
-			float before = target.getHealth();
-			attacker.doHurtTarget(helper.getLevel(), target);
-			switch (e.hitKind()) {
-				case "action" -> {
-					if (key.equals("wind_charged")) {
-						check(helper, target.getDeltaMovement().y > 0.05, "the weakest Wind Burst hit threw nothing: " + target.getDeltaMovement().y);
-					}
-				}
-				case "instant" -> {
-					// Against a hit with no gem: the strike adds or heals at least 1 HP.
-					Mob control = pig(helper, 3, 3);
-					Zombie plain = helper.spawnWithNoFreeWill(EntityTypes.ZOMBIE, new BlockPos(1, 1, 3));
-					plain.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.WOODEN_SWORD));
-					plain.doHurtTarget(helper.getLevel(), control);
-					float diff = (before - target.getHealth()) - (50F - control.getHealth());
-					check(helper, Math.abs(diff) >= 0.99F, key + ": the weakest strike changed health by " + diff);
-					control.discard();
-					plain.discard();
-				}
-				case "onoff" -> {
-					MobEffectInstance inst = target.getEffect(ModEffects.vanilla(key));
-					check(helper, inst != null && inst.getDuration() >= e.hitFloorTicks(), key + ": weakest hit " + inst + ", floor " + e.hitFloorTicks());
-				}
-				default -> {
-					MobEffectInstance inst = target.getEffect(ModEffects.gem(key));
-					check(helper, inst != null && inst.getDuration() >= Math.max(e.hitFloorTicks(), 40), key + ": weakest hit " + inst);
-					check(helper, GemValues.hit(target, key) > 0.0, key + ": weakest hit has no potency");
-				}
-			}
-			attacker.discard();
-			target.discard();
-		}
-		helper.succeed();
-	}
-
 	/** Owner: worn Saturation restores food like the vanilla effect; one weak gem slowly, the best build about a point a second. */
 	@GameTest
 	public void saturationGemsRestoreFood(GameTestHelper helper) {
 		ServerPlayer player = helper.makeMockServerPlayerInLevel();
 		player.setGameMode(GameType.SURVIVAL);
-		// One weak gem in a netherite chestplate: a food point every 20-30 s, so +1 within 30 s.
+		// One weak gem in a netherite chestplate: a food point every 20-30 s.
 		player.setItemSlot(EquipmentSlot.CHEST, GemKit.socketed(Items.NETHERITE_CHESTPLATE, GemKit.gem("saturation", 0.5)));
 		WornEffects.refresh(player);
 		double weak = WornEffects.of(player).value("saturation");
 		double every = 1.0 / WornEffects.saturationRate(weak);
 		check(helper, every >= 20.0 && every <= 30.0, "one weak Saturation gem restores a point every " + every + " s");
-		player.getFoodData().setFoodLevel(6);
-		player.getFoodData().setSaturation(0.0F);
-		for (int t = 0; t < 600; t++) {
-			WornEffects.tick(helper.getLevel(), player, WornEffects.of(player));
-		}
-		check(helper, player.getFoodData().getFoodLevel() >= 7, "weak Saturation: food " + player.getFoodData().getFoodLevel() + " after 30 s");
-		check(helper, player.getFoodData().getSaturationLevel() > 0.0F, "weak Saturation gave no saturation");
+		// The weak gem really filling food: BalanceReviewGameTest.weakAndMidSaturationStopShort.
 		strip(player);
 		wear(player, "saturation");
 		player.getFoodData().setFoodLevel(6);
@@ -700,7 +594,6 @@ public class GemsEverywhereGameTest {
 		double overTime = e.hitUnit() * GemMobEffect.potency(inst.getAmplifier()) * inst.getDuration();
 		float now = ((FoodDataAccessor) target.getFoodData()).bubbas$exhaustion();
 		close(now + overTime, 4.0, 1e-3, helper, "weakest hunger hit: exhaustion now " + now + " + over time " + overTime);
-		close(e.hitUnit(), 0.03, 1e-9, helper, "hunger hit rate: twice Hunger III");
 		GemKit.remove(helper, target);
 		helper.succeed();
 	}

@@ -16,28 +16,14 @@ import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
-/**
- * The edge of a ward for everything path-blocking can't stop (owner, 2026-11-16): phantoms, ghasts, vexes, slimes and
- * magma cubes, blazes, teleporting endermen, monsters knocked in, and happy ghasts (ridden or not). Runs at the end of
- * each kept-out mob's own tick within a few blocks of a ward (LivingEntityMixin), so the correction lands before
- * anything else sees the move:
- * <ul>
- * <li>a kept-out mob that crossed into the ward since last tick is put back on the edge, its inward motion dropped,
- * like walking into a wall (no damage; it can slide along it);</li>
- * <li>one already inside (spawned there, there when the ward went up) is nudged out through the nearest side, a
- * little each tick; walkers also walk out (WardFleeGoal);</li>
- * <li>a vehicle a player steers (a ridden happy ghast) moves on the player's client, so the server moves it back out
- * by up to a block a tick and tells the client, vanilla's own correction for a vehicle that "moved wrongly". The rider
- * can dismount and walk in.</li>
- * </ul>
- */
+/** The edge of a ward for everything path-blocking can't stop. */
 final class WardBarrier {
 	/** Outward speed added each tick to a kept-out mob inside a ward (blocks per tick). */
 	static final double NUDGE = 0.06;
 	/** How far outside the edge a pushed-back steered vehicle ends up. */
 	static final double EDGE_MARGIN = 0.6;
 
-	/** Where a kept-out mob near the edge last stood outside the ward, and when (the old position fields aren't reliable for this). */
+	/** Where a kept-out mob near the edge last stood outside the ward, and when. */
 	private record Seen(Vec3 pos, long time) {
 	}
 
@@ -46,15 +32,12 @@ final class WardBarrier {
 	private WardBarrier() {
 	}
 
-	/**
-	 * Monsters (all treated the same) and happy ghasts are kept out of wards; not a Reworked Mobs Fabricator's limp,
-	 * deactivated mobs (owner, 2026-11-16: a ward stops a Fabricator's spawning, not its teleporter).
-	 */
+	/** Monsters (all treated the same) and happy ghasts are kept out of wards. */
 	static boolean keptOut(Entity entity) {
 		return (entity instanceof Enemy || entity.getType() == EntityTypes.HAPPY_GHAST) && !SleeperHook.get().wardIgnores(entity);
 	}
 
-	/** After a kept-out mob's own tick (it has moved): hold it at the edge of {@code area}. */
+	/** After a kept-out mob's own tick (it has moved). */
 	static void afterMove(Mob mob, AABB area, long now) {
 		if (!mob.isAlive() || mob.isPassenger()) {
 			return;
@@ -74,25 +57,24 @@ final class WardBarrier {
 		if (!inside) {
 			LAST_OUTSIDE.put(mob, new Seen(mob.position(), now));
 			if (inward >= 0) {
-				return; // outside at the edge and not heading in: nothing to do
+				return;
 			}
 		}
 		if (inward < 0) {
-			motion = motion.subtract(normal.scale(inward)); // no motion inward
+			motion = motion.subtract(normal.scale(inward));
 		}
 		if (inside) {
 			Seen last = LAST_OUTSIDE.get(mob);
 			if (last != null && last.time >= now - 1) {
-				// Crossed the edge since last tick: back to the edge, like walking into a wall (it can still slide along).
 				Vec3 at = mob.position().add(normal.scale(depth(area, mob.position(), normal) + 0.01));
 				mob.setPos(at.x, at.y, at.z);
 				LAST_OUTSIDE.put(mob, new Seen(at, now));
 			} else if (!(mob instanceof PathfinderMob walker && WardFleeGoal.isTrapped(walker))) {
-				motion = motion.add(normal.scale(NUDGE)); // already inside: drift out (not one with no way out: it would only press into a wall)
+				motion = motion.add(normal.scale(NUDGE));
 			}
 		}
 		mob.setDeltaMovement(motion);
-		mob.needsSync = true; // send the new motion to clients now
+		mob.needsSync = true;
 	}
 
 	private static void pushSteered(Mob vehicle, ServerPlayer rider, AABB area) {
@@ -112,10 +94,7 @@ final class WardBarrier {
 		rider.connection.send(ClientboundMoveVehiclePacket.fromEntity(vehicle));
 	}
 
-	/**
-	 * The unit vector out of the box through its nearest face. Mobs that fall leave sideways only; flyers may also leave
-	 * through the top or bottom (a sky ward's top is the build limit, so in practice sideways there too).
-	 */
+	/** The unit vector out of the box through its nearest face. */
 	static Vec3 exitNormal(AABB box, Vec3 from, boolean vertical) {
 		double[] d = {from.x - box.minX, box.maxX - from.x, from.z - box.minZ, box.maxZ - from.z,
 				vertical ? from.y - box.minY : Double.MAX_VALUE, vertical ? box.maxY - from.y : Double.MAX_VALUE};
@@ -135,7 +114,7 @@ final class WardBarrier {
 		};
 	}
 
-	/** How far inside the box {@code from} is, measured along the exit {@code normal}. */
+	/** How far inside the box from is, measured along the exit normal. */
 	private static double depth(AABB box, Vec3 from, Vec3 normal) {
 		if (normal.x < 0) {
 			return from.x - box.minX;

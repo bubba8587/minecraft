@@ -16,7 +16,7 @@ timeout 540 xvfb-run -a -s "-screen 0 1280x720x24 +extension GLX +render -norese
 1. `mods/packcheck/build.gradle` has a `bundleDatapacks` (Sync) task. It copies every `datapacks/<name>/` that has a `pack.mcmeta` and no `DISABLED` file to `build/generated/packcheck/datapacks/<name>/`, leaving out `VERSION` and `packtest.commands`. That folder is a resource dir of packcheck's `main` source set, so the files end up at `datapacks/<name>/` in the mod's resources (and jar). The task runs automatically before `processResources`. Nothing is copied into the source tree.
 2. `Packcheck.onInitialize` lists `datapacks/` in its own mod container and calls `ResourceLoader.registerBuiltinPack(packcheck:<name>, "datapacks/<name>", container, displayName, PackActivationType.ALWAYS_ENABLED)` for each folder. It throws if a pack can't be registered.
 3. Fabric (fabric-resource-loader-v1, `ResourceLoaderImpl.registerBuiltinPack`) builds a `SERVER_DATA` pack from that path when it contains `data/` namespaces, and a `CLIENT_RESOURCES` pack only if it also has `assets/`. The path overload is the one its javadoc recommends for a data-only pack in a mod. The game test server enables every available pack (`ModPackResourcesUtil.createTestServerSettings` moves mod packs after vanilla so they win). New client worlds enable it through `createDefaultDataConfiguration`, because `ALWAYS_ENABLED` counts as enabled by default and also makes the pack required.
-4. The pack id is `packcheck:<name>`. `bundledPackIsEnabled` checks that it is in the server's selected packs.
+4. The pack id is `packcheck:<name>`. `everyPackRecipeHasATestCase` fails if the pack isn't selected, since none of its recipes would load.
 
 Every pack in `datapacks/` is loaded together, including the internal `refpack`. A test that asks "what else matches this input?" therefore looks only at `minecraft:` and the pack's own namespace. Players won't run refpack alongside a real pack.
 
@@ -38,7 +38,6 @@ Each row has a one-line `@GameTest` method calling `check(helper, id)`. For ever
 Pack-level tests:
 
 - `everyPackRecipeHasATestCase` fails when the pack's recipe ids and the table's ids differ, so adding or removing a recipe file without updating the table fails the build.
-- `onlyVanillaSaddleRecipe` checks that vanilla's saddle recipe exists and is the only one matching its grid, that the pack has no `saddle` recipe, and that the old lead-and-leather grid matches nothing. The owner removed the pack's saddle.
 - `smokerCooksRottenFleshLeather` runs the cooking end to end: a real smoker turns rotten flesh into leather that still has its lore.
 
 The client test (`PackcheckClientGameTest`) gives a survival player the assembled result of every row and opens the inventory. It takes one overview screenshot and one screenshot hovering each result that has a custom name or lore (`packcheck_tooltip_<name>`). It checks that the screen really hovers the intended slot. Look at the PNGs after any change to a name, lore or result.

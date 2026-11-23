@@ -27,8 +27,8 @@ import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContex
  * by the ankles, from in front and below), drowned-lurk-bank (from the bank at water level: only its eyes and scalp show). Lying: drowned-grab-land
  * (dragging a villager back to the water by the ankles), drowned-swim (swimming to its spot), drowned-crawl-side and drowned-crawl-front (crawling
  * on land). With the show_meters game rule on: the grip bar shows blue above the grabbing drowned (drowned-grab),
- * drowned-two-holders (a second drowned from the pit joined in and holds the other leg), creeper-startle-bar (a
- * startled creeper's red meter), drowned-held-player-hud (the held player's blue grip bar under the crosshair).
+ * drowned-two-holders (a second drowned from the pit joined in and holds the other leg), drowned-held-player-hud (the
+ * held player's blue grip bar under the crosshair).
  */
 @SuppressWarnings("UnstableApiUsage")
 public class DrownedClientGameTest implements FabricClientGameTest {
@@ -200,32 +200,6 @@ public class DrownedClientGameTest implements FabricClientGameTest {
 			server.runCommand("kill @e[tag=%s_v]".formatted(TAG));
 			server.runCommand("time set noon");
 			context.waitTicks(30);
-
-			// --- a creeper's startle meter, red above its head (show_meters) -----------------------------
-			server.runCommand("summon minecraft:creeper %d.5 %d %d.5 {PersistenceRequired:1b,Silent:1b,Rotation:[0f,0f],Tags:[\"%s_c\"]}".formatted(x - 4, y, z - 6, TAG));
-			context.waitTicks(3);
-			onServer(server, level -> {
-				for (Entity e : level.getAllEntities()) {
-					if (e instanceof net.minecraft.world.entity.monster.Creeper c && e.entityTags().contains(TAG + "_c")) {
-						c.hurtServer(level, level.damageSources().playerAttack(level.players().getFirst()), 0.1F);
-					}
-				}
-				return null;
-			});
-			context.waitTicks(12);
-			onServer(server, level -> {
-				for (Entity e : level.getAllEntities()) {
-					if (e instanceof net.minecraft.world.entity.monster.Creeper c && e.entityTags().contains(TAG + "_c")) {
-						c.hurtServer(level, level.damageSources().playerAttack(level.players().getFirst()), 0.1F);
-					}
-				}
-				return null;
-			});
-			context.waitTicks(3);
-			tp(context, server, x - 3.5, y + 0.4, z - 2.0, 160.0F, 5.0F);
-			context.takeScreenshot("creeper-startle-bar");
-			server.runCommand("kill @e[tag=%s_c]".formatted(TAG));
-			context.waitTicks(10);
 
 			// --- upright: holding the camera player (survival), from the front --------------------------
 			server.runCommand("gamemode survival @p");

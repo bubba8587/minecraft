@@ -242,7 +242,7 @@ public class FactoriesClientGameTest implements FabricClientGameTest {
 		tp(context, server, view[4], view[5], view[6], (float) view[7], 5.0F);
 		sp.getConnection().waitForChunksRender();
 		context.waitTicks(40);
-		context.takeScreenshot("factory-city-door");
+		// Night vision: the doorway is deep in the city's dark, and this shot is for checking the join.
 		server.runCommand("effect give @p minecraft:night_vision infinite 0 true");
 		context.waitTicks(4);
 		context.takeScreenshot("factory-city-door-nightvision");
@@ -288,10 +288,6 @@ public class FactoriesClientGameTest implements FabricClientGameTest {
 			}
 			return out.toString();
 		}));
-		// One overview with night vision for detail (not how it looks in play).
-		server.runCommand("effect give @p minecraft:night_vision infinite 0 true");
-		shot(context, server, o, 0.5, 9.0, 18.5, 180.0F, 12.0F, "factory-overview-nightvision");
-		server.runCommand("effect clear @p");
 		secrets(context, server, o);
 	}
 
@@ -323,7 +319,6 @@ public class FactoriesClientGameTest implements FabricClientGameTest {
 		BlockPos in = o.offset(at[1]);
 		look(context, server, in.getX() + 4.5, in.getY() + 1.5, in.getZ() + 0.5, in.getX() + 0.5, in.getY() + 0.3, in.getZ() + 0.5, "factory-intake");
 		server.runCommand("effect give @p minecraft:night_vision infinite 0 true");
-		look(context, server, in.getX() + 4.5, in.getY() + 1.5, in.getZ() + 0.5, in.getX() + 0.5, in.getY() + 0.3, in.getZ() + 0.5, "factory-intake-nightvision");
 		look(context, server, in.getX() - 1.5, in.getY() + 3.6, in.getZ() + 2.5, in.getX() + 1.0, in.getY() - 0.5, in.getZ() - 0.5, "factory-intake2-nightvision");
 		if (at[2] != null) {
 			BlockPos th = o.offset(at[2]);
@@ -339,7 +334,6 @@ public class FactoriesClientGameTest implements FabricClientGameTest {
 		look(context, server, o.getX() + 0.5, o.getY() + 4.0, o.getZ() + 18.5, o.getX() + 0.5, o.getY() - 2.0, o.getZ() + 4.5, "factory-lower-front");
 		server.runCommand("effect give @p minecraft:night_vision infinite 0 true");
 		context.runOnClient(mc -> mc.options.fov().set(90));
-		look(context, server, o.getX() + 0.5, o.getY() + 4.0, o.getZ() + 18.5, o.getX() + 0.5, o.getY() - 2.0, o.getZ() + 4.5, "factory-lower-front-nightvision");
 		look(context, server, o.getX() - 6.5, o.getY() - 1.0, o.getZ() + 12.5, o.getX() - 16.5, o.getY() - 4.0, o.getZ() + 0.5, "factory-lower-west-nightvision");
 		look(context, server, o.getX() - 11.5, o.getY() - 2.0, o.getZ() + 6.5, o.getX() - 17.5, o.getY() - 4.0, o.getZ() - 4.5, "factory-lower-terrace-nightvision");
 		if (at[3] != null) {
