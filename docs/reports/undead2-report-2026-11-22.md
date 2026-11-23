@@ -150,3 +150,27 @@ Per agent 1's relay of the owner rule (B38: comments are labels only), the comme
 
 - Milestone `NobleFineryGameTest.nobleDeadWearGemsOnlyWithInfusedGems`: a built noble crypt; without Infused Gems no gear carries its components; with `-PwithGems` most noble sleepers' gear does (11 of 13). Both runs pass; full milestone suite 129/129.
 - No screenshot: gemmed gear looks the same on a sleeper.
+
+## 6. Maps (specs/monster-camps.md "Maps")
+
+### Player-facing
+
+- **Cartographers** sell three new explorer maps (a compass plus emeralds, like vanilla's):
+  - **Graveyard Explorer Map** (journeyman, level 2): 8 emeralds, marks the nearest crypt yard with a red X.
+  - **Monster Camp Explorer Map** (journeyman, level 2): 8 emeralds, marks the nearest camp with a white X.
+  - **Fabricator Explorer Map** (expert, level 4): 20 emeralds, marks the **ancient city** of the nearest Ancient Fabricator; the Fabricator itself is about **150 blocks** from the X (every natural Fabricator sits that far from its city).
+- **Fabricator office chests** hold a Fabricator Explorer Map to the **next** one (it skips the city next to this Fabricator, which is already generated).
+- They join vanilla's trade pools for those levels (so a cartographer offers them now and then among its usual trades).
+
+### Owner question (open)
+
+- Owner (2026-11-22): "can we not have a vanilla map that points to a fabricator directly?" Not as things stand: vanilla explorer maps only find **structures**, and Fabricators are placed **features** beside their city. A marker structure sharing the city's placement would still point at the city chunk (vanilla locates by placement chunk). Choices: (1) X on the city, as built (pure vanilla); (2) make the Fabricator a real structure, after which vanilla maps, `/locate` and the Totem of Seeking point straight at it (bigger change, in the mob factory's code); (3) a small custom map function that points exactly (was built first, removed after the owner's "no new systems"). Builder leans to (2) if exact pointing matters.
+
+### Spec facts
+
+- All data, vanilla systems: structure tags `bubbas_reworked_mobs:on_graveyard_maps` (crypt_yard), `on_camp_maps` (monster_camp), `on_fabricator_maps` (minecraft:ancient_city); villager trades `data/bubbas_reworked_mobs/villager_trade/cartographer/{graveyard,camp,fabricator}_map.json` (vanilla `exploration_map` + `filtered` on map id, `filled_map` with an `item_name`); added to `#minecraft:cartographer/level_2` and `level_4` (`replace: false`); office chest pools (`chests/fabricator_office`, `fabricator_office_with_gems`) use `exploration_map` with `skip_existing_chunks: true`. Map names in the lang file. (26.3 has no map colour component, so the maps keep the default look.)
+
+### Tests
+
+- Client part `maps` (`MapsClientGameTest`, seed 20261116): each trade, offered by a cartographer, makes a named map with a target: graveyard -208,-368; camp 80,0; Fabricator map's X at a city with its Fabricator 148 blocks away (fails if no Fabricator within 400 of the X). `maps-graveyard` looked at: the Graveyard Explorer Map in hand with its red X.
+- Full milestone suite 129/129.

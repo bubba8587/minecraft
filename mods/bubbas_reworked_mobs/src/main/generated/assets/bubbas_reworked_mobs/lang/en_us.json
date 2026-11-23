@@ -30,5 +30,8 @@
   "gamerule.bubbas_reworked_mobs.monster_cap_percent": "Natural monster cap (% of vanilla)",
   "gamerule.bubbas_reworked_mobs.show_meters": "Show mob meters (drowned grip, creeper startle)",
   "gamerule.bubbas_reworked_mobs.watcher_creepers": "Creepers spawn as watchers",
+  "item.bubbas_reworked_mobs.camp_map": "Monster Camp Explorer Map",
+  "item.bubbas_reworked_mobs.fabricator_map": "Fabricator Explorer Map",
+  "item.bubbas_reworked_mobs.graveyard_map": "Graveyard Explorer Map",
   "itemGroup.bubbas_reworked_mobs": "Bubba's Reworked Mobs"
 }

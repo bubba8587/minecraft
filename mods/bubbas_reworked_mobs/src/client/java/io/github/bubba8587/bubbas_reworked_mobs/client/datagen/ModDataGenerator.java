@@ -173,6 +173,9 @@ public class ModDataGenerator implements DataGeneratorEntrypoint {
 			builder.add(ModEntities.woken(UndeadVariant.STRAY), "Stray");
 			builder.add(ModItems.sleeper(UndeadVariant.DROWNED), "Sleeping Drowned");
 			builder.add(ModEntities.woken(UndeadVariant.DROWNED), "Drowned");
+			builder.add("item.bubbas_reworked_mobs.graveyard_map", "Graveyard Explorer Map");
+			builder.add("item.bubbas_reworked_mobs.camp_map", "Monster Camp Explorer Map");
+			builder.add("item.bubbas_reworked_mobs.fabricator_map", "Fabricator Explorer Map");
 			builder.add(ModCreativeTabs.MAIN_KEY, "Bubba's Reworked Mobs");
 			builder.add(ModBlocks.LOOT_DISPLAY, "Loot on Display");
 			builder.add(ModBlocks.GRAVESTONE, "Gravestone");
