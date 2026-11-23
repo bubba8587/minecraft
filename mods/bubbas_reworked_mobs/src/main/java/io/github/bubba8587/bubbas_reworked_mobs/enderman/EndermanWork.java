@@ -109,7 +109,7 @@ public final class EndermanWork {
 			if (TerrainKinds.matches(real, site.at(pos))) {
 				return null;
 			}
-			return TerrainKinds.liftable(level, pos, real) ? Kind.TAKE : null;
+			return TerrainKinds.clearable(level, pos, real) ? Kind.TAKE : null;
 		}
 		if (real.is(Blocks.FARMLAND)) {
 			return TerrainKinds.family(target) == TerrainKinds.Family.SOIL ? Kind.TRAMPLE : null;

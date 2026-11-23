@@ -51,7 +51,7 @@ public class ShipwreckCrewGameTest {
 		helper.succeed();
 	}
 
-	/** A drowned sleeper wakes as a drowned, underwater too. */
+	/** A drowned sleeper wakes as a plain vanilla drowned (flagged vanilla, none of the drowned rework), underwater too. */
 	@GameTest(maxTicks = 40)
 	public void drownedSleeperWakesAsADrowned(GameTestHelper helper) {
 		BlockPos at = new BlockPos(2, 1, 2);
@@ -60,8 +60,8 @@ public class ShipwreckCrewGameTest {
 				.setValue(io.github.bubba8587.bubbas_reworked_mobs.undead.sleeper.SleeperBlock.WATERLOGGED, true));
 		helper.getBlockEntity(at, io.github.bubba8587.bubbas_reworked_mobs.undead.sleeper.SleeperBlockEntity.class).scheduleWake(level(helper), null, null, 1);
 		helper.succeedWhen(() -> {
-			var mob = helper.findOneEntity(io.github.bubba8587.bubbas_reworked_mobs.registry.ModEntities.woken(UndeadVariant.DROWNED));
-			helper.assertTrue(mob instanceof net.minecraft.world.entity.monster.zombie.Drowned, "it wakes as a drowned");
+			var mob = helper.findOneEntity(net.minecraft.world.entity.EntityTypes.DROWNED);
+			helper.assertTrue(((io.github.bubba8587.bubbas_reworked_mobs.drowned.DrownedAccess) mob).brm$isVanilla(), "the woken drowned is flagged vanilla");
 			mob.discard();
 		});
 	}

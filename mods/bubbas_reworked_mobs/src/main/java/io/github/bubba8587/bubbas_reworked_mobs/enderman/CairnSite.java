@@ -192,7 +192,7 @@ public final class CairnSite {
 			if (here == null || here.isAir() || here.canBeReplaced() || TerrainKinds.matches(here, blocks.get(pos.asLong()))) {
 				continue;
 			}
-			if (TerrainKinds.liftable(level, pos, here)) {
+			if (TerrainKinds.clearable(level, pos, here)) {
 				return pos;
 			}
 		}

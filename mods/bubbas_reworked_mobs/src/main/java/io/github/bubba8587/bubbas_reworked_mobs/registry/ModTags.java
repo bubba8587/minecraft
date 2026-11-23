@@ -20,6 +20,8 @@ public final class ModTags {
 	/** Weapons a mob in {@link #GRABS_LOOT} reaches for first when it wakes (before any other item lying around). */
 	public static final TagKey<Item> PREFERRED_ON_WAKE = TagKey.create(Registries.ITEM, BubbasReworkedMobs.id("preferred_on_wake"));
 	/** Mobs that grab whatever is lying around (loot displays, loose items): on waking and, when idle, by walking to it. */
+	/** Never taken by a Fabricator's teleporter. */
+	public static final TagKey<EntityType<?>> FABRICATOR_IGNORES = TagKey.create(Registries.ENTITY_TYPE, BubbasReworkedMobs.id("fabricator_ignores"));
 	public static final TagKey<EntityType<?>> GRABS_LOOT = TagKey.create(Registries.ENTITY_TYPE, BubbasReworkedMobs.id("grabs_loot"));
 
 	private ModTags() {

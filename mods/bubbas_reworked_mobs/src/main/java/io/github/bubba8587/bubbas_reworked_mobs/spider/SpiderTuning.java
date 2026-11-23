@@ -163,6 +163,9 @@ public final class SpiderTuning {
 	public static final float COCOON_CRY_VOLUME = 2.5F;
 	/** After wrapping, the spider backs off and waits this long, then comes back to feed: a bite every so often. */
 	public static final int COCOON_WAIT_TICKS = 600;
+	/** While it waits it creeps to a new spot this often, up to this far from where it backed off to. */
+	public static final int WAIT_PACE_TICKS = 50;
+	public static final double WAIT_PACE_RADIUS = 2.0;
 	public static final int COCOON_FEED_BITE_TICKS = 40;
 	public static final float COCOON_FEED_BITE_DAMAGE = 3.0F;
 	/** Cocoon hangs this far below the spider holding it. */

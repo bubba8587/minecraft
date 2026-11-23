@@ -356,3 +356,8 @@ Test-lite policy (`specs/quality.md`, Test suites): `ReworkedMobsCoreGameTest` r
 - `UndeadCombatGameTest`: fist streaks shred armor and a pause resets them, Smite kills only our undead outright, skeletons shrug off arrows, zombie headshots hurt more, idle zombies drift together and a zombie with a target doesn't (checked once it reaches its target).
 - `ZombieGaitGameTest`: the shamble's drag-and-lurch covers the same ground as a steady walker of the same speed.
 - Client (`ClientTests` names `sleepers`, `displays`, `gait`; screenshots): sleepers from several angles, sleeper items, a placed sleeper, a woken armored zombie, loot on display; the gait cycle from the side and front and the client's motion lag.
+
+## Woken drowned are vanilla (owner, 2026-11-22)
+
+- A drowned sleeper wakes as a plain vanilla `minecraft:drowned`, flagged vanilla like spawner drowned (`DrownedAccess.brm$makeVanilla`, saved under `VANILLA_KEY`), so none of the drowned rework applies. Gear and name are kept, and it targets by vanilla rules only (owner: one waking above water by day may stay confused).
+- How: the `woken_drowned` entity type stays registered as a one-tick shim. On its first server tick, `WokenDrowned` converts itself (`Mob.convertTo`, keeping equipment) into a vanilla drowned. Old saves holding a woken drowned convert the same way when they load.

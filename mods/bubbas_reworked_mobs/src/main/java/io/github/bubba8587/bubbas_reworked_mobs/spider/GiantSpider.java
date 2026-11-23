@@ -81,6 +81,7 @@ public class GiantSpider extends Spider implements Gripper {
 	private Direction trunkSide = Direction.NORTH;
 	private @Nullable SilkCocoon cocoon;
 	private Vec3 backOff = Vec3.ZERO;
+	private @Nullable Vec3 waitAnchor;
 	private static final net.minecraft.network.syncher.EntityDataAccessor<Boolean> DATA_UNDER =
 			net.minecraft.network.syncher.SynchedEntityData.defineId(GiantSpider.class, net.minecraft.network.syncher.EntityDataSerializers.BOOLEAN);
 	private float grip;
@@ -348,6 +349,7 @@ public class GiantSpider extends Spider implements Gripper {
 			return;
 		}
 		backOff = backOffSpot(level, target);
+		waitAnchor = backOff;
 		setTask(Task.WAIT);
 		taskTicks = 0;
 		playSound(SoundEvents.SPIDER_AMBIENT, 1.2F, 0.5F);
@@ -367,6 +369,20 @@ public class GiantSpider extends Spider implements Gripper {
 			return at.add(0.0, 1.5, 0.0);
 		}
 		return at;
+	}
+
+	/** While it waits: a new spot near where it backed off to, along the overhang or the trunk, if it fits there. */
+	private void pace(ServerLevel level) {
+		if (waitAnchor == null) {
+			waitAnchor = backOff;
+		}
+		double r = SpiderTuning.WAIT_PACE_RADIUS;
+		double dx = (getRandom().nextDouble() * 2.0 - 1.0) * r;
+		double dz = (getRandom().nextDouble() * 2.0 - 1.0) * r;
+		Vec3 to = perchUnder ? waitAnchor.add(dx, 0.0, dz) : waitAnchor.add(0.0, Math.abs(dx), 0.0);
+		if (level.noCollision(this, getBoundingBox().move(to.subtract(position())))) {
+			backOff = to;
+		}
 	}
 
 	/** On its perch by the cocoon: backed off while it waits, back at the cocoon to feed. */
@@ -392,6 +408,9 @@ public class GiantSpider extends Spider implements Gripper {
 			setPos(getX() + move.x, getY() + move.y, getZ() + move.z);
 		}
 		if (task == Task.WAIT) {
+			if (taskTicks % SpiderTuning.WAIT_PACE_TICKS == 0) {
+				pace(level);
+			}
 			if (taskTicks >= SpiderTuning.COCOON_WAIT_TICKS) {
 				setTask(Task.FEED);
 				taskTicks = 0;

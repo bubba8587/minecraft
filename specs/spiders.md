@@ -272,3 +272,8 @@ Player-facing: `player-docs/Projects/Bubba's Reworked Mobs/Spiders.md`. Numbers 
 - **Playtest numbers:** nest frequency, trigger area, drop speed, reel speed, refill rate, grip and cocoon toughness (tables above).
 - **Still to do:** a screenshot of Stormie's wall and ceiling climbing (its navigator refuses scripted paths; bait it with prey at night).
 - **Milestone objectives without tests:** listed under each step's Tests.
+
+## Waiting by the cocoon (owner, 2026-11-22)
+
+- While a giant spider waits to come back and feed, it no longer sits still. Every `WAIT_PACE_TICKS` (50) it creeps to a new spot up to `WAIT_PACE_RADIUS` (2 blocks) from where it backed off to: along the overhang when perched under one, up the trunk otherwise. It only moves where its body fits (`noCollision`). It still feeds on time.
+- Not yet: true wandering off the perch (vanilla stroll plus `restrictTo`), and hauling the catch to the centre of its own web (BACKLOG item 6).
