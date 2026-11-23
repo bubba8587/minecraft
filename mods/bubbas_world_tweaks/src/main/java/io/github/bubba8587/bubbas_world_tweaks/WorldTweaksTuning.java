@@ -20,10 +20,10 @@ public final class WorldTweaksTuning {
 
 	/** Each player checks for eruptions this often, sampling this many columns this far around them. */
 	public static final int GEYSER_CHECK_TICKS = 40;
-	public static final int GEYSER_COLUMNS_PER_CHECK = 6;
+	public static final int GEYSER_COLUMNS_PER_CHECK = 24;
 	public static final int GEYSER_SEARCH_RADIUS = 24;
 	/** Chance a bubbling spot found by a check erupts. */
-	public static final float GEYSER_CHANCE = 0.08F;
+	public static final float GEYSER_CHANCE = 0.125F;
 	/** An eruption lasts this long, and no two erupt this close together. */
 	public static final int GEYSER_DURATION_TICKS = 100;
 	public static final double GEYSER_SPACING = 8.0;
