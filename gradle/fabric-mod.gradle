@@ -19,11 +19,6 @@ loom {
 
 repositories {
 	maven { name = 'Modrinth'; url = 'https://api.modrinth.com/maven'; content { includeGroup 'maven.modrinth' } }
-	maven { name = 'TerraformersMC'; url = 'https://maven.terraformersmc.com/' }
-	maven { name = 'Shedaniel'; url = 'https://maven.shedaniel.me/' }
-	maven { name = 'isXander'; url = 'https://maven.isxander.dev/releases' }
-	maven { name = 'Ladysnake'; url = 'https://maven.ladysnake.org/releases' }
-	maven { name = 'Nucleoid'; url = 'https://maven.nucleoid.xyz/' }
 }
 
 dependencies {
