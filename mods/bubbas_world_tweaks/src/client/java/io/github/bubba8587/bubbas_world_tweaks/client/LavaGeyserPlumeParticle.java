@@ -41,10 +41,10 @@ public class LavaGeyserPlumeParticle extends SingleQuadParticle {
 		this.minSize = base * (2.0F + PLUME_HEIGHT / 8.0F);
 		this.maxSize = base * (3.5F + PLUME_HEIGHT / 8.0F);
 		this.quadSize = minSize;
-		float soot = 0.08F + random.nextFloat() * 0.08F;
-		this.rCol = soot;
-		this.gCol = soot * 0.95F;
-		this.bCol = soot * 0.9F;
+		float shade = 0.85F + random.nextFloat() * 0.15F;
+		this.rCol = shade;
+		this.gCol = shade;
+		this.bCol = shade;
 		setSpriteFromAge(sprites);
 	}
 
