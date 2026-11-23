@@ -62,6 +62,12 @@ Parked ideas and open items, newest first within each project. Agents add to it 
    Owner to confirm whether that goes beyond the test world.
 5. **A spider waiting on cocooned prey keeps moving:** while a giant spider (and any spider that cocoons) waits to come back and feed, it wanders around near the cocoon and its webs, instead of standing still. Use vanilla's random-stroll goal kept within a home radius around the cocoon (`WaterAvoidingRandomStrollGoal` plus `restrictTo`, specs/vanilla-subsystems.md), on walls and ceilings too through Stormie's Spiders. It still returns to feed on time.
 6. **Spiders haul prey to the middle of their web:** a giant spider carries its catch to the centre of its own web, the middle of the spun-web span it made (between the trees it anchored to), and hangs the cocoon there. Today it uses the nearest web block. If it has no web of its own, the nearest web's centre; with none at all, as today. It needs the spider to remember its webs again: the 2026-11-22 cleanup removed an unused `sites` list from `GiantSpider`, which was what this needed. The cocoon hanging in the middle of the web should read clearly from below; check it in a screenshot.
+7. **Camp variety (owner, 2026-11-22):** the test world's five camps look nearly identical.
+   - **Cause:** `CampPiece` (and `FactoryDesign`, and the cairn design) seed vanilla's `LegacyRandomSource` directly (`RandomSource.create(seed)`), so close seeds (20261122..26 in the Showcase) give almost the same first rolls: tower angle, outcrops, pikes, lean-to. It's the same weakness the trading-pad fix solved. Natural camps get unrelated seeds, so they vary more, but they still share one kit of parts.
+   - **Plan:**
+     - (a) mix the seed before use (e.g. `RandomSupport.mixStafford13`), wherever a design is built from a site seed: camps, Fabricator designs, cairn designs. Note that this changes the layout of camps already registered but not yet built, which is fine in development.
+     - (b) look at several natural camps in the natural world, and if they still feel samey, add layout variety: more than one tower in large camps, different arrangements (ring, line, cliff-side), optional pieces per kind.
+     - (c) the test world then uses well-spread seeds.
 
 ## Repo
 - **Multiplayer check (owner, 2026-11-22: "make sure these mods work in multiplayer"; light scan done, the rest is here).** Scan results:
