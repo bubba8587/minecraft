@@ -12,6 +12,7 @@ Parked ideas and open items, newest first within each project. Agents add to it 
 - Calming sleepers (owner, 2026-11-15): soul fire and a "lull" game event tag that calm sleepers (light calming and loud bells are built: `specs/undead.md`, Calming sleepers).
 - Mob spawner tweaks. `specs/undead.md`.
 - **Graveyards, crypts and gravestones** (owner, 2026-11-22; design in `specs/graveyards.md`, queued for a builder): surface crypt yards in many states of breakdown with iron bar fences and soul lights, underground crypts at three wealth levels, a gravestone block that works like a sign (glyphs only on worldgen stones).
+- **Undead variants** (owner, 2026-11-22; `specs/undead.md` "Undead variants", not built): husk sleepers burst from sand (blinding puff), stray sleepers break out of cracking ice, bogged act like the reworked drowned instead of sleeping.
 - Part 1 next pass: remaining undead variants, graves and crypts in worldgen (with Grave Talisman and Totem of Warding loot), hybrid rendering, real 16x/32x art.
 - **Creepers** (first build done): owner to playtest the numbers and review the 10 builder's choices in `specs/creepers.md`; try them in the test world's creeper grove.
 - **Endermen** (first build done, `specs/endermen.md`): owner to playtest and review the 12 builder's choices; owner, 2026-11-22: explosions don't anger them, no banners, Nether/End endermen stay vanilla; **cairn variety: as much as the builder likes** (queued after the totems, since both touch cairns). Try them in the test world's Cairns and endermen station (hub click sign).

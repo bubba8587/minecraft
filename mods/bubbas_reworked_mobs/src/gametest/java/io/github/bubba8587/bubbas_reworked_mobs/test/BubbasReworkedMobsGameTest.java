@@ -162,6 +162,33 @@ public class BubbasReworkedMobsGameTest {
 		helper.succeed();
 	}
 
+	/**
+	 * A sleeper in a crypt wall niche (one block tall under a slab, walled on three sides) wakes standing free in front
+	 * of the niche, not stuck in it (owner question, 2026-11-22: "can crypt mobs actually wake up without suffocating
+	 * in their walls?").
+	 */
+	@GameTest(maxTicks = 20)
+	public void sleeperInANicheStepsOutWhenItWakes(GameTestHelper helper) {
+		floor(helper);
+		BlockPos niche = new BlockPos(2, 1, 4);
+		helper.setBlock(niche.above(), Blocks.STONE_BRICK_SLAB);
+		helper.setBlock(niche.west(), Blocks.STONE_BRICKS);
+		helper.setBlock(niche.west().above(), Blocks.STONE_BRICKS);
+		helper.setBlock(niche.north(), Blocks.STONE_BRICKS);
+		helper.setBlock(niche.north().above(), Blocks.STONE_BRICKS);
+		helper.setBlock(niche.south(), Blocks.STONE_BRICKS);
+		helper.setBlock(niche.south().above(), Blocks.STONE_BRICKS);
+		SleeperBlockEntity sleeper = placeSleeper(helper, UndeadVariant.SKELETON, niche, SleeperPose.LYING, ALWAYS);
+		BlockPos abs = helper.absolutePos(niche);
+		net.minecraft.world.entity.monster.Monster mob = io.github.bubba8587.bubbas_reworked_mobs.undead.sleeper.SleeperWaking.wake(
+				helper.getLevel(), abs, helper.getLevel().getBlockState(abs), sleeper);
+		helper.assertTrue(mob != null, "the sleeper didn't wake");
+		helper.assertTrue(helper.getLevel().noCollision(mob, mob.getBoundingBox()), "the woken skeleton is stuck in its niche at " + mob.position());
+		helper.assertTrue(mob.blockPosition().equals(abs.east()), "it should step out of the niche's open side, got " + mob.blockPosition());
+		mob.discard();
+		helper.succeed();
+	}
+
 	// --- hearing ----------------------------------------------------------------------------------
 
 	// Core test: registered by ReworkedMobsCoreGameTest (test-lite, specs/quality.md).

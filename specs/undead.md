@@ -49,6 +49,16 @@ Dormant undead are real blocks, not entities or display-entity pseudo-blocks. Th
 - **No wake-up violence (owner: "the sleepers fight each other when they wake up!").** A woken mob takes its waker as its target only if the waker is a survival or adventure player. Cause found: the awaken event's source is the mob that just woke (and footsteps can come from other mobs), so a chain-woken undead targeted the undead that woke it and the group fought itself. Now a sleeper woken by a neighbour, a villager, a creeper or anything else wakes without a target and finds players with its normal AI. **Retaliation stays vanilla (owner: "undead can retaliate against arrows in the traditional vanilla sense")**: a woken zombie hit by a skeleton's stray arrow may fight back through vanilla's `HurtByTargetGoal`. Tests: `chainWokenUndeadDoNotFightEachOther`, `onlyASurvivalWakerIsTargeted`, `retaliationAgainstUndeadStaysVanilla`.
 - History: first built as a dice roll per heard event (step 4 %, block break 30 %, linear falloff, 1 s deafness after every roll); owner: running past sleepers didn't reliably wake them, so it was rebuilt as the meter above.
 
+## Waking in tight spots (2026-11-22)
+
+A sleeper lying somewhere lower than its mob is tall (a crypt wall niche under a slab, a shallow grave) used to wake into a box overlapping blocks: no suffocation (eyes clear a half slab) but stuck. `SleeperWaking.stepOutIfStuck` now moves it to the nearest free spot: beside it on the same level first (a niche's open side), then one up, then diagonals; with none it stays. Milestone test `BubbasReworkedMobsGameTest.sleeperInANicheStepsOutWhenItWakes`.
+
+## Undead variants (owner, 2026-11-22)
+
+- **Husks** (deserts) and **strays** (snow) become sleepers too, for crypts and camps. Husks lie buried in sand and burst out in a puff of sand that briefly blinds you (particles plus a short effect). Strays lie frozen in ice or packed snow that cracks as a warning before they break free.
+- **Bogged are not sleepers** (owner): they act like the reworked drowned (`specs/drowned.md`): lurking in swamp water and mud, moving unseen, ambushing from the reeds.
+- Resting dead in yard graves never wake (`specs/graveyards.md`).
+
 ## Loot on display (shared block)
 
 Weapons near sleepers, and later other loot, are shown with a dedicated block rather than as dropped items or item frames (owner's choice: it looks better than grabbing swords off item frames, and later loot systems reuse it). It is a deliberate new block under B15 fewNewBlocks; the owner gave the reason.
