@@ -67,6 +67,12 @@ Left for next session:
     - waiting builders don't freeze: they place what they can, otherwise do caretaker work nearby (vanilla stroll near the cairn);
     - if the block they need underneath has no builder, one of them fetches it, or the cairn spawns a builder for it;
     - a builder still holding its block near dawn sets it at the nearest valid spot, or drops it at the cairn, instead of leaving with it.
+- **20, camp generation broken by the variety change (owner, 2026-11-23: "a lot of broken camp generation caused by the variety tweaks").** Helper A's merge (`8956912`) varied tower counts, stair side and turn, and the room's width and offset; it was tested only on a few seeds. First thing next session:
+  - render 20+ seeds per kind and size in a client test and look at every shot;
+  - find what breaks (overlapping pieces, towers clipping outcrops, stairs or tunnels cut off, rooms breaking the surface, half-built pieces on chunk seams);
+  - fix it, or narrow the ranges.
+  - Ask the owner for screenshots or coordinates of what they saw.
+  - If it can't be fixed quickly, revert just the variety part and keep the seed mixing.
 - **Tests:** milestone tests for 8, 12 and 13; a client check that clicks every natural-world sign; a screenshot of a crypt niche with the sleeper inside it.
 - **Natural world camp signs:** they name the kind each biome should give, because camps only register when a player comes near.
 - **Side effect to know:** mixing design seeds changed the form of every cairn, camp, crypt yard and Fabricator that isn't built yet, including half-built cairns in existing worlds.
