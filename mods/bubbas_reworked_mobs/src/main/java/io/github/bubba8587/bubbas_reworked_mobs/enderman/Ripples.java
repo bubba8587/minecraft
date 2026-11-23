@@ -10,9 +10,12 @@ import java.util.Set;
 import java.util.WeakHashMap;
 
 import it.unimi.dsi.fastutil.longs.Long2BooleanOpenHashMap;
+import it.unimi.dsi.fastutil.longs.Long2LongOpenHashMap;
+import net.fabricmc.fabric.api.tag.convention.v2.ConventionalBlockTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.FluidTags;
@@ -20,6 +23,7 @@ import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -44,6 +48,10 @@ import net.minecraft.world.phys.AABB;
  * floor, door) keeps the air in and round it; no block is put where an entity stands; water and lava are never put
  * back or filled over. Structures and wards are skipped (the target world has no opinion there).
  *
+ * <p>A pulse ({@link #pulse}) is the same ripple with odds: each change happens only with a chance (ore far less),
+ * never on a block reverted within the recent window, never on a block that can't be broken or that the player may
+ * not touch; ore only ever comes back into air. See specs/endermen.md and specs/totems-artifacts.md.
+ *
  * <p>Cost: one pass over the cylinder (each block read once or twice), spread over the ripple's time; a column whose
  * generated terrain is still being worked out waits (up to {@link EndermanTuning#RIPPLE_PENDING_TICKS}).
  */
@@ -56,6 +64,10 @@ public final class Ripples {
 			Blocks.AMETHYST_CLUSTER, Blocks.LARGE_AMETHYST_BUD, Blocks.MEDIUM_AMETHYST_BUD, Blocks.SMALL_AMETHYST_BUD);
 
 	private static final Map<ServerLevel, List<Ripple>> ACTIVE = new WeakHashMap<>();
+	/** Per level: packed position to the game time it was last reverted by a pulse. */
+	private static final Map<ServerLevel, Long2LongOpenHashMap> RECENT = new WeakHashMap<>();
+	/** Per level: game time of the last revert sound. */
+	private static final Map<ServerLevel, long[]> LAST_SOUND = new WeakHashMap<>();
 
 	private Ripples() {
 	}
@@ -73,9 +85,56 @@ public final class Ripples {
 		if (!supported(level)) {
 			return false;
 		}
-		Ripple ripple = new Ripple(level, centre.immutable(), radius, Math.max(1, ticksPerBlock), null);
+		Ripple ripple = new Ripple(level, centre.immutable(), radius, Math.max(1, ticksPerBlock), null, null);
 		ACTIVE.computeIfAbsent(level, l -> new ArrayList<>()).add(ripple);
 		return true;
+	}
+
+	/** A pulse's odds: per-block chance, ore chance, recent window in ticks, and the player (null: no protection check). */
+	public record Odds(float chance, float oreChance, int recentTicks, @org.jspecify.annotations.Nullable Player player) {
+	}
+
+	/** Starts a pulse: a ripple where each change only happens with {@code odds}. False when unsupported here. */
+	public static boolean pulse(ServerLevel level, BlockPos centre, int radius, int ticksPerBlock, Odds odds) {
+		if (!supported(level)) {
+			return false;
+		}
+		pruneRecent(level, odds.recentTicks());
+		ACTIVE.computeIfAbsent(level, l -> new ArrayList<>()).add(new Ripple(level, centre.immutable(), radius, Math.max(1, ticksPerBlock), null, odds));
+		return true;
+	}
+
+	/** Forgets recent reverts (tests). */
+	public static void clearRecent(ServerLevel level) {
+		RECENT.remove(level);
+	}
+
+	/** Forgets one recent revert (tests). */
+	public static void clearRecent(ServerLevel level, BlockPos pos) {
+		Long2LongOpenHashMap recent = RECENT.get(level);
+		if (recent != null) {
+			recent.remove(pos.asLong());
+		}
+	}
+
+	private static void pruneRecent(ServerLevel level, int window) {
+		Long2LongOpenHashMap recent = RECENT.get(level);
+		if (recent != null) {
+			long now = level.getGameTime();
+			recent.long2LongEntrySet().removeIf(e -> now - e.getLongValue() >= window);
+		}
+	}
+
+	/** The revert effect on one block: a puff, and a soft low sound at most every few ticks per level. */
+	public static void revertEffect(ServerLevel level, BlockPos pos) {
+		level.sendParticles(ParticleTypes.REVERSE_PORTAL, pos.getX() + 0.5, pos.getY() + 0.6, pos.getZ() + 0.5, 6, 0.3, 0.3, 0.3, 0.03);
+		level.sendParticles(ParticleTypes.SCULK_SOUL, pos.getX() + 0.5, pos.getY() + 1.05, pos.getZ() + 0.5, 1, 0.2, 0.05, 0.2, 0.01);
+		long[] last = LAST_SOUND.computeIfAbsent(level, l -> new long[] { Long.MIN_VALUE / 2 });
+		long now = level.getGameTime();
+		if (now - last[0] >= EndermanTuning.REVERT_SOUND_GAP_TICKS) {
+			last[0] = now;
+			level.playSound(null, pos, SoundEvents.SCULK_CATALYST_BLOOM, SoundSource.BLOCKS, 0.35F, 0.5F + level.getRandom().nextFloat() * 0.1F);
+		}
 	}
 
 	/**
@@ -92,7 +151,7 @@ public final class Ripples {
 			}
 		}
 		Map<BlockPos, BlockState> changes = new java.util.LinkedHashMap<>();
-		Ripple ripple = new Ripple(level, centre.immutable(), radius, 1, changes);
+		Ripple ripple = new Ripple(level, centre.immutable(), radius, 1, changes, null);
 		for (int[] o : ripple.columns) {
 			ripple.column(level, o[0], o[1]);
 		}
@@ -141,9 +200,13 @@ public final class Ripples {
 		private int particlesThisTick;
 		/** A dry run: changes are recorded here instead of made. */
 		private final @org.jspecify.annotations.Nullable Map<BlockPos, BlockState> dry;
+		/** A pulse's odds; null for a full ripple. */
+		private final @org.jspecify.annotations.Nullable Odds odds;
 
-		Ripple(ServerLevel level, BlockPos centre, int radius, int ticksPerBlock, @org.jspecify.annotations.Nullable Map<BlockPos, BlockState> dry) {
+		Ripple(ServerLevel level, BlockPos centre, int radius, int ticksPerBlock, @org.jspecify.annotations.Nullable Map<BlockPos, BlockState> dry,
+				@org.jspecify.annotations.Nullable Odds odds) {
 			this.centre = centre;
+			this.odds = odds;
 			this.dry = dry;
 			this.ticksPerBlock = ticksPerBlock;
 			this.lo = Math.max(level.getMinY(), centre.getY() - radius);
@@ -221,6 +284,9 @@ public final class Ripples {
 				}
 				BlockState target = TargetWorld.target(level, pos);
 				if (target != null && target.isAir()) {
+					if (!allowed(level, pos, real, target)) {
+						break;
+					}
 					set(level, pos, target);
 				}
 			}
@@ -228,20 +294,51 @@ public final class Ripples {
 			for (int y = lo; y <= Math.min(hi, surface); y++) {
 				pos.set(x, y, z);
 				BlockState target = TargetWorld.target(level, pos);
-				if (target == null || target.isAir() || !target.getFluidState().isEmpty() || TerrainKinds.family(target) == null) {
+				if (target == null || target.isAir() || !target.getFluidState().isEmpty()) {
+					continue;
+				}
+				boolean ore = odds != null && target.is(ConventionalBlockTags.ORES);
+				if (TerrainKinds.family(target) == null && !ore) {
 					continue;
 				}
 				BlockState real = level.getBlockState(pos);
 				if (real.isAir()) {
-					if (blocked(standing, pos) || target.getBlock() instanceof FallingBlock && !holdsUp(level, pos.below())) {
+					if (blocked(standing, pos) || target.getBlock() instanceof FallingBlock && !holdsUp(level, pos.below())
+							|| !allowed(level, pos, real, target)) {
 						continue;
 					}
 					set(level, pos, target);
-				} else if (TerrainKinds.family(real) != null && TerrainKinds.family(real) != TerrainKinds.family(target)
-						&& y >= surface - 1 && !EndermanWork.nearWater(level, pos)) {
+				} else if (!ore && TerrainKinds.family(real) != null && TerrainKinds.family(real) != TerrainKinds.family(target)
+						&& y >= surface - 1 && !EndermanWork.nearWater(level, pos) && allowed(level, pos, real, target)) {
 					set(level, pos, target);
 				}
 			}
+			return true;
+		}
+
+		/** A pulse's checks and roll for one change (always true for a full ripple); records the revert. */
+		private boolean allowed(ServerLevel level, BlockPos pos, BlockState real, BlockState target) {
+			if (odds == null) {
+				return true;
+			}
+			if (!real.isAir() && real.getDestroySpeed(level, pos) < 0) {
+				return false;
+			}
+			Player player = odds.player();
+			if (player != null && !level.mayInteract(player, pos)) {
+				return false;
+			}
+			Long2LongOpenHashMap recent = RECENT.computeIfAbsent(level, l -> new Long2LongOpenHashMap());
+			long key = pos.asLong();
+			long now = level.getGameTime();
+			if (recent.containsKey(key) && now - recent.get(key) < odds.recentTicks()) {
+				return false;
+			}
+			float chance = target.is(ConventionalBlockTags.ORES) ? odds.oreChance() : odds.chance();
+			if (level.getRandom().nextFloat() >= chance) {
+				return false;
+			}
+			recent.put(key, now);
 			return true;
 		}
 
@@ -268,6 +365,10 @@ public final class Ripples {
 			}
 			BlockState old = level.getBlockState(pos);
 			if (!level.setBlock(pos, state, Block.UPDATE_ALL)) {
+				return;
+			}
+			if (odds != null) {
+				revertEffect(level, pos);
 				return;
 			}
 			if (particlesThisTick < EndermanTuning.RIPPLE_PARTICLES_PER_TICK && level.getBlockState(pos.above()).isAir()) {

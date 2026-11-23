@@ -181,6 +181,8 @@ public final class EndermanTuning {
 	public static final int RIPPLE_PROTECT_RADIUS = 2;
 	/** At most this many particles a tick (one per changed block, at most). */
 	public static final int RIPPLE_PARTICLES_PER_TICK = 48;
+	/** A revert's sound plays at most once this many ticks per level (about 3 a second), however many blocks change. */
+	public static final int REVERT_SOUND_GAP_TICKS = 7;
 
 	private EndermanTuning() {
 	}

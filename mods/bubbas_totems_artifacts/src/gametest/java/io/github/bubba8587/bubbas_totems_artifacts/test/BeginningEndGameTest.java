@@ -154,11 +154,11 @@ public class BeginningEndGameTest {
 	}
 
 	/**
-	 * Using a Totem of the Beginning: with Reworked Mobs it starts the ripple and is used up; without it nothing happens
-	 * and it isn't used up.
+	 * Using a Totem of the Beginning: with Reworked Mobs it pulses, is never used up and goes on cooldown (the pulse
+	 * cooldown); without it nothing happens and there's no cooldown.
 	 */
 	@GameTest(structure = FIELD, maxTicks = 20)
-	public void beginningUsedOnlyWithReworkedMobs(GameTestHelper helper) {
+	public void beginningPulsesOnlyWithReworkedMobs(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
 		ServerPlayer player = TestSupport.survivalPlayer(helper);
 		try {
@@ -168,9 +168,14 @@ public class BeginningEndGameTest {
 			player.setItemInHand(InteractionHand.MAIN_HAND, totem);
 			InteractionResult result = totem.use(level, player, InteractionHand.MAIN_HAND);
 			if (TestSupport.withMobs()) {
-				helper.assertTrue(result.consumesAction() && totem.isEmpty(), "with Reworked Mobs it should be used up: " + result);
+				helper.assertTrue(result.consumesAction() && totem.getCount() == 1, "with Reworked Mobs it should pulse and stay: " + result);
+				helper.assertTrue(player.getCooldowns().isOnCooldown(totem), "the pulse should set a cooldown");
+				float left = player.getCooldowns().getCooldownPercent(totem, 0.0F);
+				helper.assertTrue(left > 0.99F, "cooldown should be full right after use: " + left);
+				helper.assertTrue(TotemsTuning.BEGINNING_PULSE_COOLDOWN_TICKS >= 1200, "the pulse cooldown should be about a minute");
 			} else {
 				helper.assertTrue(result == InteractionResult.PASS && totem.getCount() == 1, "without Reworked Mobs it should do nothing: " + result);
+				helper.assertFalse(player.getCooldowns().isOnCooldown(totem), "without Reworked Mobs there should be no cooldown");
 			}
 		} finally {
 			level.getServer().getPlayerList().remove(player);

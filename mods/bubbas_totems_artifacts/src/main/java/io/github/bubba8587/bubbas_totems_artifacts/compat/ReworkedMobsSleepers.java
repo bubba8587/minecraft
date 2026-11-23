@@ -65,6 +65,17 @@ final class ReworkedMobsSleepers implements SleeperHook {
 	}
 
 	@Override
+	public boolean pulseAround(ServerLevel level, BlockPos centre, int radius, int ticksPerBlock, float chance, float oreChance,
+			int recentTicks, @org.jspecify.annotations.Nullable Player player) {
+		try {
+			return Endermen.pulseAround(level, centre, radius, ticksPerBlock, chance, oreChance, recentTicks, player);
+		} catch (LinkageError e) {
+			// An older Reworked Mobs without the pulse: nothing happens.
+			return false;
+		}
+	}
+
+	@Override
 	public boolean restoreAround(ServerLevel level, BlockPos centre, int radius, int ticksPerBlock) {
 		try {
 			return Endermen.restoreAround(level, centre, radius, ticksPerBlock);

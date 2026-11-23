@@ -15,17 +15,18 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
-/**
- * Totem of the Beginning (specs/totems-artifacts.md). Used (once: it is used up), the ground round you ripples back,
- * outward, to how it generated: holes, craters and strip mines fill, piles go, the top layer gets its own material
- * back; built things and the ground round them are left alone. That's Reworked Mobs' endermen's target world (its
- * api/Endermen, through compat/SleeperHook): without Reworked Mobs, or where there is no generated terrain to go back
- * to (the Nether, the End), using it does nothing and it isn't used up. In a beacon (compat/BeginningBeaconPayload)
- * the area draws endermen that tidy it. Found only as a cairn's offering.
- */
+/** Totem of the Beginning: right-click pulse through compat/SleeperHook (specs/totems-artifacts.md). */
 public class TotemOfTheBeginningItem extends io.github.bubba8587.bubbas_totems_artifacts.statue.StatueTotemItem {
 	public TotemOfTheBeginningItem(Properties properties) {
 		super(properties);
+	}
+
+	@Override
+	@SuppressWarnings("deprecation")
+	public void appendHoverText(ItemStack stack, TooltipContext context, net.minecraft.world.item.component.TooltipDisplay display,
+			java.util.function.Consumer<net.minecraft.network.chat.Component> builder, net.minecraft.world.item.TooltipFlag flag) {
+		builder.accept(net.minecraft.network.chat.Component.translatable("item.bubbas_totems_artifacts.totem_of_the_beginning.use")
+				.withStyle(net.minecraft.ChatFormatting.GRAY));
 	}
 
 	@Override
@@ -35,13 +36,15 @@ public class TotemOfTheBeginningItem extends io.github.bubba8587.bubbas_totems_a
 			// The client can only guess; the server decides (and says nothing either way if it can't).
 			return SleeperHook.get() != SleeperHook.NONE && level.dimension() == Level.OVERWORLD ? InteractionResult.SUCCESS : InteractionResult.PASS;
 		}
-		if (!SleeperHook.get().restoreAround(server, player.blockPosition(), TotemsTuning.BEGINNING_RADIUS, TotemsTuning.BEGINNING_TICKS_PER_BLOCK)) {
+		if (!SleeperHook.get().pulseAround(server, player.blockPosition(), TotemsTuning.BEGINNING_PULSE_RADIUS,
+				TotemsTuning.BEGINNING_PULSE_TICKS_PER_BLOCK, TotemsTuning.BEGINNING_PULSE_CHANCE, TotemsTuning.BEGINNING_PULSE_ORE_CHANCE,
+				TotemsTuning.BEGINNING_PULSE_RECENT_TICKS, player)) {
 			return InteractionResult.PASS;
 		}
 		server.sendParticles(ParticleTypes.REVERSE_PORTAL, player.getX(), player.getY() + 1.0, player.getZ(), 60, 0.6, 1.0, 0.6, 0.1);
-		server.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.TOTEM_USE, SoundSource.PLAYERS, 0.7F, 1.2F);
+		server.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.SCULK_CATALYST_BLOOM, SoundSource.PLAYERS, 0.8F, 0.5F);
 		player.awardStat(Stats.ITEM_USED.get(this));
-		stack.consume(1, player);
+		player.getCooldowns().addCooldown(stack, TotemsTuning.BEGINNING_PULSE_COOLDOWN_TICKS);
 		return InteractionResult.SUCCESS;
 	}
 }

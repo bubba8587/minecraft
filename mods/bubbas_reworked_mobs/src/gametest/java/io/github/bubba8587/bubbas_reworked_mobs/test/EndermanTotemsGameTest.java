@@ -18,6 +18,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
@@ -131,6 +132,127 @@ public class EndermanTotemsGameTest {
 			EndermanGameTest.removeBuilt(level, site);
 		}
 		helper.succeed();
+	}
+
+	/** Pulse field: generated grass at the floor, iron ore two under it, stone elsewhere; real ground dug out 4 deep. */
+	private static Runnable pulseField(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		int floor = helper.absolutePos(BlockPos.ZERO).getY();
+		BoundingBox box = BoundingBox.fromCorners(helper.absolutePos(new BlockPos(4, -8, 0)), helper.absolutePos(new BlockPos(20, 9, 16)));
+		Runnable undo = TargetWorld.overrideTerrain(level, box,
+				pos -> pos.getY() > floor ? Blocks.AIR.defaultBlockState() : pos.getY() == floor ? Blocks.GRASS_BLOCK.defaultBlockState()
+						: pos.getY() == floor - 2 ? Blocks.IRON_ORE.defaultBlockState() : Blocks.STONE.defaultBlockState(),
+				(x, z) -> floor);
+		for (int x = 5; x <= 19; x++) {
+			for (int z = 1; z <= 15; z++) {
+				for (int y = -7; y <= 8; y++) {
+					helper.setBlock(new BlockPos(x, y, z), y > -4 ? Blocks.AIR : Blocks.STONE);
+				}
+			}
+		}
+		Ripples.clearRecent(level);
+		return undo;
+	}
+
+	/** Columns within 5 of the pulse centre (12, 8): clear of the field's edge protection. */
+	private static java.util.List<BlockPos> cells(int y) {
+		java.util.List<BlockPos> list = new java.util.ArrayList<>();
+		for (int dx = -5; dx <= 5; dx++) {
+			for (int dz = -5; dz <= 5; dz++) {
+				if (dx * dx + dz * dz <= 25) {
+					list.add(new BlockPos(12 + dx, y, 8 + dz));
+				}
+			}
+		}
+		return list;
+	}
+
+	private static int filled(GameTestHelper helper, int... ys) {
+		int n = 0;
+		for (int y : ys) {
+			for (BlockPos pos : cells(y)) {
+				if (!helper.getBlockState(pos).isAir()) {
+					n++;
+				}
+			}
+		}
+		return n;
+	}
+
+	/**
+	 * Pulses at 12% (ore 1.2%): one pulse fills roughly 12% of dug-out terrain cells (bounds 5-22% of 243); after ten
+	 * pulses terrain is mostly back (over 50%) while ore spots stay mostly empty (under 30%, and under a third of terrain).
+	 */
+	@GameTest(structure = FIELD, maxTicks = 400)
+	public void pulseOddsTerrainOverOre(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		Runnable undo = pulseField(helper);
+		BlockPos centre = helper.absolutePos(new BlockPos(12, 1, 8));
+		int[] firstPulse = new int[1];
+		for (int i = 0; i < 10; i++) {
+			int pulse = i;
+			helper.runAtTickTime(1 + i * 30, () -> {
+				if (pulse == 1) {
+					firstPulse[0] = filled(helper, 0, -1, -3);
+				}
+				helper.assertTrue(Endermen.pulseAround(level, centre, 7, 1, 0.12F, 0.012F, 12000, null), "the pulse didn't start");
+			});
+		}
+		helper.runAtTickTime(330, () -> {
+			try {
+				int terrainCells = cells(0).size() * 3;
+				int oreCells = cells(-2).size();
+				double first = firstPulse[0] / (double) terrainCells;
+				double terrain = filled(helper, 0, -1, -3) / (double) terrainCells;
+				double ore = filled(helper, -2) / (double) oreCells;
+				helper.assertTrue(first >= 0.05 && first <= 0.22, "one pulse filled " + first + " of terrain");
+				helper.assertTrue(terrain > 0.5, "ten pulses filled only " + terrain + " of terrain");
+				helper.assertTrue(ore < 0.3 && ore < terrain / 3, "ten pulses filled " + ore + " of ore spots (terrain " + terrain + ")");
+				for (BlockPos pos : cells(-2)) {
+					BlockState state = helper.getBlockState(pos);
+					helper.assertTrue(state.isAir() || state.is(Blocks.IRON_ORE), "ore spot became " + state);
+				}
+			} finally {
+				undo.run();
+			}
+			helper.succeed();
+		});
+	}
+
+	/**
+	 * At chance 1: blocks a pulse reverted and that were dug out again stay dug out on the next pulse (recent window);
+	 * stone placed in an ore spot stays stone; a plank in the ground keeps the columns round it as they are.
+	 */
+	@GameTest(structure = FIELD, maxTicks = 100)
+	public void pulseRecentWindowAndBuilds(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		Runnable undo = pulseField(helper);
+		BlockPos centre = helper.absolutePos(new BlockPos(12, 1, 8));
+		helper.setBlock(new BlockPos(12, -2, 8), Blocks.STONE);
+		helper.setBlock(new BlockPos(18, -3, 8), Blocks.OAK_PLANKS);
+		helper.assertTrue(Endermen.pulseAround(level, centre, 7, 1, 1.0F, 1.0F, 12000, null), "the pulse didn't start");
+		helper.runAtTickTime(20, () -> {
+			helper.assertBlockPresent(Blocks.GRASS_BLOCK, new BlockPos(10, 0, 8));
+			helper.assertBlockPresent(Blocks.IRON_ORE, new BlockPos(10, -2, 8));
+			helper.assertBlockPresent(Blocks.STONE, new BlockPos(12, -2, 8));
+			helper.assertBlockPresent(Blocks.AIR, new BlockPos(18, 0, 8));
+			helper.setBlock(new BlockPos(10, 0, 8), Blocks.AIR);
+			helper.setBlock(new BlockPos(10, -2, 8), Blocks.AIR);
+			helper.setBlock(new BlockPos(9, 0, 8), Blocks.AIR);
+			Ripples.clearRecent(level, helper.absolutePos(new BlockPos(9, 0, 8)));
+			helper.assertTrue(Endermen.pulseAround(level, centre, 7, 1, 1.0F, 1.0F, 12000, null), "the second pulse didn't start");
+		});
+		helper.runAtTickTime(40, () -> {
+			try {
+				helper.assertBlockPresent(Blocks.AIR, new BlockPos(10, 0, 8));
+				helper.assertBlockPresent(Blocks.AIR, new BlockPos(10, -2, 8));
+				helper.assertBlockPresent(Blocks.GRASS_BLOCK, new BlockPos(9, 0, 8));
+				helper.assertBlockPresent(Blocks.OAK_PLANKS, new BlockPos(18, -3, 8));
+			} finally {
+				undo.run();
+			}
+			helper.succeed();
+		});
 	}
 
 	private static int count(ServerPlayer player, net.minecraft.world.item.Item item) {
