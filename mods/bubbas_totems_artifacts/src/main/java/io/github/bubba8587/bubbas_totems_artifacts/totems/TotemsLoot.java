@@ -15,12 +15,7 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemRandomChanceCon
 import net.fabricmc.fabric.api.loot.v3.LootTableEvents;
 import net.fabricmc.fabric.api.loot.v3.LootTableSource;
 
-/**
- * Where the five new totems are found (specs/totems-artifacts.md): like Warding's {@code WardingLoot}, one extra pool per
- * table and totem, rolling one totem at the chance in {@link TotemsTuning}. Additive (vanilla's pools untouched); tables
- * a datapack replaced through Fabric are left alone. Chests only: archaeology tables give a single item, so a second
- * pool there would break brushing.
- */
+/** Where the five new totems are found. */
 public final class TotemsLoot {
 	private TotemsLoot() {
 	}
@@ -28,6 +23,7 @@ public final class TotemsLoot {
 	/** Every (table, totem) chance, for tests and docs. */
 	public static Map<Item, Map<ResourceKey<LootTable>, Float>> all() {
 		Map<Item, Map<ResourceKey<LootTable>, Float>> all = new LinkedHashMap<>();
+		all.put(ModItems.TOTEM_OF_WARDING, io.github.bubba8587.bubbas_totems_artifacts.warding.WardingTuning.LOOT);
 		all.put(ModItems.TOTEM_OF_KEEPING, TotemsTuning.KEEPING_LOOT);
 		all.put(ModItems.TOTEM_OF_GATHERING, TotemsTuning.GATHERING_LOOT);
 		all.put(ModItems.TOTEM_OF_FORTIFICATION, TotemsTuning.FORTIFICATION_LOOT);

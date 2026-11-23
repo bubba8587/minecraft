@@ -177,14 +177,4 @@ public class BeginningEndGameTest {
 		}
 		helper.succeed();
 	}
-
-	/** The Totem of the End is in the End city treasure table at its chance; both are single-stack. */
-	@GameTest(structure = FIELD, maxTicks = 20)
-	public void endFoundInEndCitiesAndSingleStack(GameTestHelper helper) {
-		Map<?, Float> chances = TotemsLoot.all().get(ModItems.TOTEM_OF_THE_END);
-		helper.assertTrue(chances != null && chances.equals(TotemsTuning.END_LOOT), "the Totem of the End isn't in the loot list");
-		helper.assertTrue(new ItemStack(ModItems.TOTEM_OF_THE_END).getMaxStackSize() == 1
-				&& new ItemStack(ModItems.TOTEM_OF_THE_BEGINNING).getMaxStackSize() == 1, "they should be single-stack");
-		helper.succeed();
-	}
 }

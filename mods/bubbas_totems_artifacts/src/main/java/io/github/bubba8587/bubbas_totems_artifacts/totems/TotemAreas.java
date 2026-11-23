@@ -13,19 +13,13 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.phys.AABB;
 
-/**
- * Active totem areas set by beacons and statues (Fortification: no explosion block damage; Growth: faster growth;
- * Herding: a pasture; Clear Skies: no weather), the same idea
- * as Warding's {@code Wards}: each source (a beacon position) puts its box with a lifetime and refreshes it on every
- * pulse, so a beacon that stops, breaks or unloads lapses on its own with no cleanup hook. Nothing here depends on
- * Bubba's Reworked Beacons. Server thread only; one map lookup when a level has no areas.
- */
+/** Active totem areas set by beacons and statues. */
 public final class TotemAreas {
 	public enum Kind {
 		FORTIFICATION, GROWTH, HERDING, CLEAR_SKIES
 	}
 
-	/** One area; {@code strength} is what the kind makes of it (Growth: extra random ticks per vanilla tick). */
+	/** One area. */
 	public record Area(AABB box, int strength, long expiresAt) {
 	}
 
@@ -64,15 +58,5 @@ public final class TotemAreas {
 			}
 		}
 		return live;
-	}
-
-	/** Whether the block at {@code pos} is inside a live area of this kind. */
-	public static boolean contains(ServerLevel level, Kind kind, BlockPos pos) {
-		for (Area area : all(level, kind)) {
-			if (area.box().contains(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5)) {
-				return true;
-			}
-		}
-		return false;
 	}
 }

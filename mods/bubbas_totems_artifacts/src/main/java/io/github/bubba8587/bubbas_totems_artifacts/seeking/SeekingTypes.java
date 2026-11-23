@@ -4,7 +4,6 @@ package io.github.bubba8587.bubbas_totems_artifacts.seeking;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 import io.github.bubba8587.bubbas_totems_artifacts.BubbasTotemsArtifacts;
 import net.minecraft.core.Holder;
@@ -22,11 +21,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import org.jspecify.annotations.Nullable;
 
-/**
- * What a Totem of Seeking can seek, and the block that chooses each (specs/totems-artifacts.md): use the totem on a
- * structure's signature block and it seeks the nearest structure of that type. The list is the builder's proposal; the
- * owner may prefer another way of choosing. Each type is a vanilla structure tag or a list of vanilla structures.
- */
+/** What a Totem of Seeking can seek, and the block that chooses each. */
 public final class SeekingTypes {
 	/** One seekable type. */
 	public record SeekType(Identifier id, @Nullable TagKey<Structure> tag, List<ResourceKey<Structure>> structures, List<Block> blocks) {
@@ -34,7 +29,7 @@ public final class SeekingTypes {
 			return Component.translatable("seeking." + BubbasTotemsArtifacts.MOD_ID + "." + this.id.getPath());
 		}
 
-		/** The structures this type covers in this world (empty when none exist, e.g. a datapack removed them). */
+		/** The structures this type covers in this world. */
 		public HolderSet<Structure> resolve(RegistryAccess access) {
 			HolderGetter<Structure> lookup = access.lookupOrThrow(Registries.STRUCTURE);
 			if (this.tag != null) {
@@ -80,17 +75,12 @@ public final class SeekingTypes {
 				structures.stream().map(s -> ResourceKey.create(Registries.STRUCTURE, Identifier.withDefaultNamespace(s))).toList(), List.of(blocks));
 	}
 
-	/** The type whose signature block {@code state} is, if any. */
+	/** The type whose signature block state is, if any. */
 	public static Optional<SeekType> forBlock(BlockState state) {
 		return ALL.stream().filter(t -> t.blocks().stream().anyMatch(state::is)).findFirst();
 	}
 
 	public static Optional<SeekType> byId(@Nullable Identifier id) {
 		return id == null ? Optional.empty() : ALL.stream().filter(t -> t.id().equals(id)).findFirst();
-	}
-
-	/** Every signature block, for docs and tests. */
-	public static Stream<Block> allBlocks() {
-		return ALL.stream().flatMap(t -> t.blocks().stream());
 	}
 }

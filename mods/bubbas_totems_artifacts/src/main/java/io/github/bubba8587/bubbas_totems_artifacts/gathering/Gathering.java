@@ -11,6 +11,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Container;
+import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.level.block.BarrelBlock;
@@ -21,55 +22,39 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 
-/**
- * The Totem of Gathering (specs/totems-artifacts.md).
- *
- * <p><b>Held</b> ({@link #pull}, every tick): dropped items within {@link TotemsTuning#GATHER_RADIUS} fly to the
- * holder at {@link TotemsTuning#GATHER_SPEED} blocks a tick, aimed like vanilla's XP orbs (at the holder's middle), and
- * are picked up by the usual rules. (Vanilla's orb pull itself was tried first, B17: on the ground an item's friction
- * eats it, and items 6 blocks out moved under a block in 5 s.) XP orbs already fly to a player by themselves in vanilla
- * within the same 8 blocks, so the totem leaves them to it. Items the holder just threw (still on their pickup delay) and items that can never be
- * picked up (displays) are left alone. Players and mobs alike (B18).
- *
- * <p><b>In a beacon:</b> {@link GatheringRing}.
- *
- * <p><b>As a statue:</b> {@link #intoChest}.
- */
+/** The Totem of Gathering. */
 public final class Gathering {
 	private Gathering() {
 	}
 
-	/** Whether {@code item} may be pulled toward {@code holder} (null: by a beacon). */
+	/** Whether item may be pulled toward holder. */
 	static boolean pullable(ItemEntity item, @Nullable LivingEntity holder) {
 		if (!item.isAlive() || item.getItem().isEmpty()) {
 			return false;
 		}
 		int delay = ((ItemEntityAccessor) item).bta$pickupDelay();
 		if (delay >= 32767) {
-			return false; // never picked up (displays, props)
+			return false;
 		}
-		// The holder's own throw comes back only once it could be picked up again.
 		return holder == null || delay <= 0 || item.getOwner() != holder;
 	}
 
-	/** One tick of a held totem: nearby items fly toward the holder. Returns how many were pulled. */
+	/** One tick of a held totem. */
 	public static int pull(ServerLevel level, LivingEntity holder) {
 		double r = TotemsTuning.GATHER_RADIUS;
 		List<ItemEntity> items = level.getEntitiesOfClass(ItemEntity.class, holder.getBoundingBox().inflate(r),
-				item -> item.distanceToSqr(holder) <= r * r && pullable(item, holder));
+				EntitySelector.withinDistance(holder.getX(), holder.getY(), holder.getZ(), r).and(e -> pullable((ItemEntity) e, holder)));
 		int pulled = 0;
 		for (ItemEntity item : items) {
 			if (pulled++ >= TotemsTuning.GATHER_MAX_ITEMS_PER_TICK) {
 				break;
 			}
-			// Aimed like an XP orb (the holder's middle); a steady speed, slowing in the last block so it doesn't overshoot.
 			Vec3 delta = new Vec3(holder.getX() - item.getX(), holder.getY() + holder.getEyeHeight() / 2.0 - item.getY(), holder.getZ() - item.getZ());
 			double distance = delta.length();
 			if (distance > 1.0E-3) {
 				double speed = TotemsTuning.GATHER_SPEED * Math.min(1.0, distance);
-				// Plus gravity's pull back, so the item glides instead of scraping along the ground.
 				item.setDeltaMovement(delta.scale(speed / distance).add(0.0, 0.04, 0.0));
-				item.needsSync = true; // items only sync motion now and then; this one is steering
+				item.needsSync = true;
 			}
 		}
 		return Math.min(pulled, TotemsTuning.GATHER_MAX_ITEMS_PER_TICK);
@@ -88,7 +73,7 @@ public final class Gathering {
 		return null;
 	}
 
-	/** Gathering statue: nearby drops into a touching chest or barrel; returns how many were stored. */
+	/** Gathering statue. */
 	public static int intoChest(ServerLevel level, BlockPos statue) {
 		BlockPos chestPos = chestBeside(level, statue);
 		if (chestPos == null) {

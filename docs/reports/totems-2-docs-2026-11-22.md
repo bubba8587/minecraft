@@ -105,3 +105,42 @@ For `specs/totems-artifacts.md` and the player docs page. **(builder)** marks my
 - The ring look: it's functional (items orbit at the beacon's top) but plain. Maybe slower, or a second ring for XP.
 - Statue radius 3 and Warding statue not keeping sleepers asleep (builder).
 - Herding counts every animal but tamed pets, so it includes bees, axolotls and the like.
+
+## Audit fixes (separate commit)
+
+What changed, for the spec's "As built" and test sections:
+
+- **Wards:**
+  - `blocksEntry` checks "any wards in this level?" before `WardBarrier.keptOut`.
+  - The ward sweep now skips what `keptOut` skips, such as deactivated Fabricator mobs.
+  - The nearest-face exit is computed once (`WardBarrier.exitNormal`); `WardFleeGoal.exitPoint` uses it.
+- **Removed (dead):** `Wards.active`, `Wards.keepsSleepersAsleep`, `TotemAreas.contains`, `SeekingTypes.allBlocks`, `TotemStatueBlock.HAS_TYPES`.
+  - `WardingBeaconGameTest` now checks sleeper sensitivity (0 under a 4-layer ward, 1 under a 1-layer ward, with Reworked Mobs).
+- **Kept:** the client mixin config. It was empty, but now holds `ClientLevelPrecipitationMixin` (Clear Skies).
+- **Loot in one place:** `WardingLoot` is gone; Warding's tables (`WardingTuning.LOOT`, the evoker included) are in `TotemsLoot.all()`. `TotemsGameTest.totemsAreFoundInLoot` rolls chest tables as chests and checks the evoker as entity loot (about 5 %).
+- **Statues:** Warding and Seeking extend `StatueTotemItem`, so sneak-to-place lives in one place.
+- **Vanilla selectors:** `ENTITY_STILL_ALIVE` (GraveTalisman, ward sweep), `LIVING_ENTITY_STILL_ALIVE.and(NO_SPECTATORS)` (Fortification), `withinDistance` (Warding pulse, Gathering pull).
+- **Tests:**
+  - Core is now 15, one per mechanic, including the 5 new mechanics of this branch.
+  - Moved to milestone: oldReworkedMobsIdsLoadAsTheseItems (now in TotemsGameTest), endStatuePlaces…, sensesSleepers, pulseCalmsSleepers, fullWardKeepsSleepersAsleep, wardPushesBackMobsThatDoNotPath, growthPlantsDroppedSeeds.
+  - Deleted: endFoundInEndCitiesAndSingleStack, glowLevelTable, WardingGameTest.totemIsFoundInLoot (merged), and the `warding_loot` environment.
+  - `totemsAreArtifacts` checks every statue totem, the Beginning included, for one per stack and not common; the talisman for one per stack.
+  - The statue placement tests no longer check drops; `everyStatueDropsItsTotem…` covers that.
+- Full server suite: 44/44 pass, also with `-PwithBeacons -PwithMobs`. Core: 15/15.
+
+### Design notes moved out of code comments (B38), for the spec if it lacks them
+
+- **Gathering, held:**
+  - Items aim at the holder's middle like XP orbs, slow down in the last block, and get a small lift against gravity so they glide instead of scraping.
+  - Vanilla's orb pull was tried first (B17), but ground friction ate it.
+  - XP is left to vanilla's own orb pull.
+  - The holder's own throws come back only once their pickup delay ends; never-pickup items (displays) are skipped.
+- **Fortification:** only block damage is stopped. The blast still hurts and knocks back, and fire from the blast doesn't start on protected blocks. Wind charges are untouched, and the mobGriefing rule is never changed (owner: it would stop villager farming). A dull clang and a glint of wax show where a blast was turned aside.
+- **Loot:** additive pools on chest tables only. Archaeology tables give a single item, so a second pool would break brushing. A table a datapack replaced through Fabric is left alone.
+- **Grave Talisman:** the undead search lives on plain `Level`, so server tests can check it. The client works out the glow for its own player.
+- **Warding pulse:**
+  - The soul-fire ring is drawn low, below a player's eyes, so it doesn't fill the first-person view.
+  - Brain-driven monsters (piglins, hoglins) flee through their vanilla AVOID_TARGET memory; goal-driven ones get WardFleeGoal.
+- **WardFleeGoal:** vanilla's AvoidEntityGoal can't be reused. It only flees from entities a monster could target, which leaves out creative players and other monsters holding a totem.
+  - It's added on first scare at priority 0 with the MOVE flag.
+  - Trapped in an enclosed ward, a mob stops trying to leave for a while; this fixed the "stuck running/jittering" bug.

@@ -9,21 +9,17 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import org.jspecify.annotations.Nullable;
 
-/**
- * "Held" for the totems that work from a hand (Gathering, Fortification, Growth; like Warding): the main or off hand of
- * any living thing, players and mobs alike (B18). {@link #firstThisTick} keeps a holder with a totem in each hand from
- * doubling up.
- */
+/** "Held" for the totems that work from a hand. */
 public final class Held {
 	private final Map<Entity, Long> lastTick = new WeakHashMap<>();
 
-	/** Whether {@code slot} is a hand of a living, non-spectator holder. */
+	/** Whether slot is a hand of a living, non-spectator holder. */
 	public static boolean inHand(Entity owner, @Nullable EquipmentSlot slot) {
 		return (slot == EquipmentSlot.MAINHAND || slot == EquipmentSlot.OFFHAND) && owner instanceof LivingEntity living
 				&& living.isAlive() && !living.isSpectator();
 	}
 
-	/** True the first time it's asked for {@code holder} in game tick {@code now}. */
+	/** True the first time it's asked for holder in game tick now. */
 	public boolean firstThisTick(Entity holder, long now) {
 		Long last = this.lastTick.put(holder, now);
 		return last == null || last != now;

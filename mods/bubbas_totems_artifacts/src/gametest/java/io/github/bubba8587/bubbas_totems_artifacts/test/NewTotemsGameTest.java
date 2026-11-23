@@ -29,6 +29,10 @@ import net.fabricmc.fabric.api.gametest.v1.GameTest;
 
 /** The totems and changes of 2026-11-22. */
 public class NewTotemsGameTest {
+	private static boolean inArea(ServerLevel level, TotemAreas.Kind kind, BlockPos pos) {
+		return TotemAreas.all(level, kind).stream().anyMatch(a -> a.box().contains(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5));
+	}
+
 	private static ItemEntity drop(GameTestHelper helper, Vec3 rel, ItemStack stack) {
 		Vec3 at = helper.absoluteVec(rel);
 		ItemEntity item = new ItemEntity(helper.getLevel(), at.x, at.y, at.z, stack);
@@ -55,6 +59,7 @@ public class NewTotemsGameTest {
 	}
 
 	/** Core. */
+	@GameTest(structure = TestSupport.FIELD, maxTicks = 20)
 	public void growthPlantsDroppedSeeds(GameTestHelper helper) {
 		for (int x = 3; x <= 5; x++) {
 			for (int z = 7; z <= 9; z++) {
@@ -130,9 +135,9 @@ public class NewTotemsGameTest {
 		helper.assertFalse(StatueEffects.pulses(TotemType.KEEPING), "Keeping pulses");
 		ServerLevel level = helper.getLevel();
 		helper.succeedWhen(() -> {
-			helper.assertTrue(TotemAreas.contains(level, TotemAreas.Kind.GROWTH, helper.absolutePos(growth.offset(2, 0, 2))), "no growth area");
-			helper.assertFalse(TotemAreas.contains(level, TotemAreas.Kind.GROWTH, helper.absolutePos(growth.offset(5, 0, 0))), "growth area too big");
-			helper.assertTrue(TotemAreas.contains(level, TotemAreas.Kind.HERDING, helper.absolutePos(herding.offset(-3, 0, 0))), "no pasture");
+			helper.assertTrue(inArea(level, TotemAreas.Kind.GROWTH, helper.absolutePos(growth.offset(2, 0, 2))), "no growth area");
+			helper.assertFalse(inArea(level, TotemAreas.Kind.GROWTH, helper.absolutePos(growth.offset(5, 0, 0))), "growth area too big");
+			helper.assertTrue(inArea(level, TotemAreas.Kind.HERDING, helper.absolutePos(herding.offset(-3, 0, 0))), "no pasture");
 		});
 	}
 }

@@ -67,6 +67,7 @@ public class WardingGameTest {
 	 * Core (with Reworked Mobs; passes at once without it). A pulse settles a stirred sleeper within 8 blocks by the calm
 	 * points; a second tick on cooldown doesn't.
 	 */
+	@GameTest(environment = "bubbas_totems_artifacts-test:warding_pulse", structure = TestSupport.FIELD, maxTicks = 20)
 	public void pulseCalmsSleepers(GameTestHelper helper) {
 		if (!TestSupport.withMobs()) {
 			helper.succeed();
@@ -133,6 +134,7 @@ public class WardingGameTest {
 	 * Core (with Reworked Mobs; passes at once without it). A sleeper inside a full-pyramid ward never wakes, one inside
 	 * a smaller ward hears as usual, and removing the ward lets it hear again.
 	 */
+	@GameTest(environment = "bubbas_totems_artifacts-test:warding_ward", structure = TestSupport.FIELD, maxTicks = 20)
 	public void fullWardKeepsSleepersAsleep(GameTestHelper helper) {
 		if (!TestSupport.withMobs()) {
 			helper.succeed();
@@ -157,6 +159,7 @@ public class WardingGameTest {
 	 * Core. Mobs that don't follow paths are held at the edge (owner): a slime pushed toward the ward every tick never
 	 * gets in; a slime and a (baby) happy ghast that start inside drift out.
 	 */
+	@GameTest(environment = "bubbas_totems_artifacts-test:warding_barrier", structure = TestSupport.FIELD, maxTicks = 300)
 	public void wardPushesBackMobsThatDoNotPath(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
 		AABB area = new AABB(Vec3.atLowerCornerOf(helper.absolutePos(new BlockPos(0, 0, 0))), Vec3.atLowerCornerOf(helper.absolutePos(new BlockPos(10, 6, 16))));
@@ -231,43 +234,6 @@ public class WardingGameTest {
 			}
 			helper.succeed();
 		});
-	}
-
-	// --- loot -------------------------------------------------------------------------------------
-
-	/** Milestone. Woodland mansion chests hold a Totem of Warding about 20 % of the time, evokers about 5 %. */
-	@GameTest(environment = "bubbas_totems_artifacts-test:warding_loot", maxTicks = 20)
-	public void totemIsFoundInLoot(GameTestHelper helper) {
-		ServerLevel level = helper.getLevel();
-		LootTable mansion = level.getServer().reloadableRegistries().getLootTable(BuiltInLootTables.WOODLAND_MANSION);
-		int found = 0;
-		for (int i = 0; i < 400; i++) {
-			LootParams params = new LootParams.Builder(level).withParameter(LootContextParams.ORIGIN, Vec3.ZERO).create(LootContextParamSets.CHEST);
-			for (ItemStack stack : mansion.getRandomItems(params)) {
-				if (stack.is(ModItems.TOTEM_OF_WARDING)) {
-					found++;
-				}
-			}
-		}
-		// 20 % a chest: 80 expected out of 400.
-		helper.assertTrue(found > 40 && found < 130, "mansion chests with a Totem of Warding: " + found + " of 400");
-		// Evokers: a rare 5 % bonus (owner). Rolled from the entity table with the evoker as the victim.
-		var evoker = helper.spawnWithNoFreeWill(EntityTypes.EVOKER, new BlockPos(1, 1, 1));
-		LootTable evokerLoot = level.getServer().reloadableRegistries().getLootTable(EntityTypes.EVOKER.getDefaultLootTable().orElseThrow());
-		int fromEvokers = 0;
-		for (int i = 0; i < 1000; i++) {
-			LootParams params = new LootParams.Builder(level).withParameter(LootContextParams.THIS_ENTITY, evoker)
-					.withParameter(LootContextParams.ORIGIN, evoker.position())
-					.withParameter(LootContextParams.DAMAGE_SOURCE, level.damageSources().generic()).create(LootContextParamSets.ENTITY);
-			for (ItemStack stack : evokerLoot.getRandomItems(params)) {
-				if (stack.is(ModItems.TOTEM_OF_WARDING)) {
-					fromEvokers++;
-				}
-			}
-		}
-		evoker.discard();
-		helper.assertTrue(fromEvokers > 25 && fromEvokers < 80, "evokers dropping a Totem of Warding: " + fromEvokers + " of 1000");
-		helper.succeed();
 	}
 
 	/**

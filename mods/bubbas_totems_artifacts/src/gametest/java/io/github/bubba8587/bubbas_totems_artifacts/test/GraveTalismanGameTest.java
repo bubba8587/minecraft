@@ -22,19 +22,6 @@ public class GraveTalismanGameTest {
 	/** The search tests run this high above their spot (see below). */
 	private static final int UP = 100;
 
-	@GameTest
-	public void glowLevelTable(GameTestHelper helper) {
-		check(helper, GraveTalisman.glowLevel(Double.MAX_VALUE), GraveTalisman.OFF, "no undead");
-		check(helper, GraveTalisman.glowLevel(40.1 * 40.1), GraveTalisman.OFF, "40.1 blocks");
-		check(helper, GraveTalisman.glowLevel(40.0 * 40.0), GraveTalisman.FAINT, "40 blocks");
-		check(helper, GraveTalisman.glowLevel(24.1 * 24.1), GraveTalisman.FAINT, "24.1 blocks");
-		check(helper, GraveTalisman.glowLevel(24.0 * 24.0), GraveTalisman.BRIGHT, "24 blocks");
-		check(helper, GraveTalisman.glowLevel(12.1 * 12.1), GraveTalisman.BRIGHT, "12.1 blocks");
-		check(helper, GraveTalisman.glowLevel(12.0 * 12.0), GraveTalisman.BRIGHTEST, "12 blocks");
-		check(helper, GraveTalisman.glowLevel(0.0), GraveTalisman.BRIGHTEST, "0 blocks");
-		helper.succeed();
-	}
-
 	/**
 	 * Core. Undead mobs only (no other mod needed). Runs UP blocks above the test, where no other test's undead can be in
 	 * range (tests sit a few blocks apart, and blocks from finished tests stay in the world; at ground level this failed
@@ -69,6 +56,7 @@ public class GraveTalismanGameTest {
 	}
 
 	/** Core (with Reworked Mobs; passes at once without it). Its sleepers (dormant undead blocks) count too. */
+	@GameTest(environment = "bubbas_totems_artifacts-test:talisman", structure = TestSupport.LANE, maxTicks = 40)
 	public void sensesSleepers(GameTestHelper helper) {
 		if (!TestSupport.withMobs()) {
 			helper.succeed();
