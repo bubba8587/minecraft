@@ -2,7 +2,7 @@
 
 *Part of [[Bubba's Reworked Mobs]].*
 
-Shipwrecks hold their drowned crew, lying or sitting **between decks** as sleeping drowned (never outside on the sand). A whole wreck usually has several; broken fragments mostly have none. Where the hull is flooded, they lie in the water.
+Shipwrecks hold their drowned crew, lying (on their backs or face down) or sitting **between decks** as sleeping drowned (never outside on the sand). A whole wreck usually has several; broken fragments mostly have none. Where the hull is flooded, they lie in the water.
 
 They wake like any [[Sleeping Undead]], from noise ([[Noise and Waking]]), and get up as [[Drowned]] that lurk in the water. Some carry a trident, a fishing rod, a nautilus shell or a leather cap.
 

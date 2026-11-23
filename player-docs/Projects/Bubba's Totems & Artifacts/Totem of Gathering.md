@@ -23,4 +23,6 @@ In a reworked beacon, dropped items and experience anywhere in the beacon's rang
 
 ## Statue
 
-Sneaking and using the totem on a block sets it down as a [[Totem Statue]] instead of using it. Mining the statue gives the totem back.
+*Main article: [[Totem Statue]]*
+
+Sneaking and using the totem on a block sets it down as a [[Totem Statue]] instead of using it. Dropped items and experience within 5 blocks of the statue fly to it and circle it in a small ring, just above the blocks beside it. A hopper placed next to the statue, leading into a chest, collects the items as they come round. A chest placed against the statue gets nothing. Mining the statue gives the totem back.

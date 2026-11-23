@@ -11,7 +11,7 @@
 > | **Tool** | Any (pickaxe fastest) |
 > | **Size** | Smaller than a full block |
 
-A **totem statue** is a totem set down in the world as decoration: a small figure of the totem on a dark stone plinth, in the totem's own colours and look. Every totem has one. Some glow faintly at night: the Totem of the Beginning's and the Totem of the End's eyes, and the Totem of Fortification's visor. A statue gives a small version of its totem's effect in the few blocks around it (see below). Its look is a first version in this early test release.
+A **totem statue** is a totem set down in the world as decoration: a small figure of the totem on a dark stone plinth, in the totem's own colours and look. Every totem has one. Some glow faintly at night: the Totem of the Beginning's and the Totem of the End's eyes, and the Totem of Fortification's visor. A statue gives a small version of its totem's effect within 5 blocks of it (see below). Its look is a first version in this early test release.
 
 ## Obtaining
 
@@ -21,12 +21,12 @@ The [[Grave Talisman]] is not a totem and has no statue.
 
 ## Effects
 
-A statue works on the blocks within 3 of it (the Totem of Warding statue within 5), all the time:
+Every statue works on the blocks within 5 of it, all the time:
 
 | Statue | Effect |
 |---|---|
 | [[Totem of Warding]] | Monsters keep out, and sleeping undead stay asleep. Found standing in crypts with [[Bubba's Reworked Mobs]]. |
-| [[Totem of Gathering]] | Dropped items go into a chest or barrel touching the statue. |
+| [[Totem of Gathering]] | Dropped items and experience fly to the statue and circle it in a ring; a hopper placed next to the statue collects the items. |
 | [[Totem of Fortification]] | Explosions don't break blocks. |
 | [[Totem of Growth]] | Plants grow twice as fast, and dropped seeds get planted. |
 | [[Totem of Herding]] | Animals stay put, like a small pasture. |

@@ -269,16 +269,24 @@ Using a sleeper with an empty hand takes one item: held weapon first (main hand,
 ### Sleeper items (2026-11-24)
 
 - One item per mob kind (`skeleton_sleeper`, `zombie_sleeper`, `husk_sleeper`, `drowned_sleeper`, `stray_sleeper`), class `undead/sleeper/SleeperItem` (a BlockItem); ids unchanged, so old worlds need no fix. One per kind because the kind is the block and vanilla maps block to item one to one (loot, pick block, item models with the mob head icon).
-- The form is the vanilla `minecraft:block_state` component: `pose` (`sitting` | `lying`) and `resting` (`true` = statue, inert). Vanilla BlockItem applies it on placing, `copy_state` loot copies it, and `SleeperBlock.getCloneItemStack` (pick block) copies both (it used to drop `resting`, so a picked statue placed again could wake). Gear stays in `minecraft:container`. Chosen over a custom component because every vanilla path already understands it (B9).
+- The form is the vanilla `minecraft:block_state` component: `pose` (`sitting` | `lying` | `prone`) and `resting` (`true` = statue, inert). Vanilla BlockItem applies it on placing, `copy_state` loot copies it, and `SleeperBlock.getCloneItemStack` (pick block) copies both (it used to drop `resting`, so a picked statue placed again could wake). Gear stays in `minecraft:container`. Chosen over a custom component because every vanilla path already understands it (B9).
 - Names (`SleeperItem.getName`): "<base> (<pose>)", e.g. "Sleeping Zombie (Lying)", "Skeleton Statue (Lying)"; lang keys `item.bubbas_reworked_mobs.sleeper.form`, `...sleeper.pose.<pose>`, `block.bubbas_reworked_mobs.<kind>_sleeper.statue`. An anvil name wins.
-- Creative tab: every kind in every pose, sleeping and statue (20 stacks), plus the gravestone.
-- `lying` is on the back. A `prone` pose would need a pose in `SleeperPoses` (client), a shape and a lang key; the item side then works.
+- Creative tab: every kind in every pose (sitting, lying, face down), sleeping and statue, plus the gravestone.
+- Tooltip: sleeper items carry a default `minecraft:tooltip_display` that hides `minecraft:block_state`, so the raw "pose: lying" / "resting: true" lines don't show (the name already says the form).
+
+### Face-down sleepers (2026-11-24)
+
+- `lying` is on the back; `SleeperPose.PRONE` (blockstate value `prone`, after `LYING`) is face down. Lang `item.bubbas_reworked_mobs.sleeper.pose.prone` = "Face Down" ("Sleeping Skeleton (Face Down)", "Skeleton Statue (Face Down)").
+- Every `UndeadVariant` poses list ends with PRONE, so each kind's default (first) pose is unchanged. `SleeperPose.isFlat()` (lying or prone) drives the collision shape (the same 16x5 slab as lying) and BackToSleep's facing pick.
+- Client (`SleeperPoses`): the prone placement is the lying placement turned 180 degrees about the body's long axis (same footprint and height, face to the floor). Part pose: head turned to the side (cheek down), both arms at the sides, the weapon arm twisted a quarter turn so a held weapon lies flat beside it, legs slightly apart.
+- Where they appear (`UndeadTuning`): `CRYPT_FACE_DOWN_SHARE = 0.3` of the lying sleepers in crypt niches and noble halls (every crypt `Builder.sleeper` call with LYING), `SHIPWRECK_FACE_DOWN_SHARE = 0.4` of the lying shipwreck crew, `RESTING_FACE_DOWN_SHARE = 0.15` of the resting dead in yard graves.
+- Tests: `SleeperFormsGameTest.everyFormSurvivesPickUpAndPlace` loops over each kind's poses, prone included; milestone `SleeperFormsGameTest.faceDownSleepersAreNamedAndWake` (names, and a face-down zombie hears an explosion and wakes); client part `prone` (`ProneSleepersClientGameTest`: `prone-row`, `prone-low`, `prone-close`, `prone-armoured`, `prone-tooltip`).
 - Magic that prevents waking: the Totem of Warding, now in Bubba's Totems & Artifacts (`specs/totems-artifacts.md`), through the sleeper hook.
 
 ## Scope and variants
 
 - Only this mod's undead change: our own entity types (woken sleepers and the rare natural spawns), tagged as undead. Vanilla zombies and skeletons elsewhere (other mods' spawners and structures) stay vanilla, and AI or animation mods that target vanilla classes don't override ours. Mob spawner tweaks: not now (owner, 2026-11-24).
-- Built: skeleton, zombie, husk and stray sleepers, each sitting and lying (`UndeadVariant`). Bogged are not sleepers: they lurk (Undead variants, above). Drowned sleepers only in shipwrecks (in progress); elsewhere drowned are their own segment (`specs/drowned.md`). Ideas, not designed: parched, wither skeleton, zombie villager. Not yet: zombified piglin, skeleton/zombie horses, camel husk, zombie nautilus.
+- Built: skeleton, zombie, husk and stray sleepers, each sitting, lying and face down (`UndeadVariant`). Bogged are not sleepers: they lurk (Undead variants, above). Drowned sleepers only in shipwrecks (in progress); elsewhere drowned are their own segment (`specs/drowned.md`). Ideas, not designed: parched, wither skeleton, zombie villager. Not yet: zombified piglin, skeleton/zombie horses, camel husk, zombie nautilus.
 - One sleeper block per variant (or a variant property), each with its own 16x and 32x textures.
 
 ## Natural spawning
@@ -365,8 +373,9 @@ Test-lite policy (`specs/quality.md`, Test suites): `ReworkedMobsCoreGameTest` r
 - `GrabLootGameTest`: the waking grab takes any item when no weapon is in reach; the idle grab goal walks to displays and loose items (zombies and skeletons), prefers a display over a closer loose item, ignores displays when the hand is full or the mob isn't in the tag (one test), ignores displays while chasing and goes back for them when idle; contact pickup while chasing stays vanilla's.
 - `UndeadCombatGameTest`: fist streaks shred armor and a pause resets them, Smite kills only our undead outright, skeletons shrug off arrows, zombie headshots hurt more, idle zombies drift together and a zombie with a target doesn't (checked once it reaches its target).
 - `SleeperFormsGameTest`: every kind x pose x statue survives the form stack, pick block and Silk Touch drop, and names show the form (`everyFormSurvivesPickUpAndPlace`); a re-placed statue ignores explosion, bell and noise, and plain items place the default wakeable form (`statueStaysInertAfterReplaceAndOldItemsPlace`).
+- Face-down sleepers: every kind has the pose, round-trips through pick-block/Silk Touch, and wakes like any other (`SleeperFormsGameTest.faceDownSleepersAreNamedAndWake`).
 - `ZombieGaitGameTest`: the shamble's drag-and-lurch covers the same ground as a steady walker of the same speed.
-- Client (`ClientTests` names `sleepers`, `displays`, `gait`; screenshots): sleepers from several angles, sleeper items, a placed sleeper, a woken armored zombie, loot on display; the gait cycle from the side and front and the client's motion lag.
+- Client (`ClientTests` names `sleepers`, `displays`, `gait`, `prone`; screenshots): sleepers from several angles, sleeper items, a placed sleeper, a woken armored zombie, loot on display; the gait cycle from the side and front and the client's motion lag.
 
 ## Woken drowned are vanilla (owner, 2026-11-22)
 

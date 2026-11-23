@@ -6,13 +6,13 @@
 > | | |
 > |---|---|
 > | **Variants** | Sleeping Skeleton, Sleeping Zombie, Sleeping Husk, Sleeping Stray |
-> | **Poses** | Sitting slumped, or lying on its back |
+> | **Poses** | Sitting slumped, lying on its back, or lying face down |
 > | **Behavior** | Motionless until woken |
 > | **Gear** | Often a weapon and armor |
 > | **Mined with** | Silk Touch pickaxe (drops the body) |
 > | **Wakes into** | [[Woken Undead\|Woken undead]] |
 
-A **sleeping undead** is a dormant skeleton, zombie, husk or stray that lies motionless in the world until noise wakes it. All four sit slumped or lie on their backs. They often hold a weapon and wear armor, and they neither move nor attack while asleep.
+A **sleeping undead** is a dormant skeleton, zombie, husk or stray that lies motionless in the world until noise wakes it. All four sit slumped, lie on their backs or lie face down. They often hold a weapon and wear armor, and they neither move nor attack while asleep.
 
 ## Husks and strays
 
@@ -30,6 +30,8 @@ Noise near a sleeping undead disturbs it, and enough noise wakes it. Once awake 
 **Back to sleep at dawn:** undead that were awake during the night and have nothing to fight at sunrise walk to the nearest dark, covered spot within about 16 blocks (an open grave, a crypt niche, a dim roofed corner) and become sleepers again, keeping their gear and loot. A cleared crypt slowly fills up again if you leave survivors.
 
 **Fire:** a lit campfire, soul campfire or fire keeps idle monsters that fear fire about 6 blocks away. A monster already chasing someone ignores it, and Nether mobs and fire-proof mobs don't care. An unlit campfire does nothing.
+
+**Face down:** about a third of the sleepers lying in crypt niches and noble halls lie face down, as do a few of the resting dead in yard graves and many of a shipwreck's lying crew. A face-down sleeper wakes like any other.
 
 **Drowned:** shipwrecks hold sleeping drowned; see [[Shipwreck Crew]].
 
@@ -53,7 +55,7 @@ A sleeping undead woken by a theft attacks the thief.
 
 In either case, the weapon and armor drop as separate items.
 
-The item keeps the body's pose (sitting or lying) and whether it is a statue, and so does picking it with the middle mouse button in Creative mode. Placing it puts it back exactly the same, and a statue never wakes. The item's name shows its form, such as "Sleeping Zombie (Lying)" or "Skeleton Statue (Sitting)". The Creative tab has every kind sitting, lying and as a statue.
+The item keeps the body's pose (sitting, lying or face down) and whether it is a statue, and so does picking it with the middle mouse button in Creative mode. Placing it puts it back exactly the same, and a statue never wakes. The item's name shows its form, such as "Sleeping Zombie (Lying)", "Skeleton Statue (Sitting)" or "Sleeping Skeleton (Face Down)". The Creative tab has every kind in every pose, sleeping and as a statue.
 
 ## Placing
 
@@ -61,7 +63,7 @@ A sleeping-undead item can be placed again; it turns to face the player who plac
 
 ## Obtaining
 
-Sleeping undead lie in the crypts under [[Crypt Yards]]: husks in desert yards, strays in snowy ones. All four kinds, sitting and lying, are in the creative inventory under the **Bubba's Reworked Mobs** tab.
+Sleeping undead lie in the crypts under [[Crypt Yards]]: husks in desert yards, strays in snowy ones. All four kinds, in every pose, are in the creative inventory under the **Bubba's Reworked Mobs** tab.
 
 ## History
 
