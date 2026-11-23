@@ -176,6 +176,7 @@ public class ModDataGenerator implements DataGeneratorEntrypoint {
 			builder.add("item.bubbas_reworked_mobs.sleeper.form", "%s (%s)");
 			builder.add("item.bubbas_reworked_mobs.sleeper.pose.sitting", "Sitting");
 			builder.add("item.bubbas_reworked_mobs.sleeper.pose.lying", "Lying");
+			builder.add("item.bubbas_reworked_mobs.sleeper.pose.prone", "Face Down");
 			for (UndeadVariant variant : UndeadVariant.values()) {
 				String mob = Character.toUpperCase(variant.name().charAt(0)) + variant.name().substring(1).toLowerCase(java.util.Locale.ROOT);
 				builder.add(ModItems.sleeper(variant).getDescriptionId() + ".statue", mob + " Statue");

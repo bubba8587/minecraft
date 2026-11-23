@@ -10,6 +10,7 @@ import io.github.bubba8587.bubbas_totems_artifacts.statue.TotemStatueBlock;
 import io.github.bubba8587.bubbas_totems_artifacts.statue.TotemType;
 import io.github.bubba8587.bubbas_totems_artifacts.totems.TotemAreas;
 import net.minecraft.core.BlockPos;
+import io.github.bubba8587.bubbas_totems_artifacts.totems.TotemsTuning;
 import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.server.level.ServerLevel;
@@ -55,6 +56,30 @@ public class NewTotemsGameTest {
 			ChestBlockEntity chest = helper.getBlockEntity(beacon.east(2), ChestBlockEntity.class);
 			helper.assertTrue(chest.getItem(0).is(Items.DIRT) && chest.getItem(0).getCount() == 5,
 					"chest holds " + chest.getItem(0) + "; item at " + item.position() + " alive " + item.isAlive());
+		});
+	}
+
+	/**
+	 * Milestone. A gathering statue rings dropped items within its radius (none beyond it), puts nothing into a chest it
+	 * touches, and a hopper beside it takes the ring's items into a chest.
+	 */
+	@GameTest(structure = TestSupport.FIELD, maxTicks = 300)
+	public void gatheringStatueRingsItemsForASideHopper(GameTestHelper helper) {
+		BlockPos statue = new BlockPos(8, 1, 8);
+		helper.setBlock(statue, TotemStatueBlock.stateFor(TotemType.GATHERING));
+		helper.setBlock(statue.west(), Blocks.CHEST);
+		helper.setBlock(statue.east(), Blocks.HOPPER.defaultBlockState().setValue(HopperBlock.FACING, Direction.EAST));
+		helper.setBlock(statue.east(2), Blocks.CHEST);
+		ItemEntity near = drop(helper, new Vec3(8.5, 1.1, 8.5 + TotemsTuning.STATUE_RADIUS - 1), new ItemStack(Items.DIRT, 5));
+		ItemEntity far = drop(helper, new Vec3(8.5, 1.1, 8.5 - TotemsTuning.STATUE_RADIUS - 2), new ItemStack(Items.STONE, 1));
+		Vec3 farStart = far.position();
+		helper.succeedWhen(() -> {
+			ChestBlockEntity side = helper.getBlockEntity(statue.west(), ChestBlockEntity.class);
+			helper.assertTrue(side.isEmpty(), "the touching chest got " + side.getItem(0));
+			ChestBlockEntity chest = helper.getBlockEntity(statue.east(2), ChestBlockEntity.class);
+			helper.assertTrue(chest.getItem(0).is(Items.DIRT) && chest.getItem(0).getCount() == 5,
+					"chest holds " + chest.getItem(0) + "; item at " + near.position() + " alive " + near.isAlive());
+			helper.assertTrue(far.isAlive() && far.position().distanceTo(farStart) < 0.5, "an item beyond the radius moved: " + far.position());
 		});
 	}
 
@@ -200,7 +225,7 @@ public class NewTotemsGameTest {
 		ServerLevel level = helper.getLevel();
 		helper.succeedWhen(() -> {
 			helper.assertTrue(inArea(level, TotemAreas.Kind.GROWTH, helper.absolutePos(growth.offset(2, 0, 2))), "no growth area");
-			helper.assertFalse(inArea(level, TotemAreas.Kind.GROWTH, helper.absolutePos(growth.offset(5, 0, 0))), "growth area too big");
+			helper.assertFalse(inArea(level, TotemAreas.Kind.GROWTH, helper.absolutePos(growth.offset(TotemsTuning.STATUE_RADIUS + 2, 0, 0))), "growth area too big");
 			helper.assertTrue(inArea(level, TotemAreas.Kind.HERDING, helper.absolutePos(herding.offset(-3, 0, 0))), "no pasture");
 		});
 	}

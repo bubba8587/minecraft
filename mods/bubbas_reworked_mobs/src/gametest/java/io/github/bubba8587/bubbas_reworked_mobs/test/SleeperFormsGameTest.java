@@ -85,6 +85,28 @@ public class SleeperFormsGameTest {
 		helper.succeed();
 	}
 
+	/** Every kind lies face down: a face-down item is named so, and a face-down sleeper hears an explosion and wakes like any other. */
+	@GameTest(maxTicks = 100)
+	public void faceDownSleepersAreNamedAndWake(GameTestHelper helper) {
+		for (UndeadVariant variant : UndeadVariant.values()) {
+			helper.assertTrue(variant.poses().contains(SleeperPose.PRONE), variant + " has no face-down pose");
+		}
+		String name = SleeperItem.form(ModItems.sleeper(UndeadVariant.SKELETON), SleeperPose.PRONE, false).getHoverName().getString();
+		helper.assertTrue(name.equals("Sleeping Skeleton (Face Down)"), "face-down item name: " + name);
+		String statue = SleeperItem.form(ModItems.sleeper(UndeadVariant.ZOMBIE), SleeperPose.PRONE, true).getHoverName().getString();
+		helper.assertTrue(statue.contains("Statue") && statue.endsWith("(Face Down)"), "face-down statue name: " + statue);
+		helper.setBlock(POS.below(), Blocks.STONE);
+		helper.setBlock(POS, ModBlocks.sleeper(UndeadVariant.ZOMBIE).defaultBlockState().setValue(SleeperBlock.POSE, SleeperPose.PRONE));
+		SleeperBlockEntity sleeper = helper.getBlockEntity(POS, SleeperBlockEntity.class);
+		sleeper.setSensitivity(1000.0F);
+		helper.getLevel().gameEvent(GameEvent.EXPLODE, helper.absoluteVec(Vec3.atCenterOf(POS.east(2))), GameEvent.Context.of((net.minecraft.world.entity.Entity) null));
+		helper.assertTrue(sleeper.isWakePending(), "a face-down sleeper did not hear the explosion");
+		helper.succeedWhen(() -> {
+			helper.assertBlockPresent(Blocks.AIR, POS);
+			helper.assertEntityPresent(io.github.bubba8587.bubbas_reworked_mobs.registry.ModEntities.woken(UndeadVariant.ZOMBIE), POS, 1.5);
+		});
+	}
+
 	/** A statue picked up and placed again stays asleep through an explosion and a bell; a plain old-id item still places a wakeable sleeper. */
 	@GameTest(maxTicks = 40)
 	public void statueStaysInertAfterReplaceAndOldItemsPlace(GameTestHelper helper) {

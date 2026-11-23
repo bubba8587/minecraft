@@ -5,20 +5,10 @@ import java.util.List;
 
 import io.github.bubba8587.bubbas_totems_artifacts.mixin.ItemEntityAccessor;
 import io.github.bubba8587.bubbas_totems_artifacts.totems.TotemsTuning;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.Container;
 import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.level.block.BarrelBlock;
-import net.minecraft.world.level.block.ChestBlock;
-import net.minecraft.world.level.block.entity.HopperBlockEntity;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 
@@ -58,45 +48,5 @@ public final class Gathering {
 			}
 		}
 		return Math.min(pulled, TotemsTuning.GATHER_MAX_ITEMS_PER_TICK);
-	}
-
-	/** A chest or barrel touching pos, or null. */
-	public static @Nullable BlockPos chestBeside(ServerLevel level, BlockPos pos) {
-		for (net.minecraft.core.Direction d : new net.minecraft.core.Direction[] {net.minecraft.core.Direction.DOWN, net.minecraft.core.Direction.NORTH,
-				net.minecraft.core.Direction.SOUTH, net.minecraft.core.Direction.WEST, net.minecraft.core.Direction.EAST, net.minecraft.core.Direction.UP}) {
-			BlockPos at = pos.relative(d);
-			BlockState state = level.getBlockState(at);
-			if (state.getBlock() instanceof ChestBlock || state.getBlock() instanceof BarrelBlock) {
-				return at;
-			}
-		}
-		return null;
-	}
-
-	/** Gathering statue. */
-	public static int intoChest(ServerLevel level, BlockPos statue) {
-		BlockPos chestPos = chestBeside(level, statue);
-		if (chestPos == null) {
-			return 0;
-		}
-		Container chest = HopperBlockEntity.getContainerAt(level, chestPos);
-		if (chest == null) {
-			return 0;
-		}
-		AABB area = new AABB(statue).inflate(TotemsTuning.GATHER_STATUE_RADIUS);
-		int stored = 0;
-		for (ItemEntity item : level.getEntitiesOfClass(ItemEntity.class, area, item -> pullable(item, null))) {
-			int before = item.getItem().getCount();
-			Vec3 from = item.position();
-			HopperBlockEntity.addItem(chest, item);
-			if (!item.isAlive() || item.getItem().getCount() < before) {
-				stored++;
-				level.sendParticles(ParticleTypes.REVERSE_PORTAL, from.x, from.y + 0.2, from.z, 6, 0.15, 0.15, 0.15, 0.02);
-			}
-		}
-		if (stored > 0) {
-			level.playSound(null, chestPos, SoundEvents.ITEM_PICKUP, SoundSource.BLOCKS, 0.4F, 0.8F);
-		}
-		return stored;
 	}
 }

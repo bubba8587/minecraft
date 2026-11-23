@@ -24,11 +24,13 @@ import net.minecraft.world.phys.Vec3;
 
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 
-/** The Totem of Gathering in a beacon. */
+/** The Totem of Gathering in a beacon or as a statue: the ring. */
 public final class GatheringRing {
 	private static final class Ring {
 		final BlockPos beacon;
 		AABB area;
+		double radius = TotemsTuning.RING_RADIUS;
+		double height = TotemsTuning.RING_HEIGHT;
 		long expiresAt;
 		final List<Entity> members = new ArrayList<>();
 
@@ -37,7 +39,7 @@ public final class GatheringRing {
 		}
 
 		Vec3 centre() {
-			return new Vec3(beacon.getX() + 0.5, beacon.getY() + TotemsTuning.RING_HEIGHT, beacon.getZ() + 0.5);
+			return new Vec3(beacon.getX() + 0.5, beacon.getY() + height, beacon.getZ() + 0.5);
 		}
 	}
 
@@ -52,8 +54,15 @@ public final class GatheringRing {
 
 	/** Start or refresh the ring round a beacon. */
 	public static void put(ServerLevel level, BlockPos beacon, AABB area, int lifetimeTicks) {
+		put(level, beacon, area, lifetimeTicks, TotemsTuning.RING_RADIUS, TotemsTuning.RING_HEIGHT);
+	}
+
+	/** Start or refresh a ring of the given radius and height round pos (a beacon or a gathering statue). */
+	public static void put(ServerLevel level, BlockPos beacon, AABB area, int lifetimeTicks, double radius, double height) {
 		Ring ring = RINGS.computeIfAbsent(level, l -> new HashMap<>()).computeIfAbsent(beacon.immutable(), Ring::new);
 		ring.area = area;
+		ring.radius = radius;
+		ring.height = height;
 		ring.expiresAt = level.getGameTime() + lifetimeTicks;
 	}
 
@@ -65,10 +74,10 @@ public final class GatheringRing {
 	}
 
 	/** Where the ring is at time for member index of count. */
-	public static Vec3 slot(BlockPos beacon, long time, int index, int count) {
+	private static Vec3 slot(Ring ring, long time, int index, int count) {
 		double angle = time * (2.0 * Math.PI / TotemsTuning.RING_PERIOD_TICKS) + index * (2.0 * Math.PI / Math.max(1, count));
-		double r = TotemsTuning.RING_RADIUS;
-		return new Vec3(beacon.getX() + 0.5 + Math.cos(angle) * r, beacon.getY() + TotemsTuning.RING_HEIGHT, beacon.getZ() + 0.5 + Math.sin(angle) * r);
+		Vec3 c = ring.centre();
+		return new Vec3(c.x + Math.cos(angle) * ring.radius, c.y, c.z + Math.sin(angle) * ring.radius);
 	}
 
 	private static void tick(ServerLevel level) {
@@ -123,7 +132,7 @@ public final class GatheringRing {
 				count--;
 				continue;
 			}
-			Vec3 target = slot(ring.beacon, now + 1, i, count);
+			Vec3 target = slot(ring, now + 1, i, count);
 			Vec3 to = target.subtract(e.position());
 			double distance = to.length();
 			Vec3 velocity = distance > TotemsTuning.RING_FLY_SPEED ? to.scale(TotemsTuning.RING_FLY_SPEED / distance) : to;
@@ -134,7 +143,7 @@ public final class GatheringRing {
 			}
 		}
 		if (now % 20 == 0 && count > 0) {
-			level.sendParticles(ParticleTypes.ENCHANT, centre.x, centre.y, centre.z, 3, TotemsTuning.RING_RADIUS, 0.1, TotemsTuning.RING_RADIUS, 0.0);
+			level.sendParticles(ParticleTypes.ENCHANT, centre.x, centre.y, centre.z, 3, ring.radius, 0.1, ring.radius, 0.0);
 		}
 	}
 

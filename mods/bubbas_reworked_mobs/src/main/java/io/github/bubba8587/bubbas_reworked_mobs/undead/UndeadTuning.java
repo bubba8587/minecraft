@@ -118,6 +118,12 @@ public final class UndeadTuning {
 	// --- shipwreck crew ------------------------------------------------------------------------------------
 	/** Chance per below-decks cell. */
 	public static final float SHIPWRECK_CREW_CHANCE = 0.12F;
+	/** Share of lying shipwreck crew that lie face down. */
+	public static final float SHIPWRECK_FACE_DOWN_SHARE = 0.4F;
+	/** Share of lying crypt sleepers that lie face down. */
+	public static final float CRYPT_FACE_DOWN_SHARE = 0.3F;
+	/** Share of the resting dead in yard graves that lie face down. */
+	public static final float RESTING_FACE_DOWN_SHARE = 0.15F;
 
 	private UndeadTuning() {
 	}

@@ -40,6 +40,7 @@
   "item.bubbas_reworked_mobs.graveyard_map": "Graveyard Explorer Map",
   "item.bubbas_reworked_mobs.sleeper.form": "%s (%s)",
   "item.bubbas_reworked_mobs.sleeper.pose.lying": "Lying",
+  "item.bubbas_reworked_mobs.sleeper.pose.prone": "Face Down",
   "item.bubbas_reworked_mobs.sleeper.pose.sitting": "Sitting",
   "itemGroup.bubbas_reworked_mobs": "Bubba's Reworked Mobs"
 }

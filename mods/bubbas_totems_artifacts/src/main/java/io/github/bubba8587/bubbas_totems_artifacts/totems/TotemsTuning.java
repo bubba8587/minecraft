@@ -18,6 +18,9 @@ public final class TotemsTuning {
 	/** Beacon ring: radius and height above the beacon's base. */
 	public static final double RING_RADIUS = 1.25;
 	public static final double RING_HEIGHT = 1.05;
+	/** Gathering statue ring: radius (over the blocks beside the statue) and height above the statue's base. */
+	public static final double STATUE_RING_RADIUS = 1.0;
+	public static final double STATUE_RING_HEIGHT = 1.1;
 	/** Ticks per turn of the ring. */
 	public static final int RING_PERIOD_TICKS = 100;
 	/** Ring join speed and size limit. */
@@ -27,8 +30,6 @@ public final class TotemsTuning {
 	public static final int RING_COLLECT_TICKS = 10;
 	/** XP release distance to a player. */
 	public static final double RING_XP_RELEASE_DISTANCE = 2.5;
-	/** Gathering statue radius. */
-	public static final double GATHER_STATUE_RADIUS = 3.0;
 	/** Held: blocks within this many blocks of the holder are not broken by explosions. */
 	public static final double FORTIFY_RADIUS = 8.0;
 	/** Held: the box whose crops and saplings grow faster. */
@@ -63,10 +64,8 @@ public final class TotemsTuning {
 	public static final int END_COOLDOWN_TICKS = 80;
 	/** Pasture: range of a herder who can lead livestock out. */
 	public static final double HERD_LEAD_OUT_RANGE = 10.0;
-	/** Statue area radius. */
-	public static final int STATUE_RADIUS = 3;
-	/** Warding statue ward radius (keeps sleepers asleep). */
-	public static final int WARD_STATUE_RADIUS = 5;
+	/** Statue area radius, every statue type. */
+	public static final int STATUE_RADIUS = 5;
 	/** Statue pulse interval. */
 	public static final int STATUE_PULSE_TICKS = 20;
 	/** Growth statue extra random ticks. */
