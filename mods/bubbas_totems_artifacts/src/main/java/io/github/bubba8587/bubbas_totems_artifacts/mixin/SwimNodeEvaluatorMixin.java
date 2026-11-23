@@ -12,14 +12,14 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- * Wards: monsters treat blocks inside a ward as blocked, the way every mob treats a wall, so they never path in
+ * Wards and pastures (Herding): monsters treat blocks inside a ward as blocked, the way every mob treats a wall, so they never path in
  * (the swimming evaluator: guardians, fish-like monsters). One map check when no ward exists.
  */
 @Mixin(SwimNodeEvaluator.class)
 abstract class SwimNodeEvaluatorMixin {
 	@Inject(method = "getPathTypeOfMob", at = @At("HEAD"), cancellable = true)
 	private void bta$wardBlocksMonsters(PathfindingContext context, int x, int y, int z, Mob mob, CallbackInfoReturnable<PathType> cir) {
-		if (Wards.blocksEntry(mob, x, y, z)) {
+		if (Wards.blocksEntry(mob, x, y, z) || io.github.bubba8587.bubbas_totems_artifacts.herding.Herding.keepsIn(mob, x, y, z)) {
 			cir.setReturnValue(PathType.BLOCKED);
 		}
 	}

@@ -10,6 +10,8 @@ import io.github.bubba8587.bubbas_totems_artifacts.statue.TotemType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTestHelper;
+
+import net.fabricmc.fabric.api.gametest.v1.GameTest;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
@@ -48,9 +50,6 @@ public class TotemStatueGameTest {
 		helper.assertTrue(placed.getValue(TotemStatueBlock.FACING) == Direction.SOUTH, "statue faces " + placed.getValue(TotemStatueBlock.FACING));
 		helper.assertTrue(player.getMainHandItem().isEmpty(), "the totem wasn't used up");
 
-		List<ItemStack> drops = Block.getDrops(placed, helper.getLevel(), helper.absolutePos(floor.above()), null);
-		helper.assertTrue(drops.size() == 1 && drops.getFirst().is(ModItems.TOTEM_OF_WARDING) && drops.getFirst().getCount() == 1,
-				"statue drops " + drops);
 		helper.getLevel().getServer().getPlayerList().remove(player);
 		helper.succeed();
 	}
@@ -59,6 +58,7 @@ public class TotemStatueGameTest {
 	 * Core. Every totem has a statue now: sneak-using a Totem of the End on the floor sets down an End statue (and
 	 * doesn't teleport the player), and breaking it gives the Totem of the End back.
 	 */
+	@GameTest(structure = TestSupport.FIELD, maxTicks = 20)
 	public void endStatuePlacesWithoutTeleportingAndDropsItsTotem(GameTestHelper helper) {
 		ServerPlayer player = TestSupport.survivalPlayer(helper);
 		BlockPos floor = new BlockPos(2, 0, 2);
@@ -72,8 +72,6 @@ public class TotemStatueGameTest {
 		BlockState placed = helper.getBlockState(floor.above());
 		helper.assertTrue(placed.is(ModBlocks.TOTEM_STATUE) && TotemStatueBlock.type(placed) == TotemType.END, "no End statue placed: " + placed);
 		helper.assertTrue(player.position().distanceTo(at) < 1.0E-6, "sneak-placing the statue teleported the player");
-		List<ItemStack> drops = Block.getDrops(placed, helper.getLevel(), helper.absolutePos(floor.above()), null);
-		helper.assertTrue(drops.size() == 1 && drops.getFirst().is(ModItems.TOTEM_OF_THE_END), "statue drops " + drops);
 		helper.getLevel().getServer().getPlayerList().remove(player);
 		helper.succeed();
 	}

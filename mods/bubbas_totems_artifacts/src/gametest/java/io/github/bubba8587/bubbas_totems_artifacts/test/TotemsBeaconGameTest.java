@@ -37,9 +37,9 @@ public class TotemsBeaconGameTest {
 		return FabricLoader.getInstance().isModLoaded("bubbas_reworked_beacons");
 	}
 
-	/** Gathering: a dropped item 10 blocks out goes into the chest under the beacon; with no chest nothing moves. */
-	@GameTest(structure = TestSupport.FIELD, maxTicks = 20)
-	public void gatheringBeaconFillsTheChestBelow(GameTestHelper helper) {
+	/** Gathering: a pulse starts the ring; a dropped item 10 blocks out joins it. */
+	@GameTest(structure = TestSupport.FIELD, maxTicks = 60)
+	public void gatheringBeaconStartsTheRing(GameTestHelper helper) {
 		if (!withBeacons()) {
 			helper.succeed();
 			return;
@@ -49,13 +49,8 @@ public class TotemsBeaconGameTest {
 		ItemEntity item = new ItemEntity(helper.getLevel(), at.x, at.y, at.z, new ItemStack(Items.DIRT, 7));
 		helper.getLevel().addFreshEntity(item);
 		WithBeacons.pulse(helper, ModItems.TOTEM_OF_GATHERING, new ItemStack(ModItems.TOTEM_OF_GATHERING), beacon, 1);
-		helper.assertTrue(item.isAlive(), "an item moved with no chest under the beacon");
-		helper.setBlock(new BlockPos(4, 1, 8), Blocks.CHEST); // two below the beacon (a 1-layer pyramid would be between)
-		WithBeacons.pulse(helper, ModItems.TOTEM_OF_GATHERING, new ItemStack(ModItems.TOTEM_OF_GATHERING), beacon, 1);
-		ChestBlockEntity chest = helper.getBlockEntity(new BlockPos(4, 1, 8), ChestBlockEntity.class);
-		helper.assertFalse(item.isAlive(), "the item is still lying there");
-		helper.assertTrue(chest.getItem(0).is(Items.DIRT) && chest.getItem(0).getCount() == 7, "chest holds " + chest.getItem(0));
-		helper.succeed();
+		helper.succeedWhen(() -> helper.assertTrue(io.github.bubba8587.bubbas_totems_artifacts.gathering.GatheringRing
+				.members(helper.getLevel(), helper.absolutePos(beacon)).contains(item), "the item didn't join the ring"));
 	}
 
 	/** Fortification: a pulse sets an area; an explosion inside it breaks nothing. */

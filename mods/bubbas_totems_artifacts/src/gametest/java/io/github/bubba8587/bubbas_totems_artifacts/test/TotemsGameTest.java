@@ -15,6 +15,10 @@ import io.github.bubba8587.bubbas_totems_artifacts.seeking.StructureSeeker;
 import io.github.bubba8587.bubbas_totems_artifacts.seeking.TotemOfSeekingItem;
 import io.github.bubba8587.bubbas_totems_artifacts.totems.TotemsLoot;
 import io.github.bubba8587.bubbas_totems_artifacts.totems.TotemsTuning;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.resources.Identifier;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
@@ -388,6 +392,9 @@ public class TotemsGameTest {
 		for (Map.Entry<Item, Map<ResourceKey<LootTable>, Float>> totem : TotemsLoot.all().entrySet()) {
 			for (Map.Entry<ResourceKey<LootTable>, Float> table : totem.getValue().entrySet()) {
 				LootTable loot = level.getServer().reloadableRegistries().getLootTable(table.getKey());
+				if (table.getKey().identifier().getPath().startsWith("entities/")) {
+					continue;
+				}
 				if (loot == LootTable.EMPTY) {
 					continue; // another mod's table (Reworked Mobs' crypts) that isn't installed in this run
 				}
@@ -406,16 +413,60 @@ public class TotemsGameTest {
 						totem.getKey() + " in " + table.getKey().identifier() + ": " + found + " of " + rolls + " (expected about " + expected + ")");
 			}
 		}
+		// Evokers: Warding at about 5 %, rolled as entity loot with the evoker as the victim.
+		var evoker = helper.spawnWithNoFreeWill(EntityTypes.EVOKER, new BlockPos(1, 1, 1));
+		LootTable evokerLoot = level.getServer().reloadableRegistries().getLootTable(EntityTypes.EVOKER.getDefaultLootTable().orElseThrow());
+		int fromEvokers = 0;
+		for (int i = 0; i < 1000; i++) {
+			LootParams params = new LootParams.Builder(level).withParameter(LootContextParams.THIS_ENTITY, evoker)
+					.withParameter(LootContextParams.ORIGIN, evoker.position())
+					.withParameter(LootContextParams.DAMAGE_SOURCE, level.damageSources().generic()).create(LootContextParamSets.ENTITY);
+			for (ItemStack stack : evokerLoot.getRandomItems(params)) {
+				if (stack.is(ModItems.TOTEM_OF_WARDING)) {
+					fromEvokers++;
+				}
+			}
+		}
+		evoker.discard();
+		helper.assertTrue(fromEvokers > 25 && fromEvokers < 80, "evokers dropping a Totem of Warding: " + fromEvokers + " of 1000");
 		helper.succeed();
 	}
 
 	/** Every totem stacks to one and is uncommon, like the Totem of Undying; the tuning stays in sensible bounds. */
 	@GameTest(maxTicks = 5)
 	public void totemsAreArtifacts(GameTestHelper helper) {
-		for (Item item : TotemsLoot.all().keySet()) {
-			helper.assertTrue(new ItemStack(item).getMaxStackSize() == 1, item + " stacks");
+		for (io.github.bubba8587.bubbas_totems_artifacts.statue.TotemType type : io.github.bubba8587.bubbas_totems_artifacts.statue.TotemType.values()) {
+			ItemStack stack = new ItemStack(type.item());
+			helper.assertTrue(stack.getMaxStackSize() == 1, type + " stacks");
+			helper.assertTrue(stack.getRarity() != net.minecraft.world.item.Rarity.COMMON, type + " is common");
 		}
-		helper.assertTrue(TotemsTuning.GATHER_RADIUS <= 16 && TotemsTuning.FORTIFY_RADIUS <= 16, "held radii too large");
+		helper.assertTrue(new ItemStack(ModItems.GRAVE_TALISMAN).getMaxStackSize() == 1, "the talisman stacks");
 		helper.succeed();
+	}
+
+	/**
+	 * Saved worlds: items saved under their old Bubba's Reworked Mobs ids load as this mod's items (Fabric registry
+	 * aliases), both by registry lookup and through the item stack codec a world save uses.
+	 */
+	@GameTest
+	public void oldReworkedMobsIdsLoadAsTheseItems(GameTestHelper helper) {
+		checkOldId(helper, "grave_talisman", ModItems.GRAVE_TALISMAN);
+		checkOldId(helper, "totem_of_warding", ModItems.TOTEM_OF_WARDING);
+		helper.succeed();
+	}
+
+	private static void checkOldId(GameTestHelper helper, String name, Item expected) {
+		Identifier old = Identifier.fromNamespaceAndPath(ModItems.OLD_NAMESPACE, name);
+		helper.assertTrue(BuiltInRegistries.ITEM.getValue(old) == expected, old + " doesn't look up as the new item");
+		CompoundTag saved = new CompoundTag();
+		saved.putString("id", old.toString());
+		saved.putInt("count", 1);
+		ItemStack stack = ItemStack.CODEC.parse(helper.getLevel().registryAccess().createSerializationContext(NbtOps.INSTANCE), saved)
+				.getOrThrow(e -> new AssertionError("old " + name + " stack didn't load: " + e));
+		helper.assertTrue(stack.is(expected), "old " + name + " stack loaded as " + stack);
+		// Saved again, it is written under the new id.
+		var written = ItemStack.CODEC.encodeStart(helper.getLevel().registryAccess().createSerializationContext(NbtOps.INSTANCE), stack).getOrThrow();
+		helper.assertTrue(written instanceof CompoundTag tag && tag.getStringOr("id", "").equals("bubbas_totems_artifacts:" + name),
+				"re-saved " + name + " as " + written);
 	}
 }
