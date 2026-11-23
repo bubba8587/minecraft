@@ -18,11 +18,7 @@
 		]
 	},
 	"mixins": [
-		"bubbas_extra_recipes.mixins.json",
-		{
-			"config": "bubbas_extra_recipes.client.mixins.json",
-			"environment": "client"
-		}
+		"bubbas_extra_recipes.mixins.json"
 	],
 	"depends": {
 		"fabricloader": ">=${loader_version}",
