@@ -33,8 +33,8 @@ import org.joml.Vector3f;
  * Draws a spun web (specs/spiders.md "Spun webs"): a tangle of strands criss-crossing between anchor points (owner,
  * 2026-11-22), in pixels, so it sits next to vanilla's cobweb block (owner: smooth strands looked out of place).
  * <ul>
- * <li>Each strand is a stepped line of crisp square pixels snapped to the world's 1/16 texel grid, one texel wide (two
- * for the heavy guy-lines, on a 1/8 grid), sagging a little.</li>
+ * <li>Each strand is a stepped line of crisp square pixels snapped to the world grid at the cobweb texture's own texel
+ * size (1/16 with vanilla, 1/32 with a 32x pack), one texel wide (two for the heavy guy-lines), sagging a little.</li>
  * <li>Pixels take the cobweb texture's three colours (white, pale and cool grey), chosen per texel cell, so a strand
  * reads like a line drawn in the cobweb's own pixel art.</li>
  * <li>Lit like the world around each pixel (sky and block light where it hangs, no floor), so strands in shade go grey
@@ -49,7 +49,8 @@ public class SpunWebRenderer extends EntityRenderer<SpunWeb, SpunWebRenderer.Sta
 	private static final RenderType TYPE = RenderTypes.entityCutout(PIXEL);
 	/** Vanilla cobweb's colours (textures/block/cobweb.png). */
 	private static final int[][] PALETTE = {{255, 255, 255}, {228, 233, 233}, {196, 206, 210}};
-	private static final double TEXEL = 1.0 / 16.0;
+	/** The vanilla block whose texture the strands match (pixel size and palette). */
+	private static final Identifier COBWEB_SPRITE = Identifier.withDefaultNamespace("block/cobweb");
 	/** Sag at the middle, as a fraction of the strand's length (less for steep strands). */
 	private static final double SAG = 0.06;
 	private static final int LIGHT_REFRESH_TICKS = 40;
@@ -85,10 +86,11 @@ public class SpunWebRenderer extends EntityRenderer<SpunWeb, SpunWebRenderer.Sta
 	public void extractRenderState(SpunWeb entity, State state, float partialTicks) {
 		super.extractRenderState(entity, state, partialTicks);
 		Cached c = cache.computeIfAbsent(entity.getId(), id -> new Cached());
-		String key = entity.getUUID() + "|" + entity.strands().hashCode() + "|" + entity.tear() + "|" + entity.position();
+		double texel = texel();
+		String key = entity.getUUID() + "|" + entity.strands().hashCode() + "|" + entity.tear() + "|" + entity.position() + "|" + texel;
 		long now = entity.level().getGameTime();
 		if (!key.equals(c.key) || now - c.lightTick >= LIGHT_REFRESH_TICKS) {
-			c.pixels = build(entity, entity.level());
+			c.pixels = build(entity, entity.level(), texel);
 			c.key = key;
 			c.lightTick = now;
 		}
@@ -146,7 +148,21 @@ public class SpunWebRenderer extends EntityRenderer<SpunWeb, SpunWebRenderer.Sta
 
 	// --- the pixels ----------------------------------------------------------------------------------------
 
-	private static List<Pixel> build(SpunWeb web, Level level) {
+	/**
+	 * One texel of the cobweb texture as it's loaded now: 1/16 with vanilla, 1/32 with a 32x pack (ours or Faithful),
+	 * so strands always match the cobweb blocks next to them. Capped at 1/32 to bound the pixel count.
+	 */
+	private static double texel() {
+		try {
+			int w = net.minecraft.client.Minecraft.getInstance().getAtlasManager().getAtlasOrThrow(net.minecraft.data.AtlasIds.BLOCKS)
+					.getSprite(COBWEB_SPRITE).contents().width();
+			return 1.0 / Math.max(16, Math.min(32, w));
+		} catch (RuntimeException e) {
+			return 1.0 / 16.0;
+		}
+	}
+
+	private static List<Pixel> build(SpunWeb web, Level level, double texel) {
 		List<Pixel> out = new ArrayList<>();
 		Vec3 hub = web.position();
 		Random rnd = new Random(web.lookSeed());
@@ -157,8 +173,8 @@ public class SpunWebRenderer extends EntityRenderer<SpunWeb, SpunWebRenderer.Sta
 			int size = rnd.nextFloat() < 0.3F ? 2 : 1;
 			if (rnd.nextFloat() < tear * 0.7F) {
 				double at = 0.3 + rnd.nextDouble() * 0.4;
-				trace(out, drape(s.a(), s.a().lerp(s.b(), at), rnd), hub, size, level, probe);
-				trace(out, drape(s.b(), s.b().lerp(s.a(), 1.0 - at), rnd), hub, size, level, probe);
+				trace(out, drape(s.a(), s.a().lerp(s.b(), at), rnd), hub, texel * size, level, probe);
+				trace(out, drape(s.b(), s.b().lerp(s.a(), 1.0 - at), rnd), hub, texel * size, level, probe);
 				continue;
 			}
 			double len = s.length();
@@ -170,7 +186,7 @@ public class SpunWebRenderer extends EntityRenderer<SpunWeb, SpunWebRenderer.Sta
 				double t = (double) k / parts;
 				line.add(s.a().lerp(s.b(), t).add(0.0, -sag * len * 4.0 * t * (1.0 - t), 0.0));
 			}
-			trace(out, line, hub, size, level, probe);
+			trace(out, line, hub, texel * size, level, probe);
 		}
 		return out;
 	}
@@ -189,8 +205,7 @@ public class SpunWebRenderer extends EntityRenderer<SpunWeb, SpunWebRenderer.Sta
 	}
 
 	/** Walks a polyline in half-texel steps and adds one pixel per grid cell it enters (snapped to the world grid). */
-	private static void trace(List<Pixel> out, List<Vec3> line, Vec3 hub, int size, Level level, BlockPos.MutableBlockPos probe) {
-		double cell = TEXEL * size;
+	private static void trace(List<Pixel> out, List<Vec3> line, Vec3 hub, double cell, Level level, BlockPos.MutableBlockPos probe) {
 		long last = Long.MIN_VALUE;
 		for (int i = 0; i + 1 < line.size(); i++) {
 			Vec3 a = hub.add(line.get(i));
