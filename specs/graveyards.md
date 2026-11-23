@@ -112,7 +112,7 @@ Owner's design (2026-11-22). Part 1's worldgen (`specs/undead.md` "Worldgen"): t
 - Totems: `totemsAreFoundInLoot` passes standalone (crypt table skipped) and with `-PwithMobs`.
 - Not yet tested (objectives): a crypt generates under a natural yard with its chest and niche sleepers (needs a deeper test field; checked by eye in the client part); crypt yards generate in each breakdown state (step 2); the gravestone's edit screen opens on placement (vanilla path, not exercised by a test).
 
-## Will-o'-wisps (owner, 2026-11-22; in progress, agent 2)
+## Will-o'-wisps (owner, 2026-11-22; built)
 
 - **Just soul fire particles** (vanilla `soul_fire_flame`), **faint and only occasional**.
 - **Over graveyards at night:** a few drift over the graves and slowly lead toward the yard's crypt entrance.
@@ -120,9 +120,58 @@ Owner's design (2026-11-22). Part 1's worldgen (`specs/undead.md` "Worldgen"): t
 - **Cleared for good after discovery:** each player has a saved list of the yards they've reached (a persistent player attachment). Once you've walked into a yard, its wisps stop showing for you, both the hints and the ones over its graves. Other players who haven't found it still see them. The server sends them only to players who haven't found that yard.
 - Needs a cheap way to find yards near a player (a per-world registry of yards, like the cairn sites, rather than structure searches).
 
-## Noble dead in gemmed armor (owner, 2026-11-22; in progress, agent 2)
+### As built (2026-11-22, agent 2)
+
+#### Player-facing
+
+- Faint, occasional **soul fire flames** (vanilla `soul_fire_flame`) lead you to crypt yards you haven't found yet:
+  - **Hints:** while a yard is loaded within **96 blocks**, now and then (about one every 8 seconds per yard) a single wisp appears **6-12 blocks from you toward the yard**, drifting that way.
+  - **Over the graves at night:** within **48 blocks**, wisps rise over the yard's graves now and then (about one every 2 seconds) and drift slowly toward the **crypt entrance** (the top of its stairs; the gate if the yard has no crypt).
+- **Cleared for good once found:** walking into a yard (anywhere inside its footprint) adds it to your own saved list; its wisps stop showing **for you**. Other players who haven't found it still see them; the server sends wisps only to players who haven't found that yard. The list survives death.
+
+#### Numbers
+
+| What | Value | Where |
+|---|---|---|
+| Checked | every second | `GraveTuning.WISP_TICKS` |
+| Hint range / chance / distance | 96 blocks / 12% per check / 6-12 blocks from you | `WISP_RANGE`, `WISP_HINT_CHANCE`, `WISP_HINT_MIN`/`MAX` |
+| Night range / chance | 48 blocks / 50% per check | `WISP_NIGHT_RANGE`, `WISP_NIGHT_CHANCE` |
+| Yards looked for | 6 chunks round each player | `WISP_DISCOVER_CHUNKS` |
+
+#### Spec facts
+
+- `grave/Wisps`: yards are found from the structure references of loaded chunks round each player (as camps are) and kept per level in memory (not saved: they're rediscovered from chunk data after a restart); the command build registers its yard by hand. Players: `level.getPlayers(EntitySelector.NO_SPECTATORS)`. Particles go only to the player concerned: `ServerLevel.sendParticles(ServerPlayer, ...)` with count 0 (the offsets give the drift).
+- Found yards: persistent player attachment `bubbas_reworked_mobs:found_yards` (a list of yard ids = start chunk), copied on death.
+- `CryptYardPiece.wispTarget()`: the top of the crypt stairs, or above the gate.
+
+#### Tests
+
+- Milestone `WispsGameTest.walkingIntoAYardFindsIt`: a built yard is registered; a player outside hasn't found it; inside, it's found.
+- Client part `wisps` (`WispsClientGameTest`): at night from outside a built yard, wisps forced over the graves plus hints; `wisps-1` looked at (blue soul flames over the yard and toward it). Natural ones are much sparser (one at a time).
+- Full milestone suite 128/128 (develop's test cleanup merged several tests).
+
+## Noble dead in gemmed armor (owner, 2026-11-22; built)
 
 - With Bubba's Infused Gems installed, the armor and weapons of noble crypt sleepers carry gems (their burial finery). Woken, they fight with those effects; robbed, their gemmed gear is the prize. No hard dependency: the gems come through Infused Gems' own item modifier or api only when it's loaded.
+
+### As built (2026-11-22, agent 2)
+
+#### Player-facing
+
+- **With Bubba's Infused Gems installed**, the sleepers of **noble crypts** (the armoured ones in full iron, chain or gold) wear **gemmed** gear: 1-2 gems in their armor, 1 in their weapon, infusion 2-4, tier 2-3 (a little richer than ordinary gemmed mob gear). Woken, they fight with those effects; rob or kill them and the gemmed pieces are the prize.
+- Without Infused Gems, nothing changes (no hard dependency).
+- In a test noble crypt 11 of 13 armoured sleepers carried gems: Infused Gems leaves some pieces without (its own rules on what takes a gem).
+
+#### Spec facts
+
+- Data, not code, decides the gems: item modifier `data/bubbas_reworked_mobs/item_modifier/noble_finery.json` uses Infused Gems' own `bubbas_infused_gems:socket_random_gems` (armor 1-2, weapon 1; infusion [2,3,3,4], tier [2,2,3], any variant) and loads only with the mod (`fabric:load_conditions` `fabric:all_mods_loaded`).
+- `grave/NobleFinery.apply` runs it over a noble sleeper's gear when the crypt is built (`CryptYardPiece.Build.sleeper`, noble = armour chance 0.8 or more); if the modifier isn't loaded it does nothing. Loot context: chest param set with the sleeper's position; seeded per position.
+- New build option `-PwithGems` (Reworked Mobs) puts Infused Gems on the test game's classpath, like `-PwithBeacons`.
+
+#### Tests
+
+- Milestone `NobleFineryGameTest.nobleDeadWearGemsOnlyWithInfusedGems`: a built noble crypt; without Infused Gems no gear carries its components; with `-PwithGems` most noble sleepers' gear does (11 of 13). Both runs pass; full milestone suite 129/129.
+- No screenshot: gemmed gear looks the same on a sleeper.
 
 ## Noble crypt loot (built; agent's call, owner 2026-11-22: "do whatever you like with the noble crypt loot")
 

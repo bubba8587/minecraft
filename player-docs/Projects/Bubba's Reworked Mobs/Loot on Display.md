@@ -33,7 +33,7 @@ A display falls and drops its item if the block holding it up is removed.
 
 ## Obtaining
 
-There is no survival way to place items on display yet. Operators can place them with the `display` command; see [[Reworked Mobs Commands]].
+**Sneak + middle click** with an item in hand lays one of it on the ground as a display; see [[Placing Items Anywhere]]. Operators can place any placement kind with the `display` command; see [[Reworked Mobs Commands]].
 
 ## History
 

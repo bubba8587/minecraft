@@ -20,13 +20,13 @@ side: client and server
 
 **Bubba's Reworked Mobs** is a Fabric mod that reworks Minecraft's mobs one family at a time. Far fewer monsters spawn on their own; instead they come from places: undead lie dormant in graveyards and crypts until noise wakes them, spiders nest in caves, monster camps hold skeletons and zombies, and Ancient Fabricators beside ancient cities send monsters to the surface. Creepers are nervous watchers that explode only when startled, endermen mend the land and build cairns, and drowned and bogged lurk at the water's edge.
 
-In this early test version, sleeping bodies use the normal skeleton and zombie look, and item icons are placeholders until the final art is drawn.
+In this early test version, sleeping bodies use the normal mob look, and sleeper item icons are the matching mob heads.
 
 ## Sleeping undead
 
 *Main article: [[Sleeping Undead]]*
 
-Skeletons, zombies, husks and strays sit or lie motionless, often armed and armored. They can be robbed, dug up with a Silk Touch pickaxe, and placed again as traps or decoration.
+Skeletons, zombies, husks, strays and drowned sit or lie motionless, often armed and armored. They can be robbed, dug up with a Silk Touch pickaxe, and placed again as traps or decoration.
 
 ## Waking
 
@@ -55,6 +55,30 @@ Weapons and tools lie on the ground, hang on walls, stand stuck in the ground or
 ## Grave Talisman and Totem of Warding
 
 The [[Grave Talisman]] and the [[Totem of Warding]] are now part of [[Bubba's Totems & Artifacts]]. With that mod installed, the talisman also senses sleeping undead and the totem calms them. Players upgrading from an earlier version of this mod should install it to keep their talismans and totems.
+
+## Undead at dawn, and fire
+
+*Main article: [[Sleeping Undead]]*
+
+Undead that were up during the night go back to sleep at sunrise in the nearest dark, covered spot. Lit campfires and fire keep idle monsters that fear fire a few blocks away.
+
+## Shipwreck crew
+
+*Main article: [[Shipwreck Crew]]*
+
+Shipwrecks hold their drowned crew asleep between decks.
+
+## Will-o'-wisps and maps
+
+*Main articles: [[Will-o'-Wisps]], [[Explorer Maps]]*
+
+Faint soul flames lead you to graveyards you haven't found, and cartographers sell maps to graveyards, camps and Fabricators. With Infused Gems, noble crypt dead wear gemmed armor ([[Noble Finery]]).
+
+## Trading with endermen
+
+*Main articles: [[Trading at Cairns]], [[Placing Items Anywhere]]*
+
+Sneak + middle click lays a held item on the ground anywhere. Lay one on a cairn's trade pad and the endermen answer with something random.
 
 ## Creepers
 

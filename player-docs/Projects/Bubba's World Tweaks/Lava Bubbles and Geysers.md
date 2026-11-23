@@ -10,7 +10,7 @@
 
 ## Lava bubbles
 
-Wherever a magma block lies under lava (up to four blocks down), the surface above it bubbles. Each bubble is a little crusted blister of lava that swells for about a second, then bursts with a goopy plop. The Nether already has magma all along its lava seas, so their shores and shallows bubble on their own.
+Wherever a magma block lies under lava (up to four blocks down), the surface above it bubbles. Bubbles are slow and sparse: now and then a swelling of the lava itself, in lava's own colours, rises for a few seconds, then bursts with a goopy plop. The Nether already has magma all along its lava seas, so their shores and shallows bubble on their own.
 
 ## Lava geysers
 

@@ -27,6 +27,12 @@ In deserts and snowy places the sleepers are husks and strays.
 
 Noise near a sleeping undead disturbs it, and enough noise wakes it. Once awake it becomes a [[Woken Undead|woken undead]] with the same gear.
 
+**Back to sleep at dawn:** undead that were awake during the night and have nothing to fight at sunrise walk to the nearest dark, covered spot within about 16 blocks (an open grave, a crypt niche, a dim roofed corner) and become sleepers again, keeping their gear and loot. A cleared crypt slowly fills up again if you leave survivors.
+
+**Fire:** a lit campfire, soul campfire or fire keeps idle monsters that fear fire about 6 blocks away. A monster already chasing someone ignores it, and Nether mobs and fire-proof mobs don't care. An unlit campfire does nothing.
+
+**Drowned:** shipwrecks hold sleeping drowned; see [[Shipwreck Crew]].
+
 ## Robbing
 
 Using a sleeping undead with an empty hand takes one item from it: the weapon first, then the armor from the head down, one piece per use.

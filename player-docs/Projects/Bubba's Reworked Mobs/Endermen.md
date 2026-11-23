@@ -54,6 +54,12 @@ Endermen still become hostile when a player looks at them, unless they are busy 
 
 Endermen still take damage from water.
 
+## Trading
+
+*Main article: [[Trading at Cairns]]*
+
+Every cairn has a trade pad. Lay any item on it and walk away; the endermen take it and come back with something random, sometimes good and sometimes very weird.
+
 ## Wards
 
 *Main article: [[Totem of Warding]]*

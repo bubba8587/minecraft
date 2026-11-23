@@ -46,7 +46,7 @@ A sleeper lying in a niche wakes standing in front of it.
 
 ## Finding one
 
-Crypt yards are about one per 36 by 36 chunks, on fairly flat, dry ground, never on water. Operators can build any kind with `/bubbas_reworked_mobs graveyard build <lone|small|medium|large> <kept|overgrown|sunken|collapsed|nearly_gone> <none|pauper|family|noble>` (see [[Reworked Mobs Commands]]).
+Crypt yards are about one per 36 by 36 chunks, on fairly flat, dry ground, never on water. Faint [[Will-o'-Wisps|will-o'-wisps]] lead you to ones you haven't found, and cartographers sell [[Explorer Maps|Graveyard Explorer Maps]]. With Infused Gems, noble crypt dead wear gemmed [[Noble Finery|finery]]. Operators can build any kind with `/bubbas_reworked_mobs graveyard build <lone|small|medium|large> <kept|overgrown|sunken|collapsed|nearly_gone> <none|pauper|family|noble>` (see [[Reworked Mobs Commands]]).
 
 ## History
 
@@ -57,5 +57,7 @@ Crypt yards are about one per 36 by 36 chunks, on fairly flat, dry ground, never
 ## See also
 
 - [[Gravestone]]
+- [[Will-o'-Wisps]]
+- [[Noble Finery]]
 - [[Sleeping Undead]]
 - [[Grave Talisman]]

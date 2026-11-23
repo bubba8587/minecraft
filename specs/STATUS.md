@@ -27,9 +27,10 @@ Nothing is released yet: every mod is 0.1.0 in `develop`.
 - built: woken undead: armor-shred streaks, Smite kills, arrow rules, zombie shamble, drifting into groups ([§](undead.md#tuning))
 - built: light and bells calm or wake sleepers ([§](undead.md#calming-sleepers-light-and-bells))
 - built: natural monster spawns cut to 15 % ([§](undead.md#natural-spawning))
-- in progress (undead-2): back to sleep at dawn ([§](undead.md#back-to-sleep-at-dawn-owner-2026-11-22-in-progress-agent-2))
-- in progress (undead-2): fire as a weak ward ([§](undead.md#fire-as-a-weak-ward-owner-idea-2026-11-22-in-progress-agent-2))
-- in progress (undead-2): drowned sleepers in shipwrecks ([§](undead.md#drowned-sleepers-in-shipwrecks-owner-2026-11-22-in-progress-agent-2))
+- built: back to sleep at dawn ([§](undead.md#back-to-sleep-at-dawn-owner-2026-11-22-built))
+- built: fire as a weak ward ([§](undead.md#fire-as-a-weak-ward-owner-idea-2026-11-22-built))
+- built: drowned sleepers in shipwrecks ([§](undead.md#drowned-sleepers-in-shipwrecks-owner-2026-11-22-built))
+- built: sneak + middle click lays the held item on the ground anywhere ([§](undead.md#laying-a-held-item-anywhere-built-2026-11-22-agent-3-owner-sneak--middle-click))
 - designed: hybrid sleeper bodies and real 16x/32x body art, before release ([§](undead.md#dormant-undead-are-real-blocks))
 - parked: mob spawner tweaks, the bury-break system, more sleeper kinds ([§](undead.md#scope-and-variants))
 
@@ -40,8 +41,8 @@ Nothing is released yet: every mod is 0.1.0 in `develop`.
 - built: pauper, family and noble crypts ([§](graveyards.md#crypts-underground))
 - built: noble crypt burial goods ([§](graveyards.md#noble-crypt-loot-built-agents-call-owner-2026-11-22-do-whatever-you-like-with-the-noble-crypt-loot))
 - built: desert and snowy yards ([§](graveyards.md#desert-and-snowy-yards-built-2026-11-22))
-- in progress (undead-2): will-o'-wisps ([§](graveyards.md#will-o-wisps-owner-2026-11-22-in-progress-agent-2))
-- in progress (undead-2): noble dead in gemmed armor ([§](graveyards.md#noble-dead-in-gemmed-armor-owner-2026-11-22-in-progress-agent-2))
+- built: will-o'-wisps ([§](graveyards.md#will-o-wisps-owner-2026-11-22-built))
+- built: noble dead in gemmed armor (with Infused Gems) ([§](graveyards.md#noble-dead-in-gemmed-armor-owner-2026-11-22-built))
 - designed: standalone hillside crypts (owner to confirm) ([§](graveyards.md#crypts-underground))
 
 **Monster camps** ([spec](monster-camps.md))
@@ -49,7 +50,7 @@ Nothing is released yet: every mod is 0.1.0 in `develop`.
 - built: camp shade and underground room ([§](monster-camps.md#as-built-2026-11-22))
 - built: a lit fire quiets a camp ([§](monster-camps.md#lighting-a-fire-quiets-a-camp-owner-2026-11-22))
 - built: pillager outposts as camps ([§](monster-camps.md#pillager-outposts-become-camps-too-owner))
-- in progress (undead-2, last): maps from cartographers to our places ([§](monster-camps.md#maps-owner-2026-11-22-in-progress-agent-2-after-its-other-undead-work))
+- built: explorer maps from cartographers to graveyards, camps and Fabricators (Fabricator map marks its city for now) ([§](monster-camps.md#maps-owner-2026-11-22-built))
 
 **Spiders** ([spec](spiders.md))
 - built: cave nests, dropping and latching spiders ([§](spiders.md#cave-nests))
@@ -74,12 +75,12 @@ Nothing is released yet: every mod is 0.1.0 in `develop`.
 - built: cairns: sites, spawning, builders, vigil, glow ([§](endermen.md#how-its-built))
 - built: seven cairn forms ([§](endermen.md#cairn-forms-built-2026-11-22-agent-2-owner-sure-add-as-much-variety-as-you-like))
 - built: cairn offering, the ripple, the nexus (for Totems) ([§](endermen.md#cairn-gifts-the-ripple-and-the-nexus-built-2026-11-22-for-totems--artifacts))
-- designed: endermen trading at cairns ([§](endermen.md#trading-at-cairns-owner-2026-11-22-designed-not-built))
-- designed: sneak + middle click places the held item anywhere, with trading ([§](endermen.md#trading-at-cairns-owner-2026-11-22-designed-not-built))
+- built: endermen trading at cairns (trade pad, random answers) ([§](endermen.md#trading-at-cairns-owner-2026-11-22-built))
 
 **Ancient Fabricators** ([spec](mob-factory.md))
 - built: a Fabricator beside every ancient city: look, teleporter, hidden spawner, Warden, debuffs, loot ([§](mob-factory.md#mechanics-as-built-2026-11-17))
 - built: secrets and the lower city ([§](mob-factory.md#secrets-and-the-lower-city-owner-2026-11-16))
+- designed (ready to assign): Fabricators as real structures with their own placement grid, near ancient cities when possible; then maps, `/locate` and Seeking point straight at them ([§](mob-factory.md#fabricators-as-real-structures-owner-2026-11-22-designed-not-built))
 - parked: why challenge a Fabricator, office jukebox loop, totem of spawning ([§](mob-factory.md#parked))
 
 ## Bubba's Totems & Artifacts ([spec](totems-artifacts.md))
@@ -137,6 +138,7 @@ Nothing is released yet: every mod is 0.1.0 in `develop`.
 - built: lava bubbles over magma ([§](world-tweaks.md#as-built-2026-11-22-agent-3))
 - built: lava geysers with black smoke ([§](world-tweaks.md#as-built-2026-11-22-agent-3))
 - built: lift and speed from lava and sulfur geysers ([§](world-tweaks.md#as-built-2026-11-22-agent-3))
+- built: bubble art redrawn from vanilla lava, soot plume, slow and sparse bubbles ([§](world-tweaks.md#art-redo-and-slower-bubbles-2026-11-22-agent-3-owner-feedback))
 
 ## Repo
 - designed (low priority, owner): settings for every mod: game rules in a per-mod category, structure datapacks at world creation, optional Mod Menu button ([§](settings.md))

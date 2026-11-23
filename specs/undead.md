@@ -53,15 +53,111 @@ Dormant undead are real blocks, not entities or display-entity pseudo-blocks. Th
 
 A sleeper lying somewhere lower than its mob is tall (a crypt wall niche under a slab, a shallow grave) used to wake into a box overlapping blocks: no suffocation (eyes clear a half slab) but stuck. `SleeperWaking.stepOutIfStuck` now moves it to the nearest free spot: beside it on the same level first (a niche's open side), then one up, then diagonals; with none it stays. Milestone test `BubbasReworkedMobsGameTest.sleeperInANicheStepsOutWhenItWakes`.
 
-## Drowned sleepers in shipwrecks (owner, 2026-11-22; in progress, agent 2)
+## Drowned sleepers in shipwrecks (owner, 2026-11-22; built)
 
 - A **drowned sleeper** variant, placed inside **shipwreck interiors** (the cabins and hold): the ship's drowned crew, waking like other sleepers. Underwater sleepers are waterlogged already (`SleeperBlock.WATERLOGGED`). Shipwrecks are vanilla structures, so they're added by a structure processor or a placement hook. (Sunken graveyards: no, owner.)
 
-## Back to sleep at dawn (owner, 2026-11-22; in progress, agent 2)
+### As built (2026-11-22, agent 2)
+
+#### Player-facing
+
+- New **drowned sleeper** (creative: "Sleeping Drowned"): the ship's drowned crew. It wakes like other sleepers (noise meter, gear kept) into a drowned, which then behaves like the reworked drowned (lurks in water).
+- **Shipwrecks** now have their crew lying or sitting **between decks**: each empty or flooded spot on a wooden floor with wood overhead within 4 blocks has a 12% chance of a sleeper (owner: they must be inside the boat, not outside on the sand). Full wrecks get a crew of several (a full ship in the test world had 7); broken fragments with little room inside mostly have none. Waterlogged where flooded.
+- Gear: 15% a trident, 15% a fishing rod, 10% a nautilus shell in the off hand, 25% a leather cap.
+- Sleepers now look like their mob: drowned sleepers wear the drowned's seaweed hair and rags, stray sleepers their ragged clothes (the outer layer was missing; owner spotted the drowned).
+- Item icon: vanilla's zombie head model with the drowned texture (like the other sleeper icons).
+
+#### Numbers
+
+| What | Value | Where |
+|---|---|---|
+| Chance per spot between decks | 12% | `UndeadTuning.SHIPWRECK_CREW_CHANCE` |
+| Trident / rod / shell / cap | 15% / 15% / 10% / 25% | `ShipwreckCrew.place` |
+
+#### Spec facts
+
+- `UndeadVariant.DROWNED` (block, item, woken entity `WokenDrowned extends Drowned`, so the drowned mind mixins apply); tags `#woken_undead`, `#grabs_loot`, `#zombies`, `#burn_in_daylight`; particle texture prismarine; vanilla `DrownedRenderer` for the woken mob.
+- Placement: `mixin/ShipwreckCrewMixin` at every RETURN of `ShipwreckPieces.ShipwreckPiece.postProcess` (it has two exits; injecting only at TAIL missed every chunk after a wreck's first) calls `undead/ShipwreckCrew.place` over the piece box clipped to the chunk. Spots: `ShipwreckCrew.inHull` = air or water, sturdy wooden floor, wood within 4 above; one column only, so every chunk sees the same answer (a sideways check across chunk edges read unbuilt neighbours). Per-spot roll from vanilla's positional random (`XoroshiroRandomSource(seed).forkPositional().at(pos)`, seed = world seed ^ piece centre).
+- Sleeper outer layers: `PosedHumanoid` takes an optional outer layer (model layer and texture), posed like the body: drowned `ModelLayers.DROWNED_OUTER_LAYER` + `drowned_outer_layer.png`, stray `STRAY_OUTER_LAYER` + `stray_overlay.png`.
+
+#### Tests
+
+- Milestone `ShipwreckCrewGameTest`: `shipwrecksHaveADrownedCrew` (a vanilla full shipwreck piece built as worldgen builds it has drowned sleepers), `drownedSleeperWakesAsADrowned`. Full milestone suite 148/148.
+- Client part `shipwrecks` (`ShipwreckClientGameTest`): checks the nearest natural shipwrecks of seed 20261116 (fails if any crew sleeper isn't between decks: one full wreck had 7, all inside; fragments 0); screenshots looked at: `drowned-compare` / `-close` (drowned sleepers sitting and lying beside a vanilla drowned, same look), `shipwreck-sleeper-0..2` (crew below deck). The variants part's `variants-sleepers` shows the stray sleepers with their clothes.
+
+## Back to sleep at dawn (owner, 2026-11-22; built)
+
+### As built (2026-11-22, agent 2)
+
+#### Player-facing
+
+- Woken skeletons, zombies, husks and strays that were awake during the night and are still about at sunrise, with nothing to fight, go back to sleep: they walk to the nearest place out of the sun within **16 blocks** (4 up or down) and become a sleeper block again, keeping everything they carry (gear, picked-up loot, name).
+- **Owner's rule (2026-11-22): an undead can always sleep by sitting down in a pocket where it's safe to stand.** So a place is any spot on a solid floor with a roof over it (something that blocks light: glass and barriers don't count) and dim (block light 7 or less; a candle-lit crypt is fine, a torch-lit room isn't):
+  - room to stand → it **sits** down there;
+  - a one-high niche (a crypt wall niche) → it **lies** down (from beside it: it has no room to step in first);
+  - an **open grave** (a pit walled on three sides) works too, roof or not → it lies down.
+- Crypts refill themselves, and a cleared graveyard quietly fills up again if you leave survivors. Undead you wake by day (underground, say) don't go straight back to sleep: only those that saw the night. The resting dead are not involved.
+- A soft sound (the sleeper's place sound) as it settles.
+
+#### Numbers
+
+| What | Value | Where |
+|---|---|---|
+| Search range | 16 blocks across, 4 up/down | `UndeadTuning.SLEEP_SEARCH_RANGE`, `SLEEP_VERTICAL_RANGE` |
+| Searches again every | 3 s (+ up to 1 s) | `UndeadTuning.SLEEP_RESEARCH_TICKS` |
+| Dim enough | block light <= 7 | `UndeadTuning.SLEEP_MAX_LIGHT` |
+| Walk speed there | 1.2x | `BackToSleep` |
+
+#### Spec facts
+
+- `undead/sleeper/BackToSleep` is a vanilla `MoveToBlockGoal` (agent 1 / owner rule: vanilla subsystems over hand-rolled scans): nearest-first search, throttling and walking are vanilla's; `isValidTarget` = the floor under a valid place (`BackToSleep.pose`); it lies down when within 1.6 blocks (`acceptedDistance`). Registered at priority 1 in `WokenZombie` and `WokenSkeleton` (so husks and strays too); runs only by day (`isBrightOutside`, overworld-like dimensions) with no target, not riding or leashed.
+- "Saw the night" is the entity tag `bubbas_reworked_mobs.saw_night`, added in `customServerAiStep` while it's dark (`BackToSleep.noteNight`), so it survives a reload.
+- Lying down: `BackToSleep.lieDown` places the variant's sleeper block (pose from the place, facing the open side for a niche, waterlogged in water), copies every equipment slot into the block entity's gear and the custom name, then discards the mob.
+- An earlier hand-rolled ring search was replaced by the goal before commit.
+
+#### Tests (milestone, `DawnGameTest`)
+
+- `survivorsGoBackToSleepAtDawn`: at noon a woken zombie that saw the night lies down in a stone niche, as a sleeper with its helmet and shovel.
+- `onlyThoseWhoSawTheNight`: one woken by day stays up.
+- `sitsDownUnderAnyCover`: under a plain stone canopy with standing room it sits down.
+- Full milestone suite 143/143.
+- No screenshots for this step (no new visuals: the sleeper poses are the existing ones).
 
 - Woken skeletons and zombies (and their variants) that survive the night look for shade at sunrise: an open grave, a crypt niche or a dark corner nearby. They lie down there and **become sleepers again** (a sleeper block with the gear they carry). Crypts refill themselves, and a cleared graveyard quietly repopulates if you leave survivors. Builder proposes the search range and what counts as shade; the resting dead (never-waking grave skeletons) are not involved.
 
-## Fire as a weak ward (owner idea, 2026-11-22; in progress, agent 2)
+## Fire as a weak ward (owner idea, 2026-11-22; built)
+
+### As built (2026-11-22, agent 2)
+
+#### Player-facing
+
+- A **lit campfire or soul campfire, fire or soul fire** keeps hostile mobs that fear fire about **6 blocks away** (counted along the ground's grid, up to 3 up or down): an idle zombie, skeleton, creeper or spider that comes near walks off again. An unlit campfire does nothing.
+- It's a **weak ward**, a deterrent and not a wall. Builder's proposal for the spec's open detail: **a mob already hunting someone pushes straight through.** Only mobs with nothing to fight keep off.
+- **Who fears it:** goal-driven hostile mobs that fire hurts. **Never** fire-immune mobs (blazes, ghasts, magma cubes, wither skeletons, zombified piglins and the like) and never the Nether natives that fire would hurt (piglins, piglin brutes, hoglins, zoglins), nor the warden.
+- Camps generate with an unlit campfire, so they don't ward themselves (and a lit fire also quiets a camp, as before).
+
+#### Numbers
+
+| What | Value | Where |
+|---|---|---|
+| Keep-away distance | 6 (Manhattan, across) | `UndeadTuning.FIRE_WARD_RADIUS` |
+| Up and down | 3 | `UndeadTuning.FIRE_WARD_VERTICAL` |
+| Checked | every half second per mob (spread by entity id) | `FireWard.canUse` |
+| Walks off to | a spot up to 9 away from the fire, at 1.1x speed | vanilla `DefaultRandomPos.getPosAway` |
+
+#### Spec facts
+
+- Built the way vanilla piglins and hoglins avoid their repellents (specs/vanilla-subsystems.md): block tag `#bubbas_reworked_mobs:undead_repellents` (campfire, soul campfire, fire, soul fire); a campfire counts only while lit (`CampfireBlock.isLitCampfire`, as `PiglinSpecificSensor.isValidRepellent`); the nearest is found with `findBlocksInBoxByManhattanDistance(pos, 6, 3).filterState(FireWard::repels).findFirst()` (as `HoglinSpecificSensor`); the mob walks to `DefaultRandomPos.getPosAway` from it.
+- `undead/FireWard` is a goal (priority 1, MOVE flag), added in `Mob`'s constructor by `mixin/FireWardMixin` to every server-side mob for which `FireWard.fearsFire` holds: `Enemy`, `PathfinderMob`, not `fireImmune()`, not in entity tag `#bubbas_reworked_mobs:unafraid_of_fire` (piglin, piglin brute, hoglin, zoglin, warden). Runs only with no target.
+- Why a goal and not a brain sensor: the mobs it covers (zombies, skeletons, creepers, spiders...) are goal-driven; brain-driven hostile mobs (breeze, creaking and the like) don't get it. Worth an owner call if any of those should.
+- The tag name follows agent 1's brief (`undead_repellents`) although it repels every fire-fearing hostile mob, not only undead.
+
+#### Tests (milestone, `FireWardGameTest`)
+
+- `idleMobsKeepAwayFromALitCampfire`: an idle zombie 2 blocks from a lit campfire walks off to 4+ blocks.
+- `onlyLitFireRepels`: lit campfire, lit soul campfire, fire, soul fire repel; an unlit campfire doesn't.
+- `onlyFireFearingMobs`: zombie, skeleton, creeper, spider yes; blaze, wither skeleton, piglin, hoglin, zombified piglin, magma cube, warden, cow no.
+- Full milestone suite 146/146.
 
 - A lit **campfire** (and soul campfire) or plain **fire** works as a **weak ward**: hostile mobs are reluctant to come close (a few blocks), like a small, soft version of the Totem of Warding (`specs/totems-artifacts.md`). It is a deterrent, not a wall. **Only mobs that would fear fire** (owner, 2026-11-22): nothing that's immune to fire or at home in it, so no Nether mobs (blazes, ghasts, magma cubes, piglins, hoglins, wither skeletons, striders...) and no other fire-immune mob. In practice, a mob that takes fire damage and isn't from the Nether (for example `fireImmune()` false and not in a Nether-mob tag). Details (radius, whether a hunting mob still pushes through) to be proposed.
 - Light already makes sleepers harder to wake (above), so a campfire also helps keep a crypt asleep.
@@ -152,6 +248,12 @@ As built (`display/` package; renderer in `client/display/`):
   - Tests (`GrabLootGameTest`, real paths): each walking test runs in its own test environment (tests in a batch sit 5 blocks apart, inside the notice range) at night (in daylight they burn and flee the sun).
 - Worldgen defaults: skeleton sleepers get standard bows; zombie sleepers get tools/weapons at vanilla's normal zombie equipment rates. Loot rooms and dungeons will place specific items on display instead.
 - Placing for building and tests: `/bubbas_reworked_mobs display <ground|buried|wall|stuck> <item> [<pos> [north|south|east|west]]` (ops, permission level 2). Without a position it goes where you look (within 20 blocks): `wall` on the face you look at, the others on the floor you look at, turned toward you. It refuses a spot that's taken or has nothing to hold the item up. Survival placement (sneak + middle click) is designed, not built (above).
+
+### Laying a held item anywhere (built 2026-11-22, agent 3; owner: sneak + middle click)
+
+- **Sneak + middle click** with an item in hand, aimed at a block, lays one of it on the ground as a `GROUND` display: on top of the block you aim at, or in front of a side face, wherever there's a floor. Plain middle click stays vanilla's pick block. Survival and adventure respect spawn protection and adventure rules (`mayInteract`, `mayUseItemAt`), within block reach; in creative it lays a copy and keeps the stack. Picking it up with an empty hand is the existing display rule.
+- Built as `display/HandPlacing` (shared by players and mobs; the cairn courier enderman uses it): `lay(level, placer, target, stack)` splits one item, places a facing display, plays the item-frame add sound and emits `BLOCK_PLACE`; `canLayAt` = air or still water over a floor that holds a display. Client mixin `LayItemPickMixin` on `Minecraft.pickBlockOrEntity` sends the C2S payload `bubbas_reworked_mobs:lay_item`; the server checks reach and permissions.
+- Test: milestone `heldItemLaysOnTheGround` (one at a time, not on top of a display, not in mid-air); client part `trading` shot `laid-on-grass` (a plain middle click lays nothing).
 
 ## Robbing
 

@@ -24,7 +24,8 @@ Each project has a folder in `Projects/`: an overview page named after the proje
 - Undead lie dormant as [[Sleeping Undead]] until [[Noise and Waking|noise wakes them]]; [[Woken Undead]] fight differently ([[Fighting the Undead]]), and [[Monster Spawning|natural spawns]] drop to 15 %.
 - [[Crypt Yards]] with [[Gravestone|gravestones]] and crypts, [[Monster Camps]] with banner keys, and [[Loot on Display]] for the undead to guard.
 - Reworked [[Creepers]] that watch and startle, shore-lurking [[Drowned]] that drag players under, and lurking [[Bogged]].
-- Cave-nesting [[Spiders]] with giants, webs and cocoons; caretaker [[Endermen]] that build cairns.
+- Cave-nesting [[Spiders]] with giants, webs and cocoons; caretaker [[Endermen]] that build cairns and [[Trading at Cairns|trade]] at them; [[Placing Items Anywhere|lay any item on the ground]] with sneak + middle click.
+- A drowned [[Shipwreck Crew]], [[Will-o'-Wisps]] that lead to unfound graveyards, [[Explorer Maps]] from cartographers, and [[Noble Finery]] with Infused Gems.
 - [[Ancient Fabricators]], mob machines beside every ancient city. Commands: [[Reworked Mobs Commands]].
 
 **[[Bubba's Totems & Artifacts]]**
