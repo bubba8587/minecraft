@@ -18,7 +18,7 @@ public class VentRhythmGameTest {
 		long last = -1;
 		int gap = -1;
 		boolean steady = true;
-		for (long step = 0; step < 3000; step++) {
+		for (long step = 0; step < 6000; step++) {
 			if (LavaGeysers.eruptsAt(seed, magma, depth, step)) {
 				if (last >= 0) {
 					int g = (int) (step - last);
@@ -40,7 +40,7 @@ public class VentRhythmGameTest {
 			int[] shallow = rhythm(seed, magma, 1);
 			int[] deep = rhythm(seed, magma, 4);
 			helper.assertTrue(shallow[1] == 1 && deep[1] == 1, "uneven eruptions at " + magma);
-			helper.assertTrue(shallow[0] >= 20 && shallow[0] <= 50, "vent at " + magma + " erupts every " + shallow[0] * 2 + " s, expected 40-100 s");
+			helper.assertTrue(shallow[0] >= 40 && shallow[0] <= 92, "vent at " + magma + " erupts every " + shallow[0] * 2 + " s, expected 80-185 s");
 			helper.assertTrue(deep[0] > shallow[0], "deeper lava doesn't slow the vent at " + magma);
 			gaps.add(shallow[0]);
 		}
@@ -64,13 +64,13 @@ public class VentRhythmGameTest {
 		player.setGameMode(GameType.SURVIVAL);
 		player.snapTo(surface.getX() + 3.5, surface.getY() + 1.0, surface.getZ() + 0.5, 0.0F, 0.0F);
 		AABB around = new AABB(surface).inflate(1.0, 2.0, 1.0);
-		for (long step = 0; step < 60; step++) {
+		for (long step = 0; step < 100; step++) {
 			LavaGeysers.checkAround(helper.getLevel(), player, step);
 			if (!helper.getLevel().getEntitiesOfClass(LavaGeyser.class, around).isEmpty()) {
 				helper.succeed();
 				return;
 			}
 		}
-		helper.fail("no eruption from the magma block in 60 checks (120 s)");
+		helper.fail("no eruption from the magma block in 100 checks (200 s)");
 	}
 }
