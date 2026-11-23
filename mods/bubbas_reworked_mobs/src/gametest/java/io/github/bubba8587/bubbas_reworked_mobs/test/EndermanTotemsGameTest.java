@@ -10,21 +10,15 @@ import io.github.bubba8587.bubbas_reworked_mobs.enderman.EndermanAccess;
 import io.github.bubba8587.bubbas_reworked_mobs.enderman.Ripples;
 import io.github.bubba8587.bubbas_reworked_mobs.enderman.TargetWorld;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.monster.Enderman;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.Vec3;
 
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 
@@ -37,9 +31,10 @@ public class EndermanTotemsGameTest {
 	private static final String FIELD = EndermanGameTest.FIELD;
 
 	/**
-	 * Core. A ripple fills a hole with the ground that generated there (grass on stone), takes away a dirt pillar and
+	 * A ripple fills a hole with the ground that generated there (grass on stone), takes away a dirt pillar and
 	 * puts grass back where sand lies on the top layer; a pit with a plank floor (a build) keeps its air.
 	 */
+	@GameTest(structure = FIELD, maxTicks = 100)
 	public void rippleRestoresGroundButNotBuilds(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
 		int floor = helper.absolutePos(BlockPos.ZERO).getY();
@@ -116,7 +111,7 @@ public class EndermanTotemsGameTest {
 		site.buildAll(level);
 		Enderman witness = EndermanGameTest.enderman(helper, 13.5, 8.5, false);
 		((EndermanAccess) witness).brm$setHome(site.origin());
-		ServerPlayer player = CreeperGameTest.player(helper, 4.5, 4.5);
+		ServerPlayer player = TestPlayers.survivalAt(helper, 4.5, 4.5);
 		BlockPos spot = null;
 		try {
 			spot = CairnGifts.tryOffering(level, site, true);
@@ -128,7 +123,7 @@ public class EndermanTotemsGameTest {
 			helper.assertTrue(CairnGifts.tryOffering(level, site, true) == null, "the offering was laid again after it was taken");
 		} finally {
 			CairnGifts.set(null);
-			CreeperGameTest.remove(helper, player);
+			TestPlayers.remove(helper, player);
 			witness.discard();
 			if (spot != null) {
 				level.setBlock(spot, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
@@ -136,14 +131,6 @@ public class EndermanTotemsGameTest {
 			EndermanGameTest.removeBuilt(level, site);
 		}
 		helper.succeed();
-	}
-
-	/** Places {@code state}'s block at {@code pos} as the player would: using the item on the top of the block below. */
-	private static void place(GameTestHelper helper, ServerPlayer player, BlockPos pos, BlockState state) {
-		player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(state.getBlock().asItem()));
-		BlockHitResult hit = new BlockHitResult(Vec3.atCenterOf(pos.below()).add(0, 0.5, 0), Direction.UP, pos.below(), false);
-		player.getMainHandItem().useOn(new UseOnContext(player, InteractionHand.MAIN_HAND, hit));
-		helper.assertTrue(helper.getLevel().getBlockState(pos).is(state.getBlock()), "couldn't place " + state + " at " + pos);
 	}
 
 	private static int count(ServerPlayer player, net.minecraft.world.item.Item item) {

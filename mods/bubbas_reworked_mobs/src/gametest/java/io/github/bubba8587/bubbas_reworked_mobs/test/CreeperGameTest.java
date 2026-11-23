@@ -51,18 +51,6 @@ public class CreeperGameTest {
 		level.updateSkyBrightness();
 	}
 
-	static ServerPlayer player(GameTestHelper helper, double x, double z) {
-		ServerPlayer player = SleeperNoiseGameTest.survivalPlayer(helper);
-		Vec3 abs = helper.absoluteVec(new Vec3(x, 1.0, z));
-		player.snapTo(abs.x, abs.y, abs.z, 0.0F, 0.0F);
-		player.setOnGround(true);
-		return player;
-	}
-
-	static void remove(GameTestHelper helper, ServerPlayer player) {
-		helper.getLevel().getServer().getPlayerList().remove(player);
-	}
-
 	private static CreeperMind mind(Creeper creeper) {
 		return CreeperAccess.mind(creeper);
 	}
@@ -75,11 +63,12 @@ public class CreeperGameTest {
 	// --- startle meter ------------------------------------------------------------------------------
 
 	/** One hit fills the meter partway and it calms down; three hits in a row light the hiss. */
+	@GameTest(environment = "bubbas_reworked_mobs-test:creeper_meter", structure = FIELD, maxTicks = 140)
 	public void hitsFillTheMeterAndItDrains(GameTestHelper helper) {
 		Creeper creeper = creeper(helper, 12.5, 8.5, false);
 		creeper.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH).setBaseValue(100.0);
 		creeper.setHealth(100.0F);
-		ServerPlayer player = player(helper, 12.5, 11.5);
+		ServerPlayer player = TestPlayers.survivalAt(helper, 12.5, 11.5);
 		helper.runAtTickTime(2, () -> {
 			hit(helper, creeper, player);
 			float meter = mind(creeper).meter();
@@ -96,7 +85,7 @@ public class CreeperGameTest {
 			hit(helper, creeper, player);
 			helper.assertTrue(mind(creeper).isFusing(), "three hits in a row should fill it, meter " + mind(creeper).meter());
 			creeper.discard();
-			remove(helper, player);
+			TestPlayers.remove(helper, player);
 			helper.succeed();
 		});
 	}
@@ -104,7 +93,7 @@ public class CreeperGameTest {
 	/** Walking right past (2 blocks) doesn't startle it; sprinting past does. Same rule for anyone (B18). */
 	public void sprintingNearbyStartlesWalkingDoesNot(GameTestHelper helper) {
 		Creeper creeper = creeper(helper, 12.5, 8.5, false);
-		ServerPlayer player = player(helper, 4.5, 10.5);
+		ServerPlayer player = TestPlayers.survivalAt(helper, 4.5, 10.5);
 		float[] peak = {0.0F, 0.0F};
 		int[] tick = {0};
 		helper.onEachTick(() -> {
@@ -123,7 +112,7 @@ public class CreeperGameTest {
 				helper.assertTrue(peak[1] >= 3 * CreeperTuning.FAST_MOVE_POINTS, "sprinting past should startle it, peak " + peak[1]);
 				helper.assertTrue(mind(creeper).watched() == player, "it should be watching the player");
 				creeper.discard();
-				remove(helper, player);
+				TestPlayers.remove(helper, player);
 				helper.succeed();
 			}
 		});
@@ -157,9 +146,12 @@ public class CreeperGameTest {
 	// --- the hiss -----------------------------------------------------------------------------------
 
 	/** A full meter hisses (vanilla swell); the target sneaking defuses it, and so does backing out of range. A hit during the hiss stops a sneak defusing it. */
+	@GameTest(environment = "bubbas_reworked_mobs-test:creeper_fuse", structure = FIELD, maxTicks = 100)
 	public void fullMeterHissesAndDefuses(GameTestHelper helper) {
 		Creeper creeper = creeper(helper, 12.5, 8.5, true);
-		ServerPlayer player = player(helper, 12.5, 13.0);
+		creeper.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH).setBaseValue(100.0);
+		creeper.setHealth(100.0F);
+		ServerPlayer player = TestPlayers.survivalAt(helper, 12.5, 13.0);
 		helper.runAtTickTime(5, () -> mind(creeper).startle(CreeperTuning.METER_FULL, player));
 		helper.runAtTickTime(8, () -> helper.assertTrue(creeper.getSwellDir() > 0, "a full meter should hiss"));
 		helper.runAtTickTime(10, () -> player.setShiftKeyDown(true));
@@ -179,28 +171,19 @@ public class CreeperGameTest {
 		helper.runAtTickTime(20, () -> helper.assertTrue(!mind(creeper).isFusing() && creeper.getSwellDir() < 0, "backing out of range should defuse it"));
 		helper.runAtTickTime(60, () -> {
 			helper.assertTrue(creeper.isAlive(), "a defused creeper doesn't explode");
-			creeper.discard();
-			remove(helper, player);
-			helper.succeed();
+			// Hit during the hiss: sneaking no longer saves you.
+			Vec3 near = helper.absoluteVec(new Vec3(12.5, 1.0, 12.0));
+			player.snapTo(near.x, near.y, near.z, 180.0F, 0.0F);
+			mind(creeper).startle(CreeperTuning.METER_FULL, player);
 		});
-	}
-
-	/** Hit during the hiss: sneaking no longer saves you. */
-	@GameTest(environment = "bubbas_reworked_mobs-test:creeper_fuse_hit", structure = FIELD, maxTicks = 40)
-	public void aHitDuringTheHissStopsDefusing(GameTestHelper helper) {
-		Creeper creeper = creeper(helper, 12.5, 8.5, true);
-		creeper.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH).setBaseValue(100.0);
-		creeper.setHealth(100.0F);
-		ServerPlayer player = player(helper, 12.5, 12.0);
-		helper.runAtTickTime(5, () -> mind(creeper).startle(CreeperTuning.METER_FULL, player));
-		helper.runAtTickTime(8, () -> {
+		helper.runAtTickTime(63, () -> {
 			hit(helper, creeper, player);
 			player.setShiftKeyDown(true);
 		});
-		helper.runAtTickTime(20, () -> {
+		helper.runAtTickTime(75, () -> {
 			helper.assertTrue(mind(creeper).isFusing() && creeper.getSwellDir() > 0, "a hit during the hiss means no defusing");
 			creeper.discard();
-			remove(helper, player);
+			TestPlayers.remove(helper, player);
 			helper.succeed();
 		});
 	}
@@ -208,10 +191,11 @@ public class CreeperGameTest {
 	// --- blindness and charged ------------------------------------------------------------------------
 
 	/** Blinded, it can't see motion: sprinting round it and hitting it do nothing. */
+	@GameTest(environment = "bubbas_reworked_mobs-test:creeper_blind", structure = FIELD, maxTicks = 80)
 	public void blindedCreeperIgnoresMotion(GameTestHelper helper) {
 		Creeper creeper = creeper(helper, 12.5, 8.5, false);
 		creeper.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, -1));
-		ServerPlayer player = player(helper, 4.5, 10.5);
+		ServerPlayer player = TestPlayers.survivalAt(helper, 4.5, 10.5);
 		float[] peak = {0.0F};
 		int[] tick = {0};
 		helper.onEachTick(() -> {
@@ -227,22 +211,23 @@ public class CreeperGameTest {
 				helper.assertTrue(peak[0] == 0.0F, "a blind creeper shouldn't be startled, peak " + peak[0]);
 				helper.assertTrue(mind(creeper).watched() == null, "a blind creeper watches nothing");
 				creeper.discard();
-				remove(helper, player);
+				TestPlayers.remove(helper, player);
 				helper.succeed();
 			}
 		});
 	}
 
 	/** Charged creepers stay vanilla: they target a still player and swell when close; the meter stays empty. */
+	@GameTest(environment = "bubbas_reworked_mobs-test:creeper_charged", structure = FIELD, maxTicks = 100)
 	public void chargedCreeperStaysVanilla(GameTestHelper helper) {
 		Creeper creeper = creeper(helper, 12.5, 8.5, true);
 		creeper.getEntityData().set(CreeperAccessor.brmTest$powered(), true);
-		ServerPlayer player = player(helper, 12.5, 10.5);
+		ServerPlayer player = TestPlayers.survivalAt(helper, 12.5, 10.5);
 		helper.succeedWhen(() -> {
 			helper.assertTrue(creeper.getSwellDir() > 0, "a charged creeper should swell at a player 2 blocks away");
 			helper.assertTrue(mind(creeper).meter() == 0.0F, "a charged creeper has no startle meter");
 			creeper.discard();
-			remove(helper, player);
+			TestPlayers.remove(helper, player);
 		});
 	}
 
@@ -260,7 +245,7 @@ public class CreeperGameTest {
 				helper.setBlock(new BlockPos(x, y, 10), Blocks.STONE);
 			}
 		}
-		ServerPlayer player = player(helper, 12.5, 1.5);
+		ServerPlayer player = TestPlayers.survivalAt(helper, 12.5, 1.5);
 		player.setYRot(180.0F);
 		player.setYHeadRot(180.0F);
 		ServerLevel level = helper.getLevel();
@@ -287,7 +272,7 @@ public class CreeperGameTest {
 			helper.assertTrue(io.github.bubba8587.bubbas_reworked_mobs.creeper.WatcherSpawning.watchersOf(level, player) >= CreeperTuning.WATCHERS_PER_PLAYER,
 					"the per-player limit is reached");
 			creeper.discard();
-			remove(helper, player);
+			TestPlayers.remove(helper, player);
 			helper.succeed();
 		});
 	}
@@ -295,36 +280,9 @@ public class CreeperGameTest {
 	// --- watching -------------------------------------------------------------------------------------
 
 	/**
-	 * With a wall between it and the player, it walks to a spot half behind the wall (eyes visible, one side hidden).
+	 * With a wall between it and the player it walks to a spot half behind the wall (eyes visible, one side hidden).
+	 * Peekaboo: looked at, it slides about 95 % behind the cover; looked away from, it eases back out.
 	 */
-	@GameTest(environment = "bubbas_reworked_mobs-test:creeper_peek", structure = FIELD, maxTicks = 200)
-	public void peeksHalfBehindCover(GameTestHelper helper) {
-		// Along the field's long side (creepers keep 10-22 blocks off): a wall at x = 15, z = 7..9.
-		for (int z = 7; z <= 9; z++) {
-			for (int y = 1; y <= 3; y++) {
-				helper.setBlock(new BlockPos(15, y, z), Blocks.STONE);
-			}
-		}
-		Creeper creeper = creeper(helper, 18.5, 8.5, true);
-		ServerPlayer player = player(helper, 1.5, 8.5);
-		// The player looks away (yaw 90 faces -x, away from the wall).
-		player.setYRot(90.0F);
-		player.setYHeadRot(90.0F);
-		CreeperMind mind = mind(creeper);
-		helper.runAtTickTime(2, () -> mind.watch(player, helper.getLevel().getGameTime()));
-		helper.succeedWhen(() -> {
-			helper.assertTrue(mind.watched() == player, "watching the player");
-			CoverFinder.PeekSpot spot = mind.spot();
-			helper.assertTrue(spot != null && mind.spotReached(), "should reach a peek spot");
-			helper.assertTrue(creeper.position().distanceTo(spot.half()) < 0.1, "should sit half behind the wall");
-			Vec3 eye = player.getEyePosition();
-			helper.assertTrue(CoverFinder.clear(helper.getLevel(), eye, creeper.getEyePosition()), "its eyes should be visible");
-			creeper.discard();
-			remove(helper, player);
-		});
-	}
-
-	/** Peekaboo: looked at, it slides about 95 % behind the cover; looked away from, it eases back out. */
 	@GameTest(environment = "bubbas_reworked_mobs-test:creeper_peekaboo", structure = FIELD, maxTicks = 300)
 	public void hidesWhenLookedAt(GameTestHelper helper) {
 		// Along the field's long side (creepers keep 10-22 blocks off): a wall at x = 15, z = 7..9.
@@ -334,7 +292,7 @@ public class CreeperGameTest {
 			}
 		}
 		Creeper creeper = creeper(helper, 18.5, 8.5, true);
-		ServerPlayer player = player(helper, 1.5, 8.5);
+		ServerPlayer player = TestPlayers.survivalAt(helper, 1.5, 8.5);
 		player.setYRot(90.0F);
 		player.setYHeadRot(90.0F);
 		CreeperMind mind = mind(creeper);
@@ -343,6 +301,8 @@ public class CreeperGameTest {
 		helper.onEachTick(() -> {
 			CoverFinder.PeekSpot spot = mind.spot();
 			if (stage[0] == 0 && spot != null && mind.spotReached() && creeper.position().distanceTo(spot.half()) < 0.1) {
+				helper.assertTrue(mind.watched() == player, "watching the player");
+				helper.assertTrue(CoverFinder.clear(helper.getLevel(), player.getEyePosition(), creeper.getEyePosition()), "half behind the wall, its eyes should be visible");
 				// Look straight at it.
 				Vec3 to = creeper.getEyePosition().subtract(player.getEyePosition());
 				float yaw = (float) (Math.atan2(to.z, to.x) * 180.0 / Math.PI) - 90.0F;
@@ -357,7 +317,7 @@ public class CreeperGameTest {
 				stage[0] = 2;
 			} else if (stage[0] == 2 && spot != null && creeper.position().distanceTo(spot.half()) < 0.1) {
 				creeper.discard();
-				remove(helper, player);
+				TestPlayers.remove(helper, player);
 				helper.succeed();
 			}
 		});

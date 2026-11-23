@@ -9,7 +9,8 @@
 		"FailureContextMixin",
 		"TestAreaCleanupMixin",
 		"MobAccessor",
-		"FrozenClockMixin"
+		"FrozenClockMixin",
+		"GameTestHelperAccessor"
 	],
 	"injectors": {
 		"defaultRequire": 1

@@ -1,11 +1,8 @@
 // dte:C1,B15
 package io.github.bubba8587.bubbas_reworked_mobs.test;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
-import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import io.github.bubba8587.bubbas_reworked_mobs.display.DisplayPlacement;
@@ -21,19 +18,13 @@ import io.github.bubba8587.bubbas_reworked_mobs.undead.sleeper.SleeperBlockEntit
 import io.github.bubba8587.bubbas_reworked_mobs.undead.sleeper.SleeperHearing;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.Holder;
-import net.minecraft.core.SectionPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.gametest.framework.GameTestHelper;
-import io.netty.channel.embedded.EmbeddedChannel;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.Connection;
-import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.network.CommonListenerCookie;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.Monster;
@@ -43,10 +34,7 @@ import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.gameevent.BlockPositionSource;
 import net.minecraft.world.level.gameevent.GameEvent;
-import net.minecraft.world.level.gameevent.GameEventListener;
-import net.minecraft.world.level.gameevent.PositionSource;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.phys.BlockHitResult;
@@ -66,26 +54,13 @@ public class LootDisplayGameTest {
 
 	// --- helpers --------------------------------------------------------------------------------
 
-	private static void floor(GameTestHelper helper) {
-		for (int x = 0; x < 8; x++) {
-			for (int z = 0; z < 8; z++) {
-				helper.setBlock(x, 0, z, Blocks.DIRT);
-			}
-		}
-	}
-
 	private static LootDisplayBlockEntity display(GameTestHelper helper, BlockPos pos, DisplayPlacement placement, Direction facing, ItemStack stack) {
 		return LootDisplays.place(helper.getLevel(), helper.absolutePos(pos), placement, facing, stack);
 	}
 
-	/** A real player in the level (connected, so messages and the player list work) in {@code mode}; remove it with {@link #remove}. */
+	/** A real player in the level in {@code mode}, standing at {@code at}; remove it with {@link TestPlayers#remove}. */
 	private static ServerPlayer player(GameTestHelper helper, GameType mode, BlockPos at, boolean sneaking) {
-		CommonListenerCookie cookie = CommonListenerCookie.createInitial(new GameProfile(UUID.randomUUID(), "test-display-player"), false);
-		ServerPlayer player = new ServerPlayer(helper.getLevel().getServer(), helper.getLevel(), cookie.gameProfile(), cookie.clientInformation());
-		Connection connection = new Connection(PacketFlow.SERVERBOUND);
-		new EmbeddedChannel(connection);
-		helper.getLevel().getServer().getPlayerList().placeNewPlayer(connection, player, cookie);
-		player.setGameMode(mode);
+		ServerPlayer player = TestPlayers.connected(helper, mode);
 		Vec3 pos = helper.absoluteVec(Vec3.atBottomCenterOf(at));
 		player.snapTo(pos.x, pos.y, pos.z, 0.0F, 0.0F);
 		player.setOnGround(true);
@@ -97,10 +72,6 @@ public class LootDisplayGameTest {
 		BlockPos abs = helper.absolutePos(pos);
 		player.gameMode.useItemOn(player, helper.getLevel(), player.getMainHandItem(), InteractionHand.MAIN_HAND,
 				new BlockHitResult(Vec3.atCenterOf(abs), Direction.UP, abs, false));
-	}
-
-	private static void remove(GameTestHelper helper, ServerPlayer player) {
-		helper.getLevel().getServer().getPlayerList().remove(player);
 	}
 
 	/** A named, enchanted sword: anything lost in a round trip shows. */
@@ -118,7 +89,7 @@ public class LootDisplayGameTest {
 	/** The item survives a block entity save/load, the minecraft:container component, and a structure template copy. */
 	@GameTest
 	public void displayKeepsItemThroughSaveLoadAndTemplates(GameTestHelper helper) {
-		floor(helper);
+		TestFloors.floor(helper, Blocks.DIRT);
 		ItemStack sword = fancySword(helper);
 		LootDisplayBlockEntity display = display(helper, DISPLAY, DisplayPlacement.STUCK, Direction.EAST, sword);
 		helper.assertTrue(ItemStack.matches(display.getItem(), sword), "stored: " + display.getItem());
@@ -143,9 +114,9 @@ public class LootDisplayGameTest {
 	// --- taking ---------------------------------------------------------------------------------
 
 	/** Ground, wall and stuck: an empty hand takes the item and the block goes (water stays if it was waterlogged). */
-	// Core test: registered by ReworkedMobsCoreGameTest (test-lite, specs/quality.md).
+	@GameTest
 	public void emptyHandTakesGroundWallAndStuck(GameTestHelper helper) {
-		floor(helper);
+		TestFloors.floor(helper, Blocks.DIRT);
 		helper.setBlock(DISPLAY.north(), Blocks.STONE); // the wall for the wall placement (facing south, away from it)
 		ServerPlayer player = player(helper, GameType.SURVIVAL, DISPLAY.south(2), false);
 		for (DisplayPlacement placement : List.of(DisplayPlacement.GROUND, DisplayPlacement.WALL, DisplayPlacement.STUCK)) {
@@ -172,84 +143,18 @@ public class LootDisplayGameTest {
 		use(helper, player, wet);
 		helper.assertBlockPresent(Blocks.WATER, wet);
 		helper.assertTrue(player.getInventory().countItem(Items.TRIDENT) == 1, "trident not taken");
-		remove(helper, player);
-		helper.succeed();
-	}
-
-	/** Buried loot ignores an empty hand; a shovel digs it up (costing the shovel 1 durability). */
-	@GameTest
-	public void buriedLootNeedsAShovel(GameTestHelper helper) {
-		floor(helper);
-		ServerPlayer player = player(helper, GameType.SURVIVAL, DISPLAY.south(2), false);
-		display(helper, DISPLAY, DisplayPlacement.BURIED, Direction.SOUTH, new ItemStack(Items.IRON_SWORD));
-		use(helper, player, DISPLAY);
-		helper.assertBlockPresent(ModBlocks.LOOT_DISPLAY, DISPLAY);
-		helper.assertTrue(player.getInventory().countItem(Items.IRON_SWORD) == 0, "took buried loot by hand");
-
-		player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.IRON_SHOVEL));
-		use(helper, player, DISPLAY);
-		helper.assertBlockPresent(Blocks.AIR, DISPLAY);
-		helper.assertTrue(player.getInventory().countItem(Items.IRON_SWORD) == 1, "shovel did not dig it up");
-		helper.assertValueEqual(player.getMainHandItem().getDamageValue(), 1, "shovel durability used");
-		remove(helper, player);
-		helper.succeed();
-	}
-
-	/** What each way of taking sounds like to listeners: the quiet item_interact_finish vs block_destroy, louder to sleepers. */
-	@GameTest
-	public void takingIsQuietDiggingIsLoud(GameTestHelper helper) {
-		floor(helper);
-		BlockPos abs = helper.absolutePos(DISPLAY);
-		List<Holder<GameEvent>> heard = new ArrayList<>();
-		GameEventListener recorder = new GameEventListener() {
-			private final PositionSource source = new BlockPositionSource(abs);
-
-			@Override
-			public PositionSource getListenerSource() {
-				return source;
-			}
-
-			@Override
-			public int getListenerRadius() {
-				return 2;
-			}
-
-			@Override
-			public boolean handleGameEvent(ServerLevel level, Holder<GameEvent> event, GameEvent.Context context, Vec3 from) {
-				if (BlockPos.containing(from).equals(abs)) {
-					heard.add(event);
-				}
-				return false;
-			}
-		};
-		var registry = helper.getLevel().getChunkAt(abs).getListenerRegistry(SectionPos.blockToSectionCoord(abs.getY()));
-		registry.register(recorder);
-		try {
-			ServerPlayer player = player(helper, GameType.SURVIVAL, DISPLAY.south(2), false);
-			display(helper, DISPLAY, DisplayPlacement.GROUND, Direction.SOUTH, new ItemStack(Items.IRON_SWORD));
-			use(helper, player, DISPLAY);
-			helper.assertTrue(heard.contains(GameEvent.ITEM_INTERACT_FINISH) && !heard.contains(GameEvent.BLOCK_DESTROY), "taking: " + heard);
-			heard.clear();
-			display(helper, DISPLAY, DisplayPlacement.BURIED, Direction.SOUTH, new ItemStack(Items.IRON_SWORD));
-			player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.IRON_SHOVEL));
-			use(helper, player, DISPLAY);
-			helper.assertTrue(heard.contains(GameEvent.BLOCK_DESTROY), "digging: " + heard);
-			helper.assertTrue(SleeperHearing.points(GameEvent.BLOCK_DESTROY, false) > SleeperHearing.points(GameEvent.ITEM_INTERACT_FINISH, false),
-					"digging should be louder to sleepers than taking");
-			remove(helper, player);
-		} finally {
-			registry.unregister(recorder);
-		}
+		TestPlayers.remove(helper, player);
 		helper.succeed();
 	}
 
 	/**
 	 * A sleeper that wakes at any noise it hears, three blocks away: sneaking up and taking ground loot doesn't wake it;
-	 * digging up buried loot at the same spot does.
+	 * digging up buried loot at the same spot does (it costs the shovel 1 durability; an empty hand can't dig it up).
+	 * Digging is a block_destroy, which sleepers count louder than taking's quiet item_interact_finish.
 	 */
 	@GameTest(environment = "bubbas_reworked_mobs-test:display_noise", maxTicks = 80)
 	public void diggingWakesASleeperQuietTakingDoesNot(GameTestHelper helper) {
-		floor(helper);
+		TestFloors.floor(helper, Blocks.DIRT);
 		BlockPos sleeperPos = DISPLAY.east(3);
 		helper.setBlock(sleeperPos, ModBlocks.sleeper(UndeadVariant.ZOMBIE).defaultBlockState().setValue(SleeperBlock.POSE, SleeperPose.LYING));
 		SleeperBlockEntity sleeper = helper.getBlockEntity(sleeperPos, SleeperBlockEntity.class);
@@ -260,7 +165,7 @@ public class LootDisplayGameTest {
 		helper.assertBlockPresent(Blocks.AIR, DISPLAY);
 		helper.assertTrue(sneaker.getInventory().countItem(Items.IRON_SWORD) == 1, "sword not taken");
 		helper.assertFalse(sleeper.isWakePending(), "quiet taking woke the sleeper");
-		remove(helper, sneaker);
+		TestPlayers.remove(helper, sneaker);
 
 		helper.runAfterDelay(25, () -> {
 			helper.assertFalse(sleeper.isWakePending(), "quiet taking woke the sleeper (late)");
@@ -270,7 +175,17 @@ public class LootDisplayGameTest {
 			use(helper, digger, DISPLAY);
 			helper.assertBlockPresent(Blocks.AIR, DISPLAY);
 			helper.assertTrue(sleeper.isWakePending(), "digging did not wake the sleeper");
-			remove(helper, digger);
+			helper.assertTrue(digger.getInventory().countItem(Items.IRON_SWORD) == 1, "the shovel did not dig it up");
+			helper.assertValueEqual(digger.getMainHandItem().getDamageValue(), 1, "shovel durability used");
+			helper.assertTrue(SleeperHearing.points(GameEvent.BLOCK_DESTROY, false) > SleeperHearing.points(GameEvent.ITEM_INTERACT_FINISH, false),
+					"digging should be louder to sleepers than taking");
+			// Buried loot ignores an empty hand.
+			display(helper, DISPLAY, DisplayPlacement.BURIED, Direction.WEST, new ItemStack(Items.GOLDEN_SWORD));
+			digger.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
+			use(helper, digger, DISPLAY);
+			helper.assertBlockPresent(ModBlocks.LOOT_DISPLAY, DISPLAY);
+			helper.assertTrue(digger.getInventory().countItem(Items.GOLDEN_SWORD) == 0, "took buried loot by hand");
+			TestPlayers.remove(helper, digger);
 			helper.succeedWhen(() -> helper.assertEntityPresent(ModEntities.woken(UndeadVariant.ZOMBIE), sleeperPos, 1.5));
 		});
 	}
@@ -280,7 +195,7 @@ public class LootDisplayGameTest {
 	/** Mining any placement drops the item; so does removing what holds it up (the floor or the wall). */
 	@GameTest
 	public void breakingDropsTheItem(GameTestHelper helper) {
-		floor(helper);
+		TestFloors.floor(helper, Blocks.DIRT);
 		helper.setBlock(DISPLAY.north(), Blocks.STONE);
 		for (DisplayPlacement placement : DisplayPlacement.values()) {
 			display(helper, DISPLAY, placement, Direction.SOUTH, new ItemStack(Items.IRON_SWORD));
@@ -289,7 +204,7 @@ public class LootDisplayGameTest {
 			helper.assertBlockPresent(Blocks.AIR, DISPLAY);
 			helper.assertItemEntityPresent(Items.IRON_SWORD, DISPLAY, 1.5);
 			helper.killAllEntitiesOfClass(ItemEntity.class);
-			remove(helper, player);
+			TestPlayers.remove(helper, player);
 		}
 		BlockPos onDirt = DISPLAY.east(3);
 		display(helper, onDirt, DisplayPlacement.GROUND, Direction.SOUTH, new ItemStack(Items.BOW));
@@ -307,7 +222,7 @@ public class LootDisplayGameTest {
 
 	@GameTest
 	public void displayCommandPlacesAtPositionAndWhereYouLook(GameTestHelper helper) throws CommandSyntaxException {
-		floor(helper);
+		TestFloors.floor(helper, Blocks.DIRT);
 		ServerLevel level = helper.getLevel();
 		BlockPos at = helper.absolutePos(DISPLAY);
 		level.getServer().getCommands().getDispatcher().execute(
@@ -332,7 +247,7 @@ public class LootDisplayGameTest {
 		BlockPos looked = new BlockPos(5, 1, 4);
 		helper.assertBlockProperty(looked, LootDisplayBlock.PLACEMENT, DisplayPlacement.STUCK);
 		helper.assertBlockProperty(looked, LootDisplayBlock.FACING, Direction.SOUTH);
-		remove(helper, player);
+		TestPlayers.remove(helper, player);
 		helper.succeed();
 	}
 
@@ -341,7 +256,7 @@ public class LootDisplayGameTest {
 	/** An empty-handed zombie wakes and takes the displayed sword (block gone), preferring it over a nearer loose axe. */
 	@GameTest(maxTicks = 40)
 	public void wokenZombieTakesDisplayedWeaponOverLooseOne(GameTestHelper helper) {
-		floor(helper);
+		TestFloors.floor(helper, Blocks.DIRT);
 		BlockPos sleeperPos = new BlockPos(4, 1, 4);
 		helper.setBlock(sleeperPos, ModBlocks.sleeper(UndeadVariant.ZOMBIE).defaultBlockState());
 		SleeperBlockEntity sleeper = helper.getBlockEntity(sleeperPos, SleeperBlockEntity.class);
@@ -365,7 +280,7 @@ public class LootDisplayGameTest {
 	/** Skeletons arm from displays too, and take a bow (one of #preferred_on_wake). */
 	@GameTest(maxTicks = 40)
 	public void wokenSkeletonTakesDisplayedBow(GameTestHelper helper) {
-		floor(helper);
+		TestFloors.floor(helper, Blocks.DIRT);
 		BlockPos sleeperPos = new BlockPos(4, 1, 4);
 		helper.setBlock(sleeperPos, ModBlocks.sleeper(UndeadVariant.SKELETON).defaultBlockState());
 		SleeperBlockEntity sleeper = helper.getBlockEntity(sleeperPos, SleeperBlockEntity.class);
