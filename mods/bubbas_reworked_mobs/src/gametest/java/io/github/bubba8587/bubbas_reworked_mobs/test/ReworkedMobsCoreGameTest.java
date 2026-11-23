@@ -188,7 +188,7 @@ public class ReworkedMobsCoreGameTest {
 
 	// --- monster camps (specs/monster-camps.md) ---
 
-	@GameTest(structure = CreeperGameTest.FIELD, maxTicks = 80)
+	@GameTest(structure = CampsGameTest.FIELD, maxTicks = 80)
 	public void campRosterAppearsWithALeader(GameTestHelper helper) {
 		new CampsGameTest().rosterAppearsWithALeader(helper);
 	}

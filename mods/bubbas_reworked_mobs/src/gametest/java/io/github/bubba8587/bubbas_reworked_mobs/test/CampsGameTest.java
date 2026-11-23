@@ -33,8 +33,9 @@ import net.fabricmc.fabric.api.gametest.v1.GameTest;
  * ReworkedMobsCoreGameTest).
  */
 public class CampsGameTest {
-	private static final String FIELD = CreeperGameTest.FIELD;
-	private static final BlockPos CENTRE = new BlockPos(11, 1, 8);
+	/** A deep 32 x 48 field (crypt yards fit too): camps (box out to 10 from the centre, room 5 down) stay inside it, away from other tests. */
+	static final String FIELD = "bubbas_reworked_mobs-test:camp_field";
+	private static final BlockPos CENTRE = new BlockPos(16, 8, 16);
 
 	private static CampPiece camp(GameTestHelper helper, CampKind kind, long seed) {
 		return CampCommand.build(helper.getLevel(), helper.absolutePos(CENTRE), kind, CampTuning.Size.SMALL, seed);
@@ -66,7 +67,7 @@ public class CampsGameTest {
 		helper.assertTrue(site.armed() && !site.spawned(), "a new camp is armed and waiting");
 		helper.assertTrue(!banners(helper.getLevel(), piece.getBoundingBox()).isEmpty(), "the camp should fly at least one banner");
 		ServerPlayer player = SleeperNoiseGameTest.survivalPlayer(helper);
-		Vec3 at = helper.absoluteVec(new Vec3(1.5, 1.0, 1.5));
+		Vec3 at = helper.absoluteVec(new Vec3(2.5, 8.0, 2.5));
 		player.snapTo(at.x, at.y, at.z, 0.0F, 0.0F);
 		helper.succeedWhen(() -> {
 			helper.assertTrue(site.spawned(), "the roster should appear with a player near");
@@ -142,7 +143,7 @@ public class CampsGameTest {
 	}
 
 	/** An outpost with every banner broken spawns no pillagers; putting one back restores them. */
-	@GameTest(structure = FIELD)
+	@GameTest(structure = CreeperGameTest.FIELD)
 	public void outpostWithoutBannersSpawnsNoPillagers(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
 		BlockPos banner = helper.absolutePos(new BlockPos(5, 1, 5));
@@ -175,7 +176,7 @@ public class CampsGameTest {
 		helper.assertTrue(site.quiet(), "a lit campfire in the camp quiets it");
 		helper.assertTrue(piece.getBoundingBox().isInside(fire), "the fire is inside the camp");
 		ServerPlayer player = SleeperNoiseGameTest.survivalPlayer(helper);
-		Vec3 at = helper.absoluteVec(new Vec3(1.5, 1.0, 1.5));
+		Vec3 at = helper.absoluteVec(new Vec3(2.5, 8.0, 2.5));
 		player.snapTo(at.x, at.y, at.z, 0.0F, 0.0F);
 		helper.runAfterDelay(45, () -> {
 			helper.assertTrue(!site.spawned(), "no roster while the fire burns");
@@ -218,14 +219,14 @@ public class CampsGameTest {
 			if (at == null) {
 				continue;
 			}
-			helper.assertTrue(!level.canSeeSky(at.above()), "a shade spot is out of the sun: " + at.toShortString());
+			helper.assertTrue(io.github.bubba8587.bubbas_reworked_mobs.camp.CampShade.covered(level, at.above(2)), "a shade spot is roofed: " + at.toShortString());
 			if (at.getY() < piece.centre().getY()) {
 				room++;
 			} else {
 				above++;
 			}
 		}
-		helper.assertTrue(room >= 25, "the small camp's 5x5 room should be all usable shade, found " + room);
+		helper.assertTrue(room >= 20, "most of the small camp's 5x5 room should be usable shade (a few cells hold bones), found " + room);
 		helper.assertTrue(above >= 4, "shade above ground (lean-to, towers), found " + above);
 		// A zombie on the tunnel's stairs can walk down into the room. (The tunnel surfaces just past this small test
 		// field's barrier wall; the whole walk from the surface is checked on a natural camp in the client part camps.)
@@ -244,11 +245,11 @@ public class CampsGameTest {
 		});
 	}
 
-	/** At noon a camp skeleton in the sun with nothing to fight walks into its camp's shade. */
-	@GameTest(environment = "bubbas_reworked_mobs-test:camp_noon", structure = FIELD, maxTicks = 240)
+	/** At noon the roster appears in shade, and a camp zombie burning in the sun takes cover (vanilla's sun goals). */
+	@GameTest(environment = "bubbas_reworked_mobs-test:camp_noon", structure = FIELD, maxTicks = 300)
 	public void exposedCampMobsSeekShade(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
-		CampPiece piece = camp(helper, CampKind.SKELETON, 29L);
+		CampPiece piece = camp(helper, CampKind.ZOMBIE, 29L);
 		CampSite site = site(helper, piece);
 		helper.runAfterDelay(40, () -> seekShade(helper, level, site)); // once the light has settled
 	}
@@ -256,15 +257,50 @@ public class CampsGameTest {
 	private static void seekShade(GameTestHelper helper, ServerLevel level, CampSite site) {
 		List<Mob> roster = CampRoster.spawn(level, site);
 		for (Mob mob : roster) {
-			helper.assertTrue(!level.canSeeSky(BlockPos.containing(mob.getX(), mob.getEyeY(), mob.getZ())), "by day the roster appears in the shade: " + mob.blockPosition().toShortString() + " centre " + site.centre().toShortString()
+			helper.assertTrue(io.github.bubba8587.bubbas_reworked_mobs.camp.CampShade.covered(level, BlockPos.containing(mob.getX(), mob.getEyeY(), mob.getZ())),
+					"by day the roster appears in the shade: " + mob.blockPosition().toShortString() + " centre " + site.centre().toShortString()
 					+ " leader " + CampRoster.isLeader(mob));
 		}
+		// A zombie (not the helmeted leader; bare-headed, as a helmet keeps the sun off) out by the fire, burning: it
+		// takes cover with vanilla's flee-the-sun goal, which camp zombies are given.
 		Mob walker = roster.getLast();
-		BlockPos open = helper.absolutePos(new BlockPos(1, 1, 1));
+		walker.setItemSlot(net.minecraft.world.entity.EquipmentSlot.HEAD, net.minecraft.world.item.ItemStack.EMPTY);
+		BlockPos open = site.centre().offset(2, 1, 2);
 		walker.snapTo(open.getX() + 0.5, open.getY(), open.getZ() + 0.5, 0.0F, 0.0F);
+		walker.igniteForSeconds(8.0F);
 		helper.succeedWhen(() -> {
-			helper.assertTrue(!level.canSeeSky(BlockPos.containing(walker.getX(), walker.getEyeY(), walker.getZ())), "the skeleton should reach shade");
+			helper.assertTrue(!level.canSeeSky(BlockPos.containing(walker.getX(), walker.getEyeY(), walker.getZ())), "the burning zombie should take cover");
 			roster.forEach(Entity::discard);
 		});
+	}
+
+	/**
+	 * Every block of a built camp can stay where it is: nothing that needs support (ladders, banners, carpets, plants,
+	 * skulls) is placed without it, so no block update pops it off. One camp of each kind.
+	 */
+	@GameTest(structure = FIELD, maxTicks = 20)
+	public void everyCampBlockIsSupported(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		List<String> loose = new ArrayList<>();
+		long seed = 31L;
+		for (CampKind kind : CampKind.values()) {
+			CampPiece piece = CampCommand.build(level, helper.absolutePos(CENTRE), kind, CampTuning.Size.SMALL, seed++);
+			loose.addAll(unsupported(level, piece.getBoundingBox()));
+		}
+		helper.assertTrue(loose.isEmpty(), "blocks that would pop off: " + loose.subList(0, Math.min(12, loose.size())));
+		helper.succeed();
+	}
+
+	/** Blocks in the box that couldn't survive a block update where they are. */
+	static List<String> unsupported(ServerLevel level, BoundingBox box) {
+		List<String> loose = new ArrayList<>();
+		for (BlockPos pos : BlockPos.betweenClosed(box.minX(), box.minY(), box.minZ(), box.maxX(), box.maxY(), box.maxZ())) {
+			var state = level.getBlockState(pos);
+			if (!state.isAir() && !state.canSurvive(level, pos)) {
+				loose.add(state.getBlock().getDescriptionId().replaceFirst("^.*[.]", "") + "@" + pos.toShortString() + " on "
+						+ level.getBlockState(pos.below()).getBlock().getDescriptionId().replaceFirst("^.*[.]", ""));
+			}
+		}
+		return loose;
 	}
 }

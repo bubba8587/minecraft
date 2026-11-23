@@ -137,8 +137,9 @@ public enum CampKind {
 	/** The trodden ground of the camp, by roll in [0, 1). */
 	public BlockState trodden(float roll) {
 		return switch (this) {
+			// (No dirt path: it turns back to dirt under anything built on it.)
 			case SKELETON -> roll < 0.45F ? Blocks.COARSE_DIRT.defaultBlockState() : roll < 0.75F ? Blocks.GRAVEL.defaultBlockState()
-					: Blocks.DIRT_PATH.defaultBlockState();
+					: Blocks.PACKED_MUD.defaultBlockState();
 			case ZOMBIE -> roll < 0.4F ? Blocks.COARSE_DIRT.defaultBlockState() : roll < 0.7F ? Blocks.ROOTED_DIRT.defaultBlockState()
 					: Blocks.PODZOL.defaultBlockState();
 			case HUSK -> roll < 0.5F ? Blocks.SAND.defaultBlockState() : roll < 0.8F ? Blocks.COARSE_DIRT.defaultBlockState()

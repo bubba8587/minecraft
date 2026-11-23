@@ -196,8 +196,8 @@ public class CampPiece extends StructurePiece {
 				BlockPos at = new BlockPos(x, g, z);
 				if (tread < (d < r - 1.5 ? 0.6F : 0.25F) && natural(level.getBlockState(at))) {
 					b.put(x, g, z, kind.trodden(what));
-				} else if (d > r - 2.5 && weed < 0.15F && level.getBlockState(at).isFaceSturdy(level, at, Direction.UP)) {
-					b.putIfAir(x, g + 1, z, kind.weed(what));
+				} else if (d > r - 2.5 && weed < 0.15F && kind.weed(what).canSurvive(level, at.above())) {
+					b.putIfAir(x, g + 1, z, kind.weed(what)); // only where it can grow (grass on gravel would pop)
 				}
 			}
 		}
@@ -350,14 +350,16 @@ public class CampPiece extends StructurePiece {
 				}
 			}
 		}
-		// The ladder: up the outer face of a corner post, arriving beside the open post top.
+		// The ladder: up the outer face of a corner post to its top.
 		int[] lc = corners[ladderCorner];
 		Direction out = ladderAlongX ? (lc[0] == 0 ? Direction.WEST : Direction.EAST) : (lc[1] == 0 ? Direction.NORTH : Direction.SOUTH);
 		int lx = x0 + lc[0] + out.getStepX();
 		int lz = z0 + lc[1] + out.getStepZ();
 		int gl = b.ground(lx, lz);
 		if (gl != Integer.MIN_VALUE) {
-			for (int y = gl + 1; y <= top + 1; y++) {
+			// Up to the post's top, never past it (a rung with no post behind it would pop off); you step from the
+			// top rung onto the open post top. Below the post's foot the ground in its column backs the ladder.
+			for (int y = gl + 1; y <= top; y++) {
 				b.put(lx, y, lz, Blocks.LADDER.defaultBlockState().setValue(LadderBlock.FACING, out));
 			}
 		}
