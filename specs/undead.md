@@ -55,7 +55,7 @@ A sleeper lying somewhere lower than its mob is tall (a crypt wall niche under a
 
 ## Fire as a weak ward (owner idea, 2026-11-22, not built)
 
-- A lit **campfire** (and soul campfire) or plain **fire** works as a **weak ward**: hostile mobs are reluctant to come close (a few blocks), like a small, soft version of the Totem of Warding (`specs/totems-artifacts.md`). It is a deterrent, not a wall. Details (radius, which mobs, whether a hunting mob still pushes through) to be proposed.
+- A lit **campfire** (and soul campfire) or plain **fire** works as a **weak ward**: hostile mobs are reluctant to come close (a few blocks), like a small, soft version of the Totem of Warding (`specs/totems-artifacts.md`). It is a deterrent, not a wall. **Only mobs that would fear fire** (owner, 2026-11-22): nothing that's immune to fire or at home in it, so no Nether mobs (blazes, ghasts, magma cubes, piglins, hoglins, wither skeletons, striders...) and no other fire-immune mob. In practice, a mob that takes fire damage and isn't from the Nether (for example `fireImmune()` false and not in a Nether-mob tag). Details (radius, whether a hunting mob still pushes through) to be proposed.
 - Light already makes sleepers harder to wake (above), so a campfire also helps keep a crypt asleep.
 
 ## Undead variants (owner, 2026-11-22)
