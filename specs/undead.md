@@ -277,7 +277,7 @@ Using a sleeper with an empty hand takes one item: held weapon first (main hand,
 
 ## Scope and variants
 
-- Only this mod's undead change: our own entity types (woken sleepers and the rare natural spawns), tagged as undead. Vanilla zombies and skeletons elsewhere (other mods' spawners and structures) stay vanilla, and AI or animation mods that target vanilla classes don't override ours. Mob spawner tweaks are parked (BACKLOG.md).
+- Only this mod's undead change: our own entity types (woken sleepers and the rare natural spawns), tagged as undead. Vanilla zombies and skeletons elsewhere (other mods' spawners and structures) stay vanilla, and AI or animation mods that target vanilla classes don't override ours. Mob spawner tweaks: not now (owner, 2026-11-24).
 - Built: skeleton, zombie, husk and stray sleepers, each sitting and lying (`UndeadVariant`). Bogged are not sleepers: they lurk (Undead variants, above). Drowned sleepers only in shipwrecks (in progress); elsewhere drowned are their own segment (`specs/drowned.md`). Ideas, not designed: parched, wither skeleton, zombie villager. Not yet: zombified piglin, skeleton/zombie horses, camel husk, zombie nautilus.
 - One sleeper block per variant (or a variant property), each with its own 16x and 32x textures.
 
@@ -348,7 +348,7 @@ Sleeper on the server: 0 per tick. Hearing: under 0.05 ms per tick with 200 slee
 - **Bury-break system** (BACKLOG): shovel-only vs by hand, noise, tools. Today a shovel digs loudly; by hand works, slowly.
 - **Back to sleep at dawn (built):** 16 blocks across and 4 up or down; a place is a solid floor with a light-blocking roof at block light 7 or less, or an open grave. Owner to playtest.
 - **Fire ward (built):** 6 blocks (Manhattan), 3 up or down. Builder's calls to confirm: a mob already hunting someone pushes straight through, and brain-driven hostile mobs (breeze, creaking) aren't covered.
-- **Mob spawner tweaks:** parked, no design yet.
+- **Mob spawner tweaks:** not now (owner, 2026-11-24).
 
 ## Milestone test objectives
 - (objective, no test yet) A woken skeleton that grabs a bow or sword from a display or the ground never crashes the game: the item is equipped at the start of its next tick, outside goal ticking (crash 2026-11-15: GoalSelector NPE when Skeleton.reassessWeaponGoal ran mid goal-tick), and a skeleton killed before that tick still drops it.
