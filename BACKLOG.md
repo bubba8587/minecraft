@@ -50,63 +50,21 @@ Parked ideas and open items, newest first within each project. Agents add to it 
 - Builder's choices awaiting the owner's look are marked in `specs/reworked-beacons.md`.
 - Player docs: a gem-in-beacon screen screenshot (client test) once the beacon screen is final.
 
-## Playtest fixes queued (owner, 2026-11-22; plan only until the owner finishes playtesting)
+## Playtest fixes (owner, 2026-11-22)
 
-1. **Camp lower room loot:** a small chest in each camp's underground room. Use a new loot table `bubbas_reworked_mobs:chests/camp_room`, modest and themed per camp kind (arrows and bones for skeletons, rotten flesh and iron bits for zombies, plus a little gold and an occasional book). Add it to `CampPiece` and the camp spec.
-2. **Camp stairs end on a full block:** the bottom step of the room stairs must land on a full collision block. The bogged camp puts mud there, which is 14/16 tall, and mobs get stuck on it. Fix: whatever block the camp kind uses as its floor material, the landing under the last stair is always a full block (mud bricks or packed mud for bogged). Check every camp kind, and the crypt stairs too.
-3. **Crypt wake-ups spawn mobs into roofs:** the wake spot checks the block at the feet but not the head. Fix: when a sleeper wakes (and in `SleeperWaking.stepOutIfStuck`), test the mob's whole bounding box with `level.noCollision(mob, box)` at the target, not one block. A lying sleeper in a one-high niche must step out to a spot with two clear blocks. Add a milestone test: a sleeper in a one-high crypt niche wakes standing in open air, never inside the ceiling.
-4. **Worn Wither hurts its wearer every tick:** the owner noticed it on gemmed mobs. It's "not wrong, just really annoying for the test world." Vanilla Wither hurts every `40 >> amplifier` ticks, so a strong gem means damage every tick. Plan:
-   - check that the worn Wither amplifier follows the gem curve as intended;
-   - for mob gear in the test world, and probably for noble finery, roll only effects that don't harm the wearer (no worn Wither, Poison, Hunger, Instant Damage), keeping those for weapons.
+Done 2026-11-23 (installed; light testing only: full server suites pass, few new tests): 1 camp room loot (one shared table), 2 full-block stair landings, 3 waking checks the whole body, 8 caretakers only lift natural blocks, 9 Clear Skies not used up, 10 Growth checks neighbours, 12 Fabricator ignore tag, 13 Fabricator runs like vanilla spawners and the natural world keeps mob spawning on, 14 natural world signs with fixed heights, 15 woken drowned become vanilla drowned, 16 camps about half as common, 18 crypt niches 2 deep. Partly done: 5 (waiting giant spiders shift about on their perch), 7 (mixed design seeds; tower, outcrop, pike and lean-to counts, stair side and turn, room width and offset vary), 17 (highland biomes added).
 
-   Owner to confirm whether that goes beyond the test world.
-5. **A spider waiting on cocooned prey keeps moving:** while a giant spider (and any spider that cocoons) waits to come back and feed, it wanders around near the cocoon and its webs, instead of standing still. Use vanilla's random-stroll goal kept within a home radius around the cocoon (`WaterAvoidingRandomStrollGoal` plus `restrictTo`, specs/vanilla-subsystems.md), on walls and ceilings too through Stormie's Spiders. It still returns to feed on time.
-6. **Spiders haul prey to the middle of their web:** a giant spider carries its catch to the centre of its own web, the middle of the spun-web span it made (between the trees it anchored to), and hangs the cocoon there. Today it uses the nearest web block. If it has no web of its own, the nearest web's centre; with none at all, as today. It needs the spider to remember its webs again: the 2026-11-22 cleanup removed an unused `sites` list from `GiantSpider`, which was what this needed. The cocoon hanging in the middle of the web should read clearly from below; check it in a screenshot.
-7. **Camp variety, a big amount, parameterized (owner, 2026-11-22):** natural camps are samey too: always one tower, the stairs even on the same side, the lower room always the same size.
-   - **Cause, in part:** `CampPiece` (and `FactoryDesign`, and the cairn design) seed vanilla's `LegacyRandomSource` directly, so close seeds give almost the same first rolls. Mix the seed first (`RandomSupport.mixStafford13`), wherever a design is built from a site seed.
-   - **Parameterize every element** with its own roll per camp, within ranges per camp kind and size:
-     - number of towers (0-3), lean-tos and outcrops;
-     - pikes;
-     - the stair side and the stair direction;
-     - the lower room's size and shape (small cell to long hall, one or two chambers);
-     - where the room sits relative to the centre;
-     - fences, bones and decor density.
-   - **New camp forms:** rock and bone caves, large skull domes (specs/monster-camps.md "Layout variety").
-   - **Show the spread:** screenshots of at least six seeds per kind. The test world then uses well-spread seeds.
-8. **A Beginning beacon's endermen wrecked the beacon (owner, 2026-11-22):** the Totem of the Beginning in a beacon draws caretaker endermen to the area (`BeginningBeaconPayload` → `SleeperHook.drawEndermen`). One took a block from the beacon and broke it. Caretakers mend natural terrain against the worldgen target, so in the superflat test world a pyramid counts as "wrong" terrain.
-   - **Fix:** caretakers never take or move:
-     - a beacon or anything in `#minecraft:beacon_base_blocks`;
-     - any block with a block entity;
-     - blocks outside a "natural terrain" block tag (dirt, stone, sand, gravel and so on; a vanilla tag where one fits).
-   - Also: the endermen's taking rules should never touch the beacon whose area drew them.
-   - **Test:** a Beginning beacon on an iron pyramid in a superflat world keeps every block after its endermen have worked the area.
-9. **Totem of Clear Skies isn't used up, and has no cooldown (owner, 2026-11-22):** using it in rain ends the storm and the totem stays. No cooldown is needed, because vanilla weather doesn't come back that fast. Remove `stack.consume` from `TotemOfClearSkiesItem`, and update the spec and player page.
-10. **Totem of Growth checks the surroundings before planting (owner, 2026-11-22):** a planting spot must be valid with its neighbours too, not just the block below:
-    - place through vanilla's own placement path (`BlockItem` placement context, `canSurvive` against the real neighbours), so a cactus never goes next to a block, sugar cane only beside water, and so on;
-    - give saplings and other growing plants room: no planting right against walls, other saplings, trunks or another plant of its kind, so what it plants can actually grow;
-    - test: items next to walls, solid blocks and other plants get planted only where vanilla would allow them and where they can grow.
-11. **The cairn yard's backup copy floats in the sky above it (owner, 2026-11-22):** `cairns.mcfunction:49` clones the yard to y 198 straight above itself, as the source for the "Reset yard" sign. Move the backup out of sight. Options:
-    - (a) far away in its own forceloaded chunks, beyond render distance (e.g. x -2000);
-    - (b) better, if it works: save the yard as a structure template and have the sign run `/place template`, with no second copy in the world at all.
-    Update the sign's command and verify.mcfunction to match.
-12. **The Fabricator teleporter must not take Wardens (owner, 2026-11-22):** exclude the Warden, and any entity in a new `#bubbas_reworked_mobs:fabricator_ignores` tag, from the teleporter pad. Test: a Warden standing on the pad stays put.
-13. **The natural world's Fabricator spawner doesn't run (owner, 2026-11-22). Cause found:** `Fabricators.java:309` stops the machine when `!level.isSpawningMonsters()` (the `spawn_mobs` and `spawn_monsters` game rules), and `tools/build-naturalworld.py` sets `spawn_mobs false`. Vanilla spawner blocks ignore those rules: they obey `spawner_blocks_work` (`GameRules.SPAWNER_BLOCKS_WORK`) and refuse only monsters on Peaceful. Plan:
-    - (a) gate the Fabricator the vanilla way: `spawner_blocks_work` and Peaceful only (specs/vanilla-subsystems.md);
-    - (b) the natural world should leave mob spawning on, since it's for playtesting real behaviour; keep only time and weather frozen if wanted;
-    - test: the machine runs with `spawn_mobs false` and stops with `spawner_blocks_work false`.
-14. **Most natural-world teleport signs don't work (owner, 2026-11-22). Likely cause:** every sign except the Fabricator's runs `execute positioned X 0 Z positioned over motion_blocking_no_leaves run tp @s ~ ~1 ~`. That heightmap lookup needs the chunk loaded when you click, and the builder trimmed the world to only the saved chunks, so it does nothing. The Fabricator's sign works because it uses a fixed y. Fix: record each spot's surface y at build time, while the chunks are force-loaded, and write plain `tp @s X Y Z` signs. Test by clicking every sign in a client test, checking that the player arrives within a few blocks of each spot.
-15. **Woken shipwreck drowned don't aggro, not even in water (owner, 2026-11-22):** a drowned sleeper wakes as a **plain vanilla drowned**, flagged vanilla the way spawner drowned are (`DrownedMixin` `brm$vanilla`, `VANILLA_KEY`). So none of our drowned rework applies to it. It keeps its gear and name, and our `WokenDrowned` type goes.
-    - **No special targeting (owner):** vanilla rules only. One that wakes on a ship above the water by day may stay "confused", which is the accepted tradeoff.
-    - **Test:** a drowned sleeper woken underwater next to a swimming player attacks them, and the woken mob is a vanilla-flagged `minecraft:drowned`.
-16. **Camps a bit too frequent (owner, 2026-11-22: "two bumps down"; from one camp you can usually see one or two more):** `worldgen/structure_set/monster_camps.json` is `spacing 10, separation 3` (chunks). Change it to about `spacing 14, separation 5`, roughly half as many camps. Restate the spacing in specs/monster-camps.md "How common".
-17. **Camps on high ground (owner, 2026-11-22: no height limits; they should spawn on mesa plateaus and the like).** Today there's no height cap, but `CampStructure` rejects ground that varies by more than 6 blocks across the camp (`MAX_SLOPE`) or sits below sea level - 1. The biome tag also leaves out the highlands (peaks, snowy slopes, windswept savanna and gravelly hills, stony shore). Plan:
-    - add the highland biomes;
-    - on rougher ground, level the footprint (cut and fill, or a vanilla `terrain_adaptation` such as `beard_thin`, as villages use) instead of skipping the spot;
-    - check plateaus in badlands and savanna plateaus in the natural world.
-18. **Crypt sleepers lie half inside the wall (owner, 2026-11-22):** sleepers in crypt niches render with half their body in the wall, so the lying pose doesn't fit the niche. Plan:
-    - check the niche depth against the lying model's length and its facing: lengthwise into the niche, or across it;
-    - fix the niche shape or the pose offset, so the whole body sits inside the niche;
-    - screenshot each crypt wealth's niches.
+Left for next session:
+- **4 worn Wither on mobs:** owner to say whether non-harmful worn rolls apply only in the test world or to every gemmed mob.
+- **5 full:** spiders really wander off the perch (vanilla stroll near the cocoon) and walk back to feed.
+- **6:** giant spiders haul prey to the centre of their own web (the spider has to remember its webs).
+- **7 rest:** skull-dome rock and bone caves (specs/monster-camps.md "Layout variety"), two-chamber rooms, camp loot themed per kind, screenshots of 6+ seeds per kind. The `camps` client part's `camp-room` camera still points at the old fixed room.
+- **11:** the cairn yard and creeper grove backup copies still float at y 198. The quick fixes don't work: a far-away copy isn't loaded when the sign is clicked, and the builder pack is off in the finished world. Options: (a) structure templates (the yard is 51 wide, so two templates, plus copying the world's `generated/` folder), or (b) a small reset datapack left enabled.
+- **12 check:** the Warden was already excluded from the teleporter by type, so find what the owner actually saw.
+- **17 rest:** level rough high ground for camps (cut and fill or `terrain_adaptation`) instead of skipping anything over 6 blocks of slope.
+- **Tests:** milestone tests for 8, 12 and 13; a client check that clicks every natural-world sign; a screenshot of a crypt niche with the sleeper inside it.
+- **Natural world camp signs:** they name the kind each biome should give, because camps only register when a player comes near.
+- **Side effect to know:** mixing design seeds changed the form of every cairn, camp, crypt yard and Fabricator that isn't built yet, including half-built cairns in existing worlds.
 
 ## Repo
 - **Multiplayer check (owner, 2026-11-22: "make sure these mods work in multiplayer"; light scan done, the rest is here).** Scan results:
