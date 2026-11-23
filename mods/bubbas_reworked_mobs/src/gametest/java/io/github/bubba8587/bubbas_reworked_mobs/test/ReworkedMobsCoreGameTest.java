@@ -56,6 +56,11 @@ public class ReworkedMobsCoreGameTest {
 		new EndermanGameTest().builderEndermanDeliversCairnBlock(helper);
 	}
 
+	@GameTest(structure = EndermanGameTest.FIELD, maxTicks = 20)
+	public void cairnTradePadTakesAndAnswers(GameTestHelper helper) {
+		new CairnTradeGameTest().tradePadTakesAndAnswers(helper);
+	}
+
 	// --- graveyards (specs/graveyards.md) ---
 
 	@GameTest(structure = EndermanGameTest.FIELD, maxTicks = 20)

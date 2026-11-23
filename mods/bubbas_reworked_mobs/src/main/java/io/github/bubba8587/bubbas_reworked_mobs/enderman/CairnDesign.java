@@ -76,7 +76,16 @@ public final class CairnDesign {
 	/** How far out (blocks) the structure reaches, so offerings stand beyond it. */
 	private int reach;
 
+	/** A designed cairn: its blocks bottom up, and where its trade pad's item lies (null when no pad fits). */
+	public record Designed(List<Map.Entry<BlockPos, BlockState>> blocks, @org.jspecify.annotations.Nullable BlockPos tradeSpot) {
+	}
+
+	private static final long PAD_SALT = 0x7EAD_E0AD_5A1EL;
+	private final long seed;
+	private @org.jspecify.annotations.Nullable BlockPos tradeSpot;
+
 	private CairnDesign(long seed, IntBinaryOperator groundAt) {
+		this.seed = seed;
 		this.random = new LegacyRandomSource(seed);
 		this.groundAt = groundAt;
 	}
@@ -91,12 +100,17 @@ public final class CairnDesign {
 	 * @return every block, relative to the origin, in build order (bottom up)
 	 */
 	public static List<Map.Entry<BlockPos, BlockState>> design(long seed, Offerings offerings, Direction pointer, IntBinaryOperator groundAt) {
+		return designed(seed, offerings, pointer, groundAt).blocks();
+	}
+
+	/** Designs a cairn with its trade pad. */
+	public static Designed designed(long seed, Offerings offerings, Direction pointer, IntBinaryOperator groundAt) {
 		CairnDesign design = new CairnDesign(seed, groundAt);
 		design.build(offerings, pointer);
 		List<Map.Entry<BlockPos, BlockState>> list = new ArrayList<>(design.blocks.entrySet());
-		// Stable sort: bottom up, keeping each trunk's growth order within a layer.
+		// Stable sort: bottom up
 		list.sort(Comparator.comparingInt(e -> e.getKey().getY()));
-		return list;
+		return new Designed(list, design.tradeSpot);
 	}
 
 	/** The form a seed picks (tests and previews): the first roll of the design. */
@@ -148,6 +162,7 @@ public final class CairnDesign {
 		}
 		buildRim(footing);
 		buildOfferings(offerings, reach);
+		buildTradePad(reach);
 	}
 
 	// --- forms -------------------------------------------------------------------------------------------
@@ -518,6 +533,48 @@ public final class CairnDesign {
 				}
 			}
 		}
+	}
+
+	/** The trade pad: a purpur plinth skirted by four end stone brick slabs, the item lying on top. */
+	private void buildTradePad(int reachOut) {
+		RandomSource padRandom = new LegacyRandomSource(seed ^ PAD_SALT);
+		double start = padRandom.nextDouble() * Math.PI * 2.0;
+		for (int ring = 3; ring <= 5; ring++) {
+			for (int i = 0; i < 16; i++) {
+				double a = start + Math.PI * 2.0 * i / 16.0;
+				int x = (int) Math.round(Math.cos(a) * (reachOut + ring));
+				int z = (int) Math.round(Math.sin(a) * (reachOut + ring));
+				int ground = groundAt.applyAsInt(x, z);
+				if (Math.abs(ground + 1) > 1 || !padFits(x, ground, z)) {
+					continue;
+				}
+				put(new BlockPos(x, ground + 1, z), Blocks.PURPUR_BLOCK.defaultBlockState());
+				for (Direction side : HORIZONTAL) {
+					put(new BlockPos(x + side.getStepX(), ground + 1, z + side.getStepZ()), Blocks.END_STONE_BRICK_SLAB.defaultBlockState());
+				}
+				tradeSpot = new BlockPos(x, ground + 2, z);
+				return;
+			}
+		}
+	}
+
+	private boolean padFits(int x, int ground, int z) {
+		for (int dx = -2; dx <= 2; dx++) {
+			for (int dz = -2; dz <= 2; dz++) {
+				if (Math.abs(dx) + Math.abs(dz) > 2) {
+					continue;
+				}
+				if (Math.abs(dx) + Math.abs(dz) <= 1 && groundAt.applyAsInt(x + dx, z + dz) != ground) {
+					return false;
+				}
+				for (int dy = -1; dy <= 3; dy++) {
+					if (blocks.containsKey(new BlockPos(x + dx, ground + dy, z + dz))) {
+						return false;
+					}
+				}
+			}
+		}
+		return true;
 	}
 
 	private void offering(Offerings palette, BlockPos base, Direction outward) {

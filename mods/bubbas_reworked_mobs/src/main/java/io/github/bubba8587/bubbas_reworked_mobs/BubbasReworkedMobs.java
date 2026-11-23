@@ -48,6 +48,7 @@ public class BubbasReworkedMobs implements ModInitializer {
 		UndeadCombat.initialize();
 		Creepers.initialize();
 		Endermen.initialize();
+		io.github.bubba8587.bubbas_reworked_mobs.display.HandPlacing.initialize();
 		io.github.bubba8587.bubbas_reworked_mobs.grave.Graveyards.initialize();
 		io.github.bubba8587.bubbas_reworked_mobs.camp.Camps.initialize();
 		io.github.bubba8587.bubbas_reworked_mobs.factory.Fabricators.initialize();
