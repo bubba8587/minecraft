@@ -52,11 +52,15 @@ No new blocks (B15). New ids, so no old-id alias. Numbers all in `totems/TotemsT
 - No beacon use (per design).
 - **Prior art / overlap:** keep-inventory mods (Keep Inventory Always, Nice Keep Inventory, Keep Inventory Orbs; MIT/GPL), soulbound enchantments, and grave mods (Universal Graves, Gravestones, You're in Grave Danger). Graves are the closest in purpose: with a grave mod installed, a kept death simply has nothing to put in the grave (they compose). None offers a single-use found totem; no library needed (two small injections, hand-rolled because no library does it, B9).
 
+#### Growth also plants seeds (owner, 2026-11-22: Harvest folded into Growth; not built yet)
+
+- The Totem of Growth (held and in a beacon) now and then **takes a dropped or floating seed item nearby and plants it** in a valid spot close by: wheat, beetroot, melon and pumpkin seeds, carrots, potatoes, saplings, and so on, on farmland or the right soil. It's a random chance per check, never a sweep. It doesn't gather or harvest anything (owner: use a separate Gathering totem for that). Seeds floating in a Gathering ring count as dropped items.
+
 #### Gathering in a beacon: a floating ring (owner, 2026-11-22, replaces "into a chest below"; not built yet)
 
 - In a beacon, gathered items **float in a slowly rotating ring around the beacon** (no gravity, held in orbit at about the beacon's height, a radius of 1-2 blocks), instead of going into a chest below. It's meant to look cool.
 - Players collect them with **a simple sideways hopper into a chest**: a hopper next to the beacon whose pickup space the ring passes through takes items as they come round. Builder sets the ring's height and radius so one hopper placed beside the beacon works.
-- XP keeps gathering onto the top of the beacon. Ring size is capped (extra items wait where they lie until there's room).
+- **XP orbs join the ring too** (owner), orbiting with the items (a player walking up collects them as usual). Ring size is capped (extra items wait where they lie until there's room).
 
 #### Totem of Gathering (`gathering/Gathering`, `TotemOfGatheringItem`, `compat/GatheringBeaconPayload`)
 

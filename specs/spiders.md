@@ -34,6 +34,7 @@ Owner's design (2026-11-22). Ordinary spiders stay **mostly vanilla**. What's ne
 - **Breaking free (owner): attack the cocoon from inside.** Each swing weakens it, and a sword or shears cut faster than a bare hand.
 - **Others can cut a victim out** from outside, with attacks or shears, freeing a friend or a cocooned animal alive.
 - **Cocooned livestock make their distress sounds loudly and often**, so you can hear a snatched animal from a distance and go after it.
+- **Two cocoon shapes (owner, 2026-11-22):** **vertical** for upright victims (players, villagers, zombies), hanging head-down, and **horizontal** for four-legged ones (pigs, sheep, cows), slung lengthwise.
 - The cocoon's look: wrapped in the same crisp, pixel-art silk as the spun webs, hanging from the nest or the giant spider's web.
 
 ## Giant spiders (owner, 2026-11-22)
