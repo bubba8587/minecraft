@@ -1,7 +1,9 @@
 // dte:C1,B15
 package io.github.bubba8587.bubbas_reworked_mobs.grave;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import io.github.bubba8587.bubbas_reworked_mobs.display.DisplayPlacement;
@@ -176,6 +178,90 @@ public class CryptYardPiece extends StructurePiece {
 		graves(b, RandomSource.create(net.minecraft.world.level.levelgen.RandomSupport.mixStafford13(seed) ^ 0x6A4E5L));
 		if (crypt) {
 			vault(b, RandomSource.create(net.minecraft.world.level.levelgen.RandomSupport.mixStafford13(seed) ^ 0xC4F97L));
+			wardStatues(b);
+		}
+	}
+
+	// --- warding statues ------------------------------------------------------------------------------
+
+	/** Bubba's Totems & Artifacts' statue block, looked up by id (absent without that mod). */
+	private static final net.minecraft.resources.Identifier STATUE_ID =
+			net.minecraft.resources.Identifier.fromNamespaceAndPath("bubbas_totems_artifacts", "totem_statue");
+
+	/** One warding statue's floor cell and facing. */
+	public record WardSpot(BlockPos pos, Direction facing) {
+	}
+
+	/** Where this crypt's warding statues stand, one roll per wing; empty without a crypt. */
+	public List<WardSpot> wardSpots() {
+		List<WardSpot> spots = new ArrayList<>();
+		if (!crypt) {
+			return spots;
+		}
+		RandomSource random = RandomSource.create(net.minecraft.world.level.levelgen.RandomSupport.mixStafford13(seed) ^ 0x3A2D5L);
+		int gate = gateX(origin, width);
+		int floor = origin.getY() - GraveTuning.CRYPT_DEPTH + 1;
+		int start = stairsZ(origin, depth) + (origin.getY() - floor) + 2;
+		switch (wealth) {
+			case FAMILY -> {
+				if (random.nextFloat() < GraveTuning.CRYPT_STATUE_FAMILY) {
+					spots.add(new WardSpot(new BlockPos(gate, floor, start + VAULT_LENGTH / 2), Direction.NORTH));
+				}
+			}
+			case PAUPER -> {
+				if (random.nextFloat() < GraveTuning.CRYPT_STATUE_PAUPER) {
+					spots.add(new WardSpot(new BlockPos(gate - 1, floor, start + PAUPER_LENGTH / 2), Direction.NORTH));
+				}
+			}
+			case NOBLE -> {
+				int chamber = start + NOBLE_ENTRY;
+				int mid = chamber + NOBLE_CHAMBER / 2;
+				if (random.nextFloat() < GraveTuning.CRYPT_STATUE_NOBLE) {
+					spots.add(new WardSpot(new BlockPos(gate, floor, chamber + 1), Direction.NORTH));
+				}
+				for (int side = -1; side <= 1; side += 2) {
+					if (random.nextFloat() < GraveTuning.CRYPT_STATUE_NOBLE) {
+						spots.add(new WardSpot(new BlockPos(gate + side * (NOBLE_HALF + 4), floor, mid), side < 0 ? Direction.EAST : Direction.WEST));
+					}
+				}
+			}
+		}
+		return spots;
+	}
+
+	/** The warding statue state facing {@code facing}, or null without Bubba's Totems & Artifacts. */
+	public static @org.jspecify.annotations.Nullable BlockState wardStatue(Direction facing) {
+		Block block = net.minecraft.core.registries.BuiltInRegistries.BLOCK.getOptional(STATUE_ID).orElse(null);
+		if (block == null) {
+			return null;
+		}
+		BlockState state = block.defaultBlockState();
+		state = withValue(state, "totem", "warding");
+		return withValue(state, "facing", facing.getSerializedName());
+	}
+
+	private static <T extends Comparable<T>> BlockState withValue(BlockState state, String name, String value) {
+		@SuppressWarnings("unchecked")
+		net.minecraft.world.level.block.state.properties.Property<T> property =
+				(net.minecraft.world.level.block.state.properties.Property<T>) state.getBlock().getStateDefinition().getProperty(name);
+		if (property == null) {
+			return state;
+		}
+		return property.getValue(value).map(v -> state.setValue(property, v)).orElse(state);
+	}
+
+	private void wardStatues(Build b) {
+		for (WardSpot spot : wardSpots()) {
+			BlockState statue = wardStatue(spot.facing());
+			BlockPos pos = spot.pos();
+			if (statue == null || !b.inside(pos.getX(), pos.getY(), pos.getZ())) {
+				continue;
+			}
+			b.put(pos.getX(), pos.getY(), pos.getZ(), statue);
+			if (wealth == YardKinds.Wealth.PAUPER) {
+				b.put(pos.getX() + 1, pos.getY(), pos.getZ(), Blocks.AIR.defaultBlockState());
+			}
+			b.level().scheduleTick(pos, statue.getBlock(), 1);
 		}
 	}
 

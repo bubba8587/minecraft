@@ -198,4 +198,47 @@ public class GravesGameTest {
 		helper.assertTrue(loose.isEmpty(), "blocks that would pop off: " + loose.subList(0, Math.min(12, loose.size())));
 		helper.succeed();
 	}
+
+	/**
+	 * Warding statues per crypt wing (specs/graveyards.md): over 4000 seeds each wing rolls its chance (noble 85 %, family
+	 * 65 %, pauper 35 %, within 3 points); without Bubba's Totems & Artifacts none is placed and the crypt builds as before.
+	 */
+	@GameTest(structure = CampsGameTest.FIELD, maxTicks = 20)
+	public void cryptWardStatueOdds(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		BlockPos gate = helper.absolutePos(new BlockPos(16, 7, 1));
+		int seeds = 4000;
+		for (YardKinds.Wealth wealth : YardKinds.Wealth.values()) {
+			int wings = wealth == YardKinds.Wealth.NOBLE ? 3 : 1;
+			float chance = switch (wealth) {
+				case NOBLE -> io.github.bubba8587.bubbas_reworked_mobs.grave.GraveTuning.CRYPT_STATUE_NOBLE;
+				case FAMILY -> io.github.bubba8587.bubbas_reworked_mobs.grave.GraveTuning.CRYPT_STATUE_FAMILY;
+				case PAUPER -> io.github.bubba8587.bubbas_reworked_mobs.grave.GraveTuning.CRYPT_STATUE_PAUPER;
+			};
+			int statues = 0;
+			for (long seed = 0; seed < seeds; seed++) {
+				statues += piece(level, gate, seed, wealth).wardSpots().size();
+			}
+			float rate = statues / (float) (seeds * wings);
+			helper.assertTrue(Math.abs(rate - chance) < 0.03F, wealth + ": statue rate " + rate + ", expected " + chance);
+		}
+		boolean totems = net.fabricmc.loader.api.FabricLoader.getInstance().isModLoaded("bubbas_totems_artifacts");
+		helper.assertTrue(totems == (CryptYardPiece.wardStatue(Direction.NORTH) != null), "statue lookup doesn't match whether Totems & Artifacts is loaded");
+		if (!totems) {
+			long seed = 1;
+			while (piece(level, gate, seed, YardKinds.Wealth.FAMILY).wardSpots().isEmpty()) {
+				seed++;
+			}
+			CryptYardPiece built = GraveyardCommand.build(level, gate, seed, 15, 13, true, YardKinds.State.OVERGROWN, YardKinds.Wealth.FAMILY);
+			for (CryptYardPiece.WardSpot spot : built.wardSpots()) {
+				helper.assertTrue(level.getBlockState(spot.pos()).isAir(), "something stands on the statue spot without Totems & Artifacts: " + level.getBlockState(spot.pos()));
+			}
+		}
+		helper.succeed();
+	}
+
+	private static CryptYardPiece piece(ServerLevel level, BlockPos gate, long seed, YardKinds.Wealth wealth) {
+		return new CryptYardPiece(seed, gate, 15, 13, true, io.github.bubba8587.bubbas_reworked_mobs.grave.YardTrees.forBiome(level.getBiome(gate)),
+				YardKinds.State.OVERGROWN, wealth, YardKinds.Climate.TEMPERATE);
+	}
 }

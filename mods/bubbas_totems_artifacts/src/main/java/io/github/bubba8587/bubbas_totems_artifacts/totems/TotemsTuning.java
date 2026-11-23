@@ -65,6 +65,8 @@ public final class TotemsTuning {
 	public static final double HERD_LEAD_OUT_RANGE = 10.0;
 	/** Statue area radius. */
 	public static final int STATUE_RADIUS = 3;
+	/** Warding statue ward radius (keeps sleepers asleep). */
+	public static final int WARD_STATUE_RADIUS = 5;
 	/** Statue pulse interval. */
 	public static final int STATUE_PULSE_TICKS = 20;
 	/** Growth statue extra random ticks. */

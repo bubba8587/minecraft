@@ -46,6 +46,14 @@ public final class GraveTuning {
 	/** Chunks round each player searched for yards. */
 	public static final int WISP_DISCOVER_CHUNKS = 6;
 
+	// --- warding statues in crypts (with Bubba's Totems & Artifacts) -------------------------------------
+	/** Chance per wing of a Totem of Warding statue, noble crypt (chamber and each side hall). */
+	public static final float CRYPT_STATUE_NOBLE = 0.85F;
+	/** Chance of a Totem of Warding statue, family vault. */
+	public static final float CRYPT_STATUE_FAMILY = 0.65F;
+	/** Chance of a Totem of Warding statue, pauper's ossuary. */
+	public static final float CRYPT_STATUE_PAUPER = 0.35F;
+
 	private GraveTuning() {
 	}
 }

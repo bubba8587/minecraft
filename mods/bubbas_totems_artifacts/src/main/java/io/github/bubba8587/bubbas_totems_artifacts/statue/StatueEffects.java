@@ -31,13 +31,18 @@ public final class StatueEffects {
 		return new AABB(pos).inflate(TotemsTuning.STATUE_RADIUS);
 	}
 
+	/** The statue's area for its type. */
+	public static AABB area(BlockPos pos, TotemType type) {
+		return type == TotemType.WARDING ? new AABB(pos).inflate(TotemsTuning.WARD_STATUE_RADIUS) : area(pos);
+	}
+
 	/** One pulse of the statue at pos. */
 	public static void pulse(ServerLevel level, BlockPos pos, TotemType type) {
-		AABB area = area(pos);
+		AABB area = area(pos, type);
 		Source source = new Source(pos.immutable());
 		int life = TotemsTuning.STATUE_PULSE_TICKS + 20;
 		switch (type) {
-			case WARDING -> Wards.put(level, source, area, false, life);
+			case WARDING -> Wards.put(level, source, area, true, life);
 			case GATHERING -> Gathering.intoChest(level, pos);
 			case FORTIFICATION -> TotemAreas.put(level, TotemAreas.Kind.FORTIFICATION, source, area, 1, life);
 			case GROWTH -> TotemAreas.put(level, TotemAreas.Kind.GROWTH, source, area, TotemsTuning.GROWTH_STATUE_EXTRA, life);
