@@ -99,4 +99,32 @@ final class ReworkedMobsSleepers implements SleeperHook {
 	public double nearestSleeperSqr(Level level, Vec3 centre, double range) {
 		return Sleepers.nearestSqr(level, centre, range);
 	}
+
+	@Override
+	public void attachToNobleCrypts(java.util.function.BiFunction<Long, BlockPos, net.minecraft.world.level.levelgen.structure.StructurePiece> vault) {
+		try {
+			io.github.bubba8587.bubbas_reworked_mobs.api.Crypts.setNobleAttachment(vault::apply);
+		} catch (LinkageError e) {
+			// An older Reworked Mobs without api/Crypts: no crypt vaults.
+		}
+	}
+
+	@Override
+	public boolean placeDisplay(net.minecraft.world.level.LevelAccessor level, BlockPos pos, net.minecraft.core.Direction facing, ItemStack stack) {
+		try {
+			return io.github.bubba8587.bubbas_reworked_mobs.api.Crypts.placeDisplay(level, pos, facing, stack);
+		} catch (LinkageError e) {
+			return false;
+		}
+	}
+
+	@Override
+	public boolean placeSittingSleeper(net.minecraft.world.level.LevelAccessor level, BlockPos pos, net.minecraft.core.Direction facing,
+			java.util.Map<net.minecraft.world.entity.EquipmentSlot, ItemStack> gear) {
+		try {
+			return io.github.bubba8587.bubbas_reworked_mobs.api.Crypts.placeSittingSleeper(level, pos, facing, gear);
+		} catch (LinkageError e) {
+			return false;
+		}
+	}
 }

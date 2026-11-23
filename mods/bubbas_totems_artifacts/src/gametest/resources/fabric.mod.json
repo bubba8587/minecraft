@@ -18,14 +18,16 @@
 			"io.github.bubba8587.bubbas_totems_artifacts.test.BeginningEndGameTest",
 			"io.github.bubba8587.bubbas_totems_artifacts.test.TotemStatueGameTest",
 			"io.github.bubba8587.bubbas_totems_artifacts.test.NewTotemsGameTest",
-			"io.github.bubba8587.bubbas_totems_artifacts.test.CryptWardsGameTest"
+			"io.github.bubba8587.bubbas_totems_artifacts.test.CryptWardsGameTest",
+			"io.github.bubba8587.bubbas_totems_artifacts.test.RelicMapsGameTest"
 		],
 		"fabric-client-gametest": [
 			"io.github.bubba8587.bubbas_totems_artifacts.test.GraveTalismanClientGameTest",
 			"io.github.bubba8587.bubbas_totems_artifacts.test.WardingClientGameTest",
 			"io.github.bubba8587.bubbas_totems_artifacts.test.TotemsClientGameTest",
 			"io.github.bubba8587.bubbas_totems_artifacts.test.StatuesClientGameTest",
-			"io.github.bubba8587.bubbas_totems_artifacts.test.CryptWardsClientGameTest"
+			"io.github.bubba8587.bubbas_totems_artifacts.test.CryptWardsClientGameTest",
+			"io.github.bubba8587.bubbas_totems_artifacts.test.RelicsClientGameTest"
 		]
 	}
 }

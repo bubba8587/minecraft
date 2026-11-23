@@ -1,0 +1,275 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "rolls": {
+        "type": "minecraft:uniform",
+        "min": 4,
+        "max": 7
+      },
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:gold_ingot",
+          "weight": 12,
+          "modifier": {
+            "type": "minecraft:set_count",
+            "count": {
+              "type": "minecraft:uniform",
+              "min": 2,
+              "max": 7
+            }
+          }
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:iron_ingot",
+          "weight": 10,
+          "modifier": {
+            "type": "minecraft:set_count",
+            "count": {
+              "type": "minecraft:uniform",
+              "min": 3,
+              "max": 9
+            }
+          }
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:emerald",
+          "weight": 10,
+          "modifier": {
+            "type": "minecraft:set_count",
+            "count": {
+              "type": "minecraft:uniform",
+              "min": 2,
+              "max": 8
+            }
+          }
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:diamond",
+          "weight": 8,
+          "modifier": {
+            "type": "minecraft:set_count",
+            "count": {
+              "type": "minecraft:uniform",
+              "min": 1,
+              "max": 4
+            }
+          }
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:lapis_lazuli",
+          "weight": 6,
+          "modifier": {
+            "type": "minecraft:set_count",
+            "count": {
+              "type": "minecraft:uniform",
+              "min": 4,
+              "max": 12
+            }
+          }
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:experience_bottle",
+          "weight": 6,
+          "modifier": {
+            "type": "minecraft:set_count",
+            "count": {
+              "type": "minecraft:uniform",
+              "min": 2,
+              "max": 6
+            }
+          }
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:golden_apple",
+          "weight": 5,
+          "modifier": {
+            "type": "minecraft:set_count",
+            "count": {
+              "type": "minecraft:uniform",
+              "min": 1,
+              "max": 2
+            }
+          }
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:name_tag",
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:book",
+          "weight": 6,
+          "modifier": {
+            "type": "minecraft:enchant_with_levels",
+            "levels": {
+              "type": "minecraft:uniform",
+              "min": 25,
+              "max": 39
+            },
+            "options": "#minecraft:on_random_loot"
+          }
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:diamond_sword",
+          "weight": 3,
+          "modifier": {
+            "type": "minecraft:enchant_with_levels",
+            "levels": {
+              "type": "minecraft:uniform",
+              "min": 25,
+              "max": 39
+            },
+            "options": "#minecraft:on_random_loot"
+          }
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:diamond_chestplate",
+          "weight": 3,
+          "modifier": {
+            "type": "minecraft:enchant_with_levels",
+            "levels": {
+              "type": "minecraft:uniform",
+              "min": 25,
+              "max": 39
+            },
+            "options": "#minecraft:on_random_loot"
+          }
+        }
+      ]
+    },
+    {
+      "rolls": {
+        "type": "minecraft:uniform",
+        "min": 2,
+        "max": 4
+      },
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "bubbas_totems_artifacts:relic_map_shred",
+          "modifier": {
+            "type": "bubbas_totems_artifacts:random_relic_shred"
+          }
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "condition": {
+        "type": "minecraft:random_chance",
+        "chance": 0.45
+      },
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "bubbas_totems_artifacts:totem_of_keeping",
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "name": "bubbas_totems_artifacts:totem_of_gathering",
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "name": "bubbas_totems_artifacts:totem_of_fortification",
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "name": "bubbas_totems_artifacts:totem_of_growth",
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "name": "bubbas_totems_artifacts:totem_of_seeking",
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "name": "bubbas_totems_artifacts:totem_of_herding",
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "name": "bubbas_totems_artifacts:totem_of_clear_skies",
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "name": "bubbas_totems_artifacts:totem_of_warding",
+          "weight": 2
+        },
+        {
+          "type": "minecraft:item",
+          "name": "bubbas_totems_artifacts:grave_talisman",
+          "weight": 2
+        },
+        {
+          "type": "minecraft:item",
+          "name": "bubbas_totems_artifacts:totem_of_the_beginning",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "bubbas_totems_artifacts:totem_of_the_end",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "condition": {
+        "type": "minecraft:random_chance",
+        "chance": 0.4
+      },
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:enchanted_golden_apple",
+          "weight": 2
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:netherite_scrap",
+          "weight": 3,
+          "modifier": {
+            "type": "minecraft:set_count",
+            "count": {
+              "type": "minecraft:uniform",
+              "min": 1,
+              "max": 2
+            }
+          }
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:totem_of_undying",
+          "weight": 2
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:music_disc_pigstep",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:heart_of_the_sea",
+          "weight": 1
+        }
+      ]
+    }
+  ],
+  "random_sequence": "bubbas_totems_artifacts:chests/relic_vault_grand"
+}

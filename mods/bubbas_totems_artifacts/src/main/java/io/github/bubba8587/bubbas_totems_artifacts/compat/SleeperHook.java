@@ -85,6 +85,21 @@ public interface SleeperHook {
 		return Double.MAX_VALUE;
 	}
 
+	/** Reworked Mobs adds the piece {@code vault} gives (or none, for null) behind each noble crypt's far wall. */
+	default void attachToNobleCrypts(java.util.function.BiFunction<Long, BlockPos, net.minecraft.world.level.levelgen.structure.@org.jspecify.annotations.Nullable StructurePiece> vault) {
+	}
+
+	/** Puts {@code stack} on a Reworked Mobs loot display at {@code pos}; false without that mod. */
+	default boolean placeDisplay(net.minecraft.world.level.LevelAccessor level, BlockPos pos, net.minecraft.core.Direction facing, ItemStack stack) {
+		return false;
+	}
+
+	/** A sitting skeleton sleeper in {@code gear} at {@code pos}; false without Reworked Mobs. */
+	default boolean placeSittingSleeper(net.minecraft.world.level.LevelAccessor level, BlockPos pos, net.minecraft.core.Direction facing,
+			java.util.Map<net.minecraft.world.entity.EquipmentSlot, ItemStack> gear) {
+		return false;
+	}
+
 	final class Holder {
 		private static final SleeperHook HOOK = FabricLoader.getInstance().isModLoaded("bubbas_reworked_mobs")
 				? new ReworkedMobsSleepers() : NONE;

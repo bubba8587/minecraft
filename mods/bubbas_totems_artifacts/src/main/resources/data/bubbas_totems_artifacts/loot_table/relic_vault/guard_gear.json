@@ -1,0 +1,64 @@
+{
+  "fabric:load_conditions": [
+    {
+      "condition": "fabric:all_mods_loaded",
+      "values": [
+        "bubbas_infused_gems"
+      ]
+    }
+  ],
+  "type": "minecraft:empty",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:iron_chestplate",
+          "modifier": {
+            "type": "bubbas_infused_gems:socket_random_gems",
+            "count": 1,
+            "infusion": [
+              2,
+              2,
+              3,
+              3
+            ],
+            "tier": [
+              1,
+              2,
+              2
+            ],
+            "variant": "normal"
+          }
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:iron_sword",
+          "modifier": {
+            "type": "bubbas_infused_gems:socket_random_gems",
+            "count": 1,
+            "infusion": [
+              2,
+              2,
+              3,
+              3
+            ],
+            "tier": [
+              1,
+              2,
+              2
+            ],
+            "variant": "normal",
+            "prefer_harmful": 0.75
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "bubbas_totems_artifacts:item/relic_map_shred_9"
+  }
+}
