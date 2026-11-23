@@ -71,6 +71,14 @@ Parked ideas and open items, newest first within each project. Agents add to it 
        - **varying counts of every element:** towers, lean-tos, outcrops, pikes and so on.
        See specs/monster-camps.md "Layout variety".
      - (c) the test world then uses well-spread seeds.
+8. **A Beginning beacon's endermen wrecked the beacon (owner, 2026-11-22):** the Totem of the Beginning in a beacon draws caretaker endermen to the area (`BeginningBeaconPayload` → `SleeperHook.drawEndermen`). One took a block from the beacon and broke it. Caretakers mend natural terrain against the worldgen target, so in the superflat test world a pyramid counts as "wrong" terrain.
+   - **Fix:** caretakers never take or move:
+     - a beacon or anything in `#minecraft:beacon_base_blocks`;
+     - any block with a block entity;
+     - blocks outside a "natural terrain" block tag (dirt, stone, sand, gravel and so on; a vanilla tag where one fits).
+   - Also: the endermen's taking rules should never touch the beacon whose area drew them.
+   - **Test:** a Beginning beacon on an iron pyramid in a superflat world keeps every block after its endermen have worked the area.
+9. **Totem of Clear Skies shouldn't be used up (owner, 2026-11-22):** today, using it in rain ends the storm and consumes it (`TotemOfClearSkiesItem` `stack.consume`). That's too costly for what it does. Plan: it isn't consumed and gets a visible item cooldown instead (B19, the vanilla cooldown sweep), a few in-game minutes, so it can't hold the weather off forever. The builder proposes the length.
 
 ## Repo
 - **Multiplayer check (owner, 2026-11-22: "make sure these mods work in multiplayer"; light scan done, the rest is here).** Scan results:
