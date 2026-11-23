@@ -1,0 +1,175 @@
+diff --git a/mods/bubbas_reworked_mobs/src/gametest/java/io/github/bubba8587/bubbas_reworked_mobs/test/CampsGameTest.java b/mods/bubbas_reworked_mobs/src/gametest/java/io/github/bubba8587/bubbas_reworked_mobs/test/CampsGameTest.java
+index 2fd8076..048b99d 100644
+--- a/mods/bubbas_reworked_mobs/src/gametest/java/io/github/bubba8587/bubbas_reworked_mobs/test/CampsGameTest.java
++++ b/mods/bubbas_reworked_mobs/src/gametest/java/io/github/bubba8587/bubbas_reworked_mobs/test/CampsGameTest.java
+@@ -474,4 +474,23 @@ public class CampsGameTest {
+ 		}
+ 		return loose;
+ 	}
++
++	/** Large camps built at every offset to the chunk grid, away from the field: fences joined across chunk edges, no lone rail. */
++	@GameTest(structure = FIELD, maxTicks = 20)
++	public void campFencesJoinAcrossChunkEdges(GameTestHelper helper) {
++		ServerLevel level = helper.getLevel();
++		List<String> faults = new ArrayList<>();
++		for (int off = 0; off < 16; off++) {
++			for (CampKind kind : CampKind.values()) {
++				BlockPos at = helper.absolutePos(new BlockPos(16, 8, 24)).offset(4000 + off * 37 + kind.ordinal() * 300, 0, 4000 + off * 23);
++				CampPiece piece = CampCommand.build(level, at, kind, CampTuning.Size.LARGE, 3L + off);
++				List<String> f = fenceFaults(level, piece.getBoundingBox());
++				if (!f.isEmpty()) {
++					faults.add(kind + " at " + at.toShortString() + ": " + f.subList(0, Math.min(4, f.size())));
++				}
++			}
++		}
++		helper.assertTrue(faults.isEmpty(), faults.size() + " camps with fence faults, e.g. " + faults.subList(0, Math.min(4, faults.size())));
++		helper.succeed();
++	}
+ }
+diff --git a/mods/bubbas_reworked_mobs/src/gametest/java/io/github/bubba8587/bubbas_reworked_mobs/test/EndermanGameTest.java b/mods/bubbas_reworked_mobs/src/gametest/java/io/github/bubba8587/bubbas_reworked_mobs/test/EndermanGameTest.java
+index dc664ff..636ed12 100644
+--- a/mods/bubbas_reworked_mobs/src/gametest/java/io/github/bubba8587/bubbas_reworked_mobs/test/EndermanGameTest.java
++++ b/mods/bubbas_reworked_mobs/src/gametest/java/io/github/bubba8587/bubbas_reworked_mobs/test/EndermanGameTest.java
+@@ -326,6 +326,30 @@ public class EndermanGameTest {
+ 		});
+ 		helper.succeedWhen(() -> {
+ 			helper.assertTrue(worstIdle[0] <= 100, "a builder stood idle holding its block for " + worstIdle[0] + " ticks");
++			if (builders.size() == missing.size() && !site.complete(level) && helper.getTick() >= 7990) {
++				StringBuilder why = new StringBuilder();
++				for (BlockPos p : site.order()) {
++					if (!TerrainKinds.matches(level.getBlockState(p), site.at(p))) {
++						why.append(" gap ").append(p.toShortString()).append(" wants ").append(site.at(p)).append(" has ").append(level.getBlockState(p));
++					}
++				}
++				for (Enderman e : level.getEntitiesOfClass(Enderman.class, area.inflate(64.0))) {
++					if (e.getCarriedBlock() != null) {
++						EndermanMind mind = EndermanMind.of(e);
++						why.append(" | carrier ").append(e.blockPosition().toShortString()).append(e.isAlive() ? "" : " dead").append(" holds ").append(e.getCarriedBlock())
++								.append(" job ").append(mind == null ? null : mind.job()).append(" @").append(mind == null || mind.target() == null ? "-" : mind.target().toShortString());
++					}
++				}
++				java.util.Set<BlockState> wanted = new java.util.HashSet<>();
++				site.order().stream().filter(p -> !TerrainKinds.matches(level.getBlockState(p), site.at(p))).forEach(p -> wanted.add(site.at(p).getBlock().defaultBlockState()));
++				for (BlockPos p : BlockPos.betweenClosed(site.origin().offset(-16, -6, -16), site.origin().offset(16, 10, 16))) {
++					BlockState s = level.getBlockState(p);
++					if (wanted.contains(s.getBlock().defaultBlockState()) && !site.box().isInside(p)) {
++						why.append(" | lying ").append(s).append(" @").append(p.toShortString());
++					}
++				}
++				System.out.println("[relay] stuck:" + why);
++			}
+ 			helper.assertTrue(builders.size() == missing.size() && site.complete(level),
+ 					"the cairn (radius " + site.radius() + ") should be finished: " + site.standing(level) + " of " + site.size() + " standing, " + setDowns[0] + " set down");
+ 			helper.assertTrue(setDowns[0] > 0, "out of order, some builders should have set their block down");
+diff --git a/mods/bubbas_reworked_mobs/src/main/java/io/github/bubba8587/bubbas_reworked_mobs/grave/CryptYardPiece.java b/mods/bubbas_reworked_mobs/src/main/java/io/github/bubba8587/bubbas_reworked_mobs/grave/CryptYardPiece.java
+index d1ce375..1ce6506 100644
+--- a/mods/bubbas_reworked_mobs/src/main/java/io/github/bubba8587/bubbas_reworked_mobs/grave/CryptYardPiece.java
++++ b/mods/bubbas_reworked_mobs/src/main/java/io/github/bubba8587/bubbas_reworked_mobs/grave/CryptYardPiece.java
+@@ -254,13 +254,16 @@ public class CryptYardPiece extends StructurePiece {
+ 		for (WardSpot spot : wardSpots()) {
+ 			BlockState statue = wardStatue(spot.facing());
+ 			BlockPos pos = spot.pos();
+-			if (statue == null || !b.inside(pos.getX(), pos.getY(), pos.getZ())) {
++			if (statue == null) {
+ 				continue;
+ 			}
+-			b.put(pos.getX(), pos.getY(), pos.getZ(), statue);
+ 			if (wealth == YardKinds.Wealth.PAUPER) {
+ 				b.put(pos.getX() + 1, pos.getY(), pos.getZ(), Blocks.AIR.defaultBlockState());
+ 			}
++			if (!b.inside(pos.getX(), pos.getY(), pos.getZ())) {
++				continue;
++			}
++			b.put(pos.getX(), pos.getY(), pos.getZ(), statue);
+ 			b.level().scheduleTick(pos, statue.getBlock(), 1);
+ 		}
+ 	}
+diff --git a/mods/bubbas_reworked_mobs/src/main/java/io/github/bubba8587/bubbas_reworked_mobs/worldgen/ClippedBuild.java b/mods/bubbas_reworked_mobs/src/main/java/io/github/bubba8587/bubbas_reworked_mobs/worldgen/ClippedBuild.java
+index 41439dc..16ab106 100644
+--- a/mods/bubbas_reworked_mobs/src/main/java/io/github/bubba8587/bubbas_reworked_mobs/worldgen/ClippedBuild.java
++++ b/mods/bubbas_reworked_mobs/src/main/java/io/github/bubba8587/bubbas_reworked_mobs/worldgen/ClippedBuild.java
+@@ -69,8 +69,21 @@ public class ClippedBuild {
+ 	}
+ 
+ 	private final java.util.Set<BlockPos> fences = new java.util.HashSet<>();
++	/** What the piece puts just over the chunk's side edges (not placed here). */
++	private final java.util.Map<BlockPos, BlockState> ringPlan = new java.util.HashMap<>();
++
++	private boolean inRing(int x, int y, int z) {
++		boolean outX = x == chunk.minX() - 1 || x == chunk.maxX() + 1;
++		boolean outZ = z == chunk.minZ() - 1 || z == chunk.maxZ() + 1;
++		boolean inX = x >= chunk.minX() && x <= chunk.maxX();
++		boolean inZ = z >= chunk.minZ() && z <= chunk.maxZ();
++		return (outX && inZ || outZ && inX) && y >= chunk.minY() && y <= chunk.maxY();
++	}
+ 
+ 	public void put(int x, int y, int z, BlockState state) {
++		if (!inside(x, y, z) && inRing(x, y, z)) {
++			ringPlan.put(new BlockPos(x, y, z), state);
++		}
+ 		if (inside(x, y, z)) {
+ 			BlockPos pos = new BlockPos(x, y, z);
+ 			level.setBlock(pos, state, Block.UPDATE_CLIENTS);
+@@ -101,7 +114,7 @@ public class ClippedBuild {
+ 				boolean joined = false;
+ 				for (net.minecraft.core.Direction d : net.minecraft.core.Direction.Plane.HORIZONTAL) {
+ 					BlockPos n = pos.relative(d);
+-					joined |= joins(fence, n, d) || !inside(n.getX(), n.getY(), n.getZ()) && state.getValue(propertyOf(d));
++					joined |= inside(n.getX(), n.getY(), n.getZ()) ? joins(fence, n, d) : plannedJoins(fence, n, d);
+ 				}
+ 				BlockState above = level.getBlockState(pos.above());
+ 				BlockState below = level.getBlockState(pos.below());
+@@ -116,6 +129,7 @@ public class ClippedBuild {
+ 			level.setBlock(pos, joined(pos, level.getBlockState(pos)), Block.UPDATE_CLIENTS);
+ 		}
+ 		fences.clear();
++		ringPlan.clear();
+ 		int y0 = Math.max(piece.minY(), level.getMinY());
+ 		int y1 = Math.min(piece.maxY(), level.getMaxY());
+ 		for (int x = chunk.minX() - 1; x <= chunk.maxX() + 1; x++) {
+@@ -172,6 +186,15 @@ public class ClippedBuild {
+ 		return state;
+ 	}
+ 
++	/** Across the chunk edge: joins what the piece puts there, else what stands there now. */
++	private boolean plannedJoins(net.minecraft.world.level.block.FenceBlock fence, BlockPos n, net.minecraft.core.Direction d) {
++		BlockState planned = ringPlan.get(n);
++		if (planned == null) {
++			return joins(fence, n, d);
++		}
++		return fence.connectsTo(planned, planned.isFaceSturdy(level, n, d.getOpposite()), d.getOpposite());
++	}
++
+ 	private boolean joins(net.minecraft.world.level.block.FenceBlock fence, BlockPos n, net.minecraft.core.Direction d) {
+ 		BlockState ns = level.getBlockState(n);
+ 		return fence.connectsTo(ns, ns.isFaceSturdy(level, n, d.getOpposite()), d.getOpposite());
+@@ -191,6 +214,8 @@ public class ClippedBuild {
+ 		for (int dy = 1; dy <= height; dy++) {
+ 			if (inside(x, y + dy, z) && !level.getBlockState(new BlockPos(x, y + dy, z)).isAir()) {
+ 				put(x, y + dy, z, Blocks.AIR.defaultBlockState());
++			} else if (ringPlan.containsKey(new BlockPos(x, y + dy, z))) {
++				ringPlan.put(new BlockPos(x, y + dy, z), Blocks.AIR.defaultBlockState());
+ 			}
+ 		}
+ 	}
+diff --git a/mods/bubbas_totems_artifacts/src/gametest/java/io/github/bubba8587/bubbas_totems_artifacts/test/CryptWardsGameTest.java b/mods/bubbas_totems_artifacts/src/gametest/java/io/github/bubba8587/bubbas_totems_artifacts/test/CryptWardsGameTest.java
+index 686b271..dd65d75 100644
+--- a/mods/bubbas_totems_artifacts/src/gametest/java/io/github/bubba8587/bubbas_totems_artifacts/test/CryptWardsGameTest.java
++++ b/mods/bubbas_totems_artifacts/src/gametest/java/io/github/bubba8587/bubbas_totems_artifacts/test/CryptWardsGameTest.java
+@@ -105,6 +105,16 @@ public class CryptWardsGameTest {
+ 				}
+ 				int with = walkablePockets(level, piece.getBoundingBox(), piece.vaultCentre().getY(), Set.of());
+ 				int without = walkablePockets(level, piece.getBoundingBox(), piece.vaultCentre().getY(), Set.copyOf(placed));
++				if (with != without) {
++					StringBuilder around = new StringBuilder();
++					for (BlockPos p : placed) {
++						for (BlockPos q : BlockPos.betweenClosed(p.offset(-2, -1, -2), p.offset(2, 1, 2))) {
++							around.append(' ').append(q.getX() - p.getX()).append(',').append(q.getY() - p.getY()).append(',').append(q.getZ() - p.getZ()).append('=')
++									.append(net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(level.getBlockState(q).getBlock()).getPath());
++						}
++					}
++					System.out.println("[crypt] split at " + placed + " seed? box " + piece.getBoundingBox() + ":" + around);
++				}
+ 				helper.assertTrue(with == without, wealth + ": the statues split the crypt floor into " + with + " walkable areas (" + without + " without them)");
+ 				last = placed;
+ 			}

@@ -74,6 +74,7 @@ Left for next session:
 - Mob spawner tweaks.
 
 ## Repo
+- **Flaky tests, unfinished (2026-11-24):** camps "fence faults" (ClippedBuild.tidyFences at chunk edges), Totems `CryptWardsGameTest.cryptStatuesStandInEveryWing`, Reworked Mobs `outOfOrderBuildersFinishHalfBuiltCairn` (92/93 once). A builder ran out of time (1 h); its unverified half-finished diff is in `docs/patches/flaky-tests-wip-2026-11-24.patch`. Next try: one test at a time, short loops.
 - **Multiplayer check (owner, 2026-11-22: "make sure these mods work in multiplayer"; light scan done, the rest is here).** Scan results:
   - No client classes are used in common code.
   - All the per-thing state is keyed by level or entity (WeakHashMaps), not by a single player. The Seeking cache clears on server stop.
