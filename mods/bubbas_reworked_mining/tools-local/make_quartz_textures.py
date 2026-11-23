@@ -31,6 +31,7 @@ OUT32 = MOD / "resourcepacks" / f"{NS}_32x" / "assets" / NS / "textures"
 # Quartz: warm white, darkest band a soft brown-grey (never black, like nether quartz), highlights pure white.
 PAL = {
 	"o": (60, 50, 52),     # outline
+	"q": (132, 122, 121),  # tool-head outline: soft, so thin heads read white (orchestrator, 2026-11-22)
 	"p": (122, 110, 110),  # inner dark edge
 	"d": (190, 179, 174),  # shadow
 	"m": (224, 217, 211),  # mid
@@ -42,7 +43,7 @@ PAL = {
 	# vanilla stick colours
 	"A": (137, 103, 39), "B": (104, 78, 30), "C": (73, 54, 21), "E": (40, 30, 11),
 }
-QUARTZ = set("opdmlhwvu")
+QUARTZ = set("opqdmlhwvu")
 MATERIAL = {c: "quartz" for c in QUARTZ - {"o"}}
 MATERIAL.update({c: "wood" for c in "ABCE"})
 STICK = {(137, 103, 39): "A", (104, 78, 30): "B", (73, 54, 21): "C", (40, 30, 11): "E"}
@@ -128,10 +129,19 @@ def vein_32(img, count, seed):
 	return img
 
 
-def make(src, rel, smooth, veins16, veins32, seed):
-	grid = vein_grid(to_grid(Image.open(src)), veins16, seed)
+def brighten_tool(grid):
+	"""Tool heads are thin: vanilla's near-black outline and dark inner edge made them read mid-grey. Soften the
+	outline and lift the inner edge to the quartz shadow tone (tools only; the armor reads white as it is)."""
+	return ["".join({"o": "q", "p": "d"}.get(ch, ch) for ch in row) for row in grid]
+
+
+def make(src, rel, smooth, veins16, veins32, seed, tool=False):
+	grid = to_grid(Image.open(src))
+	if tool:
+		grid = brighten_tool(grid)
+	grid = vein_grid(grid, veins16, seed)
 	img16 = render(grid, PAL)
-	img32 = render32(grid, PAL, material=MATERIAL, outline="o", inner={"o": "p"}, grain=("quartz",), grain_amount=0.035,
+	img32 = render32(grid, PAL, material=MATERIAL, outline="oq", inner={"o": "p", "q": "d"}, grain=("quartz",), grain_amount=0.035,
 			seed=seed, smooth=smooth)
 	img32 = vein_32(img32, veins32, seed + 100)
 	for out, img in ((OUT16, img16), (OUT32, img32)):
@@ -146,7 +156,8 @@ def main():
 	seed = 7
 	for part in ("sword", "shovel", "pickaxe", "axe", "hoe", "helmet", "chestplate", "leggings", "boots"):
 		seed += 1
-		make(van / "item" / f"iron_{part}.png", f"item/quartz_{part}.png", True, 1, 2, seed)
+		make(van / "item" / f"iron_{part}.png", f"item/quartz_{part}.png", True, 1, 2, seed,
+				tool=part in ("sword", "shovel", "pickaxe", "axe", "hoe"))
 	for layer in ("humanoid", "humanoid_leggings"):
 		seed += 1
 		make(van / "entity" / "equipment" / layer / "iron.png", f"entity/equipment/{layer}/quartz.png", False, 4, 10, seed)
