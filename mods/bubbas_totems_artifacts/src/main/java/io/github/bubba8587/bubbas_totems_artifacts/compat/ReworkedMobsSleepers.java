@@ -66,9 +66,9 @@ final class ReworkedMobsSleepers implements SleeperHook {
 
 	@Override
 	public boolean pulseAround(ServerLevel level, BlockPos centre, int radius, int ticksPerBlock, float chance, float oreChance,
-			int recentTicks, @org.jspecify.annotations.Nullable Player player) {
+			@org.jspecify.annotations.Nullable Player player) {
 		try {
-			return Endermen.pulseAround(level, centre, radius, ticksPerBlock, chance, oreChance, recentTicks, player);
+			return Endermen.pulseAround(level, centre, radius, ticksPerBlock, chance, oreChance, player);
 		} catch (LinkageError e) {
 			// An older Reworked Mobs without the pulse: nothing happens.
 			return false;
@@ -82,15 +82,6 @@ final class ReworkedMobsSleepers implements SleeperHook {
 		} catch (LinkageError e) {
 			// An older Reworked Mobs without the ripple: nothing happens (the totem isn't used up).
 			return false;
-		}
-	}
-
-	@Override
-	public void drawEndermen(ServerLevel level, Object source, AABB area, int lifetimeTicks) {
-		try {
-			Endermen.drawIn(level, source, area, lifetimeTicks);
-		} catch (LinkageError e) {
-			// As above.
 		}
 	}
 

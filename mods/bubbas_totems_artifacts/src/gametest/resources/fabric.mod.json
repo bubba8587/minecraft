@@ -14,6 +14,7 @@
 			"io.github.bubba8587.bubbas_totems_artifacts.test.WardingBeaconGameTest",
 			"io.github.bubba8587.bubbas_totems_artifacts.test.TotemsGameTest",
 			"io.github.bubba8587.bubbas_totems_artifacts.test.TotemsBeaconGameTest",
+			"io.github.bubba8587.bubbas_totems_artifacts.test.BeginningAreaGameTest",
 			"io.github.bubba8587.bubbas_totems_artifacts.test.BeginningEndGameTest",
 			"io.github.bubba8587.bubbas_totems_artifacts.test.TotemStatueGameTest",
 			"io.github.bubba8587.bubbas_totems_artifacts.test.NewTotemsGameTest",
