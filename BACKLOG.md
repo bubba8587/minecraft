@@ -93,9 +93,9 @@ Parked ideas and open items, newest first within each project. Agents add to it 
     - (b) the natural world should leave mob spawning on, since it's for playtesting real behaviour; keep only time and weather frozen if wanted;
     - test: the machine runs with `spawn_mobs false` and stops with `spawner_blocks_work false`.
 14. **Most natural-world teleport signs don't work (owner, 2026-11-22). Likely cause:** every sign except the Fabricator's runs `execute positioned X 0 Z positioned over motion_blocking_no_leaves run tp @s ~ ~1 ~`. That heightmap lookup needs the chunk loaded when you click, and the builder trimmed the world to only the saved chunks, so it does nothing. The Fabricator's sign works because it uses a fixed y. Fix: record each spot's surface y at build time, while the chunks are force-loaded, and write plain `tp @s X Y Z` signs. Test by clicking every sign in a client test, checking that the player arrives within a few blocks of each spot.
-15. **Woken shipwreck drowned don't aggro (owner, 2026-11-22):** a drowned sleeper wakes as a **plain vanilla drowned**, flagged vanilla the way spawner drowned are (`DrownedMixin` `brm$vanilla`, `VANILLA_KEY`). So none of our drowned rework applies to it: no lurking, no grabbing. It chases and hits like vanilla, keeping its gear and name. Our `WokenDrowned` type goes.
-    - **Targeting:** vanilla drowned only target players at night or when the player is in water (`Drowned.okTarget`). So the woken mob also targets whoever woke it (the noise's maker) when it wakes; after that, vanilla rules apply. Check the other woken kinds target their waker the same way.
-    - **Test:** a drowned sleeper woken by a player standing on a dry deck by day attacks that player, and it's flagged vanilla.
+15. **Woken shipwreck drowned don't aggro, not even in water (owner, 2026-11-22):** a drowned sleeper wakes as a **plain vanilla drowned**, flagged vanilla the way spawner drowned are (`DrownedMixin` `brm$vanilla`, `VANILLA_KEY`). So none of our drowned rework applies to it. It keeps its gear and name, and our `WokenDrowned` type goes.
+    - **No special targeting (owner):** vanilla rules only. One that wakes on a ship above the water by day may stay "confused", which is the accepted tradeoff.
+    - **Test:** a drowned sleeper woken underwater next to a swimming player attacks them, and the woken mob is a vanilla-flagged `minecraft:drowned`.
 
 ## Repo
 - **Multiplayer check (owner, 2026-11-22: "make sure these mods work in multiplayer"; light scan done, the rest is here).** Scan results:
