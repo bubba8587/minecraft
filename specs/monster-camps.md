@@ -1,7 +1,7 @@
 <!-- dte:C1,B15,B17 -->
 # Reworked Mobs: monster camps (spec, design 2026-11-22, not built)
 
-Owner's design (2026-11-22), building on the earlier idea in `docs/research/camps-blood-moon-idea.md`. Decisions made since win where they differ (the 15 % spawn cut stays; the blood moon is on hold).
+Owner's design (2026-11-22), building on the earlier idea in `docs/research/camps-blood-moon-idea.md`. Decisions made since win where they differ (the 15 % spawn cut stays; **no blood moon**, owner 2026-11-22).
 
 ## What a camp is
 
@@ -16,6 +16,10 @@ Owner's design (2026-11-22), building on the earlier idea in `docs/research/camp
 - **Put a banner back** (the camp's type's pattern) **within the camp's area, and the camp returns.** Players can re-arm a camp on purpose, for a farm or a fight.
 - So camps are **registered per world, like cairns** (`specs/endermen.md`, CairnSites): location, type and area saved, fixed at worldgen. The game checks "a matching banner stands in this area?" and never scans for banners.
 
+## Refilling (owner, 2026-11-22)
+
+- **No blood moon.** A camp whose roster is dead but whose banner still stands has a **random chance to reset while you're away**: checked about once per in-game day while no player is near (outside the trigger range), with a chance per check (builder's starting value about 1 in 3, so usually within a few days). It never refills while someone is there.
+
 ## Pillager outposts become camps too (owner)
 
 - Vanilla outposts spawn pillagers anywhere in their area forever (`spawn_overrides` on `minecraft:pillager_outpost`, full bounding box) and ignore banners. New rule: **when every banner in an outpost is broken, its pillagers stop spawning**, and putting one back brings them back.
@@ -27,7 +31,6 @@ Owner's design (2026-11-22), building on the earlier idea in `docs/research/camp
 
 ## Open
 
-- **When an uncleared camp refills** (banner still standing, roster dead): at the blood moon once it exists; until then, owner to choose (agent's suggestion: a slow restock after a few in-game days while no player is near).
 - Camp loot, spacing and biomes, the trigger range, roster sizes, the leader's numbers.
 
 ## Milestone test objectives
