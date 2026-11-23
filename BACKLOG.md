@@ -4,6 +4,7 @@
 Parked ideas and open items, newest first within each project. Agents add to it when the owner parks something; details live in the linked spec.
 
 ## Bubba's Reworked Mobs
+- **Will-o'-wisps** (owner, 2026-11-22, not built; `specs/graveyards.md`): faint occasional soul fire particles over graveyards at night leading to the crypt, and near players between them and a loaded yard, cleared per player once they've found it.
 - **Owner picks, 2026-11-22 (not built):** totem statues give their totem's effect in a very small radius (`specs/totems-artifacts.md`); noble crypt sleepers in gemmed armor with Infused Gems (`specs/graveyards.md`); drowned sleepers in shipwreck interiors (`specs/undead.md`).
 - **Endermen trading at cairns** (owner, 2026-11-22; `specs/endermen.md` "Trading at cairns", not built): lay anything on a cairn's trade pad, an enderman takes it once you're away and returns with something random, sometimes good, sometimes weird.
 - **Spiders** (owner, 2026-11-22; design in `specs/spiders.md`, not built): cobweb nests at the tops of tall cave rooms with sleeper spiders that drop on a thread; a landed hit latches and reels you up (the drowned grab, upward). Giant spiders with webs between trees in old-growth taiga (details open).

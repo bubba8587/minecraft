@@ -112,6 +112,14 @@ Owner's design (2026-11-22). Part 1's worldgen (`specs/undead.md` "Worldgen"): t
 - Totems: `totemsAreFoundInLoot` passes standalone (crypt table skipped) and with `-PwithMobs`.
 - Not yet tested (objectives): a crypt generates under a natural yard with its chest and niche sleepers (needs a deeper test field; checked by eye in the client part); crypt yards generate in each breakdown state (step 2); the gravestone's edit screen opens on placement (vanilla path, not exercised by a test).
 
+## Will-o'-wisps (owner, 2026-11-22, not built)
+
+- **Just soul fire particles** (vanilla `soul_fire_flame`), **faint and only occasional**.
+- **Over graveyards at night:** a few drift over the graves and slowly lead toward the yard's crypt entrance.
+- **Near the player:** whenever a graveyard is loaded nearby, the odd wisp appears **between the player and the yard**, a faint hint at which way it lies.
+- **Cleared for good after discovery:** each player has a saved list of the yards they've reached (a persistent player attachment). Once you've walked into a yard, its wisps stop showing for you, both the hints and the ones over its graves. Other players who haven't found it still see them. The server sends them only to players who haven't found that yard.
+- Needs a cheap way to find yards near a player (a per-world registry of yards, like the cairn sites, rather than structure searches).
+
 ## Noble dead in gemmed armor (owner, 2026-11-22, not built)
 
 - With Bubba's Infused Gems installed, the armor and weapons of noble crypt sleepers carry gems (their burial finery). Woken, they fight with those effects; robbed, their gemmed gear is the prize. No hard dependency: the gems come through Infused Gems' own item modifier or api only when it's loaded.
