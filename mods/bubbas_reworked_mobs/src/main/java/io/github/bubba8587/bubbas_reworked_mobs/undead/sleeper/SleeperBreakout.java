@@ -19,7 +19,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 
 /**
- * How buried and frozen sleepers break out (specs/undead.md "Undead variants", owner 2026-11-22).
+ * How buried and frozen sleepers break out.
  * <ul>
  * <li><b>Husks</b> lie buried in sand: waking, the sand over and beside them bursts in a cloud that briefly blinds
  * anyone close.</li>

@@ -384,7 +384,7 @@ public final class FactoryDesign {
 	}
 
 	/**
-	 * The ceiling mass (owner, 2026-11-16: warped first, bone only a minor accent): warped wart with teal stripped
+	 * The ceiling mass: warped wart with teal stripped
 	 * hyphae veins through it, dark basalt seams, shroomlight accents, the odd bone knot.
 	 */
 	private BlockState massBlock(int x, int y, int z) {
@@ -429,7 +429,7 @@ public final class FactoryDesign {
 			}
 		}
 		centralDripper();
-		// Small drippers (owner: any others much smaller): short warped teats, 2-5 long, spread over the ceiling,
+		// Small drippers: short warped teats, 2-5 long, spread over the ceiling,
 		// none within 6 of the central one.
 		List<int[]> drippers = new ArrayList<>();
 		int tries = 0;
@@ -562,7 +562,7 @@ public final class FactoryDesign {
 	 * and bend toward the central dripper. Each is a thin strand (about one block thick) of warped wart along a cubic
 	 * curve, threaded with knots of stripped warped hyphae every ~3 blocks so it reads as links: from low on the wall,
 	 * up it, then sagging free under the roof, twisting as it goes (so they spiral in), to the dripper's stalk. Every
-	 * few knots is crimson (the owner's crimson streaks). None start on the face wall, the tower or the tunnel mouth.
+	 * few knots is crimson. None start on the face wall, the tower or the tunnel mouth.
 	 */
 	private void tendrils() {
 		int count = 11 + this.random.nextInt(3);
@@ -808,7 +808,7 @@ public final class FactoryDesign {
 				attach(x, 0, PZ_FRONT, Blocks.DEEPSLATE_TILE_WALL.defaultBlockState());
 			}
 		}
-		// Corner posts; soul lanterns on the front two only (owner: dark like an ancient city).
+		// Corner posts; soul lanterns on the front two only.
 		for (int x : new int[] { -PX, PX }) {
 			for (int z : new int[] { PZ_BACK, PZ_FRONT }) {
 				solid(x, 0, z, Blocks.POLISHED_DEEPSLATE.defaultBlockState());
@@ -878,7 +878,7 @@ public final class FactoryDesign {
 				}
 			}
 		}
-		// Redstone lamps set into the frame, unlit (owner: dark like an ancient city; you bring a torch).
+		// Redstone lamps set into the frame, unlit.
 		for (int x : new int[] { -7, -3, 2, 6 }) {
 			solid(x, 17, WALL_Z, Blocks.REDSTONE_LAMP.defaultBlockState());
 		}
@@ -1211,7 +1211,7 @@ public final class FactoryDesign {
 	/** Placement marker: deepslate only where the world holds a liquid there (the tunnel's sealed sides). */
 	private static final BlockState SEAL = Blocks.STRUCTURE_VOID.defaultBlockState();
 
-	// ---- Secrets and the lower city (owner, 2026-11-16: "some additional secrets and complexity ... to the generated area") ----
+	// ---- Secrets and the lower city ----
 
 	/** The deck's west rim gap (its middle z), where stairs go down to the lower terrace. */
 	static final int TERRACE_STAIR_Z = 3;
@@ -1267,7 +1267,7 @@ public final class FactoryDesign {
 	}
 
 	/**
-	 * The lower city (owner: "right now it's 3 large square platforms and some stairs"): ancient-city work round the
+	 * The lower city: ancient-city work round the
 	 * deck at broken, varied levels: a causeway on piers from the tunnel mouth to the deck's front, a lower terrace on
 	 * the west reached by stairs from the deck (a ruined arch, a back wall, a wool corner, a buried chest) with stairs
 	 * on down to the cavern floor, a ruined hut on the floor (wool, a buried chest), a broken arch and a buried chest
@@ -1293,7 +1293,7 @@ public final class FactoryDesign {
 	}
 
 	/**
-	 * More ways down (owner: "more stairs"), each its own width: from the deck's east back gap a 2-wide flight to a
+	 * More ways down, each its own width: from the deck's east back gap a 2-wide flight to a
 	 * landing north of the tower, then a broken flight on down; from the west back gap a narrow 1-wide broken flight
 	 * behind the terrace to the floor; and from the causeway's side a 2-wide flight down into the pit (on the side
 	 * away from the hut).
@@ -1738,7 +1738,7 @@ public final class FactoryDesign {
 	}
 
 	/**
-	 * The reject pit (owner): a sealed vault under the deck, its way in one odd tile: a chiseled deepslate in the
+	 * The reject pit: a sealed vault under the deck, its way in one odd tile: a chiseled deepslate in the
 	 * deck off the chiseled grid (the deck's chiseled tiles sit every 4th block). Under it a ladder drops into a
 	 * brick room heaped with failed products: bone blocks, the site's mob's heads (skeleton skulls for mobs without
 	 * one; cobwebs for spiders, obsidian for endermen), soul soil, and a chest of rejects. From the pit below, its
@@ -1828,7 +1828,7 @@ public final class FactoryDesign {
 	}
 
 	/**
-	 * The intake (owner): over the dripper's root, a low sculk-choked chamber that feeds the machine: floors of soul
+	 * The intake: over the dripper's root, a low sculk-choked chamber that feeds the machine: floors of soul
 	 * soil, soul sand, sculk and bone, walls and roof of sculk and wart, warped stems running in like roots toward the
 	 * knot of hyphae in its floor (the hidden spawner is right under that knot), bone heaps, a sculk catalyst, one soul
 	 * fire. Reached by climbing the chains: twisting vines grow up a throat from the chain that runs closest under the

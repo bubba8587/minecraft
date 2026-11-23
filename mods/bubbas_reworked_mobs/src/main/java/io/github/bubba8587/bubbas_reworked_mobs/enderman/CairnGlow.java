@@ -13,7 +13,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
 
 /**
- * Particles on complete cairns (owner, 2026-11-16; specs/endermen.md, Vigil): a slow purple portal shimmer around its
+ * Particles on complete cairns: a slow purple portal shimmer around its
  * blocks, and a thin stream of end rod sparkles rising from its highest block, sent long-distance so a finished cairn
  * can be spotted from afar at night. Server side, vanilla particles, no new assets.
  *

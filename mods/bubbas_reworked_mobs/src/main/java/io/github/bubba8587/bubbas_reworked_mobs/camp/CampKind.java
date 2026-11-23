@@ -19,7 +19,7 @@ import net.minecraft.world.level.block.entity.BannerPatterns;
 import net.minecraft.world.level.block.state.BlockState;
 
 /**
- * The kinds of monster camp (specs/monster-camps.md): skeletons and zombies (owner), and the biome versions with the
+ * The kinds of monster camp (specs/monster-camps.md): skeletons and zombies, and the biome versions with the
  * same rules: husks in deserts, strays in snow, bogged in swamps. Each has its own mob, its own banner (readable from a
  * distance) and its own materials.
  */

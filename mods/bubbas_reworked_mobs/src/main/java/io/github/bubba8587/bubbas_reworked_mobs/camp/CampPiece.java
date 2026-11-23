@@ -34,7 +34,7 @@ import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceSeriali
  * is read (so every chunk it spans builds its part of the same camp); each column then follows the ground there.
  *
  * <p>A round clearing of trodden ground (coarse dirt and gravel; sand, snow or mud by kind) with weeds at its edge; a
- * cold (unlit) soul campfire in the middle ringed by log seats (owner: camps are dark, no light at all), a chest of camp loot beside it; scrappy lookout towers (log posts,
+ * cold (unlit) soul campfire in the middle ringed by log seats, a chest of camp loot beside it; scrappy lookout towers (log posts,
  * a patchy plank platform with fence railing, a ladder, a banner on a corner post); standing banners about the camp;
  * bone-and-skull rock outcrops and skulls on pikes at the edge; in medium and large camps a lean-to over bedrolls.
  */
@@ -225,7 +225,7 @@ public class CampPiece extends StructurePiece {
 				|| state.is(Blocks.STONE) || state.is(Blocks.GRASS_BLOCK) || state.is(Blocks.PODZOL) || state.is(Blocks.MYCELIUM);
 	}
 
-	/** The unlit soul campfire (camps have no light, owner 2026-11-22), a stone ring round it, log seats on three sides and the loot chest. */
+	/** The unlit soul campfire, a stone ring round it, log seats on three sides and the loot chest. */
 	private void fire(ClippedBuild b, int cx, int cz) {
 		int g = b.ground(cx, cz);
 		if (g != Integer.MIN_VALUE) {
@@ -339,7 +339,7 @@ public class CampPiece extends StructurePiece {
 				b.put(x, top + 1, z, fence(alongX && dx < 3, alongZ && dz < 3, alongX && dx > 0, alongZ && dz > 0));
 				if (t.roof && corner) {
 					b.put(x, top + 2, z, kind.fence());
-					b.put(x, top + 3, z, kind.fence()); // roof posts tall enough to clear a banner (owner)
+					b.put(x, top + 3, z, kind.fence()); // roof posts tall enough to clear a banner
 				}
 			}
 		}
@@ -485,7 +485,7 @@ public class CampPiece extends StructurePiece {
 		boolean grey = random.nextBoolean();
 		Direction facing = leanToFacing();
 		Direction along = facing.getClockWise();
-		int roofY = centre.getY() + 4; // three blocks of headroom (owner: mobs got stuck under a lower roof)
+		int roofY = centre.getY() + 4; // three blocks of headroom
 		for (int k = -1; k <= 1; k++) {
 			for (int row = 0; row <= 2; row++) {
 				int x = spot.x + along.getStepX() * k - facing.getStepX() * row;
@@ -527,7 +527,7 @@ public class CampPiece extends StructurePiece {
 	}
 
 	/**
-	 * One small-to-medium room under the camp (owner, 2026-11-22: shade the camp's mobs can go into): dark, rock walls,
+	 * One small-to-medium room under the camp: dark, rock walls,
 	 * a beamed plank ceiling under the fire, trodden floor, cobwebs in the corners and a few bones, and a 2-wide stair
 	 * tunnel up to the surface on the side away from the first tower. Carved last, so nothing built above blocks it.
 	 */
@@ -588,7 +588,7 @@ public class CampPiece extends StructurePiece {
 	}
 
 	/**
-	 * Shade spots (owner: guaranteed shade): cells a mob can stand in out of the sun. The room's floor cells (exact
+	 * Shade spots: cells a mob can stand in out of the sun. The room's floor cells (exact
 	 * height), under the lean-to and under each tower's platform (height near the camp's ground), and on each roofed
 	 * platform. Heights are resolved against the world when used (camp/CampShade).
 	 */

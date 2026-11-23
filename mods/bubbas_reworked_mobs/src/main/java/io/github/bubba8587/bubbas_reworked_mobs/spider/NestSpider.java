@@ -171,7 +171,7 @@ public class NestSpider extends Spider implements Gripper {
 			return;
 		}
 		if (phase() != Phase.SLEEPING) {
-			// On its thread it isn't falling: nothing may carry over as fall damage when the thread snaps (owner bug).
+			// On its thread it isn't falling: nothing may carry over as fall damage when the thread snaps.
 			resetFallDistance();
 		}
 		switch (phase()) {
@@ -212,7 +212,7 @@ public class NestSpider extends Spider implements Gripper {
 			return;
 		}
 		// The bottom of the drop: just above the floor, or level with whoever it missed. A miss hangs there on its
-		// thread for a moment before it snaps (owner, 2026-11-22: "animation just looks better").
+		// thread for a moment before it snaps.
 		boolean floorClose = !level.noCollision(this, getBoundingBox().move(0.0, -SpiderTuning.DROP_SPEED - SpiderTuning.DANGLE_ABOVE_FLOOR, 0.0));
 		if (floorClose || (target != null && getY() < target.getY()) || getY() < level.getMinY()) {
 			setPhase(Phase.DANGLING);
@@ -288,7 +288,7 @@ public class NestSpider extends Spider implements Gripper {
 		}
 	}
 
-	// --- the cocoon (owner, 2026-11-22) -----------------------------------------------------------------------
+	// --- the cocoon -----------------------------------------------------------------------
 
 	public @Nullable SilkCocoon cocoon() {
 		return cocoon;

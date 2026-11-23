@@ -19,7 +19,7 @@ import net.minecraft.world.phys.Vec3;
 
 /**
  * A silk cocoon (specs/spiders.md "Cocoons"): pixel-art silk (the same crisp cobweb-palette pixels as the webs and
- * threads, lit by the world) wound round its victim. Two shapes (owner): upright victims hang head down in a vertical
+ * threads, lit by the world) wound round its victim. Two shapes: upright victims hang head down in a vertical
  * spindle tied at the feet; animals are slung lengthwise in a horizontal one along the body, from both ends. Two spirals
  * wound opposite ways criss-cross over the spindle, narrower at the ends, with a few strands lengthwise.
  * As the silk is cut, strands go (seeded, so the same ones each frame) until it gives. Worked out once per cocoon and

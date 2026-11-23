@@ -31,7 +31,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * Every vanilla creeper becomes a nervous watcher (specs/creepers.md), no new entity type: vanilla's hunting goals
  * (both target goals, MeleeAttackGoal, SwellGoal) are wrapped so they run only while the creeper is charged, and the
  * watcher's fuse and watch goals take their priorities. Floating, cat avoidance, strolling and looking around stay.
- * Creepers from spawners and trial spawners stay vanilla (owner, 2026-11-16; MobFinalizeSpawnMixin), saved as
+ * Creepers from spawners and trial spawners stay vanilla, saved as
  * {@code bubbas_reworked_mobs:vanilla}.
  */
 @Mixin(Creeper.class)

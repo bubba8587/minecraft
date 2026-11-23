@@ -31,7 +31,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 /**
  * Overworld endermen become caretakers (specs/endermen.md), no new entity type: vanilla's random take-block and
  * leave-block goals are swapped for {@link EndermanJobGoal}. Nether and End endermen (made in those levels) stay
- * vanilla, and so do vanilla's random natural spawns (MobFinalizeSpawnMixin; owner, 2026-11-16), saved as
+ * vanilla, and so do vanilla's random natural spawns, saved as
  * {@code bubbas_reworked_mobs:vanilla}. E4: an enderman busy on a job ignores eye contact. A caretaker carrying a block still despawns (vanilla
  * keeps every block-carrying enderman forever), so a block it couldn't place vanishes with it.
  */

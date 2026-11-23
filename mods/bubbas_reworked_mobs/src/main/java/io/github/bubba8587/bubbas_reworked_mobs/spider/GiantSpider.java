@@ -107,7 +107,7 @@ public class GiantSpider extends Spider implements Gripper {
 		return Task.values()[entityData.get(DATA_TASK)];
 	}
 
-	/** Climbing a trunk with a catch: posed rear first, facing down at it, thread from its abdomen to the web (owner). */
+	/** Climbing a trunk with a catch: posed rear first, facing down at it, thread from its abdomen to the web. */
 	public boolean haulingUp() {
 		return syncedTask() == Task.CLIMB;
 	}
@@ -163,7 +163,7 @@ public class GiantSpider extends Spider implements Gripper {
 		goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 8.0F));
 		goalSelector.addGoal(6, new RandomLookAroundGoal(this));
 		targetSelector.addGoal(1, new HurtByTargetGoal(this));
-		// Livestock first (owner), then players in the dark like a vanilla spider.
+		// Livestock first, then players in the dark like a vanilla spider.
 		targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Animal.class, true, (t, l) -> snatchable(t)));
 		targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Player.class, true,
 				(t, l) -> getLightLevelDependentMagicValue() < 0.5F));
@@ -336,7 +336,7 @@ public class GiantSpider extends Spider implements Gripper {
 			return;
 		}
 		setPos(target.x, target.y, target.z);
-		// Up: it wraps its catch in silk where it hangs below it (owner: cocooned, not bitten to death), then backs off.
+		// Up: it wraps its catch in silk where it hangs below it, then backs off.
 		LivingEntity prey = catchHeld;
 		catchHeld = null;
 		prey.stopRiding();
@@ -443,7 +443,7 @@ public class GiantSpider extends Spider implements Gripper {
 	// --- larders and spinning ------------------------------------------------------------------------------
 
 	/**
-	 * Where it takes a catch: a perch beside the nearest trunk. It prefers an underside (owner): the highest spot by
+	 * Where it takes a catch: a perch beside the nearest trunk. It prefers an underside: the highest spot by
 	 * the trunk with leaves or wood right above, where it hangs upside down with the cocoon below. Without one, a spot on
 	 * the trunk 4-7 up, where it clings sideways. Sets {@link #perchUnder} and {@link #trunkSide}.
 	 */
@@ -521,7 +521,7 @@ public class GiantSpider extends Spider implements Gripper {
 					continue;
 				}
 				// A tangle between the two trunks: thick strands from points on both trunks, the canopy and the ground
-				// criss-crossing through the gap (owner), seeded from the site.
+				// criss-crossing through the gap, seeded from the site.
 				Vec3 ca = new Vec3(a.getX() + 0.5, y + 0.5, a.getZ() + 0.5);
 				Vec3 cb = new Vec3(b.getX() + 0.5, y + 0.5, b.getZ() + 0.5);
 				Vec3 along = cb.subtract(ca).normalize();

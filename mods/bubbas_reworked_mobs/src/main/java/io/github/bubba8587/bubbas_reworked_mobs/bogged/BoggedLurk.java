@@ -21,7 +21,7 @@ import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 
 /**
- * Bogged are not sleepers (owner, 2026-11-22, specs/undead.md "Undead variants"): they lurk like the reworked drowned
+ * Bogged are not sleepers: they lurk like the reworked drowned
  * (specs/drowned.md), crouched low in swamp water and mud among the reeds, moving when nobody is looking, and ambush.
  *
  * <ul>

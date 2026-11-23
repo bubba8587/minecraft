@@ -19,7 +19,7 @@ import net.minecraft.world.phys.Vec3;
 
 /**
  * Draws a spun web (specs/spiders.md "Spun webs"): a tangle of strands criss-crossing between anchor points (owner,
- * 2026-11-22), in pixels, so it sits next to vanilla's cobweb block (owner: smooth strands looked out of place).
+ * 2026-11-22), in pixels, so it sits next to vanilla's cobweb block.
  * <ul>
  * <li>Each strand is a stepped line of crisp square pixels snapped to the world grid at the cobweb texture's own texel
  * size (1/16 with vanilla, 1/32 with a 32x pack), one texel wide (two for the heavy guy-lines), sagging a little.</li>

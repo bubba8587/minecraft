@@ -14,7 +14,7 @@ import net.minecraft.world.phys.Vec3;
 /**
  * A nest spider (specs/spiders.md "Cave nests"): vanilla's spider model and texture (B17), posed by phase. Asleep it
  * hangs upside down from the ceiling (vanilla's upside-down flip); off the ceiling it points head down: it drops face
- * first, and climbs back up its thread rear first, facing the victim below it (owner). The thread is a line from its back to where it's tied in the nest, drawn
+ * first, and climbs back up its thread rear first, facing the victim below it. The thread is a line from its back to where it's tied in the nest, drawn
  * in pixel art like the spun webs (crisp texels in the cobweb palette, lit by world light), while it drops, dangles,
  * reels and holds.
  */

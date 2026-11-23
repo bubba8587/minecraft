@@ -100,7 +100,7 @@ public final class EndermanJobGoal extends Goal {
 				return true;
 			}
 		}
-		// Nothing to do near it: at a complete cairn (its home first) it stands vigil in the ring around it (owner).
+		// Nothing to do near it: at a complete cairn (its home first) it stands vigil in the ring around it.
 		CairnSite site = homeSite(level);
 		if (site == null || !site.complete(level)) {
 			site = CairnSites.nearest(level, here, EndermanTuning.SITE_RADIUS);

@@ -94,7 +94,7 @@ public final class CairnSite {
 
 	/**
 	 * How far the cairn has grown, 0 to 1: the share standing of its End blocks (everything but the offerings, footing
-	 * included). What spawning follows: a fresh site is 0, and building speeds up only once it is visibly rising (owner).
+	 * included). What spawning follows: a fresh site is 0, and building speeds up only once it is visibly rising.
 	 */
 	public float growth(ServerLevel level) {
 		int total = 0;

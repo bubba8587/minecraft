@@ -53,7 +53,7 @@ public final class MiningTuning {
 	// Owner: quartz is iron/copper level on the curve, faster on all Nether blocks (builder: 1.6x).
 	public static final Tier QUARTZ = new Tier(1.0F, 0.40F, 1.0F, 1.6F, 1, 3);
 
-	// The quartz set (owner: "roughly iron/copper level"). Builder's numbers, between copper and iron.
+	// The quartz set. Builder's numbers, between copper and iron.
 	/** Tool durability (copper 190, iron 250). Speed and damage are iron's (6, +2). */
 	public static final int QUARTZ_TOOL_DURABILITY = 220;
 	public static final float QUARTZ_TOOL_SPEED = 6.0F;
@@ -105,7 +105,7 @@ public final class MiningTuning {
 			chest("chests/end_city_treasure"), 0.03F,
 			chest("chests/bastion_treasure"), 0.05F,
 			chest("chests/trial_chambers/reward_ominous_rare"), 0.05F,
-			// Bubba's Reworked Mobs' noble crypts: the main place to find one (agent's call, owner 2026-11-22). Keyed by
+			// Bubba's Reworked Mobs' noble crypts: the main place to find one. Keyed by
 			// that mod's table id, so nothing depends on it: without it the table never exists.
 			ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath("bubbas_reworked_mobs", "chests/crypt_noble")), 0.20F);
 

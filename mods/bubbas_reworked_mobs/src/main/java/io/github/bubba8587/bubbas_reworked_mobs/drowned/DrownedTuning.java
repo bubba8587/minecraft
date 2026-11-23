@@ -20,7 +20,7 @@ public final class DrownedTuning {
 	/** On land it crawls: its speed is multiplied by 1 + this (vanilla walks upright at full speed). */
 	public static final double LAND_CRAWL_SPEED_BONUS = -0.4;
 
-	// --- natural spawning (owner, 2026-11-16: "a handful of them if you're travelling near the ocean") ---------
+	// --- natural spawning ---------
 	/** Past the cut monster cap, a natural drowned may still spawn while fewer than this many are within NATURAL_NEAR_RANGE (vanilla's own water, depth and darkness rules still apply). */
 	public static final int NATURAL_NEAR_CAP = 5;
 	public static final double NATURAL_NEAR_RANGE = 48.0;
@@ -39,7 +39,7 @@ public final class DrownedTuning {
 	public static final int SPOT_SCAN_UP = 3;
 	/** ... down to this many below. */
 	public static final int SPOT_SCAN_DOWN = 6;
-	/** Water exactly this deep over a solid floor (owner: "2 deep, so a standing drowned's head just breaks the surface"). */
+	/** Water exactly this deep over a solid floor. */
 	public static final int LURK_DEPTH = 2;
 	/** Land (level with the surface, or one block above it) must be this close, in one of 8 directions: the shore it faces. */
 	public static final int SHORE_MAX_DISTANCE = 3;
@@ -55,7 +55,7 @@ public final class DrownedTuning {
 	public static final double LEDGE_RISE_SPEED = 0.04;
 
 	// --- lurking ----------------------------------------------------------------------------------
-	/** Lurking: its eyes this far above the water's surface (owner: only the eyes and the top of the head show, the waterline just under the eyes; it floats a little off the floor). */
+	/** Lurking: its eyes this far above the water's surface. */
 	public static final double LURK_EYES_ABOVE_SURFACE = 0.12;
 	/** Sunk: the top of its head this far below the surface, or as low as the floor allows (in 2-deep water it stands on the floor and crouches). */
 	public static final double SUNK_HEAD_BELOW_SURFACE = 0.1;
@@ -65,12 +65,12 @@ public final class DrownedTuning {
 	public static final int SCAN_INTERVAL = 4;
 	/** Things that could look at it or be grabbed are noticed this far (one box query). */
 	public static final double SENSE_RANGE = 16.0;
-	/** Stared at: something within SENSE_RANGE looking within this many degrees of any point of its head or the water round it, with a clear line of sight to that point (Gaze: a cone, not a direct line; owner, 2026-11-16; was 30 to a single point). */
+	/** Stared at: something within SENSE_RANGE looking within this many degrees of any point of its head or the water round it, with a clear line of sight to that point. */
 	public static final double STARE_HALF_ANGLE = 40.0;
 	/** It only moves (changes spot) while nobody looks within this many degrees of it: about the edge of the screen. */
 	public static final double UNSEEN_HALF_ANGLE = 70.0;
 
-	// --- restless lurking (owner, 2026-11-16: not parked in one spot forever) ------------------------
+	// --- restless lurking ------------------------
 	/** Unseen, it moves to another lurk spot with a 1-in-this chance a tick (about every 40 s) ... */
 	public static final int SHIFT_ONE_IN = 800;
 	/** ... or 1 in this (about every 4 s) once its nearest player is farther than SHIFT_FOLLOW_DISTANCE from its spot: it keeps up with you along the shore. */
@@ -85,7 +85,7 @@ public final class DrownedTuning {
 	/** ... for this many ticks plus up to DIP_TICKS_EXTRA more. */
 	public static final int DIP_TICKS = 20;
 	public static final int DIP_TICKS_EXTRA = 40;
-	/** Creative players' stares count (so the owner can try the sinking); creative players are never grabbed (they can't drown). */
+	/** Creative players' stares count; creative players are never grabbed (they can't drown). */
 	public static final boolean GRAB_CREATIVE_PLAYERS = false;
 
 	// --- the surge --------------------------------------------------------------------------------
@@ -112,7 +112,7 @@ public final class DrownedTuning {
 
 	// --- the grab ---------------------------------------------------------------------------------
 	/**
-	 * Held by the ankles (owner, 2026-11-16): upright, the victim's soles sit at its outstretched hands (vanilla's
+	 * Held by the ankles: upright, the victim's soles sit at its outstretched hands (vanilla's
 	 * zombie arm pose, about 80 degrees forward from hanging), this far in front of it (centre to centre) ...
 	 */
 	public static final double HOLD_FORWARD = 0.72;
@@ -134,7 +134,7 @@ public final class DrownedTuning {
 	/** Within this of its deep-water spot it looks for deeper water again (and stays if there is none). */
 	public static final double DRAG_ARRIVE = 0.8;
 	/*
-	 * The grip tightens the longer it drags you (owner, 2026-11-16: "make the drowned dangerous"). The hit numbers below
+	 * The grip tightens the longer it drags you. The hit numbers below
 	 * follow the grip meter (GRIP_START or less: start values; GRIP_FULL: full values, in a straight line between), so
 	 * the danger is the meter's own visible state (B19). It also shows as more and harder hits, a louder, lower squeeze
 	 * sound with each, and more bubbles streaming off the victim. Death times: tools/drowned-danger.py.
@@ -174,7 +174,7 @@ public final class DrownedTuning {
 	/** Each extra holder makes the drag this much faster (+35 %). */
 	public static final double DRAG_SPEED_PER_HELPER = 0.35;
 
-	// --- the grip meter (D3, owner 2026-11-16; B19: a meter, no hidden timer) ----------------------------
+	// --- the grip meter ----------------------------
 	/** The grip, 0 to this: at 0 you're free; at the top its hits are at their worst. */
 	public static final float GRIP_FULL = 100.0F;
 	/** It starts here when a drowned grabs (half). */

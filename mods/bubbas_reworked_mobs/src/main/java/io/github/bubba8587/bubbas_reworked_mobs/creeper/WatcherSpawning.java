@@ -26,7 +26,7 @@ import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
 
 /**
- * Where creepers come from (owner, 2026-11-16): vanilla's random natural creeper spawns are off, and each player
+ * Where creepers come from: vanilla's random natural creeper spawns are off, and each player
  * instead gets one "natural" watcher at night, spawned behind cover just outside their view at a watching distance,
  * so that turning round quickly you might catch one half behind a tree, looking at you. Spawners, structures,
  * commands and eggs are untouched. Both halves follow the game rule {@code bubbas_reworked_mobs:watcher_creepers}

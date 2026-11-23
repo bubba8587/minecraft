@@ -18,7 +18,7 @@ import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.phys.Vec3;
 
 /**
- * Cave spider nests (specs/spiders.md "Cave nests"): cobwebs only (owner), clinging to the ceiling at the top of a
+ * Cave spider nests (specs/spiders.md "Cave nests"): cobwebs only, clinging to the ceiling at the top of a
  * tall cave room, with a few sleepers hanging in them and a {@link SpiderNest} brain at the centre. Placed once per
  * chunk (placement list empty, so the origin is the chunk's corner), rolling {@link SpiderTuning#NEST_CHUNK_CHANCE};
  * then a few random columns are searched top-down for a ceiling with a long open drop under it and open air around it.
@@ -103,7 +103,7 @@ public record SpiderNestFeature() implements Feature {
 	}
 
 	/**
-	 * A spun web round the cobweb core (owner, 2026-11-22): thick strands criss-crossing between random points on the
+	 * A spun web round the cobweb core: thick strands criss-crossing between random points on the
 	 * ceiling and upper walls round the nest, seeded from the nest's position.
 	 */
 	public static void spinNestWebs(net.minecraft.world.level.ServerLevelAccessor level, BlockPos centre, RandomSource random, java.util.List<BlockPos> core) {

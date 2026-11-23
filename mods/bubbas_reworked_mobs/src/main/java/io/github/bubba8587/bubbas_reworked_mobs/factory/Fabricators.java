@@ -221,7 +221,7 @@ public final class Fabricators {
 			}
 			this.wasPowered = false;
 			if (this.resting) {
-				// Resting (owner, 2026-11-16: not a constant stream, so it isn't obvious what it does): lamps dark, a
+				// Resting: lamps dark, a
 				// faint shimmer over the pad; each second a chance to wake (B19: a chance, no fixed cooldown).
 				if (time % 20 == 0) {
 					BlockPos pad = this.site.pad();
@@ -310,7 +310,7 @@ public final class Fabricators {
 			return;
 		}
 		// A ward over the dripper (a Totem of Warding, e.g. in the Fabricator's own beacon) stops its spawning, not its
-		// teleporter (owner, 2026-11-16). Every ward reaches us through api/Endermen.keepOut.
+		// teleporter. Every ward reaches us through api/Endermen.keepOut.
 		if (io.github.bubba8587.bubbas_reworked_mobs.enderman.EndermanWards.isWarded(level, site.dropPoint())) {
 			return;
 		}

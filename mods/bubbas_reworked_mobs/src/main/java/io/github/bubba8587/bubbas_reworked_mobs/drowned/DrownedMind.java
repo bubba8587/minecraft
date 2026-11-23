@@ -176,7 +176,7 @@ public final class DrownedMind {
 		return entity instanceof Animal || entity instanceof AbstractVillager;
 	}
 
-	/** Anything whose stare makes it sink: what it could grab, plus creative players (so the owner can try it). */
+	/** Anything whose stare makes it sink: what it could grab, plus creative players. */
 	public static boolean watcher(LivingEntity entity) {
 		if (!entity.isAlive() || entity.isInvisible()) {
 			return false;
@@ -332,7 +332,7 @@ public final class DrownedMind {
 	}
 
 	/**
-	 * Restless (owner, 2026-11-16): unseen, it now and then moves to another lurk spot, much more often once its player
+	 * Restless: unseen, it now and then moves to another lurk spot, much more often once its player
 	 * has walked off along the shore, so it keeps up with them. It goes under, swims there lying down and comes up again,
 	 * so you only notice it has moved when you look back. Returns true when it set off.
 	 */

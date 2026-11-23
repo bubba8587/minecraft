@@ -38,7 +38,7 @@ import org.jspecify.annotations.Nullable;
  * <li>once a day, a camp whose roster is dead and whose banner stands <b>resets</b> with chance
  * {@link CampTuning#RESET_CHANCE}, only while nobody is within {@link CampTuning#AWAY_RANGE}; a camp re-armed by
  * putting a banner back resets at the next check for sure;</li>
- * <li>a lit campfire anywhere in a camp's box <b>quiets</b> it while it burns: no roster, no reset (owner);</li>
+ * <li>a lit campfire anywhere in a camp's box <b>quiets</b> it while it burns: no roster, no reset;</li>
  * <li>a pillager outpost with no banner standing spawns no pillagers ({@link #disarmedOutpostAt}).</li>
  * </ul>
  */

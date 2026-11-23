@@ -42,14 +42,14 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 
 /**
- * A spun web (specs/spiders.md "Spun webs"; owner, 2026-11-22: "for minecraft fitting-in reasons", not an orb web): a
+ * A spun web: a
  * tangle of thick, heavy strands stretched diagonally between many random anchor points on the blocks round a site
  * (ceiling, walls, trunks, branches, ground), criss-crossing through the space at different angles. Drawn on the
  * client by {@code SpunWebRenderer} (thick white strands with a faint sheen and a slight sag; torn ones hang as loose
  * ends). Seeded from the site, so the same site gives the same tangle. No blocks (B15): a nest's or a larder's cobweb
  * blocks are the core, this is the span round it.
  * <ul>
- * <li>Moving through the strands sticks you like a cobweb block does (owner); spiders aren't slowed.</li>
+ * <li>Moving through the strands sticks you like a cobweb block does; spiders aren't slowed.</li>
  * <li>Hits tear it ({@link SpiderTuning#WEB_HITS_TO_CUT} bring it down); shears cut it cleanly for string; fire burns it.</li>
  * <li>It tears a little more as it ages.</li>
  * </ul>

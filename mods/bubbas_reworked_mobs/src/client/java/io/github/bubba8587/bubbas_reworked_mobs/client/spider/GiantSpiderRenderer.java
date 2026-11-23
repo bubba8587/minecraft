@@ -18,7 +18,7 @@ import net.minecraft.world.phys.Vec3;
  * posed by Stormie's Spiders like any spider. While it hauls a catch up a trunk it's posed here instead (owner,
  * 2026-11-22, the same as the nest spiders): vertical and head down, belly to the trunk, facing the catch hanging below
  * it, climbing rear first, with a pixel-art thread from its abdomen up to where it's heading. Up there by the cocoon it
- * keeps to its surface: upside down under an overhang, or head down on the trunk (owner: it mustn't flip upright).
+ * keeps to its surface: upside down under an overhang, or head down on the trunk.
  */
 public class GiantSpiderRenderer extends SpiderRenderer<GiantSpider> {
 	/** The abdomen's end above the body's middle when it hangs head down, per unit of scale (a vanilla spider's). */
