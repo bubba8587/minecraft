@@ -19,13 +19,9 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.AABB;
 import org.jspecify.annotations.Nullable;
 
-/**
- * The reworked beacon's rules (specs/reworked-beacons.md), run from {@code BeaconBlockEntityMixin} after vanilla's
- * tick: vanilla still scans the sky beam and counts the pyramid; this adds the pair check, the item's pulse and
- * the active-area list. Vanilla's own powers never apply ({@code applyEffects} is cancelled).
- */
+/** The reworked beacon's rules, run from BeaconBlockEntityMixin after vanilla's tick. */
 public final class BeaconLogic {
-	/** Pair checks run on both sides (the client needs them for the connecting beam). */
+	/** Pair check interval. */
 	public static final int PAIR_CHECK_TICKS = 20;
 
 	private BeaconLogic() {
@@ -42,7 +38,7 @@ public final class BeaconLogic {
 		}
 	}
 
-	/** A full pyramid layer count, 0-4, going down ({@code dir} -1, a floor beacon) or up (+1, upside down). */
+	/** A full pyramid layer count, 0-4, going down or up. */
 	public static int pyramidLevels(Level level, BlockPos pos, int dir) {
 		int levels = 0;
 		BlockPos.MutableBlockPos at = new BlockPos.MutableBlockPos();
@@ -68,10 +64,7 @@ public final class BeaconLogic {
 		return state.getLightDampening() >= 15 && !state.is(Blocks.BEDROCK);
 	}
 
-	/**
-	 * Looks straight up from a floor beacon through clear blocks (vanilla's beam rule) for an upside-down beacon,
-	 * and counts both pyramids. Another upright beacon or an opaque block in between ends the search.
-	 */
+	/** Looks straight up from a floor beacon through clear blocks for an upside-down beacon. */
 	public static void updatePair(Level level, BlockPos pos, ReworkedBeacon rb) {
 		boolean upsideDown = HangingBeacon.isUpsideDown(level.getBlockState(pos));
 		if (upsideDown) {
@@ -106,7 +99,7 @@ public final class BeaconLogic {
 		return rb.bubba$skyLevels() > 0 ? BeaconMode.SKY : BeaconMode.IDLE;
 	}
 
-	/** The pyramid layers that count for the current mode (0 when idle). */
+	/** The pyramid layers that count for the current mode. */
 	public static int levels(ReworkedBeacon rb) {
 		return switch (mode(rb)) {
 			case PAIRED -> rb.bubba$pairLevels();
@@ -121,7 +114,7 @@ public final class BeaconLogic {
 				: BeaconContext.skyArea(level, pos, levels);
 	}
 
-	/** A context for the item now in the beacon, or null if the beacon is idle or the item doesn't work here. */
+	/** A context for the item now in the beacon. */
 	public static @Nullable BeaconContext activeContext(Level level, BlockPos pos, ReworkedBeacon rb) {
 		ItemStack item = rb.bubba$item();
 		BeaconPayload payload = Payloads.find(item);
@@ -136,7 +129,6 @@ public final class BeaconLogic {
 	public static void pulse(ServerLevel level, BlockPos pos, ReworkedBeacon rb) {
 		boolean paired = rb.bubba$isPaired();
 		if (paired != rb.bubba$wasPaired()) {
-			// Vanilla plays these for sky beacons itself; a pair gets the same sounds.
 			BeaconBlockEntity.playSound(level, pos, paired ? SoundEvents.BEACON_ACTIVATE : SoundEvents.BEACON_DEACTIVATE);
 			rb.bubba$setWasPaired(paired);
 		} else if (paired) {

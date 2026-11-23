@@ -5,7 +5,7 @@ import java.util.Locale;
 
 import io.github.bubba8587.bubbas_infused_gems.balance.Balance;
 
-/** What a gem strength does in game, in plain words (the /gems command). Numbers from the balance model. */
+/** What a gem strength does in game, in plain words. */
 public final class GemDescribe {
 	private GemDescribe() {
 	}
@@ -22,11 +22,10 @@ public final class GemDescribe {
 		return s >= 1 - 1e-6 ? "air never runs out" : f("air lasts %.0f s (normally 15 s)", 15 / (1 - s));
 	}
 
-	/** Worn (armor) at total s, or what a gem effect at potency s does to whoever has it. */
+	/** Worn at total s, or what a gem effect at potency s does to whoever has it. */
 	public static String worn(String key, double s) {
 		Balance b = Balance.get();
 		Balance.EffectData e = b.effect(key);
-		// Short labels (owner): the effect's name comes first in every line, so the value doesn't repeat it.
 		return switch (key) {
 			case "speed", "slowness" -> f("%+.1f%%", 100 * attr(key, 0, s));
 			case "strength", "weakness" -> f("%+.2f damage", attr(key, 0, s));
@@ -71,12 +70,12 @@ public final class GemDescribe {
 		};
 	}
 
-	/** One part of a combined gem (Turtle Master's Resistance or Slowness) at strength s. */
+	/** One part of a combined gem at strength s. */
 	public static String part(String part, double amount, double s) {
 		return part.equals("resistance") ? f("%.1f%% less damage taken", 100 * amount * s) : f("%+.1f%% speed", 100 * amount * s);
 	}
 
-	/** One hit at weapon strength s (or a drawback of size s). */
+	/** One hit at weapon strength s. */
 	public static String hit(GemHits.Entry entry) {
 		Balance b = Balance.get();
 		String key = entry.key();

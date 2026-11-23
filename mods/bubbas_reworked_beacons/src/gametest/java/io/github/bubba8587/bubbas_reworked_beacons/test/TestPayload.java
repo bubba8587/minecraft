@@ -11,10 +11,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import org.jspecify.annotations.Nullable;
 
-/**
- * A payload from "another mod" (the test mod), registered through the same entrypoint key other mods use: an
- * echo shard with Gem Power V. Proves the hook end to end and lets the cap be tested.
- */
+/** A payload from "another mod", registered through the same entrypoint key other mods use. */
 public class TestPayload implements BeaconPayload {
 	public static final int POWER = 5;
 	public static volatile @Nullable BeaconContext lastApplied;

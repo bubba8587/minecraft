@@ -10,11 +10,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
-/**
- * The mining curve's wear: vanilla takes the Tool component's damage-per-block (1 for tools) once when a block
- * breaks; on stone and deepslate the curve's wear replaces it. It still goes through hurtAndBreak, so Unbreaking
- * rolls for every point.
- */
+/** The mining curve's wear. */
 @Mixin(Item.class)
 public abstract class ItemMixin {
 	@ModifyExpressionValue(method = "mineBlock", at = @At(value = "INVOKE",

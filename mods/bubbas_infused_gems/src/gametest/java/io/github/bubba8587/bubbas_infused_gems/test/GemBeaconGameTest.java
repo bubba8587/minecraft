@@ -15,11 +15,7 @@ import net.minecraft.world.level.GameType;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 import net.fabricmc.loader.api.FabricLoader;
 
-/**
- * Gems in Bubba's Reworked Beacons (owner, 2026-11-16): a gem beacon's pulse gives a pig and a player in range the gem's
- * worn effect at BEACON_SHARE of a full netherite set, its Gem Power capped by the pyramid. Without Reworked Beacons
- * (the default test run) it passes at once; run with -PwithBeacons -PmilestoneTests to test it for real.
- */
+/** Gems in Bubba's Reworked Beacons. */
 public class GemBeaconGameTest {
 	@GameTest(maxTicks = 40)
 	public void gemBeaconReachesMobsAndPlayers(GameTestHelper helper) {
@@ -42,7 +38,7 @@ public class GemBeaconGameTest {
 		check(helper, Math.abs(WornEffects.of(player).value("speed") - full) < 1e-6, "player speed from a perfect gem beacon: " + WornEffects.of(player).value("speed"));
 		check(helper, pig.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED)
 				> pig.getAttributeBaseValue(net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED), "the pig isn't faster");
-		// A 1-layer pyramid caps the perfect gem at Gem Power I.
+		// A 1-layer pyramid caps the perfect gem at Gem Power I
 		WithBeacons.pulse(helper, beacon, 1);
 		double capped = full * b.infusion(1).factor();
 		check(helper, Math.abs(WornEffects.of(pig).value("speed") - capped) < 1e-6, "a 1-layer beacon gave " + WornEffects.of(pig).value("speed") + ", expected " + capped);

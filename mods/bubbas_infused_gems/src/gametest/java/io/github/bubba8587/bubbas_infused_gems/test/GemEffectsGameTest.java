@@ -41,16 +41,12 @@ import net.minecraft.world.item.alchemy.Potions;
 
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 
-/**
- * Gem effects match the model: armor gems on the wearer (attribute values, damage hooks, healing), drawbacks on the
- * wearer, weapon gems on what they hit (potency and duration, Harming striking every hit, drawbacks on the
- * target), and bows tipping their arrows (gem effect on hit, plain pickup, the stronger of gem and real tipped arrow).
- */
+/** Gem effects match the model. */
 public class GemEffectsGameTest {
 	private static final EquipmentSlot[] ARMOR = GemTotals.ARMOR;
 	private static final String[] PIECES = {"helmet", "chestplate", "leggings", "boots"};
 
-	/** A wearer that isn't undead (undead swap Healing and Harming gems). */
+	/** A wearer that isn't undead. */
 	private static net.minecraft.world.entity.Mob wearer(GameTestHelper helper, String material, Gem... perPiece) {
 		net.minecraft.world.entity.Mob zombie = helper.spawnWithNoFreeWill(EntityTypes.VINDICATOR, new BlockPos(1, 1, 1));
 		for (int i = 0; i < 4; i++) {
@@ -64,10 +60,10 @@ public class GemEffectsGameTest {
 		return m == null ? 0.0 : m.amount();
 	}
 
-	// Core test: registered by InfusedGemsCoreGameTest (test-lite, specs/quality.md).
+	// Core test: registered by InfusedGemsCoreGameTest
 	public void wornEffectsMatchTheJson(GameTestHelper helper) {
 		Balance b = Balance.get();
-		// One mixed gem per piece of full iron: 4 gems of each effect, so every total is the same known number.
+		// One mixed gem per piece of full iron
 		Gem strength = GemKit.gem("strength", 0.9, "jump_boost", 0.5, "weakness");
 		var zombie = wearer(helper, "iron", strength, GemKit.gem("resistance", 0.8, "water_breathing", 0.5, null),
 				GemKit.gem("instant_health", 1.0, null, 0, null));
@@ -80,15 +76,15 @@ public class GemEffectsGameTest {
 			double sJump = b.stack(List.of(0.5 * pf, 0.5 * pf, 0.5 * pf, 0.5 * pf), b.armorNorm) * b.effect("jump_boost").wornCap() / b.cap;
 			close(modifier(zombie, Attributes.JUMP_STRENGTH, "jump_boost", 0), 0.2 * sJump, 1e-6, helper, "jump strength");
 			close(modifier(zombie, Attributes.SAFE_FALL_DISTANCE, "jump_boost", 1), 2.0 * sJump, 1e-6, helper, "safe fall");
-			// Four Weakness drawbacks: the saturating drawback size.
+			// Four Weakness drawbacks: the saturating drawback size
 			close(modifier(zombie, Attributes.ATTACK_DAMAGE, "weakness", 0), -4.0 * b.drawbackTotal(4), 1e-6, helper, "weakness drawback");
 			double sWater = b.stack(List.of(0.5 * pf, 0.5 * pf, 0.5 * pf, 0.5 * pf), b.armorNorm) * b.effect("water_breathing").wornCap() / b.cap;
 			close(modifier(zombie, Attributes.OXYGEN_BONUS, "water_breathing", 0), sWater / (1 - sWater), 1e-6, helper, "oxygen bonus");
-			// Resistance through the damage hook.
+			// Resistance through the damage hook
 			double sRes = b.stack(List.of(0.8 * pf, 0.8 * pf, 0.8 * pf, 0.8 * pf), b.armorNorm) * b.effect("resistance").wornCap() / b.cap;
 			float hurt = WornEffects.modifyDamage(zombie, zombie.damageSources().generic(), 10.0F);
 			close(hurt, 10.0 * (1 - 0.4 * sRes), 1e-4, helper, "resistance damage");
-			// Healing gem: a survived attack gives back its share.
+			// Healing gem: a survived attack gives back its share
 			double sHeal = b.stack(List.of(pf, pf, pf, pf), b.armorNorm) * b.effect("instant_health").wornCap() / b.cap;
 			zombie.setHealth(10.0F);
 			WornEffects.afterDamage(zombie, zombie.damageSources().mobAttack(zombie), 4.0F);
@@ -97,7 +93,7 @@ public class GemEffectsGameTest {
 		});
 	}
 
-	// Core test: registered by InfusedGemsCoreGameTest (test-lite, specs/quality.md).
+	// Core test: registered by InfusedGemsCoreGameTest
 	public void meleeWeaponGemsHitTheTarget(GameTestHelper helper) {
 		Balance b = Balance.get();
 		Zombie attacker = helper.spawnWithNoFreeWill(EntityTypes.ZOMBIE, new BlockPos(1, 1, 1));
@@ -106,14 +102,14 @@ public class GemEffectsGameTest {
 		attacker.setItemSlot(EquipmentSlot.MAINHAND, GemKit.socketed(Items.NETHERITE_SWORD, poison, GemKit.gem("instant_damage", 1.0)));
 		target.setHealth(target.getMaxHealth());
 		attacker.doHurtTarget(helper.getLevel(), target);
-		double s = b.stack(List.of(1.0), b.weaponNorm); // one perfect gem of each in a netherite weapon
+		double s = b.stack(List.of(1.0), b.weaponNorm);
 		MobEffectInstance effect = target.getEffect(ModEffects.gem("poison"));
 		check(helper, effect != null, "no gem poison on the target");
 		check(helper, effect.getAmplifier() == GemMobEffect.amplifier(Math.sqrt(s / b.cap)), "poison amplifier " + effect.getAmplifier());
 		check(helper, Math.abs(effect.getDuration() - GemHits.duration(new GemHits.Entry("poison", s, false))) <= 1, "poison duration " + effect.getDuration());
 		MobEffectInstance drawback = target.getEffect(ModEffects.gem("speed"));
 		check(helper, drawback != null && drawback.getAmplifier() == 9 && drawback.getDuration() == 60, "speed drawback on the target: " + drawback);
-		// Harming's strike on every hit: GemsEverywhereGameTest.everyGemWorksOnHit and BalanceReviewGameTest.harmingStrikeKeepsTheHitCooldown.
+		// Harming's strike on every hit
 		attacker.discard();
 		target.discard();
 		helper.succeed();
@@ -132,7 +128,7 @@ public class GemEffectsGameTest {
 		((ArrowInvoker) arrow).bubbas$hit(target);
 		check(helper, target.hasEffect(ModEffects.gem("poison")) && target.hasEffect(ModEffects.gem("slowness")), "arrow hit applied no gem effects");
 
-		// A real strong poison arrow beats the gem (vanilla Poison II applies, the gem's poison doesn't)...
+		// A real strong poison arrow beats the gem
 		Pig t2 = helper.spawnWithNoFreeWill(EntityTypes.PIG, new BlockPos(3, 1, 3));
 		Arrow strong = (Arrow) ((ArrowItem) Items.TIPPED_ARROW).createArrow(helper.getLevel(),
 				PotionContents.createItemStack(Items.TIPPED_ARROW, Potions.STRONG_POISON), shooter, bow);
@@ -140,7 +136,7 @@ public class GemEffectsGameTest {
 		check(helper, t2.hasEffect(MobEffects.POISON) && !t2.hasEffect(ModEffects.gem("poison")), "strong tipped arrow vs gem: both or neither");
 		check(helper, t2.hasEffect(ModEffects.gem("slowness")), "the gem's other effect is lost");
 		check(helper, strong.getPickupItemStackOrigin().is(Items.TIPPED_ARROW), "tipped arrow came back plain");
-		// ...and the gem beats a weak one.
+		// ...and the gem beats a weak one
 		Pig t3 = helper.spawnWithNoFreeWill(EntityTypes.PIG, new BlockPos(1, 1, 3));
 		Arrow weak = (Arrow) ((ArrowItem) Items.TIPPED_ARROW).createArrow(helper.getLevel(),
 				PotionContents.createItemStack(Items.TIPPED_ARROW, Potions.POISON), shooter, bow);

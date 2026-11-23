@@ -13,11 +13,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.projectile.ShulkerBullet;
 import org.jspecify.annotations.Nullable;
 
-/**
- * Breeze hit (owner, Q22) on shulker bullets: they home, so a one-time spread would be steered away. Instead each time
- * the bullet picks its next heading, a shooter carrying the Breeze gem effect wobbles it by the same spread as a shot
- * (vanilla's 0.0172275 per unit, x the hit's dial), so it wanders off course while it chases.
- */
+/** Breeze hit on shulker bullets: they home, so a one-time spread would be steered away. */
 @Mixin(ShulkerBullet.class)
 abstract class BreezeVeerShulkerMixin {
 	@Shadow

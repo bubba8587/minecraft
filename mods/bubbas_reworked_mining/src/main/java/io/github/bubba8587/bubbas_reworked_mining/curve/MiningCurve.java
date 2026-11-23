@@ -17,16 +17,11 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jspecify.annotations.Nullable;
 
-/**
- * The mining curve (specs/reworked-mining.md "The curve"): how fast and how hard each tool tier works on each kind of
- * block. A tool's tier comes from item tags ({@code bubbas_reworked_mining:tier/<name>}), so datapacks and other mods'
- * tools can join a tier; a tool in no tier tag is left exactly vanilla. Runs on both sides (speed is predicted by the
- * client); every input is synced data (tags, components), so both sides agree.
- */
+/** The mining curve: how fast and how hard each tool tier works on each kind of block. */
 public final class MiningCurve {
 	public static final TagKey<Block> HARSH_STONE = TagKey.create(Registries.BLOCK, BubbasReworkedMining.id("harsh_stone"));
 	public static final TagKey<Block> HARSH_DEEPSLATE = TagKey.create(Registries.BLOCK, BubbasReworkedMining.id("harsh_deepslate"));
-	/** The Nether's natural blocks, where quartz tools are faster (ancient debris is not in it). */
+	/** The Nether's natural blocks, where quartz tools are faster. */
 	public static final TagKey<Block> NETHER_BLOCKS = TagKey.create(Registries.BLOCK, BubbasReworkedMining.id("nether_blocks"));
 
 	/** Id vanilla gives Efficiency's mining_efficiency modifier on the main hand. */
@@ -54,7 +49,7 @@ public final class MiningCurve {
 	private MiningCurve() {
 	}
 
-	/** The tier of a tool, or null for anything outside the curve (left vanilla). */
+	/** The tier of a tool, or null for anything outside the curve. */
 	public static @Nullable Tier tier(ItemStack stack) {
 		if (stack.isEmpty()) {
 			return null;
@@ -67,7 +62,7 @@ public final class MiningCurve {
 		return null;
 	}
 
-	/** Efficiency level on a stack (0 without). */
+	/** Efficiency level on a stack. */
 	public static int efficiencyLevel(ItemStack stack) {
 		for (Object2IntMap.Entry<Holder<Enchantment>> entry : stack.getEnchantments().entrySet()) {
 			if (entry.getKey().is(Enchantments.EFFICIENCY)) {
@@ -77,10 +72,7 @@ public final class MiningCurve {
 		return 0;
 	}
 
-	/**
-	 * The tool's speed on a block after the curve and Efficiency, given its vanilla speed. Like vanilla's Efficiency,
-	 * nothing changes when the tool isn't meant for the block (speed 1, the hand's speed).
-	 */
+	/** The tool's speed on a block after the curve and Efficiency, given its vanilla speed. */
 	public static float speed(ItemStack stack, BlockState state, float vanillaSpeed) {
 		if (vanillaSpeed <= 1.0F) {
 			return vanillaSpeed;
@@ -109,7 +101,7 @@ public final class MiningCurve {
 	public static int wear(ItemStack stack, BlockState state, int vanillaWear) {
 		Tier tier = tier(stack);
 		if (tier == null || vanillaWear != 1) {
-			return vanillaWear; // swords (2 per block) and tools outside the curve stay vanilla
+			return vanillaWear;
 		}
 		if (state.is(HARSH_DEEPSLATE)) {
 			return tier.deepslateWear();
@@ -120,7 +112,7 @@ public final class MiningCurve {
 		return vanillaWear;
 	}
 
-	/** Whether vanilla's flat Efficiency bonus should be taken back out (the curve applies Efficiency itself). */
+	/** Whether vanilla's flat Efficiency bonus should be taken back out. */
 	public static boolean replacesEfficiency(ItemStack stack) {
 		return tier(stack) != null;
 	}

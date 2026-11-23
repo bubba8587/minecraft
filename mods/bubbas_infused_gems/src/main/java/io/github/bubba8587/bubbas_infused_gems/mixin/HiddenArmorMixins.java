@@ -13,7 +13,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import org.jspecify.annotations.Nullable;
 
-/** Perfect Invisibility hidden armor: a marked stack restores itself on its tick unless it is still worn and hidden. */
+/** Perfect Invisibility hidden armor. */
 @Mixin(ItemStack.class)
 abstract class HiddenArmorMixins {
 	@Inject(method = "inventoryTick", at = @At("HEAD"))

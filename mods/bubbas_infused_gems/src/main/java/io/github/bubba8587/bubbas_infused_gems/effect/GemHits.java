@@ -19,15 +19,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import org.jspecify.annotations.Nullable;
 
-/**
- * Weapon gems on what they hit (melee, thrown tridents) or on the arrow a bow or crossbow fires. One hit applies, per
- * effect, the model's per-hit form against the strongest potion of the effect (owner): potency s^0.5 and duration
- * s^0.5 of its 1.0 (scaled effects, as gem mob effects), the vanilla effect for s of the 1.0 duration (on/off harmful
- * effects), or a small strike on every hit (Healing, Harming; owner). Drawbacks land on the target for 3 s, refreshed by each
- * hit. A gem effect and a vanilla effect of the same kind don't add: the stronger applies (LivingEntityMixin).
- */
+/** Weapon gems on what they hit or on the arrow a bow or crossbow fires. */
 public final class GemHits {
-	/** One thing a hit applies: an effect at weapon strength s (or a drawback of size s). */
+	/** One thing a hit applies: an effect at weapon strength s. */
 	public record Entry(String key, double s, boolean drawback) {
 		public static final Codec<Entry> CODEC = RecordCodecBuilder.create(i -> i.group(
 				Codec.STRING.fieldOf("effect").forGetter(Entry::key),
@@ -39,7 +33,7 @@ public final class GemHits {
 	private GemHits() {
 	}
 
-	/** Potency hits linger at least 4 s (owner, strength proposal Q2; the model's HIT_FLOOR_POTENCY_SECONDS). */
+	/** Potency hits linger at least 4 s. */
 	public static final int POTENCY_FLOOR_TICKS = 80;
 
 	public static boolean isRanged(ItemStack weapon) {
@@ -60,30 +54,25 @@ public final class GemHits {
 		return e.drawback() ? "scaled" : Balance.get().effect(e.key()).hitKind();
 	}
 
-	/** Potency (fraction of the effect's 1.0 level) of one hit. */
+	/** Potency of one hit. */
 	public static double potency(Entry e) {
 		return switch (kind(e)) {
 			case "onoff" -> 1.0;
-			// Levitation and Breeze (owner): the dial is set per build from the strength share, carried as the potency.
+			// Levitation and Breeze
 			case "control" -> Math.min(1.0, e.s() / Balance.get().cap);
 			case "instant" -> e.s();
 			default -> {
 				if (e.drawback()) {
 					yield e.s();
 				}
-				// Owner (2026-11-15): the perfect weapon (strength = the cap) matches the strongest potion's level.
 				double p = Math.pow(Math.min(1.0, e.s() / Balance.get().cap), Balance.get().weaponSplit);
 				Balance.EffectData d = Balance.get().effect(e.key());
-				// A beneficial gem on a hit never gives more than that effect's worn cap (no stacking past it).
 				yield d.good() && d.wornCap() > 0.0 ? Math.min(p, d.wornCap()) : p;
 			}
 		};
 	}
 
-	/**
-	 * Duration in ticks of one hit (owner): at most hit.ticks (8 s) at the best weapon, less with less strength, never
-	 * under the effect's floor (a few seconds, or for Regeneration long enough to heal its floor amount).
-	 */
+	/** Duration in ticks of one hit. */
 	public static int duration(Entry e) {
 		Balance b = Balance.get();
 		if (e.drawback()) {
@@ -93,10 +82,9 @@ public final class GemHits {
 		double rel = Math.min(1.0, e.s() / b.cap);
 		double curve = b.hitCurve(e.key(), "seconds", rel);
 		if (!Double.isNaN(curve)) {
-			return (int) Math.round(curve * 20.0); // Nausea, Glowing, Levitation (owner): seconds set per build
+			return (int) Math.round(curve * 20.0);
 		}
 		if (kind(e).equals("control")) {
-			// Breeze (owner): lingers like a potency hit, at least the potency floor.
 			return Math.max(POTENCY_FLOOR_TICKS, (int) Math.round(Math.pow(rel, 1.0 - b.weaponSplit) * d.hitTicks()));
 		}
 		double share = kind(e).equals("onoff") ? rel : Math.pow(rel, 1.0 - b.weaponSplit);
@@ -107,7 +95,7 @@ public final class GemHits {
 		return Math.max(floor, (int) Math.round(share * d.hitTicks()));
 	}
 
-	/** The magic damage or healing a Healing/Harming strike does per hit: hit_unit x s, at least the floor. */
+	/** The magic damage or healing a Healing/Harming strike does per hit. */
 	public static float strike(String key, double s) {
 		Balance b = Balance.get();
 		return (float) Math.max(b.hitStrikeFloor, b.effect(key).hitUnit() * s);
@@ -118,7 +106,7 @@ public final class GemHits {
 		apply(level, target, attacker, direct, entries, ItemStack.EMPTY);
 	}
 
-	/** Applies a hit's entries to the target; the weapon matters for Wind Burst on a Wind Burst mace. */
+	/** Applies a hit's entries to the target. */
 	public static void apply(ServerLevel level, LivingEntity target, @Nullable Entity attacker, @Nullable Entity direct, List<Entry> entries,
 			ItemStack weapon) {
 		Balance b = Balance.get();
@@ -131,8 +119,6 @@ public final class GemHits {
 			if (kind.equals("instant")) {
 				boolean harm = e.key().equals("instant_damage") != (b.undeadInversion && target.isInvertedHealAndHarm());
 				if (harm) {
-					// The strike is its own damage (gem_strike, which bypasses the hit cooldown) and leaves the hit's cooldown and
-					// lastHurt as they were, so clicking again during the cooldown lands nothing more.
 					int cooldown = target.damageCooldownTime;
 					float lastHurt = ((io.github.bubba8587.bubbas_infused_gems.mixin.LivingEntityAccessor) target).bubbas$lastHurt();
 					var strikeType = net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.DAMAGE_TYPE,
@@ -147,7 +133,7 @@ public final class GemHits {
 			}
 			Holder<MobEffect> vanilla = ModEffects.vanilla(e.key());
 			if (vanilla != null && !target.canBeAffected(new MobEffectInstance(vanilla))) {
-				continue; // a spider shrugs off poison, a wither skeleton wither, as in vanilla
+				continue;
 			}
 			if (kind.equals("onoff")) {
 				if (vanilla != null) {
@@ -155,13 +141,12 @@ public final class GemHits {
 				}
 				continue;
 			}
-			// Scaled and control hits: the gem effect, at the hit's potency (control: the strength share).
 			Holder<MobEffect> effect = ModEffects.gem(e.key());
 			if (effect != null) {
 				target.addEffect(new MobEffectInstance(effect, duration(e), GemMobEffect.amplifier(potency(e))), attacker);
 				Balance.EffectData d = b.effect(e.key());
 				if (!e.drawback() && d.hitFloorExhaustion() > 0.0 && target instanceof net.minecraft.world.entity.player.Player player) {
-					// Hunger (owner): every hit costs at least a food point's worth; what the effect won't drain comes now.
+					// Hunger: every hit costs at least a food point's worth
 					double drained = d.hitUnit() * GemMobEffect.potency(GemMobEffect.amplifier(potency(e))) * duration(e);
 					if (drained < d.hitFloorExhaustion()) {
 						player.causeFoodExhaustion((float) (d.hitFloorExhaustion() - drained));
@@ -171,10 +156,7 @@ public final class GemHits {
 		}
 	}
 
-	/**
-	 * A weapon hit landed (vanilla's post-attack hook: players' melee and stabs, mobs' melee, sweeps, thrown tridents).
-	 * Bows and crossbows are skipped: their arrows carry the gems.
-	 */
+	/** A weapon hit landed. */
 	public static void onWeaponHit(ServerLevel level, @Nullable LivingEntity attacker, @Nullable Entity direct, LivingEntity target, ItemStack weapon) {
 		if (weapon == null || weapon.isEmpty() || isRanged(weapon)) {
 			return;
@@ -185,7 +167,7 @@ public final class GemHits {
 		}
 	}
 
-	/** Where a real tipped arrow carries an effect a gem also gives, the stronger one applies (owner). */
+	/** Where a real tipped arrow carries an effect a gem also gives, the stronger one applies. */
 	public static double vanillaFraction(String key, int amplifier) {
 		return GemValues.levelFraction(key, amplifier);
 	}

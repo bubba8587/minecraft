@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-/** Counts how often each projectile reaches the entity hit-or-deflect step against a watched entity (Breeze measurement). */
+/** Counts how often each projectile reaches the entity hit-or-deflect step against a watched. */
 @Mixin(Projectile.class)
 public abstract class ProjectileProbe {
 	@Inject(method = "hitTargetOrDeflectSelf", at = @At("HEAD"))

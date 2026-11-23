@@ -33,12 +33,7 @@ import net.minecraft.world.level.storage.TagValueOutput;
 
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 
-/**
- * Owner (open question 31): a gem and a vanilla effect of the same kind don't add, the stronger applies, with care for the
- * edge cases: a stronger potion running out (the gem takes over at once), a weaker potion (its timer runs, the gem tops
- * up to its own value), milk, beacons and conduits, golden apples, splash and tipped arrows, death or reload, and gear
- * taken off mid-potion. No gem modifier is ever left behind.
- */
+/** A gem and a vanilla effect of the same kind don't add. */
 public class GemVsPotionGameTest {
 	private static final String[] PIECES = {"helmet", "chestplate", "leggings", "boots"};
 
@@ -62,7 +57,7 @@ public class GemVsPotionGameTest {
 		return m == null ? 0.0 : m.amount();
 	}
 
-	/** Health Boost gems (a combat effect at the shared cap) carry the stronger-applies tests: +8 x s max health. */
+	/** Health Boost gems carry the stronger-applies tests: +8 x s max health. */
 	private static double gemBoost(LivingEntity e) {
 		AttributeModifier m = e.getAttribute(Attributes.MAX_HEALTH).getModifier(BubbasInfusedGems.id("worn/health_boost/0"));
 		return m == null ? 0.0 : m.amount();
@@ -90,7 +85,7 @@ public class GemVsPotionGameTest {
 		return helper.spawnWithNoFreeWill(EntityTypes.PIG, new BlockPos(1, 1, 1));
 	}
 
-	private static final double S = 1.00; // twelve perfect gems in netherite: Health Boost's and Absorption's worn cap (the full potion, owner)
+	private static final double S = 1.00;
 
 	@GameTest(maxTicks = 100)
 	public void strongerPotionRunsOutAndTheGemTakesOverAtOnce(GameTestHelper helper) {
@@ -112,7 +107,6 @@ public class GemVsPotionGameTest {
 		pig.addEffect(new MobEffectInstance(MobEffects.HEALTH_BOOST, 600, 0));
 		check(helper, pig.getEffect(MobEffects.HEALTH_BOOST).getDuration() == 600, "the potion's timer is gone");
 		close(boost(pig), 8 * S, 1e-6, helper, "Health Boost I + gems: the gems' value, not the sum");
-		// Gear off mid-potion: the potion stays, the gem part goes, nothing left behind.
 		strip(pig);
 		close(boost(pig), 4.0, 1e-6, helper, "gear off: Health Boost I alone");
 		pig.removeAllEffects();
@@ -125,7 +119,6 @@ public class GemVsPotionGameTest {
 	public void beaconsAndConduitsFollowTheSameRule(GameTestHelper helper) {
 		Mob pig = pig(helper);
 		wear(pig, "health_boost");
-		// Beacons and conduits apply ambient effects, refreshed every few seconds.
 		pig.addEffect(new MobEffectInstance(MobEffects.HEALTH_BOOST, 260, 1, true, true));
 		close(boost(pig), 8.0, 1e-6, helper, "Health Boost II alone");
 		pig.addEffect(new MobEffectInstance(MobEffects.HEALTH_BOOST, 260, 1, true, true));
@@ -146,15 +139,14 @@ public class GemVsPotionGameTest {
 		wear(pig, "absorption");
 		double gemMax = 16 * S;
 		close(pig.getMaxAbsorption(), gemMax, 1e-4, helper, "gem shield size");
-		pig.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 2400, 0)); // a golden apple: Absorption I, 4
+		pig.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 2400, 0));
 		close(pig.getMaxAbsorption(), gemMax, 1e-4, helper, "golden apple + gems: the gems' size, not the sum");
-		pig.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 2400, 3)); // an enchanted apple: Absorption IV, 16
+		pig.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 2400, 3));
 		close(pig.getMaxAbsorption(), 16.0, 1e-4, helper, "enchanted apple is stronger: its 16 alone");
 		pig.removeAllEffects();
 		close(pig.getMaxAbsorption(), gemMax, 1e-4, helper, "apple over: the gems again");
 		strip(pig);
 		noGemModifiersLeft(helper, pig, "absorption gear off");
-		// Totem: Fire Resistance on top of Fire Resistance gems: the real effect wins (it is full immunity).
 		wear(pig, "fire_resistance");
 		pig.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 800, 0));
 		AttributeModifier burn = pig.getAttribute(Attributes.BURNING_TIME).getModifier(BubbasInfusedGems.id("worn/fire_resistance/0"));
@@ -166,7 +158,6 @@ public class GemVsPotionGameTest {
 	public void splashCloudsAndTippedArrowsUseTheSamePath(GameTestHelper helper) {
 		Mob pig = pig(helper);
 		wear(pig, "speed");
-		// A splash potion, a lingering cloud and a tipped arrow all end in addEffect; the arrow is the real thing here.
 		Mob shooter = helper.spawnWithNoFreeWill(EntityTypes.SKELETON, new BlockPos(3, 1, 1));
 		Arrow arrow = (Arrow) ((ArrowItem) Items.TIPPED_ARROW).createArrow(helper.getLevel(),
 				PotionContents.createItemStack(Items.TIPPED_ARROW, Potions.STRONG_SWIFTNESS), shooter, null);
@@ -184,8 +175,7 @@ public class GemVsPotionGameTest {
 		Mob pig = pig(helper);
 		wear(pig, "health_boost");
 		pig.addEffect(new MobEffectInstance(MobEffects.HEALTH_BOOST, 600, 0));
-		// Saved and loaded again (a reload, or a respawned copy): gem modifiers are transient, so none come back by
-		// themselves, and the next refresh (on joining the level) restores exactly the right value.
+		// Saved and loaded again
 		TagValueOutput out = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, helper.getLevel().registryAccess());
 		pig.saveWithoutId(out);
 		Mob copy = helper.spawnWithNoFreeWill(EntityTypes.PIG, new BlockPos(2, 1, 2));
@@ -193,7 +183,6 @@ public class GemVsPotionGameTest {
 		close(gemBoost(copy), 0.0, 1e-9, helper, "a gem modifier survived a save");
 		WornEffects.refresh(copy);
 		close(boost(copy), 8 * S, 1e-6, helper, "after reload: gems over Health Boost I, not added");
-		// Death clears effects and drops the armor: nothing of ours stays.
 		strip(copy);
 		copy.removeAllEffects();
 		noGemModifiersLeft(helper, copy, "after death");

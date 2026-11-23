@@ -20,15 +20,9 @@ import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
 
-/**
- * Armor gems on the wearer (players and mobs). Attribute effects are transient vanilla attribute modifiers, set when
- * equipment or the wearer's effects change; the rest are small hooks the mixins call (tick, damage taken, after damage,
- * death, gravity, water drag, hunger, visibility, prices, night vision on the client). Not potion effect instances:
- * vanilla levels are whole numbers. Every value goes through {@link GemValues} (undead swap, immunity, and "the
- * stronger applies" against a vanilla effect of the same kind).
- */
+/** Armor gems on the wearer. */
 public final class WornEffects {
-	/** Always-on worn effects are re-applied for this long, checked this often (so they never run out while worn). */
+	/** Always-on worn effects are re-applied for this long, checked this often. */
 	private static final int ALWAYS_ON_TICKS = 100;
 	private static final int ALWAYS_ON_REFRESH = 20;
 
@@ -47,7 +41,7 @@ public final class WornEffects {
 		return BubbasInfusedGems.id("worn/" + key + "/" + i);
 	}
 
-	/** Modifier ids of a "wet only" effect (Conduit Power), shared by armor gems and the hit-applied gem effect. */
+	/** Modifier ids of a "wet only" effect, shared by armor gems and the hit-applied gem effect. */
 	public static Identifier wetId(String key, int i) {
 		return BubbasInfusedGems.id("wet/" + key + "/" + i);
 	}
@@ -56,10 +50,7 @@ public final class WornEffects {
 		return ((GemEntity) entity).bubbas$wornGems();
 	}
 
-	/**
-	 * The attribute amount that makes gem s and a vanilla effect at fraction f together give the stronger of the two
-	 * (multiplied operations divide out the vanilla part; added ones subtract it). 0 when vanilla is at least as strong.
-	 */
+	/** The attribute amount that makes gem s and a vanilla effect at fraction f together give. */
 	public static double combinedAmount(Balance.Attr a, double s, double f) {
 		if (f <= 0.0) {
 			return a.at(s);
@@ -73,7 +64,7 @@ public final class WornEffects {
 		return (1.0 + a.at(s)) / (1.0 + a.at(f)) - 1.0;
 	}
 
-	/** Recomputes the wearer's totals from its armor and updates its attribute modifiers (server). */
+	/** Recomputes the wearer's totals from its armor and updates its attribute modifiers. */
 	public static void refresh(LivingEntity entity) {
 		GemEntity g = (GemEntity) entity;
 		double absorptionBefore = g.bubbas$wornGems().value("absorption");
@@ -85,9 +76,6 @@ public final class WornEffects {
 		}
 		double absorptionNow = g.bubbas$wornGems().value("absorption");
 		if (absorptionNow > absorptionBefore + 1e-9) {
-			// Owner (playtest): a new or bigger shield fills at once on equip (and on joining or respawning), but only if
-			// the last equip-fill was at least the refill time ago; otherwise it waits like a refill after damage, so
-			// swapping gear can't refill it.
 			int refill = (int) Balance.get().effect("absorption").wornNumber("refill_ticks", 600);
 			long now = entity.level().getGameTime();
 			Long last = entity.getAttached(io.github.bubba8587.bubbas_infused_gems.registry.ModAttachments.LAST_EQUIP_FILL);
@@ -101,7 +89,7 @@ public final class WornEffects {
 		}
 	}
 
-	/** Absorption gems fill the shield up to their own share only (not a golden apple's part on top). */
+	/** Absorption gems fill the shield up to their own share only. */
 	public static void fillShield(LivingEntity entity) {
 		Balance.EffectData e = Balance.get().effect("absorption");
 		double share = e.wornAttributes().getFirst().at(GemValues.rawWorn(entity, "absorption"));
@@ -111,7 +99,7 @@ public final class WornEffects {
 		}
 	}
 
-	/** Whether the gems keep this vanilla effect on the wearer now (always-on harmful gems; real invisibility at the full set). */
+	/** Whether the gems keep this vanilla effect on the wearer now. */
 	private static boolean keptOn(LivingEntity entity, Balance.EffectData e) {
 		double s = GemValues.rawWorn(entity, e.key());
 		if (e.wornFlag("always_on")) {
@@ -120,12 +108,12 @@ public final class WornEffects {
 		return e.worn() != null && e.worn().has("full_at") && s >= e.wornNumber("full_at", 1.0) - 1e-6;
 	}
 
-	/** An effect instance the gems keep on (ambient, no particles, short): told apart from a real potion's. */
+	/** An effect instance the gems keep on: told apart from a real potion's. */
 	private static boolean isKept(MobEffectInstance inst) {
 		return inst.isAmbient() && !inst.isVisible() && !inst.isInfiniteDuration() && inst.getDuration() <= ALWAYS_ON_TICKS;
 	}
 
-	/** Gear changed: a kept-on effect the gems no longer give goes at once (taking a piece off ends real invisibility). */
+	/** Gear changed: a kept-on effect the gems no longer give goes at once. */
 	private static void dropKeptEffects(LivingEntity entity) {
 		for (Balance.EffectData e : Balance.get().effects.values()) {
 			if (e.worn() == null || !(e.wornFlag("always_on") || e.worn().has("full_at")) || keptOn(entity, e)) {
@@ -139,7 +127,7 @@ public final class WornEffects {
 		}
 	}
 
-	/** Attribute modifiers of every worn effect, after the vanilla effects the wearer has (also on effect changes). */
+	/** Attribute modifiers of every worn effect, after the vanilla effects the wearer has. */
 	public static void updateAttributes(LivingEntity entity) {
 		Balance b = Balance.get();
 		for (Balance.EffectData e : b.effects.values()) {
@@ -148,7 +136,6 @@ public final class WornEffects {
 			}
 			boolean wet = e.wornFlag("wet_only") || e.wornFlag("sneak_only");
 			double s = GemValues.rawWorn(entity, e.key());
-			// A vanilla effect or a gem effect from a hit (they never coexist): the worn part only tops up above it.
 			double f = Math.max(GemValues.vanillaFraction(entity, e.key()), GemValues.hit(entity, e.key()));
 			for (int i = 0; i < e.wornAttributes().size(); i++) {
 				Balance.Attr a = e.wornAttributes().get(i);
@@ -177,7 +164,7 @@ public final class WornEffects {
 		return BuiltInRegistries.ATTRIBUTE.get(Identifier.parse(name)).map(entity::getAttribute).orElse(null);
 	}
 
-	/** Conduit Power: its attributes only while in water or rain (armor gems or a gem effect from a hit). */
+	/** Conduit Power: its attributes only while in water or rain. */
 	public static void wetTick(LivingEntity entity) {
 		Balance.EffectData e = Balance.get().effect("conduit_power");
 		double s = GemValues.value(entity, "conduit_power");
@@ -196,14 +183,10 @@ public final class WornEffects {
 		}
 	}
 
-	/** Last tick each wearer was sneaking (Turtle Master's shell lingers a moment after). Server thread only. */
+	/** Last tick each wearer was sneaking. */
 	private static final java.util.Map<LivingEntity, Integer> LAST_SNEAK = new java.util.WeakHashMap<>();
 
-	/**
-	 * Turtle Master worn (owner, 2026-11-22: "shell up"): its Resistance and Slowness apply only while the wearer sneaks,
-	 * and for {@code shell_linger_ticks} (half a second) after it stops, so tapping sneak can't flick the shell on and
-	 * off. Mobs don't sneak, so a mob in Turtle Master armor never shells up.
-	 */
+	/** Turtle Master worn: its Resistance and Slowness apply only while the wearer sneaks. */
 	public static boolean shelled(LivingEntity entity) {
 		if (entity.isShiftKeyDown()) {
 			return true;
@@ -237,7 +220,7 @@ public final class WornEffects {
 		}
 	}
 
-	/** Server tick of a wearer with gems: health over time, hunger, absorption refill, Conduit Power, pulsed effects. */
+	/** Server tick of a wearer with gems. */
 	public static void tick(ServerLevel level, LivingEntity entity, GemTotals t) {
 		GemBeacons.expire(entity);
 		Balance b = Balance.get();
@@ -279,9 +262,7 @@ public final class WornEffects {
 		if (t.has("turtle_master")) {
 			shellTick(entity);
 		}
-		// Harmful on/off gems that can't be partial (Glowing, Blindness, Nausea, Darkness): always on (owner), the vanilla
-		// effect kept topped up; Invisibility likewise, but only at the perfect complete set (owner, Q33). Levitation is a
-		// slow drift instead (gravity hook).
+		// Harmful on/off gems that can't be partial
 		if (entity.tickCount % ALWAYS_ON_REFRESH == 0) {
 			for (Balance.EffectData e : b.effects.values()) {
 				if (t.has(e.key()) && keptOn(entity, e)) {
@@ -295,7 +276,7 @@ public final class WornEffects {
 		}
 	}
 
-	/** Resistance against vanilla's: the strongest of Resistance gems, Turtle Master gems and a vanilla effect applies. */
+	/** Resistance against vanilla's. */
 	private static double resistanceFactor(LivingEntity entity) {
 		Balance b = Balance.get();
 		double gem = 0.0;
@@ -315,7 +296,7 @@ public final class WornEffects {
 		return b.strongerApplies ? (1.0 - Math.max(gem, v)) / (1.0 - v) : 1.0 - gem;
 	}
 
-	/** Damage after vanilla's resistance: gem Resistance and Turtle Master (worn and hit), Fire Resistance, worn Harming. */
+	/** Damage after vanilla's resistance. */
 	public static float modifyDamage(LivingEntity entity, DamageSource source, float damage) {
 		if (damage <= 0.0F || source.is(DamageTypeTags.BYPASSES_EFFECTS)) {
 			return damage;
@@ -335,7 +316,7 @@ public final class WornEffects {
 		return (float) Math.max(damage * factor, 0.0);
 	}
 
-	/** After a hit lands: the Healing gem gives back a share of a survived attack or fall; Infested gems may hatch. */
+	/** After a hit lands: the Healing gem gives back a share of a survived attack or fall. */
 	public static void afterDamage(LivingEntity entity, DamageSource source, float taken) {
 		((GemEntity) entity).bubbas$setLastHurtTick(entity.tickCount);
 		AbsorptionCooldown.start(entity, (int) Balance.get().effect("absorption").wornNumber("refill_ticks", 600));
@@ -349,11 +330,11 @@ public final class WornEffects {
 		double infested = GemValues.worn(entity, "infested");
 		if (infested > 0.0 && entity.level() instanceof ServerLevel level && !entity.hasEffect(MobEffects.INFESTED)
 				&& entity.getRandom().nextDouble() < infested) {
-			MobEffects.INFESTED.value().onMobHurt(level, entity, 0, source, taken); // vanilla's own 10% roll follows
+			MobEffects.INFESTED.value().onMobHurt(level, entity, 0, source, taken);
 		}
 	}
 
-	/** Wind Charged, Weaving and Oozing gems: their vanilla death trigger, with chance s (not on top of the real effect). */
+	/** Wind Charged, Weaving and Oozing gems: their vanilla death trigger, with chance s. */
 	public static void onDeath(LivingEntity entity) {
 		if (of(entity).isEmpty() || !(entity.level() instanceof ServerLevel level)) {
 			return;
@@ -369,15 +350,11 @@ public final class WornEffects {
 		}
 	}
 
-	/**
-	 * Levitation gem worn: a slow drift up, vanilla's levitation formula with the rise speed s x rise_per_tick (owner:
-	 * never flight). Slow Falling gem: gravity while falling, 0.08 - 0.07 x s at vanilla gravity (scaled for other gravity).
-	 */
+	/** Levitation gem worn: a slow drift up. */
 	public static double gravity(LivingEntity entity, double gravity) {
 		double hitLev = GemValues.hit(entity, "levitation");
 		if (hitLev > 0.0 && !entity.hasEffect(MobEffects.LEVITATION) && !entity.isNoGravity()) {
-			// A Levitation hit (owner, Q6): vanilla's levitation step (move 0.2 of the way to the rise speed each tick), with
-			// the rise speed set by the hit's strength instead of the effect level. Mobs and players alike.
+			// A Levitation hit: vanilla's levitation step
 			double rise = Balance.get().hitCurve("levitation", "value", hitLev) / 20.0;
 			return -(rise - entity.getDeltaMovement().y) * 0.2;
 		}
@@ -386,13 +363,10 @@ public final class WornEffects {
 			double rise = levitationRise(lev);
 			double y = entity.getDeltaMovement().y;
 			if (y < -0.05 && !entity.onGround()) {
-				// Falling (a cliff, a jump's way down): fall as normal, the downward pull only reduced by r (owner: a weak gem
-				// doesn't negate falls). Once the fall has slowed, the rise below takes over again.
+				// Falling: fall as normal, the downward pull only reduced by r
 				return gravity * (1.0 - Math.min(1.0, lev / Balance.get().cap));
 			}
-			// travelInAir subtracts this. Below the rise speed, go straight to it (vanilla eases by 0.2 a tick, but at these
-			// slow speeds the first steps would fall under the 0.003 blocks/tick that aiStep rounds to 0, and nothing would
-			// move); above it (a jump), ease down as vanilla does.
+			// travelInAir subtracts this
 			return y < rise ? -(rise - y) : -(rise - y) * 0.2;
 		}
 		if (entity.getDeltaMovement().y > 0.0) {
@@ -403,12 +377,12 @@ public final class WornEffects {
 			return gravity;
 		}
 		double reduction = Balance.get().effect("slow_falling").wornNumber("gravity_reduction", 0.07) / 0.08;
-		// Up to the potion's (0.01 at vanilla gravity) at 1.0; past it (owner's raised cap) that divided by s.
+		// Up to the potion's at 1.0; past it that divided by s
 		double factor = s <= 1.0 ? 1.0 - reduction * s : (1.0 - reduction) / s;
 		return Math.min(gravity, entity.getGravity() * factor);
 	}
 
-	/** Worn Levitation's rise speed, blocks per tick: any gem a slow but visible rise, the best build about half of Levitation I. */
+	/** Worn Levitation's rise speed, blocks per tick. */
 	public static double levitationRise(double s) {
 		Balance.EffectData e = Balance.get().effect("levitation");
 		double min = e.wornNumber("rise_min", 0.008);
@@ -426,13 +400,12 @@ public final class WornEffects {
 		if (s <= 0.0 || slowDown >= target) {
 			return slowDown;
 		}
-		// The swim-speed gain 1 / (1 - drag) moves s of the way to the potion's; past 1.0 (owner's raised cap) beyond it.
 		double base = 1.0 / (1.0 - slowDown);
 		double gain = base + (1.0 / (1.0 - target) - base) * s;
 		return 1.0 - 1.0 / gain;
 	}
 
-	/** Saturation gem's food points per second at strength s: rate_min to rate_best at the cap, geometric in between. */
+	/** Saturation gem's food points per second at strength s. */
 	public static double saturationRate(double s) {
 		Balance.EffectData e = Balance.get().effect("saturation");
 		double min = e.wornNumber("rate_min", 0.035);
@@ -440,44 +413,37 @@ public final class WornEffects {
 		return s <= 0.0 ? 0.0 : min * Math.pow(best / min, s / Balance.get().cap);
 	}
 
-	/** One tick of Saturation (worn or from a hit): food and saturation back like the vanilla effect, whole points as they build up. */
+	/** One tick of Saturation. */
 	public static void restoreFood(Player player, double s) {
 		GemEntity g = (GemEntity) player;
 		int food = player.getFoodData().getFoodLevel();
 		int target = saturationFoodTarget(s);
 		if (food >= target) {
-			// Owner: food fills only up to the gem's target; 20 (vanilla's fast regeneration) only at the perfect set.
 			g.bubbas$setFoodCarry(Math.min(g.bubbas$foodCarry(), 1.0F));
 			return;
 		}
 		float carry = g.bubbas$foodCarry() + (float) (saturationRate(s) / 20.0);
 		if (carry >= 1.0F) {
 			int points = Math.min((int) carry, target - food);
-			// Saturation added scales with strength too, and stays at most the food level, as vanilla clamps it.
+			// Saturation added scales with strength too
 			player.getFoodData().eat(points, (float) saturationShare(s));
 			carry -= (int) carry;
 		}
 		g.bubbas$setFoodCarry(carry);
 	}
 
-	/** Saturation gem's share of its cap, r = s / cap (at most 1): scales the food target and the saturation added. */
+	/** Saturation gem's share of its cap, r = s / cap. */
 	public static double saturationShare(double s) {
 		return Math.min(1.0, Math.max(0.0, s / Balance.get().effect("saturation").wornCap()));
 	}
 
-	/**
-	 * Owner: the food level a Saturation gem fills up to, round(food_base + food_span x r): a weak gem about 7, a mid build
-	 * 13-14, only the perfect set 20 (where vanilla's fast regeneration works).
-	 */
+	/** The food level a Saturation gem fills up to, round. */
 	public static int saturationFoodTarget(double s) {
 		Balance.EffectData e = Balance.get().effect("saturation");
 		return (int) Math.round(e.wornNumber("food_base", 6.0) + e.wornNumber("food_span", 14.0) * saturationShare(s));
 	}
 
-	/**
-	 * Invisibility gem: mobs notice the wearer at (1 - 0.93 x s) of the range (stealth). Read before any vanilla
-	 * Invisibility, since the full set adds the real effect on top (its body turns see-through; armor still shows).
-	 */
+	/** Invisibility gem: mobs notice the wearer at of the range. */
 	public static double visibility(LivingEntity entity, double percent) {
 		double s = Math.max(GemValues.rawWorn(entity, "invisibility"), GemValues.hit(entity, "invisibility"));
 		return s > 0.0 ? percent * (1.0 - Balance.get().effect("invisibility").wornNumber("visibility_reduction", 0.93) * s) : percent;

@@ -18,11 +18,7 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.providers.number.ints.ContextIntProvider;
 import net.minecraft.world.level.storage.loot.providers.number.ints.ContextIntProviders;
 
-/**
- * Loot function {@code bubbas_infused_gems:socket_random_gems}: puts {@code count} gems rolled from {@link GemRollSpec}
- * into gear that takes gems (up to its free slots); {@code gear} limits it to {@code "armor"} or {@code "weapon"}
- * (default {@code "any"}). Anything else passes through unchanged.
- */
+/** Loot function bubbas_infused_gems:socket_random_gems. */
 public class SocketRandomGemsFunction extends LootItemConditionalFunction {
 	public static final MapCodec<SocketRandomGemsFunction> MAP_CODEC = RecordCodecBuilder.mapCodec(i -> commonFields(i)
 			.and(ContextIntProviders.CODEC.optionalFieldOf("count", ContextIntProviders.exactly(1)).forGetter(f -> f.count))

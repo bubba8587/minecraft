@@ -9,7 +9,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
-/** Gem mob effects name their strength as a percent of the strongest vanilla level ("Poison 46%"), not a level. */
+/** Gem mob effects name their strength as a percent of the strongest vanilla level. */
 @Mixin(EffectsInInventory.class)
 public abstract class EffectsInInventoryMixin {
 	@ModifyReturnValue(method = "getEffectName", at = @At("RETURN"))

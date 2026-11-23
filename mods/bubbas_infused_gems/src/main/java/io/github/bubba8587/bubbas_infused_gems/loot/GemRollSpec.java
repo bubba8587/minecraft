@@ -19,14 +19,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.effect.MobEffect;
 
-/**
- * How a loot gem is made (the loot functions' shared fields): one of {@code effects} (none listed = any craftable gem
- * effect; with {@code prefer_harmful} p, a harmful one of them with chance p, for weapons), an Infusion level and a tier
- * picked from their lists (a repeated value is a weight), the effect's weakest potion variant ({@code "normal"}) or any
- * of its variants ({@code "any"}), then rolled like the enchanting table does. With {@code perfect}, the named Infusion
- * level always makes a perfect gem (strongest variant, tier 3, full strength) that carries a tier 3 drawback, except with
- * chance {@code clean_chance} (owner: ominous vaults). The numbers live in tools/gem-balance.py (LOOT).
- */
+/** How a loot gem is made. */
 public record GemRollSpec(Optional<List<Holder<MobEffect>>> effects, List<Integer> infusion, List<Integer> tier, String variant,
 		float preferHarmful, Optional<Perfect> perfect) {
 	public record Perfect(int infusion, float cleanChance) {
@@ -45,7 +38,7 @@ public record GemRollSpec(Optional<List<Holder<MobEffect>>> effects, List<Intege
 			Perfect.CODEC.optionalFieldOf("perfect").forGetter(GemRollSpec::perfect)
 	).apply(i, GemRollSpec::new));
 
-	/** Every gem effect that is brewed (not found-only): the default pool. */
+	/** Every gem effect that is brewed: the default pool. */
 	static List<String> craftable() {
 		Balance b = Balance.get();
 		return b.gemEffects.stream().filter(k -> !"found".equals(b.effect(k).source())).toList();
@@ -89,7 +82,7 @@ public record GemRollSpec(Optional<List<Holder<MobEffect>>> effects, List<Intege
 		return GemEnchanting.roll(random.nextInt(), tierLevel, infused);
 	}
 
-	/** A perfect gem: the strongest variant at this Infusion, tier 3's plain grade, and (unless clean) a tier 3 drawback. */
+	/** A perfect gem: the strongest variant at this Infusion. */
 	private static Gem perfect(RandomSource random, String key, Balance.EffectData e, int infusionLevel, float cleanChance) {
 		Balance b = Balance.get();
 		String top = e.variants().values().stream().max((x, y) -> Double.compare(x.factor(), y.factor())).map(Balance.Variant::name).orElse("normal");
@@ -98,7 +91,7 @@ public record GemRollSpec(Optional<List<Holder<MobEffect>>> effects, List<Intege
 		float main = (float) Math.min(1.0, new InfusedGem(GemText.holder(key), top, GemForm.LINGERING, infusionLevel).baseQuality() * b.grades.get(grade));
 		Optional<Gem.Roll> drawback = Optional.empty();
 		if (random.nextFloat() >= cleanChance && !e.drawbackPool().isEmpty()) {
-			// The drawback's size follows tier 3's own drawback outcomes (weak twice as often as medium).
+			// The drawback's size follows tier 3's own drawback outcomes
 			List<Balance.Outcome> withDrawback = outcomes.stream().filter(o -> o.drawback() != null && grade.equals(o.main())).toList();
 			double total = withDrawback.stream().mapToDouble(Balance.Outcome::odds).sum();
 			double r = random.nextDouble() * total;

@@ -21,11 +21,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.AABB;
 
-/**
- * The reworked beacon screen (specs/reworked-beacons.md): vanilla's beacon background with the power buttons and
- * payment row painted over, the beacon's state, and what the item will do in its own tooltip words. No new
- * texture (B16 has nothing to ship).
- */
+/** The reworked beacon screen. */
 public class BeaconItemScreen extends AbstractContainerScreen<BeaconItemMenu> {
 	private static final Identifier BEACON_LOCATION = Identifier.withDefaultNamespace("textures/gui/container/beacon.png");
 	private static final int PANEL = 0xFF212121;
@@ -46,9 +42,8 @@ public class BeaconItemScreen extends AbstractContainerScreen<BeaconItemMenu> {
 		int xo = this.leftPos;
 		int yo = this.topPos;
 		graphics.blit(RenderPipelines.GUI_TEXTURED, BEACON_LOCATION, xo, yo, 0.0F, 0.0F, this.imageWidth, this.imageHeight, 256, 256);
-		// One dark panel for the text instead of vanilla's two power panels.
 		graphics.fill(xo + PANEL_LEFT, yo + 7, xo + PANEL_RIGHT, yo + 100, PANEL);
-		// Vanilla's payment row (four hooks for iron, gold, emerald, diamond) is gone.
+		// Vanilla's payment row is gone
 		graphics.fill(xo + 12, yo + 103, xo + 132, yo + 132, GREY);
 	}
 

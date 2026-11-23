@@ -26,13 +26,9 @@ import net.minecraft.world.level.block.entity.BrewingStandBlockEntity;
 
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 
-/**
- * Gem inversion (owner, 2026-11-15): a gem with a drawback + a fermented spider eye at a real brewing stand swaps main and
- * drawback, one grade and one Infusion level lower; the bonus is kept; it inverts back; gems that can't invert are refused.
- * Also the rarity-weighted rolls.
- */
+/** Gem inversion: a gem with a drawback + a fermented spider eye at a real brewing stand. */
 public class GemInversionGameTest {
-	/** A Speed gem rolled strongest at Infusion VI from a strong potion (1.0), with a Strength bonus and a Hunger drawback. */
+	/** A Speed gem rolled strongest at Infusion VI from a strong potion. */
 	private static Gem speedWithHunger(int infusion, String grade) {
 		Balance b = Balance.get();
 		double main = b.infusion(infusion).factor() * b.grades.get(grade);
@@ -49,7 +45,7 @@ public class GemInversionGameTest {
 		var access = helper.getLevel().recipeAccess();
 		Gem gem = speedWithHunger(6, "strongest");
 		check(helper, PotionIngredient.isPotionInput(GemKit.item(gem), access), "the bottle slot refuses an invertible gem");
-		// Refused: no drawback, a weak grade, Infusion I.
+		// Refused: no drawback, a weak grade, Infusion I
 		check(helper, !PotionIngredient.isPotionInput(GemKit.item(GemKit.gem("speed", 1.0)), access), "a gem without a drawback goes in");
 		check(helper, !PotionIngredient.isPotionInput(GemKit.item(speedWithHunger(6, "weak")), access), "a weak-grade gem goes in");
 		check(helper, !PotionIngredient.isPotionInput(GemKit.item(speedWithHunger(1, "strongest")), access), "an Infusion I gem goes in");
@@ -67,7 +63,7 @@ public class GemInversionGameTest {
 			check(helper, out.infusion() == 5 && out.tier() == 3, "Infusion " + out.infusion());
 			check(helper, out.other().equals(gem.other()), "the bonus changed");
 			check(helper, out.equals(expected), "stand result differs from the model");
-			// Inverting back: Speed again, medium -> weak, Infusion IV.
+			// Inverting back: Speed again, medium -> weak, Infusion IV
 			Gem back = GemInversion.invert(out);
 			check(helper, GemText.key(back.effect()).equals("speed") && back.infusion() == 4, "reverted " + back);
 			close(back.main(), b.infusion(4).factor() * b.grades.get("weak"), 1e-5, helper, "reverted strength");
@@ -77,7 +73,7 @@ public class GemInversionGameTest {
 		});
 	}
 
-	/** Owner: a drawback-only gem inverts too: its drawback becomes a weak main, Infusion one lower, no drawback after. */
+	/** A drawback-only gem inverts too. */
 	@GameTest(maxTicks = 900)
 	public void drawbackOnlyGemInvertsToAWeakMain(GameTestHelper helper) {
 		Balance b = Balance.get();

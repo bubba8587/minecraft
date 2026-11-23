@@ -15,20 +15,18 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 
 public class BubbasInfusedGemsClient implements ClientModInitializer {
-	/** The local player's armor last time its gem totals were computed (client copy, for gravity and night vision). */
+	/** The local player's armor last time its gem totals were computed. */
 	private static final ItemStack[] LAST_ARMOR = {ItemStack.EMPTY, ItemStack.EMPTY, ItemStack.EMPTY, ItemStack.EMPTY};
 	private static LocalPlayer lastPlayer;
 	private static java.util.List<io.github.bubba8587.bubbas_infused_gems.effect.GemBeacons.Received> lastBeacon;
 
 	@Override
 	public void onInitializeClient() {
-		// 32x textures (Faithful style) as an optional built-in resource pack: specs/textures.md.
 		FabricLoader.getInstance().getModContainer(BubbasInfusedGems.MOD_ID).ifPresent(mod ->
 			ResourceLoader.registerBuiltinPack(BubbasInfusedGems.id(BubbasInfusedGems.MOD_ID + "_32x"), mod,
 				Component.literal("Bubba's Infused Gems 32x (Faithful style)"), PackActivationType.NORMAL));
 		ItemTintSources.ID_MAPPER.put(BubbasInfusedGems.id("gem_color"), GemColorSource.MAP_CODEC);
-		// The local player moves on the client, so its Slow Falling gem (gravity) and Night Vision gem (lightmap) need
-		// its own armor totals there: recomputed only when an armor stack changes.
+		// The local player moves on the client
 		ClientTickEvents.END_CLIENT_TICK.register(mc -> {
 			LocalPlayer player = mc.player;
 			if (player == null) {
@@ -43,7 +41,7 @@ public class BubbasInfusedGemsClient implements ClientModInitializer {
 					changed = true;
 				}
 			}
-			// Gems from Reworked Beacons arrive as a synced attachment; recompute when it changes or a receipt runs out.
+			// Gems from Reworked Beacons arrive as a synced attachment
 			var beacon = player.getAttached(io.github.bubba8587.bubbas_infused_gems.registry.ModAttachments.BEACON_GEMS);
 			if (beacon != lastBeacon || (beacon != null && beacon.stream().anyMatch(r -> r.until() <= player.level().getGameTime()))) {
 				lastBeacon = beacon;

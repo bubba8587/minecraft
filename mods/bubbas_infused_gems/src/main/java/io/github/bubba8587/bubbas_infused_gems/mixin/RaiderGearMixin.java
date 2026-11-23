@@ -14,11 +14,7 @@ import net.minecraft.world.entity.monster.illager.Pillager;
 import net.minecraft.world.entity.monster.illager.Vindicator;
 import net.minecraft.world.item.ItemStack;
 
-/**
- * Raid mobs (owner, review C): a raid hands out its weapons in applyRaidBuffs, after the spawn gear hook (vindicators get
- * their axe only there; pillagers may swap in an enchanted crossbow). A weapon that call puts in hand may get gems at the
- * raid rate; a weapon it leaves alone already had its roll.
- */
+/** Raid mobs: a raid hands out its weapons in applyRaidBuffs, after the spawn gear hook. */
 @Mixin({Pillager.class, Vindicator.class})
 abstract class RaiderGearMixin {
 	@Unique

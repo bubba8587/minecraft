@@ -33,10 +33,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-/**
- * Armor gems on the wearer: the cached totals, the tick and damage hooks, gravity, water drag, stealth, effect changes
- * (a gem and a vanilla effect of the same kind don't add: the stronger applies), and broken gear popping its gems.
- */
+/** Armor gems on the wearer. */
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin implements GemEntity {
 	@Shadow
@@ -61,7 +58,6 @@ public abstract class LivingEntityMixin implements GemEntity {
 	public void bubbas$setFoodCarry(float carry) {
 		this.bubbas$foodCarry = carry;
 	}
-
 
 	@Override
 	public GemTotals bubbas$wornGems() {
@@ -106,10 +102,7 @@ public abstract class LivingEntityMixin implements GemEntity {
 		return original.call(movement, WornEffects.waterDrag(self, x), y, WornEffects.waterDrag(self, z));
 	}
 
-	/**
-	 * Darkness and Nausea gems worn (owner): the wearer's own screen gets s of the effect's strongest look, steady, with
-	 * no vanilla instance (so nothing pulses or restarts a fade). Vanilla reads both through this blend factor.
-	 */
+	/** Darkness and Nausea gems worn. */
 	@ModifyReturnValue(method = "getEffectBlendFactor", at = @At("RETURN"))
 	private float bubbas$gemScreenEffect(float blend, Holder<MobEffect> effect, float partialTicks) {
 		if (!this.bubbas$worn.isEmpty() && ((LivingEntity) (Object) this).level().isClientSide()
@@ -124,7 +117,7 @@ public abstract class LivingEntityMixin implements GemEntity {
 		return WornEffects.visibility((LivingEntity) (Object) this, percent);
 	}
 
-	/** A gem effect and a vanilla effect of the same kind don't add (owner's rule, open question 31): the stronger applies. */
+	/** A gem effect and a vanilla effect of the same kind don't add: the stronger applies. */
 	@Inject(method = "addEffect(Lnet/minecraft/world/effect/MobEffectInstance;Lnet/minecraft/world/entity/Entity;)Z", at = @At("HEAD"), cancellable = true)
 	private void bubbas$strongerApplies(MobEffectInstance incoming, @Nullable Entity source, CallbackInfoReturnable<Boolean> cir) {
 		if (!Balance.get().strongerApplies) {
@@ -174,7 +167,7 @@ public abstract class LivingEntityMixin implements GemEntity {
 		this.bubbas$effectsChanged();
 	}
 
-	/** Worn attribute gems only top up above a vanilla effect of the same kind, so they follow the wearer's effects. */
+	/** Worn attribute gems only top up above a vanilla effect of the same kind. */
 	@Unique
 	private void bubbas$effectsChanged() {
 		LivingEntity self = (LivingEntity) (Object) this;
@@ -183,7 +176,7 @@ public abstract class LivingEntityMixin implements GemEntity {
 		}
 	}
 
-	/** Wind Burst and Oozing gems: a landing bounces, and the fall hurts less (not at all only at the perfect set). */
+	/** Wind Burst and Oozing gems: a landing bounces, and the fall hurts less. */
 	@org.spongepowered.asm.mixin.injection.ModifyVariable(method = "causeFallDamage", at = @At("HEAD"), argsOnly = true, ordinal = 0)
 	private float bubbas$gemLanding(float damageModifier, double fallDistance) {
 		return damageModifier * io.github.bubba8587.bubbas_infused_gems.effect.GemActions.landing((LivingEntity) (Object) this, fallDistance);
@@ -198,7 +191,7 @@ public abstract class LivingEntityMixin implements GemEntity {
 		}
 	}
 
-	/** Oozing slimes drop nothing (no slime ball farm). */
+	/** Oozing slimes drop nothing. */
 	@ModifyReturnValue(method = "shouldDropLoot", at = @At("RETURN"))
 	private boolean bubbas$noSlimeLoot(boolean drop) {
 		return drop && !io.github.bubba8587.bubbas_infused_gems.effect.GemActions.ownedSlime((LivingEntity) (Object) this);

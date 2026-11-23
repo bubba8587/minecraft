@@ -11,7 +11,7 @@ import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
-/** Gem effects look like vanilla's on the HUD (owner): Regeneration's heart wave, Hunger's green food bar. */
+/** Gem effects look like vanilla's on the HUD. */
 @Mixin(Hud.class)
 abstract class GemLooksHudMixin {
 	@WrapOperation(method = {"extractPlayerHealth", "extractFood"},

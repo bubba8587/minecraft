@@ -46,13 +46,7 @@ import net.minecraft.world.phys.Vec3;
 
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 
-/**
- * Synthetic Diamond Ore (specs/extra-recipes-mod.md; docs/knowledge/item-keyed-block-drops.md approach C, ported from
- * refmod): vanilla deepslate diamond ore gets a {@code synthetic} property, the datapack's blast2diamond result
- * ({@code block_state {synthetic:"true"}}) places it, and the mod's loot override sends synthetic ore to
- * {@code bubbas_extra_recipes:blocks/synthetic_diamond_ore}: 25 % chance of one diamond, no Fortune bonus, no XP;
- * silk touch gives the synthetic item back. Placing and mining go through {@code ServerPlayerGameMode}.
- */
+/** Synthetic Diamond Ore. */
 public class SyntheticOreGameTest {
 	private static final BlockPos FLOOR = new BlockPos(1, 1, 1);
 	private static final BlockPos PLACED = FLOOR.above();
@@ -75,7 +69,7 @@ public class SyntheticOreGameTest {
 		return tool;
 	}
 
-	/** A survival player right-clicks the top of FLOOR with the stack, then mines the placed block with the tool. */
+	/** A survival player right-clicks the top of FLOOR with the stack. */
 	private static Mined placeAndMine(GameTestHelper helper, ItemStack placed, ItemStack tool) {
 		ServerLevel level = helper.getLevel();
 		helper.setBlock(FLOOR, Blocks.STONE);
@@ -136,12 +130,12 @@ public class SyntheticOreGameTest {
 		helper.succeed();
 	}
 
-	// Core test: registered by ExtraRecipesCoreGameTest (test-lite, specs/quality.md).
+	// Core test: registered by ExtraRecipesCoreGameTest
 	public void syntheticOreUsesItsOwnTableAndGivesNoXp(GameTestHelper helper) {
 		ItemStack synthetic = syntheticFromRecipe(helper);
 		helper.assertValueEqual(synthetic.getHoverName().getString(), "Synthetic Diamond Ore", "recipe result name");
 
-		// Mined by a survival player: synthetic state placed, at most one diamond (25 % chance), never XP, never ore.
+		// Mined by a survival player
 		for (int i = 0; i < 6; i++) {
 			ItemStack tool = i % 2 == 0 ? pickaxe(helper, null, 0) : pickaxe(helper, Enchantments.FORTUNE, 3);
 			Mined mined = placeAndMine(helper, synthetic.copy(), tool);
@@ -151,24 +145,20 @@ public class SyntheticOreGameTest {
 			helper.assertValueEqual(mined.xpOrbs(), 0, "XP orbs from synthetic ore");
 		}
 
-		// Silk touch gives the synthetic item back, identical to the recipe result (same components, so they stack).
 		Mined silk = placeAndMine(helper, synthetic.copy(), pickaxe(helper, Enchantments.SILK_TOUCH, 1));
 		helper.assertValueEqual(silk.drops().size(), 1, "silk-touched synthetic drops " + silk.drops());
 		helper.assertTrue(ItemStack.isSameItemSameComponents(silk.drops().getFirst(), synthetic),
 			"silk-touched synthetic gave " + silk.drops().getFirst().getComponentsPatch() + ", recipe gives " + synthetic.getComponentsPatch());
 		helper.assertValueEqual(silk.xpOrbs(), 0, "XP orbs from silk-touched synthetic ore");
 
-		// Round trip: the silk-touched item places synthetic ore again.
+		// Round trip: the silk-touched item places synthetic ore again
 		Mined again = placeAndMine(helper, silk.drops().getFirst().copy(), pickaxe(helper, Enchantments.SILK_TOUCH, 1));
 		helper.assertValueEqual(again.placed().getValue(SyntheticOre.SYNTHETIC), true, "silk-touched item placed natural ore");
 		helper.assertTrue(ItemStack.isSameItemSameComponents(again.drops().getFirst(), synthetic), "second silk touch " + again.drops());
 		helper.succeed();
 	}
 
-	/**
-	 * The odds, by rolling deepslate_diamond_ore's (overridden) loot table for the synthetic state many times with a fixed
-	 * seed: about 25 % one diamond, otherwise nothing, and Fortune III doesn't change it. Natural ore always drops.
-	 */
+	/** Synthetic ore drops a diamond about one time in four; natural always drops. */
 	@GameTest
 	public void syntheticOreDropsADiamondAboutOneTimeInFour(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
@@ -186,7 +176,7 @@ public class SyntheticOreGameTest {
 				diamonds += n;
 				empty += drops.isEmpty() ? 1 : 0;
 			}
-			// Binomial(2000, 0.25): mean 500, sd ~19; 420..580 is over 4 sd either way.
+			// Binomial: mean 500, sd ~19; 420..580 is over 4 sd either way
 			helper.assertTrue(diamonds >= 420 && diamonds <= 580, "diamonds in " + rolls + " synthetic rolls with " + tool + ": " + diamonds);
 			helper.assertValueEqual(empty, rolls - diamonds, "rolls that dropped nothing");
 		}
@@ -207,7 +197,7 @@ public class SyntheticOreGameTest {
 			.create(LootContextParamSets.BLOCK);
 	}
 
-	/** Decided and documented: pick-block on synthetic ore gives the plain ore item (creative can convert it). */
+	/** Decided and documented: pick-block on synthetic ore gives the plain ore item. */
 	@GameTest
 	public void pickBlockOnSyntheticGivesPlainOre(GameTestHelper helper) {
 		helper.setBlock(PLACED, Blocks.DEEPSLATE_DIAMOND_ORE.defaultBlockState().setValue(SyntheticOre.SYNTHETIC, true));
@@ -224,21 +214,19 @@ public class SyntheticOreGameTest {
 		BlockState natural = Blocks.DEEPSLATE_DIAMOND_ORE.defaultBlockState();
 		BlockState synthetic = natural.setValue(SyntheticOre.SYNTHETIC, true);
 
-		// Natural ore is the default state, which 26.3 writes as a bare block id: byte-for-byte what vanilla writes.
 		Tag naturalTag = BlockState.CODEC.encodeStart(NbtOps.INSTANCE, natural).getOrThrow();
 		helper.assertValueEqual(naturalTag, StringTag.valueOf("minecraft:deepslate_diamond_ore"), "natural ore encoding");
 		Tag syntheticTag = BlockState.CODEC.encodeStart(NbtOps.INSTANCE, synthetic).getOrThrow();
 		helper.assertTrue(syntheticTag instanceof CompoundTag c && c.getCompoundOrEmpty("properties").getStringOr("synthetic", "").equals("true"),
 			"synthetic ore encoding " + syntheticTag);
 
-		// An old save (no property) decodes as natural, in both palette forms.
+		// An old save decodes as natural, in both palette forms
 		helper.assertValueEqual(BlockState.CODEC.parse(NbtOps.INSTANCE, StringTag.valueOf("minecraft:deepslate_diamond_ore")).getOrThrow(), natural, "bare id");
 		CompoundTag noProps = new CompoundTag();
 		noProps.putString("id", "minecraft:deepslate_diamond_ore");
 		helper.assertValueEqual(BlockState.CODEC.parse(NbtOps.INSTANCE, noProps).getOrThrow(), natural, "{id} without properties");
 
-		// The mod removed: the block has a single state again, and its codec ignores the "properties" it no longer knows.
-		// Stone is such a block today; the same entry decodes to plain stone, both through the codec and NbtUtils.
+		// The mod removed: the block has a single state again
 		CompoundTag unknown = new CompoundTag();
 		unknown.putString("id", "minecraft:stone");
 		CompoundTag props = new CompoundTag();
@@ -247,7 +235,7 @@ public class SyntheticOreGameTest {
 		helper.assertValueEqual(BlockState.CODEC.parse(NbtOps.INSTANCE, unknown).getOrThrow(), Blocks.STONE.defaultBlockState(), "unknown property via codec");
 		helper.assertValueEqual(NbtUtils.readBlockState(BuiltInRegistries.BLOCK, unknown), Blocks.STONE.defaultBlockState(), "unknown property via NbtUtils");
 
-		// A whole chunk: save it the way ChunkMap does, read it back, and read it again with the property stripped.
+		// A whole chunk: save it the way ChunkMap does
 		helper.setBlock(FLOOR, natural);
 		helper.setBlock(PLACED, synthetic);
 		BlockPos naturalPos = helper.absolutePos(FLOOR);
@@ -275,7 +263,6 @@ public class SyntheticOreGameTest {
 	}
 
 	private static ChunkAccess read(ServerLevel level, LevelChunk chunk, CompoundTag tag) {
-		// Drop the light data so reading the copy does not queue light updates for the live chunk.
 		tag.getListOrEmpty("sections").forEach(section -> {
 			if (section instanceof CompoundTag sectionTag) {
 				sectionTag.remove("BlockLight");

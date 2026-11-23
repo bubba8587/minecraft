@@ -17,14 +17,14 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
-/** Gem slots on gear (owner: 3 per armor piece, 2 per weapon), and taking gems back out. */
+/** Gem slots on gear, and taking gems back out. */
 public final class Sockets {
-	/** Armor that takes gems: every humanoid armor piece (data tag). */
+	/** Armor that takes gems: every humanoid armor piece. */
 	public static final TagKey<Item> ARMOR = TagKey.create(Registries.ITEM, BubbasInfusedGems.id("socketable_armor"));
-	/** Weapons that take gems: swords, axes, spears, maces, tridents, bows, crossbows (data tag). */
+	/** Weapons that take gems: swords, axes, spears, maces, tridents, bows, crossbows. */
 	public static final TagKey<Item> WEAPONS = TagKey.create(Registries.ITEM, BubbasInfusedGems.id("socketable_weapons"));
 
-	/** Gear that never takes gems although its tag says armor (owner: the turtle helmet, for now). */
+	/** Gear that never takes gems although its tag says armor. */
 	public static final TagKey<Item> EXCLUDED = TagKey.create(Registries.ITEM, BubbasInfusedGems.id("not_socketable"));
 
 	private Sockets() {
@@ -66,7 +66,7 @@ public final class Sockets {
 		return out;
 	}
 
-	/** The gem items in this item (empty list if none). */
+	/** The gem items in this item. */
 	public static List<ItemStack> gemItems(ItemStack stack) {
 		return list(stack).stream().map(GemEnchanting::finished).toList();
 	}
@@ -77,14 +77,14 @@ public final class Sockets {
 		return out;
 	}
 
-	/** Gives the gems to the player (inventory, else dropped at their feet). */
+	/** Gives the gems to the player. */
 	public static void give(Player player, List<ItemStack> gems) {
 		for (ItemStack gem : gems) {
 			player.getInventory().placeItemBackInInventory(gem, net.minecraft.util.Prediction.SERVER_ONLY);
 		}
 	}
 
-	/** Drops a broken item's gems where its owner stands (owner: dropped, not lost). */
+	/** Drops a broken item's gems where its owner stands. */
 	public static void popOut(Entity owner, ItemStack broken) {
 		if (owner.level() instanceof ServerLevel level) {
 			for (ItemStack gem : gemItems(broken)) {

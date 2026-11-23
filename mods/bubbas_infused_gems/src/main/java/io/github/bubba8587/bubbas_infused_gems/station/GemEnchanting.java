@@ -16,12 +16,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 
-/**
- * Enchanting an Infused Gem (owner): the three rows are the three tiers, each locking in one outcome by chance with the
- * model's odds. Costs follow vanilla's bookshelf formula (EnchantmentHelper.getEnchantmentCost), the outcome comes
- * from the player's enchantment seed (so the preview and vanilla's reroll trick behave as for gear), and rows above
- * the gem's form are off (normal: tier 1, splash: up to 2, lingering: all three).
- */
+/** Enchanting an Infused Gem. */
 public final class GemEnchanting {
 	private GemEnchanting() {
 	}
@@ -30,7 +25,7 @@ public final class GemEnchanting {
 		return stack.is(ModItems.INFUSED_GEM) && stack.has(ModComponents.INFUSED_GEM);
 	}
 
-	/** Vanilla's three level costs for this many bookshelves (random seeded from the enchantment seed), capped by the form. */
+	/** Vanilla's three level costs for this many bookshelves, capped by the form. */
 	public static int[] costs(int seed, int bookshelves, InfusedGem gem) {
 		RandomSource random = RandomSource.create(seed);
 		int shelves = Math.min(bookshelves, 15);
@@ -38,14 +33,13 @@ public final class GemEnchanting {
 		for (int slot = 0; slot < 3; slot++) {
 			int selected = random.nextInt(8) + 1 + (shelves >> 1) + random.nextInt(shelves + 1);
 			int cost = slot == 0 ? Math.max(selected / 3, 1) : slot == 1 ? selected * 2 / 3 + 1 : Math.max(selected, shelves * 2);
-			// Off: below vanilla's minimum, above the gem's form, or without the tier's bookshelves (owner: tier 2 needs 8, tier 3 all 15).
 			boolean gated = bookshelves < Balance.get().tierMinShelves.getOrDefault(slot + 1, 0);
 			costs[slot] = cost < slot + 1 || slot + 1 > gem.maxTier() || gated ? 0 : cost;
 		}
 		return costs;
 	}
 
-	/** The outcome of enchanting this gem at this tier (1-3) with this seed: always the same for the same inputs. */
+	/** The outcome of enchanting this gem at this tier with this seed. */
 	public static Gem roll(int seed, int tier, InfusedGem infused) {
 		Balance b = Balance.get();
 		RandomSource random = random(seed, tier, infused);
@@ -82,12 +76,12 @@ public final class GemEnchanting {
 		return outcomes.getLast();
 	}
 
-	/** Which outcome this seed gives this tier: the same draw {@link #roll} makes (the preview's kind and size). */
+	/** Which outcome this seed gives this tier: the same draw roll makes. */
 	public static Balance.Outcome outcome(int seed, int tier, InfusedGem infused) {
 		return pick(random(seed, tier, infused), tier);
 	}
 
-	/** One of the pool, by weight (owner: Poison and Wither drawbacks roll half as often; weights from the model). */
+	/** One of the pool, by weight. */
 	public static String weighted(RandomSource random, List<String> pool, List<Double> weights) {
 		double total = 0.0;
 		for (int i = 0; i < pool.size(); i++) {
@@ -109,11 +103,8 @@ public final class GemEnchanting {
 		return stack;
 	}
 
-	/** The preview, like vanilla's clue: the outcome's main line, then "...?" (the rest stays a surprise). */
-	/**
-	 * The hover preview, "slightly anonymized" (owner): the main effect and its strength, then for an extra roll only its
-	 * kind and size ("Speed 100% + minor bonus...?", "minor drawback only...?"). Exact, so the vanilla reroll trick works.
-	 */
+	/** The preview, like vanilla's clue: the outcome's main line, then "...?". */
+	/** The hover preview, "slightly anonymized". */
 	public static MutableComponent clue(Gem gem, Balance.Outcome outcome) {
 		MutableComponent extra = null;
 		if (outcome.other() != null) {

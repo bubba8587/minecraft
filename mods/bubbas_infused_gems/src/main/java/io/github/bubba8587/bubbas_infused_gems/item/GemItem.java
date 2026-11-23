@@ -8,7 +8,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
-/** The one finished gem item (owner): enchanted, its rolled effects in the tooltip, ready for the smithing table. */
+/** The one finished gem item. */
 public class GemItem extends Item {
 	public GemItem(Properties properties) {
 		super(properties);

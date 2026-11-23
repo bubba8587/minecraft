@@ -13,10 +13,9 @@ import net.minecraft.network.chat.Component;
 public class BubbasExtraRecipesClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
-		// Synthetic ore adds a block state: tell the server this client has it, or it turns the client away.
+		// Synthetic ore adds a block state
 		ClientConfigurationNetworking.registerGlobalReceiver(ExtraStatesHandshake.TYPE, (payload, context) -> { });
 
-		// 32x textures (Faithful style) as an optional built-in resource pack: specs/textures.md.
 		FabricLoader.getInstance().getModContainer(BubbasExtraRecipes.MOD_ID).ifPresent(mod ->
 			ResourceLoader.registerBuiltinPack(BubbasExtraRecipes.id(BubbasExtraRecipes.MOD_ID + "_32x"), mod,
 				Component.literal("Bubba's Extra Recipes 32x (Faithful style)"), PackActivationType.NORMAL));

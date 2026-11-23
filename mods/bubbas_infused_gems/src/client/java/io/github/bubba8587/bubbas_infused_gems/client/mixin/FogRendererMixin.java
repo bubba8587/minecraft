@@ -14,10 +14,7 @@ import net.minecraft.world.entity.LivingEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
-/**
- * Darkness and Blindness gems worn (owner): fog closes in s of the way to the vanilla effect's (Darkness 15 blocks,
- * Blindness 5) and its color darkens the same share, steady. Only when the real effect isn't on, which draws its own.
- */
+/** Darkness and Blindness gems worn. */
 @Mixin(FogRenderer.class)
 public abstract class FogRendererMixin {
 	@ModifyReturnValue(method = "setupFog", at = @At("RETURN"))
@@ -37,7 +34,6 @@ public abstract class FogRendererMixin {
 			float d = Mth.lerp((float) dark, render, 15.0F);
 			apply(fog, d, 0.75F, 1.0F);
 		}
-		// Fog color darkens as vanilla's does for these effects: x (1 - s)^2, black at full strength.
 		double shade = Math.max(blind, dark);
 		if (shade > 0.0) {
 			float k = Mth.square(1.0F - (float) shade);

@@ -24,11 +24,7 @@ import net.minecraft.world.phys.Vec3;
 
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 
-/**
- * The owner's answers to the strength proposal (2026-11-15): one dial per effect. Potency hits linger 4-8 s; Nausea,
- * Glowing and Levitation durations set per build; Levitation hits rise at a speed set per build; Weaving and Ender hits
- * by chance; Wind Burst has a visible floor; worn Breeze lets wind charges through; a Breeze hit makes shots veer.
- */
+/** The owner's answers to the strength proposal: one dial per effect. */
 public class StrengthAnswersGameTest {
 	private static final String[] PIECES = {"helmet", "chestplate", "leggings", "boots"};
 
@@ -47,7 +43,7 @@ public class StrengthAnswersGameTest {
 		});
 	}
 
-	/** A perfect Ender weapon blinks its target away about 40 % of the time, with chorus fruit's teleport. */
+	/** A perfect Ender weapon blinks its target away about 40 % of the time. */
 	@GameTest
 	public void enderHitBlinksTheTarget(GameTestHelper helper) {
 		Mob pig = helper.spawnWithNoFreeWill(EntityTypes.PIG, new BlockPos(1, 2, 1));
@@ -65,7 +61,7 @@ public class StrengthAnswersGameTest {
 		helper.succeed();
 	}
 
-	/** Worn Breeze lets wind charges through, as a real breeze does; a Breeze hit makes the target's shots veer. */
+	/** Worn Breeze lets wind charges through, as a real breeze does. */
 	@GameTest
 	public void breezeRulesMatchVanilla(GameTestHelper helper) {
 		Mob pig = helper.spawnWithNoFreeWill(EntityTypes.PIG, new BlockPos(1, 2, 1));

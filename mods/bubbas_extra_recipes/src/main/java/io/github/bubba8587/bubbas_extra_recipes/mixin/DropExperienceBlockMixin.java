@@ -13,7 +13,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
-/** Synthetic ore gives no experience when mined (specs/extra-recipes-mod.md): XP is code, not loot table data. */
+/** Synthetic ore gives no experience when mined: XP is code, not loot table data. */
 @Mixin(DropExperienceBlock.class)
 public abstract class DropExperienceBlockMixin {
 	@WrapWithCondition(method = "spawnAfterBreak", at = @At(value = "INVOKE",

@@ -9,7 +9,7 @@ import io.github.bubba8587.bubbas_infused_gems.effect.HiddenArmor;
 import net.minecraft.world.inventory.ResultContainer;
 import net.minecraft.world.item.ItemStack;
 
-/** Perfect Invisibility hidden armor: crafting, smithing, anvil and grindstone outputs are never marked. */
+/** Perfect Invisibility hidden armor. */
 @Mixin(ResultContainer.class)
 abstract class HiddenArmorResultMixin {
 	@ModifyVariable(method = "setItem", at = @At("HEAD"), argsOnly = true)

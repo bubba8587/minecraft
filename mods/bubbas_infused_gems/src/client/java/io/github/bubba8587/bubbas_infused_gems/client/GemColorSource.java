@@ -12,12 +12,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import org.jspecify.annotations.Nullable;
 
-/**
- * Item tint {@code bubbas_infused_gems:gem_color}: a gem's potion color, read from its own data, so every effect gets
- * its color with no art or stored color per effect. A finished gem takes its main effect's color only (owner: the
- * second-effect highlight was tried and dropped). The potion color is pushed toward full saturation and brightness so
- * gems read as jewels rather than flat potion swatches (owner).
- */
+/** Item tint bubbas_infused_gems:gem_color. */
 public record GemColorSource() implements ItemTintSource {
 	public static final MapCodec<GemColorSource> MAP_CODEC = MapCodec.unit(GemColorSource::new);
 	private static final int DEFAULT = 0xFFB0A0D0;

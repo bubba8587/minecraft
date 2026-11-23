@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-/** Silence gems: the wearer's movement vibrations are dropped before any listener (sculk, wardens, other mods) hears them. */
+/** Silence gems: the wearer's movement vibrations are dropped before any listener hears them. */
 @Mixin(ServerLevel.class)
 public abstract class ServerLevelMixin {
 	@Inject(method = "gameEvent(Lnet/minecraft/core/Holder;Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/level/gameevent/GameEvent$Context;)V",

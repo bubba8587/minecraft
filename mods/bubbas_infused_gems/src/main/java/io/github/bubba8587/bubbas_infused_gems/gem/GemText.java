@@ -16,7 +16,7 @@ public final class GemText {
 	private GemText() {
 	}
 
-	/** The balance model's key for an effect: its id path ("speed", "instant_health"...). */
+	/** The balance model's key for an effect: its id path. */
 	public static String key(Holder<MobEffect> effect) {
 		return effect.unwrapKey().map(k -> k.identifier().getPath()).orElse("unknown");
 	}

@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-/** Armor with an Absorption gem shares one cooldown group, so the shield's refill wait shows as the vanilla sweep. */
+/** Armor with an Absorption gem shares one cooldown group. */
 @Mixin(ItemCooldowns.class)
 abstract class ItemCooldownsMixin {
 	@Inject(method = "getCooldownGroup", at = @At("HEAD"), cancellable = true)

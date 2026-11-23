@@ -33,12 +33,7 @@ import net.minecraft.world.item.ItemStack;
 
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 
-/**
- * {@code /gems [player]} (owner): your combined gem effects. Every player can run it for themselves; looking at another
- * player needs operator rights. For each effect from all socketed armor gems: the total after stacking and the
- * material and matching-set factors, in game terms and as a share of the cap, drawbacks marked; then what each hit of
- * the held weapon applies.
- */
+/** [player]: your combined gem effects. */
 public final class ModCommands {
 	private ModCommands() {
 	}
@@ -50,7 +45,6 @@ public final class ModCommands {
 						.then(Commands.argument("player", EntityArgument.player())
 								.requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
 								.executes(c -> show(c.getSource(), EntityArgument.getPlayer(c, "player"))))
-						// /gems kit <effect> [material] [power] (owner, for testing): a full set and sword of one effect.
 						.then(Commands.literal("kit")
 								.requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
 								.then(Commands.argument("effect", StringArgumentType.word())
@@ -60,14 +54,13 @@ public final class ModCommands {
 												.suggests((c, b) -> SharedSuggestionProvider.suggest(KIT_MATERIALS, b))
 												.executes(c -> kit(c.getSource(), StringArgumentType.getString(c, "effect"),
 														StringArgumentType.getString(c, "material")))
-												// [power] 1-6 (owner): tier 3 full-strength gems at that Gem Power (the internal infusion level); 6 is perfect.
 												.then(Commands.argument("power", com.mojang.brigadier.arguments.IntegerArgumentType.integer(1, 6))
 														.executes(c -> kit(c.getSource(), StringArgumentType.getString(c, "effect"),
 																StringArgumentType.getString(c, "material"),
 																com.mojang.brigadier.arguments.IntegerArgumentType.getInteger(c, "power")))))))));
 	}
 
-	/** Armor materials the kit can use (vanilla's item name prefixes follow). */
+	/** Armor materials the kit can use. */
 	public static final List<String> KIT_MATERIALS = List.of("leather", "chainmail", "copper", "iron", "gold", "diamond", "netherite");
 	private static final SimpleCommandExceptionType UNKNOWN = new SimpleCommandExceptionType(Component.translatable(GemText.KEY + "command.kit.unknown"));
 	private static final String[] PIECES = {"helmet", "chestplate", "leggings", "boots"};
@@ -76,15 +69,12 @@ public final class ModCommands {
 		return BuiltInRegistries.ITEM.getValue(Identifier.withDefaultNamespace(path));
 	}
 
-	/**
-	 * Puts a full armor set of this material on the player, 3 perfect gems of the effect in every piece (Infusion VI, tier
-	 * 3, full strength, nothing else), and gives a matching sword with 2. Worn armor goes back to the inventory (or drops).
-	 */
+	/** Puts a full armor set of this material on the player. */
 	public static int kit(CommandSourceStack source, String effect, String material) throws CommandSyntaxException {
 		return kit(source, effect, material, 6);
 	}
 
-	/** The kit at an Infusion level (1-6): tier 3, full grade, strongest potion, no extras; Infusion VI is perfect. */
+	/** The kit at an Infusion level. */
 	public static int kit(CommandSourceStack source, String effect, String material, int infusion) throws CommandSyntaxException {
 		ServerPlayer player = source.getPlayerOrException();
 		if (!Balance.get().gemEffects.contains(effect) || !KIT_MATERIALS.contains(material)) {
@@ -117,7 +107,7 @@ public final class ModCommands {
 		return 1;
 	}
 
-	/** The command's lines for this player (also used by the game test). */
+	/** The command's lines for this player. */
 	public static List<Component> lines(ServerPlayer player) {
 		Balance b = Balance.get();
 		List<Component> out = new ArrayList<>();
@@ -151,11 +141,10 @@ public final class ModCommands {
 		return out;
 	}
 
-	/** One line (owner): the effect, its values, and its strength in brackets (a share of its best; drawbacks of theirs). */
+	/** One line: the effect, its values, and its strength in brackets. */
 	private static void lines(List<Component> out, String key, double s, String value, String hitSuffix) {
 		Balance b = Balance.get();
 		Balance.EffectData e = b.effect(key);
-		// Worn lines are a share of the perfect set (the effect's own worn cap, owner 2026-11-15); hit lines of the cap.
 		double max = hitSuffix.isEmpty() && e.wornCap() > 0.0 ? e.wornCap() : b.cap;
 		out.add(line(key, value, s / max, false));
 	}
@@ -167,7 +156,6 @@ public final class ModCommands {
 	}
 
 	private static int show(CommandSourceStack source, ServerPlayer player) throws CommandSyntaxException {
-		// Straight to the asker, so it shows even with the send_command_feedback game rule off.
 		for (Component line : lines(player)) {
 			source.sendSystemMessage(line);
 		}

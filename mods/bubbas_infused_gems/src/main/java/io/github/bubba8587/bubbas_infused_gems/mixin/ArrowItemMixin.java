@@ -17,10 +17,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-/**
- * Bows and crossbows with gems tip each arrow they fire with the gems' hit; the pickup item stays as it was, so a plain
- * arrow comes back plain (owner). Hooked where every bow and crossbow makes its arrow (players and skeletons alike).
- */
+/** Bows and crossbows with gems tip each arrow they fire with the gems' hit. */
 @Mixin(ArrowItem.class)
 public abstract class ArrowItemMixin {
 	@Inject(method = "createArrow", at = @At("RETURN"))

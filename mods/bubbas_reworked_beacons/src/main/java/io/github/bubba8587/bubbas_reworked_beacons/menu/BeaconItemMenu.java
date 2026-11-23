@@ -15,11 +15,7 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 
-/**
- * The reworked beacon screen's menu (specs/reworked-beacons.md): one item slot that keeps its item in the beacon
- * (no payment, no power buttons), plus the beacon's state for the screen's text. Slot and inventory positions
- * match vanilla's beacon menu so vanilla's background texture fits.
- */
+/** The reworked beacon screen's menu. */
 public class BeaconItemMenu extends AbstractContainerMenu {
 	public static final int DATA_MODE = 0;
 	public static final int DATA_LEVELS = 1;

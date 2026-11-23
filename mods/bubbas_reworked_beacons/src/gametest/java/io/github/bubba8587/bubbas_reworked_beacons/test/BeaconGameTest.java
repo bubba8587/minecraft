@@ -29,12 +29,9 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 
-/**
- * Beacon tests (specs/reworked-beacons.md, "Milestone test objectives"). The core suite runs each of these once
- * ({@code ReworkedBeaconsCoreGameTest}); the methods have no {@code @GameTest} of their own.
- */
+/** Beacon tests. */
 public class BeaconGameTest {
-	/** A square pyramid layer by layer under (dir -1) or, upside down, over (dir +1) {@code beacon}; relative. */
+	/** Builds a square pyramid under or over beacon. */
 	static void pyramid(GameTestHelper helper, BlockPos beacon, int layers, int dir, Block block) {
 		for (int step = 1; step <= layers; step++) {
 			for (int x = -step; x <= step; x++) {
@@ -49,7 +46,7 @@ public class BeaconGameTest {
 		return (ReworkedBeacon) helper.getBlockEntity(rel, BeaconBlockEntity.class);
 	}
 
-	/** Sky beacon, real ticks: an amethyst shard on a 1-layer pyramid gives Speed I to a pig (mobs too, not only players). */
+	/** Sky beacon, real ticks: an amethyst shard on a 1-layer pyramid gives Speed I to a pig. */
 	public void standalonePaymentBuysItsPower(GameTestHelper helper) {
 		BlockPos beacon = new BlockPos(4, 2, 4);
 		pyramid(helper, beacon, 1, -1, Blocks.IRON_BLOCK);
@@ -63,7 +60,7 @@ public class BeaconGameTest {
 		});
 	}
 
-	/** The standalone table and its pyramid rules, and a payload from another mod capped by the pyramid. */
+	/** The standalone table and its pyramid rules. */
 	public void pyramidSizeCapsThePower(GameTestHelper helper) {
 		StandalonePayload standalone = new StandalonePayload();
 		helper.assertValueEqual(standalone.requiredLevels(new ItemStack(Items.AMETHYST_SHARD)), 1, "amethyst shard layers");
@@ -79,7 +76,6 @@ public class BeaconGameTest {
 		}
 		helper.assertTrue(Payloads.find(new ItemStack(Items.ECHO_SHARD)) instanceof TestPayload, "test mod's payload not loaded from the entrypoint");
 
-		// A real sky beacon: a Gem Power V item on a 2-layer pyramid outputs III, and the area query sees it.
 		BlockPos beacon = new BlockPos(4, 3, 4);
 		pyramid(helper, beacon, 2, -1, Blocks.IRON_BLOCK);
 		helper.setBlock(beacon, Blocks.BEACON);
@@ -99,7 +95,7 @@ public class BeaconGameTest {
 		});
 	}
 
-	/** A floor beacon pairs with an upside-down one above it through glass; the box is 3x wide and height-limited. */
+	/** A floor beacon pairs with an upside-down one above it through glass. */
 	public void pairedBeaconsMakeAWideBox(GameTestHelper helper) {
 		BlockPos floor = new BlockPos(4, 2, 4);
 		BlockPos ceiling = floor.above(4);
@@ -119,7 +115,6 @@ public class BeaconGameTest {
 		helper.assertValueEqual(rb.bubba$pairLevels(), 1, "the smaller pyramid sets the layers");
 		helper.assertValueEqual(BeaconLogic.mode(rb), BeaconMode.PAIRED, "mode");
 		AABB area = BeaconLogic.area(helper.getLevel(), abs, rb, BeaconMode.PAIRED, 1);
-		// 60 out sideways; from 10 below the floor pyramid (1 layer) to 10 above the ceiling pyramid (2 layers).
 		AABB expected = new AABB(abs.getX() - 60, abs.getY() - 1 - 10, abs.getZ() - 60,
 				abs.getX() + 61, abs.getY() + 4 + 2 + 10 + 1, abs.getZ() + 61);
 		helper.assertValueEqual(area, expected, "paired area");
@@ -128,17 +123,17 @@ public class BeaconGameTest {
 		BeaconLogic.pulse(helper.getLevel(), abs, rb);
 		helper.assertTrue(pig.hasEffect(MobEffects.SPEED), "paired pulse gave no Speed to a pig in the box");
 
-		// Blocked beam: the pair is off.
+		// Blocked beam: the pair is off
 		helper.setBlock(floor.above(2), Blocks.STONE);
 		BeaconLogic.updatePair(helper.getLevel(), abs, rb);
 		helper.assertTrue(!rb.bubba$isPaired(), "pair still on with stone in the beam");
-		// The upside-down beacon alone is inert.
+		// The upside-down beacon alone is inert
 		helper.assertTrue(helper.getBlockEntity(ceiling, BeaconBlockEntity.class).getBeamSections().isEmpty(),
 				"upside-down beacon has a beam of its own");
 		helper.succeed();
 	}
 
-	/** Placing a beacon against the underside of a block hangs it upside down; on top of a block it stands upright. */
+	/** Placing a beacon against the underside of a block hangs it upside down. */
 	public void beaconHangsUnderABlock(GameTestHelper helper) {
 		helper.assertTrue(!HangingBeacon.isUpsideDown(Blocks.BEACON.defaultBlockState()), "beacons should default to upright");
 		Player player = helper.makeMockPlayer(GameType.CREATIVE);

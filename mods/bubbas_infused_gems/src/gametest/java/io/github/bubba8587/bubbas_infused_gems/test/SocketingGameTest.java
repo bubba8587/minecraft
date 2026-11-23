@@ -29,11 +29,7 @@ import net.minecraft.world.phys.AABB;
 
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 
-/**
- * Socketing at the smithing table (template slot empty; 3 gems per armor piece, 2 per weapon, every listed weapon kind),
- * the grindstone taking all gems out and giving them back while the item keeps the rest, and broken gear dropping its
- * gems.
- */
+/** Socketing at the smithing table. */
 public class SocketingGameTest {
 	private static final Gem SPEED = GemKit.gem("speed", 0.9);
 	private static final Gem POISON = GemKit.gem("poison", 0.8, "slowness", 0.5, "speed");
@@ -44,7 +40,7 @@ public class SocketingGameTest {
 		return new SmithingMenu(1, player.getInventory(), ContainerLevelAccess.create(helper.getLevel(), helper.absolutePos(pos)));
 	}
 
-	/** Puts base + gem in the table (template empty) and returns the result slot's item. */
+	/** Puts base + gem in the table and returns the result slot's item. */
 	private static ItemStack socket(SmithingMenu menu, ItemStack base, Gem gem) {
 		menu.getSlot(SmithingMenu.TEMPLATE_SLOT).set(ItemStack.EMPTY);
 		menu.getSlot(SmithingMenu.BASE_SLOT).set(base);
@@ -52,7 +48,7 @@ public class SocketingGameTest {
 		return menu.getSlot(3).getItem().copy();
 	}
 
-	// Core test: registered by InfusedGemsCoreGameTest (test-lite, specs/quality.md).
+	// Core test: registered by InfusedGemsCoreGameTest
 	public void smithingTableSocketsUpToTheLimit(GameTestHelper helper) {
 		ServerPlayer player = helper.makeMockServerPlayerInLevel();
 		SmithingMenu menu = smithing(helper, player);
@@ -68,7 +64,7 @@ public class SocketingGameTest {
 		check(helper, menu.hasRecipeError() || menu.getSlot(3).getItem().isEmpty(), "full armor still offered a result");
 		ItemStack sword = socket(menu, socket(menu, new ItemStack(Items.IRON_SWORD), POISON), POISON);
 		check(helper, Sockets.list(sword).size() == 2 && socket(menu, sword, POISON).isEmpty(), "a sword holds " + Sockets.list(sword).size() + " gems, or a 3rd fits");
-		// Taking the result uses up the gem and the base.
+		// Taking the result uses up the gem and the base
 		menu.getSlot(SmithingMenu.BASE_SLOT).set(new ItemStack(Items.IRON_HELMET));
 		menu.getSlot(SmithingMenu.ADDITIONAL_SLOT).set(GemKit.item(SPEED));
 		ItemStack result = menu.getSlot(3).getItem();
@@ -122,7 +118,7 @@ public class SocketingGameTest {
 			}
 		}
 		check(helper, gems == 2, "player got " + gems + " gems back, expected 2");
-		// Without enchantments it still strips the gems (vanilla would give nothing).
+		// Without enchantments it still strips the gems
 		menu.getSlot(0).set(GemKit.socketed(Items.IRON_CHESTPLATE, SPEED));
 		ItemStack plain = menu.getSlot(2).getItem();
 		check(helper, plain.is(Items.IRON_CHESTPLATE) && !Sockets.hasGems(plain), "unenchanted gear: " + plain);

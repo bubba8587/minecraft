@@ -21,9 +21,9 @@ import net.minecraft.world.phys.Vec3;
 
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 
-/** Milestone tests for Reworked Mining (run with -PmilestoneTests). Objectives in specs/reworked-mining.md. */
+/** Milestone tests for Reworked Mining. */
 public class MiningMilestoneGameTest {
-	/** True Unbreaking books turn up in the tuned chests at about the tuned rate, and work on armor too. */
+	/** True Unbreaking books turn up in the tuned chests at about the tuned rate. */
 	@GameTest
 	public void trueUnbreakingInChests(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();

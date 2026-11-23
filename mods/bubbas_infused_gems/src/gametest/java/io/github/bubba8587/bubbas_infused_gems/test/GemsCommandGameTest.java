@@ -15,12 +15,9 @@ import net.minecraft.world.item.Items;
 
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 
-/**
- * {@code /gems}: lists the wearer's combined armor gem effects (in-game value and share of the cap), marks drawbacks,
- * and says what each hit of the held weapon applies; the command is registered for everyone.
- */
+/** /gems: lists the wearer's combined armor gem effects. */
 public class GemsCommandGameTest {
-	// Core test: registered by InfusedGemsCoreGameTest (test-lite, specs/quality.md).
+	// Core test: registered by InfusedGemsCoreGameTest
 	public void gemsCommandListsCombinedEffects(GameTestHelper helper) {
 		ServerPlayer player = helper.makeMockServerPlayerInLevel();
 		player.setItemSlot(EquipmentSlot.HEAD, GemKit.socketed(Items.NETHERITE_HELMET, GemKit.gem("speed", 1.0), GemKit.gem("speed", 1.0, null, 0, "hunger")));
@@ -29,7 +26,7 @@ public class GemsCommandGameTest {
 		List<String> lines = ModCommands.lines(player).stream().map(Component::getString).toList();
 		String all = String.join("\n", lines);
 		check(helper, lines.stream().anyMatch(l -> l.contains("Speed +") && l.contains("%)") && !l.contains("of max")), "no speed line:\n" + all);
-		// Drawbacks (owner): just the effect and its values, in red.
+		// Drawbacks: just the effect and its values, in red
 		check(helper, ModCommands.lines(player).stream().anyMatch(c -> c.getString().contains("Hunger") && !c.getString().contains("rawback")
 				&& net.minecraft.network.chat.TextColor.fromLegacyFormat(net.minecraft.ChatFormatting.RED).equals(c.getStyle().getColor())), "drawback not red:\n" + all);
 		check(helper, lines.stream().anyMatch(l -> l.contains("Poison") && l.contains("HP/s for")), "no weapon hit line:\n" + all);
@@ -41,7 +38,7 @@ public class GemsCommandGameTest {
 		helper.succeed();
 	}
 
-	/** /gems kit (owner, for testing): a full netherite set of perfect gems reaches the cap, and /gems shows it. */
+	/** /gems kit: a full netherite set of perfect gems reaches the cap, and /gems shows it. */
 	@GameTest
 	public void kitGivesAPerfectSet(GameTestHelper helper) {
 		ServerPlayer player = helper.makeMockServerPlayerInLevel();

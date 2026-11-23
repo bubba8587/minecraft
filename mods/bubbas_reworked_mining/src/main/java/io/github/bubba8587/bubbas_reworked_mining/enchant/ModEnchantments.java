@@ -16,13 +16,7 @@ import net.minecraft.world.item.enchantment.effects.RemoveBinomial;
 
 import net.fabricmc.fabric.api.item.v1.EnchantmentEvents;
 
-/**
- * Enchantment changes (specs/reworked-mining.md). True Unbreaking itself is data
- * ({@code data/bubbas_reworked_mining/enchantment/true_unbreaking.json}: item damage set to 0, exclusive with Mending,
- * in no enchanting-table, trade or random-loot tag). Stronger Unbreaking is an extra item-damage roll appended to
- * vanilla's Unbreaking through Fabric's enchantment builder hook, so vanilla's file is untouched and the numbers stay
- * in {@link MiningTuning}. Stronger Efficiency is in the mining curve (code), since it has to scale with the tool.
- */
+/** Enchantment changes. */
 public final class ModEnchantments {
 	public static final ResourceKey<Enchantment> TRUE_UNBREAKING = ResourceKey.create(Registries.ENCHANTMENT, BubbasReworkedMining.id("true_unbreaking"));
 

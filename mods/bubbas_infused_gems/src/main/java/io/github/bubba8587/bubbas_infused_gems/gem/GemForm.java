@@ -7,11 +7,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.StringRepresentable;
 
-/**
- * The potion form an Infused Gem was brewed from: sets the highest enchant tier (normal 1, splash 2, lingering 3). An
- * Infused Gem brewed from an item (golden apple, wither rose...) is form {@code item}: no form in its name, tier 3 (owner,
- * 2026-11-15), unless the model caps that source.
- */
+/** The potion form an Infused Gem was brewed from: sets the highest enchant tier. */
 public enum GemForm implements StringRepresentable {
 	NORMAL("normal"), SPLASH("splash"), LINGERING("lingering"), ITEM("item");
 

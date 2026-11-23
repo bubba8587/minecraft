@@ -15,18 +15,9 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.entity.LivingEntity;
 
-/**
- * Gems in Bubba's Reworked Beacons (owner, 2026-11-16): a gem in a beacon broadcasts its effects, as worn, to every living
- * thing in the area. This class never touches the beacons API (only the payload does), so it loads without that mod.
- *
- * <p>Strength (agent's choice, the model's {@code BEACON_SHARE}): a gem in a beacon gives everyone in range BEACON_SHARE
- * of what a full netherite set of that gem would (half, so a perfect gem in a full beacon is about a vanilla beacon's
- * level I to II), with its Gem Power capped by the pyramid. Its bonus roll the same; its drawback as one worn drawback.
- * A beacon's gems join the receiver's worn totals and the stronger applies per effect (never added): armor, other
- * beacons and potions alike. Each receipt lasts the beacon's effect time and is renewed by every pulse.
- */
+/** Gems in Bubba's Reworked Beacons. */
 public final class GemBeacons {
-	/** One beacon's gem on a receiver, until game time {@code until}. */
+	/** One beacon's gem on a receiver, until game time until. */
 	public record Received(BlockPos beacon, Gem gem, int power, long until) {
 		public static final StreamCodec<RegistryFriendlyByteBuf, Received> STREAM_CODEC = StreamCodec.composite(
 				BlockPos.STREAM_CODEC, Received::beacon, Gem.STREAM_CODEC, Received::gem, ByteBufCodecs.VAR_INT, Received::power,
@@ -36,7 +27,7 @@ public final class GemBeacons {
 	private GemBeacons() {
 	}
 
-	/** A beacon pulse reached this entity (server): note it and, when anything changed, recompute its worn totals. */
+	/** A beacon pulse reached this entity. */
 	public static void receive(LivingEntity entity, BlockPos beacon, Gem gem, int power, long until) {
 		List<Received> now = entity.getAttached(ModAttachments.BEACON_GEMS);
 		List<Received> next = new ArrayList<>();
@@ -57,7 +48,7 @@ public final class GemBeacons {
 		}
 	}
 
-	/** Drops receipts that ran out (server, from the worn tick); recomputes the totals when one did. */
+	/** Drops receipts that ran out; recomputes the totals when one did. */
 	public static void expire(LivingEntity entity) {
 		List<Received> now = entity.getAttached(ModAttachments.BEACON_GEMS);
 		if (now == null) {
@@ -75,7 +66,7 @@ public final class GemBeacons {
 		}
 	}
 
-	/** The live beacon gems on this entity as totals (each effect the strongest beacon's), or NONE. */
+	/** The live beacon gems on this entity as totals, or NONE. */
 	public static GemTotals totals(LivingEntity entity) {
 		List<Received> now = entity.getAttached(ModAttachments.BEACON_GEMS);
 		if (now == null || now.isEmpty()) {
@@ -91,7 +82,6 @@ public final class GemBeacons {
 				continue;
 			}
 			Gem g = r.gem();
-			// The pyramid caps the Gem Power: the gem's quality as if made at the capped level.
 			int power = Math.max(1, Math.min(r.power(), g.infusion()));
 			double ratio = b.infusion(power).factor() / b.infusion(g.infusion()).factor();
 			if (g.hasMain()) {
@@ -106,7 +96,7 @@ public final class GemBeacons {
 		return totals.isEmpty() && drawbacks.isEmpty() ? GemTotals.NONE : new GemTotals(Map.copyOf(totals), Map.copyOf(counts), Map.copyOf(drawbacks));
 	}
 
-	/** BEACON_SHARE of a full netherite set of a gem of quality q: that set's total is the effect's worn cap x q. */
+	/** BEACON_SHARE of a full netherite set of a gem of quality q. */
 	private static double share(String key, double q) {
 		Balance b = Balance.get();
 		Balance.EffectData e = b.effect(key);

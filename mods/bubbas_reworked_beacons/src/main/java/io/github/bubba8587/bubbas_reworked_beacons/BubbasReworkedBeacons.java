@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import net.fabricmc.api.ModInitializer;
 
-/** Bubba's Reworked Beacons (specs/reworked-beacons.md, leaf C5). */
+/** Bubba's Reworked Beacons. */
 public class BubbasReworkedBeacons implements ModInitializer {
 	public static final String MOD_ID = "bubbas_reworked_beacons";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);

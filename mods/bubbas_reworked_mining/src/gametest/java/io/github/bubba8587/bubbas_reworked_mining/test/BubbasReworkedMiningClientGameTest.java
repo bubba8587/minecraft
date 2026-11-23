@@ -20,11 +20,7 @@ import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestServerContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext;
 
-/**
- * The quartz set by eye (client test part {@code quartz}): every piece in the hotbar next to iron, a pickaxe and a sword
- * held, and the armor worn on two armor stands (quartz next to iron) and by the player in third person, each at 16x
- * and 32x. Screenshots go to build/run/clientGameTest/screenshots/.
- */
+/** The quartz set by eye. */
 @SuppressWarnings("UnstableApiUsage")
 public class BubbasReworkedMiningClientGameTest implements FabricClientGameTest {
 	private static final String ID = BubbasReworkedMining.MOD_ID;
@@ -48,7 +44,7 @@ public class BubbasReworkedMiningClientGameTest implements FabricClientGameTest 
 			server.runCommand("time set noon");
 			server.runCommand("fill %d %d %d %d %d %d minecraft:air".formatted(base.getX() - 8, base.getY(), base.getZ() - 8, base.getX() + 8, base.getY() + 6, base.getZ() + 8));
 			server.runCommand("fill %d %d %d %d %d %d minecraft:netherrack".formatted(base.getX() - 8, base.getY() - 1, base.getZ() - 8, base.getX() + 8, base.getY() - 1, base.getZ() + 8));
-			// Facing south (+z), looking slightly down at the stands.
+			// Facing south, looking slightly down at the stands
 			server.runCommand("tp @p %d.5 %d %d.5 0 15".formatted(base.getX(), base.getY(), base.getZ()));
 
 			Item[] set = {ModItems.QUARTZ_SWORD, ModItems.QUARTZ_PICKAXE, ModItems.QUARTZ_AXE, ModItems.QUARTZ_SHOVEL, ModItems.QUARTZ_HOE,
@@ -68,20 +64,18 @@ public class BubbasReworkedMiningClientGameTest implements FabricClientGameTest 
 			for (boolean x32 : new boolean[] {false, true}) {
 				setPack(context, x32);
 				String suffix = x32 ? "-32x" : "";
-				// The two stands from up close, HUD hidden: quartz (right) next to iron (left).
 				server.runCommand("tp @p %d.5 %d %d.5 0 10".formatted(base.getX(), base.getY(), base.getZ() + 1));
 				hud(context, false);
 				context.waitTicks(10);
 				context.takeScreenshot("quartz-stands" + suffix);
 				hud(context, true);
-				// Held in first person, with the hotbar showing every piece.
+				// Held in first person, with the hotbar showing every piece
 				for (int slot : new int[] {1, 0}) {
 					select(context, server, slot);
 					context.waitTicks(30);
 					context.runOnClient(mc -> mc.gui.toastManager().clear());
 					context.takeScreenshot((slot == 1 ? "quartz-held-pickaxe" : "quartz-held-sword") + suffix);
 				}
-				// Worn by the player, seen from the front with the stands behind the camera, holding the pickaxe.
 				server.runOnServer(s -> {
 					ServerPlayer p = s.getPlayerList().getPlayers().getFirst();
 					p.setItemSlot(EquipmentSlot.HEAD, new ItemStack(ModItems.QUARTZ_HELMET));

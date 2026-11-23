@@ -49,11 +49,7 @@ import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.AABB;
 
-/**
- * Gems as loot (owner): vanilla tables keep their loot and get one extra roll of gems or gemmed armor; the found-only
- * gems come from their places; mobs spawn with gemmed armor at the model's rates and get its effects; the pieces drop
- * with their gems. Tables are rolled many times with fixed seeds, so the counts are the same every run.
- */
+/** Gems as loot: vanilla tables keep their loot and get one extra roll of gems or gemmed. */
 public class LootGameTest {
 	private static LootTable table(GameTestHelper helper, String id) {
 		return helper.getLevel().getServer().reloadableRegistries().getLootTable(ResourceKey.create(Registries.LOOT_TABLE, Identifier.parse(id)));
@@ -124,11 +120,8 @@ public class LootGameTest {
 		return null;
 	}
 
-	/**
-	 * Core smoke test: every place in the model is hooked into its vanilla table, and a few fixed-seed rolls of each
-	 * still give vanilla loot, with gems turning up somewhere. The rates: everyListedTableSometimesHoldsGems.
-	 */
-	// Core test: registered by InfusedGemsCoreGameTest (test-lite, specs/quality.md).
+	/** Core smoke test: every place in the model is hooked into its vanilla table. */
+	// Core test: registered by InfusedGemsCoreGameTest
 	public void listedTablesKeepTheirLootAndHoldGems(GameTestHelper helper) {
 		ServerPlayer player = helper.makeMockServerPlayerInLevel();
 		int places = Balance.get().raw.getAsJsonObject("loot_inject").size();
@@ -151,7 +144,7 @@ public class LootGameTest {
 		helper.succeed();
 	}
 
-	/** Every listed vanilla table still rolls its own loot and now sometimes adds a gem, at about the model's chance. */
+	/** Every listed vanilla table still rolls its own loot and now sometimes adds a gem. */
 	@GameTest(maxTicks = 400)
 	public void everyListedTableSometimesHoldsGems(GameTestHelper helper) {
 		ServerPlayer player = helper.makeMockServerPlayerInLevel();
@@ -195,11 +188,7 @@ public class LootGameTest {
 		return out;
 	}
 
-	/**
-	 * Each level's gems: within its Infusion and tier lists, craftable gems only, gemmed armor and weapons with 1+ gems.
-	 * Infusion VI only in ominous vaults, and there always perfect (tier 3, full strength), with a drawback except about
-	 * 1 in 20; weapon gems mostly harmful.
-	 */
+	/** Each level's gems: within its Infusion and tier lists. */
 	@GameTest(maxTicks = 200)
 	public void levelTablesMakeWeakRareGems(GameTestHelper helper) {
 		Balance b = Balance.get();
@@ -252,21 +241,20 @@ public class LootGameTest {
 			check(helper, best > previousBest, level + ": best gem " + best + "% not above the level below (" + previousBest + "%)");
 			previousBest = best;
 		}
-		// Ominous perfect gems: normally with a drawback, about 1 in 20 clean (owner).
 		List<Gem> perfect = gems(roll(helper, "bubbas_infused_gems:gems/ominous", 4000, null, null)).stream().filter(g -> g.infusion() == 6).toList();
 		long clean = perfect.stream().filter(g -> g.drawback().isEmpty()).count();
 		double share = Balance.get().raw.get("loot_perfect_clean_chance").getAsDouble();
 		check(helper, perfect.size() > 300 && clean > perfect.size() * share * 0.4 && clean < perfect.size() * share * 1.8,
 				"perfect ominous gems: " + clean + " clean of " + perfect.size() + ", model " + share);
 		check(helper, perfect.stream().anyMatch(g -> !"found".equals(b.effect(g.key()).source()) && g.drawback().isPresent()), "no perfect craftable gem with a drawback");
-		// Fixed seed, same loot.
+		// Fixed seed, same loot
 		LootTable t = table(helper, "bubbas_infused_gems:gems/common");
 		LootParams p = params(helper, t, null, null);
 		check(helper, ItemStack.matches(t.getRandomItems(p, 42L).getFirst(), t.getRandomItems(p, 42L).getFirst()), "same seed, different loot");
 		helper.succeed();
 	}
 
-	/** Found-only gems (Haste, Luck, Health Boost, Hero of the Village, Mining Fatigue, Resistance) come from their places. */
+	/** Found-only gems come from their places. */
 	@GameTest(maxTicks = 400)
 	public void foundOnlyGemsHaveSources(GameTestHelper helper) {
 		ServerPlayer player = helper.makeMockServerPlayerInLevel();
@@ -274,7 +262,7 @@ public class LootGameTest {
 		for (String k : List.of("haste", "luck", "health_boost", "hero_of_the_village", "mining_fatigue", "resistance")) {
 			check(helper, ominous.contains(k), "ominous vaults never gave " + k);
 		}
-		// Only ominous vaults reach a perfect found-only gem.
+		// Only ominous vaults reach a perfect found-only gem
 		List<Gem> ancient = gems(roll(helper, "minecraft:chests/ancient_city", 800, null, player));
 		check(helper, keys(ancient).contains("haste") && keys(ancient).contains("health_boost"), "ancient city found-only gems: " + keys(ancient));
 		check(helper, ancient.stream().noneMatch(g -> g.main() >= 1.0F), "a perfect gem from an ancient city");
@@ -284,7 +272,6 @@ public class LootGameTest {
 		Entity villager = standIn(helper, "hero_of_the_village");
 		check(helper, keys(gems(roll(helper, "minecraft:gameplay/hero_of_the_village/farmer_gift", 1500, villager, player))).contains("hero_of_the_village"),
 				"no Hero of the Village from hero gifts");
-		// Elder guardian: Mining Fatigue only, and only when a player killed it.
 		Entity elder = standIn(helper, "elder_guardian");
 		List<Gem> byPlayer = gems(roll(helper, "minecraft:entities/elder_guardian", 300, elder, player));
 		check(helper, !byPlayer.isEmpty() && keys(byPlayer).equals(Set.of("mining_fatigue")), "elder guardian gems: " + keys(byPlayer));
@@ -293,7 +280,7 @@ public class LootGameTest {
 		helper.succeed();
 	}
 
-	/** An armor slot ("armor") or a hand slot (anything else). */
+	/** An armor slot or a hand slot. */
 	private static boolean gearSlot(EquipmentSlot slot, String gearKind) {
 		return gearKind.equals("armor") ? slot.getType() == EquipmentSlot.Type.HUMANOID_ARMOR : slot.getType() == EquipmentSlot.Type.HAND;
 	}
@@ -318,11 +305,7 @@ public class LootGameTest {
 		return n;
 	}
 
-	/**
-	 * Spawn gear (vanilla's choice) gets gems at the model's chance per piece: ordinary mobs 1 %, piglins 1.5 % (owner,
-	 * review C); armor, and
-	 * weapons (skeleton bows, drowned tridents, piglin crossbows and swords, vindicator axes).
-	 */
+	/** Spawn gear gets gems at the model's chance per piece. */
 	@GameTest(maxTicks = 300)
 	public void spawnGearSometimesHasGems(GameTestHelper helper) {
 		DifficultyInstance hard = new DifficultyInstance(Difficulty.HARD, 3_600_000L, 3_600_000L, 1.0F);
@@ -350,7 +333,6 @@ public class LootGameTest {
 					mob.setItemSlot(slot, ItemStack.EMPTY);
 				}
 				if (who.equals("piglin")) {
-					// Piglins get their crossbow or sword in finalizeSpawn, just before their spawn armor (vanilla order).
 					mob.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(i % 2 == 0 ? Items.GOLDEN_SWORD : Items.CROSSBOW));
 				}
 				((MobEquipmentInvoker) mob).bubbas$populate(RandomSource.create(i), hard);
@@ -369,7 +351,7 @@ public class LootGameTest {
 					key + ": " + gemmed + " gemmed of " + total + " pieces (" + rate + "), model " + rates.get(key));
 			mob.discard();
 		}
-		// Ominous trial spawner mobs: vanilla's trial chamber equipment tables get gems too, armor and weapons (model 10 % per piece).
+		// Ominous trial spawner mobs
 		Zombie wearer = helper.spawnWithNoFreeWill(EntityTypes.ZOMBIE, new BlockPos(3, 1, 1));
 		List<ItemStack> trial = new ArrayList<>(roll(helper, "minecraft:equipment/trial_chamber_melee", 500, wearer, null));
 		trial.addAll(roll(helper, "minecraft:equipment/trial_chamber_ranged", 500, wearer, null));
@@ -384,10 +366,7 @@ public class LootGameTest {
 		helper.succeed();
 	}
 
-	/**
-	 * Owner (review C): mobs in harder areas keep a higher rate, 7 % per piece. Tested on a raid vindicator's axe, handed out
-	 * by the raid (the same "hard" level as structure mobs; a test can't register a structure start for the location check).
-	 */
+	/** Mobs in harder areas keep a higher rate, 7 % per piece. */
 	@GameTest(maxTicks = 300)
 	public void raidMobsKeepAHigherRate(GameTestHelper helper) {
 		var level = helper.getLevel();
@@ -410,7 +389,7 @@ public class LootGameTest {
 		helper.succeed();
 	}
 
-	/** A mob in gemmed armor gets the gems' effects (Speed, Glowing; Regeneration heals a piglin, not an undead skeleton). */
+	/** A mob in gemmed armor gets the gems' effects. */
 	@GameTest(maxTicks = 200)
 	public void mobsInGemmedArmorGetTheirEffects(GameTestHelper helper) {
 		Zombie zombie = helper.spawnWithNoFreeWill(EntityTypes.ZOMBIE, new BlockPos(1, 1, 1));

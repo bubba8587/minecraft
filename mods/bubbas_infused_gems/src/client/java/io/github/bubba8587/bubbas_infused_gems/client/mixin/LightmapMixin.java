@@ -11,10 +11,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-/**
- * Night Vision gem: the lightmap's night-vision intensity is at least the gem's (vanilla renders fractions while its
- * effect fades). Conduit Power gem: underwater, s of vanilla's conduit sight.
- */
+/** Night Vision gem: the lightmap's night-vision intensity is at least the gem's. */
 @Mixin(LightmapRenderStateExtractor.class)
 public abstract class LightmapMixin {
 	@Inject(method = "extract", at = @At(value = "FIELD", opcode = org.objectweb.asm.Opcodes.PUTFIELD,
@@ -27,7 +24,6 @@ public abstract class LightmapMixin {
 				float intensity = (float) (s * Balance.get().effect("night_vision").wornNumber("intensity", 1.0));
 				state.nightVisionEffectIntensity = Math.max(state.nightVisionEffectIntensity, intensity);
 			}
-			// Darkness gem worn: a steady dim, s of vanilla Darkness's darkest point (vanilla's own pulses with a cosine).
 			double dark = GemValues.rawWorn(player, "darkness");
 			if (dark > 0.0 && !player.hasEffect(net.minecraft.world.effect.MobEffects.DARKNESS)) {
 				float option = Minecraft.getInstance().options.darknessEffectScale().get().floatValue();

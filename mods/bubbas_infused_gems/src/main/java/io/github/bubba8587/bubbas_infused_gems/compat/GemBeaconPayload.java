@@ -14,11 +14,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 
-/**
- * Infused Gems in Bubba's Reworked Beacons (owner, 2026-11-16): a finished gem in the beacon's slot broadcasts its effects
- * (main, bonus and drawback, as worn) to every living thing in the area, the builder included, at its Gem Power capped by
- * the pyramid. The only class that touches the beacons API; loaded only through its entrypoint, so only with that mod.
- */
+/** Infused Gems in Bubba's Reworked Beacons. */
 public final class GemBeaconPayload implements BeaconPayload {
 	@Override
 	public boolean accepts(ItemStack stack) {
@@ -31,7 +27,7 @@ public final class GemBeaconPayload implements BeaconPayload {
 		return gem == null ? 1 : gem.infusion();
 	}
 
-	/** The gem's own tooltip words (the beacon adds its own line when the pyramid caps the Gem Power). */
+	/** The gem's own tooltip words. */
 	@Override
 	public List<Component> describe(ItemStack stack, BeaconContext context) {
 		List<Component> out = new ArrayList<>();
@@ -42,7 +38,7 @@ public final class GemBeaconPayload implements BeaconPayload {
 		return out;
 	}
 
-	/** Owner (2026-11-16): with Infused Gems installed, the standalone gem-base payments are off; only gems (and other mods' items) work. */
+	/** With Infused Gems installed, the standalone gem-base payments are off. */
 	@Override
 	public boolean replacesStandalonePayments() {
 		return true;

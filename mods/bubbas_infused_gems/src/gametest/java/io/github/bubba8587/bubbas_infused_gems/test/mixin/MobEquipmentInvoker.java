@@ -7,7 +7,7 @@ import net.minecraft.world.entity.Mob;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Invoker;
 
-/** Lets the tests run a mob's spawn equipment choice many times without spawning a mob each time. */
+/** Lets the tests run a mob's spawn equipment choice many times without spawning a mob each. */
 @Mixin(Mob.class)
 public interface MobEquipmentInvoker {
 	@Invoker("populateDefaultEquipmentSlots")

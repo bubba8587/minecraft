@@ -15,20 +15,14 @@ import net.minecraft.world.item.equipment.EquipmentAssets;
 import net.minecraft.world.item.equipment.Equippable;
 import org.jspecify.annotations.Nullable;
 
-/**
- * Owner (2026-11-15): the perfect Invisibility set makes its wearer fully invisible, armor included, by editing the
- * worn pieces the vanilla way: each piece's equippable points at an empty equipment asset (nothing renders, every other
- * equippable field kept), and the real asset is kept in {@code bubbas_infused_gems:hidden_asset}. Anything else
- * restores it: a piece off, a gem out, death, a non-armor slot, a container, the ground, a crafting output; and a marked
- * piece that isn't hidden by an active perfect set on its wearer restores itself on its next tick (self-heal).
- */
+/** The perfect Invisibility set makes its wearer fully invisible. */
 public final class HiddenArmor {
 	public static final ResourceKey<EquipmentAsset> EMPTY = ResourceKey.create(EquipmentAssets.ROOT_ID, BubbasInfusedGems.id("empty"));
 
 	private HiddenArmor() {
 	}
 
-	/** Whether this entity's armor should be hidden now: alive, wearing the perfect Invisibility set. */
+	/** Whether this entity's armor should be hidden now. */
 	public static boolean active(LivingEntity entity) {
 		if (!entity.isAlive()) {
 			return false;
@@ -37,7 +31,7 @@ public final class HiddenArmor {
 		return e != null && GemValues.rawWorn(entity, "invisibility") >= e.wornNumber("full_at", 1.0) - 1e-6;
 	}
 
-	/** After the wearer's totals change (server): hide or restore every worn armor piece. */
+	/** After the wearer's totals change: hide or restore every worn armor piece. */
 	public static void update(LivingEntity entity) {
 		boolean hide = active(entity);
 		for (EquipmentSlot slot : GemTotals.ARMOR) {
@@ -77,7 +71,7 @@ public final class HiddenArmor {
 		return stack;
 	}
 
-	/** Self-heal on a stack's tick: keep it hidden only while worn in armor by an entity with the set active. */
+	/** Self-heal on a stack's tick. */
 	public static void tick(ItemStack stack, Entity owner, @Nullable EquipmentSlot slot) {
 		if (!isHidden(stack)) {
 			return;

@@ -6,7 +6,7 @@ import java.util.Map;
 
 import net.minecraft.world.entity.Entity;
 
-/** State for the ProjectileProbe mixin: the watched entity and each projectile's hit-or-deflect checks against it. */
+/** State for the ProjectileProbe mixin. */
 public final class ProbeState {
 	public static Entity watched;
 	public static final Map<Integer, Integer> CALLS = new HashMap<>();

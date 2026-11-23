@@ -14,12 +14,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
-/**
- * Adds {@link SyntheticOre#SYNTHETIC} to chosen vanilla blocks (specs/extra-recipes-mod.md). The {@code Block} constructor builds
- * the state definition by calling {@code createBlockStateDefinition}; wrapping that call (rather than injecting into
- * the method) also works for blocks whose override doesn't call super. The block is recognised by the id in its
- * {@code Properties}, which {@code Blocks.register} sets before construction.
- */
+/** Adds SYNTHETIC to chosen vanilla blocks. */
 @Mixin(Block.class)
 public abstract class BlockExtraPropertyMixin {
 	@WrapOperation(method = "<init>", at = @At(value = "INVOKE",
@@ -33,10 +28,7 @@ public abstract class BlockExtraPropertyMixin {
 		}
 	}
 
-	/**
-	 * {@code StateDefinition#any()} is the first state, and BooleanProperty lists {@code true} first, so without this
-	 * the default (worldgen, {@code /setblock}, old saves) would be synthetic. Runs once per block at startup.
-	 */
+	/** Keeps synthetic=false as the default state. */
 	@ModifyVariable(method = "registerDefaultState", at = @At("HEAD"), argsOnly = true)
 	private BlockState bubbas_extra_recipes$naturalByDefault(BlockState state) {
 		return state.hasProperty(SyntheticOre.SYNTHETIC) ? state.setValue(SyntheticOre.SYNTHETIC, false) : state;

@@ -5,10 +5,7 @@ import net.minecraft.gametest.framework.GameTestHelper;
 
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 
-/**
- * Core suite (test-lite, specs/quality.md "Test suites"): one smoke test per main mechanic, bodies in
- * {@link BeaconGameTest}. Objectives: specs/reworked-beacons.md, "Milestone test objectives".
- */
+/** Core suite: one smoke test per main mechanic, bodies in BeaconGameTest. */
 public class ReworkedBeaconsCoreGameTest {
 	@GameTest(maxTicks = 400)
 	public void standalonePaymentBuysItsPower(GameTestHelper helper) {

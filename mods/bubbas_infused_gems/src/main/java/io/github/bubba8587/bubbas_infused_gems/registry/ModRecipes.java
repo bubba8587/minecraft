@@ -6,7 +6,7 @@ import io.github.bubba8587.bubbas_infused_gems.station.SocketRecipe;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 
-/** Recipe types the data can name: socketing at the smithing table, inverting a gem at the brewing stand. */
+/** Recipe types the data can name. */
 public final class ModRecipes {
 	private ModRecipes() {
 	}

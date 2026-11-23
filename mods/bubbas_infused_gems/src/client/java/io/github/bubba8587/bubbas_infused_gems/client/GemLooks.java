@@ -7,11 +7,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.player.Player;
 
-/**
- * Owner: a gem effect looks like the vanilla effect wherever vanilla shows it. Where the HUD asks "does the player have
- * vanilla effect X" (poisoned and withered hearts, Regeneration's heart wave, Hunger's green food bar), a gem of X (worn,
- * from the client's own totals, or a gem effect from a hit) answers yes too.
- */
+/** A gem effect looks like the vanilla effect wherever vanilla shows it. */
 public final class GemLooks {
 	private GemLooks() {
 	}
