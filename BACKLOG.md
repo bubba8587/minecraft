@@ -78,7 +78,11 @@ Parked ideas and open items, newest first within each project. Agents add to it 
      - blocks outside a "natural terrain" block tag (dirt, stone, sand, gravel and so on; a vanilla tag where one fits).
    - Also: the endermen's taking rules should never touch the beacon whose area drew them.
    - **Test:** a Beginning beacon on an iron pyramid in a superflat world keeps every block after its endermen have worked the area.
-9. **Totem of Clear Skies shouldn't be used up (owner, 2026-11-22):** today, using it in rain ends the storm and consumes it (`TotemOfClearSkiesItem` `stack.consume`). That's too costly for what it does. Plan: it isn't consumed and gets a visible item cooldown instead (B19, the vanilla cooldown sweep), a few in-game minutes, so it can't hold the weather off forever. The builder proposes the length.
+9. **Totem of Clear Skies isn't used up, and has no cooldown (owner, 2026-11-22):** using it in rain ends the storm and the totem stays. No cooldown is needed, because vanilla weather doesn't come back that fast. Remove `stack.consume` from `TotemOfClearSkiesItem`, and update the spec and player page.
+10. **Totem of Growth checks the surroundings before planting (owner, 2026-11-22):** a planting spot must be valid with its neighbours too, not just the block below:
+    - place through vanilla's own placement path (`BlockItem` placement context, `canSurvive` against the real neighbours), so a cactus never goes next to a block, sugar cane only beside water, and so on;
+    - give saplings and other growing plants room: no planting right against walls, other saplings, trunks or another plant of its kind, so what it plants can actually grow;
+    - test: items next to walls, solid blocks and other plants get planted only where vanilla would allow them and where they can grow.
 
 ## Repo
 - **Multiplayer check (owner, 2026-11-22: "make sure these mods work in multiplayer"; light scan done, the rest is here).** Scan results:
