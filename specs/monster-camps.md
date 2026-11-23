@@ -40,6 +40,12 @@ Owner's design (2026-11-22), building on the earlier idea in `docs/research/camp
 - **No campfires or other fire, and no light at all (owner, 2026-11-22): camps are dark.** Fire would ward their own monsters (`specs/undead.md` "Fire as a weak ward") and would make camps too easy to find and see. Dead (unlit) campfires as decoration are fine.
 - Sizes and layouts vary. All deterministic from the seed.
 
+## Layout variety (owner, 2026-11-22; designed, not built)
+
+- **Rock and bone caves: large skull domes** as a camp form, inspired by Breath of the Wild's skull-rock camps. Use it as a starting point, not something to copy (owner: "you wouldn't be able to copy them directly anyway"). Build it from Minecraft blocks: a big dome shaped like a skull, from bone blocks, calcite, stone and tuff, with eye-socket openings and a mouth entrance. The roster lives inside, dark, as camps are.
+- **Varying numbers of every element:** towers, lean-tos, outcrops, pikes and the rest. Each camp picks its own count of each (zero is allowed where it reads well), so no two camps share a layout. Large camps can have several towers.
+- Builder: show the spread with screenshots of several seeds per kind. Seeds are mixed first (BACKLOG, camp variety).
+
 ## How common (owner, 2026-11-22)
 
 - **Not crazy frequent, but frequent enough to replace natural spawns for grinding mobs.** Natural surface spawning is cut to 15 %, so re-armable camps are where players farm skeletons and zombies. A player should usually find a camp of each type within a reasonable walk. Builder states the spacing (camps per 1000x1000 blocks, typical distance to the nearest of each type).

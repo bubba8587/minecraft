@@ -66,7 +66,10 @@ Parked ideas and open items, newest first within each project. Agents add to it 
    - **Cause:** `CampPiece` (and `FactoryDesign`, and the cairn design) seed vanilla's `LegacyRandomSource` directly (`RandomSource.create(seed)`), so close seeds (20261122..26 in the Showcase) give almost the same first rolls: tower angle, outcrops, pikes, lean-to. It's the same weakness the trading-pad fix solved. Natural camps get unrelated seeds, so they vary more, but they still share one kit of parts.
    - **Plan:**
      - (a) mix the seed before use (e.g. `RandomSupport.mixStafford13`), wherever a design is built from a site seed: camps, Fabricator designs, cairn designs. Note that this changes the layout of camps already registered but not yet built, which is fine in development.
-     - (b) look at several natural camps in the natural world, and if they still feel samey, add layout variety: more than one tower in large camps, different arrangements (ring, line, cliff-side), optional pieces per kind.
+     - (b) **owner's direction for more variety:**
+       - **rock and bone caves:** large skull domes, inspired by Breath of the Wild's skull-rock camps; an original take in Minecraft blocks, not a copy;
+       - **varying counts of every element:** towers, lean-tos, outcrops, pikes and so on.
+       See specs/monster-camps.md "Layout variety".
      - (c) the test world then uses well-spread seeds.
 
 ## Repo
