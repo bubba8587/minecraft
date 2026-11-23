@@ -88,13 +88,16 @@ public class CampsClientGameTest implements FabricClientGameTest {
 				}
 			}
 			// Large camps with each newer piece, two kinds each, from two angles and above.
-			String[] features = { "skull", "winding", "ramp", "bridge" };
+			String[] features = { "skull", "winding", "ramp", "bridge", "buried", "ribcage" };
 			CampKind[][] featureKinds = { { CampKind.SKELETON, CampKind.HUSK }, { CampKind.ZOMBIE, CampKind.STRAY }, { CampKind.BOGGED, CampKind.SKELETON },
-					{ CampKind.HUSK, CampKind.ZOMBIE } };
+					{ CampKind.HUSK, CampKind.ZOMBIE }, { CampKind.STRAY, CampKind.SKELETON }, { CampKind.ZOMBIE, CampKind.BOGGED } };
 			for (int fi = 0; fi < features.length; fi++) {
 				for (int ki = 0; ki < 2; ki++) {
 					CampKind kind = featureKinds[fi][ki];
 					BlockPos at = base.offset(fi * 50, 0, 200 + ki * 50);
+					if (CLIENT_FEATURES != null && !CLIENT_FEATURES.contains(features[fi])) {
+						continue;
+					}
 					int f = fi;
 					long seed = 0;
 					while (feature(new CampPiece(seed, at, kind, CampTuning.Size.LARGE), f) == null) {
@@ -111,7 +114,11 @@ public class CampsClientGameTest implements FabricClientGameTest {
 					context.takeScreenshot(name + "-above");
 					// the side the camera looks from: the skull's face, across a ramp or bridge, the tower from outside
 					Vec3 toward = switch (f) {
-						case 0 -> Vec3.atLowerCornerOf(c.subtract(p));
+						case 0, 4 -> Vec3.atLowerCornerOf(c.subtract(p));
+						case 5 -> {
+							BlockPos[] e = piece.ribcageEnds();
+							yield new Vec3(e[1].getX() - e[0].getX(), 0, e[1].getZ() - e[0].getZ()).scale(-1);
+						}
 						case 1 -> Vec3.atLowerCornerOf(p.subtract(c));
 						case 2 -> {
 							BlockPos[] e = piece.rampEnds();
@@ -123,15 +130,16 @@ public class CampsClientGameTest implements FabricClientGameTest {
 						}
 					};
 					toward = new Vec3(toward.x, 0, toward.z).normalize();
-					for (int a = 0; a < 2; a++) {
-						double ang = Math.atan2(toward.z, toward.x) + (a == 0 ? 0.0 : 0.9);
-						double dist = features[fi].equals("winding") ? 18.0 : 13.0;
+					boolean skullish = f == 0 || f == 4;
+					for (int a = 0; a < (skullish ? 3 : 2); a++) {
+						double ang = Math.atan2(toward.z, toward.x) + (a == 1 ? 0.8 : 0.0);
+						double dist = a == 2 ? 34.0 : skullish ? 18.0 : features[fi].equals("winding") ? 18.0 : 13.0;
 						double ex = p.getX() + 0.5 + Math.cos(ang) * dist;
 						double ez = p.getZ() + 0.5 + Math.sin(ang) * dist;
 						double ey = p.getY() + (features[fi].equals("winding") ? 4.0 : 3.0);
 						float yaw = (float) (Math.toDegrees(Math.atan2(p.getZ() + 0.5 - ez, p.getX() + 0.5 - ex)) - 90.0);
 						tp(context, server, ex, ey, ez, yaw, 8);
-						context.takeScreenshot(name + "-" + (a == 0 ? "front" : "side"));
+						context.takeScreenshot(name + "-" + (a == 0 ? "front" : a == 1 ? "side" : "far"));
 					}
 				}
 			}
@@ -272,7 +280,10 @@ public class CampsClientGameTest implements FabricClientGameTest {
 	/** Where a camp's newer piece stands (0 skull rock, 1 winding tower, 2 ramp, 3 bridge), or null without one. */
 	private static BlockPos feature(CampPiece piece, int f) {
 		return switch (f) {
-			case 0 -> piece.skullInside();
+			case 0 -> piece.skullBuried() ? null : piece.skullInside();
+			case 4 -> piece.skullBuried() ? piece.skullInside() : null;
+			case 5 -> piece.ribcageEnds() == null ? null : piece.ribcageEnds()[0].relative(net.minecraft.core.Direction.getApproximateNearest(
+					piece.ribcageEnds()[1].getX() - piece.ribcageEnds()[0].getX(), 0, piece.ribcageEnds()[1].getZ() - piece.ribcageEnds()[0].getZ()), 5);
 			case 1 -> piece.windingTop() == null ? null : piece.windingTop().below(6);
 			case 2 -> piece.rampEnds() == null ? null : piece.rampEnds()[0];
 			default -> {
@@ -281,6 +292,10 @@ public class CampsClientGameTest implements FabricClientGameTest {
 			}
 		};
 	}
+
+	/** Feature names to shoot (system property camps.features, comma-separated), or null for all. */
+	private static final java.util.Set<String> CLIENT_FEATURES = System.getProperty("camps.features") == null ? null
+			: java.util.Set.of(System.getProperty("camps.features").split(","));
 
 	private static void setup(TestServerContext server) {
 		server.runCommand("gamerule send_command_feedback false");

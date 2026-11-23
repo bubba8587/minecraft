@@ -68,10 +68,92 @@ public class ClippedBuild {
 		}
 	}
 
+	private final java.util.Set<BlockPos> fences = new java.util.HashSet<>();
+
 	public void put(int x, int y, int z, BlockState state) {
 		if (inside(x, y, z)) {
-			level.setBlock(new BlockPos(x, y, z), state, Block.UPDATE_CLIENTS);
+			BlockPos pos = new BlockPos(x, y, z);
+			level.setBlock(pos, state, Block.UPDATE_CLIENTS);
+			if (state.getBlock() instanceof net.minecraft.world.level.block.FenceBlock) {
+				fences.add(pos);
+			} else {
+				fences.remove(pos);
+			}
 		}
+	}
+
+	/**
+	 * Fence pass after a piece is built: orphans (no side joined, nothing on top, no fence below) are taken out, then every
+	 * fence's sides are set from its neighbours, and fences just over the chunk edge (built by an earlier chunk) get their
+	 * side toward this chunk set too.
+	 */
+	public void tidyFences(BoundingBox piece) {
+		boolean removed = true;
+		while (removed) {
+			removed = false;
+			for (java.util.Iterator<BlockPos> it = fences.iterator(); it.hasNext();) {
+				BlockPos pos = it.next();
+				BlockState state = level.getBlockState(pos);
+				if (!(state.getBlock() instanceof net.minecraft.world.level.block.FenceBlock fence)) {
+					it.remove();
+					continue;
+				}
+				boolean joined = false;
+				for (net.minecraft.core.Direction d : net.minecraft.core.Direction.Plane.HORIZONTAL) {
+					BlockPos n = pos.relative(d);
+					joined |= joins(fence, n, d) || !inside(n.getX(), n.getY(), n.getZ()) && state.getValue(propertyOf(d));
+				}
+				BlockState above = level.getBlockState(pos.above());
+				BlockState below = level.getBlockState(pos.below());
+				if (!joined && above.isAir() && !(below.getBlock() instanceof net.minecraft.world.level.block.FenceBlock)) {
+					level.setBlock(pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS);
+					it.remove();
+					removed = true;
+				}
+			}
+		}
+		for (BlockPos pos : fences) {
+			level.setBlock(pos, joined(pos, level.getBlockState(pos)), Block.UPDATE_CLIENTS);
+		}
+		fences.clear();
+		int y0 = Math.max(piece.minY(), level.getMinY());
+		int y1 = Math.min(piece.maxY(), level.getMaxY());
+		for (int x = chunk.minX() - 1; x <= chunk.maxX() + 1; x++) {
+			for (int z = chunk.minZ() - 1; z <= chunk.maxZ() + 1; z++) {
+				boolean ring = x < chunk.minX() || x > chunk.maxX() || z < chunk.minZ() || z > chunk.maxZ();
+				boolean corner = (x < chunk.minX() || x > chunk.maxX()) && (z < chunk.minZ() || z > chunk.maxZ());
+				if (!ring || corner || x < piece.minX() || x > piece.maxX() || z < piece.minZ() || z > piece.maxZ()) {
+					continue;
+				}
+				for (int y = y0; y <= y1; y++) {
+					BlockPos pos = new BlockPos(x, y, z);
+					BlockState state = level.getBlockState(pos);
+					if (state.getBlock() instanceof net.minecraft.world.level.block.FenceBlock) {
+						BlockState fixed = joined(pos, state);
+						if (fixed != state) {
+							level.setBlock(pos, fixed, Block.UPDATE_CLIENTS);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	private BlockState joined(BlockPos pos, BlockState state) {
+		net.minecraft.world.level.block.FenceBlock fence = (net.minecraft.world.level.block.FenceBlock) state.getBlock();
+		for (net.minecraft.core.Direction d : net.minecraft.core.Direction.Plane.HORIZONTAL) {
+			state = state.setValue(propertyOf(d), joins(fence, pos.relative(d), d));
+		}
+		return state;
+	}
+
+	private boolean joins(net.minecraft.world.level.block.FenceBlock fence, BlockPos n, net.minecraft.core.Direction d) {
+		BlockState ns = level.getBlockState(n);
+		return fence.connectsTo(ns, ns.isFaceSturdy(level, n, d.getOpposite()), d.getOpposite());
+	}
+
+	public static net.minecraft.world.level.block.state.properties.BooleanProperty propertyOf(net.minecraft.core.Direction d) {
+		return net.minecraft.world.level.block.CrossCollisionBlock.PROPERTY_BY_DIRECTION.get(d);
 	}
 
 	public void putIfAir(int x, int y, int z, BlockState state) {

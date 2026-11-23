@@ -343,7 +343,59 @@ public class CampsGameTest {
 	/** The skull rock: a zombie before its mouth can walk inside. */
 	@GameTest(structure = FIELD, maxTicks = 20)
 	public void skullRockCanBeWalkedInto(GameTestHelper helper) {
-		walkable(helper, CampKind.SKELETON, p -> p.skullInside() == null ? null : new BlockPos[] { p.skullMouth(), p.skullInside() }, "skull rock");
+		walkable(helper, CampKind.SKELETON, p -> p.skullInside() == null || p.skullBuried() ? null : new BlockPos[] { p.skullMouth(), p.skullInside() }, "skull rock");
+	}
+
+	/** The half-buried skull rock: a zombie before one eye socket can walk inside. */
+	@GameTest(structure = FIELD, maxTicks = 20)
+	public void buriedSkullCanBeWalkedInto(GameTestHelper helper) {
+		walkable(helper, CampKind.STRAY, p -> !p.skullBuried() ? null : new BlockPos[] { p.skullMouth(), p.skullInside() }, "buried skull");
+	}
+
+	/** The ribcage: a zombie at one end of its path can walk under the ribs to the other. */
+	@GameTest(structure = FIELD, maxTicks = 20)
+	public void ribcagePathRunsUnderTheRibs(GameTestHelper helper) {
+		walkable(helper, CampKind.BOGGED, CampPiece::ribcageEnds, "ribcage");
+	}
+
+	/** Fences in built camps: every side joined exactly where a neighbour takes it, and no lone rail left with nothing to join. */
+	@GameTest(structure = FIELD, maxTicks = 20)
+	public void campFencesEndCleanly(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		List<String> faults = new ArrayList<>();
+		long seed = 3L;
+		for (CampKind kind : CampKind.values()) {
+			CampPiece piece = CampCommand.build(level, helper.absolutePos(new BlockPos(16, 8, 24)), kind, CampTuning.Size.LARGE, seed++);
+			faults.addAll(fenceFaults(level, piece.getBoundingBox()));
+		}
+		helper.assertTrue(faults.isEmpty(), faults.size() + " fence faults, e.g. " + faults.subList(0, Math.min(8, faults.size())));
+		helper.succeed();
+	}
+
+	/** Fences whose sides don't match their neighbours, or that join nothing with nothing on top and no fence below. */
+	static List<String> fenceFaults(ServerLevel level, BoundingBox box) {
+		List<String> faults = new ArrayList<>();
+		for (BlockPos pos : BlockPos.betweenClosed(box.minX(), box.minY(), box.minZ(), box.maxX(), box.maxY(), box.maxZ())) {
+			var state = level.getBlockState(pos);
+			if (!(state.getBlock() instanceof net.minecraft.world.level.block.FenceBlock fence)) {
+				continue;
+			}
+			boolean any = false;
+			for (net.minecraft.core.Direction d : net.minecraft.core.Direction.Plane.HORIZONTAL) {
+				BlockPos n = pos.relative(d);
+				var ns = level.getBlockState(n);
+				boolean want = fence.connectsTo(ns, ns.isFaceSturdy(level, n, d.getOpposite()), d.getOpposite());
+				boolean has = state.getValue(io.github.bubba8587.bubbas_reworked_mobs.worldgen.ClippedBuild.propertyOf(d));
+				any |= has;
+				if (want != has) {
+					faults.add("side " + d.getName() + " @" + pos.toShortString());
+				}
+			}
+			if (!any && level.getBlockState(pos.above()).isAir() && !(level.getBlockState(pos.below()).getBlock() instanceof net.minecraft.world.level.block.FenceBlock)) {
+				faults.add("lone @" + pos.toShortString());
+			}
+		}
+		return faults;
 	}
 
 	/** The winding tower: a zombie at the foot of its stair can climb it to the top. */
@@ -376,6 +428,8 @@ public class CampsGameTest {
 		BlockPos[] e = ends.apply(piece);
 		List<String> loose = unsupported(level, piece.getBoundingBox());
 		helper.assertTrue(loose.isEmpty(), what + ": blocks that would pop off: " + loose.subList(0, Math.min(12, loose.size())));
+		List<String> fences = fenceFaults(level, piece.getBoundingBox());
+		helper.assertTrue(fences.isEmpty(), what + ": fence faults " + fences.subList(0, Math.min(8, fences.size())));
 		Mob walker = net.minecraft.world.entity.EntityTypes.ZOMBIE.create(level, net.minecraft.world.entity.EntitySpawnReason.COMMAND);
 		walker.snapTo(e[0].getX() + 0.5, e[0].getY(), e[0].getZ() + 0.5, 0.0F, 0.0F);
 		level.addFreshEntity(walker);
