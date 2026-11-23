@@ -200,4 +200,71 @@ public class CampsGameTest {
 			});
 		});
 	}
+
+	/** Every camp has shade to spare: the underground room (all its floor cells usable) plus the lean-to and the towers. */
+	@GameTest(structure = FIELD, maxTicks = 80)
+	public void campsHaveShadeAndARoom(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		CampPiece piece = CampCommand.build(level, helper.absolutePos(CENTRE), CampKind.ZOMBIE, CampTuning.Size.SMALL, 23L);
+		CampSite site = site(helper, piece);
+		helper.runAfterDelay(40, () -> shadeCounted(helper, level, piece, site)); // once the light has settled
+	}
+
+	private static void shadeCounted(GameTestHelper helper, ServerLevel level, CampPiece piece, CampSite site) {
+		int room = 0;
+		int above = 0;
+		for (BlockPos spot : site.shade()) {
+			BlockPos at = io.github.bubba8587.bubbas_reworked_mobs.camp.CampShade.resolve(level, spot);
+			if (at == null) {
+				continue;
+			}
+			helper.assertTrue(!level.canSeeSky(at.above()), "a shade spot is out of the sun: " + at.toShortString());
+			if (at.getY() < piece.centre().getY()) {
+				room++;
+			} else {
+				above++;
+			}
+		}
+		helper.assertTrue(room >= 25, "the small camp's 5x5 room should be all usable shade, found " + room);
+		helper.assertTrue(above >= 4, "shade above ground (lean-to, towers), found " + above);
+		// A zombie on the tunnel's stairs can walk down into the room. (The tunnel surfaces just past this small test
+		// field's barrier wall; the whole walk from the surface is checked on a natural camp in the client part camps.)
+		Mob walker = net.minecraft.world.entity.EntityTypes.ZOMBIE.create(level, net.minecraft.world.entity.EntitySpawnReason.COMMAND);
+		BlockPos start = piece.tunnelStep(2);
+		walker.snapTo(start.getX() + 0.5, start.getY(), start.getZ() + 0.5, 0.0F, 0.0F);
+		level.addFreshEntity(walker);
+		BlockPos roomCell = piece.centre().below(4);
+		helper.runAfterDelay(1, () -> {
+			walker.setOnGround(true); // a mob in the air plans no path
+			var path = walker.getNavigation().createPath(roomCell, 0);
+			walker.discard();
+			helper.assertTrue(path != null && path.canReach(), "the room should be reachable down its tunnel from the surface: "
+					+ (path == null ? "no path" : "ends at " + path.getEndNode() + " target " + roomCell.toShortString()));
+			helper.succeed();
+		});
+	}
+
+	/** At noon a camp skeleton in the sun with nothing to fight walks into its camp's shade. */
+	@GameTest(environment = "bubbas_reworked_mobs-test:camp_noon", structure = FIELD, maxTicks = 240)
+	public void exposedCampMobsSeekShade(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		CampPiece piece = camp(helper, CampKind.SKELETON, 29L);
+		CampSite site = site(helper, piece);
+		helper.runAfterDelay(40, () -> seekShade(helper, level, site)); // once the light has settled
+	}
+
+	private static void seekShade(GameTestHelper helper, ServerLevel level, CampSite site) {
+		List<Mob> roster = CampRoster.spawn(level, site);
+		for (Mob mob : roster) {
+			helper.assertTrue(!level.canSeeSky(BlockPos.containing(mob.getX(), mob.getEyeY(), mob.getZ())), "by day the roster appears in the shade: " + mob.blockPosition().toShortString() + " centre " + site.centre().toShortString()
+					+ " leader " + CampRoster.isLeader(mob));
+		}
+		Mob walker = roster.getLast();
+		BlockPos open = helper.absolutePos(new BlockPos(1, 1, 1));
+		walker.snapTo(open.getX() + 0.5, open.getY(), open.getZ() + 0.5, 0.0F, 0.0F);
+		helper.succeedWhen(() -> {
+			helper.assertTrue(!level.canSeeSky(BlockPos.containing(walker.getX(), walker.getEyeY(), walker.getZ())), "the skeleton should reach shade");
+			roster.forEach(Entity::discard);
+		});
+	}
 }

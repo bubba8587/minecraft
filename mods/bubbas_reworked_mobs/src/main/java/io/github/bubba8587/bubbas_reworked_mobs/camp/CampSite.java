@@ -27,6 +27,7 @@ public final class CampSite {
 			Codec.INT.optionalFieldOf("size", 0).forGetter(s -> s.size == null ? 0 : s.size.ordinal()),
 			BlockPos.CODEC.listOf().optionalFieldOf("towers", List.of()).forGetter(s -> s.towers),
 			BlockPos.CODEC.listOf().optionalFieldOf("ground", List.of()).forGetter(s -> s.ground),
+			BlockPos.CODEC.listOf().optionalFieldOf("shade", List.of()).forGetter(s -> s.shade),
 			Codec.BOOL.optionalFieldOf("spawned", false).forGetter(s -> s.spawned),
 			Codec.BOOL.optionalFieldOf("armed", true).forGetter(s -> s.armed),
 			Codec.BOOL.optionalFieldOf("rearmed", false).forGetter(s -> s.rearmed),
@@ -42,6 +43,8 @@ public final class CampSite {
 	final List<BlockPos> towers;
 	/** Spots on the ground (columns; height from the world when the roster appears). */
 	final List<BlockPos> ground;
+	/** Shade spots (heights approximate except the room's; camp/CampShade resolves them). */
+	final List<BlockPos> shade;
 	boolean spawned;
 	boolean armed;
 	/** A banner was put back after the camp was cleared of them: the next reset check is sure to reset. */
@@ -51,7 +54,7 @@ public final class CampSite {
 	final List<UUID> members;
 
 	private CampSite(long id, Optional<String> kind, BoundingBox box, BlockPos centre, int size, List<BlockPos> towers, List<BlockPos> ground,
-			boolean spawned, boolean armed, boolean rearmed, boolean quiet, List<UUID> members) {
+			List<BlockPos> shade, boolean spawned, boolean armed, boolean rearmed, boolean quiet, List<UUID> members) {
 		this.id = id;
 		this.kind = kind.map(k -> CampKind.valueOf(k.toUpperCase(java.util.Locale.ROOT))).orElse(null);
 		this.box = box;
@@ -59,6 +62,7 @@ public final class CampSite {
 		this.size = this.kind == null ? null : CampTuning.Size.values()[Math.floorMod(size, CampTuning.Size.values().length)];
 		this.towers = List.copyOf(towers);
 		this.ground = List.copyOf(ground);
+		this.shade = List.copyOf(shade);
 		this.spawned = spawned;
 		this.armed = armed;
 		this.rearmed = rearmed;
@@ -68,13 +72,14 @@ public final class CampSite {
 
 	/** A camp, from its piece. */
 	static CampSite camp(long id, CampPiece piece, List<BlockPos> towers, List<BlockPos> ground) {
-		return new CampSite(id, Optional.of(piece.kind().id()), piece.getBoundingBox(), piece.centre(), piece.size().ordinal(), towers, ground, false, true,
+		return new CampSite(id, Optional.of(piece.kind().id()), piece.getBoundingBox(), piece.centre(), piece.size().ordinal(), towers, ground,
+				piece.shadeSpots(), false, true,
 				false, false, List.of());
 	}
 
 	/** A pillager outpost. */
 	static CampSite outpost(long id, BoundingBox box) {
-		return new CampSite(id, Optional.empty(), box, box.getCenter(), 0, List.of(), List.of(), false, true, false, false, List.of());
+		return new CampSite(id, Optional.empty(), box, box.getCenter(), 0, List.of(), List.of(), List.of(), false, true, false, false, List.of());
 	}
 
 	public long id() {
@@ -115,6 +120,11 @@ public final class CampSite {
 	/** Whether its roster has appeared since it last reset. */
 	public boolean spawned() {
 		return spawned;
+	}
+
+	/** Its shade spots (approximate heights; camp/CampShade resolves them). */
+	public List<BlockPos> shade() {
+		return shade;
 	}
 
 	/** Its roster still alive (UUIDs). */

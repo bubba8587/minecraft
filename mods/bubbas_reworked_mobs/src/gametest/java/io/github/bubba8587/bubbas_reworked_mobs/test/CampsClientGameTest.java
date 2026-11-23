@@ -19,6 +19,7 @@ import net.minecraft.world.level.chunk.status.ChunkStatus;
 import net.minecraft.world.level.levelgen.presets.WorldPresets;
 import net.minecraft.world.level.levelgen.structure.StructureStart;
 import net.minecraft.world.level.levelgen.structure.placement.RandomSpreadStructurePlacement;
+import net.minecraft.world.phys.Vec3;
 
 import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
@@ -29,7 +30,7 @@ import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContex
  * Monster camps by eye (specs/monster-camps.md; client part {@code camps}).
  * <ul>
  * <li>Built on a flat world, one of each kind and size: camp-&lt;kind&gt;-above and camp-&lt;kind&gt;-close, then a
- * skeleton camp with its roster out (camp-roster).</li>
+ * skeleton camp with its roster out at noon, in the shade (camp-roster), inside its room (camp-room) and at night (camp-roster-night).</li>
  * <li>In a real world (seed 20261116): how often camps generate (printed: camps per 1000 x 1000 blocks by kind,
  * typical distance to the nearest of each kind), and the nearest natural camps (camp-natural-N-above / -close).</li>
  * </ul>
@@ -54,6 +55,7 @@ public class CampsClientGameTest implements FabricClientGameTest {
 			CampKind[] kinds = CampKind.values();
 			CampTuning.Size[] sizes = { CampTuning.Size.LARGE, CampTuning.Size.MEDIUM, CampTuning.Size.SMALL, CampTuning.Size.MEDIUM, CampTuning.Size.MEDIUM };
 			List<BlockPos> centres = new ArrayList<>();
+			List<CampPiece> pieces = new ArrayList<>();
 			for (int i = 0; i < kinds.length; i++) {
 				BlockPos at = base.offset(i * 40, 0, 0);
 				int k = i;
@@ -61,6 +63,7 @@ public class CampsClientGameTest implements FabricClientGameTest {
 				sp.getConnection().waitForChunksRender();
 				CampPiece piece = server.computeOnServer(s -> CampCommand.build(s.overworld(), at, kinds[k], sizes[k], 100L + k));
 				centres.add(piece.centre());
+				pieces.add(piece);
 			}
 			for (int i = 0; i < kinds.length; i++) {
 				BlockPos c = centres.get(i);
@@ -75,6 +78,17 @@ public class CampsClientGameTest implements FabricClientGameTest {
 			tp(context, server, c.getX() + 12.5, c.getY() + 5.0, c.getZ() - 12.5, 45, 15);
 			context.waitTicks(40);
 			context.takeScreenshot("camp-roster");
+			// The lean-to, and the roster at night, out in the open.
+			server.runCommand("gamemode spectator @p");
+			BlockPos lean = pieces.getFirst().leanToSpot();
+			Vec3 from = Vec3.atCenterOf(lean).add(Vec3.atLowerCornerOf(c.subtract(lean)).normalize().scale(5.0)).add(0, 1.5, 0);
+			float yaw = (float) (Math.toDegrees(Math.atan2(lean.getZ() - from.z, lean.getX() - from.x)) - 90.0);
+			tp(context, server, from.x, from.y, from.z, yaw, 20);
+			context.takeScreenshot("camp-leanto");
+			server.runCommand("time set midnight");
+			tp(context, server, c.getX() + 12.5, c.getY() + 5.0, c.getZ() - 12.5, 45, 15);
+			context.waitTicks(100);
+			context.takeScreenshot("camp-roster-night");
 		}
 	}
 
@@ -100,6 +114,32 @@ public class CampsClientGameTest implements FabricClientGameTest {
 				context.takeScreenshot("camp-natural-" + i + "-above");
 				tp(context, server, c.getX() + 9.5, c.getY() + 9.0, c.getZ() - 9.5, 45, 32);
 				context.takeScreenshot("camp-natural-" + i + "-close");
+				if (i == 0) {
+					// A zombie on the surface outside the camp can walk down into its room.
+					String reach = server.computeOnServer(srv -> {
+						var level = srv.overworld();
+						var zombie = net.minecraft.world.entity.EntityTypes.ZOMBIE.create(level, net.minecraft.world.entity.EntitySpawnReason.COMMAND);
+						int sx = c.getX() + 14;
+						int sz = c.getZ();
+						zombie.snapTo(sx + 0.5, level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, sx, sz), sz + 0.5, 0, 0);
+						zombie.setOnGround(true);
+						level.addFreshEntity(zombie);
+						var path = zombie.getNavigation().createPath(c.below(4), 0);
+						zombie.discard();
+						return path == null ? "no path" : path.canReach() ? "reachable" : "ends at " + path.getEndNode();
+					});
+					System.out.println("[camps] natural camp room from the surface: " + reach);
+					if (!"reachable".equals(reach)) {
+						throw new AssertionError("a camp's room should be reachable from the surface: " + reach);
+					}
+					// Inside its underground room (night vision: it's dark).
+					server.runCommand("effect give @p minecraft:night_vision infinite 0 true");
+					tp(context, server, c.getX() + 0.5, c.getY() - 3.4, c.getZ() + 0.5, 0, 15);
+					context.takeScreenshot("camp-room");
+					tp(context, server, c.getX() + 0.5, c.getY() - 3.4, c.getZ() + 0.5, 180, 15);
+					context.takeScreenshot("camp-room-back");
+					server.runCommand("effect clear @p");
+				}
 			}
 		}
 	}

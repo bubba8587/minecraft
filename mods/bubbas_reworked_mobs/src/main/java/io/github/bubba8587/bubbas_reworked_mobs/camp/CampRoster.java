@@ -22,9 +22,9 @@ import org.jspecify.annotations.Nullable;
 
 /**
  * A camp's roster (specs/monster-camps.md): its kind's mobs, {@link CampTuning.Size#roster} of them plus a leader.
- * Archers take the tower platforms first; the rest stand round the fire. They stay at the camp (a home radius), don't
- * burn by day (they keep to camp in the daylight; mixin/CampMemberMixin), never despawn, and are tagged with their camp
- * so their deaths are counted.
+ * Archers take the tower platforms first (roofed); the rest stand round the fire, or by day in the camp's shade (the
+ * room, the lean-to, under the towers) since they burn in the sun like any other (camp/CampShade). They stay at the
+ * camp (a home radius), never despawn, and are tagged with their camp so their deaths are counted.
  *
  * <p>The leader (owner: slightly larger, tougher, better gear, no banner): scale {@link CampTuning#LEADER_SCALE},
  * {@link CampTuning#LEADER_HEALTH} times the health, more damage, knockback resistance, iron armour, an iron axe or a
@@ -73,6 +73,16 @@ public final class CampRoster {
 	}
 
 	private static BlockPos groundSpot(ServerLevel level, CampSite site, int i) {
+		// By day, the shade instead (in order: the room first, then the lean-to and under the towers).
+		if (CampShade.sunBurns(level, site.centre) && site.kind != CampKind.HUSK) {
+			int seen = 0;
+			for (BlockPos spot : site.shade) {
+				BlockPos at = CampShade.resolve(level, spot);
+				if (at != null && seen++ == i) {
+					return at;
+				}
+			}
+		}
 		BlockPos column = site.ground.isEmpty() ? site.centre : site.ground.get(i % site.ground.size());
 		int y = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, column.getX(), column.getZ());
 		return new BlockPos(column.getX(), y, column.getZ());

@@ -124,6 +124,16 @@ public enum CampKind {
 		};
 	}
 
+	/** Stairs of the underground room's tunnel. */
+	public BlockState stairs() {
+		return switch (this) {
+			case SKELETON, STRAY -> Blocks.COBBLESTONE_STAIRS.defaultBlockState();
+			case ZOMBIE -> Blocks.MOSSY_COBBLESTONE_STAIRS.defaultBlockState();
+			case HUSK -> Blocks.SANDSTONE_STAIRS.defaultBlockState();
+			case BOGGED -> Blocks.MUD_BRICK_STAIRS.defaultBlockState();
+		};
+	}
+
 	/** The trodden ground of the camp, by roll in [0, 1). */
 	public BlockState trodden(float roll) {
 		return switch (this) {
