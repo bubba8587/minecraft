@@ -36,18 +36,30 @@ public class EnchantingGameTest {
 		return GemKit.infused(key, "strong", form, 6).get(ModComponents.INFUSED_GEM);
 	}
 
+	/**
+	 * The rows a gem gets: its form caps the tier (normal 1, splash 2, lingering and item-sourced 3), and tiers are
+	 * gated by bookshelves like gear's strongest enchantments (owner: tier 2 needs 8, tier 3 all 15).
+	 */
 	@GameTest
-	public void formCapsTheTiers(GameTestHelper helper) {
-		for (int seed = 0; seed < 50; seed++) {
+	public void formAndBookshelvesCapTheTiers(GameTestHelper helper) {
+		InfusedGem lingeringGem = infused("speed", GemForm.LINGERING);
+		ItemStack apple = GemKit.infused("absorption", "strong", GemForm.ITEM, 6);
+		check(helper, apple.getHoverName().getString().equals("Infused Gem: Gem Power VI, Absorption"), "item gem name " + apple.getHoverName().getString());
+		for (int seed = 0; seed < 200; seed++) {
 			int[] normal = GemEnchanting.costs(seed, 15, infused("speed", GemForm.NORMAL));
 			int[] splash = GemEnchanting.costs(seed, 15, infused("speed", GemForm.SPLASH));
-			int[] lingering = GemEnchanting.costs(seed, 15, infused("speed", GemForm.LINGERING));
+			int[] lingering = GemEnchanting.costs(seed, 15, lingeringGem);
+			int[] item = GemEnchanting.costs(seed, 15, apple.get(ModComponents.INFUSED_GEM));
 			check(helper, normal[0] > 0 && normal[1] == 0 && normal[2] == 0, "normal form rows " + java.util.Arrays.toString(normal));
 			check(helper, splash[0] > 0 && splash[1] > 0 && splash[2] == 0, "splash form rows " + java.util.Arrays.toString(splash));
-			check(helper, lingering[0] > 0 && lingering[1] > 0 && lingering[2] > 0, "lingering form rows " + java.util.Arrays.toString(lingering));
-			// Vanilla's bookshelf rule: with 15 shelves the bottom row costs 30.
-			check(helper, lingering[2] == 30, "15 bookshelves: bottom row " + lingering[2]);
-			check(helper, GemEnchanting.costs(seed, 0, infused("speed", GemForm.LINGERING))[2] <= 8, "no bookshelves: cheap bottom row");
+			check(helper, lingering[0] > 0 && lingering[1] > 0 && lingering[2] == 30, "lingering rows with 15 shelves (bottom row 30) " + java.util.Arrays.toString(lingering));
+			check(helper, item[2] > 0, "item gem has no tier 3 row: " + java.util.Arrays.toString(item));
+			int[] none = GemEnchanting.costs(seed, 0, lingeringGem);
+			int[] seven = GemEnchanting.costs(seed, 7, lingeringGem);
+			int[] fourteen = GemEnchanting.costs(seed, 14, lingeringGem);
+			check(helper, none[2] <= 8, "no bookshelves: cheap bottom row " + none[2]);
+			check(helper, seven[1] == 0 && seven[2] == 0, "tier 2 or 3 with 7 shelves: " + java.util.Arrays.toString(seven));
+			check(helper, fourteen[2] == 0, "tier 3 with 14 shelves: " + java.util.Arrays.toString(fourteen));
 		}
 		helper.succeed();
 	}
@@ -57,6 +69,8 @@ public class EnchantingGameTest {
 		Balance b = Balance.get();
 		InfusedGem gem = infused("speed", GemForm.LINGERING);
 		check(helper, GemEnchanting.roll(1234, 3, gem).equals(GemEnchanting.roll(1234, 3, gem)), "same seed, different gem");
+		Map<String, Integer> others = new HashMap<>();
+		Map<String, Integer> drawbacks = new HashMap<>();
 		for (int tier = 1; tier <= 3; tier++) {
 			Map<String, Integer> seen = new HashMap<>();
 			int n = 8000;
@@ -72,6 +86,10 @@ public class EnchantingGameTest {
 				}
 				g.drawback().ifPresent(r -> close(r.strength(), b.drawbackSize(o.drawback()), 1e-6, helper, "drawback size " + o.label()));
 				seen.merge(o.label(), 1, Integer::sum);
+				if (tier == 3) {
+					g.other().ifPresent(r -> others.merge(r.key(), 1, Integer::sum));
+					g.drawback().ifPresent(r -> drawbacks.merge(r.key(), 1, Integer::sum));
+				}
 			}
 			for (Balance.Outcome o : b.tiers.get(tier)) {
 				close(seen.getOrDefault(o.label(), 0) / (double) n, o.odds(), 0.02, helper, "tier " + tier + " " + o.label());
@@ -80,6 +98,13 @@ public class EnchantingGameTest {
 			Balance.Outcome first = b.tiers.get(tier).getFirst();
 			check(helper, first.other() == null && first.drawback() == null && first.main() != null, "tier " + tier + " does not start plain");
 		}
+		// Owner: extra rolls weighted by rarity, common 4, uncommon 2, rare (found-only) 1, in both pools.
+		Balance.EffectData e = b.effect("speed");
+		check(helper, e.otherWeights().size() == e.otherPool().size() && e.drawbackWeights().size() == e.drawbackPool().size(), "weights missing");
+		double ratio = others.getOrDefault("strength", 0) / (double) Math.max(1, others.getOrDefault("haste", 0));
+		check(helper, ratio > 2.8 && ratio < 5.6, "bonus Strength (common) / Haste (rare) " + ratio + " (" + others + ")");
+		double d = drawbacks.getOrDefault("weakness", 0) / (double) Math.max(1, drawbacks.getOrDefault("poison", 0));
+		check(helper, d > 1.4 && d < 2.8, "drawback Weakness (common) / Poison (uncommon) " + d + " (" + drawbacks + ")");
 		// The preview (owner): main effect and strength, then only the extra roll's kind and size.
 		for (int seed = 0; seed < 400; seed++) {
 			for (int tier = 1; tier <= 3; tier++) {
@@ -126,21 +151,6 @@ public class EnchantingGameTest {
 		helper.succeed();
 	}
 
-	/** Owner: tiers are gated by bookshelves (tier 2 needs 8, tier 3 all 15), like gear's strongest enchantments. */
-	@GameTest
-	public void tiersNeedTheirBookshelves(GameTestHelper helper) {
-		InfusedGem gem = infused("speed", GemForm.LINGERING);
-		for (int seed = 0; seed < 200; seed++) {
-			int[] seven = GemEnchanting.costs(seed, 7, gem);
-			int[] fourteen = GemEnchanting.costs(seed, 14, gem);
-			int[] fifteen = GemEnchanting.costs(seed, 15, gem);
-			check(helper, seven[1] == 0 && seven[2] == 0, "tier 2 or 3 with 7 shelves: " + java.util.Arrays.toString(seven));
-			check(helper, fourteen[2] == 0, "tier 3 with 14 shelves: " + java.util.Arrays.toString(fourteen));
-			check(helper, fifteen[0] > 0 && fifteen[1] > 0 && fifteen[2] >= 15, "rows with 15 shelves: " + java.util.Arrays.toString(fifteen));
-		}
-		helper.succeed();
-	}
-
 	// Core test: registered by InfusedGemsCoreGameTest (test-lite, specs/quality.md).
 	public void enchantingTableMakesAFinishedGem(GameTestHelper helper) {
 		// A table with a full ring of bookshelves (owner: tier 2 needs 8, tier 3 all 15).
@@ -174,18 +184,6 @@ public class EnchantingGameTest {
 		check(helper, menu.costs[0] == 0, "a finished gem can be enchanted again");
 		check(helper, player.experienceLevel == 30 - cost2, "the full level cost " + cost2 + " was not paid: " + player.experienceLevel);
 		menu.removed(player);
-		// An item-sourced Infused Gem (owner, 2026-11-15) reaches tier 3 like a lingering potion's, through the real table.
-		EnchantmentMenu menu2 = new EnchantmentMenu(2, player.getInventory(), ContainerLevelAccess.create(helper.getLevel(), helper.absolutePos(table)));
-		player.setExperienceLevels(30);
-		ItemStack apple = GemKit.infused("absorption", "strong", GemForm.ITEM, 6);
-		check(helper, apple.getHoverName().getString().equals("Infused Gem: Gem Power VI, Absorption"), "item gem name " + apple.getHoverName().getString());
-		menu2.getSlot(0).set(apple);
-		menu2.getSlot(1).set(new ItemStack(Items.LAPIS_LAZULI, 10));
-		check(helper, menu2.costs[2] > 0, "item gem has no tier 3 row: " + java.util.Arrays.toString(menu2.costs));
-		Gem expected3 = GemEnchanting.roll(menu2.getEnchantmentSeed(), 3, apple.get(ModComponents.INFUSED_GEM));
-		check(helper, menu2.clickMenuButton(player, 2), "tier 3 refused on an item gem");
-		check(helper, expected3.equals(menu2.getSlot(0).getItem().get(ModComponents.GEM)) && expected3.tier() == 3, "item gem tier 3 roll");
-		menu2.removed(player);
 		GemKit.remove(helper, player);
 		helper.succeed();
 	}

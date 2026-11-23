@@ -38,7 +38,8 @@ public final class AbsorptionCooldown {
 			return false;
 		}
 		for (Gem gem : gems.gems()) {
-			if (gem.effect().is(MobEffects.ABSORPTION) || gem.other().map(r -> r.effect().is(MobEffects.ABSORPTION)).orElse(false)) {
+			// A drawback-only gem (no main) keyed to Absorption gives no shield, so it doesn't join the wait.
+			if ((gem.hasMain() && gem.effect().is(MobEffects.ABSORPTION)) || gem.other().map(r -> r.effect().is(MobEffects.ABSORPTION)).orElse(false)) {
 				return true;
 			}
 		}

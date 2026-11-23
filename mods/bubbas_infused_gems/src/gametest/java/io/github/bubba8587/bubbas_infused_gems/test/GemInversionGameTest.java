@@ -99,26 +99,4 @@ public class GemInversionGameTest {
 		});
 	}
 
-	/** Owner: rolls weighted by rarity, common 4, uncommon 2, rare (found-only) 1, both bonus and drawback pools. */
-	@GameTest
-	public void rollsFavourCommonEffects(GameTestHelper helper) {
-		Balance b = Balance.get();
-		InfusedGem infused = GemKit.infused("speed", "strong", GemForm.LINGERING, 6).get(ModComponents.INFUSED_GEM);
-		Map<String, Integer> others = new HashMap<>();
-		Map<String, Integer> drawbacks = new HashMap<>();
-		for (int seed = 0; seed < 20000; seed++) {
-			Gem g = GemEnchanting.roll(seed, 3, infused);
-			g.other().ifPresent(r -> others.merge(r.key(), 1, Integer::sum));
-			g.drawback().ifPresent(r -> drawbacks.merge(r.key(), 1, Integer::sum));
-		}
-		Balance.EffectData e = b.effect("speed");
-		// Common (Strength) vs rare (Haste) in the bonus pool: about 4 to 1.
-		double ratio = others.getOrDefault("strength", 0) / (double) Math.max(1, others.getOrDefault("haste", 0));
-		check(helper, ratio > 2.8 && ratio < 5.6, "bonus Strength/Haste " + ratio + " (" + others + ")");
-		check(helper, e.otherWeights().size() == e.otherPool().size() && e.drawbackWeights().size() == e.drawbackPool().size(), "weights missing");
-		// Common (Weakness) vs uncommon (Poison) in the drawback pool: about 2 to 1.
-		double d = drawbacks.getOrDefault("weakness", 0) / (double) Math.max(1, drawbacks.getOrDefault("poison", 0));
-		check(helper, d > 1.4 && d < 2.8, "drawback Weakness/Poison " + d + " (" + drawbacks + ")");
-		helper.succeed();
-	}
 }
