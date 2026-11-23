@@ -31,7 +31,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * Every vanilla creeper becomes a nervous watcher (specs/creepers.md), no new entity type: vanilla's hunting goals
  * (both target goals, MeleeAttackGoal, SwellGoal) are wrapped so they run only while the creeper is charged, and the
  * watcher's fuse and watch goals take their priorities. Floating, cat avoidance, strolling and looking around stay.
- * Creepers from spawners and trial spawners stay vanilla (owner, 2026-11-16; MobFinalizeSpawnMixin), saved as
+ * Creepers from spawners and trial spawners stay vanilla, saved as
  * {@code bubbas_reworked_mobs:vanilla}.
  */
 @Mixin(Creeper.class)
@@ -91,6 +91,7 @@ abstract class CreeperMixin extends Monster implements CreeperAccess {
 				}
 			}
 		}
+		getNavigation().setRequiredPathLength(16.0F); // vanilla's default, raised by the watch goal
 	}
 
 	@Override
@@ -101,13 +102,13 @@ abstract class CreeperMixin extends Monster implements CreeperAccess {
 	@Inject(method = "addAdditionalSaveData", at = @At("TAIL"))
 	private void brm$saveVanilla(ValueOutput output, CallbackInfo ci) {
 		if (brm$vanilla) {
-			output.putBoolean("bubbas_reworked_mobs:vanilla", true);
+			output.putBoolean(io.github.bubba8587.bubbas_reworked_mobs.BubbasReworkedMobs.VANILLA_KEY, true);
 		}
 	}
 
 	@Inject(method = "readAdditionalSaveData", at = @At("TAIL"))
 	private void brm$loadVanilla(ValueInput input, CallbackInfo ci) {
-		if (input.getBooleanOr("bubbas_reworked_mobs:vanilla", false)) {
+		if (input.getBooleanOr(io.github.bubba8587.bubbas_reworked_mobs.BubbasReworkedMobs.VANILLA_KEY, false)) {
 			brm$makeVanilla();
 		}
 	}

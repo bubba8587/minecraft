@@ -33,7 +33,7 @@ import net.minecraft.world.level.levelgen.structure.placement.RandomSpreadStruct
 import org.jspecify.annotations.Nullable;
 
 /**
- * Where Ancient Fabricators are (owner, 2026-11-16: one beside every ancient city). Worked out from the seed alone,
+ * Where Ancient Fabricators are. Worked out from the seed alone,
  * never stored: each ancient-city grid cell (vanilla's own placement, read from the {@code ancient_cities} structure
  * set, so datapacks that move cities move Fabricators too) has a candidate city chunk; where the city's biome test
  * passes there (the biome at the chunk's corner at y -27, the city's start height: the same test vanilla makes, give
@@ -170,7 +170,7 @@ public final class FabricatorSites {
 	public static List<FabricatorSite> near(ServerLevel level, BlockPos pos, int radius) {
 		List<FabricatorSite> found = new ArrayList<>();
 		for (FabricatorSite site : extra(level)) {
-			if (site.origin().distSqr(pos) <= (double) radius * radius) {
+			if (horizontalDistSqr(site.origin(), pos) <= (double) radius * radius) {
 				found.add(site);
 			}
 		}

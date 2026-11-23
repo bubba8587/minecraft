@@ -46,8 +46,20 @@ import win.demistorm.stormiespiders.common.entity.mob.Orientation;
  * </ul>
  */
 public class NestSpider extends Spider implements Gripper {
+	/** A new sleeper hung from {@code anchor} facing {@code yaw}, not yet added to the level. */
+	public static @Nullable NestSpider hanging(Level level, Vec3 anchor, float yaw) {
+		NestSpider spider = Spiders.NEST_SPIDER.create(level, net.minecraft.world.entity.EntitySpawnReason.STRUCTURE);
+		if (spider != null) {
+			spider.setYRot(yaw);
+			spider.setYBodyRot(yaw);
+			spider.setYHeadRot(yaw);
+			spider.hangFrom(anchor);
+		}
+		return spider;
+	}
+
 	public enum Phase {
-		SLEEPING, DROPPING, REELING, HOLDING, DANGLING,
+		SLEEPING, DROPPING, REELING, DANGLING,
 		/** Its victim is cocooned below; it has backed off into the nest and waits. */
 		WAITING,
 		/** Back down at the cocoon, feeding. */
@@ -159,13 +171,18 @@ public class NestSpider extends Spider implements Gripper {
 			return;
 		}
 		if (phase() != Phase.SLEEPING) {
-			// On its thread it isn't falling: nothing may carry over as fall damage when the thread snaps (owner bug).
+			// On its thread it isn't falling: nothing may carry over as fall damage when the thread snaps.
 			resetFallDistance();
 		}
 		switch (phase()) {
-			case SLEEPING -> setDeltaMovement(Vec3.ZERO);
+			case SLEEPING -> {
+				setDeltaMovement(Vec3.ZERO);
+				if (isVehicle()) {
+					ejectPassengers(); // a victim left riding it by a reload
+				}
+			}
 			case DROPPING -> tickDrop(level);
-			case REELING, HOLDING -> tickHold(level);
+			case REELING -> tickHold(level);
 			case WAITING, FEEDING -> tickCocoon(level);
 			case DANGLING -> {
 				setDeltaMovement(Vec3.ZERO);
@@ -195,7 +212,7 @@ public class NestSpider extends Spider implements Gripper {
 			return;
 		}
 		// The bottom of the drop: just above the floor, or level with whoever it missed. A miss hangs there on its
-		// thread for a moment before it snaps (owner, 2026-11-22: "animation just looks better").
+		// thread for a moment before it snaps.
 		boolean floorClose = !level.noCollision(this, getBoundingBox().move(0.0, -SpiderTuning.DROP_SPEED - SpiderTuning.DANGLE_ABOVE_FLOOR, 0.0));
 		if (floorClose || (target != null && getY() < target.getY()) || getY() < level.getMinY()) {
 			setPhase(Phase.DANGLING);
@@ -259,12 +276,9 @@ public class NestSpider extends Spider implements Gripper {
 				setDeltaMovement(0.0, 0.0, 0.0);
 				setPos(anchor.x, Math.min(top, getY() + SpiderTuning.REEL_SPEED), anchor.z);
 			} else {
-				setPhase(Phase.HOLDING);
 				wrap(level, held);
 				return;
 			}
-		} else {
-			setDeltaMovement(Vec3.ZERO);
 		}
 		if (random.nextFloat() < Mth.lerp(tight, SpiderTuning.BITE_CHANCE_PER_TICK, SpiderTuning.BITE_CHANCE_PER_TICK_FULL)) {
 			if (held.hurtServer(level, damageSources().mobAttack(this), Mth.lerp(tight, SpiderTuning.BITE_DAMAGE, SpiderTuning.BITE_DAMAGE_FULL))) {
@@ -274,15 +288,10 @@ public class NestSpider extends Spider implements Gripper {
 		}
 	}
 
-	// --- the cocoon (owner, 2026-11-22) -----------------------------------------------------------------------
+	// --- the cocoon -----------------------------------------------------------------------
 
 	public @Nullable SilkCocoon cocoon() {
 		return cocoon;
-	}
-
-	/** For tests: ticks left before it comes back to feed. */
-	public void setWaitTicks(int ticks) {
-		waitTicks = ticks;
 	}
 
 	/** Up in the nest: it wraps its victim where it hangs, then backs off and waits. */
@@ -309,8 +318,8 @@ public class NestSpider extends Spider implements Gripper {
 		if (wrapped == null) {
 			cocoon = null;
 			// Its meal got away (cut free) or is gone: an ordinary spider again if anyone's near, else back to sleep.
-			Player near = level.getNearestPlayer(this, 8.0);
-			if (near != null && NestSpider.grabbable(near)) {
+			Player near = level.getNearestPlayer(getX(), getY(), getZ(), 8.0, e -> e instanceof LivingEntity living && grabbable(living));
+			if (near != null) {
 				breakThread(level);
 			} else {
 				sleep();

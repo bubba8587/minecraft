@@ -48,7 +48,7 @@ public final class SpiderTuning {
 
 	/** Drop speed, blocks a tick (straight down, no steering: it has to actually hit). */
 	public static final double DROP_SPEED = 0.9;
-	/** A miss stops this far above the floor and hangs on its thread this long before the thread snaps (owner: about a second). */
+	/** A miss stops this far above the floor and hangs on its thread this long before the thread snaps. */
 	public static final double DANGLE_ABOVE_FLOOR = 1.0;
 	public static final int MISS_DANGLE_TICKS = 20;
 	/** Damage of the landing bite. */
@@ -89,8 +89,6 @@ public final class SpiderTuning {
 	public static final int GIANT_SPAWN_WEIGHT = 12;
 	public static final double GIANT_SPACING = 48.0;
 
-	/** Livestock: how far it notices an animal to snatch, and how close an animal must be to lure it off a player. */
-	public static final double SNATCH_RANGE = 16.0;
 	public static final double LURE_RADIUS = 10.0;
 	/** A player who hurt it in the last this many ticks isn't dropped for livestock. */
 	public static final int LURE_IGNORED_AFTER_HURT_TICKS = 100;
@@ -111,8 +109,6 @@ public final class SpiderTuning {
 	/** Cap: no spinning when this many spun webs are already within AREA_RADIUS (so a forest isn't buried). */
 	public static final int AREA_WEB_CAP = 5;
 	public static final int AREA_RADIUS = 12;
-	/** Webs (larder sites) one giant remembers. */
-	public static final int SITES_REMEMBERED = 8;
 
 	/** Little spiders: summoned when it's hurt, this many, at most this many alive near it, then a cooldown. */
 	public static final int SPIDERLINGS_PER_CALL = 2;
@@ -122,9 +118,9 @@ public final class SpiderTuning {
 	public static final double SPIDERLING_HEALTH = 6.0;
 	public static final double SPIDERLING_ATTACK = 1.0;
 
-	// --- spun webs (owner, 2026-11-22: "something really outstanding looking") ---------------------------
+	// --- spun webs ---------------------------
 
-	/** Movement through the strands: exactly a cobweb block's (owner, 2026-11-22: "slow you like normal cobwebs do"). */
+	/** Movement through the strands: exactly a cobweb block's. */
 	public static final net.minecraft.world.phys.Vec3 WEB_STUCK = new net.minecraft.world.phys.Vec3(0.25, 0.05F, 0.25);
 	public static final net.minecraft.world.phys.Vec3 WEB_STUCK_WEAVING = new net.minecraft.world.phys.Vec3(0.5, 0.25, 0.5);
 	/** Hits to bring one down, how torn each hit leaves it, and string from a clean cut with shears. */
@@ -134,7 +130,7 @@ public final class SpiderTuning {
 	/** Ageing: torn up to WEB_AGE_TEAR_MAX over this many ticks (five in-game days). */
 	public static final int WEB_AGE_TICKS_TO_TATTERS = 24000 * 5;
 	public static final float WEB_AGE_TEAR_MAX = 0.45F;
-	/** The tangle (owner: thick strands criss-crossing between many random points). Shortest strand. */
+	/** The tangle. Shortest strand. */
 	public static final double WEB_STRAND_MIN = 2.5;
 	/** Between trees: rays cast for anchors, how far they reach, strands strung. */
 	public static final int TREE_WEB_RAYS = 22;
@@ -148,9 +144,9 @@ public final class SpiderTuning {
 	public static final double NEST_WEB_REACH = 11.0;
 	public static final int NEST_WEB_STRANDS = 16;
 
-	// --- cocoons (owner, 2026-11-22) ------------------------------------------------------------------
+	// --- cocoons ------------------------------------------------------------------
 
-	/** Silk to cut through (owner: hard to escape), and how much each hit cuts by what it's made with (a fist ~24 hits, a sword ~9). */
+	/** Silk to cut through, and how much each hit cuts by what it's made with (a fist ~24 hits, a sword ~9). */
 	public static final float COCOON_SILK = 300.0F;
 	public static final float COCOON_CUT_HAND = 13.0F;
 	public static final float COCOON_CUT_OTHER = 18.0F;

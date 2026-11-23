@@ -65,11 +65,11 @@ public final class SleeperWaking {
 				mob.setGuaranteedDrop(slot);
 			}
 		}
-		// Buried and frozen sleepers burst out of the sand or ice they lie in first (SleeperBreakout).
-		SleeperBreakout.breakOut(level, pos, block.variant());
 		if (!level.addFreshEntity(mob)) {
+			sleeper.cancelWake(); // refused: it stays asleep and listening
 			return null;
 		}
+		SleeperBreakout.breakOut(level, pos, block.variant());
 		LootGrabbing.grabOnWake(level, mob); // empty-handed: a weapon within reach, else anything (loot/LootGrabbing)
 		NonNullList<ItemStack> unused = sleeper.takeAllGear(); // the mob has it now; keep it from dropping as the block goes
 		unused.clear();

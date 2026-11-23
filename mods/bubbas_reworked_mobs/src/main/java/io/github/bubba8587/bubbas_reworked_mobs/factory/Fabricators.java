@@ -16,7 +16,6 @@ import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.core.particles.ParticleTypes;
@@ -31,6 +30,7 @@ import net.minecraft.util.Unit;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.LivingEntity;
@@ -221,7 +221,7 @@ public final class Fabricators {
 			}
 			this.wasPowered = false;
 			if (this.resting) {
-				// Resting (owner, 2026-11-16: not a constant stream, so it isn't obvious what it does): lamps dark, a
+				// Resting: lamps dark, a
 				// faint shimmer over the pad; each second a chance to wake (B19: a chance, no fixed cooldown).
 				if (time % 20 == 0) {
 					BlockPos pad = this.site.pad();
@@ -302,7 +302,7 @@ public final class Fabricators {
 
 	/** What stands on the pad (not spectators, not the Warden). */
 	static List<LivingEntity> riders(ServerLevel level, FabricatorSite site) {
-		return level.getEntitiesOfClass(LivingEntity.class, site.padArea(), e -> e.isAlive() && !e.isSpectator() && !(e instanceof Warden));
+		return level.getEntitiesOfClass(LivingEntity.class, site.padArea(), EntitySelector.ENTITY_STILL_ALIVE.and(EntitySelector.NO_SPECTATORS).and(e -> !(e instanceof Warden)));
 	}
 
 	static void tryDrop(ServerLevel level, FabricatorSite site) {
@@ -310,7 +310,7 @@ public final class Fabricators {
 			return;
 		}
 		// A ward over the dripper (a Totem of Warding, e.g. in the Fabricator's own beacon) stops its spawning, not its
-		// teleporter (owner, 2026-11-16). Every ward reaches us through api/Endermen.keepOut.
+		// teleporter. Every ward reaches us through api/Endermen.keepOut.
 		if (io.github.bubba8587.bubbas_reworked_mobs.enderman.EndermanWards.isWarded(level, site.dropPoint())) {
 			return;
 		}
@@ -410,8 +410,9 @@ public final class Fabricators {
 				warden.setYRot(yaw);
 				warden.setYHeadRot(yaw);
 				warden.setYBodyRot(yaw);
-				for (ServerPlayer player : level.players()) {
-					if (!player.isShiftKeyDown() && inMachineZone(site, player.blockPosition()) && canAnger(player)) {
+				for (ServerPlayer player : level.getEntitiesOfClass(ServerPlayer.class, AABB.of(site.box()).inflate(FabricatorTuning.HEAR_SPAWNER),
+						EntitySelector.NO_CREATIVE_OR_SPECTATOR)) {
+					if (!player.isShiftKeyDown() && inMachineZone(site, player.blockPosition())) {
 						wakeWarden(warden, player);
 						break;
 					}
@@ -424,7 +425,7 @@ public final class Fabricators {
 	}
 
 	private static boolean canAnger(Player player) {
-		return !player.isCreative() && !player.isSpectator();
+		return EntitySelector.NO_CREATIVE_OR_SPECTATOR.test(player);
 	}
 
 	/** Going for the machine or a beacon: near the hidden spawner or a beacon, or up in the roof. */
@@ -476,7 +477,7 @@ public final class Fabricators {
 		BlockPos c = site.ceilingBeacon();
 		int r = FabricatorTuning.DEBUFF_RANGE;
 		AABB area = new AABB(f.getX() - r, Math.min(f.getY(), c.getY()) - 12, f.getZ() - r, f.getX() + r + 1, Math.max(f.getY(), c.getY()) + 12, f.getZ() + r + 1);
-		for (Player player : level.getEntitiesOfClass(Player.class, area, p -> p.isAlive() && !p.isSpectator() && !p.isCreative())) {
+		for (Player player : level.getEntitiesOfClass(Player.class, area, EntitySelector.ENTITY_STILL_ALIVE.and(EntitySelector.NO_CREATIVE_OR_SPECTATOR))) {
 			applyDebuffs(player, FabricatorTuning.DEBUFF_TICKS);
 		}
 	}
@@ -502,7 +503,4 @@ public final class Fabricators {
 		return FabricatorLink.beaconsLoaded();
 	}
 
-	static boolean modLoaded(String id) {
-		return FabricLoader.getInstance().isModLoaded(id);
-	}
 }

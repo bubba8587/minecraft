@@ -87,4 +87,17 @@ public class ClippedBuild {
 			}
 		}
 	}
+
+	/** Builds a whole piece now, chunk by chunk, as worldgen would (commands, tests). */
+	public static void buildNow(net.minecraft.server.level.ServerLevel level, net.minecraft.world.level.levelgen.structure.StructurePiece piece, BlockPos pivot) {
+		BoundingBox box = piece.getBoundingBox();
+		for (int cx = box.minX() >> 4; cx <= box.maxX() >> 4; cx++) {
+			for (int cz = box.minZ() >> 4; cz <= box.maxZ() >> 4; cz++) {
+				net.minecraft.world.level.ChunkPos chunk = new net.minecraft.world.level.ChunkPos(cx, cz);
+				BoundingBox chunkBox = new BoundingBox(chunk.getMinBlockX(), level.getMinY(), chunk.getMinBlockZ(), chunk.getMaxBlockX(), level.getMaxY(),
+						chunk.getMaxBlockZ());
+				piece.postProcess(level, level.structureManager(), level.getChunkSource().getGenerator(), level.getRandom(), chunkBox, chunk, pivot);
+			}
+		}
+	}
 }

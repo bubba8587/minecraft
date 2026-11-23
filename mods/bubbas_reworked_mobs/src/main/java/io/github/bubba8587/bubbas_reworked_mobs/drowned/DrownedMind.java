@@ -18,6 +18,7 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffectUtil;
+import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Pose;
@@ -66,6 +67,7 @@ public final class DrownedMind {
 	private @Nullable BlockPos avoid;
 	private @Nullable LivingEntity victim;
 	private @Nullable Vec3 deepTarget;
+	private long nextDeepSearch;
 	private boolean stared;
 	/** Something looks roughly its way (UNSEEN_HALF_ANGLE): it doesn't move spots while seen. */
 	private boolean seen;
@@ -174,7 +176,7 @@ public final class DrownedMind {
 		return entity instanceof Animal || entity instanceof AbstractVillager;
 	}
 
-	/** Anything whose stare makes it sink: what it could grab, plus creative players (so the owner can try it). */
+	/** Anything whose stare makes it sink: what it could grab, plus creative players. */
 	public static boolean watcher(LivingEntity entity) {
 		if (!entity.isAlive() || entity.isInvisible()) {
 			return false;
@@ -226,7 +228,7 @@ public final class DrownedMind {
 
 	private void tickSeeking(Drowned drowned, ServerLevel level, long time) {
 		Player player = level.getNearestPlayer(drowned.getX(), drowned.getY(), drowned.getZ(), DrownedTuning.ACTIVATE_RANGE,
-				e -> !e.isSpectator());
+				EntitySelector.NO_SPECTATORS);
 		if (player == null && !(pinned && spot != null)) {
 			if (state != State.IDLE) {
 				enterIdle(drowned);
@@ -330,7 +332,7 @@ public final class DrownedMind {
 	}
 
 	/**
-	 * Restless (owner, 2026-11-16): unseen, it now and then moves to another lurk spot, much more often once its player
+	 * Restless: unseen, it now and then moves to another lurk spot, much more often once its player
 	 * has walked off along the shore, so it keeps up with them. It goes under, swims there lying down and comes up again,
 	 * so you only notice it has moved when you look back. Returns true when it set off.
 	 */
@@ -338,7 +340,7 @@ public final class DrownedMind {
 		if (seen || stared) {
 			return false;
 		}
-		Player player = level.getNearestPlayer(drowned.getX(), drowned.getY(), drowned.getZ(), DrownedTuning.ACTIVATE_RANGE, e -> !e.isSpectator());
+		Player player = level.getNearestPlayer(drowned.getX(), drowned.getY(), drowned.getZ(), DrownedTuning.ACTIVATE_RANGE, EntitySelector.NO_SPECTATORS);
 		if (player == null) {
 			return false;
 		}
@@ -365,7 +367,7 @@ public final class DrownedMind {
 
 	/** One senses scan while lurking: is it stared at, and is someone at the edge with their back turned? */
 	private @Nullable LivingEntity scan(Drowned drowned, ServerLevel level, LurkSpots.Spot s) {
-		if (!pinned && level.getNearestPlayer(drowned.getX(), drowned.getY(), drowned.getZ(), DrownedTuning.ACTIVATE_RANGE, e -> !e.isSpectator()) == null) {
+		if (!pinned && level.getNearestPlayer(drowned.getX(), drowned.getY(), drowned.getZ(), DrownedTuning.ACTIVATE_RANGE, EntitySelector.NO_SPECTATORS) == null) {
 			enterIdle(drowned);
 			return null;
 		}
@@ -527,13 +529,16 @@ public final class DrownedMind {
 			recruit(drowned, level, held);
 		}
 		// Toward the deepest water nearby, backwards (facing away from it, toward the victim and the shore).
-		if (deepTarget == null || horizontalDistance(drowned.position(), deepTarget) < DrownedTuning.DRAG_ARRIVE) {
+		if ((deepTarget == null || horizontalDistance(drowned.position(), deepTarget) < DrownedTuning.DRAG_ARRIVE)
+				&& level.getGameTime() >= nextDeepSearch) {
 			Vec3 next = findDeeper(level, drowned);
 			if (next != null) {
 				deepTarget = next;
-			} else if (deepTarget == null && !drowned.isInWater() && spot != null) {
-				// Up the bank with no water column found from here: back to its spot first.
-				deepTarget = spot.centre();
+			} else {
+				nextDeepSearch = level.getGameTime() + DrownedTuning.DEEP_SEARCH_RETRY_TICKS;
+				if (deepTarget == null && !drowned.isInWater() && spot != null) {
+					deepTarget = spot.centre(); // up the bank: back to its spot first
+				}
 			}
 		}
 		Vec3 v = drowned.getDeltaMovement();

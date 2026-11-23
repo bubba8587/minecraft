@@ -94,7 +94,7 @@ public final class CairnSite {
 
 	/**
 	 * How far the cairn has grown, 0 to 1: the share standing of its End blocks (everything but the offerings, footing
-	 * included). What spawning follows: a fresh site is 0, and building speeds up only once it is visibly rising (owner).
+	 * included). What spawning follows: a fresh site is 0, and building speeds up only once it is visibly rising.
 	 */
 	public float growth(ServerLevel level) {
 		int total = 0;
@@ -181,17 +181,6 @@ public final class CairnSite {
 				continue;
 			}
 			if (TerrainKinds.liftable(level, pos, here)) {
-				return pos;
-			}
-		}
-		return null;
-	}
-
-	/** The lowest missing block that can be placed now, or null (the cairn is complete or nothing is reachable). */
-	public @Nullable BlockPos nextBuildable(ServerLevel level) {
-		for (BlockPos pos : order) {
-			BlockState want = blocks.get(pos.asLong());
-			if (level.isLoaded(pos) && !TerrainKinds.matches(level.getBlockState(pos), want) && canPlace(level, pos, want)) {
 				return pos;
 			}
 		}

@@ -1,6 +1,7 @@
 // dte:C1
 package io.github.bubba8587.bubbas_reworked_mobs.grave;
 
+import io.github.bubba8587.bubbas_reworked_mobs.worldgen.ClippedBuild;
 import com.mojang.brigadier.arguments.LongArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
@@ -9,7 +10,6 @@ import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 
@@ -95,15 +95,7 @@ public final class GraveyardCommand {
 		BlockPos origin = new BlockPos(gate.getX() - width / 2, ground, gate.getZ());
 		CryptYardPiece piece = new CryptYardPiece(seed, origin, width, depth, crypt, YardTrees.forBiome(level.getBiome(origin)), state, wealth,
 				YardKinds.Climate.of(level.getBiome(origin)));
-		BoundingBox box = piece.getBoundingBox();
-		for (int cx = box.minX() >> 4; cx <= box.maxX() >> 4; cx++) {
-			for (int cz = box.minZ() >> 4; cz <= box.maxZ() >> 4; cz++) {
-				ChunkPos chunk = new ChunkPos(cx, cz);
-				BoundingBox chunkBox = new BoundingBox(chunk.getMinBlockX(), level.getMinY(), chunk.getMinBlockZ(), chunk.getMaxBlockX(), level.getMaxY(),
-						chunk.getMaxBlockZ());
-				piece.postProcess(level, level.structureManager(), level.getChunkSource().getGenerator(), level.getRandom(), chunkBox, chunk, gate);
-			}
-		}
+		ClippedBuild.buildNow(level, piece, gate);
 		return piece;
 	}
 }

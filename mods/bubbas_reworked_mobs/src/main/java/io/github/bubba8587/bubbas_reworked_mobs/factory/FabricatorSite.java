@@ -6,6 +6,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.Rotation;
@@ -13,18 +15,19 @@ import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.phys.AABB;
 import org.jspecify.annotations.Nullable;
 
-/**
- * One Ancient Fabricator (specs/mob-factory.md): where it is (origin = first air above the middle of the deck), how
- * it's turned, its seed and mob, and (beside a city) where the city's centre is, relative to it. Everything else
- * (the design, the world positions of its working parts) follows from these. Value-equal by origin.
- */
+/** One Ancient Fabricator site: origin, turn, seed, mob and city offset. */
 public final class FabricatorSite {
 	private final BlockPos origin;
 	private final Rotation rotation;
 	private final long seed;
 	private final FactoryDesign.Mob mob;
 	private final @Nullable BlockPos cityLocal;
-	private @Nullable FactoryDesign design;
+	private volatile @Nullable Parts parts;
+
+	/** World positions of the working parts. */
+	private record Parts(BlockPos pad, BlockPos control, BlockPos dropPoint, BlockPos dripperTip, BlockPos spawner, BlockPos floorBeacon,
+			BlockPos ceilingBeacon, BlockPos wardenSpot, BlockPos jukebox, List<BlockPos> timerLamps, BoundingBox box) {
+	}
 
 	public FabricatorSite(BlockPos origin, Rotation rotation, long seed, FactoryDesign.Mob mob, @Nullable BlockPos cityLocal) {
 		this.origin = origin.immutable();
@@ -54,12 +57,25 @@ public final class FabricatorSite {
 		return this.cityLocal;
 	}
 
-	/** The design (worked out once per site and kept in a small shared cache). */
+	/** The design, from the shared cache. */
 	public FactoryDesign design() {
-		if (this.design == null) {
-			this.design = DESIGNS.get(this);
+		return DESIGNS.get(this);
+	}
+
+	private Parts parts() {
+		Parts p = this.parts;
+		if (p == null) {
+			FactoryDesign d = design();
+			List<BlockPos> lamps = new ArrayList<>();
+			for (BlockPos lamp : d.timerLamps()) {
+				lamps.add(world(lamp));
+			}
+			p = new Parts(world(d.pad()), world(d.control()), world(d.dropPoint()), world(d.dripperTip()), world(d.spawner()),
+					world(d.floorBeacon()), world(d.ceilingBeacon()), world(d.wardenSpot()), world(d.jukebox()), List.copyOf(lamps),
+					d.box(this.origin, this.rotation));
+			this.parts = p;
 		}
-		return this.design;
+		return p;
 	}
 
 	public BlockPos world(BlockPos local) {
@@ -67,47 +83,43 @@ public final class FabricatorSite {
 	}
 
 	public BlockPos pad() {
-		return world(design().pad());
+		return parts().pad();
 	}
 
 	public BlockPos control() {
-		return world(design().control());
+		return parts().control();
 	}
 
 	public BlockPos dropPoint() {
-		return world(design().dropPoint());
+		return parts().dropPoint();
 	}
 
 	public BlockPos dripperTip() {
-		return world(design().dripperTip());
+		return parts().dripperTip();
 	}
 
 	public BlockPos spawner() {
-		return world(design().spawner());
+		return parts().spawner();
 	}
 
 	public BlockPos floorBeacon() {
-		return world(design().floorBeacon());
+		return parts().floorBeacon();
 	}
 
 	public BlockPos ceilingBeacon() {
-		return world(design().ceilingBeacon());
+		return parts().ceilingBeacon();
 	}
 
 	public BlockPos wardenSpot() {
-		return world(design().wardenSpot());
+		return parts().wardenSpot();
 	}
 
 	public BlockPos jukebox() {
-		return world(design().jukebox());
+		return parts().jukebox();
 	}
 
 	public List<BlockPos> timerLamps() {
-		List<BlockPos> out = new ArrayList<>();
-		for (BlockPos p : design().timerLamps()) {
-			out.add(world(p));
-		}
-		return out;
+		return parts().timerLamps();
 	}
 
 	/** The pad's 5 x 5 top, 3 high: what stands here rides the teleporter. */
@@ -122,9 +134,9 @@ public final class FabricatorSite {
 		return new AABB(p.getX() - 12, p.getY() - 3, p.getZ() - 14, p.getX() + 13, p.getY() + 8, p.getZ() + 12);
 	}
 
-	/** The world box the whole build covers (cavern, office, tunnel). */
+	/** The world box the whole build covers. */
 	public BoundingBox box() {
-		return design().box(this.origin, this.rotation);
+		return parts().box();
 	}
 
 	/** World yaw (degrees) for local direction -x: the Warden's window looks that way. */
@@ -147,7 +159,7 @@ public final class FabricatorSite {
 		return "Ancient Fabricator (%s) at %d %d %d".formatted(this.mob.id(), this.origin.getX(), this.origin.getY(), this.origin.getZ());
 	}
 
-	/** Designs by site: about 54,000 blocks each, so only the last few are kept. Thread-safe (worldgen workers). */
+	/** Recent designs by seed, mob and city; built outside the lock, one build per key at a time. */
 	private static final class DesignCache {
 		private final Map<String, FactoryDesign> map = new LinkedHashMap<>(16, 0.75F, true) {
 			@Override
@@ -155,15 +167,34 @@ public final class FabricatorSite {
 				return size() > 6;
 			}
 		};
+		private final ConcurrentHashMap<String, CompletableFuture<FactoryDesign>> building = new ConcurrentHashMap<>();
 
-		synchronized FactoryDesign get(FabricatorSite site) {
+		FactoryDesign get(FabricatorSite site) {
 			String key = site.seed + "/" + site.mob + "/" + Objects.toString(site.cityLocal);
-			FactoryDesign d = this.map.get(key);
-			if (d == null) {
-				d = FactoryDesign.design(site.seed, site.mob, site.cityLocal);
-				this.map.put(key, d);
+			synchronized (this) {
+				FactoryDesign d = this.map.get(key);
+				if (d != null) {
+					return d;
+				}
 			}
-			return d;
+			CompletableFuture<FactoryDesign> mine = new CompletableFuture<>();
+			CompletableFuture<FactoryDesign> other = this.building.putIfAbsent(key, mine);
+			if (other != null) {
+				return other.join();
+			}
+			try {
+				FactoryDesign d = FactoryDesign.design(site.seed, site.mob, site.cityLocal);
+				synchronized (this) {
+					this.map.put(key, d);
+				}
+				mine.complete(d);
+				return d;
+			} catch (RuntimeException | Error e) {
+				mine.completeExceptionally(e);
+				throw e;
+			} finally {
+				this.building.remove(key, mine);
+			}
 		}
 	}
 

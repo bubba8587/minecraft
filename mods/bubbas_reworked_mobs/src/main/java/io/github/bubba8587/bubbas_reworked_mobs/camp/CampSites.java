@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.WeakHashMap;
 
 import io.github.bubba8587.bubbas_reworked_mobs.BubbasReworkedMobs;
@@ -17,6 +16,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.LevelChunk;
@@ -38,7 +38,7 @@ import org.jspecify.annotations.Nullable;
  * <li>once a day, a camp whose roster is dead and whose banner stands <b>resets</b> with chance
  * {@link CampTuning#RESET_CHANCE}, only while nobody is within {@link CampTuning#AWAY_RANGE}; a camp re-armed by
  * putting a banner back resets at the next check for sure;</li>
- * <li>a lit campfire anywhere in a camp's box <b>quiets</b> it while it burns: no roster, no reset (owner);</li>
+ * <li>a lit campfire anywhere in a camp's box <b>quiets</b> it while it burns: no roster, no reset;</li>
  * <li>a pillager outpost with no banner standing spawns no pillagers ({@link #disarmedOutpostAt}).</li>
  * </ul>
  */
@@ -133,32 +133,18 @@ public final class CampSites {
 		if (level.getGameTime() % CampTuning.CHECK_TICKS != 0) {
 			return;
 		}
-		List<ServerPlayer> players = level.players().stream().filter(p -> !p.isSpectator()).toList();
+		List<ServerPlayer> players = level.players().stream().filter(EntitySelector.NO_SPECTATORS).toList();
+		List<ServerPlayer> fighters = players.stream().filter(EntitySelector.NO_CREATIVE_OR_SPECTATOR).toList();
 		boolean changed = false;
 		for (ServerPlayer player : players) {
 			changed |= discover(level, player.chunkPosition());
 		}
 		Sites sites = sites(level);
 		for (CampSite site : sites.byId.values()) {
-			double near = nearest(players, site.centre);
-			if (near <= CampTuning.AWAY_RANGE) {
-				Boolean stands = CampBanners.standsIn(level, site.box, site.kind);
-				if (stands != null && stands != site.armed) {
-					if (stands && site.spawned && site.members.isEmpty()) {
-						site.rearmed = true; // a banner put back in a cleared camp
-					}
-					site.armed = stands;
-					changed = true;
-				}
-				if (!site.isOutpost()) {
-					Boolean fire = CampBanners.litFireIn(level, site.box);
-					if (fire != null && fire != site.quiet) {
-						site.quiet = fire;
-						changed = true;
-					}
-				}
+			if (nearest(players, site.centre) <= CampTuning.AWAY_RANGE) {
+				changed |= refresh(level, site);
 			}
-			if (!site.isOutpost() && site.armed && !site.quiet && !site.spawned && near <= CampTuning.TRIGGER_RANGE
+			if (!site.isOutpost() && site.armed && !site.quiet && !site.spawned && nearest(fighters, site.centre) <= CampTuning.TRIGGER_RANGE
 					&& level.getChunkSource().getChunkNow(site.centre.getX() >> 4, site.centre.getZ() >> 4) != null) {
 				CampRoster.spawn(level, site);
 				changed = true;
@@ -171,10 +157,7 @@ public final class CampSites {
 		} else if (day != sites.lastDay) {
 			sites.lastDay = day;
 			for (CampSite site : sites.byId.values()) {
-				if (!site.isOutpost() && site.spawned && site.members.isEmpty() && site.armed && !site.quiet && nearest(players, site.centre) > CampTuning.AWAY_RANGE
-						&& (site.rearmed || level.getRandom().nextFloat() < CampTuning.RESET_CHANCE)) {
-					site.spawned = false;
-					site.rearmed = false;
+				if (nearest(players, site.centre) > CampTuning.AWAY_RANGE && tryReset(level, site, false)) {
 					changed = true;
 				}
 			}
@@ -184,17 +167,11 @@ public final class CampSites {
 		}
 	}
 
-	/**
-	 * Runs the daily reset check now (tests, the command), whoever is near; {@code sure} skips the chance. Returns how
-	 * many camps reset.
-	 */
+	/** Runs the daily reset check now, whoever is near; {@code sure} skips the chance. Returns how many camps reset. */
 	public static int resetCheck(ServerLevel level, boolean sure) {
 		int reset = 0;
 		for (CampSite site : sites(level).byId.values()) {
-			if (!site.isOutpost() && site.spawned && site.members.isEmpty() && site.armed && !site.quiet
-					&& (sure || site.rearmed || level.getRandom().nextFloat() < CampTuning.RESET_CHANCE)) {
-				site.spawned = false;
-				site.rearmed = false;
+			if (tryReset(level, site, sure)) {
 				reset++;
 			}
 		}
@@ -202,21 +179,43 @@ public final class CampSites {
 		return reset;
 	}
 
-	/** Re-reads whether a camp's banners stand (and whether a fire burns in it) now (tests, the command); null when its box isn't loaded. */
+	/** A cleared, armed, unquiet camp resets (by chance unless {@code sure}, or always when re-armed); true if it did. */
+	private static boolean tryReset(ServerLevel level, CampSite site, boolean sure) {
+		if (site.isOutpost() || !site.spawned || !site.members.isEmpty() || !site.armed || site.quiet
+				|| !(sure || site.rearmed || level.getRandom().nextFloat() < CampTuning.RESET_CHANCE)) {
+			return false;
+		}
+		site.spawned = false;
+		site.rearmed = false;
+		return true;
+	}
+
+	/** Re-reads a camp's banners and fire now; returns whether its banners stand, null when its box isn't loaded. */
 	public static @Nullable Boolean recheck(ServerLevel level, CampSite site) {
+		refresh(level, site);
+		save(level);
+		return CampBanners.standsIn(level, site.box, site.kind);
+	}
+
+	/** Re-reads whether a camp's banners stand and a fire burns in it; true if either changed. */
+	private static boolean refresh(ServerLevel level, CampSite site) {
+		boolean changed = false;
 		Boolean stands = CampBanners.standsIn(level, site.box, site.kind);
 		if (stands != null && stands != site.armed) {
 			if (stands && site.spawned && site.members.isEmpty()) {
-				site.rearmed = true;
+				site.rearmed = true; // a banner put back in a cleared camp
 			}
 			site.armed = stands;
+			changed = true;
 		}
-		Boolean fire = site.isOutpost() ? Boolean.FALSE : CampBanners.litFireIn(level, site.box);
-		if (fire != null) {
-			site.quiet = fire;
+		if (!site.isOutpost()) {
+			Boolean fire = CampBanners.litFireIn(level, site.box);
+			if (fire != null && fire != site.quiet) {
+				site.quiet = fire;
+				changed = true;
+			}
 		}
-		save(level);
-		return stands;
+		return changed;
 	}
 
 	private static double nearest(List<ServerPlayer> players, BlockPos centre) {
@@ -281,20 +280,36 @@ public final class CampSites {
 
 	// --- the roster's deaths ----------------------------------------------------------------------
 
-	/** A camp mob left the world for good (killed, or discarded: converted, despawned): it's off its camp's roster. */
+	/** A camp mob left the world for good: off its camp's roster. */
 	public static void removed(ServerLevel level, Entity entity) {
+		CampSite site = siteOf(level, entity);
+		if (site != null && site.members.remove(entity.getUUID())) {
+			save(level);
+		}
+	}
+
+	/** A camp mob converted (zombie to drowned, skeleton to stray): the new mob takes its place on the roster. */
+	public static void converted(ServerLevel level, Entity from, Entity to) {
+		CampSite site = siteOf(level, from);
+		if (site != null) {
+			site.members.remove(from.getUUID());
+			if (!site.members.contains(to.getUUID())) {
+				site.members.add(to.getUUID());
+			}
+			save(level);
+		}
+	}
+
+	private static @Nullable CampSite siteOf(ServerLevel level, Entity entity) {
 		for (String tag : entity.entityTags()) {
 			if (tag.startsWith(CampTuning.CAMP_TAG + ":")) {
 				try {
-					CampSite site = sites(level).byId.get(Long.parseLong(tag.substring(CampTuning.CAMP_TAG.length() + 1)));
-					UUID uuid = entity.getUUID();
-					if (site != null && site.members.remove(uuid)) {
-						save(level);
-					}
+					return sites(level).byId.get(Long.parseLong(tag.substring(CampTuning.CAMP_TAG.length() + 1)));
 				} catch (NumberFormatException ignored) {
 					// not ours
 				}
 			}
 		}
+		return null;
 	}
 }

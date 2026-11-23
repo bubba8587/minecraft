@@ -50,8 +50,6 @@ abstract class DrownedMixin extends Zombie implements DrownedAccess {
 	private @Nullable DrownedMind brm$mind;
 	@Unique
 	private boolean brm$vanilla;
-	@Unique
-	private static final String BRM_VANILLA_KEY = "bubbas_reworked_mobs:vanilla";
 
 	protected DrownedMixin(EntityType<? extends Zombie> type, Level level) {
 		super(type, level);
@@ -86,7 +84,7 @@ abstract class DrownedMixin extends Zombie implements DrownedAccess {
 		return brm$vanilla;
 	}
 
-	/** Spawners and trial spawners keep vanilla drowned (owner, 2026-11-16). Before vanilla's own setup, so it picks vanilla gear (tridents included). */
+	/** Spawners and trial spawners keep vanilla drowned. Before vanilla's own setup, so it picks vanilla gear (tridents included). */
 	@Inject(method = "finalizeSpawn", at = @At("HEAD"))
 	private void brm$spawnerStaysVanilla(net.minecraft.world.level.ServerLevelAccessor level, DifficultyInstance difficulty,
 			net.minecraft.world.entity.EntitySpawnReason reason, net.minecraft.world.entity.@Nullable SpawnGroupData groupData,
@@ -100,7 +98,7 @@ abstract class DrownedMixin extends Zombie implements DrownedAccess {
 	protected void addAdditionalSaveData(net.minecraft.world.level.storage.ValueOutput output) {
 		super.addAdditionalSaveData(output);
 		if (brm$vanilla) {
-			output.putBoolean(BRM_VANILLA_KEY, true);
+			output.putBoolean(io.github.bubba8587.bubbas_reworked_mobs.BubbasReworkedMobs.VANILLA_KEY, true);
 		}
 	}
 
@@ -108,7 +106,7 @@ abstract class DrownedMixin extends Zombie implements DrownedAccess {
 	protected void readAdditionalSaveData(net.minecraft.world.level.storage.ValueInput input) {
 		super.readAdditionalSaveData(input);
 		// The saved attributes are already vanilla's; only the flag is needed.
-		brm$vanilla = input.getBooleanOr(BRM_VANILLA_KEY, false);
+		brm$vanilla = input.getBooleanOr(io.github.bubba8587.bubbas_reworked_mobs.BubbasReworkedMobs.VANILLA_KEY, false);
 	}
 
 	@Inject(method = "createAttributes", at = @At("RETURN"))
@@ -198,7 +196,7 @@ abstract class DrownedMixin extends Zombie implements DrownedAccess {
 	}
 
 	/**
-	 * The victim is held by the ankles (owner, 2026-11-16): upright, their soles at its outstretched hands, floating
+	 * The victim is held by the ankles: upright, their soles at its outstretched hands, floating
 	 * above and in front of it; lying (crawling), their feet at its hands on the ground ahead of its head. Follows the
 	 * swim amount, which both sides tick, so client and server agree with no syncing.
 	 */

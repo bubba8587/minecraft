@@ -45,6 +45,7 @@ public final class BeaconLogic {
 	/** A full pyramid layer count, 0-4, going down ({@code dir} -1, a floor beacon) or up (+1, upside down). */
 	public static int pyramidLevels(Level level, BlockPos pos, int dir) {
 		int levels = 0;
+		BlockPos.MutableBlockPos at = new BlockPos.MutableBlockPos();
 		for (int step = 1; step <= 4; step++) {
 			int y = pos.getY() + dir * step;
 			if (y < level.getMinY() || y > level.getMaxY()) {
@@ -52,7 +53,7 @@ public final class BeaconLogic {
 			}
 			for (int x = pos.getX() - step; x <= pos.getX() + step; x++) {
 				for (int z = pos.getZ() - step; z <= pos.getZ() + step; z++) {
-					if (!level.getBlockState(new BlockPos(x, y, z)).is(BlockTags.BEACON_BASE_BLOCKS)) {
+					if (!level.getBlockState(at.set(x, y, z)).is(BlockTags.BEACON_BASE_BLOCKS)) {
 						return levels;
 					}
 				}

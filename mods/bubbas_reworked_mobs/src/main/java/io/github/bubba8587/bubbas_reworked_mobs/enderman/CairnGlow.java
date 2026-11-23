@@ -9,12 +9,11 @@ import java.util.WeakHashMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
 
 /**
- * Particles on complete cairns (owner, 2026-11-16; specs/endermen.md, Vigil): a slow purple portal shimmer around its
+ * Particles on complete cairns: a slow purple portal shimmer around its
  * blocks, and a thin stream of end rod sparkles rising from its highest block, sent long-distance so a finished cairn
  * can be spotted from afar at night. Server side, vanilla particles, no new assets.
  *
@@ -37,10 +36,7 @@ public final class CairnGlow {
 		}
 		boolean recheck = time % EndermanTuning.GLOW_CHECK_TICKS == 0;
 		Map<CairnSite, Boolean> known = COMPLETE.computeIfAbsent(level, l -> new HashMap<>());
-		java.util.Set<CairnSite> near = new java.util.HashSet<>();
-		for (ServerPlayer player : level.players()) {
-			near.addAll(CairnSites.near(level, player.blockPosition(), EndermanTuning.GLOW_RANGE));
-		}
+		java.util.Set<CairnSite> near = CairnSites.nearPlayers(level, EndermanTuning.GLOW_RANGE, true); // spectators see it too
 		known.keySet().retainAll(near);
 		RandomSource random = level.getRandom();
 		for (CairnSite site : near) {

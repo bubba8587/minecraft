@@ -19,7 +19,7 @@ import net.minecraft.world.level.block.entity.BannerPatterns;
 import net.minecraft.world.level.block.state.BlockState;
 
 /**
- * The kinds of monster camp (specs/monster-camps.md): skeletons and zombies (owner), and the biome versions with the
+ * The kinds of monster camp (specs/monster-camps.md): skeletons and zombies, and the biome versions with the
  * same rules: husks in deserts, strays in snow, bogged in swamps. Each has its own mob, its own banner (readable from a
  * distance) and its own materials.
  */
@@ -172,7 +172,7 @@ public enum CampKind {
 		return this == ZOMBIE || this == HUSK ? Blocks.ZOMBIE_HEAD.defaultBlockState() : Blocks.SKELETON_SKULL.defaultBlockState();
 	}
 
-	/** A scrap of plant life round the camp's edge, or null. */
+	/** A scrap of plant life round the camp's edge. */
 	public BlockState weed(float roll) {
 		return switch (this) {
 			case SKELETON, ZOMBIE -> roll < 0.5F ? Blocks.SHORT_GRASS.defaultBlockState() : Blocks.FERN.defaultBlockState();

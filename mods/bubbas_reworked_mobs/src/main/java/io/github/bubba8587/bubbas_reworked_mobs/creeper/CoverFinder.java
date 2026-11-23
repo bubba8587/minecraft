@@ -1,6 +1,7 @@
 // dte:C1
 package io.github.bubba8587.bubbas_reworked_mobs.creeper;
 
+import io.github.bubba8587.bubbas_reworked_mobs.world.NaturalSpawns;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -49,14 +50,7 @@ public final class CoverFinder {
 
 	/** The highest standable cell in this column within dy of {@code y}, or null. */
 	public static @Nullable BlockPos standableIn(Level level, int x, int y, int z, int up, int down) {
-		BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
-		for (int dy = up; dy >= -down; dy--) {
-			pos.set(x, y + dy, z);
-			if (standable(level, pos)) {
-				return pos.immutable();
-			}
-		}
-		return null;
+		return NaturalSpawns.highest(x, y, z, up, down, pos -> standable(level, pos));
 	}
 
 	/** Clear collision line from {@code from} to {@code to}. */

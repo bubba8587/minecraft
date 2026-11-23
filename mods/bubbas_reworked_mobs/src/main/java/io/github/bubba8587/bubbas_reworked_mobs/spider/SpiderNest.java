@@ -7,8 +7,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.level.Level;
@@ -80,7 +80,7 @@ public class SpiderNest extends Entity {
 	}
 
 	private void scan(ServerLevel level) {
-		List<ServerPlayer> players = level.getEntitiesOfClass(ServerPlayer.class, triggerBox(), p -> !p.isSpectator() && p.isAlive());
+		List<ServerPlayer> players = level.getEntitiesOfClass(ServerPlayer.class, triggerBox(), EntitySelector.NO_CREATIVE_OR_SPECTATOR.and(EntitySelector.ENTITY_STILL_ALIVE));
 		if (players.isEmpty()) {
 			return;
 		}
@@ -103,7 +103,7 @@ public class SpiderNest extends Entity {
 	}
 
 	private void upkeep(ServerLevel level) {
-		if (webs(level) < SpiderTuning.NEST_MIN_WEBS_ALIVE) {
+		if (!enoughWebs(level)) {
 			discard();
 			return;
 		}
@@ -116,16 +116,11 @@ public class SpiderNest extends Entity {
 		hang(level, this, random.nextInt());
 	}
 
-	private int webs(ServerLevel level) {
-		int n = 0;
+	private boolean enoughWebs(ServerLevel level) {
 		BlockPos centre = blockPosition();
 		int r = SpiderTuning.NEST_RADIUS;
-		for (BlockPos pos : BlockPos.betweenClosed(centre.offset(-r, -2, -r), centre.offset(r, 1, r))) {
-			if (level.getBlockState(pos).is(Blocks.COBWEB) && ++n >= SpiderTuning.NEST_MIN_WEBS_ALIVE) {
-				return n;
-			}
-		}
-		return n;
+		return level.findBlocksIn(centre.offset(-r, -2, -r), centre.offset(r, 1, r)).filterState(state -> state.is(Blocks.COBWEB))
+				.atLeastMatched(SpiderTuning.NEST_MIN_WEBS_ALIVE);
 	}
 
 	/**
@@ -153,14 +148,10 @@ public class SpiderNest extends Entity {
 			if (!level.getEntitiesOfClass(NestSpider.class, room).isEmpty()) {
 				continue;
 			}
-			NestSpider spider = Spiders.NEST_SPIDER.create(level, EntitySpawnReason.STRUCTURE);
+			NestSpider spider = NestSpider.hanging(level, anchor, rnd.nextFloat() * 360.0F);
 			if (spider == null) {
 				return null;
 			}
-			spider.setYRot(rnd.nextFloat() * 360.0F);
-			spider.setYBodyRot(spider.getYRot());
-			spider.setYHeadRot(spider.getYRot());
-			spider.hangFrom(anchor);
 			level.addFreshEntity(spider);
 			return spider;
 		}

@@ -14,7 +14,6 @@ import java.util.WeakHashMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTestServer;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jspecify.annotations.Nullable;
@@ -65,12 +64,7 @@ public final class EndermanHoles {
 		if (level.dimension() != Level.OVERWORLD || level.getServer() instanceof GameTestServer || level.getGameTime() % 20 != 7) {
 			return;
 		}
-		Set<CairnSite> active = new LinkedHashSet<>();
-		for (ServerPlayer player : level.players()) {
-			if (!player.isSpectator()) {
-				active.addAll(CairnSites.near(level, player.blockPosition(), EndermanTuning.SITE_ACTIVE_RANGE));
-			}
-		}
+		Set<CairnSite> active = CairnSites.nearPlayers(level, EndermanTuning.SITE_ACTIVE_RANGE, false);
 		Map<BlockPos, Integer> sweeps = SWEEPS.computeIfAbsent(level, l -> new HashMap<>());
 		for (CairnSite site : active) {
 			int index = sweeps.getOrDefault(site.origin(), 0);

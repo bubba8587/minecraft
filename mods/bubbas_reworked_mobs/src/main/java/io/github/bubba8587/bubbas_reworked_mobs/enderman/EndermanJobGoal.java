@@ -100,7 +100,7 @@ public final class EndermanJobGoal extends Goal {
 				return true;
 			}
 		}
-		// Nothing to do near it: at a complete cairn (its home first) it stands vigil in the ring around it (owner).
+		// Nothing to do near it: at a complete cairn (its home first) it stands vigil in the ring around it.
 		CairnSite site = homeSite(level);
 		if (site == null || !site.complete(level)) {
 			site = CairnSites.nearest(level, here, EndermanTuning.SITE_RADIUS);
@@ -208,8 +208,8 @@ public final class EndermanJobGoal extends Goal {
 			case VIGIL, WAIT -> {
 				Vec3 at = Vec3.atBottomCenterOf(target);
 				CairnSite site = CairnSites.covering(level, vigilCentre);
-				if (site == null || (mind.job() == EndermanMind.Job.VIGIL && !site.complete(level))) {
-					// Its cairn was damaged or is gone: look for work instead.
+				if (site == null || (mind.job() == EndermanMind.Job.VIGIL && (level.getGameTime() - mind.started()) % 20 == 0 && !site.complete(level))) {
+					// cairn damaged or gone: back to work
 					mind.clear();
 					return;
 				}
@@ -256,17 +256,11 @@ public final class EndermanJobGoal extends Goal {
 	private static @Nullable CairnSite siteWanting(ServerLevel level, BlockPos here, BlockState carried) {
 		CairnSite best = null;
 		for (CairnSite site : CairnSites.near(level, here, EndermanTuning.SITE_WORK_RADIUS)) {
-			if (site.wants(level, carried.getBlock()) && (best == null || horizontalDistSqr(site.origin(), here) < horizontalDistSqr(best.origin(), here))) {
+			if (site.wants(level, carried.getBlock()) && (best == null || CairnSites.horizontalDistSqr(site.origin(), here) < CairnSites.horizontalDistSqr(best.origin(), here))) {
 				best = site;
 			}
 		}
 		return best;
-	}
-
-	private static double horizontalDistSqr(BlockPos a, BlockPos b) {
-		double dx = a.getX() - b.getX();
-		double dz = a.getZ() - b.getZ();
-		return dx * dx + dz * dz;
 	}
 
 	/** Teleports to a free standing spot within reach of {@code job} (on the cairn itself for high blocks). */
@@ -372,8 +366,4 @@ public final class EndermanJobGoal extends Goal {
 		return null;
 	}
 
-	/** For tests: plan right now, ignoring the search interval. */
-	public boolean planNow() {
-		return enderman.level() instanceof ServerLevel level && allowed(level) && plan(level);
-	}
 }

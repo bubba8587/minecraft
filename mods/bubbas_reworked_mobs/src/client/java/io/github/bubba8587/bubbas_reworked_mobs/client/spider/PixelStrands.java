@@ -1,7 +1,11 @@
 // dte:C1,B17
 package io.github.bubba8587.bubbas_reworked_mobs.client.spider;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Supplier;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -15,24 +19,15 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.data.AtlasIds;
 import net.minecraft.resources.Identifier;
+import com.mojang.math.Axis;
 import net.minecraft.util.LightCoordsUtil;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 
-/**
- * Silk drawn as pixel art (owner, 2026-11-22: custom visuals are crisp pixels in a vanilla palette, lit by world light,
- * like vanilla's lead and fishing line), shared by the spun webs and the nest spiders' drop thread.
- * <ul>
- * <li>A line is a run of square pixels, one per world-grid cell it passes through, at the loaded cobweb texture's texel
- * size (1/16 with vanilla, 1/32 with a 32x pack), so silk always matches the cobweb blocks beside it.</li>
- * <li>Each pixel takes one of the cobweb texture's three colours (white, pale grey, cool grey), picked per cell.</li>
- * <li>Each pixel is lit by the sky and block light of the block it's in (one lookup per block crossed), with no glow
- * floor, so silk in shade goes grey like cobwebs.</li>
- * <li>Pixels are camera-facing squares a touch bigger than their cell, so diagonal lines stay solid.</li>
- * </ul>
- */
+/** Silk drawn as pixel art: webs, cocoons and spider threads (specs/spiders.md "pixel art"). */
 public final class PixelStrands {
 	public static final Identifier PIXEL = BubbasReworkedMobs.id("textures/entity/spun_web_strand.png");
 	public static final RenderType TYPE = RenderTypes.entityCutout(PIXEL);
@@ -46,6 +41,52 @@ public final class PixelStrands {
 	}
 
 	private PixelStrands() {
+	}
+
+	/** A taut thread from {@code from} up to {@code to}, relative to {@code origin}; empty unless {@code to} is higher. */
+	public static List<Pixel> thread(Vec3 origin, Vec3 from, Vec3 to, Level level) {
+		if (to.y <= from.y) {
+			return List.of();
+		}
+		List<Pixel> pixels = new ArrayList<>();
+		trace(pixels, List.of(from, to), origin, texel(), level);
+		return pixels;
+	}
+
+	/** Turns a spider model a quarter turn about its middle so it hangs head down. */
+	public static void headDown(PoseStack poseStack, float boundingBoxHeight, float entityScale) {
+		float half = boundingBoxHeight * 0.5F / entityScale;
+		poseStack.translate(0.0F, half, 0.0F);
+		poseStack.rotateDegrees(Axis.XP, -90.0F);
+		poseStack.translate(0.0F, -half, 0.0F);
+	}
+
+	/** Pixels per entity, rebuilt when their key changes or after {@code refreshTicks} (light changes). */
+	public static final class Cache {
+		private record Entry(String key, long tick, List<Pixel> pixels) {
+		}
+
+		private final Map<Integer, Entry> entries = new HashMap<>();
+		private final int refreshTicks;
+		private final int pruneAbove;
+
+		public Cache(int refreshTicks, int pruneAbove) {
+			this.refreshTicks = refreshTicks;
+			this.pruneAbove = pruneAbove;
+		}
+
+		public List<Pixel> get(Entity entity, String key, Supplier<List<Pixel>> build) {
+			long now = entity.level().getGameTime();
+			Entry e = this.entries.get(entity.getId());
+			if (e == null || !key.equals(e.key) || now - e.tick >= this.refreshTicks) {
+				e = new Entry(key, now, build.get());
+				this.entries.put(entity.getId(), e);
+			}
+			if (this.entries.size() > this.pruneAbove) {
+				this.entries.keySet().removeIf(id -> entity.level().getEntity(id) == null);
+			}
+			return e.pixels;
+		}
 	}
 
 	/** One texel of the loaded cobweb texture (1/16 vanilla, 1/32 with a 32x pack), capped at 1/32. */

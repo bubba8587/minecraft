@@ -12,6 +12,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -37,7 +38,7 @@ public final class FabricatorBeaconPayload implements BeaconPayload {
 	@Override
 	public void apply(ServerLevel level, ItemStack stack, BeaconContext context) {
 		for (LivingEntity e : context.livingEntities()) {
-			if (e instanceof Player player && !player.isCreative()) {
+			if (e instanceof Player player && EntitySelector.NO_CREATIVE_OR_SPECTATOR.test(player)) {
 				Fabricators.applyDebuffs(player, context.effectDurationTicks());
 			}
 		}

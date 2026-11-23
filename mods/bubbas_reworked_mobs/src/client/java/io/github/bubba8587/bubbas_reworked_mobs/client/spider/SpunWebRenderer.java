@@ -2,9 +2,7 @@
 package io.github.bubba8587.bubbas_reworked_mobs.client.spider;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -21,7 +19,7 @@ import net.minecraft.world.phys.Vec3;
 
 /**
  * Draws a spun web (specs/spiders.md "Spun webs"): a tangle of strands criss-crossing between anchor points (owner,
- * 2026-11-22), in pixels, so it sits next to vanilla's cobweb block (owner: smooth strands looked out of place).
+ * 2026-11-22), in pixels, so it sits next to vanilla's cobweb block.
  * <ul>
  * <li>Each strand is a stepped line of crisp square pixels snapped to the world grid at the cobweb texture's own texel
  * size (1/16 with vanilla, 1/32 with a 32x pack), one texel wide (two for the heavy guy-lines), sagging a little.</li>
@@ -39,17 +37,11 @@ public class SpunWebRenderer extends EntityRenderer<SpunWeb, SpunWebRenderer.Sta
 	private static final double SAG = 0.06;
 	private static final int LIGHT_REFRESH_TICKS = 40;
 
-	private static final class Cached {
-		String key;
-		long lightTick;
-		List<PixelStrands.Pixel> pixels = List.of();
-	}
-
 	public static class State extends EntityRenderState {
 		public List<PixelStrands.Pixel> pixels = List.of();
 	}
 
-	private final Map<Integer, Cached> cache = new HashMap<>();
+	private final PixelStrands.Cache cache = new PixelStrands.Cache(LIGHT_REFRESH_TICKS, 256);
 
 	public SpunWebRenderer(EntityRendererProvider.Context context) {
 		super(context);
@@ -63,19 +55,9 @@ public class SpunWebRenderer extends EntityRenderer<SpunWeb, SpunWebRenderer.Sta
 	@Override
 	public void extractRenderState(SpunWeb entity, State state, float partialTicks) {
 		super.extractRenderState(entity, state, partialTicks);
-		Cached c = cache.computeIfAbsent(entity.getId(), id -> new Cached());
 		double texel = PixelStrands.texel();
 		String key = entity.getUUID() + "|" + entity.strands().hashCode() + "|" + entity.tear() + "|" + entity.position() + "|" + texel;
-		long now = entity.level().getGameTime();
-		if (!key.equals(c.key) || now - c.lightTick >= LIGHT_REFRESH_TICKS) {
-			c.pixels = build(entity, entity.level(), texel);
-			c.key = key;
-			c.lightTick = now;
-		}
-		if (cache.size() > 256) {
-			cache.keySet().removeIf(id -> entity.level().getEntity(id) == null);
-		}
-		state.pixels = c.pixels;
+		state.pixels = cache.get(entity, key, () -> build(entity, entity.level(), texel));
 	}
 
 	@Override

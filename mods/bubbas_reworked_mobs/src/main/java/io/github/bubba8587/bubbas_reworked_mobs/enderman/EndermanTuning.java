@@ -29,7 +29,7 @@ public final class EndermanTuning {
 	/** Height of the main trunk, from the footing to its top knuckle. */
 	public static final int CAIRN_MIN_HEIGHT = 8;
 	public static final int CAIRN_MAX_HEIGHT = 14;
-	/** Chance that one offering of a cairn is TNT (owner: rare TNT allowed); a third of cairns in deserts and badlands. */
+	/** Chance that one offering of a cairn is TNT; a third of cairns in deserts and badlands. */
 	public static final float CAIRN_TNT_CHANCE = 0.16F;
 
 	// --- jobs ----------------------------------------------------------------------------------
@@ -59,17 +59,17 @@ public final class EndermanTuning {
 	public static final int STUCK_TICKS = 60;
 	/** A job not done in this long is dropped (the block, if carried, is kept). */
 	public static final int JOB_TIMEOUT = 600;
-	/** Vigil (owner, 2026-11-16): endermen with nothing to do at a complete cairn stand in a ring around it, staring at it. */
+	/** Vigil: endermen with nothing to do at a complete cairn stand in a ring around it, staring at it. */
 	/** The ring is this far outside the cairn's footprint. */
 	public static final int VIGIL_GAP = 3;
 	/** A vigil lasts this long, then it looks around for work (and most likely takes up its place again). */
 	public static final int VIGIL_TICKS = 1200;
-	/** By day a caretaker under open sky leaves with a 1-in-this chance each tick (about 20 s on average; owner, 2026-11-16). */
+	/** By day a caretaker under open sky leaves with a 1-in-this chance each tick. */
 	public static final int DAY_LEAVE_ONE_IN = 400;
 	/** A builder whose block can't go in yet stands in the ring around its cairn (the vigil's place), checking every second whether it can go in, and plans afresh after this long. */
 	public static final int WAIT_TICKS = 400;
 	/**
-	 * New tasks (owner, 2026-11-16: endermen should occasionally pick up a new task): an empty-handed enderman with
+	 * New tasks: an empty-handed enderman with
 	 * nothing to do near it (and one whose vigil just ended) has this chance per look round to go on an errand: it looks
 	 * for something to take or trample round a random spot ERRAND_MIN-ERRAND_MAX blocks away and goes there.
 	 */
@@ -77,7 +77,7 @@ public final class EndermanTuning {
 	public static final int ERRAND_MIN = 12;
 	public static final int ERRAND_MAX = 40;
 
-	// --- particles on complete cairns (owner) -------------------------------------------------
+	// --- particles on complete cairns -------------------------------------------------
 	/** Ticks between puffs (a few portal particles and one end rod sparkle per complete cairn). */
 	public static final int GLOW_TICKS = 4;
 	/** Ticks between checks that a cairn is still complete. */
@@ -138,9 +138,9 @@ public final class EndermanTuning {
 	/** Breaking a cairn block, or hitting an enderman near a site, angers endermen within this distance. */
 	public static final double ANGER_RADIUS = 24.0;
 
-	// --- cairn gifts (Totems & Artifacts' Totems of the Beginning and the End, through api/Endermen) ------------
+	// --- cairn offerings (Totems & Artifacts' Totem of the Beginning, through api/Endermen) -----------------
 	/** The share of cairns (picked from each site's seed) whose endermen leave an offering once it is complete. */
-	public static final float OFFERING_SHARE = 0.15F; // owner, 2026-11-22: nerfed from 1 in 2
+	public static final float OFFERING_SHARE = 0.15F;
 	/** How often (ticks) complete cairns near players are checked for their offering. */
 	public static final int OFFERING_CHECK_TICKS = 100;
 	/** Each check, a chosen complete cairn with one of its endermen at it leaves its offering with 1 in this chance (~1 min). */

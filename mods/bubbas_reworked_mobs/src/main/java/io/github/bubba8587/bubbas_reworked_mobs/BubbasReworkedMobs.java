@@ -27,6 +27,8 @@ public class BubbasReworkedMobs implements ModInitializer {
 	/** The only place the mod id is written in Java. */
 	public static final String MOD_ID = "bubbas_reworked_mobs";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
+	/** Saved flag: this mob keeps vanilla behaviour. */
+	public static final String VANILLA_KEY = MOD_ID + ":vanilla";
 
 	public static Identifier id(String path) {
 		return Identifier.fromNamespaceAndPath(MOD_ID, path);

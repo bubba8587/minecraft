@@ -11,12 +11,12 @@ import java.util.WeakHashMap;
 
 import it.unimi.dsi.fastutil.longs.Long2BooleanOpenHashMap;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.FluidTags;
+import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -210,7 +210,7 @@ public final class Ripples {
 				}
 			}
 			List<Entity> standing = level.getEntities((Entity) null, new AABB(x, lo, z, x + 1, hi + 1, z + 1),
-					e -> !(e instanceof ItemEntity) && !(e instanceof ExperienceOrb) && !e.isSpectator());
+					EntitySelector.NO_SPECTATORS.and(e -> !(e instanceof ItemEntity) && !(e instanceof ExperienceOrb)));
 			BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
 			// Ground where there was none, top down (so nothing above falls into the gap first).
 			for (int y = hi; y > Math.max(lo - 1, surface); y--) {
@@ -238,7 +238,7 @@ public final class Ripples {
 					}
 					set(level, pos, target);
 				} else if (TerrainKinds.family(real) != null && TerrainKinds.family(real) != TerrainKinds.family(target)
-						&& y >= surface - 1 && !nearWater(level, pos)) {
+						&& y >= surface - 1 && !EndermanWork.nearWater(level, pos)) {
 					set(level, pos, target);
 				}
 			}
@@ -297,14 +297,5 @@ public final class Ripples {
 	private static boolean holdsUp(ServerLevel level, BlockPos below) {
 		BlockState state = level.getBlockState(below);
 		return !state.isAir() && state.getFluidState().isEmpty() && !state.is(BlockTags.REPLACEABLE);
-	}
-
-	private static boolean nearWater(ServerLevel level, BlockPos pos) {
-		for (Direction d : Direction.values()) {
-			if (!level.getFluidState(pos.relative(d)).isEmpty()) {
-				return true;
-			}
-		}
-		return false;
 	}
 }

@@ -31,7 +31,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 /**
  * Overworld endermen become caretakers (specs/endermen.md), no new entity type: vanilla's random take-block and
  * leave-block goals are swapped for {@link EndermanJobGoal}. Nether and End endermen (made in those levels) stay
- * vanilla, and so do vanilla's random natural spawns (MobFinalizeSpawnMixin; owner, 2026-11-16), saved as
+ * vanilla, and so do vanilla's random natural spawns, saved as
  * {@code bubbas_reworked_mobs:vanilla}. E4: an enderman busy on a job ignores eye contact. A caretaker carrying a block still despawns (vanilla
  * keeps every block-carrying enderman forever), so a block it couldn't place vanishes with it.
  */
@@ -122,7 +122,7 @@ abstract class EndermanMixin extends Monster implements EndermanAccess {
 	@Inject(method = "addAdditionalSaveData", at = @At("TAIL"))
 	private void brm$saveVanilla(ValueOutput output, CallbackInfo ci) {
 		if (brm$vanilla) {
-			output.putBoolean("bubbas_reworked_mobs:vanilla", true);
+			output.putBoolean(io.github.bubba8587.bubbas_reworked_mobs.BubbasReworkedMobs.VANILLA_KEY, true);
 		}
 		if (brm$home != null) {
 			output.putLong("bubbas_reworked_mobs:cairn_home", brm$home.asLong());
@@ -131,7 +131,7 @@ abstract class EndermanMixin extends Monster implements EndermanAccess {
 
 	@Inject(method = "readAdditionalSaveData", at = @At("TAIL"))
 	private void brm$loadVanilla(ValueInput input, CallbackInfo ci) {
-		if (input.getBooleanOr("bubbas_reworked_mobs:vanilla", false)) {
+		if (input.getBooleanOr(io.github.bubba8587.bubbas_reworked_mobs.BubbasReworkedMobs.VANILLA_KEY, false)) {
 			brm$makeVanilla();
 		}
 		input.getLong("bubbas_reworked_mobs:cairn_home").ifPresent(l -> brm$home = BlockPos.of(l));

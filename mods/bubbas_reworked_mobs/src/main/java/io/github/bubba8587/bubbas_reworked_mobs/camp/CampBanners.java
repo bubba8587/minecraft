@@ -3,7 +3,7 @@ package io.github.bubba8587.bubbas_reworked_mobs.camp;
 
 import java.util.List;
 
-import net.minecraft.core.BlockPos;
+import io.github.bubba8587.bubbas_reworked_mobs.world.LoadedBlockEntities;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
@@ -11,11 +11,12 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.CampfireBlock;
 import net.minecraft.world.level.block.entity.BannerBlockEntity;
 import net.minecraft.world.level.block.entity.BannerPattern;
 import net.minecraft.world.level.block.entity.BannerPatternLayers;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.block.entity.CampfireBlockEntity;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import org.jspecify.annotations.Nullable;
 
@@ -83,52 +84,15 @@ public final class CampBanners {
 		return true;
 	}
 
-	/**
-	 * Whether a matching banner stands in the box, or null when part of the box isn't loaded (no answer: keep what was
-	 * known).
-	 */
+	/** Whether a matching banner stands in the box, or null when part of the box isn't loaded. */
 	public static @Nullable Boolean standsIn(ServerLevel level, BoundingBox box, @Nullable CampKind kind) {
-		boolean found = false;
-		for (int cx = box.minX() >> 4; cx <= box.maxX() >> 4; cx++) {
-			for (int cz = box.minZ() >> 4; cz <= box.maxZ() >> 4; cz++) {
-				LevelChunk chunk = level.getChunkSource().getChunkNow(cx, cz);
-				if (chunk == null) {
-					return null;
-				}
-				if (found) {
-					continue;
-				}
-				for (var entry : chunk.getBlockEntities().entrySet()) {
-					BlockPos pos = entry.getKey();
-					if (entry.getValue() instanceof BannerBlockEntity banner && box.isInside(pos) && matches(banner, kind)) {
-						found = true;
-						break;
-					}
-				}
-			}
-		}
-		return found;
+		List<BannerBlockEntity> banners = LoadedBlockEntities.in(level, BannerBlockEntity.class, box);
+		return banners == null ? null : banners.stream().anyMatch(banner -> matches(banner, kind));
 	}
 
-	/**
-	 * Whether a lit campfire or soul campfire stands in the box (owner, "Lighting a fire quiets a camp"), or null when
-	 * part of the box isn't loaded. Campfires are block entities too, so this reads the same maps as the banner check.
-	 */
+	/** Whether a lit campfire or soul campfire stands in the box, or null when part of the box isn't loaded. */
 	public static @Nullable Boolean litFireIn(ServerLevel level, BoundingBox box) {
-		for (int cx = box.minX() >> 4; cx <= box.maxX() >> 4; cx++) {
-			for (int cz = box.minZ() >> 4; cz <= box.maxZ() >> 4; cz++) {
-				LevelChunk chunk = level.getChunkSource().getChunkNow(cx, cz);
-				if (chunk == null) {
-					return null;
-				}
-				for (var entry : chunk.getBlockEntities().entrySet()) {
-					if (entry.getValue() instanceof net.minecraft.world.level.block.entity.CampfireBlockEntity fire && box.isInside(entry.getKey())
-							&& fire.getBlockState().getValueOrElse(net.minecraft.world.level.block.CampfireBlock.LIT, false)) {
-						return true;
-					}
-				}
-			}
-		}
-		return false;
+		List<CampfireBlockEntity> fires = LoadedBlockEntities.in(level, CampfireBlockEntity.class, box);
+		return fires == null ? null : fires.stream().anyMatch(fire -> fire.getBlockState().getValueOrElse(CampfireBlock.LIT, false));
 	}
 }

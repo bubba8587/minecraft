@@ -2,22 +2,20 @@
 package io.github.bubba8587.bubbas_reworked_mobs.camp;
 
 import io.github.bubba8587.bubbas_reworked_mobs.BubbasReworkedMobs;
+import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureType;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceType;
 import net.minecraft.world.level.storage.loot.LootTable;
 
-/**
- * Wiring for monster camps (specs/monster-camps.md): the structure and piece types, the loot table, the ticking that
- * registers camps and spawns their rosters, and counting the roster's deaths. Where camps go (biomes, spacing) is data:
- * data/bubbas_reworked_mobs/worldgen/structure/monster_camp.json and structure_set/monster_camps.json.
- */
+/** Monster camp registration and event wiring. */
 public final class Camps {
 	public static final StructureType<CampStructure> CAMP = Registry.register(BuiltInRegistries.STRUCTURE_TYPE, BubbasReworkedMobs.id("monster_camp"),
 			() -> CampStructure.CODEC);
@@ -35,6 +33,11 @@ public final class Camps {
 			var reason = entity.getRemovalReason();
 			if (reason != null && reason.shouldDestroy() && entity.entityTags().contains(CampTuning.CAMP_TAG)) {
 				CampSites.removed(level, entity);
+			}
+		});
+		ServerLivingEntityEvents.MOB_CONVERSION.register((from, to, params) -> {
+			if (to.level() instanceof ServerLevel level && from.entityTags().contains(CampTuning.CAMP_TAG)) {
+				CampSites.converted(level, from, to);
 			}
 		});
 	}

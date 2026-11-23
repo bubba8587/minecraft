@@ -249,9 +249,32 @@ public final class EndermanWork {
 		return false;
 	}
 
-	private static boolean nearWater(ServerLevel level, BlockPos pos) {
+	/** A fluid touches one of its six faces. */
+	static boolean nearWater(ServerLevel level, BlockPos pos) {
 		for (Direction d : Direction.values()) {
 			if (!level.getFluidState(pos.relative(d)).isEmpty()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * The first hole in column x, z (from the generated surface down FILL_DEPTH) whose original block belongs back: the
+	 * enderman carries that block and sets off to deliver it. False when the column has none or isn't ready.
+	 */
+	static boolean carryToHole(ServerLevel level, net.minecraft.world.entity.monster.Enderman enderman, EndermanMind mind, int x, int z) {
+		int surface = TargetWorld.surface(level, x, z);
+		if (surface == Integer.MIN_VALUE || !level.hasChunk(x >> 4, z >> 4)) {
+			return false;
+		}
+		BlockPos.MutableBlockPos at = new BlockPos.MutableBlockPos();
+		for (int y = surface; y > surface - EndermanTuning.FILL_DEPTH; y--) {
+			at.set(x, y, z);
+			BlockState target = TargetWorld.target(level, at);
+			if (target != null && TerrainKinds.family(target) != null && needsFill(level, at, target)) {
+				enderman.setCarriedBlock(target);
+				mind.set(EndermanMind.Job.DELIVER, at.immutable(), level.getGameTime());
 				return true;
 			}
 		}

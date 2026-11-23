@@ -29,9 +29,11 @@ import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.SkullBlock;
 import net.minecraft.world.level.block.SculkShriekerBlock;
+import net.minecraft.world.level.block.entity.SculkShriekerBlockEntity;
+import net.minecraft.world.level.levelgen.structure.BoundingBox;
+import io.github.bubba8587.bubbas_reworked_mobs.world.LoadedBlockEntities;
 import net.minecraft.world.level.block.StairBlock;
 import net.minecraft.world.level.block.WallBlock;
-import net.minecraft.world.level.block.WeepingVinesBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
@@ -40,18 +42,7 @@ import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.block.state.properties.SlabType;
 import org.jspecify.annotations.Nullable;
 
-/**
- * An Ancient Fabricator's whole build (the mob factory of specs/mob-factory.md; owner's name, 2026-11-16), worked out from a seed and the factory's mob: a pure function,
- * so worldgen can later place it chunk by chunk. Local coordinates: the origin is the first air block above the
- * middle of the platform; +z is the front (the entrance tunnel), -z the back (the face wall), +x the Warden's tower.
- *
- * <p>Parts, back to front: a squashed dome cavern (radius about 21, floor 8 below the platform, 22 high in the
- * middle) lined with sculk; the <b>ceiling growth</b> (a 5-block mass of bone, basalt and wart with hanging spikes,
- * shroomlight bulbs and weeping vines; the inert spawner buried in it, the upside-down beacon set into it); the
- * <b>platform</b> (deepslate tiles on brick pillars, lit redstone lamps, the floor beacon on an iron inlay, the
- * teleporter pad, candles, sensors); the <b>face wall</b> (the mob's 8 x 8 face at 2 blocks a pixel,
- * {@link FactoryFaces}); the Warden's <b>tower</b> with its window, ledge and stairs down; and a tunnel out front.
- */
+/** An Ancient Fabricator's whole build from a seed and mob, in local coordinates (specs/mob-factory.md). */
 public final class FactoryDesign {
 	// Bounds of the local grid.
 	private static final int MIN_X = -34;
@@ -144,11 +135,6 @@ public final class FactoryDesign {
 		}
 	}
 
-	/** The design for this seed and mob (deterministic), with the old winding tunnel out of the front. */
-	public static FactoryDesign design(long seed, Mob mob) {
-		return design(seed, mob, null);
-	}
-
 	/**
 	 * The design for this seed and mob, its entrance tunnel running to an ancient city whose centre is at {@code city}
 	 * (local coordinates; null for the plain winding tunnel). Deterministic.
@@ -216,18 +202,6 @@ public final class FactoryDesign {
 		return this.timerLamps;
 	}
 
-	public List<BlockPos> chests() {
-		return this.chests;
-	}
-
-	public Mob mob() {
-		return this.mob;
-	}
-
-	public long seed() {
-		return this.seed;
-	}
-
 	/** Local position of the buried spawner. */
 	public BlockPos spawner() {
 		return this.spawner;
@@ -241,12 +215,12 @@ public final class FactoryDesign {
 		return this.ceilingBeacon;
 	}
 
-	/** Where the Warden stands (feet), local. It looks toward -x, out of its window. */
 	/** Local position of the office jukebox. */
 	public BlockPos jukebox() {
 		return this.jukebox;
 	}
 
+	/** Where the Warden stands (feet), local; it looks toward -x. */
 	public BlockPos wardenSpot() {
 		return this.warden;
 	}
@@ -410,7 +384,7 @@ public final class FactoryDesign {
 	}
 
 	/**
-	 * The ceiling mass (owner, 2026-11-16: warped first, bone only a minor accent): warped wart with teal stripped
+	 * The ceiling mass: warped wart with teal stripped
 	 * hyphae veins through it, dark basalt seams, shroomlight accents, the odd bone knot.
 	 */
 	private BlockState massBlock(int x, int y, int z) {
@@ -455,7 +429,7 @@ public final class FactoryDesign {
 			}
 		}
 		centralDripper();
-		// Small drippers (owner: any others much smaller): short warped teats, 2-5 long, spread over the ceiling,
+		// Small drippers: short warped teats, 2-5 long, spread over the ceiling,
 		// none within 6 of the central one.
 		List<int[]> drippers = new ArrayList<>();
 		int tries = 0;
@@ -577,16 +551,6 @@ public final class FactoryDesign {
 		}
 	}
 
-	private void hangVines(int x, int y, int z, int length) {
-		for (int i = 0; i < length; i++) {
-			if (!isOpen(x, y - i - 1, z) || i == length - 1) {
-				attach(x, y - i, z, Blocks.WEEPING_VINES.defaultBlockState().setValue(WeepingVinesBlock.AGE, 25));
-				return;
-			}
-			attach(x, y - i, z, Blocks.WEEPING_VINES_PLANT.defaultBlockState());
-		}
-	}
-
 	private static boolean nearBeam(int x, int z, double r) {
 		return Math.hypot(x - BEAM_X, z - BEAM_Z) < r;
 	}
@@ -598,7 +562,7 @@ public final class FactoryDesign {
 	 * and bend toward the central dripper. Each is a thin strand (about one block thick) of warped wart along a cubic
 	 * curve, threaded with knots of stripped warped hyphae every ~3 blocks so it reads as links: from low on the wall,
 	 * up it, then sagging free under the roof, twisting as it goes (so they spiral in), to the dripper's stalk. Every
-	 * few knots is crimson (the owner's crimson streaks). None start on the face wall, the tower or the tunnel mouth.
+	 * few knots is crimson. None start on the face wall, the tower or the tunnel mouth.
 	 */
 	private void tendrils() {
 		int count = 11 + this.random.nextInt(3);
@@ -844,7 +808,7 @@ public final class FactoryDesign {
 				attach(x, 0, PZ_FRONT, Blocks.DEEPSLATE_TILE_WALL.defaultBlockState());
 			}
 		}
-		// Corner posts; soul lanterns on the front two only (owner: dark like an ancient city).
+		// Corner posts; soul lanterns on the front two only.
 		for (int x : new int[] { -PX, PX }) {
 			for (int z : new int[] { PZ_BACK, PZ_FRONT }) {
 				solid(x, 0, z, Blocks.POLISHED_DEEPSLATE.defaultBlockState());
@@ -914,7 +878,7 @@ public final class FactoryDesign {
 				}
 			}
 		}
-		// Redstone lamps set into the frame, unlit (owner: dark like an ancient city; you bring a torch).
+		// Redstone lamps set into the frame, unlit.
 		for (int x : new int[] { -7, -3, 2, 6 }) {
 			solid(x, 17, WALL_Z, Blocks.REDSTONE_LAMP.defaultBlockState());
 		}
@@ -1247,7 +1211,7 @@ public final class FactoryDesign {
 	/** Placement marker: deepslate only where the world holds a liquid there (the tunnel's sealed sides). */
 	private static final BlockState SEAL = Blocks.STRUCTURE_VOID.defaultBlockState();
 
-	// ---- Secrets and the lower city (owner, 2026-11-16: "some additional secrets and complexity ... to the generated area") ----
+	// ---- Secrets and the lower city ----
 
 	/** The deck's west rim gap (its middle z), where stairs go down to the lower terrace. */
 	static final int TERRACE_STAIR_Z = 3;
@@ -1303,7 +1267,7 @@ public final class FactoryDesign {
 	}
 
 	/**
-	 * The lower city (owner: "right now it's 3 large square platforms and some stairs"): ancient-city work round the
+	 * The lower city: ancient-city work round the
 	 * deck at broken, varied levels: a causeway on piers from the tunnel mouth to the deck's front, a lower terrace on
 	 * the west reached by stairs from the deck (a ruined arch, a back wall, a wool corner, a buried chest) with stairs
 	 * on down to the cavern floor, a ruined hut on the floor (wool, a buried chest), a broken arch and a buried chest
@@ -1329,7 +1293,7 @@ public final class FactoryDesign {
 	}
 
 	/**
-	 * More ways down (owner: "more stairs"), each its own width: from the deck's east back gap a 2-wide flight to a
+	 * More ways down, each its own width: from the deck's east back gap a 2-wide flight to a
 	 * landing north of the tower, then a broken flight on down; from the west back gap a narrow 1-wide broken flight
 	 * behind the terrace to the floor; and from the causeway's side a 2-wide flight down into the pit (on the side
 	 * away from the hut).
@@ -1774,7 +1738,7 @@ public final class FactoryDesign {
 	}
 
 	/**
-	 * The reject pit (owner): a sealed vault under the deck, its way in one odd tile: a chiseled deepslate in the
+	 * The reject pit: a sealed vault under the deck, its way in one odd tile: a chiseled deepslate in the
 	 * deck off the chiseled grid (the deck's chiseled tiles sit every 4th block). Under it a ladder drops into a
 	 * brick room heaped with failed products: bone blocks, the site's mob's heads (skeleton skulls for mobs without
 	 * one; cobwebs for spiders, obsidian for endermen), soul soil, and a chest of rejects. From the pit below, its
@@ -1864,7 +1828,7 @@ public final class FactoryDesign {
 	}
 
 	/**
-	 * The intake (owner): over the dripper's root, a low sculk-choked chamber that feeds the machine: floors of soul
+	 * The intake: over the dripper's root, a low sculk-choked chamber that feeds the machine: floors of soul
 	 * soil, soul sand, sculk and bone, walls and roof of sculk and wart, warped stems running in like roots toward the
 	 * knot of hyphae in its floor (the hidden spawner is right under that knot), bone heaps, a sculk catalyst, one soul
 	 * fire. Reached by climbing the chains: twisting vines grow up a throat from the chain that runs closest under the
@@ -2111,26 +2075,25 @@ public final class FactoryDesign {
 		int flags = Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE;
 		BooleanProperty upsideDown = upsideDownProperty();
 		BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
-		for (Map<BlockPos, BlockState> pass : List.of(this.blocks, this.attached)) {
-			for (Map.Entry<BlockPos, BlockState> e : pass.entrySet()) {
-				BlockPos local = e.getKey();
-				BlockPos r = local.rotate(rotation);
-				pos.set(origin.getX() + r.getX(), origin.getY() + r.getY(), origin.getZ() + r.getZ());
-				if (box != null && !box.isInside(pos) || level.isOutsideBuildHeight(pos)) {
-					continue;
-				}
-				BlockState state = e.getValue();
-				if (state == SEAL) {
-					if (!level.getFluidState(pos).isEmpty()) {
-						level.setBlock(pos, Blocks.DEEPSLATE.defaultBlockState(), flags);
-					}
-					continue;
-				}
-				if (local.equals(this.ceilingBeacon) && upsideDown != null) {
-					state = state.setValue(upsideDown, true);
-				}
-				level.setBlock(pos, state.rotate(rotation), flags);
+		List<Map.Entry<BlockPos, BlockState>> entries = entriesFor(origin, rotation, box);
+		for (Map.Entry<BlockPos, BlockState> e : entries) {
+			BlockPos local = e.getKey();
+			BlockPos r = local.rotate(rotation);
+			pos.set(origin.getX() + r.getX(), origin.getY() + r.getY(), origin.getZ() + r.getZ());
+			if (box != null && !box.isInside(pos) || level.isOutsideBuildHeight(pos)) {
+				continue;
 			}
+			BlockState state = e.getValue();
+			if (state == SEAL) {
+				if (!level.getFluidState(pos).isEmpty()) {
+					level.setBlock(pos, Blocks.DEEPSLATE.defaultBlockState(), flags);
+				}
+				continue;
+			}
+			if (local.equals(this.ceilingBeacon) && upsideDown != null) {
+				state = state.setValue(upsideDown, true);
+			}
+			level.setBlock(pos, state.rotate(rotation), flags);
 		}
 		for (BlockPos chest : this.chests) {
 			BlockPos at = toWorld(origin, chest, rotation);
@@ -2148,14 +2111,12 @@ public final class FactoryDesign {
 				}
 			}
 		}
-		// Walls settle their connections.
-		for (Map<BlockPos, BlockState> pass : List.of(this.blocks, this.attached)) {
-			for (Map.Entry<BlockPos, BlockState> e : pass.entrySet()) {
-				if (e.getValue().getBlock() instanceof WallBlock || e.getValue().getBlock() instanceof IronBarsBlock) {
-					BlockPos at = toWorld(origin, e.getKey(), rotation);
-					if (box == null || box.isInside(at)) {
-						level.setBlock(at, Block.updateFromNeighbourShapes(level.getBlockState(at), level, at), flags);
-					}
+		// walls settle their connections
+		for (Map.Entry<BlockPos, BlockState> e : entries) {
+			if (e.getValue().getBlock() instanceof WallBlock || e.getValue().getBlock() instanceof IronBarsBlock) {
+				BlockPos at = toWorld(origin, e.getKey(), rotation);
+				if (box == null || box.isInside(at)) {
+					level.setBlock(at, Block.updateFromNeighbourShapes(level.getBlockState(at), level, at), flags);
 				}
 			}
 		}
@@ -2171,6 +2132,38 @@ public final class FactoryDesign {
 				patch.place(level, generator, r, at);
 			}
 		}
+	}
+
+	/** Entries by world chunk, for the last origin and rotation placed (worldgen places one site chunk by chunk). */
+	private record ChunkIndex(BlockPos origin, Rotation rotation,
+			it.unimi.dsi.fastutil.longs.Long2ObjectMap<List<Map.Entry<BlockPos, BlockState>>> byChunk) {
+	}
+
+	private volatile @Nullable ChunkIndex chunkIndex;
+
+	/** The entries that can fall inside {@code box}: blocks then attached, in placing order. */
+	private List<Map.Entry<BlockPos, BlockState>> entriesFor(BlockPos origin, Rotation rotation,
+			net.minecraft.world.level.levelgen.structure.@Nullable BoundingBox box) {
+		if (box == null || box.minX() >> 4 != box.maxX() >> 4 || box.minZ() >> 4 != box.maxZ() >> 4) {
+			List<Map.Entry<BlockPos, BlockState>> all = new java.util.ArrayList<>(this.blocks.size() + this.attached.size());
+			all.addAll(this.blocks.entrySet());
+			all.addAll(this.attached.entrySet());
+			return all;
+		}
+		ChunkIndex index = this.chunkIndex;
+		if (index == null || !index.origin.equals(origin) || index.rotation != rotation) {
+			var byChunk = new it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap<List<Map.Entry<BlockPos, BlockState>>>();
+			for (Map<BlockPos, BlockState> pass : List.of(this.blocks, this.attached)) {
+				for (Map.Entry<BlockPos, BlockState> e : pass.entrySet()) {
+					BlockPos r = e.getKey().rotate(rotation);
+					long key = net.minecraft.world.level.ChunkPos.pack((origin.getX() + r.getX()) >> 4, (origin.getZ() + r.getZ()) >> 4);
+					byChunk.computeIfAbsent(key, k -> new java.util.ArrayList<>()).add(e);
+				}
+			}
+			index = new ChunkIndex(origin.immutable(), rotation, byChunk);
+			this.chunkIndex = index;
+		}
+		return index.byChunk.getOrDefault(net.minecraft.world.level.ChunkPos.pack(box.minX() >> 4, box.minZ() >> 4), List.of());
 	}
 
 	/**
@@ -2193,16 +2186,16 @@ public final class FactoryDesign {
 				}
 			}
 		}
-		BlockPos a = toWorld(origin, new BlockPos(MIN_X, MIN_Y, MIN_Z), rotation);
-		BlockPos b = toWorld(origin, new BlockPos(MAX_X, MAX_Y, MAX_Z), rotation);
-		for (BlockPos pos : BlockPos.betweenClosed(a, b)) {
-			BlockState state = level.getBlockState(pos);
+		// shriekers: no Warden summons
+		BoundingBox area = BoundingBox.fromCorners(toWorld(origin, new BlockPos(MIN_X, MIN_Y, MIN_Z), rotation),
+				toWorld(origin, new BlockPos(MAX_X, MAX_Y, MAX_Z), rotation));
+		for (SculkShriekerBlockEntity shrieker : LoadedBlockEntities.inLoading(level, SculkShriekerBlockEntity.class, area)) {
+			BlockState state = shrieker.getBlockState();
 			if (state.is(Blocks.SCULK_SHRIEKER) && state.getValue(SculkShriekerBlock.CAN_SUMMON)) {
-				level.setBlock(pos, state.setValue(SculkShriekerBlock.CAN_SUMMON, false), flags);
+				level.setBlock(shrieker.getBlockPos(), state.setValue(SculkShriekerBlock.CAN_SUMMON, false), flags);
 			}
 		}
-		// The office jukebox plays music disc 13 (eerie; owner: "a weird music disc that's always playing"; vanilla's
-		// infinite jukebox, coming in current snapshots, will keep it going).
+		// office jukebox: disc 13
 		if (level.getBlockEntity(toWorld(origin, this.jukebox, rotation)) instanceof net.minecraft.world.level.block.entity.JukeboxBlockEntity box
 				&& box.getTheItem().isEmpty()) {
 			box.setTheItem(new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.MUSIC_DISC_13));

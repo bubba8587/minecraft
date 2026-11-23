@@ -11,6 +11,7 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.monster.skeleton.Bogged;
+import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
@@ -20,7 +21,7 @@ import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 
 /**
- * Bogged are not sleepers (owner, 2026-11-22, specs/undead.md "Undead variants"): they lurk like the reworked drowned
+ * Bogged are not sleepers: they lurk like the reworked drowned
  * (specs/drowned.md), crouched low in swamp water and mud among the reeds, moving when nobody is looking, and ambush.
  *
  * <ul>
@@ -81,8 +82,8 @@ public final class BoggedLurk {
 				if ((now + bogged.getId()) % 20 != 0 || bogged.getTarget() != null) {
 					return;
 				}
-				Player player = level.getNearestPlayer(bogged, BoggedTuning.NOTICE_RANGE);
-				if (player == null || player.isSpectator()) {
+				Player player = nearestSurvival(level, bogged);
+				if (player == null) {
 					return;
 				}
 				BlockPos spot = findSpot(level, bogged, player, null, random);
@@ -134,23 +135,25 @@ public final class BoggedLurk {
 		Vec3 centre = Vec3.atBottomCenterOf(spot);
 		Vec3 pull = centre.subtract(bogged.position()).multiply(0.15, 0.0, 0.15);
 		bogged.setDeltaMovement(bogged.getDeltaMovement().multiply(0.5, 1.0, 0.5).add(pull));
-		Player nearest = level.getNearestPlayer(bogged, BoggedTuning.NOTICE_RANGE);
-		if (nearest == null) {
-			return;
-		}
 		if (bogged.hurtTime > 0 && bogged.getLastHurtByMob() != null) {
 			ambush(bogged, mind, bogged.getLastHurtByMob(), now); // found out: fight
 			return;
 		}
+		if ((now + bogged.getId()) % BoggedTuning.WATCH_INTERVAL != 0) {
+			return;
+		}
+		Player nearest = nearestSurvival(level, bogged);
+		if (nearest == null) {
+			return;
+		}
 		Vec3[] points = Gaze.bodyPoints(bogged.position(), bogged.getBbWidth(), bogged.getBbHeight(), bogged.getEyeHeight(), nearest.getEyePosition());
 		boolean seen = false;
-		for (Player player : level.players()) {
-			if (player.isSpectator() || player.distanceToSqr(bogged) > BoggedTuning.NOTICE_RANGE * BoggedTuning.NOTICE_RANGE) {
-				continue;
-			}
+		double range = BoggedTuning.NOTICE_RANGE;
+		for (Player player : level.getEntitiesOfClass(Player.class, bogged.getBoundingBox().inflate(range),
+				EntitySelector.NO_CREATIVE_OR_SPECTATOR.and(EntitySelector.withinDistance(bogged.getX(), bogged.getY(), bogged.getZ(), range)))) {
 			double d = Math.sqrt(player.distanceToSqr(bogged));
 			boolean faces = Gaze.looksAt(level, player, BoggedTuning.BACK_TURNED_HALF_ANGLE, false, points);
-			if (!player.isCreative() && (d < BoggedTuning.TOO_CLOSE || (d < BoggedTuning.AMBUSH_RANGE && !faces && bogged.hasLineOfSight(player)))) {
+			if (d < BoggedTuning.TOO_CLOSE || (d < BoggedTuning.AMBUSH_RANGE && !faces && bogged.hasLineOfSight(player))) {
 				ambush(bogged, mind, player, now);
 				return;
 			}
@@ -167,6 +170,10 @@ public final class BoggedLurk {
 				mind.since = now;
 			}
 		}
+	}
+
+	private static @Nullable Player nearestSurvival(ServerLevel level, Bogged bogged) {
+		return level.getNearestPlayer(bogged.getX(), bogged.getY(), bogged.getZ(), BoggedTuning.NOTICE_RANGE, EntitySelector.NO_CREATIVE_OR_SPECTATOR);
 	}
 
 	private static void ambush(Bogged bogged, Mind mind, net.minecraft.world.entity.LivingEntity target, long now) {

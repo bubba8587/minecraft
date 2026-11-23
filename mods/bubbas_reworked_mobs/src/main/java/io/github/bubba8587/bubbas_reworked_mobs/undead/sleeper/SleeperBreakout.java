@@ -11,6 +11,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -18,7 +19,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 
 /**
- * How buried and frozen sleepers break out (specs/undead.md "Undead variants", owner 2026-11-22).
+ * How buried and frozen sleepers break out.
  * <ul>
  * <li><b>Husks</b> lie buried in sand: waking, the sand over and beside them bursts in a cloud that briefly blinds
  * anyone close.</li>
@@ -59,7 +60,7 @@ public final class SleeperBreakout {
 			level.sendParticles(ParticleTypes.CLOUD, pos.getX() + 0.5, pos.getY() + 1.2, pos.getZ() + 0.5, 12, 0.8, 0.5, 0.8, 0.02);
 			// The puff of sand blinds anyone close for a moment.
 			for (Player player : level.getEntitiesOfClass(Player.class, new AABB(pos).inflate(UndeadTuning.HUSK_BLIND_RADIUS),
-					p -> !p.isSpectator() && !p.isCreative())) {
+					EntitySelector.NO_CREATIVE_OR_SPECTATOR)) {
 				player.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, UndeadTuning.HUSK_BLIND_TICKS, 0));
 			}
 		} else if (variant == UndeadVariant.STRAY) {

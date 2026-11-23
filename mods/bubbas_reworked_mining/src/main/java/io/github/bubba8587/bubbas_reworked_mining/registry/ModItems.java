@@ -1,7 +1,6 @@
 // dte:C7,B15
 package io.github.bubba8587.bubbas_reworked_mining.registry;
 
-import java.util.List;
 import java.util.function.Function;
 
 import io.github.bubba8587.bubbas_reworked_mining.BubbasReworkedMining;
@@ -24,11 +23,7 @@ import net.minecraft.world.item.equipment.EquipmentAssets;
 
 import net.fabricmc.fabric.api.creativetab.v1.CreativeModeTabEvents;
 
-/**
- * The quartz set (specs/reworked-mining.md "Quartz tools and armor"): items, not blocks (B15). Iron-level for what it
- * can harvest (so ancient debris stays diamond-only), on the mining curve as its own tier with a Nether speed bonus
- * ({@code tier/quartz} item tag, {@link MiningTuning#QUARTZ}). Made and repaired with quartz blocks.
- */
+/** The quartz tool and armor set (specs/reworked-mining.md "Quartz tools and armor"). */
 public final class ModItems {
 	/** Quartz blocks: what the set is crafted from and repaired with. */
 	public static final TagKey<Item> QUARTZ_MATERIALS = TagKey.create(Registries.ITEM, BubbasReworkedMining.id("quartz_tool_materials"));
@@ -54,9 +49,6 @@ public final class ModItems {
 	public static final Item QUARTZ_CHESTPLATE = register("quartz_chestplate", new Item.Properties().humanoidArmor(QUARTZ_ARMOR, ArmorType.CHESTPLATE));
 	public static final Item QUARTZ_LEGGINGS = register("quartz_leggings", new Item.Properties().humanoidArmor(QUARTZ_ARMOR, ArmorType.LEGGINGS));
 	public static final Item QUARTZ_BOOTS = register("quartz_boots", new Item.Properties().humanoidArmor(QUARTZ_ARMOR, ArmorType.BOOTS));
-
-	public static final List<Item> TOOLS = List.of(QUARTZ_SHOVEL, QUARTZ_PICKAXE, QUARTZ_AXE, QUARTZ_HOE);
-	public static final List<Item> ARMOR = List.of(QUARTZ_HELMET, QUARTZ_CHESTPLATE, QUARTZ_LEGGINGS, QUARTZ_BOOTS);
 
 	private ModItems() {
 	}

@@ -1,18 +1,15 @@
 // dte:C1,B17
 package io.github.bubba8587.bubbas_reworked_mobs.client.spider;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Axis;
 import io.github.bubba8587.bubbas_reworked_mobs.spider.GiantSpider;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.SpiderRenderer;
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
@@ -21,7 +18,7 @@ import net.minecraft.world.phys.Vec3;
  * posed by Stormie's Spiders like any spider. While it hauls a catch up a trunk it's posed here instead (owner,
  * 2026-11-22, the same as the nest spiders): vertical and head down, belly to the trunk, facing the catch hanging below
  * it, climbing rear first, with a pixel-art thread from its abdomen up to where it's heading. Up there by the cocoon it
- * keeps to its surface: upside down under an overhang, or head down on the trunk (owner: it mustn't flip upright).
+ * keeps to its surface: upside down under an overhang, or head down on the trunk.
  */
 public class GiantSpiderRenderer extends SpiderRenderer<GiantSpider> {
 	/** The abdomen's end above the body's middle when it hangs head down, per unit of scale (a vanilla spider's). */
@@ -54,15 +51,9 @@ public class GiantSpiderRenderer extends SpiderRenderer<GiantSpider> {
 		s.isUpsideDown = s.under;
 		s.thread = List.of();
 		if (s.hauling && entity.syncedLarder().isPresent()) {
-			BlockPos larder = entity.syncedLarder().get();
 			Vec3 at = entity.getPosition(partialTicks);
-			Vec3 from = at.add(0.0, state.boundingBoxHeight * 0.5 + ABDOMEN * entity.getScale(), 0.0);
-			Vec3 to = Vec3.atCenterOf(larder);
-			if (to.y > from.y) {
-				List<PixelStrands.Pixel> pixels = new ArrayList<>();
-				PixelStrands.trace(pixels, List.of(from, to), at, PixelStrands.texel(), entity.level());
-				s.thread = pixels;
-			}
+			s.thread = PixelStrands.thread(at, at.add(0.0, state.boundingBoxHeight * 0.5 + ABDOMEN * entity.getScale(), 0.0),
+					Vec3.atCenterOf(entity.syncedLarder().get()), entity.level());
 		}
 	}
 
@@ -73,10 +64,7 @@ public class GiantSpiderRenderer extends SpiderRenderer<GiantSpider> {
 		if (!s.perched || s.under) {
 			return; // Stormie's poses it on the ground; under an overhang, vanilla's upside-down flip does
 		}
-		float half = state.boundingBoxHeight * 0.5F / entityScale;
-		poseStack.translate(0.0F, half, 0.0F);
-		poseStack.rotateDegrees(Axis.XP, -90.0F);
-		poseStack.translate(0.0F, -half, 0.0F);
+		PixelStrands.headDown(poseStack, state.boundingBoxHeight, entityScale);
 	}
 
 	@Override

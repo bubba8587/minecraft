@@ -19,6 +19,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
+import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
@@ -41,14 +42,14 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 
 /**
- * A spun web (specs/spiders.md "Spun webs"; owner, 2026-11-22: "for minecraft fitting-in reasons", not an orb web): a
+ * A spun web: a
  * tangle of thick, heavy strands stretched diagonally between many random anchor points on the blocks round a site
  * (ceiling, walls, trunks, branches, ground), criss-crossing through the space at different angles. Drawn on the
  * client by {@code SpunWebRenderer} (thick white strands with a faint sheen and a slight sag; torn ones hang as loose
  * ends). Seeded from the site, so the same site gives the same tangle. No blocks (B15): a nest's or a larder's cobweb
  * blocks are the core, this is the span round it.
  * <ul>
- * <li>Moving through the strands sticks you like a cobweb block does (owner); spiders aren't slowed.</li>
+ * <li>Moving through the strands sticks you like a cobweb block does; spiders aren't slowed.</li>
  * <li>Hits tear it ({@link SpiderTuning#WEB_HITS_TO_CUT} bring it down); shears cut it cleanly for string; fire burns it.</li>
  * <li>It tears a little more as it ages.</li>
  * </ul>
@@ -303,7 +304,7 @@ public class SpunWeb extends Entity {
 			discard();
 			return;
 		}
-		for (LivingEntity e : level.getEntitiesOfClass(LivingEntity.class, span(), e -> !(e instanceof Spider) && !e.isSpectator())) {
+		for (LivingEntity e : level.getEntitiesOfClass(LivingEntity.class, span(), EntitySelector.NO_SPECTATORS.and(e -> !(e instanceof Spider)))) {
 			if (touching(e)) {
 				// Exactly vanilla's cobweb (WebBlock.entityInside), Weaving included.
 				e.makeStuckInBlock(Blocks.COBWEB.defaultBlockState(), e.hasEffect(net.minecraft.world.effect.MobEffects.WEAVING)
@@ -350,12 +351,8 @@ public class SpunWeb extends Entity {
 	}
 
 	private static boolean fireAt(ServerLevel level, BlockPos pos) {
-		for (BlockPos p : BlockPos.betweenClosed(pos.offset(-1, -1, -1), pos.offset(1, 1, 1))) {
-			if (level.getBlockState(p).is(BlockTags.FIRE) || level.getFluidState(p).is(net.minecraft.tags.FluidTags.LAVA)) {
-				return true;
-			}
-		}
-		return false;
+		return level.getBlockStatesIfLoaded(new AABB(pos.getX() - 1, pos.getY() - 1, pos.getZ() - 1, pos.getX() + 1, pos.getY() + 1, pos.getZ() + 1))
+				.anyMatch(state -> state.is(BlockTags.FIRE) || state.getFluidState().is(net.minecraft.tags.FluidTags.LAVA));
 	}
 
 	private void burn(ServerLevel level) {
@@ -374,6 +371,11 @@ public class SpunWeb extends Entity {
 	@Override
 	public boolean isAttackable() {
 		return true;
+	}
+
+	@Override
+	public boolean canBePickedFromInside() {
+		return false;
 	}
 
 	@Override
@@ -412,8 +414,8 @@ public class SpunWeb extends Entity {
 		if (level() instanceof ServerLevel level) {
 			held.hurtAndBreak(1, player, hand);
 			level.playSound(null, getX(), getY(), getZ(), SoundEvents.SHEEP_SHEAR, SoundSource.PLAYERS, 0.8F, 1.4F);
-			// The string falls from the cut, where the player's aim met the web (like shearing a sheep).
-			Vec3 cut = location == null ? position() : location;
+			// string drops at the cut (location is relative to the web)
+			Vec3 cut = location == null ? position() : position().add(location);
 			level.addFreshEntity(new ItemEntity(level, cut.x, cut.y, cut.z,
 					new ItemStack(Items.STRING, SpiderTuning.WEB_SHEAR_STRING)));
 			discard();
