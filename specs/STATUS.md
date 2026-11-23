@@ -32,7 +32,7 @@ Nothing is released yet: every mod is 0.1.0 in `develop`.
 - built: drowned sleepers in shipwrecks ([§](undead.md#drowned-sleepers-in-shipwrecks-owner-2026-11-22-built))
 - built: sneak + middle click lays the held item on the ground anywhere ([§](undead.md#laying-a-held-item-anywhere-built-2026-11-22-agent-3-owner-sneak--middle-click))
 - designed: hybrid sleeper bodies and real 16x/32x body art, before release ([§](undead.md#dormant-undead-are-real-blocks))
-- parked: mob spawner tweaks, the bury-break system, more sleeper kinds ([§](undead.md#scope-and-variants))
+- parked: the bury-break system, more sleeper kinds ([§](undead.md#scope-and-variants))
 
 **Graveyards** ([spec](graveyards.md))
 - built: gravestone block ([§](graveyards.md#gravestones-a-new-block-owner-approved-2026-11-22))

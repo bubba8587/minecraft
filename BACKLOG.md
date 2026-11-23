@@ -6,14 +6,10 @@ Parked ideas and open items, newest first within each project. Agents add to it 
 ## Bubba's Reworked Mobs
 - **Flaky test seen once (2026-11-24):** `enderman_game_test_out_of_order_builders_finish_half_built_cairn` (92 of 93 standing).
 - **Prone sleepers** (face down): not a pose yet; needs a client pose, a shape and a lang key (`specs/undead.md` "Sleeper items").
-- **Endermen trading at cairns** (owner, 2026-11-22; designed, unassigned; `specs/endermen.md` "Trading at cairns"): lay anything on a cairn's trade pad, an enderman takes it once you're away and returns with something random, sometimes good, sometimes weird. To be built with it: sneak + middle click places the held item on the ground anywhere (survival players placing items on display). Still open: the return table, the pad design, the return delay.
 - **Spiders** (`specs/spiders.md` Open): a unique giant drop, what giants do by day, a Stormie's wall/ceiling screenshot, milestone objectives without tests (giants only in old-growth taiga, spin cap, fire burns webs, grip break drops the animal, webs tear with age).
-- **Why challenge a Fabricator? (owner raised 2026-11-16, then skipped the options for now).** Today: two beacons, iron pyramids, office loot, the perfect gem in the floor beacon, farming limp mobs. Options offered: it feeds its region's surface spawns of its mob type (break it, that mob gets rare round there; recommended), capture it as a farm (powered lodestone), a prize found only there (at the intake chamber), office paperwork leading to the next Fabricator. Loot buffed 2026-11-22 (owner: rewarding, Warden stays vanilla). `specs/mob-factory.md`.
 - **Orphaned block entities after a command-built Fabricator (2026-11-22):** the Reworked Mobs `factories` client part logs about 45 vanilla warnings ("Tried to load a DUMMY block entity ... found air", from `LevelChunk` loading) when the player teleports to sites built with `/ancient_fabricator place` (x 320, 480). It's still there after the audit fixes. Along with it come "mark a block for post processing ... not supported", from vanilla's sculk patch feature running on a `ServerLevel`. It looks like the command path only (`site.design().place(ServerLevel)` over chunks that aren't loaded yet, then those chunks generating with the site already registered), not natural worldgen. Harmless (the test passes and nothing looks wrong). To confirm: load a natural Fabricator in a fresh world and grep the log.
 - **Totems ward test flaky (2026-11-22):** `ward_stops_spawns_and_sends_monsters_out` fails about 2 in 10 runs (a zombie stuck 3 blocks up inside the ward), `held_totem_pulses_and_scares_monsters` failed once. The Fabricator flakes were fixed 2026-11-22 (fixed site origins, counted forced chunks, cleanup on failure); watch that they stay gone.
 - **Bury-break system:** how buried loot comes out (shovel-only vs breaking by hand, noise, tools). Today: shovel digs it out loudly; breaking by hand also works, slowly like packed dirt. `specs/undead.md`, Loot on display.
-- Calming sleepers (owner, 2026-11-15): a "lull" game event tag that calms sleepers (light calming and loud bells are built, fire as a weak ward is being built: `specs/undead.md`).
-- Mob spawner tweaks. `specs/undead.md`.
 - Undead before release: hybrid rendering of sleeper bodies and real 16x/32x body art (`specs/undead.md`).
 - **Creepers** (first build done): owner to playtest the numbers and review the 10 builder's choices in `specs/creepers.md`; try them in the test world's creeper grove.
 - **Endermen** (first build done, `specs/endermen.md`): owner to playtest and review the 13 builder's choices and the 4 cairn-form choices; owner, 2026-11-22: explosions don't anger them, no banners, Nether/End endermen stay vanilla; seven cairn forms are built. Try them in the test world's Cairns and endermen station (hub click sign).
@@ -26,7 +22,6 @@ Parked ideas and open items, newest first within each project. Agents add to it 
 - **Monster camps** (`specs/monster-camps.md`): Owner to playtest spacing (10 chunks, ~6 camps per km²) and leader numbers. Natural forest camps sit among uncleared trees (leaves crowd the towers); worth a look. Builder's calls to review: resting dead follow the yard climate (husks/strays), bogged hide fully underwater.
 
 ## Bubba's Totems & Artifacts (C6)
-- **Grave Talisman as loot:** found only (owner); in crypt chests now. Idea: a rare find on sleepers too.
 - Warding open question (builder): should mobs holding a Totem of Warding pulse, and may woken undead pick one up (built as yes). `specs/totems-artifacts.md`.
 - **Statues:** every totem has an agent-made statue; person-made statue designs and the mod icon later (`docs/art-todo.md`).
 - **Totems built 2026-11-16** (Keeping, Gathering, Fortification, Growth, Seeking; `specs/totems-artifacts.md`): owner to review the builder's calls (Seeking signature blocks vs a picker screen, Gathering in a beacon, Growth strength and name, loot); the Gathering texture reads like gingerbread (art row).
@@ -72,6 +67,12 @@ Left for next session:
 - **Tests:** milestone tests for 8, 12 and 13; a client check that clicks every natural-world sign; a screenshot of a crypt niche with the sleeper inside it.
 - **Side effect to know:** mixing design seeds changed the form of every cairn, camp, crypt yard and Fabricator that isn't built yet, including half-built cairns in existing worlds.
 
+## Not now (owner, 2026-11-24)
+- World Tweaks environment ideas: rain puddles, mudslides, sandstorms, mountain wind, avalanches.
+- Calming sleepers with a "lull" game event tag (light, bells and fire already calm them).
+- Grave Talisman as a rare find on sleepers (it stays crypt-chest loot).
+- Mob spawner tweaks.
+
 ## Repo
 - **Multiplayer check (owner, 2026-11-22: "make sure these mods work in multiplayer"; light scan done, the rest is here).** Scan results:
   - No client classes are used in common code.
@@ -86,7 +87,7 @@ Left for next session:
      - Fabricator debuffs and the Warden;
      - Keeping and Seeking totems;
      - camp and nest triggers, a drowned or spider holding one player while another hits it;
-     - endermen trading at cairns once it's built.
+     - endermen trading at cairns (one player's offering, another player nearby).
   3. **Threads:** the static WeakHashMaps aren't thread-safe. Confirm that each is only touched on the server thread, and that none is touched from the client thread in single player (e.g. `WornEffects.LAST_SNEAK` if it is ever reached from client-side entity ticks).
   4. **Player docs:** say which mods every player needs installed. All of them register content, so all are needed on client and server; vanilla clients can't join.
 - **Compatibility tests before releases** (prior-art research, docs/research/prior-art-all-projects-2026-11-16.md): Reworked Beacons vs Beyond Basic Beacons / Potion Beacons (likely mark incompatible) and Underground Beacons / Extended Beacon Range (test); Warding pathing vs Lithium; Infused Gems' enchanting hooks vs Easy Magic; Glider turning vs Do a Barrel Roll; Totem of Keeping vs grave mods (dupes/loss).
@@ -97,4 +98,4 @@ Left for next session:
 - Built (`specs/reworked-mining.md`). Owner to playtest every number in `MiningTuning`, decide whether stronger Efficiency should beat vanilla at Efficiency V diamond, how progress shows to the player, and review the builder's calls (spec "Open").
 
 ## Bubba's World Tweaks (C8)
-- Built (`specs/world-tweaks.md`). Owner to playtest bubble and eruption frequency and the boost numbers. More environment ideas (rain puddles, mudslides, sandstorms, mountain wind, avalanches) offered 2026-11-22, not picked yet.
+- Built (`specs/world-tweaks.md`). Owner to playtest bubble and eruption frequency and the boost numbers.

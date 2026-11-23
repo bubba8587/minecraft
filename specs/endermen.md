@@ -1,7 +1,7 @@
 <!-- dte:C1,B17,B18,B19,D2 -->
 # Reworked Mobs: endermen (spec)
 
-**Status:** caretakers, cairns (seven forms), cairn spawning, vigil, the ripple and nexus for Totems & Artifacts: **built** (first build 2026-11-16, forms 2026-11-22). Trading at cairns and sneak + middle-click placing: **designed, not built** (last section). Open items at the end.
+**Status:** caretakers, cairns (seven forms), cairn spawning, vigil, the ripple and nexus for Totems & Artifacts: **built** (first build 2026-11-16, forms 2026-11-22). Trading at cairns and sneak + middle-click placing: **built** (last section). Open items at the end.
 
 Owner's design (2026-11-16). Endermen are the world's **caretakers and builders**.
 
