@@ -707,11 +707,11 @@ public class CryptYardPiece extends StructurePiece {
 						.setValue(CandleBlock.LIT, random.nextFloat() < 0.6F));
 			}
 		}
-		// The sarcophagus: a stone box three long, an armoured sleeper inside, a slab lid.
+		// The sarcophagus: a stone box three long, an armoured sleeper inside, a slab lid (upper half: the candle stands on it).
 		for (int z = mid - 1; z <= mid + 1; z++) {
 			b.put(gate - 1, floor, z, Blocks.POLISHED_ANDESITE.defaultBlockState());
 			b.put(gate + 1, floor, z, Blocks.POLISHED_ANDESITE.defaultBlockState());
-			b.put(gate, floor + 1, z, Blocks.SMOOTH_STONE_SLAB.defaultBlockState());
+			b.put(gate, floor + 1, z, Blocks.SMOOTH_STONE_SLAB.defaultBlockState().setValue(net.minecraft.world.level.block.SlabBlock.TYPE, net.minecraft.world.level.block.state.properties.SlabType.TOP));
 		}
 		b.put(gate, floor, mid - 1, Blocks.CHISELED_STONE_BRICKS.defaultBlockState());
 		b.put(gate, floor, mid + 1, Blocks.POLISHED_ANDESITE.defaultBlockState());

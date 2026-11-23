@@ -12,7 +12,7 @@ Branch `camps` (worktree `../mc-camps`). Task: build `specs/monster-camps.md`. F
   - a **lean-to** (all sizes): open toward the fire, 3 wide and 2 deep, roof four blocks up (three blocks of headroom; owner asked for it taller after mobs got stuck), fence posts, plank back wall, bedrolls;
   - **roofed towers**: every tower has a full slab roof, raised a block so the tower's banner clears it (owner); lookouts on the platform and mobs under it are shaded;
   - **one underground room** under the fire: 5x5 in small and medium camps, 7x7 in large, 3 high, dark, rock walls, beamed plank ceiling, cobwebs in the corners, a few bones, reached by a 2-wide stair tunnel that surfaces on the side away from the first tower.
-  - By day an exposed camp mob with nothing to fight (or already on fire) walks to the nearest free shade spot, and camp mobs' wandering avoids sunlit ground (vanilla's avoid-sun pathing). If the roster appears by day it appears in the shade (the room first). Husks don't burn and don't bother. At night they're free.
+  - Taking cover is **vanilla's own behaviour** (owner: don't reinvent it): skeletons, strays and bogged already have it (RestrictSunGoal, FleeSunGoal: they keep out of the sun and run for shade once burning); camp zombies are given the same two vanilla goals. If the roster appears by day it appears in the shade (the room first). Husks don't burn. A helmet keeps the sun off, as in vanilla.
 - **Leader:** one per camp, same kind, **1.25x size**, **2.5x health**, +3 attack damage (melee kinds), half knockback resistance, iron helmet and chestplate, an **iron axe** (zombie, husk) or a **Power II bow** (archer kinds). No banner. Drops its weapon half the time and each armour piece 1 time in 5.
 - **Banners are the key.** Each kind has its own banner: skeleton black with a white skull and base stripe, zombie green with a black skull and jagged hem, husk brown with a yellow skull and hem, stray light blue with a white skull and icicle fringe, bogged grey with a green murk rising and a lime skull. One flies from a tower post; the rest stand on short posts round the camp.
   - Break every banner of the camp's kind in the camp and it **stops for good**.
@@ -63,3 +63,12 @@ Already reported separately: `docs/reports/undead-variants-report-2026-11-22.md`
 
 - `camp/CampShade`: by day (`isBrightOutside` and the `monsters_burn` environment attribute), for camp mobs tagged burn-in-daylight: avoid-sun pathing on; when the eye sees the sky and there's no target (or it's on fire), path to the nearest free shade spot. `resolve` finds the standable, sky-less height of a spot (exact for the room, near the ground for the rest). Sky visibility is the sky-light level (15), so it settles with the light engine a moment after blocks change.
 - `CampPiece.shadeSpots()` (saved on the site as `shade`), `tunnelStep(i)`, `leanToSpot()`; the camp box now reaches 10 (12 for large) from the centre so the tunnel is built; the room is skipped where the world isn't deep enough (superflat).
+
+## Fixes after owner review (2026-11-22)
+
+- **Ladders** stopped one rung short of the top: the top rung had no post behind it and would pop off on a block update (owner). They now end at the post's top; you step from the top rung onto the open post top.
+- **Weeds** are only planted where they can grow (grass on gravel would pop); **dirt path** is gone from camp ground (it turns back to dirt under anything built on it).
+- **Crypts:** the noble sarcophagus lid is now an upper slab, so the candle on it stands (it floated on a lower slab).
+- New milestone tests `CampsGameTest.everyCampBlockIsSupported` (one camp of each kind) and `GravesGameTest.everyYardBlockIsSupported` (a crypt of each wealth): every built block passes `canSurvive`, so nothing pops off on an update.
+- Shade checks read the blocks overhead (`CampShade.covered`), not sky light, so they hold right after a camp is built; shade spots need three blocks of headroom (leaders are 1.25x).
+- Camp and crypt tests now run on their own deep 32 x 48 test field (`camp_field`): the camp box (out to 10 from the centre, room 5 down) had spilled into neighbouring tests and made two Mob Factory tests fail. Full milestone suite 123/123, twice.

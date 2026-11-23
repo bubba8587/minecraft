@@ -7,6 +7,7 @@ import io.github.bubba8587.bubbas_reworked_mobs.grave.CryptYardPiece;
 import io.github.bubba8587.bubbas_reworked_mobs.grave.GraveText;
 import io.github.bubba8587.bubbas_reworked_mobs.grave.GraveyardCommand;
 import io.github.bubba8587.bubbas_reworked_mobs.grave.GravestoneBlockEntity;
+import io.github.bubba8587.bubbas_reworked_mobs.grave.YardKinds;
 import io.github.bubba8587.bubbas_reworked_mobs.registry.ModBlocks;
 import io.github.bubba8587.bubbas_reworked_mobs.undead.sleeper.SleeperBlock;
 import net.minecraft.core.BlockPos;
@@ -182,5 +183,19 @@ public class GravesGameTest {
 	private static void boom(GameTestHelper helper, BlockPos at) {
 		helper.getLevel().gameEvent(net.minecraft.world.level.gameevent.GameEvent.EXPLODE, helper.absoluteVec(net.minecraft.world.phys.Vec3.atCenterOf(at)),
 				net.minecraft.world.level.gameevent.GameEvent.Context.of((net.minecraft.world.entity.Entity) null));
+	}
+
+	/** Every block of a built yard (with a crypt) can stay where it is: no candle, lantern, sign or plant without support. */
+	@GameTest(structure = CampsGameTest.FIELD, maxTicks = 20)
+	public void everyYardBlockIsSupported(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		List<String> loose = new java.util.ArrayList<>();
+		for (YardKinds.Wealth wealth : YardKinds.Wealth.values()) {
+			CryptYardPiece piece = GraveyardCommand.build(level, helper.absolutePos(new BlockPos(16, 7, 1)), 900L + wealth.ordinal(), 15, 13, true,
+					YardKinds.State.OVERGROWN, wealth);
+			loose.addAll(CampsGameTest.unsupported(level, piece.getBoundingBox()));
+		}
+		helper.assertTrue(loose.isEmpty(), "blocks that would pop off: " + loose.subList(0, Math.min(12, loose.size())));
+		helper.succeed();
 	}
 }
