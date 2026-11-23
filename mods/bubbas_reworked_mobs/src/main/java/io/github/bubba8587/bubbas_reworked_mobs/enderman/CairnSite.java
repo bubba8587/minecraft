@@ -151,6 +151,19 @@ public final class CairnSite {
 				return true;
 			}
 		}
+		// edge neighbours: diagonal arms of a design
+		for (int dx = -1; dx <= 1; dx++) {
+			for (int dy = -1; dy <= 1; dy++) {
+				for (int dz = -1; dz <= 1; dz++) {
+					if (Math.abs(dx) + Math.abs(dy) + Math.abs(dz) == 2) {
+						BlockState next = level.getBlockState(pos.offset(dx, dy, dz));
+						if (!next.isAir() && next.getFluidState().isEmpty()) {
+							return true;
+						}
+					}
+				}
+			}
+		}
 		return false;
 	}
 

@@ -79,7 +79,7 @@ public final class EndermanWork {
 			if (surface == Integer.MIN_VALUE) {
 				continue;
 			}
-			int top = Math.min(level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z) - 1, surface + EndermanTuning.SCAN_HEIGHT);
+			int top = Math.min(level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z), surface + EndermanTuning.SCAN_HEIGHT);
 			for (int y = top; y >= surface - 1; y--) {
 				pos.set(x, y, z);
 				Kind kind = judge(level, pos, random, wanted);
@@ -114,6 +114,10 @@ public final class EndermanWork {
 		if (real.is(Blocks.FARMLAND)) {
 			return TerrainKinds.family(target) == TerrainKinds.Family.SOIL ? Kind.TRAMPLE : null;
 		}
+		if (wanted.contains(real.getBlock()) && target.isAir()) {
+			// a cairn block lying near its cairn: fetched once it fits
+			return readyCairnBlock(level, pos, real) ? Kind.TAKE : null;
+		}
 		if (!TerrainKinds.liftable(level, pos, real)) {
 			return null;
 		}
@@ -144,6 +148,34 @@ public final class EndermanWork {
 			return Kind.TAKE;
 		}
 		return null;
+	}
+
+	/**
+	 * A block lying where the ground was open that a nearby unwarded cairn can take in now (a builder set it down
+	 * when it didn't fit yet).
+	 */
+	public static boolean readyCairnBlock(ServerLevel level, BlockPos pos, BlockState real) {
+		if (real.isAir() || real.hasBlockEntity() || !real.getFluidState().isEmpty() || real.getDestroySpeed(level, pos) < 0.0F
+				|| !offCairn(level, pos)) {
+			return false;
+		}
+		BlockState target = TargetWorld.target(level, pos);
+		if (target == null || !target.isAir()) {
+			return false;
+		}
+		for (CairnSite site : CairnSites.near(level, pos, EndermanTuning.SITE_WORK_RADIUS)) {
+			if (!EndermanWards.isWarded(level, site.origin()) && site.spotFor(level, real) != null) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/** Not a block of any cairn's design, nor resting on one. */
+	public static boolean offCairn(ServerLevel level, BlockPos pos) {
+		CairnSite site = CairnSites.covering(level, pos);
+		CairnSite under = CairnSites.covering(level, pos.below());
+		return (site == null || site.at(pos) == null) && (under == null || under.at(pos.below()) == null);
 	}
 
 	/**
