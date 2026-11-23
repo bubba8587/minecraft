@@ -169,6 +169,7 @@ All positions are relative to the structure; convert with `absolutePos` and `rel
   - `assertionException(...)` builds an exception to throw yourself.
 - **Scheduling**:
   - `runAfterDelay(ticks, r)`, `runAtTickTime(tick, r)`, `onEachTick(r)`, `runBeforeTestEnd(r)`, `getTick()`
+  - Gotcha: `runAtTickTime`/`runAfterDelay` store runs in an `Object2LongMap<Runnable>` keyed by the Runnable (`GameTestInfo.runAtTickTimeMap`), so scheduling the same Runnable object at several ticks runs it only once, at the last tick given. Wrap it in a fresh lambda per tick (`() -> r.run()`).
   - `startSequence()` returns a `GameTestSequence`, with `.thenWaitUntil([delay,] r)`, `.thenWaitAtLeast(min, r)`, `.thenIdle(n)`, `.thenExecute(r)`, `.thenExecuteAfter(n, r)`, `.thenExecuteFor(n, r)`, `.thenSucceed()`, `.thenFail(supplier)`, `.thenTrigger()`
 - **Blocks**:
   - `setBlock(pos|xyz, Block|BlockState[, Direction])`, `getBlockState`, `destroyBlock`, `placeBlock`

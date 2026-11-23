@@ -15,7 +15,7 @@ side: client and server
 > | **Minecraft** | 26.3 |
 > | **Version** | 0.1.0 (early test, not released yet) |
 > | **Requires** | Fabric API |
-> | **Optional** | [[Bubba's Reworked Mobs]], [[Bubba's Reworked Beacons]] |
+> | **Optional** | [[Bubba's Reworked Mobs]], [[Bubba's Reworked Beacons]], [[Bubba's Infused Gems]] |
 > | **Side** | Client and server |
 > | **Status** | Active |
 
@@ -53,6 +53,12 @@ A found item that makes nearby monsters run away while held, and in a beacon fro
 
 Sneaking and using a totem on a block sets it down as a statue, which gives a small version of the totem's effect around it. Mining the statue gives the totem back.
 
+## Relic maps and vaults
+
+*Main articles: [[Relic Maps]], [[Relic Vaults]]*
+
+Torn relic map shreds turn up in chests across the world. Shreds of the same relic combine into a real map that leads to that relic's buried vault: a sealed room with a totem statue or a fine weapon on its pedestal and chests of treasure. Every world has one vault per relic.
+
 ## Installation
 
 The mod installs like any Fabric mod (see [[Installing Fabric Mods]]) and is needed on both the server and every player's game.
@@ -73,14 +79,14 @@ The mod requires Fabric API and works on its own. Two of Bubba's mods add to it 
 
 | Installed with | Adds |
 |---|---|
-| [[Bubba's Reworked Mobs]] | The Grave Talisman also senses [[Sleeping Undead|sleeping undead]]; the Totem of Warding calms sleeping undead, and a full ward keeps them asleep. [[Endermen|Enderman cairns]] sometimes offer the [[Totem of the Beginning]], and the Totem of the Beginning works only with this mod. |
-| [[Bubba's Reworked Beacons]] | Totems fit in a [[Beacon|beacon]] and work across its area: the Totem of Warding wards it, Gathering makes its item ring, Herding keeps animals in, Clear Skies keeps the weather off. The Totem of the Beginning in a beacon draws endermen to tend its area (with Bubba's Reworked Mobs). |
+| [[Bubba's Reworked Mobs]] | The Grave Talisman also senses [[Sleeping Undead|sleeping undead]]; the Totem of Warding calms sleeping undead, and a full ward keeps them asleep. [[Endermen|Enderman cairns]] sometimes offer the [[Totem of the Beginning]], and the Totem of the Beginning works only with this mod. Relic map shreds are also found in crypts, camps, Fabricator offices and cairn trades; some noble crypts hide a [[Relic Vaults|crypt vault]]; vault pedestals show their weapon planted point-down and a skeleton guard sits by it. |
+| [[Bubba's Reworked Beacons]] | Totems fit in a [[Beacon|beacon]] and work across its area: the Totem of Warding wards it, Gathering makes its item ring, Herding keeps animals in, Clear Skies keeps the weather off. The Totem of the Beginning in a beacon slowly returns its whole area's ground to how it was generated (with Bubba's Reworked Mobs). |
 
 ## History
 
 | Version | Changes |
 |---|---|
-| 0.1.0 | Added, with the Grave Talisman and the Totem of Warding (moved from Bubba's Reworked Mobs) and totem statues. Early test version. |
+| 0.1.0 | Added, with the Grave Talisman and the Totem of Warding (moved from Bubba's Reworked Mobs), totem statues, relic maps and relic vaults. Early test version. |
 
 ## See also
 

@@ -12,7 +12,7 @@ All projects target the latest full release of Minecraft. *See also: [[Version S
 | [[Bubba's Reworked Mobs]] | Fabric mod | Dormant undead, graveyards, monster camps, and reworked creepers, drowned, spiders and endermen. |
 | [[Bubba's Infused Gems]] | Fabric mod | Potions brewed into gems, enchanted and socketed into armor and weapons for permanent effects. |
 | [[Bubba's Reworked Beacons]] | Fabric mod | Beacons with one item slot instead of fixed powers, and paired beacons that work underground. |
-| [[Bubba's Totems & Artifacts]] | Fabric mod | Found artifacts: the Grave Talisman and ten totems, many of which also work in a beacon; totems set down as statues give a small version of their effect. |
+| [[Bubba's Totems & Artifacts]] | Fabric mod | Found artifacts: the Grave Talisman and ten totems, many of which also work in a beacon; totems set down as statues give a small version of their effect; relic maps that lead to buried vaults. |
 | [[Bubba's Reworked Mining]] | Fabric mod | A steep tool curve from slow bare tools to an enchanted machine, rare finds in stone, True Unbreaking, and quartz gear for the Nether. |
 | [[Bubba's World Tweaks]] | Fabric mod | Small touches to the world: bubbling lava, lava geysers, and geyser updrafts to ride. |
 
@@ -22,7 +22,7 @@ Each project has a folder in `Projects/`: an overview page named after the proje
 
 **[[Bubba's Reworked Mobs]]**
 - Undead lie dormant as [[Sleeping Undead]] until [[Noise and Waking|noise wakes them]]; [[Woken Undead]] fight differently ([[Fighting the Undead]]), and [[Monster Spawning|natural spawns]] drop to 15 %.
-- [[Crypt Yards]] with [[Gravestone|gravestones]] and crypts, [[Monster Camps]] with banner keys, and [[Loot on Display]] for the undead to guard.
+- [[Crypt Yards]] with [[Gravestone|gravestones]] and crypts, [[Monster Camps]] with banner keys, [[Trader Posts]] where the wandering trader sets up, and [[Loot on Display]] for the undead to guard.
 - Reworked [[Creepers]] that watch and startle, shore-lurking [[Drowned]] that drag players under, and lurking [[Bogged]].
 - Cave-nesting [[Spiders]] with giants, webs and cocoons; caretaker [[Endermen]] that build cairns and [[Trading at Cairns|trade]] at them; [[Placing Items Anywhere|lay any item on the ground]] with sneak + middle click.
 - A drowned [[Shipwreck Crew]], [[Will-o'-Wisps]] that lead to unfound graveyards, [[Explorer Maps]] from cartographers, and [[Noble Finery]] with Infused Gems.
@@ -33,6 +33,7 @@ Each project has a folder in `Projects/`: an overview page named after the proje
 - [[Totem of Keeping|Keeping]], [[Totem of Gathering|Gathering]], [[Totem of Fortification|Fortification]], [[Totem of Growth|Growth]], [[Totem of Seeking|Seeking]], [[Totem of Herding|Herding]] and [[Totem of Clear Skies|Clear Skies]]; most also work in a beacon.
 - The [[Totem of the Beginning]] restores the land; the [[Totem of the End]] makes endermen kin and teleports.
 - Any totem can be set down as a [[Totem Statue]], which gives a small version of its effect.
+- [[Relic Maps|Relic map shreds]] from chests combine into maps that lead to buried [[Relic Vaults]].
 
 **[[Bubba's Infused Gems]]**
 - [[Making Infused Gems|Brew potions into gems]], [[Enchanting Gems|enchant]] them and [[Socketing Gems|socket]] them into gear.

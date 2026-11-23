@@ -34,7 +34,7 @@ The world appears in the world list of the "mod testing" profile after an instal
 
 ## Bubba Natural World
 
-A second world from normal world generation, installed next to the test world. Signs on a platform at the spawn point teleport to a natural example of each: crypt yards, a camp of each kind, a pillager outpost, a shipwreck with its sleeping crew, an [[Ancient Fabricators|Ancient Fabricator]], an enderman cairn, and an old-growth taiga where giant spiders live. It's a creative world with cheats on; time stands at morning and nothing spawns on its own.
+A second world from normal world generation, installed next to the test world. Signs on a platform at the spawn point teleport to a natural example of each: crypt yards, a camp of each kind, a [[Monster Camps#Nether outposts|Nether outpost]] (the sign leads into the Nether), a pillager outpost, a [[Trader Posts|trader post]], a shipwreck with its sleeping crew, an [[Ancient Fabricators|Ancient Fabricator]], an enderman cairn, and an old-growth taiga where giant spiders live. It's a creative world with cheats on; time stands at morning and nothing spawns on its own.
 
 ## Gem testing grounds
 

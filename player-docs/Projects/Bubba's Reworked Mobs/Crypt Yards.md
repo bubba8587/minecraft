@@ -46,6 +46,8 @@ A sleeper lying in a niche wakes standing in front of it.
 
 With [[Bubba's Totems & Artifacts]] installed, crypts often have a [[Totem Statue|Totem of Warding statue]] standing among the sleepers, facing the way in. While it stands, the sleepers near it never wake. Noble crypts can have one in the chamber and one in each side hall (each 85 % likely), family vaults 65 %, pauper's ossuaries 35 %. Breaking the statue gives you the totem, and the sleepers can wake again.
 
+With Bubba's Totems & Artifacts, about a third of noble crypts also hide a small [[Relic Vaults|relic vault]] behind the far wall, between the two family chests: an old stair leads down from there to a sealed treasure room. Nothing shows it from inside the crypt; it is found by breaking through the wall. Crypt chests also hold [[Relic Maps|relic map shreds]].
+
 ## Finding one
 
 Crypt yards are about one per 36 by 36 chunks, on fairly flat, dry ground, never on water. Faint [[Will-o'-Wisps|will-o'-wisps]] lead you to ones you haven't found, and cartographers sell [[Explorer Maps|Graveyard Explorer Maps]]. With Infused Gems, noble crypt dead wear gemmed [[Noble Finery|finery]]. Operators can build any kind with `/bubbas_reworked_mobs graveyard build <lone|small|medium|large> <kept|overgrown|sunken|collapsed|nearly_gone> <none|pauper|family|noble>` (see [[Reworked Mobs Commands]]).

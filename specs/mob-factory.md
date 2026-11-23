@@ -233,7 +233,7 @@ The Warden and the debuffs carry on.
   - paperwork, 3-5 rolls: paper, books, a book and quill, gray candles, redstone, sculk, disc fragment 5;
   - valuables, 2-4 rolls: diamonds 1-4, emeralds 2-6, gold 2-6, iron 3-8, echo shards 2-4, experience bottles 3-8;
   - one treasure, always: Swift Sneak book (5), level 30-39 enchanted book (4) or diamond chestplate, leggings, sword, pickaxe (3 each), enchanted golden apple, totem of undying, netherite upgrade template, recovery compass, ward trim (2 each), silence trim (1), disc 13 (2), 11 (1), Otherside (1).
-- **Spare parts (owner):** with Infused Gems installed the chests use `fabricator_office_with_gems` instead (it loads only with that mod, via a Fabric load condition; chosen in code by `isModLoaded`). It adds a **1-in-3** chance of a harmful gem: Mining Fatigue 3 / Slowness 2 / Weakness 2 (weights) at Gem Power III tier 2, or 1 the beacon's own perfect Mining Fatigue gem. Without Infused Gems, no gems.
+- **Spare parts (owner):** with Infused Gems installed the chests use `fabricator_office_with_gems` instead (it loads only with that mod, via a Fabric load condition; chosen in code by `isModLoaded`). It adds a **1-in-3** chance of a harmful gem: Mining Fatigue 3 / Slowness 2 / Weakness 2 (weights) at Gem Power III tier 2, or 1 the beacon's own perfect Mining Fatigue gem. Without Infused Gems, no gems. The pool's chance is written in 26.3's form, `"condition": {"type": "minecraft:random_chance", "chance": 0.3333}` (fixed 2026-11-24: the pre-26.x `"conditions"` list was ignored, so the pool rolled every time).
 
 ### Builder's choices (mechanics)
 
@@ -257,6 +257,7 @@ The Warden and the debuffs carry on.
   - `breakingTheHiddenSpawnerStopsItForGood`: once a mob has dropped, the spawner is broken; broken saved, deck mob wakes, no more drops;
   - `wardenWakesWhenItHearsAPlayerAtTheMachine`: one Warden, passive and persistent, wakes angry at a survival player at the floor beacon;
   - `debuffsWithoutReworkedBeacons`: Mining Fatigue III, Weakness, Slowness; its Fabricator also carries the secrets check (below);
+  - `officeGemPoolRollsOneInThree`: the office gem pool rolls about 1 in 3 (900 rolls, 25-42 %; the real table with Infused Gems, else the pool's `condition` decoded from the file); `lootFilesUseCurrentKeys`: no `bubbas_*` loot table or item modifier on the server uses an old-form key (`"function"`, `"functions"` outside a sequence, a `"conditions"` list);
   - `chestTablesRollTheirLoot` (no Fabricator built): reject and buried tables roll items, reject gear comes out damaged, every office chest holds valuables and a treasure.
 - **Client part `factories`:** the look shots plus:
   - `factory-countdown`: a deactivated zombie on the pad mid-count;

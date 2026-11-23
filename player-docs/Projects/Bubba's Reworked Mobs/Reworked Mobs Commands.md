@@ -67,6 +67,16 @@ Requires operator permission; intended for building and testing.
 - `camp locate <kind>` names the nearest camp of that kind (skeleton, zombie, husk, stray, bogged or piglin) and how far away it is. Piglin camps are Nether outposts: run `camp locate piglin` in the Nether.
 - `camp build piglin <size> [<seed>]` builds a Nether outpost here. Built outside the Nether, its piglins and hoglins don't turn into zombies.
 
+### trader_post
+
+*Main article: [[Trader Posts]]*
+
+Requires operator permission; intended for building and testing.
+
+- `trader_post build [<seed>]` builds a trader post here.
+- `trader_post locate` names the nearest trader post and how far away it is. Vanilla's `/locate structure bubbas_reworked_mobs:trader_post` also finds them.
+- `trader_post arrive` brings a wandering trader and its llamas to the nearest post within 96 blocks now.
+
 ### ancient_fabricator
 
 *Main article: [[Ancient Fabricators]]*

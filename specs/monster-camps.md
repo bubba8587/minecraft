@@ -1,7 +1,7 @@
 <!-- dte:C1,B15,B17 -->
 # Reworked Mobs: monster camps (spec)
 
-**Status:** built 2026-11-22: camps, banner keys, leaders, daily resets, a lit fire quiets a camp, shade and the underground room, pillager outposts, maps from cartographers. Built 2026-11-24: Nether outposts (the piglin kind, below).
+**Status:** built 2026-11-22: camps, banner keys, leaders, daily resets, a lit fire quiets a camp, shade and the underground room, pillager outposts, maps from cartographers. Built 2026-11-24: Nether outposts (the piglin kind, below) and trader posts (a wandering trader's market square, not a monster camp, below: it shares the camps' structure machinery).
 
 Owner's design (2026-11-22), building on the earlier idea in `docs/research/camps-blood-moon-idea.md`. Decisions made since win where they differ (the 15 % spawn cut stays; **no blood moon**, owner 2026-11-22).
 
@@ -263,7 +263,7 @@ All from noise columns, before any block exists:
 - **Roster:** piglins; ground members are a piglin brute 25 % of the time (`CampTuning.OUTPOST_BRUTE`). Tower lookouts hold crossbows; other piglins a crossbow or golden sword, brutes a golden axe. Piglins keep vanilla behaviour (neutral to players wearing gold). Built outside the Nether (command, tests), piglins and hoglins are made immune to zombification.
 - **Leader:** a piglin brute, scaled and toughened like overworld leaders, in golden helmet, chestplate and leggings with Protection II and a golden axe with Sharpness III; drop chances as overworld leaders.
 - **Light:** outposts are lit (lanterns, a lit portal). Overworld camps stay dark; the "camps are dark" check in `everyCampBlockIsSupported` skips the piglin kind.
-- **Loot:** `chests/nether_outpost` (by the fire): gold nuggets and ingots, crimson fungus, raw and cooked porkchops, leather, quartz, arrows, string, golden carrots, a worn crossbow, 1 in 4 the outpost's banner. `chests/nether_outpost_room`: gold, gilded blackstone, enchanted golden sword/helmet/chestplate, obsidian, crying obsidian, flint and steel, fire charges, porkchops, a gold block, the piglin banner pattern, a snout trim template, and rarely netherite scrap (weight 1 of about 90).
+- **Loot:** `chests/nether_outpost` (by the fire): gold nuggets and ingots, crimson fungus, raw and cooked porkchops, leather, quartz, arrows, string, golden carrots, a worn crossbow, 1 in 4 the outpost's banner. `chests/nether_outpost_room`: gold, gilded blackstone, enchanted golden sword/helmet/chestplate, obsidian, crying obsidian, flint and steel, fire charges, porkchops, a gold block, the piglin banner pattern, a snout trim template, and rarely netherite scrap (weight 1 of about 90). Both tables use 26.3's `"modifier": {"type": "minecraft:set_count"}` form (2026-11-24: they were written with the pre-26.x `"functions"` list, which 26.3 ignores, so every stack came out as 1); `MobFactoryGameTest.lootFilesUseCurrentKeys` checks every `bubbas_*` loot table and item modifier for old-form keys.
 
 ### Numbers for the owner to playtest
 
@@ -273,4 +273,60 @@ In `CampTuning`, `NetherOutpostStructure` and the structure set: spacing 22 / se
 
 - Milestone `CampsGameTest`: `netherOutpostBiomes`, `outpostRosterAndPennedHoglins`, `outpostGateCanBeWalkedThrough`, `outpostRampCanBeClimbed`, `outpostPortalRoomCanBeReached`, `outpostPortalsMatchTheirState`. Existing camp tests include the piglin kind automatically: `campPiecesNeverOverlap` (gate and pen are new footprints), `campFencesEndCleanly`, `everyCampBlockIsSupported` (minus the dark check).
 - Client part `outposts` (`OutpostsClientGameTest`, seed 20261116): see Milestone test objectives.
-- Natural test world: `tools/build-naturalworld.py` has a "Nether outpost (piglins)" sign (found with `camp locate piglin` run in the Nether, chunks force-loaded there, the sign teleports into the Nether, Nether chunks pruned like overworld ones). Not run yet (built in a worktree); the script is only syntax-checked.
+- Natural test world: `tools/build-naturalworld.py` has a "Nether outpost (piglins)" sign (found with `camp locate piglin` run in the Nether, chunks force-loaded there, the sign teleports into the Nether, Nether chunks pruned like overworld ones). Seed 20261122: -1032 -213 (y 63).
+
+## Trader posts (built 2026-11-24)
+
+A wandering trader's market square: a striped wool stall, llama pens, a hitching rail, a signpost, a lit campfire and often a cart. Vanilla's daily wandering-trader spawn is sent to a nearby post, and its llamas arrive tied up in the pens. Governing leaf: C1 (Reworked Mobs' direction); no new leaf. B15: all vanilla blocks (wool stairs from 26.3), no new blocks.
+
+**Home:** Reworked Mobs, next to camps, crypt yards and Nether outposts: it shares their code-built structure machinery (`worldgen/ClippedBuild`, the chunk-clipped build and fence pass, the footprint plan, the locate-by-placement-grid search) and it is about a mob. World Tweaks has no worldgen structure code.
+
+**Prior art (B9):** `tools/prior-art.py` ("wandering trader post structure", "wandering trader camp", "trader camp", "wandering trader spawn"): no mod adds wandering-trader posts. Ocean/Desert Villager Trader add their own traders with structures (a different idea); "Wanderful Trades" adds trades; the rest change spawn rates or block traders. Built on vanilla's `WanderingTraderSpawner` (one injection) and vanilla blocks; only the choice of place is hand-rolled (the odds, timing, trader, llamas and despawning are vanilla's).
+
+### Placement
+
+- Structure `bubbas_reworked_mobs:trader_post` (step `top_layer_modification`, like camps), set `trader_posts` (random spread, spacing 18, separation 6, salt 20261124; exclusion zone 3 chunks from villages).
+- Biomes `#bubbas_reworked_mobs:has_structure/trader_post`: plains, sunflower plains, meadow, savanna, savanna plateau, desert. A desert post needs a non-desert biome 48 blocks out in one of the four directions (desert edges only).
+- `TraderPostStructure`: nine samples (centre, corners and edge middles 10 out) must be dry and in the tag; ground may rise or fall at most 4 (6 was tried: posts cut deep into hillsides); the floor is the mean of the nine sample heights, at or above sea level. Kept 2 chunks clear of camp and crypt-yard placement-grid candidates (checked from their sets' `getPotentialStructureChunk`, before their own terrain checks, so conservative): a camp's skeletons next to the trader would spoil it.
+- Density in seed 20261116: about 0.08 posts per km² near spawn (a forest-heavy area), typically 1.5-2.5 km between posts; open plains and savanna get more. Rejections are mostly biome (13 of ~100 grid candidates near spawn were in post biomes); of those in biome, about a third pass the terrain checks.
+
+### Layout (`TraderPostPiece`)
+
+- Local frame round the centre: u across, w toward the front. The seed picks the front (4 ways), mirror, colours (primary blue or red; stripes primary/white/secondary/white, primary/secondary, or light blue/white/red/white), pens (one on the left, 60 % also one on the right) and cart (60 %).
+- Plaza u -9..9, w -8..10, levelled to the post's floor height (rocky columns topped with coarse dirt); a 4-block skirt slopes a block per block back to the land; trees and plants cleared (14 up over the plaza). Soil plaza: coarse dirt patches (busier near the stall and fire), a dirt path out the front (w 4 to 14) and in front of the counter; sand plazas stay sand. Pen floors coarse dirt and grass.
+- Footprints (local, inclusive): stall u -3..3 w -7..-3; fire u -2..2 w 1..3; pens u ±5..±9 w -3..3; cargo pile (one pen) u 5..7 w -2..0; rail u 4..8 w 6..7; signpost u 2 w 6..8; cart u -8..-4 w 5..8; entrance banners u ±2 w 10. All keep a gap of at least 1 and stay inside the plaza.
+- Stall: spruce fence posts at the corners (3 high); roof: back eave wool stairs (y+4, w -7), ridge wool (y+5, w -6/-5), front eave stairs (y+4, w -4), overhang stairs (y+3, w -3), wool gable ends; striped by u. Back wall wool (y+2..3) over barrels (one with `chests/trader_post`) and a hay bale. Counter (w -4): barrel, three stripped spruce logs, barrel; on it a potted blue orchid, two carpets, three lit dyed candles, a lantern. Rug of carpets (w -6), a hanging lantern under the ridge, wall banners on the front posts and back wall. No displayed goods on the counter (owner, 2026-11-24: players could just take them).
+- Pens: spruce fence ring 5 x 7, gate toward the plaza with lanterns on the fences either side, hay (a stack of two plus one) in a back corner, two water cauldrons in the other. A post with one pen has a cargo pile of hay and barrels on the other side.
+- Rail: two 2-high posts, a fence top bar, two water cauldrons and a hay bale in front. Signpost: stripped log 2 high, fence, lantern, waxed spruce wall signs front and back ("Trader Post / All welcome", translatable `sign.bubbas_reworked_mobs.trader_post.line1/line2` with English fallback). Cart: spruce top slabs 4 x 2, dark oak trapdoor wheels (open, on the sides), barrel (`chests/trader_post_cart`), hay, barrel, carpet; fence shaft.
+- Campfire lit, with two log benches (builder: unlike dark monster camps, it is a person's camp, and the light keeps the night quiet).
+- Trader banner: base colour, yellow rhombus, zigzag hem (triangles bottom) in the other colour; red banners also a zigzag top.
+- Blocks with entities are only painted when the chunk being built holds them (worldgen block entities have no level: sign text is loaded as NBT, not `setText`).
+- Loot: stall barrel 3-5 stacks (wheat, dried kelp, bread, string, dyes, paper, now and then a lead; emerald weight 4 of 93, one at most per pick); cart barrel 2-4 stacks of food (wheat, kelp, carrots, potatoes, maybe a hay bale or a lead). Nothing that undercuts trading.
+
+### The trader's arrival (`TraderPosts`, `WanderingTraderSpawnerMixin`, `TraderLlamaTetherMixin`)
+
+- One injection in `WanderingTraderSpawner.spawn`, at its meeting-point lookup, i.e. after vanilla picked a player and passed its 1-in-10 roll (vanilla's check every 20 minutes and 25-75 % chance are unchanged). `TraderPosts.redirect`: a village meeting point (bell) within 48 of the player wins (vanilla); else the nearest post whose centre is within 96 (found from the set's placement grid and structure starts, a handful of chunk lookups, only on a successful roll). `arrive` needs the post's trader spot and llama spots loaded and clear, and the biome not in `#without_wandering_trader_spawns`; otherwise vanilla places the trader as usual.
+- Trader at the spot behind the counter (u 0, w -5): despawn delay 48000 (vanilla), wander target and home the post centre, home radius 12 (builder: it wanders round the post like vanilla traders round a bell, not tied to the counter). Llamas: two, `TRADER_LLAMA.spawn(EVENT)`, one per pen (or both in the one pen), leashed to a lead knot on the pen's back fence; tagged `bubbas_reworked_mobs.trader_post` and `bubbas_reworked_mobs.tether:<fence pos>`, despawn delay 47999.
+- Vanilla keeps any trader llama leashed to something other than its trader forever. `TraderLlamaTetherMixin` makes the post's own tether count like the trader's lead, so a tethered llama counts down and leaves when its stay is up (and its knot goes with it); otherwise penned llamas would pile up after every visit. A llama a player leads away (or ties up elsewhere) follows vanilla's rule again.
+- No griefing: `spawn_overrides` monster category, `piece` box, empty list (vanilla's mechanism): no natural monster spawns inside. Light from lanterns, candles and the fire. Endermen already leave structure pieces alone (`EndermanTuning.STRUCTURE_MARGIN`).
+- Between visits the post stands empty and intact.
+
+### Commands
+
+`/bubbas_reworked_mobs trader_post build [seed]`, `trader_post locate` (the plaza centre and its height), `trader_post arrive` (bring a trader to the nearest post within 96 blocks now). `/locate structure bubbas_reworked_mobs:trader_post` works.
+
+### Code
+
+`traderpost/`: `TraderPosts` (registration, keys, `nearest`, `redirect`, `redirectTo`, `arrive`, `tetheredAtPost`), `TraderPostStructure`, `TraderPostPiece` (plan, footprints, spots: `traderSpot`, `llamaSpots`, `tetherPosts`, `gates`, `gateFronts`, `entrance`, `penInsides`, `plaza`, `at(u, dy, w)`), `TraderPostCommand`. Mixins `WanderingTraderSpawnerMixin`, `TraderLlamaTetherMixin`. Data: `worldgen/structure/trader_post.json`, `worldgen/structure_set/trader_posts.json`, `tags/worldgen/biome/has_structure/trader_post.json`, `loot_table/chests/trader_post.json`, `trader_post_cart.json`.
+
+### Numbers for the owner to playtest
+
+Spacing 18 chunks, separation 6 (a candidate every 288 blocks); if they should be commoner, lower the spacing or allow a slope of 5. Draw range 96 blocks from the player; village bells within 48 still win; the trader stays within 12 of the post. Loot as above.
+
+### Milestone test objectives
+
+- `TraderPostGameTest` (milestone): `traderPostBiomes` (in: plains, sunflower plains, meadow, savanna, savanna plateau, desert; out: forest, dark forest, taiga, jungle, swamp, river, ocean, beach, snowy plains, badlands, mushroom fields, windswept hills); `postPiecesNeverOverlap` (300 seeds, gap 1, inside the plaza); `everyPostBlockIsSupportedAndFencesEndCleanly` (four seeds: one or two pens, with and without a cart); `postCanBeWalkedThrough` (a trader from the entrance reaches the counter and each pen gate); `tetheredLlamasLeaveWhenTheirStayIsUp` (post llamas and their knots go; a trader llama tied up elsewhere stays, vanilla); `vanillaPlacementWithoutANearbyPost` (no post: vanilla; a post over 96 blocks off: vanilla; a village bell within 48: vanilla).
+- Core: `ReworkedMobsCoreGameTest.traderArrivesAtAPostWithLlamasPenned` (body `TraderPostGameTest.traderArrivesWithLlamasPenned`): with two pens and one, the trader arrives behind the counter with vanilla's stay, two llamas penned (one per pen when two), tethered to the pen fence and counted as tethered at the post.
+- Client part `traderposts` (`TraderPostsClientGameTest`): natural posts in seed 20261116, each checked for biome, flat dry floor, sound blocks, clean fences, no monster spawns, a trader's walk to the counter and gates; shots `traderpost-<i>-above/-front/-left/-backright`, `traderpost-0-counter/-pen`; the daily-spawn redirect from a player 30 blocks off (`traderpost-arrival-front/-pen/-above`), a night shot (`traderpost-night`); prints the density.
+- Not covered by a test: the injection point itself firing inside vanilla's daily tick (the test calls the same `TraderPosts.redirect` the mixin calls; the mixin would fail to apply at startup if its target moved).
+- Natural test world: sign "Trader post (wandering trader)" (`specs/testworld.md`).

@@ -187,6 +187,10 @@ With Totems & Artifacts loaded, a Totem of Warding statue stands among each wing
 - Spots (`CryptYardPiece.wardSpots()`, record `WardSpot(pos, facing)`, on the floor): family at the vault's middle (gate x, `start + VAULT_LENGTH/2`) facing north; pauper one west of the tunnel's middle (`gate - 1`, `start + PAUPER_LENGTH/2`) facing north, the cell east of it cleared so the tunnel stays open; noble chamber at (gate, `chamber + 1`) just inside the entry facing north, each side hall at its middle (`gate ± 8`, `mid`) facing the chamber. Every crypt sleeper lies within 5 of its wing's spot.
 - Placement (`CryptYardPiece.wardStatues`): block looked up by id (`bubbas_totems_artifacts:totem_statue`, `BuiltInRegistries.BLOCK.getOptional`), `totem=warding` and `facing` set by property name (no compile dependency), and a block tick scheduled so it pulses at once (worldgen `setBlock` doesn't call `onPlace`).
 
+## Crypt vaults behind noble crypts (Totems & Artifacts, built 2026-11-24)
+
+With Totems & Artifacts loaded, 35 % of noble crypts (rolled from the crypt's seed) get a small relic vault whose stair starts just behind the crypt's far wall, between the two family chests. Reworked Mobs only offers the hook: `api/Crypts` (`setNobleAttachment`, `attachments(piece)`, `placeDisplay`, `placeStuckDisplay`, `placeSittingSleeper`; stable, add-don't-change), which `CryptYardStructure` and `GraveyardCommand.build` call; `CryptYardPiece` gained `seed()` and `nobleFarWall()`. Nothing is registered without Totems. The vault itself: `specs/totems-artifacts.md`, "Relic maps and relic vaults".
+
 ## Milestone test objectives
 
 - A crypt with Totems & Artifacts gets statues per wing at the stated odds; without it the spot stays air (`GravesGameTest.cryptWardStatueOdds`, 4000 seeds per kind, within 3 points).

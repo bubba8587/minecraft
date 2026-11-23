@@ -16,7 +16,7 @@ The core recipe datapack (built: datapack 1.1.0, 16 recipes). Owner-authored rec
 
 - Bamboo Paper: keeps its name, light green tint (done).
 - Charcoal Block: keeps its name.
-- Andesite/diorite/granite → quartz (blasting): normal 200-tick cook time (was 100).
+- Andesite/diorite/granite → quartz (blasting): normal 200-tick cook time (was 100). The andesite quartz loop (+1 quartz per cycle) stays as is (owner, 2026-11-24).
 - Rotten flesh → leather (smoker): 0.1 XP (was 1.0); lore kept.
 - Trident recipe: kept as is (tridents are too rare otherwise).
 - Organic Glowstone Dust, black dye, sand, gravel, iron nugget: unchanged.

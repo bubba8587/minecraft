@@ -14,6 +14,7 @@ A separate mod for **artifacts**: found items that do things potions and enchant
 | Totem of the Beginning, Totem of the End | built 2026-11-22; the Beginning reworked 2026-11-24 into a reusable pulse (below; unreleased) |
 | Totem statue for every totem (decorative) | built 2026-11-22 |
 | Totems of Herding and Clear Skies | built (2026-11-22) |
+| Relic map shreds, relic maps, relic vaults (named, seeded) and crypt vaults | built (2026-11-24; below) |
 | Gathering beacon ring, Growth seed planting, statues giving an area effect | built (2026-11-22) |
 | One statue radius (5) for every statue, Gathering statue ring | built (2026-11-24) |
 
@@ -193,7 +194,7 @@ Client part `totems` (`TotemsClientGameTest`): the five (and Warding) in the hot
 
 Owner-approved design, handed over by the orchestrator. Player-facing description: `player-docs/Projects/Bubba's Totems & Artifacts/Totem of the Beginning.md` and `Totem of the End.md`. The cairn side (ripple, offerings, beacon nexus) lives in Reworked Mobs: `specs/endermen.md`, "Cairn gifts, the ripple and the nexus".
 
-- **Totem of the Beginning** (original 2026-11-22 design; replaced by the 2026-11-24 rework, next section): used up on use; the ground within 24 blocks ripples back, outward, to how it generated (Reworked Mobs' target world), never harming builds. Without Reworked Mobs or outside the overworld it does nothing and isn't used up. In a beacon the area draws caretaker endermen like a cairn nexus. Found only as a once-ever offering at some complete cairns. Never crafted.
+- **Totem of the Beginning** (original 2026-11-22 design; replaced by the 2026-11-24 rework, next section): used up on use; the ground within 24 blocks ripples back, outward, to how it generated (Reworked Mobs' target world), never harming builds. Without Reworked Mobs or outside the overworld it does nothing and isn't used up. In a beacon the area drew caretaker endermen like a cairn nexus (replaced 2026-11-24 by direct area pulses). Found only as a once-ever offering at some complete cairns. Never crafted.
 - **Totem of the End:** held (either hand), endermen treat you as kin (eye contact, and Reworked Mobs' cairn anger). Used, it teleports to the aimed block within range by the owner's landing rules (top face: stand on it; side face: on top if the 2 above are open, else down to the nearest safe footing; bottom face: down), with a cooldown sweep; no hit, no cooldown. Found only in End city chests (owner, 2026-11-22: no cairn reward).
 
 ### As built
@@ -202,7 +203,7 @@ Owner-approved design, handed over by the orchestrator. Player-facing descriptio
 - Items `bubbas_totems_artifacts:totem_of_the_beginning` (`beginning/TotemOfTheBeginningItem`) and `:totem_of_the_end` (`end/TotemOfTheEndItem`), `stacksTo(1)`, `Rarity.RARE`, in the creative tab after Seeking. No new blocks (B15). Statues for both came later (Totem statue, below).
 - `end/EndTeleport`: aim = `level.clip` from the eyes, `ClipContext.Block.COLLIDER` (aims through grass and flowers) and `Fluid.NONE` (through water). Landing uses vanilla's `noCollision` for the entity's box (as `randomTeleport` does). Teleport like the ender pearl: `stopRiding`, `ServerPlayer.teleport(TeleportTransition(..., Vec3.ZERO, Relative.ROTATION, DO_NOTHING))`, `resetFallDistance`, `resetCurrentImpulseContext`, `GameEvent.TELEPORT`; sound `ENDERMAN_TELEPORT` and `PORTAL` particles at both ends; cooldown via `ItemCooldowns.addCooldown` (B19).
 - `mixin/EndermanKinMixin`: HEAD of `Enderman.isBeingStaredBy` returns false when the player holds the totem in either hand (vanilla's own disguise check is the carved pumpkin on the head; this is the same check for the hand).
-- `compat/BeginningBeaconPayload` (entrypoint `bubbas_reworked_beacons:payload`): accepts the totem only when Reworked Mobs is installed; power 1, 1 layer; refreshes the area each pulse for `AREA_LIFETIME_TICKS` (100).
+- `compat/BeginningBeaconPayload` (entrypoint `bubbas_reworked_beacons:payload`): accepts the totem only when Reworked Mobs is installed; power 1, 1 layer; refreshes the area each pulse for `AREA_LIFETIME_TICKS` (100). Since 2026-11-24 the area pulses itself (`BeginningAreas`) instead of drawing endermen.
 - `compat/SleeperHook` gained `restoreAround`, `drawEndermen`, `setUpEndermen(offering, kin)`; `ReworkedMobsSleepers` calls the new api methods and ignores a `LinkageError` from an older Reworked Mobs. `BubbasTotemsArtifacts.onInitialize` calls `setUpEndermen` once.
 - Loot: `TotemsTuning.END_LOOT` joins `TotemsLoot` (same additive-pool pattern).
 - Textures: `tools/totems-textures.py` (two new grids), rows in `docs/art-todo.md`.
@@ -234,7 +235,7 @@ Owner-approved design, handed over by the orchestrator. Player-facing descriptio
 7. **The top-layer swap only happens away from water** (like the endermen), so natural sand and gravel by rivers and lakes stay.
 8. ~~Used up only when the ripple starts~~ (replaced 2026-11-24: never used up, cooldown instead); the client shows the use animation only in the overworld with Reworked Mobs installed. No message when it does nothing.
 9. **Beacon: the totem isn't accepted without Reworked Mobs** (there are no caretakers to draw), rather than taking it and doing nothing.
-10. **Beacon area spawns** follow the cairn rules (night, game rule, Peaceful...) but keep only 16 blocks from players, not 24 (beacon areas are often small).
+10. ~~**Beacon area spawns**~~ (moot since 2026-11-24: Beginning beacons no longer draw endermen) follow the cairn rules (night, game rule, Peaceful...) but keep only 16 blocks from players, not 24 (beacon areas are often small).
 11. **Offerings: 0.15 of cairns (owner, 2026-11-22; was 1 in 2), about a minute after completion with one of its endermen present.** The offering appears with an enderman's teleport sound and portal particles; no enderman walks over and sets it down.
 12. ~~Completion gift~~ **removed (owner, 2026-11-22): no reward for completing a cairn.** The Totem of the End is found only in End cities.
 13. **Totem of the End landing:** top face with no room or unsafe → nothing (no fallback downward). Aims through grass, flowers and water (lands on a lake bed, as an ender pearl can). Fire, campfire, powder snow, magma, cactus, berry bush, wither rose and lava count as unsafe. Range 32, cooldown 4 s.
@@ -253,7 +254,6 @@ Owner-approved design, handed over by the orchestrator. Player-facing descriptio
 - Client part `totems`: both in the hotbar and held in first person, 16x and 32x (`totems-hotbar`, `totems-held-beginning`, `totems-held-end`, and their `-32x`).
 
 Milestone test objectives not yet written as tests:
-- A beacon with the Totem of the Beginning draws caretakers into its area at night and they repair a hole there (needs `-PwithMobs -PwithBeacons`).
 - With Reworked Mobs, a player holding the Totem of the End breaks a cairn block and no enderman turns on them.
 
 ## Totem of the Beginning rework (owner, 2026-11-24; built 2026-11-24)
@@ -264,11 +264,122 @@ Owner decisions (C6 detail, spec not leaf): the totem is never used up; right-cl
 - **Odds:** each pulse brings back about 1 block in 8 (0.12); mined-out ore far more rarely (0.012), only into empty space. Never touches builds (as before), unbreakable blocks or spawn-protected ground.
 - **Effect:** each changed block gives a dark soul puff with purple portal motes and a low, soft sculk sound (at most about 3 sounds a second). Item use sound: `SCULK_CATALYST_BLOOM` at pitch 0.5 (was the totem-pop sound).
 - **Tooltip:** "Use: the ground nearby slowly remembers how it began". Rarity stays Rare.
-- **Numbers** (`TotemsTuning.BEGINNING_PULSE_*`): radius 8, 7 ticks/block, cooldown 1200 ticks, chance 0.12, ore chance 0.012, recent window 12000 ticks (superseded, below). The old `BEGINNING_RADIUS`/`BEGINNING_TICKS_PER_BLOCK` (24/2) are unused by the item, left in place to keep `TotemsTuning` edits additive; remove once the parallel builder's edits are merged.
+- **Numbers** (`TotemsTuning.BEGINNING_PULSE_*`): radius 8, 7 ticks/block, cooldown 1200 ticks, chance 0.12, ore chance 0.012 (the 10-minute recent window, `BEGINNING_PULSE_RECENT_TICKS`, was removed in the follow-up below). The old `BEGINNING_RADIUS`/`BEGINNING_TICKS_PER_BLOCK` (24/2) are unused by the item, left in place to keep `TotemsTuning` edits additive; remove once the parallel builder's edits are merged.
 - **Why these numbers (builder):** at 12 % a fully dug spot of terrain is about 70 % back after 10 pulses (10 minutes), so healing a crater is a session's background chore, not instant, while one pulse visibly changes something. Ore at 1.2 % means about 80 pulses (80 minutes of standing and clicking) per ore spot on average: mining normally is far faster, so no ore farm. 60 s cooldown and radius 8 as the owner suggested.
-- **Superseded (pending, 2026-11-24):** two parts of the build report are being replaced by a follow-up being built now, so they aren't documented as current: (1) the 10-minute recent window (a block that just came back can't come back again for 10 minutes; `BEGINNING_PULSE_RECENT_TICKS`) is being removed; (2) beacon and statue Beginning areas played the revert effect when their endermen took or set down a block, and will instead revert blocks directly. Update this section when the follow-up lands.
-- **Tests:** milestone `BeginningEndGameTest.beginningPulsesOnlyWithReworkedMobs`; Reworked Mobs milestone `EndermanTotemsGameTest.pulseOddsTerrainOverOre` and `pulseRecentWindowAndBuilds` (`specs/endermen.md`); client part `totems` (with `-PwithMobs`) screenshot `totems-beginning-pulse` (revert puffs on grass). Not tested: outside the overworld (`Ripples.supported` is unchanged and covered by the same check).
+- **Follow-up (owner, 2026-11-24; built): no hidden window, direct reverts in beacons and statues.**
+  - The hidden 10-minute "recently reverted" window is gone (a hidden cooldown, B19 noHiddenCooldowns): a spot can be reverted again on the next use. Anti-ore-farming rests on the low per-block chance (ore 1/10 of terrain: 12 % / 1.2 %), ore only ever into air, and the visible 60 s item cooldown. Removed: `TotemsTuning.BEGINNING_PULSE_RECENT_TICKS`, `SleeperHook.drawEndermen`; Reworked Mobs' `pulseAround` lost its `recentTicks` parameter (`specs/endermen.md`, "The pulse").
+  - A Beginning totem in a beacon or as a statue reverts blocks directly with the same area pulse as the hand version. The caretaker-endermen draw for Beginning beacons is removed (cairns keep their own nexus; Reworked Mobs' `Endermen.drawIn` API stays, now unused by Totems).
+  - **Rhythm** (`beginning/BeginningAreas`): a Beginning beacon or statue pulses once every 15 s on the world clock (`TotemsTuning.BEGINNING_AREA_PULSE_TICKS` = 300; due when `gameTime % 300` falls in the source's call interval, so each source pulses exactly once per 15 s, all in step), spreading 2 ticks per block (`BEGINNING_AREA_TICKS_PER_BLOCK`). No player, so no protection check; builds untouched; same puff and throttled sound as the hand pulse; same chances.
+  - **Beacon:** the pulse covers the beacon's whole area (radius half the area's larger horizontal size, a cylinder as far up and down), centred on the beacon. Beacon text: "Every 15 s the ground here slowly remembers how it began". Still accepted only with Reworked Mobs installed.
+  - **Statue:** Beginning statues pulse (`StatueEffects.pulses` includes BEGINNING), radius `TotemsTuning.STATUE_RADIUS`.
+- **Tests:** milestone `BeginningEndGameTest.beginningPulsesOnlyWithReworkedMobs`; Reworked Mobs milestone `EndermanTotemsGameTest.pulseOddsTerrainOverOre` and `pulseRepeatsAndBuilds` (`specs/endermen.md`); milestone `BeginningAreaGameTest` (needs `-PwithMobs`, beacon part `-PwithBeacons`: a Beginning beacon and a Beginning statue each revert most of a dug hole over one rhythm window; ore spots only get ore); client part `totems` (with `-PwithMobs`) screenshot `totems-beginning-pulse` (revert puffs on grass). Not tested: outside the overworld (`Ripples.supported` is unchanged and covered by the same check).
 - **Milestone objective:** a pulse with Reworked Mobs starts a cooldown and leaves the totem in hand; without Reworked Mobs it passes and sets no cooldown. Ten pulses over a dug field bring back most terrain but far less ore, and never touch a build.
+
+## Relic maps and relic vaults (owner, 2026-11-24; built 2026-11-24)
+
+Owner's design (C6 detail, spec not leaf): torn **relic map shreds** turn up in loot; shreds of one relic combine into a real filled map; each map leads to that relic's one **relic vault**, a sealed treasure room buried under the world. Player page: `player-docs/Projects/Bubba's Totems & Artifacts/Relic Maps.md` and `Relic Vaults.md`.
+
+**Prior art (B9):** `tools/prior-art.py` found nothing for "map fragments", "treasure map pieces", "buried vault structure" (it may have been offline). Known: Quark's Pathfinder's Quills (maps to biomes), Explorer's Compass / Nature's Compass (locate structures), vanilla explorer and buried-treasure maps, YUNG's structure mods. None split a map into named shreds that lead to one fixed seeded site per name; ours adds the collect-and-combine loop and the one-place-per-name rule. Hand-rolled: no library places structures at seed-derived fixed sites; vanilla's placements are grid (random_spread) or rings, and neither gives "exactly one site per name". Code-built pieces match the crypts. Vanilla subsystems used: structure / structure set / `StructurePlacement` registry, `StructurePiece`, `CustomRecipe` + `RecipeSerializer`, `LootItemConditionalFunction`, `MapItem`/`MapItemSavedData` explorer-map decorations, Cushion and armour stand entities, chest loot tables.
+
+### The shred item
+
+- One item, `bubbas_totems_artifacts:relic_map_shred`, stacks to 16, uncommon. Data component `bubbas_totems_artifacts:relic_shred` = `{name, size, count}` (name like `wondrous_crab`, size 4 or 9, count 1..size).
+- Item name "<Name> Relic Map (<count>/<size>)", e.g. "Wondrous Crab Relic Map (1/9)". Tooltip: "A torn scrap of an old map, the ink faded but the crest still clear." / "2 of 4 pieces" / "Find the rest of the <Name> map (4 pieces) and put them together."
+- Names: 8 adjectives x 8 nouns = 64 names; with the two sizes, 128 maps per world. Adjectives: Wondrous, Egregious, Forgotten, Gilded, Sunken, Whispering, Crooked, Radiant. Nouns: Crab, Zealot, Lantern, Serpent, Crown, Owl, Anvil, Bell.
+- Look: the `custom_model_data` string picks the texture: `4` (a big torn corner), `9` (a small scrap, older paper), `whole`.
+- Recipe type `bubbas_totems_artifacts:relic_shreds` (special recipe, `data/.../recipe/relic_shreds.json`), shapeless, 2+ shreds of the same name and size whose counts add up to at most the whole (any grid: 2x2, crafting table, crafter). The result is a combined shred; a whole one becomes the filled map when it ticks in a player's inventory (recipes have no level to make a map in). A whole shred out of a crafter becomes a map once picked up.
+- The finished map: vanilla filled map, scale 2 (like explorer maps), biome preview (water outlines), red X decoration on the vault's door, item name "<Name> Relic Map", and it keeps the `relic_shred` component.
+- Loot function `bubbas_totems_artifacts:random_relic_shred`: a random name of the 64; /9 35 %, else /4; 1 piece 80 %, 2 pieces 15 %, 3 pieces 5 % (never a whole map).
+
+Shred odds per chest (one roll each; Reworked Mobs tables keyed by id through `LootTableEvents.MODIFY`, so no dependency):
+
+| Table | Chance |
+|---|---|
+| simple_dungeon | 30 % |
+| abandoned_mineshaft | 20 % |
+| shipwreck_map / treasure / supply | 40 % / 30 % / 15 % |
+| buried_treasure | 40 % |
+| desert_pyramid, jungle_temple, igloo_chest | 30 % |
+| stronghold corridor / crossing / library | 25 % / 25 % / 40 % |
+| woodland_mansion | 30 % |
+| pillager_outpost, ancient_city | 25 % |
+| ruined_portal | 15 % |
+| underwater_ruin big / small | 30 % / 15 % |
+| village cartographer / temple / weaponsmith, toolsmith / houses | 30 % / 15 % / 10 % / 8 % |
+| trial_chambers/corridor, bastion_other | 10 % |
+| Reworked Mobs crypt noble / family / pauper | 50 % / 35 % / 15 % |
+| Reworked Mobs monster_camp, camp_room | 30 % |
+| Reworked Mobs fabricator_office (+ `_with_gems`) | 25 % |
+| Reworked Mobs gameplay/enderman_trade (cairn trades) | 10 % |
+
+### Where the named vaults are (seeded at world start)
+
+- `RelicSites`: from the world seed alone (Xoroshiro random, seed xor a fixed salt), every (name, size) pair in a fixed order gets one chunk: a random angle and a distance from the world's middle, /4 between 400 and 2400 blocks, /9 between 1600 and 4800. A candidate within 20 chunks of an earlier site is re-rolled (up to 48 tries). Same seed, same sites, always; nothing is generated or stored when a map is made.
+- A custom structure placement `bubbas_totems_artifacts:relic_sites` (structure set `relic_vaults`) says "this chunk" exactly for those 128 chunks, so the vaults are real worldgen structures, built when their chunk generates. Structure `bubbas_totems_artifacts:relic_vault`, Overworld biomes, step `underground_structures`.
+- The vault's door is at the chunk's middle, floor 20 below the ground there (ocean floor under water), never lower than 12 above the world's bottom.
+- One vault per name and size: once emptied, other maps of that name and size lead to an empty room.
+- **Not findable with vanilla `/locate` (owner, 2026-11-24: skip; maps are the way).** Vanilla `/locate structure` and explorer-map searches only know random-spread and ring placements, so they don't find these; the maps and `/bubbas_totems_artifacts relic_map` do. No own locate command and no Totem of Seeking target.
+
+### The vault (`RelicVaultPiece`, code-built like crypts)
+
+| | /4 (small) | /9 (grand) | Crypt vault |
+|---|---|---|---|
+| Room inside (w x l x h) | 9 x 9 x 4 | 13 x 11 x 4 | 7 x 7 x 4 |
+| Floor depth | 20 under ground | 20 under ground | 12 under ground (7 under the crypt floor) |
+| Chests (stacked two high) | 3 | 6 | 2 |
+| Armour stands | 2 (iron or gold sets) | 4 (iron, diamond or gold) | 1 (chain) |
+| Tables with cushioned chairs | 1 | 2 | 1 |
+| Pedestal: statue | any totem except the Beginning and the End | any totem, the Beginning and the End included | as small |
+| Pedestal: weapon | diamond sword or axe, enchanted 20-30 | netherite sword or axe, enchanted 30-39 | diamond sword or axe, enchanted 15-25 |
+| Sitting guard (Reworked Mobs) | iron set | diamond set | none |
+| Loot table | chests/relic_vault_small | chests/relic_vault_grand | chests/relic_vault_crypt |
+
+- Stair: 3 wide, stone bricks (cracked and mossy), 7 steps from the door's landing; a soul lantern at its foot. Named vaults: a stone wall after the top landing (no way in from the surface). Crypt vaults: the top landing is just south of the noble crypt's far wall, at the crypt's floor height.
+- Room: deepslate tile walls with polished deepslate pillars, polished deepslate border and smooth quartz / polished diorite checker floor, sea lanterns set in the ceiling every 3 blocks, two pearlescent froglights in the floor beside the chiseled quartz pedestal, a red carpet runner, an iron door with a lever inside (nothing outside opens it).
+- **Pedestal prize** (owner, 2026-11-24: a totem item lying on the pedestal isn't cool): `RelicVaultPiece.prime()` (STATUE or WEAPON, `RelicTuning.PRIME_STATUE_CHANCE` 0.5) and `primeStatue()` come from the vault's seed alone (their own random), so tests and commands can tell what a vault holds before it's built.
+  - Statue: `TotemStatueBlock.stateFor(type)` facing north (toward the door), on the pedestal's top cell. Breaking it gives the totem; left standing it works as a statue.
+  - Weapon: loot tables `loot_table/relic_vault/prime_weapon_<small|grand|crypt>.json` (`enchant_with_levels`, options `#minecraft:on_random_loot`, levels as in the table), and `_gems` twins (plus Infused Gems' `socket_random_gems`, gear weapon, `prefer_harmful` 0.75; two gems on a grand vault's weapon, one otherwise; load only with Infused Gems) picked when Gems is loaded (`RelicLoot.primeWeapon`). With Reworked Mobs the weapon is planted point-down as a stuck loot display (`api/Crypts.placeStuckDisplay(level, pos, facing, stack)`, through `SleeperHook.placeStuckDisplay`), placed by the chunk holding the pedestal. Without it, a glow item frame on the north face of the pedestal block, placed by the chunk holding the frame's block (`pedestal().below().north()`), decided by `SleeperHook.hasDisplays()`, so a chunk border between the two no longer drops it (fix 2026-11-23).
+- Guard: a sitting skeleton sleeper (`api/Crypts.placeSittingSleeper`) only with Reworked Mobs; with Infused Gems its chestplate and sword are gemmed (`loot_table/relic_vault/guard_gear.json`, loads only with Gems).
+- Cushions: vanilla 26.3 Cushion entities on the stair chairs (one colour per table: red, cyan, purple or orange).
+
+Vault chest loot (per chest; tables written by `mods/bubbas_totems_artifacts/tools-local/make_relic_loot.py`, which also writes the six prime weapon tables):
+
+| | Treasure rolls | Shred rolls | Totem chance | Rare chance | Infused Gems rare rolls |
+|---|---|---|---|---|---|
+| Grand | 4-7 (diamonds 1-4, enchants 25-39) | 2-4 | 45 % | 40 % | 1-2 |
+| Small | 3-5 (diamonds 1-2, enchants 15-30) | 1-3 | 30 % | 15 % | 0-2 |
+| Crypt | 2-4 | 1-2 | 20 % | none | 0-1 |
+
+Totem weights: Keeping, Gathering, Fortification, Growth, Seeking, Herding, Clear Skies 3 each; Warding and Grave Talisman 2; the Beginning and the End 1. Rare: enchanted golden apple, netherite scrap, totem of undying, Pigstep, heart of the sea. Infused Gems: its `gems/rare` table rolled into the drops at open time (`LootTableEvents.MODIFY_DROPS`), only with that mod loaded.
+
+### Noble crypt vaults (no hard dependency either way)
+
+- Reworked Mobs has a new `api/Crypts` (stable, add-don't-change): `setNobleAttachment(...)`, `attachments(piece)`, `placeDisplay`, `placeStuckDisplay`, `placeSittingSleeper`. `CryptYardStructure` and `GraveyardCommand.build` add whatever the attachment returns; nothing is registered unless Totems & Artifacts is loaded. `CryptYardPiece` gained `seed()` and `nobleFarWall()`.
+- Totems & Artifacts registers the attachment through its `SleeperHook` (only when Reworked Mobs is loaded): 35 % of noble crypts (roll from the crypt's seed) get a crypt vault, its stair starting just behind the crypt's far wall, between the two family chests.
+- Crypt vaults are **unnamed** (builder; no map leads there), so each name keeps exactly one place (open question in Open).
+
+### Commands (op)
+
+- `/bubbas_totems_artifacts relic_map <name> <4|9>`: the finished map for that relic.
+- `/bubbas_totems_artifacts relic_shred <name> <4|9> <count>`: a shred.
+- `/bubbas_totems_artifacts relic_vault <small|grand|crypt>`: builds a vault with its door at the player's feet (room to the south).
+
+### Code
+
+Package `relic/`: `RelicNames`, `RelicShred` (component), `RelicMapShredItem`, `RelicMaps`, `RelicShredRecipe`, `RelicShredFunction`, `RelicSites`, `RelicVaultPlacement`, `RelicVaultStructure`, `RelicVaultPiece`, `RelicLoot`, `RelicTuning`, `RelicCommand`, `Relics` (wiring). All numbers in `RelicTuning` (and the loot script).
+
+### Milestone test objectives (`RelicMapsGameTest`; two in the core suite)
+
+- (core) Shreds combine only with the same name and size, totals no more than the whole; 2x2 and 3x3; the recipe loads and is found for the inventory grid.
+- (core) Every vault kind builds sealed (flood fill stays inside), iron door, the stair climbs 7 and (named) stops at stone, chests, stands, cushions, the pedestal prize the seed says.
+- A crafter combines two shreds.
+- Sites: same seed same sites, two seeds differ, 128 sites in unique chunks, in their distance bands, 20+ chunks apart; the structure set uses `relic_sites`; lookup by chunk.
+- A whole shred carried turns into a filled map whose X is on its name's site; /4 and /9 of one name lead to different places.
+- Loot: dungeon shred rate about 30 %; grand vault chests have a totem about 45 % and 2+ shreds each.
+- `pedestalHoldsStatueOrWeapon`: about half of 400 seeds give a statue per kind; Beginning/End statues only in grand vaults; a built statue vault has the statue facing north and breaking it drops the totem; a built weapon vault shows an enchanted netherite (grand) or diamond weapon (display with `-PwithMobs`, glow frame without); weapon vaults are also built split into two chunks meeting at the pedestal (catches the dropped glow frame).
+- (with Reworked Mobs) A noble crypt's vault: stair top just behind the far wall, the wall intact, the vault under the crypt and sealed; about 35 % of noble crypts have one.
+- Client part `relics`: `relics-inventory(-32x)`, `relics-tooltip(-32x)`, `relics-map` (finished map in hand), `relics-vault-grand-door/-back/-side/-pedestal/-pedestal-close/-stair` (grand built with a weapon seed), `relics-vault-small-door/-pedestal/-pedestal-close` (statue seed), `relics-crypt-wall/-stair/-vault` (with `-PwithMobs`), and the pedestal with Totems alone (glow item frame).
+- Not covered by a test: a vault actually generating at its site in a real (non-flat) world (game test worlds are flat).
 
 ## As built (0.1.0)
 
@@ -349,7 +460,8 @@ Owner's goal (2026-11-15): mob-free zones without spamming torches. Owner decisi
   - Fortification: no blast damage to blocks.
   - Growth: plants grow twice as fast, plus planting.
   - Herding: a small pasture. Clear Skies: dry.
-  - Keeping, Seeking, the Beginning and the End: nothing (no area form).
+  - The Beginning (2026-11-24): an area pulse every 15 s ("Totem of the Beginning rework", follow-up).
+  - Keeping, Seeking and the End: nothing (no area form).
 
 ### Totem statue (block, B15 exception)
 
@@ -385,6 +497,7 @@ Owner decisions still pending (built as described above until decided):
 - **Herding** counts every animal except tamed pets, so bees, axolotls and the like too (builder).
 - **Art:** the Herding (spruce ram-headed idol with a gold bell) and Clear Skies (calcite, gold sun crown, sky emblem) items and statues are builder art.
 - **Numbers to playtest:** every value in `TotemsTuning` and `WardingTuning`.
+- **Relic vaults** (owner to decide): should some crypt vaults carry a name too (two places per name)? The whole shred becomes a map only once it's in a player's inventory: OK, or unfold on right-click? Tune 35 % of noble crypts with a vault and 45 % totem chance per grand vault chest (about 3 totems plus the pedestal's prize per grand vault).
 
 ## Milestone test objectives
 
