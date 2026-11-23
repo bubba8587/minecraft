@@ -74,7 +74,18 @@ def mod_jars():
         if not found:
             sys.exit(f"no jar for {m}; run without --no-build")
         jars.append(max(found, key=os.path.getmtime))
-    return jars
+    return jars + library_jars()
+
+
+def library_jars():
+    """Required outside mods (B9), taken from the Gradle cache the mod builds fill. Stormie's Spiders is pinned by
+    Modrinth version id in gradle/stormies-spiders.gradle (Reworked Mobs depends on it)."""
+    vid = re.search(r"stormies-spiders:(\w+)", (ROOT / "gradle" / "stormies-spiders.gradle").read_text()).group(1)
+    cache = Path.home() / ".gradle" / "caches" / "modules-2" / "files-2.1" / "maven.modrinth" / "stormies-spiders" / vid
+    found = sorted(cache.glob("*/*.jar"))
+    if not found:
+        sys.exit(f"Stormie's Spiders {vid} not in the Gradle cache; run ./gradlew :bubbas_reworked_mobs:build once")
+    return [found[0]]
 
 
 def function_lines(fid, seen=()):
