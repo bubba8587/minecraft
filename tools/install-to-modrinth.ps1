@@ -88,7 +88,7 @@ if (Test-Path (Join-Path $pristine "level.dat")) {
 }
 
 # The natural test world (specs/testworld.md "Natural world"): the same, as its own save "Bubba Natural World".
-$naturalPristine = Join-Path $root "testworldsubba-natural-world"
+$naturalPristine = Join-Path $root "testworlds\bubba-natural-world"
 $naturalCopy = Join-Path $saves "Bubba Natural World"
 if (Test-Path (Join-Path $naturalPristine "level.dat")) {
 	New-Item -ItemType Directory -Force $saves | Out-Null
