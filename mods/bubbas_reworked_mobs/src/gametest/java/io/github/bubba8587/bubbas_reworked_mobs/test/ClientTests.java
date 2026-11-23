@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 
 /**
  * Picks which client game tests (or parts of one) run: `./gradlew :bubbas_reworked_mobs:runClientGameTest
- * -PclientTests=sleepers,gait` runs only those; without the property everything runs (CI). Names: sleepers, displays,
+ * -PclientTests=sleepers,gait` runs only those; without the property everything runs (CI). Names: spiders, sleepers, displays,
  * gait, creepers, endermen, drowned, factories; cairnsim only when named. (talisman and warding moved to Bubba's Totems & Artifacts.) specs/quality.md, Speed.
  */
 public final class ClientTests {

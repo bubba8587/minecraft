@@ -173,4 +173,9 @@ public class ReworkedMobsCoreGameTest {
 	public void fabricatorBreakingTheSpawnerStopsIt(GameTestHelper helper) {
 		new MobFactoryGameTest().breakingTheHiddenSpawnerStopsItForGood(helper);
 	}
+
+	@GameTest(structure = SpiderGameTest.ROOM, maxTicks = 300)
+	public void spiderSleeperDropsLatchesAndReelsUp(GameTestHelper helper) {
+		new SpiderGameTest().sleeperDropsLatchesAndReelsUp(helper);
+	}
 }

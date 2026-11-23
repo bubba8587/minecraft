@@ -17,7 +17,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 abstract class PlayerGripMixin {
 	@Inject(method = "wantsToStopRiding", at = @At("HEAD"), cancellable = true)
 	private void brm$heldByDrowned(CallbackInfoReturnable<Boolean> cir) {
-		if (((Player) (Object) this).getVehicle() instanceof Drowned) {
+		if (((Player) (Object) this).getVehicle() instanceof Drowned
+				|| ((Player) (Object) this).getVehicle() instanceof io.github.bubba8587.bubbas_reworked_mobs.grip.Gripper) {
 			cir.setReturnValue(false);
 		}
 	}

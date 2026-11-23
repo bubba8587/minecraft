@@ -175,6 +175,9 @@ public class ModDataGenerator implements DataGeneratorEntrypoint {
 			builder.add(ModGameRules.CAIRN_ENDERMEN.getDescriptionId(), "Overworld endermen spawn at cairns");
 			builder.add(ModGameRules.SHOW_METERS.getDescriptionId(), "Show mob meters (drowned grip, creeper startle)");
 			builder.add(io.github.bubba8587.bubbas_reworked_mobs.client.drowned.DrownedPoses.GRABBED_HINT, "A drowned has you! Hit it hard and fast to break free");
+			builder.add(io.github.bubba8587.bubbas_reworked_mobs.spider.Spiders.NEST_SPIDER, "Spider");
+			builder.add(io.github.bubba8587.bubbas_reworked_mobs.spider.Spiders.SPIDER_NEST, "Spider Nest");
+			builder.add("bubbas_reworked_mobs.spider.grabbed", "A spider has you! Hit it hard and fast to break free");
 		}
 	}
 

@@ -38,5 +38,8 @@ public class BubbasReworkedMobsClient implements ClientModInitializer {
 
 		// Loot on display: the item's own model, posed per placement.
 		BlockEntityRenderers.register(ModBlockEntities.LOOT_DISPLAY, LootDisplayRenderer::new);
+		EntityRenderers.register(io.github.bubba8587.bubbas_reworked_mobs.spider.Spiders.NEST_SPIDER,
+				io.github.bubba8587.bubbas_reworked_mobs.client.spider.NestSpiderRenderer::new);
+		EntityRenderers.register(io.github.bubba8587.bubbas_reworked_mobs.spider.Spiders.SPIDER_NEST, net.minecraft.client.renderer.entity.NoopRenderer::new);
 	}
 }

@@ -22,7 +22,7 @@ abstract class ProjectileUtilGripMixin {
 	@WrapOperation(method = "getEntityHitResult(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/phys/AABB;Ljava/util/function/Predicate;D)Lnet/minecraft/world/phys/EntityHitResult;",
 			at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;getRootVehicle()Lnet/minecraft/world/entity/Entity;", ordinal = 0))
 	private static Entity brm$drownedIsNotYourRide(Entity entity, Operation<Entity> original, Entity except, Vec3 from, Vec3 to, AABB box, Predicate<Entity> matching, double maxValue) {
-		if (entity instanceof Drowned && except.getVehicle() == entity) {
+		if ((entity instanceof Drowned || entity instanceof io.github.bubba8587.bubbas_reworked_mobs.grip.Gripper) && except.getVehicle() == entity) {
 			// Compared with ==, only against except's root vehicle: null never matches it.
 			return null;
 		}
