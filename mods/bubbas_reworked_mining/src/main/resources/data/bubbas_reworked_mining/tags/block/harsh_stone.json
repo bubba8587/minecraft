@@ -1,0 +1,21 @@
+{
+	"values": [
+		"minecraft:stone",
+		"minecraft:cobblestone",
+		"minecraft:mossy_cobblestone",
+		"minecraft:granite",
+		"minecraft:diorite",
+		"minecraft:andesite",
+		"minecraft:tuff",
+		"minecraft:infested_stone",
+		"minecraft:infested_cobblestone",
+		"minecraft:coal_ore",
+		"minecraft:iron_ore",
+		"minecraft:copper_ore",
+		"minecraft:gold_ore",
+		"minecraft:redstone_ore",
+		"minecraft:emerald_ore",
+		"minecraft:lapis_ore",
+		"minecraft:diamond_ore"
+	]
+}

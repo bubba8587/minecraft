@@ -1,0 +1,16 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"category": "equipment",
+	"key": {
+		"#": "minecraft:stick",
+		"X": "#bubbas_reworked_mining:quartz_tool_materials"
+	},
+	"pattern": [
+		"X",
+		"X",
+		"#"
+	],
+	"result": {
+		"id": "bubbas_reworked_mining:quartz_sword"
+	}
+}
