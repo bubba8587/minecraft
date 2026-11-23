@@ -44,6 +44,7 @@ Owner's design (2026-11-22). Ordinary spiders stay **mostly vanilla**. What's ne
 - **Size (owner): "not too giant."** Roughly 1.5-2x a vanilla spider (builder tunes; it must still fit between the trees).
 - **It roams** the old forest. It doesn't sit in one lair.
 - **It spins new webs** as it goes: cobweb spans between nearby trunks and in the canopy, so its territory fills in over time (capped, so a forest isn't buried).
+- **Holding pose (owner, 2026-11-22):** hauling or holding a catch, a spider stays oriented to its surface: **upside down** under a branch, canopy or web anchor (preferred stopping spots), **sideways** on a trunk. It never flips upright while holding.
 - **It snatches livestock** (passive mobs: sheep, pigs, cows, chickens, goats...) and hauls them up into its webs, where they're stuck and it feeds. This reuses the grab, pulling up into the web.
 - **Livestock is a distraction (owner):** it goes for a nearby animal before a player, so players can bait or lure it with livestock.
 - **In a fight it summons little spiders**: smaller and weaker than vanilla spiders (owner). Builder tunes how many and how often, with a cap.
