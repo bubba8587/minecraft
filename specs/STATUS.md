@@ -93,10 +93,11 @@ Nothing is released yet: every mod is 0.1.0 in `develop`.
 - built: Totem of Seeking ([§](totems-artifacts.md#totem-of-seeking-seekingtotemofseekingitem-seekingtypes-structureseeker-seekingbeacon-mixincompassitemmixin-compatseekingbeaconpayload))
 - built: Totems of the Beginning and the End ([§](totems-artifacts.md#totems-of-the-beginning-and-the-end-built-2026-11-22))
 - built: a statue for every totem, decorative ([§](totems-artifacts.md#totem-statue-block-b15-exception))
-- in progress (totems-2): Gathering beacon makes a floating ring of items and XP ([§](totems-artifacts.md#gathering-in-a-beacon-a-floating-ring))
-- in progress (totems-2): Growth plants dropped seeds ([§](totems-artifacts.md#growth-also-plants-seeds))
-- in progress (totems-2): Totems of Herding and Clear Skies ([§](totems-artifacts.md#totems-of-herding-and-clear-skies))
-- in progress (totems-2): statues give their totem's effect in a tiny radius ([§](totems-artifacts.md#statues-give-their-totems-effect))
+- built: Gathering beacon makes a floating ring of items and XP for a side hopper ([§](totems-artifacts.md#gathering-in-a-beacon-a-floating-ring-built-2026-11-22-replaced-into-a-chest-below))
+- built: Growth plants dropped seeds ([§](totems-artifacts.md#growth-also-plants-seeds-built-2026-11-22-harvest-folded-in-owner))
+- built: Totem of Herding ([§](totems-artifacts.md#totem-of-herding-herdingherding-built-2026-11-22))
+- built: Totem of Clear Skies ([§](totems-artifacts.md#totem-of-clear-skies-skiesclearskies-built-2026-11-22))
+- built: statues give their totem's effect in a tiny radius ([§](totems-artifacts.md#statues-give-their-totems-effect-built-2026-11-22))
 - parked: Grave Talisman as a rare sleeper drop ([§](totems-artifacts.md#grave-talisman))
 
 ## Bubba's Infused Gems ([spec](effect-gems.md))
@@ -134,9 +135,9 @@ Nothing is released yet: every mod is 0.1.0 in `develop`.
 - parked: person-made Glider art and mod icon ([§](extra-recipes-mod.md#open))
 
 ## Bubba's World Tweaks ([spec](world-tweaks.md))
-- in progress (world-tweaks, done, awaiting merge): lava bubbles over magma ([§](world-tweaks.md#lava-bubbles-and-lava-geysers-owner-2026-11-22))
-- in progress (world-tweaks, done, awaiting merge): lava geysers with black smoke ([§](world-tweaks.md#lava-bubbles-and-lava-geysers-owner-2026-11-22))
-- in progress (world-tweaks, done, awaiting merge): lift and speed from lava and sulfur geysers ([§](world-tweaks.md#lava-bubbles-and-lava-geysers-owner-2026-11-22))
+- built: lava bubbles over magma ([§](world-tweaks.md#as-built-2026-11-22-agent-3))
+- built: lava geysers with black smoke ([§](world-tweaks.md#as-built-2026-11-22-agent-3))
+- built: lift and speed from lava and sulfur geysers ([§](world-tweaks.md#as-built-2026-11-22-agent-3))
 
 ## Repo
 - designed (low priority, owner): settings for every mod: game rules in a per-mod category, structure datapacks at world creation, optional Mod Menu button ([§](settings.md))

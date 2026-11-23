@@ -13,8 +13,8 @@ A separate mod for **artifacts**: found items that do things potions and enchant
 | Totem of Keeping, Gathering, Fortification, Growth, Seeking | built 2026-11-16 (below; unreleased) |
 | Totem of the Beginning, Totem of the End | built 2026-11-22 (below; unreleased) |
 | Totem statue for every totem (decorative) | built 2026-11-22 |
-| Totems of Herding and Clear Skies | in progress (agent 3, `totems-2` branch; not in develop) |
-| Gathering beacon ring, Growth seed planting, statues giving a tiny-radius effect | in progress (agent 3, `totems-2` branch; develop still has the chest-below Gathering beacon and inert statues) |
+| Totems of Herding and Clear Skies | built (2026-11-22) |
+| Gathering beacon ring, Growth seed planting, statues giving a tiny-radius effect | built (2026-11-22) |
 
 Previews (client test screenshots, 2026-11-16, still current for these totems): `docs/previews/totems/` (`textures-16x-32x.png` and `hotbar-16x-and-32x.png`: the Warding, Keeping, Gathering, Fortification, Growth and Seeking icons at 16x and 32x; `gathering-pulling.png`: a held Gathering totem pulling items; `seeking-ahead-turned-turned32x.png`: the Seeking needle facing the found village, turned 90 degrees, and at 32x).
 
@@ -57,35 +57,39 @@ No new blocks (B15). New ids, so no old-id alias. Numbers all in `totems/TotemsT
 - No beacon use (per design).
 - **Prior art / overlap:** keep-inventory mods (Keep Inventory Always, Nice Keep Inventory, Keep Inventory Orbs; MIT/GPL), soulbound enchantments, and grave mods (Universal Graves, Gravestones, You're in Grave Danger). Graves are the closest in purpose: with a grave mod installed, a kept death simply has nothing to put in the grave (they compose). None offers a single-use found totem; no library needed (two small injections, hand-rolled because no library does it, B9).
 
-#### Totems of Herding and Clear Skies
+#### Totem of Herding (`herding/Herding`, built 2026-11-22)
 
-*Owner, 2026-11-22. In progress on `totems-2`, not in develop.*
+- **Held:** livestock follow you as if you held their food. Every animal counts except tamed pets (builder; bees and axolotls included). Hooks vanilla's temptation: `TemptGoalMixin.shouldFollow` (goal mobs) and `TemptingSensorMixin.playerHoldingTemptation` (brain mobs such as goats).
+- **In a beacon or as a statue: a pasture without fences.** Livestock in the area won't walk out of it (`TotemAreas.Kind.HERDING`; `Herding.keepsIn` uses the wards' node-evaluator mixins: nodes outside are BLOCKED for livestock inside). A lead still pulls them out, and so does a player holding the totem within 10 blocks (`getNearestPlayer` with `EntitySelector.NO_SPECTATORS`). Beacon text: "Animals stay in the area".
+- **Found:** village shepherd 12 %, butcher 8 %, tannery 8 %.
 
-- **Totem of Herding:** held, nearby livestock of every kind (cows, sheep, pigs, chickens, goats, horses, llamas, rabbits...) follow you as if you were holding their food, so moving a herd is easy. In a beacon, animals in the area don't wander out of it, like a pasture without fences. Found, not crafted, like the others.
-- **Totem of Clear Skies:** in a beacon, no rain, snow or lightning in the area (it stays dry and lightning-safe; weather elsewhere is unchanged). Held, it's used up to end a storm (clear weather, like vanilla's `/weather clear`). Found, not crafted.
-- Neither overlaps a gem effect. Each gets an initial statue like the rest (statues give their effect in a tiny radius: Herding's statue keeps animals by it, Clear Skies' statue keeps rain off a few blocks).
+#### Totem of Clear Skies (`skies/ClearSkies`, built 2026-11-22)
 
-#### Growth also plants seeds
+- **Used in rain or a storm,** it ends the weather like `/weather clear` (`MinecraftServer.setWeatherParameters(RAIN_DELAY.sample, 0, false, false)`) and is used up. In clear weather nothing happens and it isn't used.
+- **In a beacon or as a statue:** no rain, snow or lightning on the area's columns, sky to ground. No snow builds up and cauldrons don't fill; ice still forms in cold biomes. Beacon text: "No rain, snow or lightning in the area".
+  - Server: `TotemAreas.Kind.CLEAR_SKIES`, flattened per tick to column rectangles. Mixins on `Level.precipitationAt` (covers `isRainingAt`: lightning, wetness, rain putting out fire) and on `ServerLevel.tickPrecipitation`'s `isRaining` (snow layers, cauldrons).
+  - Client: rectangles are sent once a second and when the areas end (payload `bubbas_totems_artifacts:clear_skies`, with the dimension); `ClientLevelPrecipitationMixin` on `ClientLevel.getPrecipitationAt` stops rain drawing, splashes and sounds there. A copy older than 3 s, or from another dimension, is ignored.
+- **Found:** igloos 12 %, desert village houses 6 %, shipwreck supply chests 5 %.
+- Neither totem overlaps a gem effect.
 
-*Owner, 2026-11-22: Harvest folded into Growth. In progress on `totems-2`, not in develop.*
+#### Growth also plants seeds (built 2026-11-22; Harvest folded in, owner)
 
-- The Totem of Growth (held and in a beacon) now and then **takes a dropped or floating seed item nearby and plants it** in a valid spot close by: wheat, beetroot, melon and pumpkin seeds, carrots, potatoes, saplings, and so on, on farmland or the right soil. It's a random chance per check, never a sweep. It doesn't gather or harvest anything (owner: use a separate Gathering totem for that). Seeds floating in a Gathering ring count as dropped items.
+- Held, in a beacon or as a statue: every 2 s, with a 35 % chance, one random dropped plantable item in range (any item whose block is in `growth_totem_boosts`: seeds, carrots, potatoes, saplings, berries, nether wart...) is planted within 3 blocks of where it lies, where vanilla says it can grow (`Growth.plant`: 32 tries of `BlockPos.randomBetweenClosed`, y -3..+1, air plus `canSurvive`). Never a sweep, never harvests or gathers. Items circling a Gathering ring count.
 
-#### Gathering in a beacon: a floating ring
+#### Gathering in a beacon: a floating ring (built 2026-11-22, replaced "into a chest below")
 
-*Owner, 2026-11-22, replaces "into a chest below". In progress on `totems-2`; develop still has the chest-below version described next.*
-
-- In a beacon, gathered items **float in a slowly rotating ring around the beacon** (no gravity, held in orbit at about the beacon's height, a radius of 1-2 blocks), instead of going into a chest below. It's meant to look cool.
-- Players collect them with **a simple sideways hopper into a chest**: a hopper next to the beacon whose pickup space the ring passes through takes items as they come round. Builder sets the ring's height and radius so one hopper placed beside the beacon works.
-- **XP orbs join the ring too** (owner), orbiting with the items (a player walking up collects them as usual). Ring size is capped (extra items wait where they lie until there's room).
+- Dropped items and XP in the beacon's area fly to the beacon and **circle it, weightless**, 1.25 blocks out from its middle and 1.05 above its base, turning once every 5 s (`gathering/GatheringRing`: rings keyed by beacon position; each member's velocity is set toward its slot every tick, `needsSync` keeps clients smooth).
+- **A hopper against any side of the beacon,** into a chest, collects the items as they come round: its pickup space (11/16 to 2 blocks above it) is where the ring passes. Vanilla's hopper does the collecting.
+- Items in the ring never despawn. XP orbs stay until a player comes within 2.5 blocks, then fly to them as usual. At most 48 members; new ones join every half second. When the beacon stops, the ring lapses after about 5 s and everything falls.
+- Beacon text: "Dropped items and experience circle the beacon".
+- The ring's slot motion is hand-rolled: vanilla has nothing that orbits entities (specs/vanilla-subsystems.md).
 
 #### Totem of Gathering (`gathering/Gathering`, `TotemOfGatheringItem`, `compat/GatheringBeaconPayload`)
 
 - **Held:** every tick, dropped items within **8 blocks** (`GATHER_RADIUS`) fly to the holder at **0.3 blocks/tick** (`GATHER_SPEED`; about 1.5 s from 8 blocks), aimed at the holder's middle like XP orbs, then are picked up by the usual rules. At most 64 items per tick. Skipped: items the holder itself threw that are still on their pickup delay (so Q-dropping works), and items that can never be picked up (pickup delay 32767, displays/props). Someone else's fresh throw is pulled.
   - *B17 note:* vanilla's own XP-orb pull formula was tried first: on the ground item friction eats it, and items 6 blocks out moved less than a block in 5 s (seen in the client test). So the speed is a steady pull instead.
   - **XP:** vanilla XP orbs already fly to any player within 8 blocks, so the held totem leaves orbs to vanilla (no double pull).
-- **In a beacon (each 80-tick pulse, any pyramid):** dropped items anywhere in the beacon's area go into **the nearest chest or barrel "under" the beacon**, inserted as a hopper would (double chests count whole; partial stacks if full). **"Under" (agent's definition):** the 3x3 column directly below the beacon, from 1 block below it down through the pyramid to 6 blocks below its bottom layer (`GATHER_CHEST_DEPTH_BELOW_PYRAMID`); nearest first (straight below, then sides, then corners, layer by layer). Chests (incl. trapped) and barrels only. **XP orbs** in the area are gathered **onto the top of the beacon** (agent's choice: XP can't go in a chest), where they wait to be collected (they still despawn after 5 minutes like any orb). **No chest or barrel: nothing at all happens** (items and XP stay put). Bounded: 256 items and 256 orbs per pulse. Effects: reverse-portal puff where an item vanished, a soft pickup sound at the chest.
-  - Screen lines: "Dropped items go into a chest or barrel below", "Experience gathers on the beacon".
+- **In a beacon:** the floating ring above. **As a statue:** drops in its small area go into a chest or barrel touching the statue (`Gathering.intoChest` / `chestBeside`, a fixed six-neighbour check).
 - **Prior art:** item magnets (Simple Magnets ARR, magnetic GPL, Magnetic Enchantment AGPL, Sticky Fingers MIT, davdeo's Item Magnet MIT). None ties into a beacon/chest; hand-rolled (tiny; no library does it).
 
 #### Totem of Fortification (`fortification/Fortification`, `mixin/ServerExplosionMixin`, `compat/FortificationBeaconPayload`)
@@ -315,22 +319,33 @@ Owner's goal (2026-11-15): mob-free zones without spamming torches. Owner decisi
 - 4 layers: **sleepers inside stay asleep** (`Sleepers.keepAsleep` for the ward's area).
 - `Wards.put(level, key, AABB, keepsSleepersAsleep, lifetimeTicks)` lapses unless refreshed: refreshed every 80-tick beacon pulse for 100 ticks (`WARD_DEFAULT_LIFETIME_TICKS`), so a ward ends about 5 s after its beacon stops. One map lookup when no ward exists.
 
-### Statues give their totem's effect
+### Statues give their totem's effect (built 2026-11-22)
 
-*Owner, 2026-11-22. In progress on `totems-2`, not in develop.*
-
-- A placed totem statue gives its totem's area effect in a **very small radius** (a few blocks), weaker than the same totem in a beacon: a Warding statue keeps a doorway clear, a Growth statue a garden bed, a Gathering statue pulls drops into a chest beside it, and so on. Builder proposes each statue's version and radius. Totems with no area form (Keeping, the End's teleport) give nothing as statues.
+- A statue gives a weaker form of its totem's area effect in a **7x7x7 box** round it (radius 3, builder), refreshed every second (`statue/StatueEffects`: a scheduled block tick every 20 ticks, no block entity; `onPlace` starts it, and statues saved earlier restart from a random tick; each pulse refreshes its area for 40 ticks under a `Source(pos)` key so it never collides with a beacon's).
+  - Warding: monsters keep out; sleepers are **not** kept asleep (builder).
+  - Gathering: drops go into a chest or barrel touching the statue.
+  - Fortification: no blast damage to blocks.
+  - Growth: plants grow twice as fast, plus planting.
+  - Herding: a small pasture. Clear Skies: dry.
+  - Keeping, Seeking, the Beginning and the End: nothing (no area form).
 
 ### Totem statue (block, B15 exception)
 
 - `bubbas_totems_artifacts:totem_statue` ("Totem Statue"). **B15 reason (owner-approved, 2026-11-16):** one shared block for every totem, so a found totem can be set down as decoration.
 - **Placing (owner-approved, 2026-11-16; every totem since 2026-11-22):** sneak and use any totem on a block (sneaking, so holding a totem for its pulse never places it by accident; without sneaking the click does nothing). The statue faces the player and the totem is used up (creative keeps it). The Grave Talisman is not a totem and has no statue.
-- **Inert in develop:** no pulse, ward or beacon effect; no block entity, no ticking (tiny-radius effects are in progress, above).
+- **Effects:** see "Statues give their totem's effect" above. No block entity.
 - **Breaking** (any tool, pickaxe fastest, strength 1) drops the totem back; pistons pop it off as its totem. Shape: 10x10 footprint, 14 high (plinth and column).
-- **Which totem:** `statue/TotemType`: WARDING (first, so it's the default and statues saved before the `totem` property load as warding), KEEPING, GATHERING, FORTIFICATION, GROWTH, SEEKING, BEGINNING, END, with `forItem(Item)`. `statue/StatueTotemItem` is an `Item` whose `useOn` places the statue when sneaking (PASS otherwise, so `use()` still runs); Keeping and Fortification are `StatueTotemItem`s, Gathering, Growth, the Beginning and the End extend it, Seeking checks sneaking first, Warding keeps its own `useOn`. **Sneak-use always places the statue** (builder's choice): a sneaking Totem of the End doesn't teleport, the Beginning doesn't ripple, Seeking doesn't pick a structure.
+- **Which totem:** `statue/TotemType`: WARDING (first, so it's the default and statues saved before the `totem` property load as warding), KEEPING, GATHERING, FORTIFICATION, GROWTH, SEEKING, BEGINNING, END, HERDING, CLEAR_SKIES, with `forItem(Item)`. `statue/StatueTotemItem` is an `Item` whose `useOn` places the statue when sneaking (PASS otherwise, so `use()` still runs); every totem item is or extends `StatueTotemItem`, so sneak-to-place lives in one place (Warding and Seeking joined it in the 2026-11-22 audit). **Sneak-use always places the statue** (builder's choice): a sneaking Totem of the End doesn't teleport, the Beginning doesn't ripple, Seeking doesn't pick a structure.
 - **Loot (26.3 format):** one pool, an `alternatives` entry with one item per totem, each with `"condition": {"type": "minecraft:all_of", "terms": [survives_explosion, match_block {state: {totem}}]}`. The pre-26.x `conditions` / `block_state_property` keys are silently ignored by 26.3 (they made every statue drop all eight totems).
 - **Art (initial, 2026-11-22; owner will redesign):** generated by `tools-local/make_statue_textures.py` (`main()` Warding's hooded figure, unchanged; `write_others()` the seven new ones). Builder's choices: one generic figure for the seven (body, arms, head, chest emblem) on Warding's plinth, told apart by per-totem tops and emblems in each item's palette: Fortification's helm brim, Growth's leaf crown and blossom, Seeking's gold band, the Beginning's grass cap, the End's purpur crown with four spikes; Gathering raises its hands, Keeping hugs a deeper chest. Glowing parts: the Beginning's and the End's eyes (light 12), Fortification's visor (10). 16x and 32x (`pixelart.render32`); rows in `docs/art-todo.md`.
 - **Tests:** core `endStatuePlacesWithoutTeleportingAndDropsItsTotem`; milestone `TotemStatueGameTest.everyStatueDropsItsTotemAndOldOnesLoadAsWarding`; client part `statues` (row, close pairs, night, each at 32x too).
+### Design notes (moved out of code comments, B38)
+
+- **Fortification:** only block damage is stopped. The blast still hurts and knocks back, and its fire doesn't start on protected blocks. Wind charges are untouched, and the `mobGriefing` rule is never changed (owner: it would stop villager farming). A dull clang and a glint of wax show where a blast was turned aside.
+- **Loot:** additive pools on chest tables only (archaeology tables give a single item, so a second pool would break brushing). A table a datapack replaced through Fabric is left alone. Every totem's tables, Warding's included (the evoker drop too), are in `TotemsLoot.all()`.
+- **Grave Talisman:** the undead search lives on plain `Level`, so server tests can check it; the client works out the glow for its own player.
+- **Warding pulse:** the soul-fire ring is drawn low, below a player's eyes. Brain-driven monsters (piglins, hoglins) flee through their vanilla AVOID_TARGET memory; goal-driven ones get `WardFleeGoal`. Vanilla's `AvoidEntityGoal` can't be reused: it only flees entities a monster could target, which leaves out creative players and monsters holding a totem. The goal is added on first scare at priority 0 with the MOVE flag; a mob trapped in an enclosed ward stops trying to leave for a while (fixed the stuck-jittering bug). The nearest-face exit is computed once (`WardBarrier.exitNormal`). `Wards.blocksEntry` checks "any wards in this level?" before `WardBarrier.keptOut`, and the ward sweep skips what `keptOut` skips (deactivated Fabricator mobs).
+
 ### Tooling
 
 `tools/install-to-modrinth.ps1`, `tools/build-testworld.py` (`MODS`) and `mods/testworldshots` (`modsUnderTest`) include this mod; the test world builder names `bubbas_totems_artifacts:totem_of_warding` (the saved world's old-id totems load through the alias). No mod icon yet; it must be person-made (B14).
@@ -342,19 +357,27 @@ Owner decisions still pending (built as described above until decided):
 - **Mob holders:** should mobs holding a Totem of Warding pulse, and may woken undead pick one up? (built as yes, agent's choice)
 - **Names:** the Grave Talisman's name; the Totem of Growth's name (owner wanted a verb-like word).
 - **Seeking:** signature blocks (built) or a picker screen; keep pointing at a found structure (built) or "point to the next one".
-- **Builder's calls to review:** Keeping counts anywhere in the inventory and keeps XP levels; Gathering's "under the beacon" chest rule (being replaced by the ring); the totem loot tables and chances; the Beginning/End builder's choices 1-16 (ripple size, what counts as built, landing rules, rarity, End city 5 %); trapped monsters in a ward fight rather than cower.
+- **Builder's calls to review:** Keeping counts anywhere in the inventory and keeps XP levels; the totem loot tables and chances; the Beginning/End builder's choices 1-16 (ripple size, what counts as built, landing rules, rarity, End city 5 %); trapped monsters in a ward fight rather than cower.
 - **Art:** person-made statue designs and mod icon (B14); the Gathering texture reads like gingerbread (`docs/art-todo.md`).
+- **Gathering ring look:** functional but plain (items orbit at the beacon's top). Slower, or a second ring for XP?
+- **Statues:** radius 3, and a Warding statue doesn't keep sleepers asleep (builder).
+- **Herding** counts every animal except tamed pets, so bees, axolotls and the like too (builder).
+- **Art:** the Herding (spruce ram-headed idol with a gold bell) and Clear Skies (calcite, gold sun crown, sky emblem) items and statues are builder art.
 - **Numbers to playtest:** every value in `TotemsTuning` and `WardingTuning`.
 
 ## Milestone test objectives
 
 Test-lite (`specs/quality.md`, Test suites). Run: `./gradlew :bubbas_totems_artifacts:build` (standalone core); `:bubbas_totems_artifacts:runGameTest -PwithMobs -PwithBeacons -PmilestoneTests` for every test for real (the sleeper tests pass trivially without `-PwithMobs`, the beacon test without `-PwithBeacons`).
 
-- Core (`BubbasTotemsArtifactsCoreGameTest`, 16: the nine below, the five new totems' (above), `endLandingRules` and `endStatuePlacesWithoutTeleportingAndDropsItsTotem`): old Reworked Mobs ids load as these items (registry lookup and the item stack codec, re-saved under the new id); sneaking places a warding statue facing the player and breaking it drops the totem (not sneaking places nothing); the talisman senses undead mobs at 29/17/11 blocks; it senses sleepers; a held totem pulses onto the cooldown and scares a zombie away; the pulse calms sleepers; a ward stops spawns and sends monsters out; a full ward keeps sleepers asleep and releases them on removal; a ward pushes back mobs that don't path.
-- `GraveTalismanGameTest`: the glow-level table; undead mobs and sleepers sensed at each level.
-- `WardingGameTest`: the core warding checks plus the off-hand totem pulses and a backpack one doesn't; a zombie can't path into a ward; a ridden happy ghast is put back outside; mansion chests (about 20 %) and evokers (about 5 %) give a totem.
-- `WardingBeaconGameTest`: a totem beacon wards its range (1 layer: spawns only, 20 blocks; 4 layers: 50 blocks and sleepers kept asleep). Real only with `-PwithBeacons`.
-- `TotemStatueGameTest`: sneak-place, facing, no place without sneaking, break drops the totem (core); the End statue places without teleporting (core); every statue drops its own totem and statues saved before the `totem` property load as Warding.
-- Client (`ClientTests` names `talisman`, `warding`; screenshots): the talisman's glow at each distance in hand and hotbar (vanilla husk, skeleton, zombie, so it runs without Reworked Mobs); the Totem of Warding in the hotbar, its pulse ring and cooldown sweep in first and third person; the statue from three angles at 16x and 32x.
+- Core (`BubbasTotemsArtifactsCoreGameTest`, 15, one per mechanic, trimmed in the 2026-11-22 audit): the talisman senses undead mobs at 29/17/11 blocks; a held totem pulses onto the cooldown and scares a zombie away; a ward stops spawns and sends monsters out; sneaking places a statue facing the player and breaking it drops the totem; Keeping, Gathering, Fortification, Growth, Seeking and the End landing each have one; and the five added 2026-11-22: `gatheringRingFeedsASideHopper` (an item 6 blocks out ends up in a chest through a side hopper), `herdingPastureKeepsLivestockIn` (a cow is blocked at the pasture edge, not inside; a zombie never), `clearSkiesKeepsRainOff` (an area column gets no precipitation while it rains; outside does), `statuesPulseTheirArea` (Growth and Herding statues set radius-3 areas; Keeping none).
+- Moved to milestone in the audit: old Reworked Mobs ids load as these items (now in `TotemsGameTest`), the End statue places without teleporting, sensing sleepers, the pulse calming sleepers, a full ward keeping sleepers asleep, a ward pushing back mobs that don't path, and `growthPlantsDroppedSeeds` (a wheat seed is planted on farmland, exactly one).
+- `TotemsGameTest`: every totem's loot (chest tables rolled as chests, the evoker as entity loot, about 5 %); `totemsAreArtifacts` (every statue totem, the Beginning included, one per stack and not common; the talisman one per stack).
+- `TotemsBeaconGameTest.gatheringBeaconStartsTheRing` (real with `-PwithBeacons`), replacing `gatheringBeaconFillsTheChestBelow`.
+- Objectives without a test yet: a cow follows a player holding the Totem of Herding, and a goat (brain-driven) does too; using Clear Skies in rain clears the weather and uses it up, and in clear weather it isn't used; the client draws no rain over a Clear Skies area; XP leaves the ring for a nearby player.
+- `GraveTalismanGameTest`: undead mobs and sleepers sensed at each level.
+- `WardingGameTest`: the core warding checks plus the off-hand totem pulses and a backpack one doesn't; a zombie can't path into a ward; a ridden happy ghast is put back outside. (Its loot check merged into `TotemsGameTest.totemsAreFoundInLoot`.)
+- `WardingBeaconGameTest`: a totem beacon wards its range (1 layer: spawns only, 20 blocks; 4 layers: 50 blocks, and sleeper sensitivity 0 under 4 layers, 1 under 1 layer with Reworked Mobs). Real only with `-PwithBeacons`.
+- `TotemStatueGameTest`: sneak-place, facing, no place without sneaking; the End statue places without teleporting; every statue drops its own totem and statues saved before the `totem` property load as Warding.
+- Client (`ClientTests` names `talisman`, `warding`; screenshots): the talisman's glow at each distance in hand and hotbar (vanilla husk, skeleton, zombie, so it runs without Reworked Mobs); the Totem of Warding in the hotbar, its pulse ring and cooldown sweep in first and third person; part `totems`: the hotbar with every totem, Gathering held and the beacon ring (`totems-gathering-ring`, `-later`: items orbiting, one entering the side hopper); part `statues`: all ten statues in a row, close pairs and at night, each at 32x too.
 
 **Trapped inside a ward (bug fix 2026-11-16, owner: a skeleton in an enclosed beacon ward was "stuck running/jittering").** A monster inside a ward plans its walk out (`WardFleeGoal`); when the walk can't end outside the ward (an enclosed room) it counts as trapped for 10 s (`TRAPPED_RECHECK_TICKS`): it stops trying to leave, the ward's outward push skips it (it only pressed it into the wall), and it behaves normally (fights), then looks for a way out again. Milestone test `WardingGameTest.trappedInAnEnclosedWardItStillFights`. Builder's choice the owner may change: trapped monsters fight as normal rather than cower.

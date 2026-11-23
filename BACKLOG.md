@@ -58,4 +58,4 @@ Parked ideas and open items, newest first within each project. Agents add to it 
 - Built (`specs/reworked-mining.md`). Owner to playtest every number in `MiningTuning`, decide whether stronger Efficiency should beat vanilla at Efficiency V diamond, how progress shows to the player, and review the builder's calls (spec "Open").
 
 ## Bubba's World Tweaks (C8)
-- **Built on the world-tweaks branch, awaiting merge** (`specs/world-tweaks.md`): lava bubbles over magma (half-dome bubbles that plop), lava geysers with black smoke, and lift plus a speed boost from lava and sulfur geysers, for the Glider.
+- Built (`specs/world-tweaks.md`). Owner to playtest bubble and eruption frequency and the boost numbers. More environment ideas (rain puddles, mudslides, sandstorms, mountain wind, avalanches) offered 2026-11-22, not picked yet.
