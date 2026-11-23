@@ -125,10 +125,9 @@ public final class LavaGeysers {
 		return null;
 	}
 
-	/** Starts an eruption at a bubbling spot (unless one is already going close by). */
+	/** Starts an eruption at a bubbling spot (unless that spot is already erupting). */
 	public static @Nullable LavaGeyser erupt(ServerLevel level, BlockPos surface) {
-		double s = WorldTweaksTuning.GEYSER_SPACING;
-		if (!level.getEntitiesOfClass(LavaGeyser.class, new AABB(surface).inflate(s)).isEmpty()) {
+		if (!level.getEntitiesOfClass(LavaGeyser.class, new AABB(surface)).isEmpty()) {
 			return null;
 		}
 		LavaGeyser geyser = LAVA_GEYSER.create(level, EntitySpawnReason.TRIGGERED);

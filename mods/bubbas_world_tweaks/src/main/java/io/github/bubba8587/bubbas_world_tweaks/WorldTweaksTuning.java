@@ -26,9 +26,8 @@ public final class WorldTweaksTuning {
 	public static final int VENT_QUIET_SPREAD = 50;
 	public static final int VENT_QUIET_PER_DEPTH = 5;
 	public static final long VENT_SALT = 0x6C617661L;
-	/** An eruption lasts this long, and no two erupt this close together. */
+	/** An eruption lasts this long. */
 	public static final int GEYSER_DURATION_TICKS = 100;
-	public static final double GEYSER_SPACING = 5.0;
 	/** The column that lifts. */
 	public static final double GEYSER_HEIGHT = 14.0;
 	public static final double GEYSER_RADIUS = 0.8;
