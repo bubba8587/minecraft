@@ -61,6 +61,7 @@ Parked ideas and open items, newest first within each project. Agents add to it 
 
    Owner to confirm whether that goes beyond the test world.
 5. **A spider waiting on cocooned prey keeps moving:** while a giant spider (and any spider that cocoons) waits to come back and feed, it wanders around near the cocoon and its webs, instead of standing still. Use vanilla's random-stroll goal kept within a home radius around the cocoon (`WaterAvoidingRandomStrollGoal` plus `restrictTo`, specs/vanilla-subsystems.md), on walls and ceilings too through Stormie's Spiders. It still returns to feed on time.
+6. **Spiders haul prey to the middle of their web:** a giant spider carries its catch to the centre of its own web, the middle of the spun-web span it made (between the trees it anchored to), and hangs the cocoon there. Today it uses the nearest web block. If it has no web of its own, the nearest web's centre; with none at all, as today. It needs the spider to remember its webs again: the 2026-11-22 cleanup removed an unused `sites` list from `GiantSpider`, which was what this needed. The cocoon hanging in the middle of the web should read clearly from below; check it in a screenshot.
 
 ## Repo
 - **Multiplayer check (owner, 2026-11-22: "make sure these mods work in multiplayer"; light scan done, the rest is here).** Scan results:
