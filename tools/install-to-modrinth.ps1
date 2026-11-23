@@ -38,7 +38,7 @@ try {
 New-Item -ItemType Directory -Force $target | Out-Null
 foreach ($m in $Mods) {
 	Get-ChildItem $target -Filter "$m-*.jar" | Remove-Item -Confirm:$false
-	Get-ChildItem (Join-Path $root "mods\$m\build\libs") -Filter "*.jar" | Where-Object Name -notmatch "sources" |
+	Get-ChildItem (Join-Path $root "mods\$m\build\libs") -Filter "$m-*.jar" | Where-Object Name -notmatch "sources" |
 		Copy-Item -Destination $target
 }
 
