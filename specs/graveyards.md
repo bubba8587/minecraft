@@ -23,6 +23,14 @@ Owner's design (2026-11-22). Part 1's worldgen (`specs/undead.md` "Worldgen"): t
 - Rows of gravestones over shallow graves holding sleepers (skeletons and zombies by biome; husks in deserts, strays in snow). Some graves have loot on display (`specs/undead.md` "Loot on display").
 - Sizes from a lone family plot to a large yard. Some yards sit over a crypt entrance; some don't.
 
+## The resting dead (owner, 2026-11-22)
+
+- **A class of sleepers that never wake up.** Sleepers in **proper graves** (the plots under gravestones in crypt yards) are **always skeletons** and **never wake**: noise, bells, robbing and the rest leave them be. They are the yard's buried dead, not a trap.
+- They are **more likely to wear dyed leather armor** (burial clothes), in muted colours.
+- **Free to rob and dig (owner):** players can take their armor and items, and mine the skeleton itself, at no risk. A mined one stays a never-waking sleeper wherever it's placed, so it works as decoration.
+- Crypt sleepers (vaults, ossuaries, noble crypts) are unchanged: they wake as before. The danger lives underground.
+- Replaces the earlier yard rule (skeletons and zombies 50/50 in graves).
+
 ## Crypts (underground)
 
 - **Different crypts at different wealth levels** (owner). Builder's starting proposal, for the owner to adjust:
