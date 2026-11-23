@@ -234,8 +234,8 @@ Sleeper on the server: 0 per tick. Hearing: under 0.05 ms per tick with 200 slee
 - **Resting dead in desert/snowy yards:** husks/strays (built) or skeletons everywhere (owner said "the skeleton kind")?
 - **Bogged hiding:** fully underwater in 2-deep water (built), or head showing (1-deep)?
 - **Bury-break system** (BACKLOG): shovel-only vs by hand, noise, tools. Today a shovel digs loudly; by hand works, slowly.
-- **Back to sleep at dawn:** search range and what counts as shade (builder proposes).
-- **Fire ward:** radius, and whether a hunting mob pushes through (builder proposes).
+- **Back to sleep at dawn (built):** 16 blocks across and 4 up or down; a place is a solid floor with a light-blocking roof at block light 7 or less, or an open grave. Owner to playtest.
+- **Fire ward (built):** 6 blocks (Manhattan), 3 up or down. Builder's calls to confirm: a mob already hunting someone pushes straight through, and brain-driven hostile mobs (breeze, creaking) aren't covered.
 - **Mob spawner tweaks:** parked, no design yet.
 
 ## Milestone test objectives
