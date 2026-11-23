@@ -89,6 +89,11 @@ public interface SleeperHook {
 	default void attachToNobleCrypts(java.util.function.BiFunction<Long, BlockPos, net.minecraft.world.level.levelgen.structure.@org.jspecify.annotations.Nullable StructurePiece> vault) {
 	}
 
+	/** Reworked Mobs' loot displays are there to place. */
+	default boolean hasDisplays() {
+		return false;
+	}
+
 	/** Puts {@code stack} on a Reworked Mobs loot display at {@code pos}; false without that mod. */
 	default boolean placeDisplay(net.minecraft.world.level.LevelAccessor level, BlockPos pos, net.minecraft.core.Direction facing, ItemStack stack) {
 		return false;

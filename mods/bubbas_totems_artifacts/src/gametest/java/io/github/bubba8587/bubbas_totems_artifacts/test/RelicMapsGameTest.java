@@ -263,7 +263,11 @@ public class RelicMapsGameTest {
 			helper.assertTrue(statues > 150 && statues < 250, kind + ": " + statues + " statues in 400 vaults");
 			for (long seed : new long[] { statueSeed, weaponSeed }) {
 				RelicVaultPiece piece = new RelicVaultPiece(kind, A, door, seed);
-				piece.buildNow(level);
+				if (piece.prime() == RelicVaultPiece.Prime.WEAPON) {
+					buildSplitAt(level, piece, piece.pedestal().getZ());
+				} else {
+					piece.buildNow(level);
+				}
 				helper.assertTrue(primeShown(level, piece), kind + " seed " + seed + ": the " + piece.prime() + " isn't on the pedestal");
 				if (piece.prime() == RelicVaultPiece.Prime.STATUE) {
 					BlockPos top = piece.pedestal();
@@ -281,6 +285,17 @@ public class RelicMapsGameTest {
 			}
 		}
 		helper.succeed();
+	}
+
+	/** Builds {@code piece} as two chunks meeting at {@code z} (the pedestal in one, the block in front of it in the other). */
+	static void buildSplitAt(ServerLevel level, RelicVaultPiece piece, int z) {
+		BoundingBox all = piece.getBoundingBox();
+		BoundingBox[] halves = { new BoundingBox(all.minX(), level.getMinY(), all.minZ(), all.maxX(), level.getMaxY(), z - 1),
+				new BoundingBox(all.minX(), level.getMinY(), z, all.maxX(), level.getMaxY(), all.maxZ()) };
+		for (BoundingBox half : halves) {
+			piece.postProcess(level, level.structureManager(), level.getChunkSource().getGenerator(), level.getRandom(), half,
+					net.minecraft.world.level.ChunkPos.containing(piece.door()), piece.door());
+		}
 	}
 
 	/** Air reachable from {@code start} without leaving {@code box}; null when it reaches the box's edge (not sealed). */

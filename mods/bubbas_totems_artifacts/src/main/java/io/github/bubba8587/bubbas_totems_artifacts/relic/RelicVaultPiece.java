@@ -346,8 +346,9 @@ public class RelicVaultPiece extends StructurePiece {
 		} else {
 			ItemStack weapon = RelicLoot.primeWeapon(b.level, kind, random, top);
 			BlockPos front = top.below().north();
-			if (b.inside(top.getX(), top.getY(), top.getZ()) && !SleeperHook.get().placeStuckDisplay(b.level, top, Direction.NORTH, weapon)
-					&& b.inside(front.getX(), front.getY(), front.getZ())) {
+			boolean displayed = SleeperHook.get().hasDisplays()
+					&& (!b.inside(top.getX(), top.getY(), top.getZ()) || SleeperHook.get().placeStuckDisplay(b.level, top, Direction.NORTH, weapon));
+			if (!displayed && b.inside(front.getX(), front.getY(), front.getZ())) {
 				GlowItemFrame frame = new GlowItemFrame(b.level.getLevel(), front, Direction.NORTH);
 				frame.setItem(weapon, false);
 				b.level.addFreshEntity(frame);

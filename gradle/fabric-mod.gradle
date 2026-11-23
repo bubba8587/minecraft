@@ -96,7 +96,8 @@ tasks.matching { it.name == 'processGametestResources' }.configureEach { t ->
 // on its own; instead we fingerprint the mod's compiled code and resources (main, client, gametest, which also hold
 // bundled packs) and skip when it matches the fingerprint a passing run recorded. The marker also records the suite:
 // a full pass covers core, a core pass never counts for the full suite. The generated gametest fabric.mod.json differs
-// between suites, so the fingerprint uses its source instead. Force a run with -PrerunGametests.
+// between suites, so the fingerprint uses its source instead. The with* flags (-PwithMobs, -PwithBeacons, ...) put
+// other mods on the test runtime, so they are part of the fingerprint too. Force a run with -PrerunGametests.
 def gametestSet = sourceSets.findByName('gametest')
 def gametestInputs = files(sourceSets.main.output, sourceSets.client.output, gametestSet?.output ?: files())
 def gametestFingerprintFiles = files(sourceSets.main.output, sourceSets.client.output,
@@ -104,14 +105,17 @@ def gametestFingerprintFiles = files(sourceSets.main.output, sourceSets.client.o
 		file('src/gametest/resources/fabric.mod.json'))
 def gametestMarker = layout.buildDirectory.file('gametest/passed.fingerprint')
 def forceGametests = providers.gradleProperty('rerunGametests').isPresent()
+def withFlags = providers.gradlePropertiesPrefixedBy('with').map { m -> m.findAll { k, v -> k ==~ /with[A-Z].*/ }.collect { k, v -> "${k}=${v}" }.sort().join(',') }
 def fingerprintOf = { FileCollection fc ->
 	def md = java.security.MessageDigest.getInstance('SHA-256')
+	md.update("flags|${withFlags.getOrElse('')}\n".bytes)
 	fc.asFileTree.files.sort { it.path }.each { f -> md.update("${f.path}|${f.length()}|${f.lastModified()}\n".bytes) }
 	md.digest().encodeHex().toString()
 }
 tasks.matching { it.name == 'runGameTest' }.configureEach { t ->
 	t.inputs.files(gametestInputs).withPropertyName('gametestFingerprintInputs')
 	t.inputs.property('gametestSuite', suite)
+	t.inputs.property('gametestWithFlags', withFlags)
 	t.onlyIf("code or resources changed since the last passing ${suite} game test run") {
 		def m = gametestMarker.get().asFile
 		if (forceGametests || !m.exists()) return true

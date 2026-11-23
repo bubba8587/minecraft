@@ -1,0 +1,5 @@
+# Relic vault weapon frame fix: docs to merge (2026-11-23)
+
+- **Player-facing (Totems & Artifacts, relic vaults):** without Reworked Mobs, a vault whose pedestal sat on the first block of a chunk (its front block in the previous chunk) showed no prime weapon at all. Now the glow item frame is always there. Bug fix line for the changelog.
+- **Spec fact (specs/totems-artifacts.md, Relic maps / vault build):** the pedestal's stuck display is placed by the chunk holding the pedestal; the glow frame fallback is placed by the chunk holding the frame's block (`pedestal().below().north()`), decided by `SleeperHook.hasDisplays()`, so a chunk border between the two no longer drops it. The milestone test `pedestalHoldsStatueOrWeapon` now builds the weapon vaults split into two chunks meeting at the pedestal, which catches this.
+- **Spec fact (specs/quality.md, "Mechanism"):** the server game test pass fingerprint now includes the `-Pwith*` flags (`-PwithMobs`, `-PwithBeacons`, `-PwithGems`, any `with<Capital>` property), so a run with different flags is never skipped as unchanged.
