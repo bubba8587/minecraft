@@ -130,7 +130,8 @@ public class EndermanGameTest {
 	/** Designs are the same for the same seed, vary between seeds, and their structure is only End blocks. */
 	public void cairnDesignsVaryAndUseOnlyEndBlocks(GameTestHelper helper) {
 		Set<Block> structural = Set.of(Blocks.PURPUR_BLOCK, Blocks.PURPUR_PILLAR, Blocks.PURPUR_STAIRS, Blocks.PURPUR_SLAB, Blocks.END_STONE,
-				Blocks.END_STONE_BRICKS, Blocks.END_STONE_BRICK_SLAB, Blocks.END_ROD, Blocks.STAINED_GLASS.magenta());
+				Blocks.END_STONE_BRICKS, Blocks.END_STONE_BRICK_SLAB, Blocks.END_STONE_BRICK_STAIRS, Blocks.END_STONE_BRICK_WALL, Blocks.END_ROD,
+				Blocks.STAINED_GLASS.magenta(), Blocks.STAINED_GLASS.purple(), Blocks.STAINED_GLASS.pink());
 		Set<Integer> heights = new HashSet<>();
 		Set<Integer> sizes = new HashSet<>();
 		int multiTrunk = 0;
@@ -177,10 +178,44 @@ public class EndermanGameTest {
 				multiTrunk += trunks > 1 ? 1 : 0;
 			}
 		}
+		// Every form turns up (owner, 2026-11-22: as much variety as you like).
+		Set<CairnDesign.Form> forms = new HashSet<>();
+		for (long seed = 1; seed <= 400; seed++) {
+			forms.add(CairnDesign.formOf(seed * 7919L));
+		}
+		helper.assertTrue(forms.size() == CairnDesign.Form.values().length, "every cairn form should turn up, got " + forms);
 		helper.assertTrue(heights.size() >= 5, "heights should vary, got " + heights);
 		helper.assertTrue(sizes.size() >= 15, "sizes should vary, got " + sizes.size());
 		helper.assertTrue(multiTrunk >= designs / 5, "some cairns should have several trunks: " + multiTrunk + " of " + designs);
 		helper.assertTrue(withTnt > 0 && withTnt < designs / 2, "TNT should be rare but present: " + withTnt + " of " + designs);
+		helper.succeed();
+	}
+
+	/**
+	 * Cairn designs stay cheap and buildable (2026-11-22, cairn variety): 2000 designs of every form average well
+	 * under a millisecond each (they are worked out once per site, off the main thread), and none has more than 120 End
+	 * blocks (a site's spawn check reads its design every 5 s; more blocks also mean more nights to build).
+	 */
+	@GameTest(maxTicks = 5)
+	public void cairnDesignsAreCheapAndBounded(GameTestHelper helper) {
+		int most = 0;
+		java.util.Map<CairnDesign.Form, int[]> perForm = new java.util.EnumMap<>(CairnDesign.Form.class);
+		long start = System.nanoTime();
+		for (long seed = 1; seed <= 2000; seed++) {
+			List<Map.Entry<BlockPos, BlockState>> design = CairnDesign.design(seed * 31337L, CairnDesign.Offerings.TEMPERATE, Direction.NORTH, (x, z) -> -1);
+			int end = (int) design.stream().filter(e -> !e.getValue().is(BlockTags.ENDERMAN_HOLDABLE)).count();
+			most = Math.max(most, end);
+			int[] stats = perForm.computeIfAbsent(CairnDesign.formOf(seed * 31337L), f -> new int[3]);
+			stats[0]++;
+			stats[1] += end;
+			stats[2] = Math.max(stats[2], end);
+		}
+		double ms = (System.nanoTime() - start) / 1.0e6 / 2000;
+		StringBuilder report = new StringBuilder();
+		perForm.forEach((form, st) -> report.append(form).append(": ").append(st[0]).append(" designs, ").append(st[1] / st[0]).append(" End blocks on average, at most ").append(st[2]).append("; "));
+		System.out.println("[cairns] " + String.format(java.util.Locale.ROOT, "%.3f ms a design; ", ms) + report);
+		helper.assertTrue(ms < 1.0, "a design takes " + ms + " ms on average");
+		helper.assertTrue(most <= 120, "a design has " + most + " End blocks");
 		helper.succeed();
 	}
 
