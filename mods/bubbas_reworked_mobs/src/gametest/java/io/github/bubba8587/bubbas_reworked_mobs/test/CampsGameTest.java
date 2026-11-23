@@ -222,7 +222,7 @@ public class CampsGameTest {
 		BlockPos start = piece.tunnelStep(2);
 		walker.snapTo(start.getX() + 0.5, start.getY(), start.getZ() + 0.5, 0.0F, 0.0F);
 		level.addFreshEntity(walker);
-		BlockPos roomCell = piece.centre().below(4);
+		BlockPos roomCell = piece.roomSpot();
 		helper.runAfterDelay(1, () -> {
 			walker.setOnGround(true); // a mob in the air plans no path
 			var path = walker.getNavigation().createPath(roomCell, 0);
@@ -285,6 +285,29 @@ public class CampsGameTest {
 		}
 		helper.assertTrue(loose.isEmpty(), "blocks that would pop off: " + loose.subList(0, Math.min(12, loose.size())));
 		helper.assertTrue(lit.isEmpty(), "camps are dark, but these give off light: " + lit.subList(0, Math.min(12, lit.size())));
+		helper.succeed();
+	}
+
+	/** Camp footprint plan: no two pieces' footprints overlap or touch, for 32 seeds of every kind and size. */
+	@GameTest(structure = FIELD, maxTicks = 5)
+	public void campPiecesNeverOverlap(GameTestHelper helper) {
+		List<String> clashes = new ArrayList<>();
+		BlockPos at = helper.absolutePos(CENTRE);
+		for (CampKind kind : CampKind.values()) {
+			for (CampTuning.Size size : CampTuning.Size.values()) {
+				for (long seed = 0; seed < 32; seed++) {
+					List<CampPiece.Footprint> all = new CampPiece(seed * 7919L + kind.ordinal(), at, kind, size).footprints();
+					for (int i = 0; i < all.size(); i++) {
+						for (int j = i + 1; j < all.size(); j++) {
+							if (!all.get(i).clearOf(all.get(j), 0)) {
+								clashes.add(kind.id() + "/" + size.id() + "/" + seed + ": " + all.get(i) + " x " + all.get(j));
+							}
+						}
+					}
+				}
+			}
+		}
+		helper.assertTrue(clashes.isEmpty(), clashes.size() + " overlaps, e.g. " + clashes.subList(0, Math.min(4, clashes.size())));
 		helper.succeed();
 	}
 
