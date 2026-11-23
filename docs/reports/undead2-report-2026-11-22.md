@@ -73,3 +73,31 @@ Branch `undead-2` (worktree `../mc-undead2`), from develop. One section per step
 ### Code comments
 
 Per agent 1's relay of the owner rule (B38: comments are labels only), the comments and javadoc in the new undead-2 code (BackToSleep, FireWard, FireWardMixin, the UndeadTuning additions) were cut to short labels; their reasons are in this report.
+
+## 3. Drowned sleepers in shipwrecks (specs/undead.md)
+
+### Player-facing
+
+- New **drowned sleeper** (creative: "Sleeping Drowned"): the ship's drowned crew. It wakes like other sleepers (noise meter, gear kept) into a drowned, which then behaves like the reworked drowned (lurks in water).
+- **Shipwrecks** now have their crew lying or sitting **between decks**: each empty or flooded spot on a wooden floor with wood overhead within 4 blocks has a 12% chance of a sleeper (owner: they must be inside the boat, not outside on the sand). Full wrecks get a crew of several (a full ship in the test world had 7); broken fragments with little room inside mostly have none. Waterlogged where flooded.
+- Gear: 15% a trident, 15% a fishing rod, 10% a nautilus shell in the off hand, 25% a leather cap.
+- Sleepers now look like their mob: drowned sleepers wear the drowned's seaweed hair and rags, stray sleepers their ragged clothes (the outer layer was missing; owner spotted the drowned).
+- Item icon: a drowned head with its eyes shut, 16x and 32x (art-todo row updated).
+
+### Numbers
+
+| What | Value | Where |
+|---|---|---|
+| Chance per spot between decks | 12% | `UndeadTuning.SHIPWRECK_CREW_CHANCE` |
+| Trident / rod / shell / cap | 15% / 15% / 10% / 25% | `ShipwreckCrew.place` |
+
+### Spec facts
+
+- `UndeadVariant.DROWNED` (block, item, woken entity `WokenDrowned extends Drowned`, so the drowned mind mixins apply); tags `#woken_undead`, `#grabs_loot`, `#zombies`, `#burn_in_daylight`; particle texture prismarine; vanilla `DrownedRenderer` for the woken mob.
+- Placement: `mixin/ShipwreckCrewMixin` at every RETURN of `ShipwreckPieces.ShipwreckPiece.postProcess` (it has two exits; injecting only at TAIL missed every chunk after a wreck's first) calls `undead/ShipwreckCrew.place` over the piece box clipped to the chunk. Spots: `ShipwreckCrew.inHull` = air or water, sturdy wooden floor, wood within 4 above; one column only, so every chunk sees the same answer (a sideways check across chunk edges read unbuilt neighbours). Per-spot roll from vanilla's positional random (`XoroshiroRandomSource(seed).forkPositional().at(pos)`, seed = world seed ^ piece centre).
+- Sleeper outer layers: `PosedHumanoid` takes an optional outer layer (model layer and texture), posed like the body: drowned `ModelLayers.DROWNED_OUTER_LAYER` + `drowned_outer_layer.png`, stray `STRAY_OUTER_LAYER` + `stray_overlay.png`.
+
+### Tests
+
+- Milestone `ShipwreckCrewGameTest`: `shipwrecksHaveADrownedCrew` (a vanilla full shipwreck piece built as worldgen builds it has drowned sleepers), `drownedSleeperWakesAsADrowned`. Full milestone suite 148/148.
+- Client part `shipwrecks` (`ShipwreckClientGameTest`): checks the nearest natural shipwrecks of seed 20261116 (fails if any crew sleeper isn't between decks: one full wreck had 7, all inside; fragments 0); screenshots looked at: `drowned-compare` / `-close` (drowned sleepers sitting and lying beside a vanilla drowned, same look), `shipwreck-sleeper-0..2` (crew below deck). The variants part's `variants-sleepers` shows the stray sleepers with their clothes.

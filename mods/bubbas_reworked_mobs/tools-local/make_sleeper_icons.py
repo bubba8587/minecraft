@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # dte:B16,C1
-"""Item icons for the sleeper items (Sleeping Skeleton, Zombie, Husk, Stray): the undead's head, eyes shut, at 16x
+"""Item icons for the sleeper items (Sleeping Skeleton, Zombie, Husk, Stray, Drowned): the undead's head, eyes shut, at 16x
 and Faithful-style 32x (specs/textures.md). Agent-made, listed in docs/art-todo.md; never AI-generated.
 
   python mods/bubbas_reworked_mobs/tools-local/make_sleeper_icons.py
@@ -66,6 +66,7 @@ FACE = check([
 ])
 ZOMBIE_PAL = shades((24, 40, 20), (42, 70, 36), (58, 96, 48), (76, 122, 62), (94, 146, 76), (114, 168, 92), (138, 190, 112))
 HUSK_PAL = shades((48, 38, 24), (90, 72, 48), (122, 100, 66), (150, 126, 86), (176, 150, 104), (198, 174, 124), (220, 198, 150))
+DROWNED_PAL = shades((14, 34, 38), (28, 66, 70), (40, 92, 92), (56, 118, 112), (74, 142, 130), (96, 164, 148), (124, 186, 166))
 
 HOODED = check([
 	"....oooooooo....",
@@ -105,6 +106,7 @@ def main():
 	write("zombie_sleeper", FACE, ZOMBIE_PAL, flesh, ("flesh",), 42)
 	write("husk_sleeper", FACE, HUSK_PAL, flesh, ("flesh",), 43)
 	write("stray_sleeper", HOODED, STRAY_PAL, {**bone, "a": "cloth", "b": "cloth"}, ("bone", "cloth"), 44)
+	write("drowned_sleeper", FACE, DROWNED_PAL, flesh, ("flesh",), 45)
 
 
 if __name__ == "__main__":

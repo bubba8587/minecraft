@@ -1,4 +1,5 @@
 {
+  "block.bubbas_reworked_mobs.drowned_sleeper": "Sleeping Drowned",
   "block.bubbas_reworked_mobs.gravestone": "Gravestone",
   "block.bubbas_reworked_mobs.husk_sleeper": "Sleeping Husk",
   "block.bubbas_reworked_mobs.loot_display": "Loot on Display",
@@ -19,6 +20,7 @@
   "entity.bubbas_reworked_mobs.silk_cocoon": "Silk Cocoon",
   "entity.bubbas_reworked_mobs.spider_nest": "Spider Nest",
   "entity.bubbas_reworked_mobs.spun_web": "Spider Web",
+  "entity.bubbas_reworked_mobs.woken_drowned": "Drowned",
   "entity.bubbas_reworked_mobs.woken_husk": "Husk",
   "entity.bubbas_reworked_mobs.woken_skeleton": "Skeleton",
   "entity.bubbas_reworked_mobs.woken_stray": "Stray",

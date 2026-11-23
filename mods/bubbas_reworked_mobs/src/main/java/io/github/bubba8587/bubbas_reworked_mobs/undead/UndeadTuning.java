@@ -115,6 +115,10 @@ public final class UndeadTuning {
 	/** Search range, up and down. */
 	public static final int FIRE_WARD_VERTICAL = 3;
 
+	// --- shipwreck crew ------------------------------------------------------------------------------------
+	/** Chance per below-decks cell. */
+	public static final float SHIPWRECK_CREW_CHANCE = 0.12F;
+
 	private UndeadTuning() {
 	}
 

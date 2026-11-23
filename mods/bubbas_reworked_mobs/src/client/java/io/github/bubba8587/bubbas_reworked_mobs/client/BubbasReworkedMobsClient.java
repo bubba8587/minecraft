@@ -39,6 +39,8 @@ public class BubbasReworkedMobsClient implements ClientModInitializer {
 		EntityRenderers.register((EntityType<? extends Zombie>) ModEntities.woken(UndeadVariant.HUSK),
 				c -> new WokenZombieRenderer(c, net.minecraft.resources.Identifier.withDefaultNamespace("textures/entity/zombie/husk.png")));
 		EntityRenderers.register((EntityType<? extends Skeleton>) ModEntities.woken(UndeadVariant.STRAY), WokenSkeletonRenderer::stray);
+		EntityRenderers.register((EntityType<? extends net.minecraft.world.entity.monster.zombie.Drowned>) ModEntities.woken(UndeadVariant.DROWNED),
+				net.minecraft.client.renderer.entity.DrownedRenderer::new);
 
 		// Loot on display: the item's own model, posed per placement.
 		BlockEntityRenderers.register(ModBlockEntities.LOOT_DISPLAY, LootDisplayRenderer::new);

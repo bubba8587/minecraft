@@ -4,6 +4,7 @@ package io.github.bubba8587.bubbas_reworked_mobs.undead;
 import java.util.List;
 import java.util.function.Supplier;
 
+import io.github.bubba8587.bubbas_reworked_mobs.undead.entity.WokenDrowned;
 import io.github.bubba8587.bubbas_reworked_mobs.undead.entity.WokenHusk;
 import io.github.bubba8587.bubbas_reworked_mobs.undead.entity.WokenSkeleton;
 import io.github.bubba8587.bubbas_reworked_mobs.undead.entity.WokenStray;
@@ -34,6 +35,11 @@ public enum UndeadVariant {
 	/** Deserts (owner, 2026-11-22): lies buried in sand and bursts out in a puff of it that briefly blinds. */
 	HUSK("husk", List.of(SleeperPose.LYING, SleeperPose.SITTING), SoundType.SAND, MapColor.SAND, Items.ROTTEN_FLESH,
 			() -> EntityType.Builder.<WokenHusk>of(WokenHusk::new, MobCategory.MONSTER).sized(0.6F, 1.95F).eyeHeight(1.74F)
+					.passengerAttachments(2.075F).ridingOffset(-0.7F).clientTrackingRange(8).notInPeaceful(),
+			UndeadTuning::wokenZombieAttributes),
+	/** Shipwrecks: the ship's crew. */
+	DROWNED("drowned", List.of(SleeperPose.LYING, SleeperPose.SITTING), SoundType.WET_GRASS, MapColor.WATER, Items.ROTTEN_FLESH,
+			() -> EntityType.Builder.<WokenDrowned>of(WokenDrowned::new, MobCategory.MONSTER).sized(0.6F, 1.95F).eyeHeight(1.74F)
 					.passengerAttachments(2.075F).ridingOffset(-0.7F).clientTrackingRange(8).notInPeaceful(),
 			UndeadTuning::wokenZombieAttributes),
 	/** Snow (owner, 2026-11-22): lies frozen in ice or packed snow that cracks as a warning before it breaks free. */
@@ -84,6 +90,7 @@ public enum UndeadVariant {
 			case SKELETON -> net.minecraft.sounds.SoundEvents.SKELETON_AMBIENT;
 			case ZOMBIE -> net.minecraft.sounds.SoundEvents.ZOMBIE_AMBIENT;
 			case HUSK -> net.minecraft.sounds.SoundEvents.HUSK_AMBIENT;
+			case DROWNED -> net.minecraft.sounds.SoundEvents.DROWNED_AMBIENT_WATER;
 			case STRAY -> net.minecraft.sounds.SoundEvents.STRAY_AMBIENT;
 		};
 	}
