@@ -3,7 +3,7 @@
 
 For the orchestrator or docs agent to merge into `specs/reworked-mining.md` and `player-docs/`. Every number lives in `MiningTuning.java` (`mods/bubbas_reworked_mining/src/main/java/io/github/bubba8587/bubbas_reworked_mining/MiningTuning.java`). **(builder)** marks the builder's own choices. Everything else is the owner's design.
 
-## Step 1: the curve, rare finds, True Unbreaking (built, 8/8 server tests pass)
+## Step 1: the curve, rare finds, True Unbreaking (built; server tests pass)
 
 ### Player-facing behaviour
 
@@ -16,7 +16,7 @@ For the orchestrator or docs agent to merge into `specs/reworked-mining.md` and 
 - **Efficiency is stronger relative to each tool:** it now multiplies the tool's speed, so it matters on every tier. An Efficiency V iron pickaxe mines deepslate a little faster than a bare diamond one, and Efficiency V diamond is as fast as in vanilla.
 - **Unbreaking is stronger:** at level III a tool loses about 1 durability in 7 (vanilla is 1 in 4). Armor gets the same extra protection on top of its vanilla odds.
 - **Haste (potion, beacon) and Infused Gems' Haste gems** still multiply on top of all of this.
-- **Rare finds:** mining natural stone, granite, diorite, andesite or tuff sometimes drops iron or gold nuggets (1-3), rarely lapis, very rarely an emerald. Natural deepslate has slightly better odds and a tiny diamond chance. Each Fortune level doubles the odds. Silk Touch, blocks a player placed, and stone made by lava flowing onto water never give finds. Explosions can give finds (at the no-Fortune odds).
+- **Rare finds:** mining stone, granite, diorite, andesite or tuff sometimes drops iron or gold nuggets (1-3), rarely lapis, very rarely an emerald. Deepslate has slightly better odds and a tiny diamond chance. Each Fortune level doubles the odds. Silk Touch never gives finds. Placed blocks give finds like natural ones (**owner, 2026-11-22: no natural/placed distinction**; this replaces the spec's "only from natural blocks" bullet). Explosions can give finds (at the no-Fortune odds).
 - **True Unbreaking** (new enchantment, max level I): the item never loses durability. It works on anything with durability (tools, weapons, armor, elytra, shields, ...) and is applied at an anvil. It can't combine with Mending. It's never offered by the enchanting table or villagers and never appears as a random enchantment on loot: it's found only as an enchanted book in ancient city, End city, bastion treasure and ominous trial vault (rare) chests.
 - Tooltips: no new tooltip lines (minimal-tooltips preference). True Unbreaking shows as a normal enchantment name.
 
@@ -38,8 +38,8 @@ What that means in seconds (on the ground, no Haste): iron on deepslate is about
 
 - Efficiency multiplier by level 0-V: 1.0, 1.5, 2.1, 2.8, 3.5, 4.25. Higher levels (commands, other mods) keep adding 0.75 per level.
 - Extra Unbreaking cancel chance at I/II/III: 0.333, 0.40, 0.43. Tools then keep a point with odds 1/3, 1/5, 1/7.
-- Find chance per natural block, at Fortune 0/I/II/III: stone-type 0.5 %, 1 %, 2 %, 4 %; deepslate 0.8 %, 1.6 %, 3.2 %, 6.4 %.
-- Find weights: stone-type: iron nugget 60, gold nugget 30, lapis 7, emerald 3. Deepslate: iron nugget 50, gold nugget 35, lapis 10, emerald 4, diamond 1. So a bare pickaxe finds a diamond about once per 12,500 natural deepslate blocks.
+- Find chance per block, at Fortune 0/I/II/III: stone-type 0.5 %, 1 %, 2 %, 4 %; deepslate 0.8 %, 1.6 %, 3.2 %, 6.4 %.
+- Find weights: stone-type: iron nugget 60, gold nugget 30, lapis 7, emerald 3. Deepslate: iron nugget 50, gold nugget 35, lapis 10, emerald 4, diamond 1. So a bare pickaxe finds a diamond about once per 12,500 deepslate blocks.
 - True Unbreaking book chance per chest: ancient city 4 %, End city treasure 3 %, bastion treasure 5 %, trial chambers `reward_ominous_rare` 5 %. Anvil cost 8, weight 1.
 
 ### Builder's choices (owner may want to look)
@@ -47,12 +47,12 @@ What that means in seconds (on the ground, no Haste): iron on deepslate is about
 - **(builder) Why Efficiency changed shape.** Vanilla Efficiency adds a flat +26 speed at level V. On a slowed curve that would erase the curve: an Efficiency V stone pickaxe would out-mine a bare diamond one on deepslate. So Efficiency became a multiplier on the tool's own speed, tuned to the spec's target ("Efficiency V iron about like bare diamond on deepslate") and capped so Efficiency V diamond matches vanilla. As a result, low-tier tools gain less from Efficiency than in vanilla in absolute terms, and the curve keeps its shape. If the owner wants "stronger" to mean faster than vanilla at the top, raise the last entries of `EFFICIENCY_MULTIPLIER`.
 - **(builder) Gold tools** count as wood for harvesting (vanilla), so they can't mine deepslate either. They keep some speed on stone (0.67 of vanilla gold's 12).
 - **(builder) Which blocks are "stone" and "deepslate"** (block tags `bubbas_reworked_mining:harsh_stone` / `harsh_deepslate`): stone, cobblestone, mossy cobblestone, granite, diorite, andesite, tuff, infested stone/cobblestone and the 8 stone ores; deepslate, cobbled deepslate, infested deepslate and the 8 deepslate ores. Crafted variants (bricks, polished, tiles, slabs) use the gentle "other" factor.
-- **(builder) Which blocks give finds:** natural stone, granite, diorite, andesite, tuff (stone-type) and deepslate. Not cobblestone, calcite or the ores.
+- **(builder) Which blocks give finds:** stone, granite, diorite, andesite, tuff (stone-type) and deepslate. Not cobblestone, calcite or the ores.
 - **(builder) Which tools are on the curve:** the vanilla pickaxe, axe, shovel, hoe and sword of each tier, through item tags `bubbas_reworked_mining:tier/<wood|stone|copper|iron|gold|diamond|netherite>`. Other mods' tools stay vanilla unless a datapack adds them to a tier tag. Swords keep vanilla wear (2 per block). Spears, shears and maces aren't on the curve.
 - **(builder) Wear on wood in deepslate** is 3 even though it drops nothing, so trying it is a bad deal.
 - **(builder) Unbreaking on armor** gets the same extra roll as tools (the spec says Unbreaking is stronger; armor wasn't singled out).
 - **(builder) True Unbreaking chest list and odds**, from the spec's proposal: ancient city, End city treasure, bastion treasure, ominous trial vault (rare pool). Noble crypts and Fabricator offices are for later (Reworked Mobs, no hard dependency).
-- **(builder) Explosions** can give finds (at no-Fortune odds), since an exploded natural block is still natural.
+- **(builder) Explosions** can give finds (at no-Fortune odds).
 
 ### How it's built (for the spec, not for players)
 
@@ -61,21 +61,18 @@ What that means in seconds (on the ground, no Haste): iron on deepslate is about
 - Wood/gold can't harvest deepslate: data only (`#harsh_deepslate` added to `minecraft:incorrect_for_wooden_tool` and `incorrect_for_gold_tool`).
 - Stronger Unbreaking: Fabric `EnchantmentEvents.MODIFY_WITH_LOOKUP` appends a second `remove_binomial` item-damage effect to vanilla Unbreaking. Vanilla's file is untouched.
 - True Unbreaking: data, `data/bubbas_reworked_mining/enchantment/true_unbreaking.json` (`minecraft:set` item damage to 0, `exclusive_set` Mending, in no enchantment tag).
-- Natural vs placed: approach C from `docs/knowledge/item-keyed-block-drops.md`. Stone, granite, diorite, andesite, tuff and deepslate get a `bubba_placed` boolean (default false). Block items mark what they place, and the lava-onto-water stone is marked too. The mark survives pistons, `/clone`, structures and saves; old worlds and generated terrain count as natural. Removing the mod drops the mark (everything reads as natural again).
-- Finds and books: `LootTableEvents.MODIFY` adds one pool per table (skipped when a datapack replaced the table). The find pool's conditions are `match_block` with `bubba_placed=false`, not `minecraft:tool/can_silk_touch`, `survives_explosion`, and a `table_bonus` on Fortune.
-- **The mod must be on both sides.** Adding the property shifts block-state ids. In step 2 the quartz items make Fabric's registry sync turn away clients without the mod, so no extra handshake is needed. Step 1 alone should not go on a server without step 2.
-- Known edge: Reworked Mobs' endermen restore natural terrain with `setBlock`, so stone they put back counts as natural again. That's slow and not a practical farm, but it's worth knowing.
+- Finds and books: `LootTableEvents.MODIFY` adds one pool per table (skipped when a datapack replaced the table). The find pool's conditions are: not `minecraft:tool/can_silk_touch`, `survives_explosion`, and a `table_bonus` on Fortune.
+- No block states are changed (the natural/placed mark was built, then removed at the owner's call), so the mod changes no vanilla block. The quartz items still make Fabric's registry sync require the mod on both sides.
+- Known edge: placing and re-mining stone farms finds at the tuned odds (0.5 % bare, 4 % with Fortune III). Accepted by the owner (2026-11-22).
 
 ### Tests
 
 - Core (`BubbasReworkedMiningCoreGameTest`, every build):
   - `curveSlowsDeepslateAndEfficiencyMultiplies`: tier factors and the Efficiency V multiplier reach `Player.getDestroySpeed`.
   - `deepslateWearsToolsAndWoodCantHarvestIt`: iron wear on deepslate and on stone; wood can't harvest deepslate, stone can.
-  - `findsOnlyFromNaturalStone`: 3000 rolls with Fortune III. Natural stone gives about the tuned rate; placed stone and Silk Touch give zero.
+  - `findsFromStoneButNotWithSilkTouch`: 3000 rolls with Fortune III give about the tuned rate; Silk Touch gives zero.
   - `unbreakingStrongerAndTrueUnbreakingIsTotal`: Unbreaking III keeps about 1/7. True Unbreaking takes zero damage on an elytra, is incompatible with Mending, and is in none of the enchanting table, tradeable or random-loot tags.
 - Milestone (`MiningMilestoneGameTest`):
-  - `playerPlacedStoneIsMarked`: a survival player placing stone or deepslate marks it.
-  - `lavaMadeStoneIsMarked`: lava onto water makes marked stone.
   - `trueUnbreakingInChests`: 2000 bastion treasure rolls give about 5 % books; True Unbreaking takes zero damage on armor.
 - Milestone objectives to add to the spec (no test yet):
   - Every tier's speed and wear on stone, deepslate and "other" match `MiningTuning` (the core test covers iron, wood and the wood axe).
@@ -84,7 +81,7 @@ What that means in seconds (on the ground, no Haste): iron on deepslate is about
   - Explosions give finds only at no-Fortune odds.
   - Haste and gem `block_break_speed` stack on top.
 
-## Step 2: the quartz set (built, 9/9 server tests pass, client screenshots checked)
+## Step 2: the quartz set (built; server tests pass, client screenshots checked)
 
 ### Player-facing behaviour
 

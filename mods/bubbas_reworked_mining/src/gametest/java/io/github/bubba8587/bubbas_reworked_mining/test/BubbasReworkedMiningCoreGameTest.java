@@ -5,7 +5,6 @@ import java.util.List;
 
 import io.github.bubba8587.bubbas_reworked_mining.MiningTuning;
 import io.github.bubba8587.bubbas_reworked_mining.enchant.ModEnchantments;
-import io.github.bubba8587.bubbas_reworked_mining.natural.NaturalStone;
 import io.github.bubba8587.bubbas_reworked_mining.registry.ModItems;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
@@ -94,32 +93,26 @@ public class BubbasReworkedMiningCoreGameTest {
 		helper.succeed();
 	}
 
-	/** Finds: natural stone sometimes drops a find with Fortune III; placed stone and Silk Touch never do. */
+	/** Finds: stone sometimes drops a find, at the tuned odds with Fortune III; Silk Touch never does. */
 	@GameTest
-	public void findsOnlyFromNaturalStone(GameTestHelper helper) {
+	public void findsFromStoneButNotWithSilkTouch(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
 		ServerPlayer player = helper.makeMockServerPlayerInLevel();
 		BlockPos pos = helper.absolutePos(new BlockPos(1, 1, 1));
-		BlockState natural = Blocks.STONE.defaultBlockState();
-		helper.assertTrue(!NaturalStone.isPlaced(natural), "default stone counts as placed");
-		BlockState placed = NaturalStone.placed(natural);
-		helper.assertTrue(NaturalStone.isPlaced(placed), "placed mark missing");
+		BlockState stone = Blocks.STONE.defaultBlockState();
 		ItemStack fortune = tool(helper, new ItemStack(Items.DIAMOND_PICKAXE), Enchantments.FORTUNE, 3);
 		ItemStack silk = tool(helper, new ItemStack(Items.DIAMOND_PICKAXE), Enchantments.SILK_TOUCH, 1);
 
 		int rolls = 3000;
-		int naturalFinds = 0;
-		int placedFinds = 0;
+		int found = 0;
 		int silkFinds = 0;
 		for (int i = 0; i < rolls; i++) {
-			naturalFinds += finds(Block.getDrops(natural, level, pos, null, player, fortune));
-			placedFinds += finds(Block.getDrops(placed, level, pos, null, player, fortune));
-			silkFinds += finds(Block.getDrops(natural, level, pos, null, player, silk));
+			found += finds(Block.getDrops(stone, level, pos, null, player, fortune));
+			silkFinds += finds(Block.getDrops(stone, level, pos, null, player, silk));
 		}
 		float expected = rolls * MiningTuning.STONE_FIND_CHANCE[3];
-		helper.assertTrue(naturalFinds > expected * 0.5F && naturalFinds < expected * 1.5F,
-				"natural finds " + naturalFinds + " out of " + rolls + ", expected about " + expected);
-		helper.assertValueEqual(placedFinds, 0, "finds from placed stone");
+		helper.assertTrue(found > expected * 0.5F && found < expected * 1.5F,
+				"finds " + found + " out of " + rolls + ", expected about " + expected);
 		helper.assertValueEqual(silkFinds, 0, "finds with Silk Touch");
 		helper.succeed();
 	}

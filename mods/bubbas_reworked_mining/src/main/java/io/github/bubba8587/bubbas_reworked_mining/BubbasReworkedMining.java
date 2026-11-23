@@ -11,8 +11,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Bubba's Reworked Mining (specs/reworked-mining.md): a mining curve from "tough" to "machine". The curve's speed and
- * wear are mixins ({@code PlayerMixin}, {@code ItemMixin}) reading {@link MiningTuning}; natural vs placed stone is a
- * block-state mark ({@code natural/NaturalStone}).
+ * wear are mixins ({@code PlayerMixin}, {@code ItemMixin}) reading {@link MiningTuning}; finds, books and quartz are
+ * loot, data and items.
  */
 public class BubbasReworkedMining implements ModInitializer {
 	public static final String MOD_ID = "bubbas_reworked_mining";

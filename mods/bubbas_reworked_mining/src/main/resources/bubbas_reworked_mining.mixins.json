@@ -3,11 +3,7 @@
 	"package": "io.github.bubba8587.bubbas_reworked_mining.mixin",
 	"compatibilityLevel": "JAVA_25",
 	"mixins": [
-		"BlockExtraPropertyMixin",
-		"BlockItemMixin",
-		"BlockPropertiesAccessor",
 		"ItemMixin",
-		"LavaFluidMixin",
 		"PlayerMixin"
 	],
 	"injectors": {

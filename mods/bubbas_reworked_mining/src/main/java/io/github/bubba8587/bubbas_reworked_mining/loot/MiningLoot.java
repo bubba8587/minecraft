@@ -3,16 +3,12 @@ package io.github.bubba8587.bubbas_reworked_mining.loot;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import io.github.bubba8587.bubbas_reworked_mining.MiningTuning;
 import io.github.bubba8587.bubbas_reworked_mining.enchant.ModEnchantments;
-import io.github.bubba8587.bubbas_reworked_mining.natural.NaturalStone;
-import net.minecraft.advancements.predicates.BlockPredicate;
-import net.minecraft.advancements.predicates.StatePropertiesPredicate;
 import net.minecraft.core.Holder;
-import net.minecraft.core.HolderGetter;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
@@ -20,7 +16,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
@@ -32,7 +27,6 @@ import net.minecraft.world.level.storage.loot.predicates.ExplosionCondition;
 import net.minecraft.world.level.storage.loot.predicates.InvertedLootItemCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemRandomChanceCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootPredicates;
-import net.minecraft.world.level.storage.loot.predicates.MatchBlock;
 import net.minecraft.world.level.storage.loot.providers.number.ints.ContextIntProviders;
 import net.minecraft.world.level.storage.loot.providers.number.ints.UniformGenerator;
 
@@ -40,20 +34,25 @@ import net.fabricmc.fabric.api.loot.v3.LootTableEvents;
 import net.fabricmc.fabric.api.loot.v3.LootTableSource;
 
 /**
- * Loot additions (specs/reworked-mining.md): rare finds on natural stone and deepslate, and True Unbreaking books in a
+ * Loot additions (specs/reworked-mining.md): rare finds on stone and deepslate, and True Unbreaking books in a
  * few rare chests. Each is one extra pool added to the vanilla table (vanilla's pools untouched); a table a datapack
  * replaced is left alone. Odds and weights are in {@link MiningTuning}.
  */
 public final class MiningLoot {
+	/** Stone-type blocks that can give finds (builder's list), and deepslate. Placed blocks count too (owner, 2026-11-22). */
+	public static final Set<String> STONE_IDS = Set.of("minecraft:stone", "minecraft:granite", "minecraft:diorite",
+			"minecraft:andesite", "minecraft:tuff");
+	public static final Set<String> DEEPSLATE_IDS = Set.of("minecraft:deepslate");
+
 	private MiningLoot() {
 	}
 
 	public static void initialize() {
 		Map<ResourceKey<LootTable>, Boolean> finds = new HashMap<>();
-		for (String id : NaturalStone.STONE_IDS) {
+		for (String id : STONE_IDS) {
 			finds.put(blockTable(id), false);
 		}
-		for (String id : NaturalStone.DEEPSLATE_IDS) {
+		for (String id : DEEPSLATE_IDS) {
 			finds.put(blockTable(id), true);
 		}
 
@@ -63,7 +62,7 @@ public final class MiningLoot {
 			}
 			Boolean deepslate = finds.get(key);
 			if (deepslate != null) {
-				builder.withPool(findPool(key, deepslate, registries));
+				builder.withPool(findPool(deepslate, registries));
 				return;
 			}
 			Float chance = MiningTuning.TRUE_UNBREAKING_LOOT.get(key);
@@ -81,15 +80,10 @@ public final class MiningLoot {
 		return ResourceKey.create(Registries.LOOT_TABLE, id.withPrefix("blocks/"));
 	}
 
-	private static LootPool.Builder findPool(ResourceKey<LootTable> key, boolean deepslate, HolderLookup.Provider registries) {
-		HolderGetter<Block> blocks = registries.lookupOrThrow(Registries.BLOCK);
+	private static LootPool.Builder findPool(boolean deepslate, HolderLookup.Provider registries) {
 		Holder<Enchantment> fortune = registries.lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.FORTUNE);
-		Block block = BuiltInRegistries.BLOCK.getValue(Identifier.withDefaultNamespace(key.identifier().getPath().substring("blocks/".length())));
 
 		LootPool.Builder pool = LootPool.lootPool()
-				// Only natural blocks: placed ones carry bubba_placed=true.
-				.when(MatchBlock.blockMatches(BlockPredicate.Builder.block().of(blocks, block)
-						.setProperties(StatePropertiesPredicate.Builder.properties().hasProperty(NaturalStone.PLACED, false))))
 				.when(InvertedLootItemCondition.invert(registries.lookupOrThrow(Registries.PREDICATE).getOrThrow(LootPredicates.TOOL_CAN_SILK_TOUCH)))
 				.when(ExplosionCondition.survivesExplosion())
 				.when(BonusLevelTableCondition.bonusLevelFlatChance(fortune,
