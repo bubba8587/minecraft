@@ -55,6 +55,15 @@ The webs round nests and between trees are tangles of thick strands. Walking thr
 
 Only the strands themselves get in the way: the player can hit, mine and use blocks and mobs through the gaps, from inside or outside a web. Swings, shears, arrows and other projectiles only hit a web when they pass close to a strand, so shears cut and fire arrows burn the web actually aimed at.
 
+## Territories
+
+- A giant spider's first web is its **home web**, and it claims the forest round it as its **territory**: a 2x2 square of chunks (32x32 blocks) with the home web near the middle.
+- It then spins up to **4 more webs** inside its territory, spread out between the trees, so it ends up with 5 webs in its patch of forest. While it still has webs to spin it roams the whole territory; once all 5 are up it stays round its home web as before.
+- **No other giant spins webs in a claimed territory.** A giant that can't find free land keeps roaming and spinning only on unclaimed ground, and claims a territory as soon as it spins a web somewhere free.
+- If its webs are cut, it spins replacements (up to 5 again). If its home web is cut, its oldest remaining web becomes its home.
+- **Smaller spiders settle in the subsidiary webs:** spiders, cave spiders and the giant's little spiders that are inside a territory go to one of its subsidiary webs (not the home web), at most 2 per web, and hang around under it. Every so often one climbs up and **rests in the middle of the web**, then lets itself back down. Hitting it (or it spotting a target) makes it drop out and fight.
+- When the giant dies, its territory is freed and another giant can take the forest.
+
 ## History
 
 | Version | Changes |
