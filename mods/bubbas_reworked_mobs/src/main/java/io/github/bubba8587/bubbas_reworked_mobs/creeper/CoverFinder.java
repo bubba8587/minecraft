@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import it.unimi.dsi.fastutil.longs.LongArrayList;
+import it.unimi.dsi.fastutil.longs.LongList;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import net.minecraft.core.BlockPos;
@@ -15,6 +17,7 @@ import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -23,9 +26,9 @@ import org.jspecify.annotations.Nullable;
 /**
  * Finding a spot "halfway behind a wall" (specs/creepers.md). Works from the watched entity's eyes: a spot is a floor
  * cell where, sliding sideways across the line of sight, the view of the creeper's eyes goes from clear to blocked
- * (the edge of a tree trunk, a wall's end, a boulder, any collision shape: leaves count, like vanilla line of sight).
+ * (the edge of a tree trunk, a wall's end, a window frame, a boulder; leaves block the view, glass and panes don't).
  * The creeper stands with its middle just on the open side of that edge (half hidden, eyes peeking) or slides past it
- * (about 95 % hidden). Only collision raycasts; at most a few dozen per search, and searches are throttled.
+ * (about 95 % hidden). Only raycasts and block lookups; searches are throttled.
  */
 public final class CoverFinder {
 	/** Sideways offsets sampled across the line of sight, either side of the cell centre. */
@@ -53,9 +56,9 @@ public final class CoverFinder {
 		return NaturalSpawns.highest(x, y, z, up, down, pos -> standable(level, pos));
 	}
 
-	/** Clear collision line from {@code from} to {@code to}. */
+	/** Clear line of sight from {@code from} to {@code to}: blocked by what the eye can't see through (glass and panes are clear, leaves aren't). */
 	public static boolean clear(Level level, Vec3 from, Vec3 to) {
-		return level.clip(new ClipContext(from, to, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, CollisionContext.empty()))
+		return level.clip(new ClipContext(from, to, ClipContext.Block.VISUAL, ClipContext.Fluid.NONE, CollisionContext.empty()))
 				.getType() == HitResult.Type.MISS;
 	}
 
@@ -74,7 +77,14 @@ public final class CoverFinder {
 		Vec3 perp = new Vec3(-dz / len, 0.0, dx / len);
 		double eye = body.eyeHeight();
 		boolean[] seen = new boolean[SAMPLES.length];
-		for (int i = 0; i < SAMPLES.length; i++) {
+		int last = SAMPLES.length - 1;
+		seen[0] = clear(level, viewer, base.add(perp.scale(SAMPLES[0])).add(0.0, eye, 0.0));
+		seen[last] = clear(level, viewer, base.add(perp.scale(SAMPLES[last])).add(0.0, eye, 0.0));
+		// Quick reject: both sides alike means no edge across the cell.
+		if (seen[0] == seen[last]) {
+			return null;
+		}
+		for (int i = 1; i < last; i++) {
 			seen[i] = clear(level, viewer, base.add(perp.scale(SAMPLES[i])).add(0.0, eye, 0.0));
 		}
 		// The visible-to-blocked change nearest the centre decides the edge and which way is into cover.
@@ -156,38 +166,53 @@ public final class CoverFinder {
 	 */
 	public static @Nullable PeekSpot find(Level level, EntityDimensions body, BlockPos around, Vec3 viewer,
 			double minDistance, double maxDistance, double preferred) {
-		record Candidate(BlockPos cell, double score) {
+		List<PeekSpot> spots = findAll(level, body, around, viewer, minDistance, maxDistance, preferred, 1);
+		return spots.isEmpty() ? null : spots.getFirst();
+	}
+
+	/** Up to {@code limit} peek spots as {@link #find} picks them, best first. */
+	public static List<PeekSpot> findAll(Level level, EntityDimensions body, BlockPos around, Vec3 viewer,
+			double minDistance, double maxDistance, double preferred, int limit) {
+		record Candidate(BlockPos cell, double score, boolean edge) {
 		}
-		// Random cells (owner, 2026-11-16: creepers seek out walls much farther off; a full grid that wide costs too
-		// much): half within SPOT_SEARCH_RADIUS of the creeper, half on its side of the ring of wanted distances round
-		// the viewer (within 75 degrees of the creeper's bearing, so it never crosses in front of what it watches).
-		List<Candidate> candidates = new ArrayList<>();
-		LongSet tried = new LongOpenHashSet();
+		List<PeekSpot> found = new ArrayList<>();
+		if (minDistance > maxDistance) {
+			return found;
+		}
 		RandomSource random = level.getRandom();
 		int r = CreeperTuning.SPOT_SEARCH_RADIUS;
 		double bearing = Math.atan2(around.getZ() + 0.5 - viewer.z, around.getX() + 0.5 - viewer.x);
-		double maxWalkSqr = CreeperTuning.SPOT_MAX_WALK * CreeperTuning.SPOT_MAX_WALK;
 		int g = CreeperTuning.SPOT_NEAR_GRID;
 		int grid = (2 * g + 1) * (2 * g + 1);
+		LongList cells = new LongArrayList();
+		// Cells just behind each cover edge the sweep finds.
+		for (Vec3 point : sweep(level, viewer, bearing, maxDistance)) {
+			cells.add(BlockPos.asLong(Mth.floor(point.x), 0, Mth.floor(point.z)));
+		}
+		int edgeCells = cells.size();
 		for (int i = 0; i < grid + CreeperTuning.SPOT_SEARCH_SAMPLES; i++) {
-			int x;
-			int z;
 			if (i < grid) {
-				// Every cell close by first (a small tree beside it is never missed).
-				x = around.getX() + i % (2 * g + 1) - g;
-				z = around.getZ() + i / (2 * g + 1) - g;
+				// Every cell close by.
+				cells.add(BlockPos.asLong(around.getX() + i % (2 * g + 1) - g, 0, around.getZ() + i / (2 * g + 1) - g));
 			} else if (i % 2 == 0) {
-				x = around.getX() + random.nextInt(2 * r + 1) - r;
-				z = around.getZ() + random.nextInt(2 * r + 1) - r;
+				cells.add(BlockPos.asLong(around.getX() + random.nextInt(2 * r + 1) - r, 0, around.getZ() + random.nextInt(2 * r + 1) - r));
 			} else {
-				double angle = bearing + Math.toRadians((random.nextDouble() * 2.0 - 1.0) * 75.0);
+				// On the creeper's side of the ring of wanted distances round the viewer.
+				double angle = bearing + Math.toRadians((random.nextDouble() * 2.0 - 1.0) * CreeperTuning.SWEEP_HALF_ANGLE);
 				double distance = minDistance + random.nextDouble() * (maxDistance - minDistance);
-				x = Mth.floor(viewer.x + Math.cos(angle) * distance);
-				z = Mth.floor(viewer.z + Math.sin(angle) * distance);
+				cells.add(BlockPos.asLong(Mth.floor(viewer.x + Math.cos(angle) * distance), 0, Mth.floor(viewer.z + Math.sin(angle) * distance)));
 			}
-			if (!tried.add(BlockPos.asLong(x, 0, z))) {
+		}
+		List<Candidate> candidates = new ArrayList<>();
+		LongSet tried = new LongOpenHashSet();
+		double maxWalkSqr = CreeperTuning.SPOT_MAX_WALK * CreeperTuning.SPOT_MAX_WALK;
+		for (int i = 0; i < cells.size(); i++) {
+			long packed = cells.getLong(i);
+			if (!tried.add(packed)) {
 				continue;
 			}
+			int x = BlockPos.getX(packed);
+			int z = BlockPos.getZ(packed);
 			double dx = x - around.getX();
 			double dz = z - around.getZ();
 			double walkSqr = dx * dx + dz * dz;
@@ -201,19 +226,83 @@ public final class CoverFinder {
 			if (cell == null || !coverNextTo(level, cell, viewer)) {
 				continue;
 			}
-			candidates.add(new Candidate(cell, Math.abs(toViewer - preferred) + 0.3 * Math.sqrt(walkSqr)));
+			candidates.add(new Candidate(cell, Math.abs(toViewer - preferred) + 0.3 * Math.sqrt(walkSqr), i < edgeCells));
 		}
 		candidates.sort(Comparator.comparingDouble(Candidate::score));
-		int evaluated = 0;
+		// Separate raycast budgets for edge cells and the rest, so neither crowds the other out.
+		int[] budget = {CreeperTuning.SPOT_EDGE_EVALUATIONS, CreeperTuning.SPOT_MAX_EVALUATIONS};
 		for (Candidate candidate : candidates) {
-			if (evaluated++ >= CreeperTuning.SPOT_MAX_EVALUATIONS) {
+			if (found.size() >= limit || budget[0] + budget[1] == 0) {
 				break;
 			}
+			int group = candidate.edge() ? 0 : 1;
+			if (budget[group] == 0) {
+				continue;
+			}
+			budget[group]--;
 			PeekSpot spot = evaluate(level, body, candidate.cell(), viewer);
 			if (spot != null) {
-				return spot;
+				found.add(spot);
 			}
 		}
-		return null;
+		return found;
+	}
+
+	/** Whether the spot's hidden place is out of {@code viewer}'s sight (its eyes there are behind the cover). */
+	public static boolean hiddenOutOfSight(Level level, EntityDimensions body, PeekSpot spot, Vec3 viewer) {
+		return !clear(level, viewer, spot.hidden().add(0.0, body.eyeHeight(), 0.0));
+	}
+
+	/**
+	 * Cover edges seen from {@code viewer}: level rays fanned over the creeper's side ({@code bearing}); where two
+	 * neighbouring rays end more than a block apart there is an edge, pinned down with a few more rays. Returns points
+	 * just behind each edge (where a creeper could peek round it).
+	 */
+	private static List<Vec3> sweep(Level level, Vec3 viewer, double bearing, double maxDistance) {
+		int n = CreeperTuning.SWEEP_RAYS;
+		double half = Math.toRadians(CreeperTuning.SWEEP_HALF_ANGLE);
+		double step = 2.0 * half / (n - 1);
+		double start = bearing - half + (level.getRandom().nextDouble() - 0.5) * step;
+		double[] hits = new double[n];
+		for (int i = 0; i < n; i++) {
+			hits[i] = ray(level, viewer, start + i * step, maxDistance);
+		}
+		List<Vec3> points = new ArrayList<>();
+		for (int i = 0; i + 1 < n; i++) {
+			if (Math.abs(hits[i] - hits[i + 1]) <= 1.0) {
+				continue;
+			}
+			boolean nearFirst = hits[i] < hits[i + 1];
+			double near = start + (nearFirst ? i : i + 1) * step;
+			double far = start + (nearFirst ? i + 1 : i) * step;
+			double nearHit = Math.min(hits[i], hits[i + 1]);
+			for (int b = 0; b < CreeperTuning.SWEEP_BISECTIONS; b++) {
+				double mid = (near + far) / 2.0;
+				double hit = ray(level, viewer, mid, maxDistance);
+				if (Math.abs(hit - nearHit) <= 1.0) {
+					near = mid;
+					nearHit = Math.min(nearHit, hit);
+				} else {
+					far = mid;
+				}
+			}
+			for (double behind : new double[] {0.7, 1.5}) {
+				double d = nearHit + behind;
+				if (d > maxDistance) {
+					continue;
+				}
+				for (double angle : new double[] {near, far}) {
+					points.add(new Vec3(viewer.x + Math.cos(angle) * d, viewer.y, viewer.z + Math.sin(angle) * d));
+				}
+			}
+		}
+		return points;
+	}
+
+	/** How far a level ray from {@code viewer} along {@code angle} gets before something blocks the view (maxDistance + 2 if nothing does). */
+	private static double ray(Level level, Vec3 viewer, double angle, double maxDistance) {
+		Vec3 to = viewer.add(Math.cos(angle) * maxDistance, 0.0, Math.sin(angle) * maxDistance);
+		BlockHitResult hit = level.clip(new ClipContext(viewer, to, ClipContext.Block.VISUAL, ClipContext.Fluid.NONE, CollisionContext.empty()));
+		return hit.getType() == HitResult.Type.MISS ? maxDistance + 2.0 : hit.getLocation().subtract(viewer).horizontalDistance();
 	}
 }

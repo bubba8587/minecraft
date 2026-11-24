@@ -7,6 +7,7 @@ import it.unimi.dsi.fastutil.ints.Int2LongMap;
 import it.unimi.dsi.fastutil.ints.Int2LongOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -40,6 +41,12 @@ public final class CreeperMind {
 	/** The watch spot, kept here so a spawner can hand a fresh creeper its spot. */
 	CoverFinder.@Nullable PeekSpot spot;
 	boolean spotReached;
+	private boolean openGround;
+	/** Game time its watched player last looked toward it (never: Long.MIN_VALUE). */
+	private long lastLookedAt = Long.MIN_VALUE;
+	/** Leaving by day (watchers only): ticks until it starts leaving (-1: not counting), and whether it is leaving. */
+	private int leaveCountdown = -1;
+	private boolean leaving;
 
 	/** Whether this creeper behaves as a watcher at all: charged creepers stay vanilla, blinded ones can't see motion. */
 	public static boolean active(Creeper creeper) {
@@ -89,6 +96,30 @@ public final class CreeperMind {
 	public void setSpot(CoverFinder.PeekSpot spot, boolean reached) {
 		this.spot = spot;
 		this.spotReached = reached;
+	}
+
+	/** Whether it found no cover at all and holds the open-ground stance (C5). */
+	public boolean openGround() {
+		return openGround;
+	}
+
+	void setOpenGround(boolean openGround) {
+		this.openGround = openGround;
+	}
+
+	/** Its watched player looked toward it now. */
+	void lookedAt(long gameTime) {
+		lastLookedAt = gameTime;
+	}
+
+	/** Whether it is leaving (a mod-spawned watcher by day): it heads out of sight and is gone once no one can see it. */
+	public boolean leaving() {
+		return leaving;
+	}
+
+	/** Starts the leaving countdown now with {@code ticks} to go (by day it otherwise picks a random moment itself). */
+	public void leaveIn(int ticks) {
+		leaveCountdown = Math.max(0, ticks);
 	}
 
 	/** Adds startle points from {@code source} (null for unknown); a full meter lights the hiss. */
@@ -151,6 +182,58 @@ public final class CreeperMind {
 		if (Math.floorMod(phase, CreeperTuning.PROJECTILE_SCAN_INTERVAL) == 0) {
 			scanProjectiles(creeper, time);
 		}
+		if (Math.floorMod(phase, 20) == 0) {
+			tickLeaving(creeper, time);
+		}
+	}
+
+	/** Leaving by day (mod-spawned watchers only), once a second: the countdown, then the despawn roll while unseen. */
+	private void tickLeaving(Creeper creeper, long time) {
+		if (!creeper.hasAttached(WatcherSpawning.WATCHER_FOR)) {
+			return;
+		}
+		if (!creeper.level().isBrightOutside()) {
+			leaveCountdown = -1;
+			leaving = false;
+			return;
+		}
+		long unseen = lastLookedAt == Long.MIN_VALUE ? Long.MAX_VALUE / 2 : time - lastLookedAt;
+		if (!leaving) {
+			if (leaveCountdown < 0) {
+				leaveCountdown = Mth.nextInt(creeper.getRandom(), CreeperTuning.LEAVE_DELAY_MIN, CreeperTuning.LEAVE_DELAY_MAX);
+			}
+			leaveCountdown -= unseen >= CreeperTuning.LEAVE_UNSEEN_TICKS ? 40 : 20;
+			if (leaveCountdown > 0) {
+				return;
+			}
+			leaving = true;
+		}
+		if (fusing || seenByAnyPlayer(creeper)) {
+			return;
+		}
+		double chance = CreeperTuning.LEAVE_CHANCE + CreeperTuning.LEAVE_CHANCE_PER_UNSEEN_SECOND * Math.min(unseen / 20.0, 1000.0);
+		if (creeper.getRandom().nextDouble() < chance) {
+			creeper.discard();
+		}
+	}
+
+	/** Whether any player (not spectators) within LEAVE_SEEN_RANGE has a clear view of its eyes, middle or top. */
+	public static boolean seenByAnyPlayer(Creeper creeper) {
+		double rangeSqr = CreeperTuning.LEAVE_SEEN_RANGE * CreeperTuning.LEAVE_SEEN_RANGE;
+		Vec3 feet = creeper.position();
+		Vec3[] points = {feet.add(0.0, creeper.getEyeHeight(), 0.0), feet.add(0.0, creeper.getBbHeight() * 0.5, 0.0), feet.add(0.0, creeper.getBbHeight(), 0.0)};
+		for (Player player : creeper.level().players()) {
+			if (player.isSpectator() || player.distanceToSqr(creeper) > rangeSqr) {
+				continue;
+			}
+			Vec3 eye = player.getEyePosition();
+			for (Vec3 point : points) {
+				if (CoverFinder.clear(creeper.level(), eye, point)) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	private boolean stillWatching(Creeper creeper, LivingEntity entity, long time) {
