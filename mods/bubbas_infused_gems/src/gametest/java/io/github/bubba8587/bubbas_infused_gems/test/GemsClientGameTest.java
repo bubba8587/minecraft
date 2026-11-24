@@ -16,6 +16,7 @@ import net.minecraft.client.gui.screens.worldselection.WorldCreationUiState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.packs.repository.PackRepository;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -199,9 +200,40 @@ public class GemsClientGameTest implements FabricClientGameTest {
 		context.getInput().setCursorPos(0, 0);
 		context.waitTicks(2);
 		context.takeScreenshot("gems-colors-finished-hotbar-infused-above");
+		setPack(context, true);
+		context.getInput().setCursorPos(0, 0);
+		context.waitTicks(2);
+		context.takeScreenshot("gems-colors-finished-hotbar-infused-above-32x");
+		setPack(context, false);
 		context.runOnClient(mc -> mc.player.closeContainer());
 		context.getInput().resizeWindow(854, 480);
 		context.waitTicks(5);
+	}
+
+	/** Turns the built-in 32x pack on or off and waits for the reload. */
+	private static void setPack(ClientGameTestContext context, boolean on) {
+		String pack = "bubbas_infused_gems:bubbas_infused_gems_32x";
+		boolean changed = context.computeOnClient(mc -> {
+			PackRepository repo = mc.getResourcePackRepository();
+			if (!repo.getAvailableIds().contains(pack)) {
+				throw new AssertionError("no resource pack " + pack + "; available: " + repo.getAvailableIds());
+			}
+			if (repo.getSelectedIds().contains(pack) == on) {
+				return false;
+			}
+			if (on) {
+				repo.addPack(pack);
+			} else {
+				repo.removePack(pack);
+			}
+			mc.options.updateResourcePacks(repo);
+			return true;
+		});
+		if (changed) {
+			context.waitTicks(2);
+			context.waitFor(mc -> mc.gui.overlay() == null, 1200);
+			context.waitTicks(5);
+		}
 	}
 
 	private static BlockPos stationPos(TestServerContext server) {

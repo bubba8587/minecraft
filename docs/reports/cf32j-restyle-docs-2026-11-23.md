@@ -11,8 +11,8 @@ With a mod's built-in 32x pack on, every 32x texture now matches Classic Faithfu
 - **Totems & Artifacts:** 32x Grave Talisman (all glow levels), Relic Map Shreds (/4, /9, whole) and every totem statue (plinth and figures) are restyled. Statues have flat faces lit on the top and left edges with small grain patches, instead of the 16x speckle doubled up.
 - **Extra Recipes:** the 32x glider icon has stepped shading instead of blended shading.
 - **World Tweaks:** 32x lava bubbles are flat lava bands; the 32x geyser soot plumes are CF32J's geyser plume recoloured to soot.
-- **Infused Gems:** already flat (6-7 colours), unchanged.
-- 16x art unchanged everywhere.
+- **Infused Gems (redesign, owner: "not very gemmy, flat discs, no iridescence"):** both gems redrawn at 16x and 32x. The finished gem is now a cut gemstone seen from the side, like vanilla's diamond: a flat table, five crown facets catching the light, a bright girdle line, and four darker pavilion facets narrowing to a point. The infused gem is a round brilliant seen from above: an octagonal table ringed by sixteen facets alternating light and dark. Both shimmer: translucent cool and warm sheens on a couple of facets, a short rainbow along the lit edge, and bright white glints. Each effect still colours its gem. The body texture is flat grey facets tinted by the effect; the glints and iridescence are the untinted second layer, so they show over every colour. The mod icon (a placeholder) was regenerated from the new gem. Test: the `colors` client test now also shoots the inventory with the 32x pack on (`gems-colors-finished-hotbar-infused-above-32x`).
+- 16x art unchanged everywhere except the two Infused Gems.
 
 ## Spec facts (for `specs/textures.md`)
 
@@ -38,9 +38,11 @@ With a mod's built-in 32x pack on, every 32x texture now matches Classic Faithfu
 | totems_artifacts | statue seeking / beginning / end / herding / clear_skies / north_wind / undying | 106 / 124 / 106 / 26 / 11 / 89 / 105 | 11 / 13 / 15 / 15 / 10 / 14 / 8 |
 | world_tweaks | lava_bubble_0..4 | 22-33 | 6 |
 | world_tweaks | lava_geyser_plume_01..08 | 5-6 | 3 |
+| infused_gems | gem / infused_gem body (grey, tinted) | 6 / 7 | 6 / 6 flat greys; the shine layers add white, two translucent sheens and a 6-step rainbow |
 
 ## Agent choices to surface to the owner
 
 - Quartz 32x tools have no veins (CF32J's iron heads are 2-3 px wide; veins would break the outline). Armor icons get 2 veins and worn layers 10.
 - CF32J's three near-identical darkest plume greys (193/195/198) all map to the darkest soot.
 - The statues' 16x still has its per-pixel speckle. Only the 32x is flattened.
+- The gem shapes changed. The finished gem was "a regular octagon seen from above, emerald-like, not an emerald copy (owner)". It is now a side-view cut stone, because the owner asked for a table, crown and pavilion. The iridescence relies on translucent pixels in the untinted layer, which render as translucent in game (checked in the 16x and 32x screenshots).
