@@ -30,6 +30,9 @@ public class RelicMapShredItem extends Item {
 		if (shred == null) {
 			return Component.translatable(KEY);
 		}
+		if (shred.unnamed()) {
+			return Component.translatable(KEY + ".unnamed", shred.count(), shred.size());
+		}
 		return Component.translatable(KEY + ".named", RelicNames.display(shred.name()), shred.count(), shred.size());
 	}
 
@@ -41,7 +44,9 @@ public class RelicMapShredItem extends Item {
 		if (shred == null) {
 			return;
 		}
-		if (shred.complete()) {
+		if (shred.unnamed()) {
+			builder.accept(Component.translatable(KEY + ".unnamed_hint").withStyle(ChatFormatting.DARK_GRAY));
+		} else if (shred.complete()) {
 			builder.accept(Component.translatable(KEY + ".whole").withStyle(ChatFormatting.GOLD));
 		} else {
 			builder.accept(Component.translatable(KEY + ".pieces", shred.count(), shred.size()).withStyle(ChatFormatting.GRAY));
@@ -52,7 +57,14 @@ public class RelicMapShredItem extends Item {
 	@Override
 	public void inventoryTick(ItemStack stack, ServerLevel level, Entity owner, @Nullable EquipmentSlot slot) {
 		RelicShred shred = stack.get(Relics.SHRED);
-		if (shred == null || !shred.complete() || !(owner instanceof Player player)) {
+		if (shred == null || !(owner instanceof Player player)) {
+			return;
+		}
+		if (shred.unnamed()) {
+			RelicMaps.set(stack, new RelicShred(RelicNames.ALL.get(level.getRandom().nextInt(RelicNames.ALL.size())), shred.size(), shred.count()));
+			return;
+		}
+		if (!shred.complete()) {
 			return;
 		}
 		ItemStack map = RelicMaps.map(level, shred);

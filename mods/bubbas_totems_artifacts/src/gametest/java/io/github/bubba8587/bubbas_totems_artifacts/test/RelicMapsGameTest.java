@@ -176,6 +176,13 @@ public class RelicMapsGameTest {
 		var otherDecorations = other.get(DataComponents.MAP_DECORATIONS);
 		helper.assertTrue(otherDecorations.decorations().values().stream().noneMatch(d -> (int) d.x() == site.centre().getX()),
 				"the /4 and /9 maps of one name lead to the same place");
+		// A creative-tab shred has no relic until it reaches an inventory, then picks one.
+		ItemStack blank = RelicMaps.shred("", 4, 1);
+		player.getInventory().setItem(5, blank);
+		blank.getItem().inventoryTick(blank, level, player, null);
+		RelicShred rolled = blank.get(Relics.SHRED);
+		helper.assertTrue(rolled != null && RelicNames.ALL.contains(rolled.name()) && rolled.size() == 4 && rolled.count() == 1,
+				"the blank shred didn't pick a relic: " + rolled);
 		helper.succeed();
 	}
 

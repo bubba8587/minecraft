@@ -22,8 +22,13 @@ public record RelicShred(String name, int size, int count) {
 		return count >= size;
 	}
 
+	/** A creative-tab shred whose relic isn't picked yet (empty name). */
+	public boolean unnamed() {
+		return name.isEmpty();
+	}
+
 	/** Same relic and same size. */
 	public boolean sameMap(RelicShred other) {
-		return name.equals(other.name) && size == other.size;
+		return !unnamed() && name.equals(other.name) && size == other.size;
 	}
 }

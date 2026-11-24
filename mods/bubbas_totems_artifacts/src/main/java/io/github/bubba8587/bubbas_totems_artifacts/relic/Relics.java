@@ -47,7 +47,7 @@ public final class Relics {
 		RelicCommand.initialize();
 		CreativeModeTabEvents.modifyOutputEvent(ModCreativeTabs.MAIN_KEY).register(output -> {
 			for (int size : RelicNames.SIZES) {
-				output.accept(RelicMaps.shred(RelicNames.ALL.get(0), size, 1));
+				output.accept(RelicMaps.shred("", size, 1));
 			}
 		});
 		SleeperHook.get().attachToNobleCrypts((cryptSeed, farWall) -> {

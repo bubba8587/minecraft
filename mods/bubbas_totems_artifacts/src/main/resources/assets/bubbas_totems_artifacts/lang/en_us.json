@@ -48,6 +48,8 @@
   "seeking.bubbas_totems_artifacts.woodland_mansion": "Woodland Mansion",
   "item.bubbas_totems_artifacts.relic_map_shred": "Relic Map Shred",
   "item.bubbas_totems_artifacts.relic_map_shred.named": "%s Relic Map (%s/%s)",
+  "item.bubbas_totems_artifacts.relic_map_shred.unnamed": "Relic Map Shred (%s/%s)",
+  "item.bubbas_totems_artifacts.relic_map_shred.unnamed_hint": "Its relic is picked when it reaches your inventory.",
   "item.bubbas_totems_artifacts.relic_map_shred.lore": "A torn scrap of an old map, the ink faded but the crest still clear.",
   "item.bubbas_totems_artifacts.relic_map_shred.pieces": "%s of %s pieces",
   "item.bubbas_totems_artifacts.relic_map_shred.hint": "Find the rest of the %s map (%s pieces) and put them together.",

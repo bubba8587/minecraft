@@ -180,13 +180,38 @@ public final class FabricatorMobs {
 			if (pos == null) {
 				continue;
 			}
-			if (SpawnPlacements.isSpawnPositionOk(type, level, pos) && SpawnPlacements.checkSpawnRules(type, level, EntitySpawnReason.NATURAL, pos, random)
-					&& level.noCollision(type.getSpawnAABB(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5))
-					&& level.getNearestPlayer(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, FabricatorTuning.NO_PLAYER_RANGE, false) == null) {
+			if (spawnableAt(level, type, pos, random)) {
 				return pos;
 			}
 		}
+		return darkSpotForMob(level, site, type);
+	}
+
+	/** No dark surface (daytime): a dark spot under the surface but well above the pad, such as a cave. Null when none. */
+	static @Nullable BlockPos darkSpotForMob(ServerLevel level, FabricatorSite site, EntityType<?> type) {
+		BlockPos pad = site.pad();
+		var random = level.getRandom();
+		int lowest = pad.getY() + FabricatorTuning.MIN_RISE;
+		for (int i = 0; i < FabricatorTuning.SURFACE_TRIES; i++) {
+			BlockPos top = column(level, pad, random);
+			if (top == null) {
+				continue;
+			}
+			BlockPos.MutableBlockPos pos = top.mutable();
+			for (int y = top.getY() - 1; y >= lowest; y--) {
+				pos.setY(y);
+				if (level.getBlockState(pos).isAir() && !level.getBlockState(pos.below()).isAir() && spawnableAt(level, type, pos, random)) {
+					return pos.immutable();
+				}
+			}
+		}
 		return null;
+	}
+
+	private static boolean spawnableAt(ServerLevel level, EntityType<?> type, BlockPos pos, net.minecraft.util.RandomSource random) {
+		return SpawnPlacements.isSpawnPositionOk(type, level, pos) && SpawnPlacements.checkSpawnRules(type, level, EntitySpawnReason.NATURAL, pos, random)
+				&& level.noCollision(type.getSpawnAABB(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5))
+				&& level.getNearestPlayer(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, FabricatorTuning.NO_PLAYER_RANGE, false) == null;
 	}
 
 	/** A surface spot for anything else on the pad (a player who hopped on): any time, standing room on solid ground. */
