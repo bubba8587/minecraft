@@ -67,7 +67,7 @@ Owner's design (2026-11-22), building on the earlier idea in `docs/research/camp
   - **Graveyard Explorer Map** (journeyman, level 2): 8 emeralds, marks the nearest crypt yard with a red X.
   - **Monster Camp Explorer Map** (journeyman, level 2): 8 emeralds, marks the nearest camp with a white X.
   - **Fabricator Explorer Map** (expert, level 4): 20 emeralds, marks the **ancient city** of the nearest Ancient Fabricator; the Fabricator itself is about **150 blocks** from the X (every natural Fabricator sits that far from its city).
-- **Fabricator office chests** hold a Fabricator Explorer Map to the **next** one (it skips the city next to this Fabricator, which is already generated).
+- Fabricator office chests hold **no** Fabricator Explorer Map (owner, 2026-11-23: removed; the map is only sold by cartographers).
 - They join vanilla's trade pools for those levels (so a cartographer offers them now and then among its usual trades).
 
 #### The Fabricator map's X
@@ -76,7 +76,7 @@ Owner's design (2026-11-22), building on the earlier idea in `docs/research/camp
 
 #### Spec facts
 
-- All data, vanilla systems: structure tags `bubbas_reworked_mobs:on_graveyard_maps` (crypt_yard), `on_camp_maps` (monster_camp), `on_fabricator_maps` (minecraft:ancient_city); villager trades `data/bubbas_reworked_mobs/villager_trade/cartographer/{graveyard,camp,fabricator}_map.json` (vanilla `exploration_map` + `filtered` on map id, `filled_map` with an `item_name`); added to `#minecraft:cartographer/level_2` and `level_4` (`replace: false`); office chest pools (`chests/fabricator_office`, `fabricator_office_with_gems`) use `exploration_map` with `skip_existing_chunks: true`. Map names in the lang file. (26.3 has no map colour component, so the maps keep the default look.)
+- All data, vanilla systems: structure tags `bubbas_reworked_mobs:on_graveyard_maps` (crypt_yard), `on_camp_maps` (monster_camp), `on_fabricator_maps` (minecraft:ancient_city); villager trades `data/bubbas_reworked_mobs/villager_trade/cartographer/{graveyard,camp,fabricator}_map.json` (vanilla `exploration_map` + `filtered` on map id, `filled_map` with an `item_name`); added to `#minecraft:cartographer/level_2` and `level_4` (`replace: false`). Map names in the lang file. (26.3 has no map colour component, so the maps keep the default look.)
 
 #### Tests
 

@@ -190,6 +190,22 @@ def with_heights(s, examples):
     return out
 
 
+GIANT_OFFSET = 5
+
+
+def place_giants(s, examples):
+    """A persistent giant spider at the taiga example: giants only spawn in the dark, and this world never spawns or gets dark."""
+    for l1, _, x, z, _ in examples:
+        if l1 != "Giant spiders":
+            continue
+        lines = ask(s, f"execute positioned {x + GIANT_OFFSET} 0 {z} positioned over motion_blocking_no_leaves "
+                       "run bubbas_reworked_mobs spider giant")
+        if any("Giant spider at" in l for l in lines):
+            print(f"  giant spider placed by {x} {z}")
+        else:
+            s.problems.append(f"no giant spider placed at the taiga example {x} {z}")
+
+
 def sign_cmd(dx, l1, l2, x, z, y=None):
     tp = (f"execute in minecraft:the_nether run tp @s {x} {y + 1} {z}" if l1 == NETHER
           else f"tp @s {x} {y + 1} {z}" if y is not None
@@ -212,6 +228,7 @@ def build(seed, jars, timeout):
     camps = load_around(s, examples)
     check_camp_kinds(s, examples)
     examples = with_heights(s, examples)
+    place_giants(s, examples)
     width = len(examples)
     # Spawn: a stone platform at world spawn (0, 0) with a sign per example in a row to the south.
     half = width + 1

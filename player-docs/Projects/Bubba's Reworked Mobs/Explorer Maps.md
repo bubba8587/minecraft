@@ -10,7 +10,6 @@ Cartographer villagers sell three new explorer maps, for a compass and emeralds,
 | Monster Camp Explorer Map | Journeyman | 8 emeralds | the nearest [[Monster Camps|monster camp]] (white X) |
 | Fabricator Explorer Map | Expert | 20 emeralds | the ancient city of the nearest [[Ancient Fabricators|Ancient Fabricator]]; the Fabricator is about 150 blocks from the X |
 
-The office chests of an Ancient Fabricator also hold a Fabricator Explorer Map to the **next** one.
 
 ## History
 

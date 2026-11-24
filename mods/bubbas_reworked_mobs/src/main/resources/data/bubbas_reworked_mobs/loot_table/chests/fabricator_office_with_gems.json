@@ -393,43 +393,6 @@
         "type": "minecraft:random_chance",
         "chance": 0.3333
       }
-    },
-    {
-      "rolls": 1,
-      "entries": [
-        {
-          "type": "minecraft:item",
-          "name": "minecraft:filled_map",
-          "modifier": [
-            {
-              "type": "minecraft:exploration_map",
-              "decoration": "minecraft:trial_chambers",
-              "destination": "#bubbas_reworked_mobs:on_fabricator_maps",
-              "search_radius": 50,
-              "skip_existing_chunks": true
-            },
-            {
-              "type": "minecraft:filtered",
-              "item_filter": {
-                "predicates": {
-                  "minecraft:map_id": {}
-                }
-              },
-              "on_fail": {
-                "type": "minecraft:discard"
-              }
-            },
-            {
-              "type": "minecraft:set_components",
-              "components": {
-                "minecraft:item_name": {
-                  "translate": "item.bubbas_reworked_mobs.fabricator_map"
-                }
-              }
-            }
-          ]
-        }
-      ]
     }
   ],
   "random_sequence": "bubbas_reworked_mobs:chests/fabricator_office_with_gems"
