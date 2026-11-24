@@ -72,8 +72,11 @@ public class NorthWindGameTest {
 		});
 	}
 
-	/** A North Wind statue: a glider inside its area gets a gust and the cooldown; outside, or not gliding, nothing. */
-	@GameTest(structure = TestSupport.FIELD, maxTicks = 60)
+	/**
+	 * A North Wind statue: a glider inside its area gets a gust and the cooldown; outside, or not gliding, nothing. Its own
+	 * environment, so it runs in a batch of its own: areas gust every glider in the level, other tests' players included.
+	 */
+	@GameTest(environment = TestSupport.NS + ":north_wind_statue", structure = TestSupport.FIELD, maxTicks = 60)
 	public void statueAreaGustsGliders(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
 		BlockPos statue = new BlockPos(5, 1, 8);
@@ -90,12 +93,13 @@ public class NorthWindGameTest {
 			for (ServerPlayer p : new ServerPlayer[] {inside, outside, walking}) {
 				level.getServer().getPlayerList().remove(p);
 			}
+			helper.setBlock(statue, net.minecraft.world.level.block.Blocks.AIR);
 			TotemAreas.remove(level, TotemAreas.Kind.NORTH_WIND, helper.absolutePos(statue));
 		});
 	}
 
-	/** In a Reworked Beacons beacon (run with -PwithBeacons): the whole beacon area, sky high, gusts gliders. */
-	@GameTest(structure = TestSupport.FIELD, maxTicks = 20)
+	/** In a Reworked Beacons beacon (run with -PwithBeacons): the whole beacon area, sky high, gusts gliders. A batch of its own. */
+	@GameTest(environment = TestSupport.NS + ":north_wind_beacon", structure = TestSupport.FIELD, maxTicks = 20)
 	public void beaconAreaGustsGliders(GameTestHelper helper) {
 		if (!FabricLoader.getInstance().isModLoaded("bubbas_reworked_beacons")) {
 			helper.succeed();

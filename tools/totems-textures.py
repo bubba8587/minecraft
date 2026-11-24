@@ -15,6 +15,7 @@ Warding (tools/warding-textures.py): same body and pose, its own material, head 
   Growth         oak wood, a leafy crown with a pink blossom, a green sprout on the chest
   Beginning      weathered stone wearing a grass cap, purple ender eyes, a strata emblem (grass, dirt, stone)
   End            end stone with a purpur crown, an enderman's black face and magenta eyes, an ender pearl on the chest
+  North Wind     packed ice, an icicle crown, cheeks puffed blowing a gust to the side, a snowflake on the chest
   Seeking        lapis stone, a gold-rimmed hood, a compass dial on the chest; 16 needle frames
                  (totem_of_seeking_00..15, frame i = needle turned i/16 clockwise from up, as the item model's
                  minecraft:compass dispatch expects). At 32x the needle is drawn at 32x, not scaled up.

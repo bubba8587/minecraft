@@ -14,8 +14,8 @@ import net.fabricmc.fabric.api.client.gametest.v1.context.TestServerContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext;
 
 /**
- * Every totem's statue by eye (client part {@code statues}): all eight in a row on a stone floor, facing the camera
- * (statues-row), two at a time close up (statues-close-0..3), at night to show the glowing
+ * Every totem's statue by eye (client part {@code statues}): all of them in a row on a stone floor, facing the camera
+ * (statues-row), two at a time close up (statues-close-0..5), at night to show the glowing
  * eyes and flames (statues-night), and the same with the 32x pack (-32x).
  */
 @SuppressWarnings("UnstableApiUsage")
@@ -41,8 +41,8 @@ public class StatuesClientGameTest implements FabricClientGameTest {
 			server.runCommand("gamerule advance_time false");
 			server.runCommand("weather clear");
 			server.runCommand("gamemode spectator @p");
-			server.runCommand("fill %d %d %d %d %d %d minecraft:air".formatted(x - 10, y, z - 6, x + 10, y + 4, z + 8));
-			server.runCommand("fill %d %d %d %d %d %d minecraft:smooth_stone".formatted(x - 10, y - 1, z - 6, x + 10, y - 1, z + 8));
+			server.runCommand("fill %d %d %d %d %d %d minecraft:air".formatted(x - 10, y, z - 6, x + 12, y + 4, z + 8));
+			server.runCommand("fill %d %d %d %d %d %d minecraft:smooth_stone".formatted(x - 10, y - 1, z - 6, x + 12, y - 1, z + 8));
 			TotemType[] types = TotemType.values();
 			for (int i = 0; i < types.length; i++) {
 				server.runCommand("setblock %d %d %d bubbas_totems_artifacts:totem_statue[facing=south,totem=%s]".formatted(
@@ -58,10 +58,10 @@ public class StatuesClientGameTest implements FabricClientGameTest {
 
 	private static void shots(ClientGameTestContext context, TestServerContext server, int x, int y, int z, String suffix) {
 		server.runCommand("time set noon");
-		tp(context, server, x + 0.5, y + 1.0, z + 6.5, 180, 15);
+		tp(context, server, x + 1.5, y + 1.0, z + 7.5, 180, 15);
 		context.takeScreenshot("statues-row" + suffix);
 		// Close up, two at a time
-		for (int pair = 0; pair < 5; pair++) {
+		for (int pair = 0; pair < 6; pair++) {
 			tp(context, server, x - 7.5 + 4 * pair, y - 0.75, z - 0.6, 180, 12);
 			context.takeScreenshot("statues-close-" + pair + suffix);
 		}

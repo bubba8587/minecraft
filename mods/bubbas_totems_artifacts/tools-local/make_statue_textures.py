@@ -267,7 +267,7 @@ def _statues():
 	defs["clear_skies"] = (TT.SKY_PAL, TT.SKY_MAT, ("stone",), g, ["YyYy", "yYyY", "YyYy", "yYyY", "YyYy", "yYyY"], [])
 	# North Wind: packed ice, deep blue eyes, puffed cheeks and a blowing mouth, a snowflake on the chest, an icicle crown
 	# swept back by the wind.
-	g = _shade_grid(30); _eyes(g, "k"); _put(g, R_EMBLEM, ["FbF", "bfb", "FbF"])
+	g = _shade_grid(30); _eyes(g, "k"); _put(g, R_EMBLEM, ["bFb", "FfF", "bFb"])
 	g[EYE_ROW + 1][1] = "5"; g[EYE_ROW + 1][4] = "5"; g[EYE_ROW + 2][2] = "m"; g[EYE_ROW + 2][3] = "m"
 	defs["north_wind"] = (TT.NORTH_PAL, TT.NORTH_MAT, ("ice",), g, ["IiIi", "iIiI", "IiIi", "iiii", "iIii", "iiIi"], [])
 	for name, (pal, mat, grain, grid, topper, glow) in defs.items():
@@ -341,9 +341,9 @@ def statue_model(name, glow):
 		for x, z, h in ((5.5, 5.5, 3), (7.5, 5, 3.5), (9.5, 5.5, 3), (6, 7.5, 2.5), (9, 7.5, 2.5), (7.5, 8.5, 2)):
 			el.append(box([x, 13.5, z], [x + 1, 13.5 + h, z + 1], {d: tf for d in (*sides, "up")},
 				rotation={"origin": [8, 13.5, 8], "axis": "x", "angle": 22.5}))
-		gust = face([12, 10, 16, 11], F)
-		for x0, x1, y in ((6, 10, 10.25), (5, 8, 11.25)):
-			el.append(box([x0, y, 2.5], [x1, y + 0.5, 4.5], {d: gust for d in (*sides, "up", "down")}))
+		gust = face([12, 10, 13, 11], F)
+		for x0, x1, y in ((9, 14.5, 10), (10, 13.5, 11), (9.5, 15.5, 9)):
+			el.append(box([x0, y, 4.25], [x1, y + 0.5, 4.75], {d: gust for d in (*sides, "up", "down")}))
 	# Glowing parts, just proud of the face.
 	if "eyes" in glow:
 		for x, u in ((6, 1), (9, 4)):

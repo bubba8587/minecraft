@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 
 /**
  * Picks which client game tests (or parts of one) run: `./gradlew :bubbas_totems_artifacts:runClientGameTest
- * -PclientTests=talisman,warding` runs only those; without the property everything runs (CI). Names: talisman, warding, totems, statues, crypts (needs -PwithMobs), relics.
+ * -PclientTests=talisman,warding` runs only those; without the property everything runs (CI). Names: talisman, warding, totems, statues, crypts (needs -PwithMobs), relics, northwind.
  * specs/quality.md, Speed.
  */
 public final class ClientTests {
