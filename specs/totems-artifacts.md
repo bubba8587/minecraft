@@ -284,7 +284,7 @@ Owner's design (C6 detail, spec not leaf): torn **relic map shreds** turn up in 
 ### The shred item
 
 - One item, `bubbas_totems_artifacts:relic_map_shred`, stacks to 16, uncommon. Data component `bubbas_totems_artifacts:relic_shred` = `{name, size, count}` (name like `wondrous_crab`, size 4 or 9, count 1..size).
-- Item name "<Name> Relic Map (<count>/<size>)", e.g. "Wondrous Crab Relic Map (1/9)". Tooltip: "A torn scrap of an old map, the ink faded but the crest still clear." / "2 of 4 pieces" / "Find the rest of the <Name> map (4 pieces) and put them together."
+- Item name "<Name> Relic Map (<count>/<size>)", e.g. "Wondrous Crab Relic Map (1/9)". Tooltip: "2 of 4 pieces" only (owner, 2026-11-23: the lore and hint lines were removed); a whole one says "Whole again. Carry it to read where it leads."
 - Names: 8 adjectives x 8 nouns = 64 names; with the two sizes, 128 maps per world. Adjectives: Wondrous, Egregious, Forgotten, Gilded, Sunken, Whispering, Crooked, Radiant. Nouns: Crab, Zealot, Lantern, Serpent, Crown, Owl, Anvil, Bell.
 - Look: the `custom_model_data` string picks the texture: `4` (a big torn corner), `9` (a small scrap, older paper), `whole`.
 - Recipe type `bubbas_totems_artifacts:relic_shreds` (special recipe, `data/.../recipe/relic_shreds.json`), shapeless, 2+ shreds of the same name and size whose counts add up to at most the whole (any grid: 2x2, crafting table, crafter). The result is a combined shred; a whole one becomes the filled map when it ticks in a player's inventory (recipes have no level to make a map in). A whole shred out of a crafter becomes a map once picked up.

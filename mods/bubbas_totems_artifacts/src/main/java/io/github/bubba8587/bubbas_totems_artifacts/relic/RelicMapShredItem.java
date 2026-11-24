@@ -40,17 +40,16 @@ public class RelicMapShredItem extends Item {
 	@SuppressWarnings("deprecation")
 	public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> builder, TooltipFlag flag) {
 		RelicShred shred = stack.get(Relics.SHRED);
-		builder.accept(Component.translatable(KEY + ".lore").withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC));
 		if (shred == null) {
 			return;
 		}
 		if (shred.unnamed()) {
-			builder.accept(Component.translatable(KEY + ".unnamed_hint").withStyle(ChatFormatting.DARK_GRAY));
-		} else if (shred.complete()) {
+			return;
+		}
+		if (shred.complete()) {
 			builder.accept(Component.translatable(KEY + ".whole").withStyle(ChatFormatting.GOLD));
 		} else {
 			builder.accept(Component.translatable(KEY + ".pieces", shred.count(), shred.size()).withStyle(ChatFormatting.GRAY));
-			builder.accept(Component.translatable(KEY + ".hint", RelicNames.display(shred.name()), shred.size()).withStyle(ChatFormatting.DARK_GRAY));
 		}
 	}
 

@@ -36,7 +36,7 @@ A found shred is usually a single piece, sometimes two or three, never a whole m
 
 Every shred names its relic, such as **"Wondrous Crab Relic Map (1/9)"** or **"Egregious Zealot Relic Map (2/4)"**. A name is one of eight words (Wondrous, Egregious, Forgotten, Gilded, Sunken, Whispering, Crooked, Radiant) and one of eight things (Crab, Zealot, Lantern, Serpent, Crown, Owl, Anvil, Bell), so there are 64 names. Each name comes as a four-piece map and a nine-piece map, which lead to different places: 128 maps in every world.
 
-The tooltip reads like a found scrap: "A torn scrap of an old map, the ink faded but the crest still clear.", the pieces it holds ("2 of 4 pieces") and how many the whole map needs.
+The tooltip shows only the pieces it holds ("2 of 4 pieces").
 
 ## Usage
 
