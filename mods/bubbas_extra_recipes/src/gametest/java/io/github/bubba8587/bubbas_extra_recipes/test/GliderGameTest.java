@@ -1,6 +1,7 @@
 // dte:C3
 package io.github.bubba8587.bubbas_extra_recipes.test;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +15,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.FireworkRocketEntity;
@@ -25,35 +27,78 @@ import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.equipment.Equippable;
+import net.minecraft.world.level.GameType;
 import net.minecraft.world.phys.Vec3;
 
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 
-/** The Glider: its components. */
+/** The Glider: its components, wear and handling. */
 public class GliderGameTest {
 	private static final Method FALL_FLYING_STEP;
+	private static final Method UPDATE_FALL_FLYING;
+	private static final Field FALL_FLY_TICKS;
 
 	static {
 		try {
 			FALL_FLYING_STEP = LivingEntity.class.getDeclaredMethod("updateFallFlyingMovement", Vec3.class);
 			FALL_FLYING_STEP.setAccessible(true);
-		} catch (NoSuchMethodException e) {
+			UPDATE_FALL_FLYING = LivingEntity.class.getDeclaredMethod("updateFallFlying");
+			UPDATE_FALL_FLYING.setAccessible(true);
+			FALL_FLY_TICKS = LivingEntity.class.getDeclaredField("fallFlyTicks");
+			FALL_FLY_TICKS.setAccessible(true);
+		} catch (NoSuchMethodException | NoSuchFieldException e) {
 			throw new IllegalStateException(e);
 		}
 	}
 
 	@GameTest
-	public void gliderHasGliderAndEquippableAndNoDurability(GameTestHelper helper) {
+	public void gliderHasGliderEquippableAndDurability(GameTestHelper helper) {
 		ItemStack glider = new ItemStack(ModItems.GLIDER);
 		helper.assertTrue(glider.has(DataComponents.GLIDER), "no glider component");
 		Equippable equippable = glider.get(DataComponents.EQUIPPABLE);
 		helper.assertTrue(equippable != null && equippable.slot() == EquipmentSlot.CHEST, "equippable: " + equippable);
 		helper.assertValueEqual(equippable.assetId().orElseThrow(), ModItems.GLIDER_ASSET, "equipment asset");
-		helper.assertTrue(!glider.has(DataComponents.MAX_DAMAGE) && !glider.has(DataComponents.DAMAGE) && !glider.isDamageableItem(),
-				"glider has durability: " + glider.getComponents());
+		helper.assertTrue(glider.isDamageableItem() && glider.getDamageValue() == 0, "glider not damageable: " + glider.getComponents());
+		helper.assertValueEqual(glider.getMaxDamage(), ModItems.GLIDER_DURABILITY, "max durability");
+		helper.assertTrue(glider.isValidRepairItem(new ItemStack(Items.PHANTOM_MEMBRANE)), "not repaired by phantom membrane");
+		helper.assertTrue(!glider.isValidRepairItem(new ItemStack(Items.DIAMOND)), "repaired by diamond");
+		helper.assertTrue(glider.is(ItemTags.DURABILITY_ENCHANTABLE) && glider.is(ItemTags.EQUIPPABLE_ENCHANTABLE),
+				"not in the durability/equippable enchantable tags (Mending, Unbreaking, curses)");
 		helper.assertTrue(LivingEntity.canGlideUsing(glider, EquipmentSlot.CHEST), "cannot glide using the glider in the chest slot");
 		helper.assertValueEqual(glider.getMaxStackSize(), 1, "stack size");
 		helper.succeed();
+	}
+
+	@GameTest
+	public void gliderWearsWhileGlidingAndStopsAtOneDurability(GameTestHelper helper) throws ReflectiveOperationException {
+		ServerPlayer player = flier(helper, ModItems.GLIDER, 0.0F, 0.0F, new Vec3(0.5, 0.0, 0.0));
+		player.setGameMode(GameType.SURVIVAL);
+		player.startFallFlying();
+		helper.assertTrue(player.isFallFlying(), "not fall flying");
+		for (int t = 0; t < 200; t++) {
+			fallFly(player, t);
+		}
+		ItemStack worn = player.getItemBySlot(EquipmentSlot.CHEST);
+		helper.assertValueEqual(worn.getDamageValue(), 10, "damage after 200 gliding ticks (one point a second)");
+
+		worn.setDamageValue(ModItems.GLIDER_DURABILITY - 2);
+		fallFly(player, 19);
+		worn = player.getItemBySlot(EquipmentSlot.CHEST);
+		helper.assertTrue(worn.is(ModItems.GLIDER) && worn.getDamageValue() == ModItems.GLIDER_DURABILITY - 1,
+				"glider at its last point: " + worn + " damage " + worn.getDamageValue());
+		fallFly(player, 20);
+		helper.assertTrue(!player.isFallFlying(), "still fall flying on a glider with 1 durability");
+		worn = player.getItemBySlot(EquipmentSlot.CHEST);
+		helper.assertTrue(worn.is(ModItems.GLIDER) && worn.getDamageValue() == ModItems.GLIDER_DURABILITY - 1,
+				"glider broke or kept wearing: " + worn);
+		helper.assertTrue(!LivingEntity.canGlideUsing(worn, EquipmentSlot.CHEST), "can glide at 1 durability");
+		helper.succeed();
+	}
+
+	/** One server step of the game's fall-flying upkeep at the given gliding tick. */
+	private static void fallFly(ServerPlayer player, int tick) throws ReflectiveOperationException {
+		FALL_FLY_TICKS.setInt(player, tick);
+		UPDATE_FALL_FLYING.invoke(player);
 	}
 
 	@GameTest
