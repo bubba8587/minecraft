@@ -11,7 +11,7 @@ Status words: **ok** (checked), **easy win** (small change, queued or done), **t
 |---|---|---|
 | Classic Faithful 32x Jappa (resource pack) | Our 32x art matches its style (B16). Older 32x art in Faithful style gets restyled. | restyle over time |
 | Mod Menu | Every mod has a name, player description, author, MIT licence and GitHub links, grouped under one "Bubba's Mods" parent; no icons yet (B14); config screens later. | ok (not yet seen in game) |
-| Explorer's Compass | Names structures by the lang key `structure.<ns>.<path>`; all five of ours are named. It hides structures tagged `c:hidden_from_locator_selection` (see Open). | ok |
+| Explorer's Compass | Dropped from the owner's setup (2026-11-23: the Totem of Seeking does its job). Our structures keep their names (`structure.<ns>.<path>`), which other locator mods read too. | n/a |
 | Cristel Lib | Structure-spacing config library (used by Towns & Towers): could let players tune how often our camps, crypt yards, trader posts and relic vaults appear. | later |
 | Lithium | Rewrites vanilla code some of our mixins hook (spawning, pathfinding, entity lookups): the most likely real break. | test |
 | Sodium | Rendering: our custom renderers (spun webs, cocoons, gravestone text, statues, meters, beacon beams) must draw correctly. | test |
@@ -77,6 +77,6 @@ None is in the owner's profile, so nothing could be run. From reading our recipe
 
 ## Open
 
-- **Explorer's Compass and Relic Vaults (owner's call).** Explorer's Compass lists every structure, so it can point straight at a Relic Vault, skipping the relic map shred hunt. Tagging `relic_vault` as `c:hidden_from_locator_selection` (a Fabric convention tag) hides it from Explorer's Compass and other locator mods. Same question for crypt yards, monster camps and trader posts, which have their own explorer maps. Not done: it's a design call.
+- **Locator mods and our structures:** any locator mod could point straight at a Relic Vault (skipping the relic map hunt) or at crypt yards, camps and trader posts. Tagging a structure `c:hidden_from_locator_selection` hides it. Not urgent now that the owner doesn't use Explorer's Compass; decide before a release.
 
 - A compatibility test setup: an option that loads chosen Modrinth mods into our game test runs (as Stormie's Spiders is loaded today), so the "test" rows above get real runs and screenshots.
