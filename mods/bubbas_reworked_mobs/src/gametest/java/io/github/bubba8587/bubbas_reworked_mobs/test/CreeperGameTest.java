@@ -322,4 +322,151 @@ public class CreeperGameTest {
 			}
 		});
 	}
+
+	// --- cover to cover, leaving -----------------------------------------------------------------------
+
+	/** A 3-tall stone wall along z at {@code x}, from {@code z0} to {@code z1}. */
+	private static void wall(GameTestHelper helper, int x, int z0, int z1) {
+		for (int z = z0; z <= z1; z++) {
+			for (int y = 1; y <= 3; y++) {
+				helper.setBlock(new BlockPos(x, y, z), Blocks.STONE);
+			}
+		}
+	}
+
+	/** Horizontal distance from the player's eyes to the middle of the spot's cell. */
+	private static double spotDistance(CoverFinder.PeekSpot spot, ServerPlayer player) {
+		return Vec3.atBottomCenterOf(spot.cell()).subtract(player.getEyePosition()).horizontalDistance();
+	}
+
+	/** Two walls off to either side of the line from the player (x 1.5) down the field: a near one (x 7) and a far one (x 18). */
+	private static void nearAndFarCover(GameTestHelper helper) {
+		wall(helper, 7, 4, 6);
+		wall(helper, 18, 10, 12);
+	}
+
+	/** Not looked at, it leaves its far cover for a peek spot behind cover much closer to the player. */
+	@GameTest(environment = "bubbas_reworked_mobs-test:creeper_approach", structure = FIELD, maxTicks = 500)
+	public void creepsToCloserCoverWhenUnseen(GameTestHelper helper) {
+		nearAndFarCover(helper);
+		Creeper creeper = creeper(helper, 20.5, 9.5, true);
+		ServerPlayer player = TestPlayers.survivalAt(helper, 1.5, 8.5, 90.0F);
+		CreeperMind mind = mind(creeper);
+		helper.runAtTickTime(2, () -> mind.watch(player, helper.getLevel().getGameTime()));
+		double[] first = {-1.0};
+		helper.onEachTick(() -> {
+			CoverFinder.PeekSpot spot = mind.spot();
+			if (spot == null || !mind.spotReached()) {
+				return;
+			}
+			double d = spotDistance(spot, player);
+			if (first[0] < 0.0) {
+				first[0] = d;
+				helper.assertTrue(d > 14.0, "it should first take the far cover, took one " + d + " away");
+			} else if (d < first[0] - 3.0) {
+				helper.assertTrue(d >= CreeperTuning.APPROACH_MIN_DISTANCE - 0.5, "too close: " + d);
+				helper.assertTrue(!mind.openGround(), "it has cover");
+				creeper.discard();
+				TestPlayers.remove(helper, player);
+				helper.succeed();
+			}
+		});
+	}
+
+	/** A player walking toward it (not sneaking) sends it running to a peek spot farther away. */
+	@GameTest(environment = "bubbas_reworked_mobs-test:creeper_flee", structure = FIELD, maxTicks = 400)
+	public void runsToFartherCoverWhenApproached(GameTestHelper helper) {
+		nearAndFarCover(helper);
+		Creeper creeper = creeper(helper, 10.5, 8.0, true);
+		ServerPlayer player = TestPlayers.survivalAt(helper, 1.5, 8.5, -90.0F);
+		CreeperMind mind = mind(creeper);
+		helper.runAtTickTime(2, () -> mind.watch(player, helper.getLevel().getGameTime()));
+		int[] walked = {-1};
+		double[] fledFrom = {0.0};
+		helper.onEachTick(() -> {
+			CoverFinder.PeekSpot spot = mind.spot();
+			if (walked[0] < 0) {
+				if (spot != null && mind.spotReached() && spotDistance(spot, player) < 11.0) {
+					walked[0] = 0;
+				}
+				return;
+			}
+			if (walked[0] < 24) {
+				walked[0]++;
+				player.setOnGround(true);
+				player.move(MoverType.SELF, new Vec3(WALK, 0.0, 0.0));
+				fledFrom[0] = Math.sqrt(creeper.distanceToSqr(player));
+				return;
+			}
+			helper.assertTrue(mind.meter() == 0.0F, "walking at it shouldn't startle it, meter " + mind.meter());
+			if (spot != null && mind.spotReached() && spotDistance(spot, player) > fledFrom[0] + CreeperTuning.FLEE_MIN_GAIN - 0.5) {
+				creeper.discard();
+				TestPlayers.remove(helper, player);
+				helper.succeed();
+			}
+		});
+	}
+
+	/** With cover in reach (one lone pillar, like a tree trunk) it holds a peek spot and never takes the open-ground stance. */
+	@GameTest(environment = "bubbas_reworked_mobs-test:creeper_cover", structure = FIELD, maxTicks = 300)
+	public void neverOpenGroundWithCoverAround(GameTestHelper helper) {
+		for (int y = 1; y <= 3; y++) {
+			helper.setBlock(new BlockPos(10, y, 8), Blocks.OAK_LOG);
+		}
+		Creeper creeper = creeper(helper, 20.5, 3.5, true);
+		ServerPlayer player = TestPlayers.survivalAt(helper, 1.5, 8.5, 90.0F);
+		CreeperMind mind = mind(creeper);
+		helper.runAtTickTime(2, () -> mind.watch(player, helper.getLevel().getGameTime()));
+		boolean[] reached = {false};
+		int[] tick = {0};
+		helper.onEachTick(() -> {
+			tick[0]++;
+			helper.assertTrue(!mind.openGround(), "it took the open-ground stance with a trunk in reach (tick " + tick[0] + ")");
+			reached[0] |= mind.spot() != null && mind.spotReached();
+			if (tick[0] == 240) {
+				helper.assertTrue(reached[0], "it should have reached a spot behind the trunk");
+				creeper.discard();
+				TestPlayers.remove(helper, player);
+				helper.succeed();
+			}
+		});
+	}
+
+	/** Morning, right now (the day test environment sets the clock at batch start; this makes sure). */
+	static void forceDay(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		level.getServer().clockManager().setTotalTicks(
+				level.registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.WORLD_CLOCK).getOrThrow(net.minecraft.world.clock.WorldClocks.OVERWORLD), 1000L);
+		level.getServer().setWeatherParameters(12000, 0, false, false);
+		level.updateSkyBrightness();
+	}
+
+	/** By day a watcher walks out of sight and is gone; it never vanishes while the player can see it. */
+	@GameTest(environment = "bubbas_reworked_mobs-test:creeper_leave", structure = FIELD, maxTicks = 900)
+	public void watcherLeavesOutOfSightByDay(GameTestHelper helper) {
+		forceDay(helper);
+		wall(helper, 14, 10, 12);
+		Creeper creeper = creeper(helper, 6.5, 3.5, true);
+		ServerPlayer player = TestPlayers.survivalAt(helper, 1.5, 8.5, -90.0F);
+		creeper.setAttached(io.github.bubba8587.bubbas_reworked_mobs.creeper.WatcherSpawning.WATCHER_FOR, player.getUUID());
+		CreeperMind mind = mind(creeper);
+		helper.runAtTickTime(2, () -> {
+			helper.assertTrue(helper.getLevel().isBrightOutside(), "it should be day");
+			mind.watch(player, helper.getLevel().getGameTime());
+			mind.leaveIn(0);
+		});
+		int[] seenWhileLeaving = {0};
+		helper.onEachTick(() -> {
+			if (creeper.isRemoved()) {
+				helper.assertTrue(seenWhileLeaving[0] >= 20, "it should have stayed while in view (one leave check a second), seen for " + seenWhileLeaving[0] + " ticks");
+				helper.assertTrue(!CreeperMind.seenByAnyPlayer(creeper), "it vanished in plain view at " + creeper.position());
+				TestPlayers.remove(helper, player);
+				helper.succeed();
+				return;
+			}
+			if (mind.leaving() && CreeperMind.seenByAnyPlayer(creeper)) {
+				seenWhileLeaving[0]++;
+			}
+		});
+	}
 }
