@@ -129,7 +129,8 @@ public final class TerrainOracle {
 			future = request(level, chunkX, chunkZ);
 			cache.put(key, future);
 		}
-		return future.getNow(null);
+		// a chunk that couldn't be regenerated (e.g. a worldgen mod that needs a full region) counts as unknown
+		return future.isCompletedExceptionally() ? null : future.getNow(null);
 	}
 
 	/** The regenerated block at {@code pos}, or null while its chunk isn't ready. */
@@ -147,6 +148,9 @@ public final class TerrainOracle {
 		}
 		return future.join();
 	}
+
+	/** Whether a regeneration failure was logged already (one warning per run, not one per chunk). */
+	private static final java.util.concurrent.atomic.AtomicBoolean WARNED = new java.util.concurrent.atomic.AtomicBoolean();
 
 	public static void clear(ServerLevel level) {
 		CACHE.remove(level);
@@ -192,7 +196,9 @@ public final class TerrainOracle {
 				}
 				return result;
 			} catch (RuntimeException e) {
-				BubbasReworkedMobs.LOGGER.warn("Could not regenerate terrain for chunk {}", pos, e);
+				if (!WARNED.getAndSet(true)) {
+					BubbasReworkedMobs.LOGGER.warn("Could not regenerate terrain for chunk {} (further failures are not logged); natural-terrain checks are off there", pos, e);
+				}
 				throw e;
 			} finally {
 				CHUNKS_BUILT.incrementAndGet();
