@@ -49,12 +49,15 @@ Commands only work where chunks are loaded, so a scene starts with `place` near 
 - `design.py`:
   - the Minecraft font, straight from the game jar's `font/ascii.png`;
   - logo titles where each font pixel is a bevelled block of a vanilla block texture, extruded and outlined;
-  - splash text; vanilla tooltips, buttons, hotbar and slots;
+  - vanilla tooltips, buttons, hotbar and slots (splash text exists but posters never use it: `specs/copy-strings.md`);
   - `tooltip_crop`: cuts a real tooltip out of a chest screenshot (it finds the purple border lines) and redraws a clean frame;
   - framed photos, fades and block-textured backgrounds.
 - `icons.py`: cuts exact 16x16 item icons (gems with their real tints, totems, quartz gear...) out of the camera's chest screenshots into `build/posters/icons/`.
-- `layouts.py`: `hero` (full-bleed shot fading into a textured background, logo on the seam, framed insets, hotbar) and `mosaic`.
+- `copytext.py`: every poster line comes from `specs/copy-strings.md` ("Allowed" bullets), looked up by a short key unique within the mod's section (`line(mod, key)`), so the wording is always the owner's. A `[Requires ...]` note is split off and drawn under the string in aqua; a `[Coming in 26.4]:` tag is drawn in gold above it. No other text goes on a poster (no blurbs, subtitles, headers or footers).
 - `make.py`: the posters themselves, `python3 tools/posters/make.py [name...]` writes `build/posters/<name>.png` (1080x1350; the story overview is 1080x1920). Shots are named by the scene scripts that made them.
+  - The **card** layout (`cards`): hero shot with the block-letter title on its seam, then one dark card per string, with a framed photo, a fitted image (a cut-out tooltip) or item slots on the left. `layout_cards` gives each card the height its text needs at Minecraft-font scale 3 (side by side, or text under the icons when that's shorter) and shares out the rest; only if the cards can't fit does it drop the costliest ones to scale 2, and it prints a warning. When that happens, split the poster rather than accept small text.
+  - Posters: title, three Reworked Mobs (graveyards, world, creatures), two Totems & Artifacts, two Infused Gems, Reworked Beacons, Reworked Mining, World Tweaks, Extra Recipes, and the story overview.
+- `layouts.py`: older `hero` and `mosaic` layouts (unused now).
 - `sheet.py`: a contact sheet of shots for picking: `python3 tools/posters/sheet.py out.png "glob[,glob]" [cols]`.
 
 Everything is built from vanilla textures, the mods' own textures and in-game screenshots; no 32x textures.

@@ -17,7 +17,7 @@ How to use it:
 - **[Coming in 26.4]** marks a string for a feature promised for the 26.4 port (each one has a backlog item). Drop the tag once it ships.
 - **Strings that need another of Bubba's mods** carry a requirement note in brackets after them, e.g. `[Requires Reworked Beacons]`. The poster or post shows that note with the string.
 
-## Bubba's Reworked Mobs
+## Reworked Mobs
 
 ### Must
 - (open: waiting on the owner)
@@ -50,7 +50,7 @@ Subtitles and blurbs: none approved yet.
 - Blurbs: "The dead sleep in crypt yards. Make noise and they get up.", "Creepers watch. Endermen build. Something hums below.", "Every graveyard is a dungeon. Every crypt is asleep. Keep it that way.", "That creeper's been watching you for three nights. It's fine. Just don't run.", "The water's edge was never safe. Now it's personal.", "Look up before you mine that cave.", "Monsters don't just appear in the dark anymore. They come from somewhere, and you can go there."
 - Splashes: "Shhh, they're sleeping!", "It's watching you...", "Don't turn your back on the water.", "Mind the ceiling."
 
-## Bubba's Totems & Artifacts
+## Totems & Artifacts
 
 ### Must
 - (none yet)
@@ -88,7 +88,7 @@ Feature names: Totems, Artifacts, Grave Talisman, every "Totem of ..." name, Tot
 ### Allowed
 
 Descriptive strings (owner's wording):
-- Say goodbye to time-limited Potions- with Infused Gems, you can instill a weak form of a potion's effect into a variety of gems with a Brewing Stand & Enchantment table, which can be installed in your armor and tools for a permanent effect.
+- Say goodbye to time-limited Potions- with Infused Gems, you can instill a weak form of a potion's effect into a variety of gems with a Brewing Stand & Enchanting Table, which can be installed in your armor and tools for a permanent effect.
 - Install a full set of 12 perfect Nether Star-based gems into Netherite armor for the strongest results.
 - Gems you find throughout the world may come with minor secondary or tertiary effects, good or bad.
 - Some Gems are brewed with rare items, not potions.
