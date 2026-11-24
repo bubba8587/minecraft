@@ -16,7 +16,7 @@ Status words: **ok** (checked), **easy win** (small change, queued or done), **t
 | Lithium | Rewrites vanilla code some of our mixins hook (spawning, pathfinding, entity lookups): the most likely real break. | test |
 | Sodium | Rendering: our custom renderers (spun webs, cocoons, gravestone text, statues, meters, beacon beams) must draw correctly. | test |
 | Iris (shaders) | Custom rendering often breaks under shaders. | test |
-| Voxy | Far-distance view: our code-built structures should appear in it. | test |
+| Voxy | Far-distance view: our code-built structures should appear in it. Voxy 0.2.20-beta crashed on world join in "mod testing" (2026-11-23): its `sodium.MixinDefaultChunkRenderer` found no target in Sodium 0.9.3 (a Voxy/Sodium version mismatch, none of our mods in the trace). Owner playtests without it for now. | blocked (Voxy vs Sodium) |
 | Tectonic, Lithostitched | Taller, steeper terrain: our structures read ground height and skip steep ground, so they may be rarer or misplaced. | test |
 | Towns & Towers, Explorify | More structures: ours could land on theirs. | test |
 | Xaero's Minimap and World Map | Our helper entities (webs, cocoons, displays) may show as radar dots. | later |
