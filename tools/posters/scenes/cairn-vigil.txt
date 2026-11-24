@@ -1,0 +1,40 @@
+place 667 90 168 0 0
+wait 60
+/bubbas_reworked_mobs cairn locate
+run 667 67 168 bubbas_reworked_mobs cairn build
+wait 20
+/time set 14000
+orbit cn 667 72 168 16 3 0,90,180,270
+/kill @e[type=minecraft:enderman,x=667,y=68,z=168,distance=..30]
+/time set 15500
+run 671.6 g 169.2 summon minecraft:enderman ~ ~ ~ {NoAI:1b,PersistenceRequired:1b,Rotation:[100f,-8f]}
+run 669.9 g 171.9 summon minecraft:enderman ~ ~ ~ {NoAI:1b,PersistenceRequired:1b,Rotation:[145f,-8f]}
+run 666.8 g 172.6 summon minecraft:enderman ~ ~ ~ {NoAI:1b,PersistenceRequired:1b,Rotation:[-170f,-8f]}
+run 664.1 g 170.9 summon minecraft:enderman ~ ~ ~ {NoAI:1b,PersistenceRequired:1b,Rotation:[-125f,-8f]}
+run 663.4 g 167.8 summon minecraft:enderman ~ ~ ~ {NoAI:1b,PersistenceRequired:1b,Rotation:[-80f,-8f]}
+run 665.1 g 165.1 summon minecraft:enderman ~ ~ ~ {NoAI:1b,PersistenceRequired:1b,Rotation:[-35f,-8f]}
+run 668.2 g 164.4 summon minecraft:enderman ~ ~ ~ {NoAI:1b,PersistenceRequired:1b,Rotation:[10f,-8f]}
+run 670.9 g 166.1 summon minecraft:enderman ~ ~ ~ {NoAI:1b,PersistenceRequired:1b,Rotation:[55f,-8f]}
+wait 5
+fov 72
+shot cnW_95 655.5 g+3 167.5 667.5 70 168.5
+shot cnW_150 661.0 g+3.5 157.2 667.5 70 168.5
+shot cnW_40 659.8 g+4 177.7 667.5 70 168.5
+place 667 90 168 0 0
+wait 40
+/fill 655 67 156 680 82 181 minecraft:air replace minecraft:acacia_leaves
+/fill 655 67 156 680 82 181 minecraft:air replace minecraft:acacia_log
+/fill 655 67 156 680 82 181 minecraft:air replace minecraft:tall_grass
+/time set 15500
+fov 72
+wait 10
+shot cnX_40 659.8 g+4 177.7 667.5 70 168.5
+shot cnX_10 665.2 g+3.5 181.3 667.5 70 168.5
+shot cnX_70 656.2 g+3.5 172.6 667.5 70 168.5
+place 700 90 300 0 0
+wait 30
+/execute if block 684 63 300 minecraft:water
+/execute if block 690 63 300 minecraft:water
+/execute if block 696 63 300 minecraft:water
+/execute if block 700 63 300 minecraft:water
+/execute if block 704 63 300 minecraft:water

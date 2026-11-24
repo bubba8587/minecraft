@@ -1,0 +1,4 @@
+window 1920 1080
+gui 4
+/data merge block 712 101 -90 {cooking_time_spent:55,cooking_total_time:100,lit_time_remaining:1100,lit_total_time:1600,Items:[{Slot:0b,id:"minecraft:diorite",count:12},{Slot:1b,id:"minecraft:coal",count:6},{Slot:2b,id:"minecraft:quartz",count:4}]}
+chest blast 712 101 -90

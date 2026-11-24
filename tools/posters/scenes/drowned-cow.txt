@@ -1,0 +1,20 @@
+/kill @e[type=minecraft:drowned,x=697,y=62,z=300,distance=..20]
+/kill @e[type=minecraft:cow,x=697,y=62,z=300,distance=..20]
+/kill @e[type=minecraft:item,x=697,y=62,z=300,distance=..20]
+run 698.5 g 300.5 summon minecraft:cow ~ ~ ~ {PersistenceRequired:1b,Rotation:[-90f,0f],Tags:["vic"]}
+/summon minecraft:drowned 695.3 62 301.1 {PersistenceRequired:1b,Tags:["dr"],Rotation:[-90f,0f]}
+fov 60
+pose 697.5 64.4 305.5 696.5 63 300.5
+wait 10
+grab dr vic
+burst drm 10 2
+/kill @e[type=minecraft:drowned,x=697,y=62,z=300,distance=..20]
+/kill @e[type=minecraft:cow,x=697,y=62,z=300,distance=..20]
+/kill @e[type=minecraft:item,x=697,y=62,z=300,distance=..20]
+run 698.5 g 300.5 summon minecraft:cow ~ ~ ~ {PersistenceRequired:1b,Rotation:[-90f,0f],Tags:["vic"]}
+/summon minecraft:drowned 695.3 62 301.1 {PersistenceRequired:1b,Tags:["dr"],Rotation:[-90f,0f]}
+fov 60
+pose 693 64.6 305.5 697 62.7 300.5
+wait 10
+grab dr vic
+burst drn 10 2

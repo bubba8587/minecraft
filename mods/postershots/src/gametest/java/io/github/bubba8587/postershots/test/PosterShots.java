@@ -247,6 +247,24 @@ public class PosterShots implements FabricClientGameTest {
 					throw new RuntimeException(e);
 				}
 			});
+			// grab drownedTag victimTag: the tagged drowned grabs the tagged mob now (Bubba's Reworked Mobs)
+			case "grab" -> world.getServer().runOnServer(s -> {
+				ServerLevel l = level(s);
+				net.minecraft.world.entity.Entity drowned = null, victim = null;
+				for (net.minecraft.world.entity.Entity e : l.getAllEntities()) {
+					if (e.entityTags().contains(a[1])) drowned = e;
+					if (e.entityTags().contains(a[2])) victim = e;
+				}
+				if (drowned == null || victim == null) throw new IllegalStateException("no drowned or victim tagged");
+				try {
+					Class<?> access = Class.forName("io.github.bubba8587.bubbas_reworked_mobs.drowned.DrownedAccess");
+					Object m = access.getMethod("mind", net.minecraft.world.entity.monster.zombie.Drowned.class).invoke(null, drowned);
+					m.getClass().getMethod("grab", net.minecraft.world.entity.monster.zombie.Drowned.class, ServerLevel.class,
+							net.minecraft.world.entity.LivingEntity.class).invoke(m, drowned, l, victim);
+				} catch (ReflectiveOperationException e) {
+					throw new RuntimeException(e);
+				}
+			});
 			// yard NAME x z seed width depth state wealth: builds a crypt yard (Bubba's Reworked Mobs) with its gate there;
 			// NAMEg* = gate, NAMEv* = vault centre (if it has a crypt)
 			case "yard" -> world.getServer().runOnServer(s -> {
@@ -333,6 +351,9 @@ public class PosterShots implements FabricClientGameTest {
 				mc.resizeGui();
 			});
 			case "clouds" -> context.runOnClient(mc -> mc.options.cloudStatus().set(a[1].equals("off") ? CloudStatus.OFF : CloudStatus.FANCY));
+			// attack / release: hold or let go of the attack key (mid-break pictures)
+			case "attack" -> context.getInput().holdKey(o -> o.keyAttack);
+			case "release" -> context.getInput().releaseKey(o -> o.keyAttack);
 			case "hud" -> context.runOnClient(mc -> {
 				if (mc.gui.hud.isHidden() == a[1].equals("on")) mc.gui.hud.toggle();
 			});

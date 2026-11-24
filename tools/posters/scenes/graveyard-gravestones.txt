@@ -1,0 +1,16 @@
+place -1190 110 700 0 0
+wait 60
+yard K -1190 690 21 21 19 kept family
+wait 40
+/time set 12400
+shot gyK_top $Kgx $Kgy+30 $Kgz+10 $Kgx $Kgy $Kgz+10
+shot gyK_a $Kgx-8 $Kgy+6 $Kgz-6 $Kgx $Kgy $Kgz+10
+shot gyK_b $Kgx+9 $Kgy+5 $Kgz-5 $Kgx $Kgy $Kgz+9
+set Kgx -1190
+set Kgy 68
+set Kgz 690
+/time set 12500
+fov 65
+shot gyL1 $Kgx+4.5 $Kgy+2.2 $Kgz+1.5 $Kgx+2 $Kgy+0.8 $Kgz+12
+shot gyL2 $Kgx-5.5 $Kgy+2.4 $Kgz+1 $Kgx-2 $Kgy+0.8 $Kgz+12
+shot gyL3 $Kgx+9 $Kgy+3.5 $Kgz+4 $Kgx $Kgy+1 $Kgz+12
