@@ -209,30 +209,30 @@ M = "Reworked Mobs"
 @poster
 def p01_mobs_graveyards(out):
 	cards(out, "REWORKED MOBS", "mossy_stone_bricks", "deepslate_bricks", M, [
-		("New Graveyard structures", dict(photo=S("yardSun_270"))),
-		("woken by sound", dict(photo=S("hall1"))),
-		("You can loot the sleeping undead", dict(photo=S("crypt2"), photo_kw={"focus": (0.5, 0.7)})),
-		("pick up nearby weapons", dict(photo=S("hall3"))),
+		("New Graveyard structures", dict(photo=S("yardF2"), photo_kw={"crop": (300, 200, 1500, 875)})),
+		("woken by sound", dict(photo=S("wake1"), photo_kw={"crop": (380, 250, 1460, 858)})),
+		("You can loot the sleeping undead", dict(photo=S("row5"), photo_kw={"crop": (300, 250, 1400, 869)})),
+		("pick up nearby weapons", dict(photo=S("woke4"), photo_kw={"crop": (500, 200, 1500, 763)})),
 	], hero_photo=S("ysun_270"), hero_kw={"focus": (0.5, 0.6)})
 
 
 @poster
 def p02_mobs_world(out):
 	cards(out, "REWORKED MOBS", "mossy_stone_bricks", "deepslate_bricks", M, [
-		("random natural mob spawning", dict(photo=S("cb_0"))),
+		("random natural mob spawning", dict(photo=S("campC_20"), photo_kw={"focus": (0.5, 0.6)})),
 		("Ancient Fabricators", dict(photo=S("fabC"))),
-		("Will-o-wisps", dict(photo=S("ydusk_90"), photo_kw={"bright": 1.5})),
-		("Frostbites", dict(photo=S("stray_0"))),
+		("Will-o-wisps", dict(photo=S("wispD_0"), photo_kw={"crop": (300, 100, 1400, 719)})),
+		("Frostbites", dict(icons=[block_icon("packed_ice"), block_icon("blue_ice"), block_icon("snow")])),
 	], hero_photo=S("fabA"), hero_kw={"focus": (0.5, 0.5)})
 
 
 @poster
 def p03_mobs_creatures(out):
 	cards(out, "REWORKED MOBS", "oxidized_copper", "deepslate_tiles", M, [
-		("Creepers are creepy", dict(photo=S("crN"), photo_kw={"focus": (0.45, 0.6)})),
+		("Creepers are creepy", dict(photo=S("crO"), photo_kw={"crop": (520, 260, 1360, 733)})),
 		("Endermen build cairns", dict(photo=S("cairnF3"))),
 		("Drowned lie in wait", dict(photo=PREV / "drowned/drowned-grab-land.png", photo_kw={"crop": (170, 110, 700, 420)})),
-		("Spiders have real webs", dict(photo=S("spY1"))),
+		("Spiders have real webs", dict(photo=S("rnL_60"))),
 		("giant spiders", dict(photo=S("spZ4"), photo_kw={"focus": (0.5, 0.45)})),
 	], hero_photo=S("cairnF1"), hero_h=300, scale=8)
 
@@ -305,8 +305,8 @@ def p08_beacons(out):
 	cards(out, "REWORKED BEACONS", "diamond_block", "deepslate_tiles", "Reworked Beacons", [
 		("un-consumed set of gems", dict(icons=[I("amethyst_shard"), I("quartz"), I("ender_pearl"), I("diamond"),
 			I("prismarine_shard"), I("nether_star")])),
-		("apply equally", dict(photo=S("bcA"))),
-		("Paired Beacons", dict(photo=S("bcD"))),
+		("apply equally", dict(photo=S("bcE"))),
+		("Paired Beacons", dict(photo=S("pairA"), photo_kw={"focus": (0.5, 0.4)})),
 		("Highly recommended", dict(icons=[I("gem_speed"), I("totem_of_warding")])),
 	], hero_photo=S("bcB"), hero_h=320, scale=8)
 
@@ -332,7 +332,7 @@ def _quartz_hotbar(c, y):
 def p10_world_tweaks(out):
 	c = textured_bg(W, H, block("netherrack"), px=6)
 	hero_h = 1000
-	c.alpha_composite(cover(S("qtzD0"), W, hero_h, focus=(0.3, 0.5)), (0, 0))
+	c.alpha_composite(cover(S("gyy_3"), W, hero_h, focus=(0.5, 0.4)), (0, 0))
 	c.alpha_composite(fade(hero_h, hero_h - 300, hero_h, color=(8, 8, 10)), (0, 0))
 	title_area(c, "WORLD TWEAKS", "magma", None, scale=9)
 	layout_cards(c, "World Tweaks", [("Magma blocks", dict(icons=[block_icon("magma"), block_icon("lava_still")]))], H - 260, H - 40)
@@ -373,7 +373,7 @@ def p12_story(out):
 		(S("bcA"), "REWORKED BEACONS", "diamond_block", {"focus": (0.5, 0.4)}),
 		(S("glideK"), "EXTRA RECIPES", "oak_planks", {"focus": (0.5, 0.35)}),
 		(S("qtzC0"), "REWORKED MINING", "quartz_block_side", {"focus": (0.5, 0.6)}),
-		(S("qtzD0"), "WORLD TWEAKS", "magma", {}),
+		(S("gyy_3"), "WORLD TWEAKS", "magma", {}),
 	]
 	top, gap = 480, 24
 	tw = (SW - 80 - gap) // 2

@@ -1,0 +1,17 @@
+/setblock 704 105 -96 minecraft:lantern[hanging=true]
+/setblock 711 105 -96 minecraft:lantern[hanging=true]
+/setblock 707 105 -92 minecraft:lantern[hanging=true]
+/setblock 703 101 -91 minecraft:air
+/bubbas_reworked_mobs display stuck minecraft:iron_sword 703 101 -90 east
+/bubbas_reworked_mobs display stuck minecraft:diamond_sword 702 101 -91 east
+/bubbas_reworked_mobs display ground minecraft:iron_axe 704 101 -89 north
+/bubbas_reworked_mobs display wall minecraft:bow 701 102 -91 east
+/summon bubbas_reworked_mobs:woken_zombie 705.5 101 -90.5 {NoAI:1b,Rotation:[100f,0f],equipment:{mainhand:{id:"minecraft:iron_sword",count:1},head:{id:"minecraft:iron_helmet",count:1}},PersistenceRequired:1b}
+/summon bubbas_reworked_mobs:woken_skeleton 709.5 101 -95.5 {NoAI:1b,Rotation:[160f,0f],equipment:{mainhand:{id:"minecraft:bow",count:1},head:{id:"minecraft:chainmail_helmet",count:1}},PersistenceRequired:1b}
+/setblock 713 101 -92 minecraft:bell[attachment=floor,facing=west]
+wait 10
+fov 60
+shot row4 708 103.2 -90 708 101.3 -97
+shot row5 701.8 102.8 -94 707 101.2 -97.5
+shot woke1 709.5 102.6 -91.2 704 101.6 -90.5
+shot woke2 712.5 102.4 -91 709.5 102 -95.5

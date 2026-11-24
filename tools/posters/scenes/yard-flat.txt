@@ -1,0 +1,11 @@
+/fill 735 60 -150 785 62 -95 minecraft:dirt
+/fill 735 63 -150 785 63 -95 minecraft:grass_block
+/fill 735 64 -150 785 71 -95 minecraft:air
+/fill 735 72 -150 785 79 -95 minecraft:air
+/fill 735 80 -150 785 87 -95 minecraft:air
+wait 20
+yard Z 760 -135 11 15 13 kept noble
+wait 40
+/time set 13400
+shot flatA 760 70 -144 760 63 -126
+shot flatB 752 66.5 -138 762 64 -126

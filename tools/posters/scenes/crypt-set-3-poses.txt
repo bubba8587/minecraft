@@ -1,0 +1,11 @@
+/item replace entity @e[type=bubbas_reworked_mobs:woken_zombie] weapon.mainhand with minecraft:iron_sword
+/item replace entity @e[type=bubbas_reworked_mobs:woken_skeleton] weapon.mainhand with minecraft:bow
+/tp @e[type=bubbas_reworked_mobs:woken_zombie] 704.6 101 -90.4 125 10
+/tp @e[type=bubbas_reworked_mobs:woken_skeleton] 709.3 101 -95.2 200 0
+/setblock 713 101 -92 minecraft:air
+/setblock 711 101 -93 minecraft:bell[attachment=floor,facing=north]
+wait 10
+fov 60
+shot woke3 701.6 102.7 -93.6 704.2 101.7 -90.6
+shot woke4 700.9 102.4 -88.9 704 101.7 -90.6
+shot wake1 712.6 102.2 -91.4 708.5 101.6 -96.2

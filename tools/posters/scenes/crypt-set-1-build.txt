@@ -1,0 +1,29 @@
+place 708 g+2 -94 0 0
+wait 60
+/fill 700 100 -100 716 106 -88 minecraft:stone_bricks hollow
+/fill 701 100 -99 715 100 -89 minecraft:polished_andesite
+/fill 703 100 -97 713 100 -95 minecraft:cracked_stone_bricks
+/fill 700 101 -100 700 105 -88 minecraft:mossy_stone_bricks
+/fill 701 101 -99 701 105 -99 minecraft:chiseled_stone_bricks
+/fill 715 101 -99 715 105 -99 minecraft:chiseled_stone_bricks
+/fill 708 101 -99 708 105 -99 minecraft:chiseled_stone_bricks
+/setblock 703 101 -97 bubbas_reworked_mobs:skeleton_sleeper[pose=lying,facing=south]{Items:[{Slot:0b,id:"minecraft:bow",count:1},{Slot:2b,id:"minecraft:iron_helmet",count:1},{Slot:3b,id:"minecraft:chainmail_chestplate",count:1}]}
+/setblock 706 101 -97 bubbas_reworked_mobs:zombie_sleeper[pose=lying,facing=south]{Items:[{Slot:0b,id:"minecraft:iron_sword",count:1},{Slot:3b,id:"minecraft:iron_chestplate",count:1},{Slot:4b,id:"minecraft:iron_leggings",count:1}]}
+/setblock 710 101 -98 bubbas_reworked_mobs:skeleton_sleeper[pose=sitting,facing=south]{Items:[{Slot:0b,id:"minecraft:stone_sword",count:1},{Slot:2b,id:"minecraft:golden_helmet",count:1},{Slot:3b,id:"minecraft:golden_chestplate",count:1}]}
+/setblock 713 101 -97 bubbas_reworked_mobs:husk_sleeper[pose=prone,facing=south]{Items:[{Slot:2b,id:"minecraft:chainmail_helmet",count:1}]}
+/setblock 702 101 -98 minecraft:candle[candles=3,lit=true]
+/setblock 712 101 -98 minecraft:candle[candles=2,lit=true]
+/setblock 704 101 -92 minecraft:candle[candles=4,lit=true]
+/setblock 711 101 -91 minecraft:candle[candles=1,lit=true]
+/setblock 701 105 -99 minecraft:cobweb
+/setblock 714 105 -98 minecraft:cobweb
+/setblock 707 105 -98 minecraft:cobweb
+/setblock 709 101 -89 minecraft:chest[facing=north]
+/setblock 714 101 -90 minecraft:chest[facing=west]
+/fill 701 106 -99 715 106 -89 minecraft:stone_bricks
+wait 10
+fov 60
+shot row1 708 103.2 -90 708 101.3 -97
+shot row2 701.8 102.8 -94 707 101.2 -97.5
+shot row3 714 102.6 -94 709 101.2 -97.5
+shot close1 706 102.4 -94.6 706 101.2 -97

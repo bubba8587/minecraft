@@ -1,0 +1,17 @@
+place 775 66 -112 0 0
+wait 40
+/time set 4000
+/fill 772 64 -118 778 64 -112 minecraft:iron_block
+/fill 773 65 -117 777 65 -113 minecraft:iron_block
+/setblock 775 66 -115 minecraft:beacon{"bubbas_reworked_beacons:item":{id:"minecraft:amethyst_shard",count:1}}
+/summon minecraft:cow 770.5 64 -110.5 {NoAI:1b,PersistenceRequired:1b,Rotation:[45f,0f]}
+/summon minecraft:sheep 772 64 -108.5 {NoAI:1b,PersistenceRequired:1b,Rotation:[67f,0f]}
+/summon minecraft:villager 779.5 64 -109 {NoAI:1b,PersistenceRequired:1b,Rotation:[77f,0f]}
+/summon minecraft:zombie 777 64 -107 {NoAI:1b,PersistenceRequired:1b,Rotation:[85f,0f],equipment:{head:{id:"minecraft:iron_helmet",count:1}}}
+/summon minecraft:pig 768.5 64 -113 {NoAI:1b,PersistenceRequired:1b,Rotation:[20f,0f]}
+/summon minecraft:chicken 774 64 -106.5 {NoAI:1b,PersistenceRequired:1b,Rotation:[86f,0f]}
+/effect give @e[distance=..20,type=!minecraft:player] minecraft:speed 600 0
+wait 120
+fov 70
+shot bcE 766.0 66.8 -106.0 775 66 -113.5
+shot bcF 765 69 -102 775 67 -114

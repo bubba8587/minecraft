@@ -1,0 +1,19 @@
+/execute at @p run tag @e[type=bubbas_reworked_mobs:nest_spider,sort=nearest,limit=1] add rn
+entity RN rn
+/effect give @s minecraft:night_vision infinite 0 true
+place 730.5 3 -27.5 0 0
+wait 60
+fov 75
+orbit rn 730.5 6 -27.5 7 -3 0,60,120,180,240,300
+/fill 718 -4 -40 743 12 -15 minecraft:light[level=11] replace minecraft:air
+wait 20
+fov 72
+/kill @e[tag=drop]
+/summon minecraft:spider 730.8 3.5 -27.5 {NoAI:1b,PersistenceRequired:1b,Tags:["drop"],Rotation:[60f,30f]}
+shot rnL_60 724.4 3 -24.0 730.5 5.5 -27.5
+/kill @e[tag=drop]
+/summon minecraft:spider 730.8 3.5 -27.5 {NoAI:1b,PersistenceRequired:1b,Tags:["drop"],Rotation:[120f,30f]}
+shot rnL_120 724.4 3 -31.0 730.5 5.5 -27.5
+/kill @e[tag=drop]
+/summon minecraft:spider 730.8 3.5 -27.5 {NoAI:1b,PersistenceRequired:1b,Tags:["drop"],Rotation:[-180f,30f]}
+shot rnL_180 730.5 3 -34.5 730.5 5.5 -27.5

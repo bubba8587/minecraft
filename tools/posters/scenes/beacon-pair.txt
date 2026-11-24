@@ -1,0 +1,11 @@
+place 720 31 -120 0 0
+wait 40
+/effect give @s minecraft:night_vision infinite 0 true
+/fill 713 31 -127 715 31 -125 minecraft:gold_block
+/fill 713 48 -127 715 48 -125 minecraft:gold_block
+/setblock 714 47 -126 minecraft:beacon[upside_down=true]
+/setblock 714 32 -126 minecraft:beacon{"bubbas_reworked_beacons:item":{id:"minecraft:amethyst_shard",count:1}}
+wait 80
+fov 75
+shot pairA 721 34 -119 714 39.5 -126
+shot pairB 724 33 -127.5 714 39.5 -126

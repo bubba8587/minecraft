@@ -1,0 +1,20 @@
+/effect clear @s minecraft:night_vision
+dim the_nether
+place 0 70 0 0 0
+wait 80
+findlava L 0 0 48
+place $Lx $Ly+6 $Lz 0 0
+wait 80
+/setblock $Lx $Ly-1 $Lz minecraft:magma_block
+pose $Lx-7 $Ly+3 $Lz-6 $Lx $Ly+3 $Lz
+wait 40
+erupt $Lx $Ly $Lz
+burst gyz 6 6
+set Lx -3
+set Ly 31
+set Lz 13
+fov 70
+pose $Lx-4.5 $Ly+1.6 $Lz-3.5 $Lx $Ly+5 $Lz
+wait 40
+erupt $Lx $Ly $Lz
+burst gyy 7 5

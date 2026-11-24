@@ -1,0 +1,10 @@
+/time set 14500
+fov 60
+pose 757.5 65.4 -137.5 761 64 -128
+wait 30
+/particle minecraft:soul_fire_flame 760 65 -130 2.5 0.5 3 0.003 30 force
+/particle minecraft:soul_fire_flame 761 65.3 -127 2 0.4 2 0.003 20 force
+burst wispD 3 2
+/time set 12300
+shot yardF1 752 65.4 -139 760 64 -128
+shot yardF2 767 66.5 -140.5 759 63.6 -129

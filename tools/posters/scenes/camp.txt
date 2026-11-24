@@ -1,0 +1,16 @@
+/time set 13000
+run 748 64 -104 bubbas_reworked_mobs camp build zombie medium 5
+wait 60
+orbit camp 748 64 -104 16 7 200,250,320
+/time set 12700
+/summon minecraft:zombie 746.5 64 -103.5 {NoAI:1b,PersistenceRequired:1b,Rotation:[200f,0f],equipment:{head:{id:"minecraft:leather_helmet",count:1}}}
+/summon minecraft:zombie 750.5 64 -102 {NoAI:1b,PersistenceRequired:1b,Rotation:[160f,0f]}
+/summon minecraft:zombie 744 64 -107 {NoAI:1b,PersistenceRequired:1b,Rotation:[230f,0f]}
+/summon minecraft:husk 749 64 -107.5 {NoAI:1b,PersistenceRequired:1b,Rotation:[180f,0f]}
+/item replace entity @e[type=minecraft:zombie,distance=..0] weapon.mainhand with minecraft:iron_axe
+wait 10
+fov 65
+shot campA 748 66.2 -94 747 64.6 -104
+shot campB 756 67 -97 747 64.5 -105
+fov 65
+orbit campC 747 64.5 -105 11 3.5 290,330,20,60
