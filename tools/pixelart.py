@@ -90,12 +90,14 @@ def hash01(x, y, seed=0):
 
 
 def render32(grid, pal, material=None, outline="o", inner=None, bevel=0.12, grain=(), grain_amount=0.06, seed=1,
-		smooth=True):
+		smooth=True, snap=False):
 	"""The Faithful-style 32x twin of a 16x grid (see the module notes).
 
 	material: {char: name} groups shades of one material so bevels only fall on edges between materials (default:
 	every char is its own material). inner: {outline_char: char} colour for outline pixels that don't touch
-	transparency (default: leave them). grain: material names that get texture.
+	transparency (default: leave them). grain: material names that get texture. snap: every pixel snaps to the
+	nearest colour already in the icon's palette (Classic Faithful 32x Jappa style: few colours, flat bands, crisp
+	edges), so bevels step to a neighbouring shade instead of inventing in-between colours.
 	"""
 	material = material or {}
 	g = scale2x(grid, lambda ch: "." if ch == "." else ("o" if ch in outline else "x")) if smooth else upscale_grid(grid)
@@ -143,6 +145,14 @@ def render32(grid, pal, material=None, outline="o", inner=None, bevel=0.12, grai
 				n = hash01(x // 2 + (y % 2), y, seed) - 0.5
 				col = lighten(col, n * 2 * grain_amount) if n > 0 else darken(col, -n * 2 * grain_amount)
 			px[x, y] = col + (a,)
+	if snap:
+		used = sorted({rgba(pal[ch])[:3] for row in g for ch in row if ch != "."})
+		for y in range(h):
+			for x in range(w):
+				c = px[x, y]
+				if c[3]:
+					near = min(used, key=lambda u: (u[0] - c[0]) ** 2 + (u[1] - c[1]) ** 2 + (u[2] - c[2]) ** 2)
+					px[x, y] = near + (c[3],)
 	return img
 
 

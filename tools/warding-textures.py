@@ -56,7 +56,7 @@ def main():
 		if n == 16:
 			img = render(ICON, PALETTE)
 		else:
-			img = render32(ICON, PALETTE, MATERIAL, inner={"o": "1"}, bevel=0.1, seed=7)
+			img = render32(ICON, PALETTE, MATERIAL, inner={"o": "1"}, bevel=0.3, seed=7, snap=True)
 		img.save(out / "totem_of_warding.png")
 		print("wrote", out / "totem_of_warding.png")
 

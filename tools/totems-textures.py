@@ -343,9 +343,9 @@ def main():
 		("totem_of_north_wind", NORTH_WIND, NORTH_PAL, NORTH_MAT, (), 20),
 	]
 	for name, grid, pal, mat, grain, seed in plain:
-		write(name, render(grid, pal), render32(grid, pal, mat, inner={"o": "1"}, bevel=0.1, seed=seed))
+		write(name, render(grid, pal), render32(grid, pal, mat, inner={"o": "1"}, bevel=0.3, seed=seed, snap=True))
 	base16 = render(SEEKING, SEEK_PAL)
-	base32 = render32(SEEKING, SEEK_PAL, SEEK_MAT, inner={"o": "1"}, bevel=0.1, seed=15)
+	base32 = render32(SEEKING, SEEK_PAL, SEEK_MAT, inner={"o": "1"}, bevel=0.3, seed=15, snap=True)
 	centre = dial_centre(SEEKING)
 	for frame in range(16):
 		write("totem_of_seeking_%02d" % frame, draw_needle(base16.copy(), 1, centre, frame), draw_needle(base32.copy(), 2, centre, frame))
