@@ -12,6 +12,7 @@ import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.util.DefaultRandomPos;
 import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.pathfinder.Node;
 import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.phys.Vec3;
@@ -211,9 +212,11 @@ public final class CreeperWatchGoal extends Goal {
 		}
 		Vec3 here = creeper.position();
 		double closing = before.subtract(here).horizontalDistance() - now.subtract(here).horizontalDistance();
+		boolean seen = seesThroughGlass(target);
 		if (target.isShiftKeyDown()) {
-			if (closing > CreeperTuning.SNEAK_CLOSING && distance < CreeperTuning.SNEAK_NOTICE_RANGE && plan != Plan.HIDE && plan != Plan.FLEE && plan != Plan.LEAVE) {
+			if (seen && closing > CreeperTuning.SNEAK_CLOSING && distance < CreeperTuning.SNEAK_NOTICE_RANGE && plan != Plan.HIDE && plan != Plan.FLEE && plan != Plan.LEAVE) {
 				plan = Plan.HIDE;
+				mind.noticedApproach(creeper.level().getGameTime());
 				mind.spot = null;
 				nextSearch = ticks;
 			}
@@ -223,14 +226,21 @@ public final class CreeperWatchGoal extends Goal {
 			plan = Plan.WATCH;
 		}
 		boolean running = plan == Plan.FLEE && (mind.spot == null || !mind.spotReached);
-		if (closing >= CreeperTuning.FLEE_CLOSING && distance < CreeperTuning.FLEE_NOTICE_RANGE && !running) {
+		if (seen && closing >= CreeperTuning.FLEE_CLOSING && distance < CreeperTuning.FLEE_NOTICE_RANGE && !running) {
 			plan = Plan.FLEE;
+			mind.noticedApproach(creeper.level().getGameTime());
 			fleeFrom = distance;
 			previous = null;
 			mind.spot = null;
 			nextSearch = ticks;
 			failedSearches = 0;
 		}
+	}
+
+	/** Line of sight from its eyes to the target's eyes or middle; glass, panes and bars don't block it. */
+	private boolean seesThroughGlass(LivingEntity target) {
+		return creeper.hasLineOfSight(target, ClipContext.Block.VISUAL, ClipContext.Fluid.NONE, target.getEyeY())
+				|| creeper.hasLineOfSight(target, ClipContext.Block.VISUAL, ClipContext.Fluid.NONE, target.getY(0.5));
 	}
 
 	private void startLeaving(CreeperMind mind, LivingEntity target) {

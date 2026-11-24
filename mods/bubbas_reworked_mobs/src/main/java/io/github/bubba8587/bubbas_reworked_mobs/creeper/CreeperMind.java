@@ -42,6 +42,7 @@ public final class CreeperMind {
 	CoverFinder.@Nullable PeekSpot spot;
 	boolean spotReached;
 	private boolean openGround;
+	private long lastNoticedApproach = -1L;
 	/** Game time its watched player last looked toward it (never: Long.MIN_VALUE). */
 	private long lastLookedAt = Long.MIN_VALUE;
 	/** Leaving by day (watchers only): ticks until it starts leaving (-1: not counting), and whether it is leaving. */
@@ -105,6 +106,15 @@ public final class CreeperMind {
 
 	void setOpenGround(boolean openGround) {
 		this.openGround = openGround;
+	}
+
+	/** Game time it last noticed a player coming at it (ran off or backed behind cover); -1 if never. */
+	public long lastNoticedApproach() {
+		return lastNoticedApproach;
+	}
+
+	void noticedApproach(long gameTime) {
+		lastNoticedApproach = gameTime;
 	}
 
 	/** Its watched player looked toward it now. */

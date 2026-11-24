@@ -89,7 +89,7 @@ public final class CreeperTuning {
 
 	// --- creeping closer, cover to cover ----------------------------------------------------------
 	/** The closest peek spot it creeps to (e.g. outside your wall, peeking in at a window). */
-	public static final double APPROACH_MIN_DISTANCE = 3.0;
+	public static final double APPROACH_MIN_DISTANCE = 2.0;
 	/** A new spot must be at least this much closer than where it is ... */
 	public static final double APPROACH_STEP = 2.0;
 	/** ... and it prefers one about this much closer. */

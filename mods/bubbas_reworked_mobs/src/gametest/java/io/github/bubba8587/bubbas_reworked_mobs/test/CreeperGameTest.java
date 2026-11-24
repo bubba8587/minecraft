@@ -399,7 +399,51 @@ public class CreeperGameTest {
 				return;
 			}
 			helper.assertTrue(mind.meter() == 0.0F, "walking at it shouldn't startle it, meter " + mind.meter());
+			helper.assertTrue(mind.lastNoticedApproach() >= 0, "it should have seen the player coming");
 			if (spot != null && mind.spotReached() && spotDistance(spot, player) > fledFrom[0] + CreeperTuning.FLEE_MIN_GAIN - 0.5) {
+				creeper.discard();
+				TestPlayers.remove(helper, player);
+				helper.succeed();
+			}
+		});
+	}
+
+	/** A player walking toward it behind a solid wall goes unnoticed: no running off without line of sight. */
+	@GameTest(environment = "bubbas_reworked_mobs-test:creeper_flee", structure = FIELD, maxTicks = 200)
+	public void approachThroughSolidWallGoesUnnoticed(GameTestHelper helper) {
+		approachBehind(helper, Blocks.STONE, false);
+	}
+
+	/** Glass doesn't hide the player: walking at it behind a glass wall is noticed. */
+	@GameTest(environment = "bubbas_reworked_mobs-test:creeper_flee", structure = FIELD, maxTicks = 200)
+	public void approachThroughGlassIsNoticed(GameTestHelper helper) {
+		approachBehind(helper, Blocks.GLASS, true);
+	}
+
+	private static void approachBehind(GameTestHelper helper, net.minecraft.world.level.block.Block block, boolean noticed) {
+		for (int z = 0; z <= 15; z++) {
+			for (int y = 1; y <= 3; y++) {
+				helper.setBlock(new BlockPos(8, y, z), block);
+			}
+		}
+		Creeper creeper = creeper(helper, 14.5, 8.0, true);
+		ServerPlayer player = TestPlayers.survivalAt(helper, 1.5, 8.5, -90.0F);
+		CreeperMind mind = mind(creeper);
+		helper.runAtTickTime(2, () -> mind.watch(player, helper.getLevel().getGameTime()));
+		int[] tick = {0};
+		helper.onEachTick(() -> {
+			tick[0]++;
+			if (tick[0] >= 5 && tick[0] < 29) {
+				player.setOnGround(true);
+				player.move(MoverType.SELF, new Vec3(WALK, 0.0, 0.0));
+			}
+			if (!noticed) {
+				helper.assertTrue(mind.lastNoticedApproach() < 0, "it noticed the approach through a solid wall (tick " + tick[0] + ")");
+			}
+			if (tick[0] == 60) {
+				if (noticed) {
+					helper.assertTrue(mind.lastNoticedApproach() >= 0, "it should see the player coming through glass");
+				}
 				creeper.discard();
 				TestPlayers.remove(helper, player);
 				helper.succeed();
