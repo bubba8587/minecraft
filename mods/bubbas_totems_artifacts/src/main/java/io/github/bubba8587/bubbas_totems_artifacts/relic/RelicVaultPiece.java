@@ -327,6 +327,7 @@ public class RelicVaultPiece extends StructurePiece {
 		RandomSource random = primeRandom();
 		random.nextFloat();
 		List<TotemType> types = new ArrayList<>(List.of(TotemType.values()));
+		types.remove(TotemType.UNDYING);
 		if (kind != Kind.GRAND) {
 			types.remove(TotemType.BEGINNING);
 			types.remove(TotemType.END);

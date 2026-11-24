@@ -97,6 +97,39 @@ public class TotemStatueGameTest {
 	}
 
 	/**
+	 * Vanilla's Totem of Undying: right-clicking a floor with it does nothing new and keeps the totem; sneak-using it
+	 * (through the real block-use path, where UndyingStatue's UseBlockCallback runs) sets down the undying statue and uses
+	 * it up; breaking the statue drops the vanilla Totem of Undying.
+	 */
+	@GameTest(structure = TestSupport.FIELD, maxTicks = 20)
+	public void undyingStatuePlacesFromVanillaTotemAndDropsIt(GameTestHelper helper) {
+		ServerPlayer player = TestSupport.survivalPlayer(helper);
+		BlockPos floor = new BlockPos(2, 0, 2);
+		helper.setBlock(floor, Blocks.STONE);
+		Vec3 at = helper.absoluteVec(new Vec3(2.5, 1.0, 5.5));
+		player.snapTo(at.x, at.y, at.z, 180.0F, 45.0F);
+		ItemStack totem = new ItemStack(net.minecraft.world.item.Items.TOTEM_OF_UNDYING);
+		player.setItemInHand(InteractionHand.MAIN_HAND, totem);
+		BlockHitResult hit = new BlockHitResult(helper.absoluteVec(new Vec3(2.5, 1.0, 2.5)), Direction.UP, helper.absolutePos(floor), false);
+
+		player.setShiftKeyDown(false);
+		player.gameMode.useItemOn(player, helper.getLevel(), player.getMainHandItem(), InteractionHand.MAIN_HAND, hit);
+		helper.assertBlockPresent(Blocks.AIR, floor.above());
+		helper.assertTrue(player.getMainHandItem().is(net.minecraft.world.item.Items.TOTEM_OF_UNDYING), "a plain right-click used the totem");
+
+		player.setShiftKeyDown(true);
+		player.gameMode.useItemOn(player, helper.getLevel(), player.getMainHandItem(), InteractionHand.MAIN_HAND, hit);
+		BlockState placed = helper.getBlockState(floor.above());
+		helper.assertTrue(placed.is(ModBlocks.TOTEM_STATUE) && TotemStatueBlock.type(placed) == TotemType.UNDYING, "no undying statue placed: " + placed);
+		helper.assertTrue(placed.getValue(TotemStatueBlock.FACING) == Direction.SOUTH, "statue faces " + placed.getValue(TotemStatueBlock.FACING));
+		helper.assertTrue(player.getMainHandItem().isEmpty(), "the totem wasn't used up");
+		List<ItemStack> drops = Block.getDrops(placed, helper.getLevel(), helper.absolutePos(floor.above()), null);
+		helper.assertTrue(drops.size() == 1 && drops.getFirst().is(net.minecraft.world.item.Items.TOTEM_OF_UNDYING), "undying statue drops " + drops);
+		helper.getLevel().getServer().getPlayerList().remove(player);
+		helper.succeed();
+	}
+
+	/**
 	 * Every totem's statue drops its own totem, and a statue saved before the {@code totem} property existed (only its
 	 * facing) loads as a warding statue.
 	 */

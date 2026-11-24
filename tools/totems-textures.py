@@ -1,22 +1,25 @@
 #!/usr/bin/env python3
 # dte:B16,C6
-"""Item textures for the five totems of 2026-11-16 in Bubba's Totems & Artifacts (Keeping, Gathering, Fortification,
-Growth, Seeking), 16x and their Faithful-style 32x twins (specs/textures.md). Agent-made, listed in docs/art-todo.md
-for the owner to redo or tweak; never AI-generated.
+"""Item textures for the totems of Bubba's Totems & Artifacts other than Warding (tools/warding-textures.py), 16x and
+their Faithful-style 32x twins (specs/textures.md). Agent-made, listed in docs/art-todo.md for the owner to redo or
+tweak; never AI-generated.
 
   python tools/totems-textures.py
 
-Each is a small carved idol in the Totem of Undying's idiom (head, arms out, body, foot), drawn like the Totem of
-Warding (tools/warding-textures.py): same body and pose, its own material, head and chest emblem.
+Each is a small carved idol in the family of vanilla's Totem of Undying: head, arms out, body, a dark belt with a gem
+and the Undying's tapered foot, cast in its own precious material with gem eyes (X light, Z dark), plus the head and
+chest emblem of its power.
 
-  Keeping        purple obsidian stone, gold eyes, clutching a small gold-bound chest
-  Gathering      copper with green patina, arms ending in upturned hands, a patina ring (a pull) on the chest
-  Fortification  iron, a flat-topped helm with a glowing visor slit, an obsidian shield on the chest
-  Growth         oak wood, a leafy crown with a pink blossom, a green sprout on the chest
-  Beginning      weathered stone wearing a grass cap, purple ender eyes, a strata emblem (grass, dirt, stone)
-  End            end stone with a purpur crown, an enderman's black face and magenta eyes, an ender pearl on the chest
-  North Wind     packed ice, an icicle crown, cheeks puffed blowing a gust to the side, a snowflake on the chest
-  Seeking        lapis stone, a gold-rimmed hood, a compass dial on the chest; 16 needle frames
+  Keeping        crying obsidian, magenta gem eyes, clutching a small gold-bound chest
+  Gathering      polished copper, arms ending in upturned hands, an oxidised-copper ring on the chest, verdigris eyes
+  Fortification  netherite, a gold-banded helm with a glowing visor slit, a gold shield with a lapis field
+  Growth         resin amber, a leafy crown with a pink blossom, emerald eyes, a green sprout on the chest
+  Beginning      emerald wearing a grass cap, amethyst eyes, a grass block (grass, dirt) on the chest
+  End            amethyst, a pale end-stone crown, an enderman's black face and magenta eyes, an ender pearl
+  Herding        ruby-red redstone, a woolly ram's head with ivory horns, gold eyes, a gold bell
+  Clear Skies    quartz, a gold sun crown of rays, sky-blue gem eyes, blue sky with the sun on the chest
+  North Wind     diamond, an icicle crown, cheeks puffed blowing a gust to the side, deep-blue eyes, a snowflake
+  Seeking        lapis, a gold-rimmed hood, gold eyes, a compass dial on the chest; 16 needle frames
                  (totem_of_seeking_00..15, frame i = needle turned i/16 clockwise from up, as the item model's
                  minecraft:compass dispatch expects). At 32x the needle is drawn at 32x, not scaled up.
 
@@ -42,60 +45,67 @@ def shades(*cols):
 	return {k: c for k, c in zip(keys, cols)}
 
 
-# --- Keeping: purple obsidian, gold ---------------------------------------------------------------
-KEEPING_PAL = {**shades((22, 12, 36), (44, 24, 70), (64, 38, 100), (88, 56, 132), (114, 80, 164), (146, 110, 194), (184, 150, 222)),
-	"a": (122, 76, 18), "b": (200, 146, 42), "c": (240, 202, 84), "d": (255, 244, 176)}
+# Gem eyes and belt gems use X (the gem's light) and Z (its dark), like the Totem of Undying's emerald eyes.
+def gem(light, dark):
+	return {"X": light, "Z": dark}
+
+
+GEM_MAT = {"X": "gem", "Z": "gem"}
+
+# --- Keeping: crying obsidian, magenta gem eyes, clutching a small gold-bound chest -----------------
+KEEPING_PAL = {**shades((12, 6, 22), (32, 16, 54), (50, 28, 82), (70, 42, 110), (94, 60, 144), (124, 86, 180), (164, 124, 216)),
+	"a": (122, 76, 18), "b": (200, 146, 42), "c": (240, 202, 84), "d": (255, 244, 176), **gem((238, 132, 255), (150, 40, 214))}
 KEEPING = check([
 	"................",
 	"................",
 	".....oooooo.....",
 	"....o566654o....",
 	"...o56544443o...",
-	"...o54d44d32o...",
-	"...o54433332o...",
+	"...o56X446X2o...",
+	"...o5XZ54XZ2o...",
 	"....o443321o....",
 	".oooo5abba1oooo.",
 	"o56655bccb22221o",
 	"o54544adda32211o",
 	".oooo4aaaa1oooo.",
-	"...o54433221o...",
-	"....o543321o....",
-	"...o65544321o...",
-	"...oooooooooo...",
+	"....o11XZ11o....",
+	".....o5432o.....",
+	".....o4321o.....",
+	"......oooo......",
 ])
-KEEPING_MAT = {**{k: "stone" for k in "123456"}, **{k: "gold" for k in "abcd"}}
+KEEPING_MAT = {**{k: "stone" for k in "123456"}, **{k: "gold" for k in "abcd"}, **GEM_MAT}
 
-# --- Gathering: copper and patina ------------------------------------------------------------------
-GATHERING_PAL = {**shades((58, 24, 14), (108, 48, 28), (150, 72, 44), (188, 100, 62), (216, 130, 88), (234, 162, 118), (250, 200, 158)),
-	"p": (52, 132, 108), "q": (94, 190, 158), "e": (170, 250, 220)}
+# --- Gathering: polished copper, oxidised-copper ring and gem eyes ------------------------------------
+GATHERING_PAL = {**shades((70, 26, 12), (122, 50, 26), (166, 74, 40), (204, 102, 58), (230, 134, 84), (246, 170, 118), (255, 212, 166)),
+	"p": (40, 120, 98), "q": (78, 182, 148), "e": (170, 250, 220), **gem((120, 230, 190), (30, 118, 96))}
 GATHERING = check([
 	"................",
 	"................",
 	".....oooooo.....",
 	"....o566543o....",
 	"...o56654332o...",
-	"...o54e44e22o...",
-	"...o54433322o...",
+	"...o56X436X2o...",
+	"...o5XZ43XZ2o...",
 	"oo..o443321o..oo",
 	"o5ooo543321ooo2o",
 	"o56655qqqq32221o",
 	"o5454qpeepq2211o",
 	".oooo4qqqq1oooo.",
-	"...o54433221o...",
-	"....o543321o....",
-	"...o65544321o...",
-	"...oooooooooo...",
+	"....o11XZ11o....",
+	".....o5432o.....",
+	".....o4321o.....",
+	"......oooo......",
 ])
-GATHERING_MAT = {**{k: "metal" for k in "123456"}, **{k: "patina" for k in "pqe"}}
+GATHERING_MAT = {**{k: "metal" for k in "123456"}, **{k: "patina" for k in "pqe"}, **GEM_MAT}
 
-# --- Fortification: iron, obsidian shield ----------------------------------------------------------
-FORT_PAL = {**shades((26, 26, 32), (56, 58, 66), (86, 88, 98), (118, 120, 130), (150, 152, 162), (184, 186, 194), (222, 224, 230)),
-	"f": (240, 120, 30), "g": (255, 214, 110), "s": (30, 16, 48), "t": (66, 42, 100), "u": (130, 92, 184)}
+# --- Fortification: netherite, a gold-banded helm with a glowing visor slit, a gold shield with a lapis field ---
+FORT_PAL = {**shades((24, 20, 22), (52, 45, 47), (74, 66, 67), (96, 87, 87), (120, 110, 109), (148, 138, 135), (182, 172, 166)),
+	"f": (240, 120, 30), "g": (255, 214, 110), "s": (30, 52, 140), "t": (200, 146, 42), "u": (250, 214, 100)}
 FORTIFICATION = check([
 	"................",
 	"...oooooooooo...",
 	"...o66655443o...",
-	"...o65544332o...",
+	"...otuuuuuuto...",
 	"...o1gf11fg1o...",
 	"...o54433221o...",
 	"...o44332211o...",
@@ -104,38 +114,39 @@ FORTIFICATION = check([
 	"o56655tsst22221o",
 	"o54544tsst32211o",
 	".oooo43ts31oooo.",
-	"...o544tt321o...",
-	"....o543321o....",
-	"...o65544321o...",
-	"...oooooooooo...",
+	"....o54tt21o....",
+	".....o5432o.....",
+	".....o4321o.....",
+	"......oooo......",
 ])
 FORT_MAT = {**{k: "metal" for k in "123456"}, **{k: "glow" for k in "fg"}, **{k: "shield" for k in "stu"}}
 
-# --- Growth: oak, leaves, blossom ------------------------------------------------------------------
-GROWTH_PAL = {**shades((42, 26, 12), (72, 46, 22), (102, 68, 34), (134, 94, 52), (164, 122, 72), (192, 150, 94), (218, 182, 126)),
-	"l": (30, 84, 22), "m": (58, 134, 38), "n": (112, 190, 62), "k": (246, 136, 178), "y": (255, 226, 120)}
+# --- Growth: resin amber, a leafy crown with a pink blossom, emerald eyes, a sprout on the chest --------
+GROWTH_PAL = {**shades((72, 22, 6), (120, 42, 10), (164, 66, 14), (206, 98, 22), (232, 132, 36), (248, 170, 62), (255, 212, 124)),
+	"l": (30, 84, 22), "m": (58, 134, 38), "n": (112, 190, 62), "k": (246, 136, 178), "y": (255, 226, 120),
+	**gem((65, 230, 127), (0, 150, 60))}
 GROWTH = check([
 	"......lmml......",
 	"....lmnnmnl.....",
 	"...lmnkynmml....",
 	"...olmmllmmlo...",
 	"...o56544332o...",
-	"...o54n44n22o...",
-	"...o54433322o...",
+	"...o56X436X2o...",
+	"...o5XZ43XZ2o...",
 	"....o443321o....",
 	".oooo54nm21oooo.",
 	"o56655nmlm22221o",
 	"o545443ln322211o",
 	".oooo43l331oooo.",
-	"...o5443l221o...",
-	"....o543321o....",
-	"...o65544321o...",
-	"...oooooooooo...",
+	"....o11XZ11o....",
+	".....o5432o.....",
+	".....o4321o.....",
+	"......oooo......",
 ])
-GROWTH_MAT = {**{k: "wood" for k in "123456"}, **{k: "leaf" for k in "lmn"}, "k": "flower", "y": "flower"}
+GROWTH_MAT = {**{k: "resin" for k in "123456"}, **{k: "leaf" for k in "lmn"}, "k": "flower", "y": "flower", **GEM_MAT}
 
-# --- Seeking: lapis, gold, a compass dial ---------------------------------------------------------
-SEEK_PAL = {**shades((12, 18, 46), (24, 38, 90), (34, 56, 126), (50, 78, 162), (72, 106, 194), (108, 140, 218), (158, 182, 238)),
+# --- Seeking: lapis, gold, gold gem eyes, a compass dial ---------------------------------------------
+SEEK_PAL = {**shades((10, 16, 48), (22, 36, 96), (32, 54, 134), (46, 78, 172), (68, 108, 204), (106, 144, 228), (160, 188, 246)),
 	"a": (130, 86, 16), "b": (210, 156, 48), "c": (250, 214, 100), "w": (150, 150, 158), "y": (226, 222, 210)}
 SEEKING = check([
 	"................",
@@ -143,49 +154,50 @@ SEEKING = check([
 	".....oooooo.....",
 	"....o566543o....",
 	"...o5bbbbbb2o...",
-	"...o51c11c12o...",
-	"...o51111112o...",
+	"...o5cb11cb2o...",
+	"...o5ba11ba2o...",
 	"....o443321o....",
 	".oooo5abba1oooo.",
 	"o5665ayyyyb2221o",
 	"o5454ayyyyb2211o",
-	".ooooayyyyb1oooo",
-	"...o5ayyyyb1o...",
-	"....o5abbb2o....",
-	"...o65544321o...",
-	"...oooooooooo...",
+	".ooooayyyyboooo.",
+	"....oayyyybo....",
+	".....oabbbo.....",
+	".....o4321o.....",
+	"......oooo......",
 ])
 SEEK_MAT = {**{k: "stone" for k in "123456"}, **{k: "gold" for k in "abc"}, "y": "dial", "w": "dial"}
 NEEDLE_RED = (214, 36, 36)
 NEEDLE_DARK = (70, 70, 78)
 
-# --- Beginning: weathered stone, a grass cap, strata on the chest (2026-11-22) ------------------------
-BEGIN_PAL = {**shades((24, 24, 26), (52, 52, 56), (78, 78, 82), (104, 104, 108), (128, 128, 132), (152, 152, 156), (182, 182, 186)),
-	"g": (52, 98, 28), "h": (86, 140, 44), "H": (124, 180, 66), "d": (100, 68, 40), "D": (134, 96, 60), "e": (200, 90, 230)}
+# --- Beginning: emerald, a grass cap, amethyst gem eyes, a grass block (grass, dirt) on the chest -----
+BEGIN_PAL = {**shades((4, 44, 24), (8, 80, 40), (12, 114, 56), (20, 150, 74), (34, 184, 96), (84, 220, 140), (176, 248, 206)),
+	"g": (60, 96, 22), "h": (104, 146, 40), "H": (150, 196, 70), "d": (100, 68, 40), "D": (138, 98, 60),
+	**gem((206, 150, 255), (120, 60, 190))}
 BEGINNING = check([
 	"................",
 	"......hHHh......",
 	"....ghHhhHhg....",
 	"...oghgghgggo...",
 	"...o5g544g43o...",
-	"...o54e44e32o...",
-	"...o54433332o...",
+	"...o56X436X2o...",
+	"...o5XZ43XZ2o...",
 	"....o443321o....",
 	".oooo5HhhH1oooo.",
 	"o56655hggh22221o",
 	"o54544dDDd32211o",
-	".oooo4d43d1oooo.",
-	"...o54433221o...",
-	"....o543321o....",
-	"...o65544321o...",
-	"...oooooooooo...",
+	".oooo4dDdd1oooo.",
+	"....o11XZ11o....",
+	".....o5432o.....",
+	".....o4321o.....",
+	"......oooo......",
 ])
-BEGIN_MAT = {**{k: "stone" for k in "123456"}, **{k: "grass" for k in "ghH"}, **{k: "dirt" for k in "dD"}, "e": "eye"}
+BEGIN_MAT = {**{k: "stone" for k in "123456"}, **{k: "grass" for k in "ghH"}, **{k: "dirt" for k in "dD"}, **GEM_MAT}
 
-# --- End: end stone, purpur crown, an enderman's face, an ender pearl (2026-11-22) -------------------
-END_PAL = {**shades((40, 38, 24), (110, 108, 70), (150, 148, 100), (190, 188, 136), (214, 212, 160), (228, 228, 176), (244, 244, 200)),
-	"p": (122, 74, 122), "q": (170, 124, 170), "k": (18, 10, 24), "m": (204, 0, 250), "M": (250, 150, 255),
-	"t": (18, 80, 72), "T": (40, 160, 140), "w": (180, 250, 230)}
+# --- End: amethyst, a pale end-stone crown, an enderman's black face and magenta eyes, an ender pearl ---
+END_PAL = {**shades((34, 16, 60), (64, 36, 108), (94, 60, 148), (126, 88, 188), (156, 118, 216), (188, 154, 236), (224, 202, 254)),
+	"p": (186, 182, 120), "q": (238, 236, 184), "k": (18, 10, 24), "m": (204, 0, 250), "M": (250, 150, 255),
+	"t": (18, 80, 72), "T": (40, 160, 140), "w": (180, 250, 230), **gem((60, 190, 160), (16, 90, 80))}
 END = check([
 	"................",
 	"....p.pqqp.p....",
@@ -199,85 +211,88 @@ END = check([
 	"o56655TwTt22221o",
 	"o54544tTTt32211o",
 	".oooo4tttt1oooo.",
-	"...o54433221o...",
-	"....o543321o....",
-	"...o65544321o...",
-	"...oooooooooo...",
+	"....o11XZ11o....",
+	".....o5432o.....",
+	".....o4321o.....",
+	"......oooo......",
 ])
-END_MAT = {**{k: "stone" for k in "123456"}, **{k: "purpur" for k in "pq"}, "k": "face", "m": "eye", "M": "eye", **{k: "pearl" for k in "tTw"}}
+END_MAT = {**{k: "stone" for k in "123456"}, **{k: "crown" for k in "pq"}, "k": "face", "m": "eye", "M": "eye",
+	**{k: "pearl" for k in "tTw"}, **GEM_MAT}
 
-# --- Herding: spruce wood, a woolly ram's head with curled horns, a gold bell on the chest (2026-11-22) ------
-HERD_PAL = {**shades((30, 20, 10), (58, 40, 22), (82, 58, 32), (106, 76, 44), (130, 96, 58), (156, 118, 74), (184, 144, 96)),
-	"W": (236, 234, 224), "w": (196, 192, 180), "h": (120, 100, 76), "H": (168, 146, 114), "e": (26, 18, 12),
-	"a": (122, 76, 18), "b": (200, 146, 42), "B": (240, 202, 84), "c": (255, 244, 176)}
+# --- Herding: ruby-red redstone, a woolly ram's head with ivory horns, gold eyes, a gold bell ---------------
+HERD_PAL = {**shades((46, 6, 10), (90, 12, 18), (132, 20, 26), (172, 32, 36), (208, 56, 54), (234, 98, 92), (252, 160, 150)),
+	"W": (240, 238, 228), "w": (200, 196, 184), "h": (150, 128, 96), "H": (214, 198, 160),
+	"a": (122, 76, 18), "b": (200, 146, 42), "B": (240, 202, 84), "c": (255, 244, 176), **gem((250, 214, 100), (170, 110, 24))}
 HERDING = check([
 	"................",
 	"................",
 	"...hH.WWWW.Hh...",
 	"..hHHWWwwWWHHh..",
 	"..hHoWWWWWwoHh..",
-	"...ho54e4e2oh...",
+	"...ho5XZ4XZoh...",
 	"....o544332o....",
 	"....o443321o....",
 	".oooo5bBBb1oooo.",
 	"o56655bBcb22221o",
 	"o54544bbbb32211o",
 	".oooo4abba1oooo.",
-	"...o54433221o...",
-	"....o543321o....",
-	"...o65544321o...",
-	"...oooooooooo...",
+	"....o11XZ11o....",
+	".....o5432o.....",
+	".....o4321o.....",
+	"......oooo......",
 ])
-HERD_MAT = {**{k: "wood" for k in "123456"}, **{k: "wool" for k in "Ww"}, **{k: "horn" for k in "hH"}, "e": "eye",
-	**{k: "gold" for k in "abBc"}}
+HERD_MAT = {**{k: "ruby" for k in "123456"}, **{k: "wool" for k in "Ww"}, **{k: "horn" for k in "hH"},
+	**{k: "gold" for k in "abBc"}, **GEM_MAT}
 
-# --- Clear Skies: pale calcite, a gold sun crown of rays, a patch of blue sky on the chest (2026-11-22) -------
-SKY_PAL = {**shades((58, 60, 72), (124, 126, 138), (156, 158, 170), (186, 188, 198), (210, 212, 220), (230, 232, 238), (250, 250, 252)),
-	"y": (226, 160, 34), "Y": (255, 222, 96), "k": (56, 116, 200), "s": (74, 146, 226), "S": (146, 204, 250)}
+# --- Clear Skies: quartz, a gold sun crown of rays, sky-blue gem eyes, a patch of blue sky with the sun ----
+SKY_PAL = {**shades((96, 78, 74), (150, 128, 120), (186, 170, 162), (212, 200, 192), (230, 224, 216), (243, 240, 234), (253, 252, 249)),
+	"y": (226, 160, 34), "Y": (255, 222, 96), "k": (56, 116, 200), "s": (74, 146, 226), "S": (146, 204, 250),
+	**gem((110, 190, 255), (30, 86, 190))}
 CLEAR_SKIES = check([
 	"......y..y......",
 	"..y..yYYYYy..y..",
 	"...yYooooooYy...",
 	"....o566543o....",
 	"...o56654332o...",
-	"...o54k44k22o...",
-	"...o54433322o...",
+	"...o56X446X2o...",
+	"...o5XZ54XZ2o...",
 	"....o443321o....",
 	".oooo5sSss1oooo.",
 	"o56655sYYs22221o",
 	"o54544sYYs32211o",
 	".oooo4SssS1oooo.",
-	"...o54433221o...",
-	"....o543321o....",
-	"...o65544321o...",
-	"...oooooooooo...",
+	"....o11yY11o....",
+	".....o5432o.....",
+	".....o4321o.....",
+	"......oooo......",
 ])
-SKY_MAT = {**{k: "stone" for k in "123456"}, **{k: "gold" for k in "yY"}, "k": "eye", **{k: "sky" for k in "sS"}}
+SKY_MAT = {**{k: "quartz" for k in "123456"}, **{k: "gold" for k in "yY"}, **{k: "sky" for k in "sS"}, **GEM_MAT}
 
-# --- North Wind: packed-ice blue, an icicle crown, puffed cheeks blowing a gust, a snowflake on the chest (2026-11-23) --
-NORTH_PAL = {**shades((26, 44, 76), (56, 92, 138), (86, 128, 176), (120, 164, 208), (156, 196, 232), (194, 222, 246), (232, 244, 255)),
-	"i": (150, 200, 236), "I": (236, 248, 255), "k": (24, 62, 128), "m": (44, 66, 104),
-	"w": (196, 228, 250), "W": (255, 255, 255), "b": (40, 86, 156), "f": (186, 224, 252), "F": (255, 255, 255)}
+# --- North Wind: diamond, an icicle crown, puffed cheeks blowing a gust, deep-blue gem eyes, a snowflake ----
+NORTH_PAL = {**shades((8, 56, 66), (20, 100, 112), (36, 146, 156), (68, 190, 196), (116, 222, 222), (172, 244, 238), (232, 255, 252)),
+	"i": (176, 214, 240), "I": (240, 250, 255), "k": (24, 62, 128), "m": (16, 74, 84),
+	"w": (196, 228, 250), "W": (255, 255, 255), "b": (30, 70, 150), "f": (186, 224, 252), "F": (255, 255, 255),
+	**gem((64, 110, 220), (22, 44, 130))}
 NORTH_WIND = check([
 	"................",
 	"....I..I..I.....",
 	"....ioIiiIoi....",
 	"....o566543o....",
 	"...o56654332o.ww",
-	"...o5k44k332o...",
+	"...o5XZ4XZ32o...",
 	"...o5443355moWWw",
 	"....o443321o....",
 	".oooo5FbbF1oooo.",
 	"o56655bffb22221o",
 	"o54544bffb32211o",
 	".oooo4FbbF1oooo.",
-	"...o54433221o...",
-	"....o543321o....",
-	"...o65544321o...",
-	"...oooooooooo...",
+	"....o11XZ11o....",
+	".....o5432o.....",
+	".....o4321o.....",
+	"......oooo......",
 ])
-NORTH_MAT = {**{k: "ice" for k in "123456"}, **{k: "icicle" for k in "iI"}, "k": "eye", "m": "mouth",
-	**{k: "gust" for k in "wW"}, **{k: "flake" for k in "bfF"}}
+NORTH_MAT = {**{k: "ice" for k in "123456"}, **{k: "icicle" for k in "iI"}, "m": "mouth",
+	**{k: "gust" for k in "wW"}, **{k: "flake" for k in "bfF"}, **GEM_MAT}
 
 
 def dial_centre(grid):
@@ -318,19 +333,19 @@ def write(name, img16, img32):
 def main():
 	plain = [
 		("totem_of_keeping", KEEPING, KEEPING_PAL, KEEPING_MAT, ("stone",), 11),
-		("totem_of_gathering", GATHERING, GATHERING_PAL, GATHERING_MAT, ("metal",), 12),
+		("totem_of_gathering", GATHERING, GATHERING_PAL, GATHERING_MAT, (), 12),
 		("totem_of_fortification", FORTIFICATION, FORT_PAL, FORT_MAT, ("metal",), 13),
-		("totem_of_growth", GROWTH, GROWTH_PAL, GROWTH_MAT, ("wood", "leaf"), 14),
-		("totem_of_the_beginning", BEGINNING, BEGIN_PAL, BEGIN_MAT, ("stone", "grass"), 16),
-		("totem_of_the_end", END, END_PAL, END_MAT, ("stone",), 17),
-		("totem_of_herding", HERDING, HERD_PAL, HERD_MAT, ("wood", "wool"), 18),
-		("totem_of_clear_skies", CLEAR_SKIES, SKY_PAL, SKY_MAT, ("stone",), 19),
-		("totem_of_north_wind", NORTH_WIND, NORTH_PAL, NORTH_MAT, ("ice",), 20),
+		("totem_of_growth", GROWTH, GROWTH_PAL, GROWTH_MAT, ("leaf",), 14),
+		("totem_of_the_beginning", BEGINNING, BEGIN_PAL, BEGIN_MAT, ("grass",), 16),
+		("totem_of_the_end", END, END_PAL, END_MAT, (), 17),
+		("totem_of_herding", HERDING, HERD_PAL, HERD_MAT, ("wool",), 18),
+		("totem_of_clear_skies", CLEAR_SKIES, SKY_PAL, SKY_MAT, (), 19),
+		("totem_of_north_wind", NORTH_WIND, NORTH_PAL, NORTH_MAT, (), 20),
 	]
 	for name, grid, pal, mat, grain, seed in plain:
-		write(name, render(grid, pal), render32(grid, pal, mat, inner={"o": "1"}, grain=grain, seed=seed))
+		write(name, render(grid, pal), render32(grid, pal, mat, inner={"o": "1"}, bevel=0.1, seed=seed))
 	base16 = render(SEEKING, SEEK_PAL)
-	base32 = render32(SEEKING, SEEK_PAL, SEEK_MAT, inner={"o": "1"}, grain=("stone",), seed=15)
+	base32 = render32(SEEKING, SEEK_PAL, SEEK_MAT, inner={"o": "1"}, bevel=0.1, seed=15)
 	centre = dial_centre(SEEKING)
 	for frame in range(16):
 		write("totem_of_seeking_%02d" % frame, draw_needle(base16.copy(), 1, centre, frame), draw_needle(base32.copy(), 2, centre, frame))
