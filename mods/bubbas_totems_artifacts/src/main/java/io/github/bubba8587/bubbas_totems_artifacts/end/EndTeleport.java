@@ -10,7 +10,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.tags.FluidTags;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Relative;
@@ -38,8 +37,7 @@ import org.jspecify.annotations.Nullable;
  * </ul>
  * "Fit" is vanilla's own collision test for the entity's box (as {@code randomTeleport} uses), so slabs, stairs and
  * paths are footing and a low ceiling is not room. "Safe": the box and the block under it touch no lava, fire,
- * campfire, powder snow, magma, cactus or berry bush; the void is never footing (scanning stops at the world's floor).
- * Water is allowed (vanilla's pearl and chorus fruit allow it).
+ * campfire, powder snow, magma, cactus, berry bush or water; the void is never footing (scanning stops at the world's floor).
  */
 public final class EndTeleport {
 	private EndTeleport() {
@@ -107,7 +105,7 @@ public final class EndTeleport {
 		BlockPos max = BlockPos.containing(box.maxX - 1.0E-7, box.maxY - 1.0E-7, box.maxZ - 1.0E-7);
 		for (BlockPos p : BlockPos.betweenClosed(min, max)) {
 			BlockState state = level.getBlockState(p);
-			if (hazard(state) || state.getFluidState().is(FluidTags.LAVA)) {
+			if (hazard(state)) {
 				return true;
 			}
 		}
@@ -117,13 +115,38 @@ public final class EndTeleport {
 	private static boolean hazard(BlockState state) {
 		return state.is(BlockTags.FIRE) || state.is(BlockTags.CAMPFIRES) || state.is(Blocks.POWDER_SNOW) || state.is(Blocks.MAGMA_BLOCK)
 				|| state.is(Blocks.CACTUS) || state.is(Blocks.SWEET_BERRY_BUSH) || state.is(Blocks.LAVA) || state.is(Blocks.WITHER_ROSE)
-				|| state.getFluidState().is(FluidTags.LAVA);
+				|| !state.getFluidState().isEmpty();
 	}
 
-	/**
-	 * Teleports {@code user} to {@code to} like an ender pearl does (dismounted first, motion stopped, fall distance
-	 * reset), with an enderman's teleport sound and portal particles at both ends and a teleport game event.
-	 */
+	/** Teleport-to-here check for {@link LivingEntity#randomTeleport}: the same hazards plus endermen's no-go blocks. */
+	public static boolean unsafe(BlockState state) {
+		return hazard(state) || state.is(BlockTags.ENDERMAN_DOES_NOT_TELEPORT_TO);
+	}
+
+	/** Out of water like an enderman: a random dry spot within reach, tried up to the tuning's count; true if moved. */
+	public static boolean escapeWater(ServerLevel level, LivingEntity user) {
+		if (user.isPassenger()) {
+			return false;
+		}
+		Vec3 from = user.position();
+		int r = io.github.bubba8587.bubbas_totems_artifacts.totems.TotemsTuning.END_WATER_TELEPORT_RADIUS;
+		for (int i = 0; i < io.github.bubba8587.bubbas_totems_artifacts.totems.TotemsTuning.END_WATER_TELEPORT_TRIES; i++) {
+			double x = from.x + (user.getRandom().nextDouble() - 0.5) * 2 * r;
+			double y = from.y + (user.getRandom().nextInt(2 * r) - r);
+			double z = from.z + (user.getRandom().nextDouble() - 0.5) * 2 * r;
+			if (user.randomTeleport(x, y, z, false, EndTeleport::unsafe)) {
+				effects(level, from);
+				user.resetFallDistance();
+				user.resetCurrentImpulseContext();
+				level.gameEvent(GameEvent.TELEPORT, from, GameEvent.Context.of(user));
+				effects(level, user.position());
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/** Aimed teleport, ender pearl style. */
 	public static void teleport(ServerLevel level, LivingEntity user, Vec3 to) {
 		if (user.isPassenger()) {
 			user.stopRiding();
@@ -138,7 +161,6 @@ public final class EndTeleport {
 		}
 		user.resetFallDistance();
 		user.resetCurrentImpulseContext();
-		user.hurtServer(level, user.damageSources().enderPearl(), io.github.bubba8587.bubbas_totems_artifacts.totems.TotemsTuning.END_TELEPORT_DAMAGE);
 		level.gameEvent(GameEvent.TELEPORT, from, GameEvent.Context.of(user));
 		effects(level, to);
 	}

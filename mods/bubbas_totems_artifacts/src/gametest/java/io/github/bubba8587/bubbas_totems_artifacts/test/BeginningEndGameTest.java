@@ -65,6 +65,10 @@ public class BeginningEndGameTest {
 			helper.setBlock(new BlockPos(17, 1, 5), Blocks.STONE);
 			helper.setBlock(new BlockPos(17, 2, 5), Blocks.FIRE);
 			expect(helper, player, new BlockPos(17, 1, 5), Direction.UP, null, "fire on top");
+			// Water on top: not safe.
+			helper.setBlock(new BlockPos(23, 1, 5), Blocks.STONE);
+			helper.setBlock(new BlockPos(23, 2, 5), Blocks.WATER);
+			expect(helper, player, new BlockPos(23, 1, 5), Direction.UP, null, "water on top");
 			// Bottom face of an overhang: down to the floor under it.
 			helper.setBlock(new BlockPos(20, 3, 5), Blocks.STONE);
 			expect(helper, player, new BlockPos(20, 3, 5), Direction.DOWN, new Vec3(20.5, 1.0, 5.5), "bottom face");
@@ -128,11 +132,41 @@ public class BeginningEndGameTest {
 			float before = player.getHealth();
 			InteractionResult used = totem.use(level, player, InteractionHand.MAIN_HAND);
 			helper.assertTrue(used.consumesAction(), "using it on a block returned " + used);
-			helper.assertTrue(before - player.getHealth() > 0.0F, "the teleport did no damage (an ender pearl's 5)");
+			helper.assertTrue(player.getHealth() == before, "the teleport did damage");
 			Vec3 want = helper.absoluteVec(new Vec3(12.5, 2.0, 10.5));
 			helper.assertTrue(player.position().distanceTo(want) < 1.0E-6, "expected the player at " + want + ", was at " + player.position());
 			helper.assertTrue(player.getCooldowns().isOnCooldown(totem), "no cooldown after a teleport");
 			helper.assertTrue(totem.getCount() == 1, "the Totem of the End was used up");
+		} finally {
+			level.getServer().getPlayerList().remove(player);
+		}
+		helper.succeed();
+	}
+
+	/** Holding a Totem of the End in water hurts like an enderman and teleports out to dry ground. */
+	@GameTest(structure = FIELD, maxTicks = 20)
+	public void endInWaterHurtsAndTeleportsOut(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		ServerPlayer player = TestSupport.survivalPlayer(helper);
+		try {
+			helper.setBlock(new BlockPos(5, 1, 5), Blocks.WATER);
+			helper.setBlock(new BlockPos(5, 2, 5), Blocks.WATER);
+			Vec3 start = helper.absoluteVec(new Vec3(5.5, 1.0, 5.5));
+			player.snapTo(start.x, start.y, start.z, 0.0F, 0.0F);
+			player.setItemInHand(InteractionHand.OFF_HAND, new ItemStack(ModItems.TOTEM_OF_THE_END));
+			try { // a fake player's client never loads, and vanilla keeps it invulnerable till then
+				var mark = net.minecraft.server.network.ServerGamePacketListenerImpl.class.getDeclaredMethod("markClientLoaded");
+				mark.setAccessible(true);
+				mark.invoke(player.connection);
+			} catch (ReflectiveOperationException e) {
+				throw new IllegalStateException(e);
+			}
+			float before = player.getHealth();
+			boolean moved = io.github.bubba8587.bubbas_totems_artifacts.end.EndWater.inWater(level, player);
+			helper.assertTrue(player.getHealth() < before, "water did no damage");
+			helper.assertTrue(moved && player.position().distanceTo(start) > 1.0, "not teleported out of the water");
+			helper.assertTrue(level.getBlockState(player.blockPosition()).getFluidState().isEmpty()
+					&& level.getBlockState(player.blockPosition().below()).getFluidState().isEmpty(), "landed in or on water");
 		} finally {
 			level.getServer().getPlayerList().remove(player);
 		}

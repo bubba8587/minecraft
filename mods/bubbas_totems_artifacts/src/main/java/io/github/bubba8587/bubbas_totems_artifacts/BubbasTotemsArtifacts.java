@@ -42,6 +42,7 @@ public class BubbasTotemsArtifacts implements ModInitializer {
 		// The five totems of 2026-11-16 (Gathering and Fortification need no setup of their own).
 		Keeping.initialize();
 		Growth.initialize();
+		io.github.bubba8587.bubbas_totems_artifacts.end.EndWater.initialize();
 		io.github.bubba8587.bubbas_totems_artifacts.skies.ClearSkies.initialize();
 		io.github.bubba8587.bubbas_totems_artifacts.northwind.NorthWind.initialize();
 		io.github.bubba8587.bubbas_totems_artifacts.gathering.GatheringRing.initialize();
