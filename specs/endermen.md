@@ -77,14 +77,6 @@ What endermen think belongs at a block: a cairn's design where a cairn site cove
 - Terrain mending lifts only natural terrain: the `caretaker_liftable` tag above, never a beacon base (`#minecraft:beacon_base_blocks`) or anything with a block entity. This came from a Totem of the Beginning beacon whose caretakers took a pyramid block and broke the beacon.
 - Clearing a cairn's footprint keeps the broader rule (`TerrainKinds.clearable`: holdable or a full cube, never a beacon base or block entity), so trees and player blocks in the cairn's way still go.
 
-### Beacon bases (owner, 2026-11-23)
-
-- **No enderman ever takes a block of a working beacon's base, anywhere.** Covers vanilla's take-block goal (`mixin/EndermanTakeBlockMixin`, wrapping its holdable check; Nether, End and plain endermen), caretakers' take step (`EndermanJobGoal.take`) and cairn-wanted fetches (`EndermanWork.readyCairnBlock`). The blanket caretaker rule above stays.
-- **Working base** (`enderman/BeaconBases.inWorkingBase`): in `#minecraft:beacon_base_blocks` and in a full pyramid layer of a beacon, counted from the beacon to the block's layer (vanilla's `BeaconBlockEntity.updateBase` shape, same as Reworked Beacons' `BeaconLogic.pyramidLevels`, so no optional-mod check). A full pyramid above a beacon counts too (Reworked Beacons' upside-down pairs).
-  - *Builder's choice:* "working" means full layers, not lit: a covered or paused beacon's pyramid is still safe. Loose base blocks or an unfinished layer can still be taken if holdable.
-- **Cost:** non-base blocks return at once; a base block reads at most 164 states per direction to find a beacon, only when an enderman is about to take it; unloaded positions never count.
-- **Not vanilla, and why:** vanilla has no beacon POI or block-to-beacon lookup, so this reads the pyramid's states as `updateBase` does.
-
 ### Jobs (`EndermanJobGoal`, `EndermanWork`)
 
 Off while angry, riding, or when `mobGriefing` is off (vanilla's rule for enderman blocks).
@@ -439,7 +431,6 @@ Cairn forms have their own list (above).
 - `cairnTradePadTakesAndAnswers`: a built cairn has a pad (purpur under the spot, the spot not a design block). An item on it brings one enderman that looks at it and doesn't take it while it stares; it's taken once the stare is over and the enderman leaves. It isn't answered early, is answered once due, and the answer isn't taken back. An empty pad does nothing.
 
 **Milestone, `EndermanGameTest`:**
-- `endermenNeverTakeWorkingBeaconBases`: test data makes iron blocks holdable (gametest `data/minecraft/tags/block/enderman_holdable.json`); a vanilla take-block goal ticked 3000 times beside a 1-layer iron pyramid under a beacon takes the three stray iron blocks and no pyramid block, and takes pyramid blocks once the beacon is gone; a full gold layer above a beacon counts until it has a gap.
 - `terrainOracleAnswersFlatLayersAndCairns`: a regenerated superflat column equals the generator's; a cairn's design is the target inside its site.
 - `cairnDesignsVaryAndUseOnlyEndBlocks`: 108 designs are deterministic per seed, with varied heights, sizes and trunk counts; only End blocks in the structure (including end stone brick stairs and walls and magenta, purple and pink glass), none natural, never obsidian; every cairn has offerings and rods; the tallest rod is the pointer, faces the stronghold and is the only one at that height; TNT present but rare. Then 2000 more designs: every form turns up, they average under 1 ms, and none has more than 120 End blocks.
 - `endermanTakesStrayBlockAndFillsHole`: cobblestone on open ground is taken and fills a stone hole as stone.
