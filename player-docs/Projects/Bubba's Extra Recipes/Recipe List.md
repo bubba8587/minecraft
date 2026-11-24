@@ -2,7 +2,7 @@
 
 *Part of [[Bubba's Extra Recipes]].*
 
-**Extra Recipes recipes** are the crafting, blasting and smoking recipes added by [[Bubba's Extra Recipes]]. None of them replaces a vanilla recipe. Each appears in the recipe book once the player has picked up one of its ingredients.
+The **recipe list** covers every crafting, blasting and smoking recipe added by [[Bubba's Extra Recipes]]. None of them replaces a vanilla recipe. Each appears in the recipe book once the player has picked up one of its ingredients.
 
 ## Crafting
 
@@ -50,9 +50,9 @@ All of these are made in a blast furnace.
 | Smooth Basalt | Basalt | Smooth basalt | 10 s | 0.1 |
 | [[Synthetic Diamond Ore]] | Block of coal | Deepslate diamond ore, named "Synthetic Diamond Ore" | 200 s | 5 |
 
-Cobbled deepslate still smelts into deepslate in a normal furnace; only the blast furnace makes tuff. Basalt also still smelts into smooth basalt in a normal furnace, as in vanilla.
-
-With the datapack alone, Synthetic Diamond Ore mines like normal diamond ore. With the [[Extra Recipes Companion Mod]] it rarely drops a diamond; see [[Synthetic Diamond Ore]].
+- Cobbled deepslate still smelts into deepslate in a normal furnace; only the blast furnace makes tuff.
+- Basalt still smelts into smooth basalt in a normal furnace too, as in vanilla.
+- With the datapack alone, Synthetic Diamond Ore mines like normal diamond ore. With the [[Extra Recipes Companion Mod]] it rarely drops a diamond; see [[Synthetic Diamond Ore]].
 
 ## Smoking
 
