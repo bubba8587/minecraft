@@ -69,7 +69,6 @@ Left for next session:
 - **21 follow-up:** web hits follow the strands (done 2026-11-23); F3+B debug outline still shows the whole span box.
 - **22 follow-up:** gravestone edit screen matches the stone (done 2026-11-23); its title still reads "Edit Sign Message".
 - **23, lava geysers only near the player (owner, 2026-11-23):** vents erupt only within 24 blocks sideways, and from 16 below to 8 above a player (`GEYSER_SEARCH_RADIUS`, `LavaGeysers.checkAround`). So a player gliding high over a lava sea never sees eruptions to steer to. Proposal, awaiting the owner's yes: about 64 blocks sideways and the full height from the player down to the lava sea (section skipping keeps it cheap). Lava bubbles stay on vanilla's ambient particle range: within 32 blocks, denser within 16.
-- **Not installed yet (2026-11-23):** the gravestone, geyser and bubble changes and the rebuilt test worlds are pushed but not installed (the game was open). Run `pwsh tools/install-to-modrinth.ps1 -ResetWorld` with the game closed.
 - **Tests:** milestone tests for 8, 12 and 13; a client check that clicks every natural-world sign; a screenshot of a crypt niche with the sleeper inside it.
 - **Side effect to know:** mixing design seeds changed the form of every cairn, camp, crypt yard and Fabricator that isn't built yet, including half-built cairns in existing worlds.
 
