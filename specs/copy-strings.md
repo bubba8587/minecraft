@@ -154,3 +154,25 @@ Feature names: World Tweaks, Lava Geysers.
 
 ### Not allowed
 - Agent drafts replaced by the owner's wording above (2026-11-24): "The Nether's lava seas now bubble and plop...", "Watch out for lava geysers...", "Lava geysers and sulfur geysers create updrafts...", "Pair geyser updrafts with the Glider..."
+
+## Extra Recipes
+
+Covers the datapack and its companion Fabric mod.
+
+### Must
+- (none yet)
+
+### Allowed
+
+Descriptive strings (owner's wording; the renewable list was filled in from the recipe list):
+- Extra Recipes adds a handful of vanilla-esque extra recipes to add gameplay loop depth and automation and reduce the grind. It doesn't change or remove any vanilla recipes.
+- Renewable blocks: sand, red sand, gravel, clay, calcite, tuff and smooth basalt. (Some are now more easily renewable than before).
+- Tools, equipment and armor: Craftable Tridents, smoke rotten flesh for leather, & the Glider (an Elytra with worse handling).
+- Materials: Diorite & co. blast to Quartz, stone blasts to iron nuggets, smoke Glow Berries for Glowstone Dust, and blast Coal or Charcoal Blocks for a long time for a chance at Diamonds via Synthetic Diamond Ore.
+- Mod-only: most of Extra Recipes works with just the datapack. The companion Fabric mod is required for the Glider and for Synthetic Diamond Ore to work properly.
+
+Feature names: Extra Recipes, The Glider, Synthetic Diamond Ore.
+
+### Not allowed
+- "Never breaks" for the Glider (it's getting durability, see `BACKLOG.md`).
+- Agent drafts replaced by the owner's wording above (2026-11-24): "New recipes for grindy and hard-to-get items...", "Craft your own Trident from prismarine shards and crystals.", "The Glider: a craftable, weaker cousin of the Elytra that never breaks.", "Cook a block of coal for long enough and it becomes Synthetic Diamond Ore...", "Works as a datapack in plain vanilla, or as a Fabric mod with extra features."
