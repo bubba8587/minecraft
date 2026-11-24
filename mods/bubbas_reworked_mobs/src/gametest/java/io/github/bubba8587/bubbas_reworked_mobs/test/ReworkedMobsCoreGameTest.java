@@ -49,6 +49,11 @@ public class ReworkedMobsCoreGameTest {
 		new CreeperGameTest().sprintingNearbyStartlesWalkingDoesNot(helper);
 	}
 
+	@GameTest(maxTicks = 20)
+	public void biomeCreepersKeepTheirSkins(GameTestHelper helper) {
+		new BiomeCreeperGameTest().birchAndDesertCreepersKeepTheirSkins(helper);
+	}
+
 	// --- endermen and cairns (specs/endermen.md) ---
 
 	@GameTest(environment = "bubbas_reworked_mobs-test:enderman_build", structure = EndermanGameTest.FIELD, maxTicks = 400)
