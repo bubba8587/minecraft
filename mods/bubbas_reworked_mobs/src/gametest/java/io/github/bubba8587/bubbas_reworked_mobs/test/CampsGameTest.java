@@ -182,7 +182,7 @@ public class CampsGameTest {
 	 * Lighting a fire quiets a camp (owner): with a lit campfire in its area the roster doesn't appear and the camp
 	 * doesn't reset; put the fire out and both work again.
 	 */
-	@GameTest(structure = FIELD, maxTicks = 120)
+	@GameTest(environment = "bubbas_reworked_mobs-test:camp_night", structure = FIELD, maxTicks = 120)
 	public void aLitFireQuietsTheCamp(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
 		CampPiece piece = camp(helper, CampKind.SKELETON, 17L);
@@ -480,7 +480,7 @@ public class CampsGameTest {
 	}
 
 	/** An outpost's roster: piglins with a brute leader in enchanted gold; its hoglins appear in their pen, one leashed, and stay penned. */
-	@GameTest(structure = FIELD, maxTicks = 200)
+	@GameTest(environment = "bubbas_reworked_mobs-test:camp_night", structure = FIELD, maxTicks = 200)
 	public void outpostRosterAndPennedHoglins(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
 		CampPiece piece = CampCommand.build(level, helper.absolutePos(new BlockPos(16, 8, 24)), CampKind.PIGLIN, CampTuning.Size.MEDIUM, 5L);

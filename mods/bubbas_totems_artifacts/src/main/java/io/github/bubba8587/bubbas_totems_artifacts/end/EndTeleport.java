@@ -138,6 +138,7 @@ public final class EndTeleport {
 		}
 		user.resetFallDistance();
 		user.resetCurrentImpulseContext();
+		user.hurtServer(level, user.damageSources().enderPearl(), io.github.bubba8587.bubbas_totems_artifacts.totems.TotemsTuning.END_TELEPORT_DAMAGE);
 		level.gameEvent(GameEvent.TELEPORT, from, GameEvent.Context.of(user));
 		effects(level, to);
 	}

@@ -118,8 +118,17 @@ public class BeginningEndGameTest {
 
 			// At the top of the block 10 away: there, with the cooldown.
 			player.lookAt(EntityAnchorArgument.Anchor.EYES, helper.absoluteVec(new Vec3(12.5, 2.0, 10.5)));
+			try { // a fake player's client never loads, and vanilla keeps it invulnerable till then
+				var mark = net.minecraft.server.network.ServerGamePacketListenerImpl.class.getDeclaredMethod("markClientLoaded");
+				mark.setAccessible(true);
+				mark.invoke(player.connection);
+			} catch (ReflectiveOperationException e) {
+				throw new IllegalStateException(e);
+			}
+			float before = player.getHealth();
 			InteractionResult used = totem.use(level, player, InteractionHand.MAIN_HAND);
 			helper.assertTrue(used.consumesAction(), "using it on a block returned " + used);
+			helper.assertTrue(before - player.getHealth() > 0.0F, "the teleport did no damage (an ender pearl's 5)");
 			Vec3 want = helper.absoluteVec(new Vec3(12.5, 2.0, 10.5));
 			helper.assertTrue(player.position().distanceTo(want) < 1.0E-6, "expected the player at " + want + ", was at " + player.position());
 			helper.assertTrue(player.getCooldowns().isOnCooldown(totem), "no cooldown after a teleport");

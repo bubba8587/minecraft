@@ -62,6 +62,8 @@ public final class TotemsTuning {
 	public static final double END_RANGE = 32.0;
 	/** Used: the cooldown after a teleport, shown with the item cooldown sweep. */
 	public static final int END_COOLDOWN_TICKS = 80;
+	/** Damage a Totem of the End teleport deals, as an ender pearl's landing (5 = 2.5 hearts). */
+	public static final float END_TELEPORT_DAMAGE = 5.0F;
 	/** Pasture: range of a herder who can lead livestock out. */
 	public static final double HERD_LEAD_OUT_RANGE = 10.0;
 	/** Statue area radius, every statue type. */

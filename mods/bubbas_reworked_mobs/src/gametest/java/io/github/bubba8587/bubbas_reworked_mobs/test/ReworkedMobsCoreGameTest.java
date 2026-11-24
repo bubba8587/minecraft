@@ -96,7 +96,7 @@ public class ReworkedMobsCoreGameTest {
 
 	// --- monster camps (specs/monster-camps.md) ---
 
-	@GameTest(structure = CampsGameTest.FIELD, maxTicks = 80)
+	@GameTest(environment = "bubbas_reworked_mobs-test:camp_night", structure = CampsGameTest.FIELD, maxTicks = 80)
 	public void campRosterAppearsWithALeader(GameTestHelper helper) {
 		new CampsGameTest().rosterAppearsWithALeader(helper);
 	}
