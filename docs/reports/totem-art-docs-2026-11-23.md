@@ -65,3 +65,14 @@ bottom row.
 - Whether the undying statue should do anything (none asked for; it is decorative).
 - The materials are the agent's picks. Swapping any is a palette change in `tools/totems-textures.py`, and the statue
   follows automatically.
+
+## 32x style: Classic Faithful 32x Jappa (owner, 2026-11-23)
+
+The owner changed the 32x target from Faithful 32x to Classic Faithful 32x Jappa (CF32J). That is a B16 rule change, so
+`specs/textures.md` needs updating; this builder only restyled the totems. I compared against CF32J-2026r21's
+`totem_of_undying`, diamond, emerald, gold and iron ingot textures. CF32J items have a thin 1 px (at 32x) outline in
+the material's dark shade, smooth rounded silhouettes, and flat, clean shade areas with a soft lit rim and no noise.
+The totem 32x icons now follow that: Scale2x silhouette smoothing, outlines thinned to 1 px, a gentler top-left bevel
+(0.10, was 0.12), and **no grain** (was a stone/metal grain). The statue figure textures keep their 2x layout, with the
+grain cut to half (0.03). The plinth (vanilla polished deepslate) and every non-totem 32x texture are unchanged; that
+restyle is a separate job.

@@ -166,7 +166,7 @@ def main():
 			render(fig, PALETTE).save(out / "totem_statue_warding.png")
 		else:
 			render32(PLINTH, PALETTE, MATERIAL, smooth=False, bevel=0, grain=("deep",), seed=3).save(out / "totem_statue_plinth.png")
-			render32(fig, PALETTE, MATERIAL, smooth=False, bevel=0, grain=("soul",), seed=5).save(out / "totem_statue_warding.png")
+			render32(fig, PALETTE, MATERIAL, smooth=False, bevel=0, grain=("soul",), grain_amount=0.03, seed=5).save(out / "totem_statue_warding.png")
 		print("wrote", out)
 	write_model(RES / f"assets/{MOD}/models/block/totem_statue_warding.json")
 	print("wrote model")
@@ -392,7 +392,7 @@ def write_others():
 		for s, base in ((1, RES / f"assets/{MOD}"), (2, RES / f"resourcepacks/{MOD}_32x/assets/{MOD}")):
 			out = base / "textures/block"
 			out.mkdir(parents=True, exist_ok=True)
-			img = render(rows, pal) if s == 1 else render32(rows, pal, mat, smooth=False, bevel=0, grain=grain, seed=31 + len(name))
+			img = render(rows, pal) if s == 1 else render32(rows, pal, mat, smooth=False, bevel=0, grain=grain, grain_amount=0.03, seed=31 + len(name))
 			img.save(out / f"totem_statue_{name}.png")
 		text = json.dumps(statue_model(name, glow), indent="\t")
 		(RES / f"assets/{MOD}/models/block/totem_statue_{name}.json").write_text(text + "\n", encoding="utf-8")
