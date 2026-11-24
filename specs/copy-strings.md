@@ -12,6 +12,8 @@ How to use it:
 ## All projects
 
 - **No splash text** on posters (the yellow tilted Minecraft-title text). Not allowed anywhere.
+- **Never mention the art** (textures, models, placeholder art, how finished it looks).
+- **Strings that need another of Bubba's mods** carry a requirement note in brackets after them, e.g. `[Requires Reworked Beacons]`. The poster or post shows that note with the string.
 
 ## Bubba's Reworked Mobs
 
@@ -42,3 +44,32 @@ Subtitles and blurbs: none approved yet.
 - Subtitles: "Mobs that live somewhere", "Monsters come from places now", "Fewer monsters. Better ones.", "The overworld fights back, quietly", "A rework of Minecraft's mobs, one family at a time".
 - Blurbs: "The dead sleep in crypt yards. Make noise and they get up.", "Creepers watch. Endermen build. Something hums below.", "Every graveyard is a dungeon. Every crypt is asleep. Keep it that way.", "That creeper's been watching you for three nights. It's fine. Just don't run.", "The water's edge was never safe. Now it's personal.", "Look up before you mine that cave.", "Monsters don't just appear in the dark anymore. They come from somewhere, and you can go there."
 - Splashes: "Shhh, they're sleeping!", "It's watching you...", "Don't turn your back on the water.", "Mind the ceiling."
+
+## Bubba's Totems & Artifacts
+
+### Must
+- (none yet)
+
+### Allowed
+
+Descriptive strings (owner's wording):
+- New Totems can be found throughout the world, and add powerful utility whether in your hand, placed on the ground, or in a Beacon. [Requires Reworked Beacons]
+- Use the Grave Talisman to detect nearby undead.
+- The Totem of Warding causes mobs to run away and keeps the dead from rising.
+- Hold on to your inventory upon death with the Totem of Keeping.
+- The Totem of Gathering pulls items & XP toward its holder or location.
+- The Totem of Fortification protects areas from explosions.
+- The Totem of Growth accelerates crop growth and even replants seeds in valid areas- try it with a tree farm!
+- The Totem of Seeking guides you toward structures and biomes, if you know what you're looking for.
+- There's a mysterious, ancient power hidden in the Totem of the Beginning...
+- The Totem of Herding draws animals to your hand, and keeps them from wandering when placed down.
+- The Totem of the End grants you the power and status of an Enderman.
+- Chase away storms with the Totem of Clear Skies.
+- The Totem of the North Wind grants boosts in flight.
+- Find Relic Map shreds in chests. Piece the right ones together to form a map that leads you to the rare and powerful Relic Vaults, which commonly contain Totems, armor and weapons with Infused Gems. [Requires Infused Gems]
+
+Feature names: Totems, Artifacts, Grave Talisman, every "Totem of ..." name, Totem Statues, Relic Maps, Relic Vaults.
+
+### Not allowed
+- Any mention of the art (see All projects).
+- Agent drafts replaced by the owner's wording above (2026-11-24): the per-totem lines starting "Rare totems can be found throughout the world, and do things potions and enchantments can't."
