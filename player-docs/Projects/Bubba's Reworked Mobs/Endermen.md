@@ -16,6 +16,7 @@ An **enderman** in [[Bubba's Reworked Mobs]] is a caretaker of the overworld. It
 Most overworld endermen come from cairn sites, at night.
 
 - **Ordinary endermen:** a few still appear anywhere, as rarely as other monsters. They only pick up and drop blocks at random, like normal endermen. Endermen from spawners are ordinary too.
+- **Beacons are safe:** no enderman ever picks up a block from a working beacon's pyramid, any beacon, anywhere (also pyramids hung upside down with Reworked Beacons).
 - **Growing cairns:** a fresh cairn draws an enderman only now and then and grows by a block or two a night. Once it is clearly rising, more and more come, and the last part goes up quickly.
 - **Finished cairns** draw the most.
 - **The more endermen are already around a site, the faster more arrive.** Killing them slows this down but never stops it. Tearing a cairn down drops it back to the lower rate until it is rebuilt.
