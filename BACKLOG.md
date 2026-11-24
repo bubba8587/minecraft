@@ -4,6 +4,7 @@
 Parked ideas and open items, newest first within each project. Agents add to it when the owner parks something; details live in the linked spec. What is built, being built or designed and unassigned is on the status board, `specs/STATUS.md`; once an item is built, delete it here.
 
 ## Bubba's Reworked Mobs
+- **26.4 Frostbites (owner, 2026-11-24, for the 26.4 port):** Frostbites as Sleeping Undead, frozen in ice in Ice Caves, and in Monster Camps in cold biomes. Already promised on posters as [Coming in 26.4] (`specs/copy-strings.md`).
 - **Trader posts (owner to decide, `specs/monster-camps.md` "Trader posts"):** rarity (spacing 18 chunks, about 0.08 per km² near spawn in seed 20261116; commoner?); is the llama tether mixin OK (vanilla never despawns a trader llama tied to a fence, so the post's tether counts as the trader's lead)?; a village bell within 48 beats a post (vanilla): keep?; lit campfire (unlike dark camps): keep?
 - **Flaky or failing tests seen 2026-11-24 (untouched):** `CryptWardsGameTest.cryptStatuesStandInEveryWing` failed with `-PwithMobs` in two builders' worktrees ("PAUPER: the statues split the crypt floor into 2 walkable areas") but passed on merged develop with `-PmilestoneTests -PwithMobs` (2026-11-24): flaky, watch it. Passed on rerun: `GiantSpiderGameTest.leavesItsPerchAndComesBackToFeed` ("only wandered 1.0"), and once with `-PwithGems` `CampsGameTest.exposedCampMobsSeekShade`.
 - **Face-down sleeper shares** (builder's numbers, owner to playtest): 30% of crypt lying sleepers, 40% of lying shipwreck crew, 15% of resting dead (`specs/undead.md` "Face-down sleepers").
@@ -44,6 +45,7 @@ Parked ideas and open items, newest first within each project. Agents add to it 
 - Real Glider art (16x and 32x, made by a person).
 
 ## Bubba's Infused Gems
+- **26.4 Freezing gem (owner, 2026-11-24, for the 26.4 port):** 26.4 adds a Freezing potion; make a craftable (brewed) Freezing gem from it. Already promised on posters as [Coming in 26.4] (`specs/copy-strings.md`).
 - **Per-weapon tuning for gems in bows, crossbows, tridents and maces** (owner, 2026-11-14): they have no material, so they count as diamond level for now; each probably needs its own factor.
 - **Drawback sizes** (owner will playtest): currently 10% each, under 20% stacked.
 - **Tipped arrow vs gem arrow of the same effect** (owner: come back to it): now the higher level wins (a Poison II tipped arrow beats a longer, near-perfect Poison gem arrow); alternative is comparing total effect (level x time).

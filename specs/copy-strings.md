@@ -14,6 +14,7 @@ How to use it:
 - **No splash text** on posters (the yellow tilted Minecraft-title text). Not allowed anywhere.
 - **"Bubba's" only where absolutely required:** mods go by their short names ("Infused Gems", "Reworked Mobs"). Otherwise leave it out.
 - **Never mention the art** (textures, models, placeholder art, how finished it looks).
+- **[Coming in 26.4]** marks a string for a feature promised for the 26.4 port (each one has a backlog item). Drop the tag once it ships.
 - **Strings that need another of Bubba's mods** carry a requirement note in brackets after them, e.g. `[Requires Reworked Beacons]`. The poster or post shows that note with the string.
 
 ## Bubba's Reworked Mobs
@@ -37,11 +38,14 @@ Descriptive strings (owner's wording):
 - Will-o-wisps lead you to nearby graveyards.
 - New Graveyard structures that often contain Crypts with sleeping undead soldiers and valuable loot.
 
+- [Coming in 26.4]: Frostbites will be able to be found as Sleeping Undead, frozen in ice in Ice Caves, as well as in Monster Camps in cold biomes.
+
 Feature names: Sleeping Undead, Crypt Yards, Ancient Fabricators, Enderman Cairns, Monster Camps, Trader Posts, Giant Spiders, Watcher Creepers, Will-o'-Wisps.
 
 Subtitles and blurbs: none approved yet.
 
 ### Not allowed
+- The looping Ancient Fabricator jukebox (26.4): not for posters or marketing.
 - Subtitles: "Mobs that live somewhere", "Monsters come from places now", "Fewer monsters. Better ones.", "The overworld fights back, quietly", "A rework of Minecraft's mobs, one family at a time".
 - Blurbs: "The dead sleep in crypt yards. Make noise and they get up.", "Creepers watch. Endermen build. Something hums below.", "Every graveyard is a dungeon. Every crypt is asleep. Keep it that way.", "That creeper's been watching you for three nights. It's fine. Just don't run.", "The water's edge was never safe. Now it's personal.", "Look up before you mine that cave.", "Monsters don't just appear in the dark anymore. They come from somewhere, and you can go there."
 - Splashes: "Shhh, they're sleeping!", "It's watching you...", "Don't turn your back on the water.", "Mind the ceiling."
@@ -73,6 +77,7 @@ Feature names: Totems, Artifacts, Grave Talisman, every "Totem of ..." name, Tot
 
 ### Not allowed
 - Any mention of the art (see All projects).
+- No [Coming in 26.4] lines (owner, 2026-11-24): no Relic Map shreds in Ice Cave chests.
 - Agent drafts replaced by the owner's wording above (2026-11-24): the per-totem lines starting "Rare totems can be found throughout the world, and do things potions and enchantments can't."
 
 ## Infused Gems
@@ -89,6 +94,8 @@ Descriptive strings (owner's wording):
 - Some Gems are brewed with rare items, not potions.
 - Some Gems can only be found.
 - Place a Gem in a Beacon to apply its effect to everything in the beacon's area. [Requires Reworked Beacons] This overrides vanilla Beacon behavior.
+
+- [Coming in 26.4]: A new Freezing Gem, brewed from the new Freezing Potion.
 
 Feature names: Infused Gems, Gems.
 
@@ -130,6 +137,7 @@ Descriptive strings (owner's wording):
 Feature names: Reworked Mining, Rare Finds, True Unbreaking, Quartz Tools, Quartz Armor.
 
 ### Not allowed
+- No [Coming in 26.4] lines (owner, 2026-11-24): no Ice Cave rare finds.
 - Agent drafts replaced by the owner's wording above (2026-11-24): "Tools are now a real progression...", "Netherite now mines faster than vanilla.", "Efficiency and Unbreaking are worth chasing...", "Find the rare True Unbreaking enchantment in chests...", "Quartz tools and armor: a white set about as strong as iron..."
 
 ## World Tweaks
