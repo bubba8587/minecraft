@@ -131,3 +131,18 @@ Feature names: Reworked Mining, Rare Finds, True Unbreaking, Quartz Tools, Quart
 
 ### Not allowed
 - Agent drafts replaced by the owner's wording above (2026-11-24): "Tools are now a real progression...", "Netherite now mines faster than vanilla.", "Efficiency and Unbreaking are worth chasing...", "Find the rare True Unbreaking enchantment in chests...", "Quartz tools and armor: a white set about as strong as iron..."
+
+## World Tweaks
+
+### Must
+- (none yet)
+
+### Allowed
+
+Descriptive strings (owner's wording):
+- Magma blocks below Lava create bubbles and powerful black smoke geysers. These work just like Sulfur Geysers.
+
+Feature names: World Tweaks, Lava Geysers.
+
+### Not allowed
+- Agent drafts replaced by the owner's wording above (2026-11-24): "The Nether's lava seas now bubble and plop...", "Watch out for lava geysers...", "Lava geysers and sulfur geysers create updrafts...", "Pair geyser updrafts with the Glider..."
