@@ -35,7 +35,7 @@ This repo keeps its decisions as a Decision Tree Engineering tree. Follow `vendo
 
 **Compatibility (B20 compatList):** our mods should work alongside the mods in `specs/compat.md` (a fluid list); easy wins first, the rest tested before release.
 
-**Textures at 16x and 32x (B16 textures16and32):** every custom texture ships at 16x in vanilla style and 32x in Classic Faithful 32x Jappa style (owner, 2026-11-23; older 32x art in Faithful style gets restyled over time); the 32x set is a built-in resource pack in the jar. Layout, credit rules and the checker (`python3 tools/texcheck.py`) are in `specs/textures.md`; the scaffolder sets it up.
+**Textures at 16x and 32x (B16 textures16and32):** every custom texture ships at 16x in vanilla style and 32x in Classic Faithful 32x Jappa style (owner, 2026-11-23; older 32x art in Faithful style gets restyled over time); each mod keeps its 32x textures in its own folder, and they ship together as one combined resource pack, "Bubba's Mods 32x" (owner, 2026-11-23). Layout, credit rules and the checker (`python3 tools/texcheck.py`) are in `specs/textures.md`; the scaffolder sets it up.
 
 Lots of mods already exist. Before designing a mod, pack or tool:
 
