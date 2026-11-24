@@ -1,8 +1,10 @@
-# Use vanilla subsystems (spec, owner 2026-11-22)
+# Use vanilla subsystems (spec, owner)
 
 **The rule (owner): when vanilla already has a system for a job, our mods use it rather than hand-rolling their own.** This covers finding entities, players, blocks and places; mob movement; and cooldowns, sounds, loot and tags. Vanilla's systems are tuned, well tested and handle edge cases we'd miss (creative and spectator players, unloaded chunks, throttling). They also behave the way players already expect.
 
-Builders: check this table before writing any search, scan or timer. A reviewer rejects a hand-rolled version of anything listed here unless the project's spec says why vanilla's doesn't fit (B9 libsOverHandroll applies to vanilla too). Names are checked against the 26.3 source (`build/mcsrc/26.3/common`). Re-check them on a new release.
+- **Builders:** check these tables before writing any search, scan or timer.
+- **Reviewers:** reject a hand-rolled version of anything listed here unless the project's spec says why vanilla's doesn't fit (B9 libsOverHandroll applies to vanilla too).
+- Names are checked against the 26.3 source (`build/mcsrc/26.3/common`). Re-check them on a new release.
 
 ## Finding entities
 
@@ -43,8 +45,10 @@ Builders: check this table before writing any search, scan or timer. A reviewer 
 
 ## When vanilla doesn't fit
 
-Write the reason in the project's spec, never in a code comment: DTE puts the WHY in a leaf, the HOW in a spec, and the code says only WHAT a block is (vendor/dte SPEC.md, B38 commentsMigrate). For example: "Beacons: vanilla has no beacon POI, so beacons are tracked in `BeaconRegistry` when they load" goes in `specs/reworked-beacons.md`, under a "Not vanilla, and why" list. The code then just labels the section ("beacon registry"). The builder's report names each exception so the orchestrator can check it.
+- Write the reason in the project's spec, never in a code comment. DTE puts the WHY in a leaf and the HOW in a spec; the code says only WHAT a section is (`vendor/dte/SPEC.md`, B38 commentsMigrate).
+- Put it under a "Not vanilla, and why" list in that spec. Example, for `specs/reworked-beacons.md`: "Beacons: vanilla has no beacon POI, so beacons are tracked in `BeaconRegistry` when they load." The code then just labels the section ("beacon registry").
+- The builder's report names each exception, so the orchestrator can check it.
 
 ## Exceptions so far
 
-(none recorded yet; the 2026-11-22 code audit adds them here or fixes the code)
+None recorded yet. A code audit adds them here, or fixes the code.
