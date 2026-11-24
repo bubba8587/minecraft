@@ -2,10 +2,17 @@
 # dte:C8,B16
 """Lava bubble particle frames and the lava geyser's soot plume sprites, 16x and 32x.
 
-Usage: python3 make_lava_bubble_textures.py <path to build/mcsrc/26.3/vanilla>
+32x (Classic Faithful 32x Jappa style): the bubbles use a few flat lava shades (the shade is snapped to LEVELS32, no
+per-pixel grain), and the soot plumes are CF32J's own geyser plume sprites recoloured to soot (credited in the mod's
+CREDITS.md, Faithful License, https://faithfulpack.net/license).
+
+Usage: python3 make_lava_bubble_textures.py <path to build/mcsrc/26.3/vanilla> [<path to the CF32J zip>]
 """
+import io
 import math
+import os
 import sys
+import zipfile
 from collections import Counter
 from pathlib import Path
 from PIL import Image
@@ -21,6 +28,9 @@ TOP_Q = 0.96
 HIGHLIGHT_Q = 1.0
 GRAIN = 0.10
 RADII = [2.5, 3.5, 4.5, 5.5, 6.5]
+# The 32x bubbles' shade levels (ramp quantiles).
+LEVELS32 = [0.10, 0.35, 0.6, 0.8, 0.92, 0.985, 1.0]
+CF32J_ZIP = Path(os.environ.get("APPDATA", "")) / "ModrinthApp/profiles/porp/resourcepacks/CF32J-2026r21.zip"
 
 
 class Ramp:
@@ -53,7 +63,7 @@ def grain(lava, size):
 	return [[rank[sum(tile.getpixel((x, y)))] - 0.5 for x in range(size)] for y in range(size)]
 
 
-def dome(size, ramp, noise, r, grain_amount=GRAIN, top=TOP_Q):
+def dome(size, ramp, noise, r, grain_amount=GRAIN, top=TOP_Q, levels=None):
 	"""A swelling of the lava surface: lit from above, brightest at the top, a little darker where it meets the lava."""
 	img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
 	px = img.load()
@@ -73,6 +83,8 @@ def dome(size, ramp, noise, r, grain_amount=GRAIN, top=TOP_Q):
 			e = hx * hx + hy * hy
 			if e < 1.0:
 				t = max(t, top + (HIGHLIGHT_Q - top) * (1.0 - e))
+			if levels:
+				t = min(levels, key=lambda q: abs(q - t))
 			px[x, y] = ramp.at(t) + (255,)
 	return img
 
@@ -98,7 +110,8 @@ def burst(size, ramp, i):
 
 
 # Vanilla geyser plume shades to soot shades, darkest to lightest.
-SOOT = {(193, 193, 193): (36, 33, 32), (210, 210, 210): (52, 48, 46), (224, 224, 224): (70, 65, 62)}
+SOOT = {(193, 193, 193): (36, 33, 32), (195, 195, 195): (36, 33, 32), (198, 198, 198): (36, 33, 32), (210, 210, 210): (52, 48, 46),
+	(224, 224, 224): (70, 65, 62)}
 
 
 def soot16(src):
@@ -113,23 +126,18 @@ def soot16(src):
 	return img
 
 
-def soot32(img16):
-	"""2x, with an in-between shade where two soot shades meet, for a softer Faithful-style edge."""
-	big = img16.resize((img16.width * 2, img16.height * 2), Image.Resampling.NEAREST)
-	src = big.copy().load()
-	px = big.load()
-	for y in range(big.height):
-		for x in range(big.width):
-			r, g, b, a = src[x, y]
-			if not a or (x + y) % 2:
-				continue
-			for nx, ny in ((x + 1, y), (x, y + 1), (x - 1, y), (x, y - 1)):
-				if 0 <= nx < big.width and 0 <= ny < big.height:
-					r2, g2, b2, a2 = src[nx, ny]
-					if a2 and r2 > r:
-						px[x, y] = ((r + r2) // 2, (g + g2) // 2, (b + b2) // 2, a)
-						break
-	return big
+def soot32(src):
+	"""CF32J's geyser plume sprite with its shades recoloured to soot."""
+	img = src.convert("RGBA")
+	px = img.load()
+	for y in range(img.height):
+		for x in range(img.width):
+			r, g, b, a = px[x, y]
+			if a:
+				if (r, g, b) not in SOOT:
+					raise ValueError(f"unmapped CF32J plume shade {(r, g, b)}")
+				px[x, y] = SOOT[(r, g, b)] + (a,)
+	return img
 
 
 def main():
@@ -142,13 +150,18 @@ def main():
 		noise = grain(src, size)
 		s = size / 16.0
 		for i, r in enumerate(RADII):
-			dome(size, ramp, noise, r * s).save(out / f"lava_bubble_{i}.png")
+			if size == 16:
+				dome(size, ramp, noise, r * s).save(out / f"lava_bubble_{i}.png")
+			else:
+				dome(size, ramp, noise, r * s, grain_amount=0.0, levels=LEVELS32).save(out / f"lava_bubble_{i}.png")
 		for i in (5, 6):
 			burst(size, ramp, i).save(out / f"lava_bubble_{i}.png")
+	zf = zipfile.ZipFile(sys.argv[2] if len(sys.argv) > 2 else CF32J_ZIP)
 	for i in range(1, 9):
 		plume = soot16(Image.open(vanilla / f"assets/minecraft/textures/particle/geyser_plume_0{i}.png"))
 		plume.save(OUT16 / f"lava_geyser_plume_0{i}.png")
-		soot32(plume).save(OUT32 / f"lava_geyser_plume_0{i}.png")
+		cf = Image.open(io.BytesIO(zf.read(f"assets/minecraft/textures/particle/geyser_plume_0{i}.png")))
+		soot32(cf).save(OUT32 / f"lava_geyser_plume_0{i}.png")
 	print("wrote", OUT16, OUT32)
 
 

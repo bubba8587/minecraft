@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # dte:C6,B16
 """Totem statues. The Totem of Warding (hand-placed, main) and, since 2026-11-22, every other totem (a generic figure in
-each item palette, write_others, with the blockstate and loot). Block models and textures, 16x and the Faithful-style 32x twins (agent-made, listed
+each item palette, write_others, with the blockstate and loot). Block models and textures, 16x and the Classic Faithful 32x Jappa-style 32x twins (pixelart.py cf mode) (agent-made, listed
 in docs/art-todo.md for the owner to redo or tweak; never AI-generated).
 
   python mods/bubbas_totems_artifacts/tools-local/make_statue_textures.py
@@ -165,8 +165,8 @@ def main():
 			render(PLINTH, PALETTE).save(out / "totem_statue_plinth.png")
 			render(fig, PALETTE).save(out / "totem_statue_warding.png")
 		else:
-			render32(PLINTH, PALETTE, MATERIAL, smooth=False, bevel=0, grain=("deep",), seed=3).save(out / "totem_statue_plinth.png")
-			render32(fig, PALETTE, MATERIAL, smooth=False, bevel=0, grain=("soul",), grain_amount=0.03, seed=5).save(out / "totem_statue_warding.png")
+			render32(PLINTH, PALETTE, MATERIAL, smooth=False, bevel=0, grain=("deep",), seed=3, cf=True).save(out / "totem_statue_plinth.png")
+			render32(fig, PALETTE, MATERIAL, smooth=False, bevel=0, grain=("soul",), seed=5, cf=True, grain_p=0.05).save(out / "totem_statue_warding.png")
 		print("wrote", out)
 	write_model(RES / f"assets/{MOD}/models/block/totem_statue_warding.json")
 	print("wrote model")
@@ -191,7 +191,7 @@ R_HEAD_BACK, R_HEAD_TOP, R_TOPPER = (0, 9, 6, 13), (6, 9, 12, 15), (12, 10, 16, 
 EYE_ROW = 6  # v of the eyes, in the head front
 
 
-def _shade_grid(seed):
+def _shade_grid(seed, speckle=True):
 	"""A 16x16 grid of the material's shades '2'..'6', lit from the top left, with a little grain."""
 	rnd = random.Random(seed)
 	grid = [["4"] * 16 for _ in range(16)]
@@ -208,7 +208,7 @@ def _shade_grid(seed):
 				if u == u1 - 1 or v == v1 - 1:
 					level -= 1
 				grain = rnd.choice((0, 0, 0, 1, -1))
-				if region != R_HEAD_FRONT:  # the face stays clean so its features read
+				if speckle and region != R_HEAD_FRONT:  # the face stays clean so its features read
 					level += grain
 				grid[v][u] = str(max(2, min(6, level)))
 	return grid
@@ -227,45 +227,45 @@ def _eyes(grid, ch):
 	grid[EYE_ROW][4] = ch
 
 
-def _statues():
+def _statues(speckle=True):
 	"""name -> (palette, materials, grain, grid, topper rows (4 x 6) or None, glowing parts)."""
 	defs = {}
 	# Keeping: purple obsidian, gold eyes, a gold-bound chest held to the chest.
-	g = _shade_grid(21); _eyes(g, "X"); _put(g, R_EMBLEM, ["abb", "bdb", "aaa"])
+	g = _shade_grid(21, speckle); _eyes(g, "X"); _put(g, R_EMBLEM, ["abb", "bdb", "aaa"])
 	defs["keeping"] = (TT.KEEPING_PAL, TT.KEEPING_MAT, ("stone",), g, None, [])
 	# Gathering: copper with patina, patina eyes, a patina ring (a pull); hands raised to gather.
-	g = _shade_grid(22); _eyes(g, "X"); _put(g, R_EMBLEM, ["qpq", "p4p", "qpq"])
+	g = _shade_grid(22, speckle); _eyes(g, "X"); _put(g, R_EMBLEM, ["qpq", "p4p", "qpq"])
 	defs["gathering"] = (TT.GATHERING_PAL, TT.GATHERING_MAT, ("metal",), g, None, [])
 	# Fortification: iron, a flat-topped helm with a glowing visor slit, an obsidian shield on the chest.
-	g = _shade_grid(23)
+	g = _shade_grid(23, speckle)
 	for u in range(1, 5):
 		g[EYE_ROW][u] = "f" if u in (1, 4) else "g"
 	_put(g, R_EMBLEM, ["tut", "sts", "tst"])
 	defs["fortification"] = (TT.FORT_PAL, TT.FORT_MAT, ("metal",), g, ["6655", "4433", "4433", "5554", "5444", "4433"], ["visor"])
 	# Growth: oak wood, green eyes, a sprout on the chest, a leafy crown with a pink blossom.
-	g = _shade_grid(24); _eyes(g, "X"); _put(g, R_EMBLEM, ["n4n", "4m4", "4l4"])
+	g = _shade_grid(24, speckle); _eyes(g, "X"); _put(g, R_EMBLEM, ["n4n", "4m4", "4l4"])
 	defs["growth"] = (TT.GROWTH_PAL, TT.GROWTH_MAT, ("wood", "leaf"), g, ["mnmn", "lmml", "lkyl", "mnmm", "nmnm", "mmnm"], [])
 	# Seeking: lapis, gold eyes, a compass dial on the chest (needle to the north), a gold-rimmed hood band.
-	g = _shade_grid(25); _eyes(g, "c"); _put(g, R_EMBLEM, ["bRb", "bwb", "bbb"])
+	g = _shade_grid(25, speckle); _eyes(g, "c"); _put(g, R_EMBLEM, ["bRb", "bwb", "bbb"])
 	defs["seeking"] = (dict(TT.SEEK_PAL, R=TT.NEEDLE_RED), dict(TT.SEEK_MAT, R="dial"), ("stone",), g,
 		["cbba", "bbaa", "cbba", "bbaa", "cbba", "bbaa"], [])
 	# The Beginning: weathered stone, purple ender eyes (glowing), strata on the chest, a cap of grass.
-	g = _shade_grid(26); _eyes(g, "X"); _put(g, R_EMBLEM, ["HhH", "dDd", "343"])
+	g = _shade_grid(26, speckle); _eyes(g, "X"); _put(g, R_EMBLEM, ["HhH", "dDd", "343"])
 	defs["beginning"] = (TT.BEGIN_PAL, TT.BEGIN_MAT, ("stone", "grass"), g, ["HHhH", "hghh", "hhhh", "dDdD", "DdDd", "dddD"], ["eyes"])
 	# The End: end stone, an enderman's black face with magenta eyes (glowing), an ender pearl, a purpur crown.
-	g = _shade_grid(27)
+	g = _shade_grid(27, speckle)
 	_put(g, R_HEAD_FRONT, ["kkkkkk", "kMkkMk", "kkkkkk", "kkkkkk"])
 	_put(g, R_EMBLEM, ["tTt", "TwT", "tTt"])
 	defs["end"] = (TT.END_PAL, TT.END_MAT, ("stone",), g, ["qqqq", "pppp", "pppp", "pppp", "pqqp", "pppp"], ["eyes"])
 	# Herding: spruce, a woolly ram's head (wool cap, curled horns either side), a gold bell on the chest.
-	g = _shade_grid(28); _eyes(g, "X"); _put(g, R_EMBLEM, ["bBb", "BcB", "aba"])
+	g = _shade_grid(28, speckle); _eyes(g, "X"); _put(g, R_EMBLEM, ["bBb", "BcB", "aba"])
 	defs["herding"] = (TT.HERD_PAL, TT.HERD_MAT, ("wood", "wool"), g, ["WWWW", "WwWW", "WWwW", "HHHH", "hhhh", "HHHH"], [])
 	# Clear Skies: pale calcite, blue eyes, blue sky with the sun on the chest, a gold sun crown of rays.
-	g = _shade_grid(29); _eyes(g, "X"); _put(g, R_EMBLEM, ["sSs", "SYS", "sSs"])
+	g = _shade_grid(29, speckle); _eyes(g, "X"); _put(g, R_EMBLEM, ["sSs", "SYS", "sSs"])
 	defs["clear_skies"] = (TT.SKY_PAL, TT.SKY_MAT, ("stone",), g, ["YYYY", "YYYY", "yyyy", "yyyy", "yYYy", "yyyy"], [])
 	# North Wind: packed ice, deep blue eyes, puffed cheeks and a blowing mouth, a snowflake on the chest, an icicle crown
 	# swept back by the wind.
-	g = _shade_grid(30); _eyes(g, "X"); _put(g, R_EMBLEM, ["bFb", "FfF", "bFb"])
+	g = _shade_grid(30, speckle); _eyes(g, "X"); _put(g, R_EMBLEM, ["bFb", "FfF", "bFb"])
 	g[EYE_ROW + 1][0] = g[EYE_ROW + 1][1] = g[EYE_ROW + 1][4] = g[EYE_ROW + 1][5] = "6"; g[EYE_ROW + 2][2] = "m"; g[EYE_ROW + 2][3] = "m"
 	defs["north_wind"] = (TT.NORTH_PAL, TT.NORTH_MAT, ("ice",), g, ["IIII", "IIII", "iiii", "iiii", "iIIi", "iiii"], [])
 	belts = {"keeping": "XZ", "gathering": "XZ", "fortification": "ut", "growth": "XZ", "seeking": "cb", "beginning": "XZ",
@@ -387,12 +387,15 @@ ITEMS = {"warding": "totem_of_warding", "keeping": "totem_of_keeping", "gatherin
 
 
 def write_others():
+	flat = _statues(speckle=False)
 	for name, (pal, mat, grain, grid, topper, glow) in _statues().items():
 		rows = check(["".join(r) for r in grid])
+		rows32 = check(["".join(r) for r in flat[name][3]])
 		for s, base in ((1, RES / f"assets/{MOD}"), (2, RES / f"resourcepacks/{MOD}_32x/assets/{MOD}")):
 			out = base / "textures/block"
 			out.mkdir(parents=True, exist_ok=True)
-			img = render(rows, pal) if s == 1 else render32(rows, pal, mat, smooth=False, bevel=0, grain=grain, grain_amount=0.03, seed=31 + len(name))
+			img = render(rows, pal) if s == 1 else render32(rows32, pal, mat, smooth=False, bevel=0, grain=grain, seed=31 + len(name), cf=True,
+				grain_p=0.1)
 			img.save(out / f"totem_statue_{name}.png")
 		text = json.dumps(statue_model(name, glow), indent="\t")
 		(RES / f"assets/{MOD}/models/block/totem_statue_{name}.json").write_text(text + "\n", encoding="utf-8")
@@ -481,7 +484,7 @@ def write_undying():
 	for s, base in ((1, RES / f"assets/{MOD}"), (2, RES / f"resourcepacks/{MOD}_32x/assets/{MOD}")):
 		out = base / "textures/block"
 		img = render(UNDYING_FIG, UNDYING_PAL) if s == 1 else render32(UNDYING_FIG, UNDYING_PAL, UNDYING_MAT, smooth=False, bevel=0,
-			grain=("gold",), grain_amount=0.03, seed=41)
+			grain=("gold",), seed=41, cf=True, grain_p=0.05)
 		img.save(out / "totem_statue_undying.png")
 	text = json.dumps(undying_model(), indent="\t")
 	(RES / f"assets/{MOD}/models/block/totem_statue_undying.json").write_text(text + "\n", encoding="utf-8")

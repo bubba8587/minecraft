@@ -6,7 +6,7 @@ plinth. Agent-made, listed in docs/art-todo.md for the owner to redo or tweak; n
   python tools/gravestone-textures.py
 
 Writes
-  textures/block/gravestone.png (16x) and its Faithful-style 32x twin in the built-in 32x pack;
+  textures/block/gravestone.png (16x) and its Classic Faithful 32x Jappa-style 32x twin in the built-in 32x pack;
   models/block/gravestone_rot_0..3.json (turned 0, 22.5, 45, 67.5 degrees, as vanilla's sign templates) and
   models/item/gravestone.json.
 
@@ -120,6 +120,56 @@ def stone_texture(scale, seed):
 	return img
 
 
+# The 32x stone ramps, darkest to lightest (Classic Faithful 32x Jappa style: a few flat shades in horizontal
+# blotches, like its stone and smooth stone, no per-pixel noise).
+STONE_RAMP = [(104, 104, 100), (120, 120, 116), (138, 138, 134), (152, 152, 147)]
+PLINTH_RAMP = [(90, 90, 87), (102, 102, 98), (112, 112, 108), (124, 124, 119)]
+MOSS_RAMP = [(62, 82, 38), (82, 104, 52), (104, 128, 64)]
+
+
+def stone_texture32(seed):
+	"""The front view at 32x: flat shades in horizontal blotches, crisp carved panel lines, moss clumps on the plinth."""
+	n = 32
+	rnd = random.Random(seed)
+	img = Image.new("RGBA", (n, n), (0, 0, 0, 0))
+	px = img.load()
+	plinth = lambda y: y >= 28
+	for y in range(n):
+		for x in range(n):
+			px[x, y] = (PLINTH_RAMP if plinth(y) else STONE_RAMP)[2] + (255,)
+	# Blotches: dashes 2-6 wide, 1-2 tall, one shade up or down the ramp (the darkest is kept for the crack).
+	for _ in range(70):
+		x0, y0 = rnd.randrange(-2, n), rnd.randrange(0, n)
+		w, h = rnd.randint(2, 6), rnd.choice((1, 1, 2))
+		k = rnd.choice((1, 1, 3, 3))
+		for y in range(y0, min(n, y0 + h)):
+			ramp = PLINTH_RAMP if plinth(y) else STONE_RAMP
+			for x in range(max(0, x0 + (y - y0) % 2), min(n, x0 + w + (y - y0) % 2)):
+				px[x, y] = ramp[k] + (255,)
+	# Moss along the plinth: small clumps, darkest at the bottom.
+	for _ in range(5):
+		x0, w = rnd.randrange(0, n - 3), rnd.randint(2, 4)
+		for x in range(x0, x0 + w):
+			px[x, 31] = MOSS_RAMP[0] + (255,)
+			px[x, 30] = MOSS_RAMP[1] + (255,)
+		for x in range(x0 + 1, x0 + w - 1):
+			px[x, 29] = MOSS_RAMP[2] + (255,)
+	# Carved inset panel: shadowed top and left, lit lip bottom and right, an inner line a shade off each.
+	for x in range(6, 26):
+		px[x, 10] = GROOVE + (255,)
+		px[x, 11] = STONE_RAMP[1] + (255,)
+		px[x, 27] = LIGHT + (255,)
+	for y in range(10, 28):
+		px[6, y] = GROOVE + (255,)
+		px[25, y] = LIGHT + (255,)
+	for y in range(11, 27):
+		px[7, y] = STONE_RAMP[1] + (255,)
+	# Weathering: a short crack.
+	for x, y in ((18, 15), (19, 16), (19, 17), (20, 18)):
+		px[x, y] = STONE_RAMP[0] + (255,)
+	return img
+
+
 def model(angle):
 	elements = []
 	for (frm, to) in ELEMENTS:
@@ -143,7 +193,7 @@ def main():
 	for scale, base in ((1, ASSETS), (2, PACK32)):
 		out = base / "textures" / "block"
 		out.mkdir(parents=True, exist_ok=True)
-		stone_texture(scale, 2026 + scale).save(out / "gravestone.png")
+		(stone_texture(scale, 2026 + scale) if scale == 1 else stone_texture32(2028)).save(out / "gravestone.png")
 	models = ASSETS / "models"
 	(models / "block").mkdir(parents=True, exist_ok=True)
 	(models / "item").mkdir(parents=True, exist_ok=True)

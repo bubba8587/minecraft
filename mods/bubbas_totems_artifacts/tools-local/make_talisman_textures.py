@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # dte:B16,C6
-"""The Grave Talisman's item textures, 16x and their Faithful-style 32x twins (agent-made, listed in docs/art-todo.md
+"""The Grave Talisman's item textures, 16x and their Classic Faithful 32x Jappa-style 32x twins (pixelart.py cf mode) (agent-made, listed in docs/art-todo.md
 for the owner to redo or tweak; never AI-generated). Needs Pillow.
 
   python mods/bubbas_totems_artifacts/tools-local/make_talisman_textures.py
@@ -65,7 +65,7 @@ def main():
 		name = "grave_talisman" if level == 0 else f"grave_talisman_glow_{level}"
 		pal = {**BASE, **gem}
 		render(TALISMAN, pal).save(out16 / f"{name}.png")
-		render32(TALISMAN, pal, MATERIAL, inner={"o": "1"}, grain=("stone",), seed=11).save(out32 / f"{name}.png")
+		render32(TALISMAN, pal, MATERIAL, inner={"o": "1"}, bevel=1, grain=("stone",), seed=11, cf=True, grain_p=0.1).save(out32 / f"{name}.png")
 		print(name)
 
 

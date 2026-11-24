@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # dte:B16,C6
-"""The Relic Map Shred's item textures, 16x and their Faithful-style 32x twins (agent-made, listed in docs/art-todo.md
+"""The Relic Map Shred's item textures, 16x and their Classic Faithful 32x Jappa-style 32x twins (pixelart.py cf mode) (agent-made, listed in docs/art-todo.md
 for the owner to redo or tweak; never AI-generated). Needs Pillow.
 
   python3 mods/bubbas_totems_artifacts/tools-local/make_relic_textures.py
@@ -22,7 +22,7 @@ MOD = "bubbas_totems_artifacts"
 PAPER = {"o": (70, 50, 30), "1": (150, 122, 84), "2": (196, 172, 124), "3": (226, 212, 172), "i": (96, 70, 46),
 	"b": (104, 132, 156), "g": (122, 142, 82), "r": (176, 36, 28), "s": (150, 124, 86)}
 OLD = {**PAPER, "1": (140, 108, 62), "2": (190, 160, 100), "3": (218, 196, 140)}
-MATERIAL = {**{k: "paper" for k in "123s"}, "b": "water", "g": "land", "i": "ink", "r": "ink"}
+MATERIAL = {**{k: "paper" for k in "123s"}, "b": "water", "g": "land", "i": "ink", "r": "mark"}
 
 SHRED_4 = check([
 	"................",
@@ -89,7 +89,7 @@ def main():
 	out32.mkdir(parents=True, exist_ok=True)
 	for name, grid, pal in (("relic_map_shred_4", SHRED_4, PAPER), ("relic_map_shred_9", SHRED_9, OLD), ("relic_map_shred_whole", WHOLE, PAPER)):
 		render(grid, pal).save(out16 / f"{name}.png")
-		render32(grid, pal, material=MATERIAL, outline="o", inner={"o": "1"}, grain=("paper",), grain_amount=0.05).save(out32 / f"{name}.png")
+		render32(grid, pal, material=MATERIAL, outline="o", inner={"o": "1"}, bevel=1, grain=("paper",), cf=True, grain_p=0.08).save(out32 / f"{name}.png")
 
 
 if __name__ == "__main__":

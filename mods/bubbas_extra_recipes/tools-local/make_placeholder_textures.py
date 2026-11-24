@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # dte:B16
-"""The Glider's textures: the item icon and the worn wings, 16x and their Faithful-style 32x twins (agent-made, listed
+"""The Glider's textures: the item icon and the worn wings, 16x and their Classic Faithful 32x Jappa-style 32x twins (agent-made, listed
 in docs/art-todo.md for the owner to redo or tweak; never AI-generated; a person's art replaces it before any Modrinth
 release, specs/extra-recipes-mod.md). Needs Pillow.
 
@@ -156,7 +156,7 @@ def main():
 	for base, scale in ((TEX16, 1), (TEX32, 2)):
 		(base / "item").mkdir(parents=True, exist_ok=True)
 		(base / "entity/equipment/wings").mkdir(parents=True, exist_ok=True)
-		icon = render(ICON, PALETTE) if scale == 1 else render32(ICON, PALETTE, MATERIAL, outline="", bevel=0.08)
+		icon = render(ICON, PALETTE) if scale == 1 else render32(ICON, PALETTE, MATERIAL, outline="", bevel=1, cf=True)
 		icon.save(base / "item/glider.png")
 		wings(scale).save(base / "entity/equipment/wings/glider.png")
 	print("wrote", TEX16, TEX32)
