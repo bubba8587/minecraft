@@ -13,7 +13,6 @@
 		"CreeperMixin",
 		"DrownedMixin",
 		"EndermanMixin",
-		"EndermanTakeBlockMixin",
 		"MobAmbientSoundInvoker",
 		"MobDeactivatedMixin",
 		"MobFinalizeSpawnMixin",
