@@ -12,6 +12,6 @@ public class BubbasReworkedMiningClient implements ClientModInitializer {
 	public void onInitializeClient() {
 		FabricLoader.getInstance().getModContainer(BubbasReworkedMining.MOD_ID).ifPresent(mod ->
 			ResourceLoader.registerBuiltinPack(BubbasReworkedMining.id(BubbasReworkedMining.MOD_ID + "_32x"), mod,
-				Component.literal("Bubba's Reworked Mining 32x (Faithful style)"), PackActivationType.NORMAL));
+				Component.literal("Bubba's Reworked Mining 32x (Classic Faithful style)"), PackActivationType.NORMAL));
 	}
 }

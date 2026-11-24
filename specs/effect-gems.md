@@ -191,7 +191,7 @@ Details:
 
 - Placeholders drawn by `tools/gem-textures.py` from shapes (not AI), at 16x and 32x, plus the icon. `tools/texcheck.py` passes.
 - Body: tinted, including a dark rim in the gem's own color. Shine: untinted white glints and a lit rim (file `*_outline.png`).
-- The finished gem is a regular octagon seen from above (owner).
+- The finished gem is a cut stone seen from the side: flat top, five crown facets, a bright girdle line, four darker pavilion facets to a point; the infused gem a round brilliant seen from above (16 facets). The effect colour tints the grey facets; an untinted second layer adds white glints, cool and warm sheens and a short rainbow on the lit edge (owner, 2026-11-23: "they look like flat discs. no iridescence"; replaces the earlier octagon).
 - Not done: real textures made by a person.
 
 ### Brewing

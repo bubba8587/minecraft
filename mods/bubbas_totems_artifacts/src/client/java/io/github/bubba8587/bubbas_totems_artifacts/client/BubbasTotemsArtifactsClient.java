@@ -14,10 +14,10 @@ import net.fabricmc.loader.api.FabricLoader;
 public class BubbasTotemsArtifactsClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
-		// 32x textures (Faithful style) as an optional built-in resource pack: specs/textures.md.
+		// 32x textures (Classic Faithful style) as an optional built-in resource pack: specs/textures.md.
 		FabricLoader.getInstance().getModContainer(BubbasTotemsArtifacts.MOD_ID).ifPresent(mod ->
 			ResourceLoader.registerBuiltinPack(BubbasTotemsArtifacts.id(BubbasTotemsArtifacts.MOD_ID + "_32x"), mod,
-				Component.literal("Bubba's Totems & Artifacts 32x (Faithful style)"), PackActivationType.NORMAL));
+				Component.literal("Bubba's Totems & Artifacts 32x (Classic Faithful style)"), PackActivationType.NORMAL));
 
 		// Grave Talisman: glow level worked out on the client, read by the item model.
 		GraveTalismanGlow.initialize();

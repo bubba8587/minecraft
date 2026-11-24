@@ -18,7 +18,7 @@ public class BubbasWorldTweaksClient implements ClientModInitializer {
 	public void onInitializeClient() {
 		FabricLoader.getInstance().getModContainer(BubbasWorldTweaks.MOD_ID).ifPresent(mod ->
 			ResourceLoader.registerBuiltinPack(BubbasWorldTweaks.id(BubbasWorldTweaks.MOD_ID + "_32x"), mod,
-				Component.literal("Bubba's World Tweaks 32x (Faithful style)"), PackActivationType.NORMAL));
+				Component.literal("Bubba's World Tweaks 32x (Classic Faithful style)"), PackActivationType.NORMAL));
 		ParticleProviderRegistry.getInstance().register(ModParticles.LAVA_BUBBLE, LavaBubbleParticle.Provider::new);
 		ParticleProviderRegistry.getInstance().register(ModParticles.LAVA_GEYSER_PLUME, LavaGeyserPlumeParticle.Provider::new);
 		EntityRenderers.register(LavaGeysers.LAVA_GEYSER, NoopRenderer::new);

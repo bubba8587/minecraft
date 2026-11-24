@@ -24,7 +24,7 @@ public class BubbasInfusedGemsClient implements ClientModInitializer {
 	public void onInitializeClient() {
 		FabricLoader.getInstance().getModContainer(BubbasInfusedGems.MOD_ID).ifPresent(mod ->
 			ResourceLoader.registerBuiltinPack(BubbasInfusedGems.id(BubbasInfusedGems.MOD_ID + "_32x"), mod,
-				Component.literal("Bubba's Infused Gems 32x (Faithful style)"), PackActivationType.NORMAL));
+				Component.literal("Bubba's Infused Gems 32x (Classic Faithful style)"), PackActivationType.NORMAL));
 		ItemTintSources.ID_MAPPER.put(BubbasInfusedGems.id("gem_color"), GemColorSource.MAP_CODEC);
 		// The local player moves on the client
 		ClientTickEvents.END_CLIENT_TICK.register(mc -> {

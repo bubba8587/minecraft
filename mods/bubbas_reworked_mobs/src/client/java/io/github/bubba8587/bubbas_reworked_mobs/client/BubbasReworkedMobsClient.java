@@ -26,10 +26,10 @@ public class BubbasReworkedMobsClient implements ClientModInitializer {
 	@SuppressWarnings("unchecked")
 	public void onInitializeClient() {
 		io.github.bubba8587.bubbas_reworked_mobs.client.meter.MeterBars.initialize();
-		// 32x textures (Faithful style) as an optional built-in resource pack: specs/textures.md.
+		// 32x textures (Classic Faithful style) as an optional built-in resource pack: specs/textures.md.
 		FabricLoader.getInstance().getModContainer(BubbasReworkedMobs.MOD_ID).ifPresent(mod ->
 			ResourceLoader.registerBuiltinPack(BubbasReworkedMobs.id(BubbasReworkedMobs.MOD_ID + "_32x"), mod,
-				Component.literal("Bubba's Reworked Mobs 32x (Faithful style)"), PackActivationType.NORMAL));
+				Component.literal("Bubba's Reworked Mobs 32x (Classic Faithful style)"), PackActivationType.NORMAL));
 
 		// Undead: sleepers draw through one block entity renderer; woken mobs use vanilla renderers with our walk animations (UndeadGaits).
 		BlockEntityRenderers.register(ModBlockEntities.SLEEPER, SleeperRenderer::new);

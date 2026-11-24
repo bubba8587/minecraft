@@ -58,7 +58,7 @@ def main(argv):
         write(d / f"src/{src}/resources/{modid}{env}.mixins.json", json.dumps(mixin, indent="\t") + "\n")
     write(d / f"src/main/resources/assets/{modid}/lang/en_us.json", "{\n}\n")
     # B16 textures16and32: the 32x set ships in the jar as a built-in resource pack (specs/textures.md).
-    rp = {"pack": {"description": f"{name} 32x textures (Faithful style)", "min_format": 97, "max_format": 97}}
+    rp = {"pack": {"description": f"{name} 32x textures (Classic Faithful style)", "min_format": 97, "max_format": 97}}
     write(d / f"src/main/resources/resourcepacks/{modid}_32x/pack.mcmeta", json.dumps(rp, indent=2) + "\n")
     (d / f"src/main/resources/resourcepacks/{modid}_32x/assets/{modid}/textures").mkdir(parents=True, exist_ok=True)
     (d / f"src/main/resources/assets/{modid}/textures").mkdir(parents=True, exist_ok=True)
@@ -95,10 +95,10 @@ import net.minecraft.network.chat.Component;
 public class {cls}Client implements ClientModInitializer {{
 	@Override
 	public void onInitializeClient() {{
-		// 32x textures (Faithful style) as an optional built-in resource pack: specs/textures.md.
+		// 32x textures (Classic Faithful style) as an optional built-in resource pack: specs/textures.md.
 		FabricLoader.getInstance().getModContainer({cls}.MOD_ID).ifPresent(mod ->
 			ResourceLoader.registerBuiltinPack({cls}.id({cls}.MOD_ID + "_32x"), mod,
-				Component.literal("{name} 32x (Faithful style)"), PackActivationType.NORMAL));
+				Component.literal("{name} 32x (Classic Faithful style)"), PackActivationType.NORMAL));
 	}}
 }}
 """)

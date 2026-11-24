@@ -18,6 +18,6 @@ public class BubbasExtraRecipesClient implements ClientModInitializer {
 
 		FabricLoader.getInstance().getModContainer(BubbasExtraRecipes.MOD_ID).ifPresent(mod ->
 			ResourceLoader.registerBuiltinPack(BubbasExtraRecipes.id(BubbasExtraRecipes.MOD_ID + "_32x"), mod,
-				Component.literal("Bubba's Extra Recipes 32x (Faithful style)"), PackActivationType.NORMAL));
+				Component.literal("Bubba's Extra Recipes 32x (Classic Faithful style)"), PackActivationType.NORMAL));
 	}
 }
