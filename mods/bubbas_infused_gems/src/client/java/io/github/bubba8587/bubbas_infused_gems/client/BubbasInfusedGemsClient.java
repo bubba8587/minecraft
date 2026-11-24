@@ -6,12 +6,8 @@ import io.github.bubba8587.bubbas_infused_gems.effect.GemEntity;
 import io.github.bubba8587.bubbas_infused_gems.effect.GemTotals;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
-import net.fabricmc.fabric.api.resource.v1.pack.PackActivationType;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.color.item.ItemTintSources;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 
 public class BubbasInfusedGemsClient implements ClientModInitializer {
@@ -22,9 +18,6 @@ public class BubbasInfusedGemsClient implements ClientModInitializer {
 
 	@Override
 	public void onInitializeClient() {
-		FabricLoader.getInstance().getModContainer(BubbasInfusedGems.MOD_ID).ifPresent(mod ->
-			ResourceLoader.registerBuiltinPack(BubbasInfusedGems.id(BubbasInfusedGems.MOD_ID + "_32x"), mod,
-				Component.literal("Bubba's Infused Gems 32x (Classic Faithful style)"), PackActivationType.NORMAL));
 		ItemTintSources.ID_MAPPER.put(BubbasInfusedGems.id("gem_color"), GemColorSource.MAP_CODEC);
 		// The local player moves on the client
 		ClientTickEvents.END_CLIENT_TICK.register(mc -> {

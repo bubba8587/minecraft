@@ -59,6 +59,42 @@ if (-not (Get-ChildItem $target -Filter "fabric-api-*.jar")) {
 Write-Output "Installed into '$Profile':"
 Get-ChildItem $target -Filter "*.jar" | ForEach-Object { "  $($_.Name)" }
 
+# Our 32x textures (B16): the combined resource pack resourcepacks/bubbas_32x, built by tools/pack.py, copied into the
+# profile's resourcepacks/ (replacing only older copies of it) and switched on in options.txt, above any Classic
+# Faithful 32x Jappa (file/CF32J...) entry. Old built-in entries (bubbas_<mod>:bubbas_<mod>_32x) are dropped.
+$packScript = Join-Path $root "tools\pack.py"
+if (Get-Command python -ErrorAction SilentlyContinue) { & python $packScript build bubbas_32x } else { & py -3 $packScript build bubbas_32x }
+if ($LASTEXITCODE -ne 0) { throw "Building the 32x resource pack failed." }
+$packVersion = (Get-Content (Join-Path $root "resourcepacks\bubbas_32x\VERSION") -TotalCount 1).Trim()
+$packZip = Join-Path $root "build\packs\resourcepacks\bubbas_32x-$packVersion.zip"
+$packDir = Join-Path $modrinth "profiles\$Profile\resourcepacks"
+New-Item -ItemType Directory -Force $packDir | Out-Null
+Get-ChildItem $packDir -Filter "bubbas_32x-*.zip" | Remove-Item -Confirm:$false
+Copy-Item $packZip -Destination $packDir
+Write-Output "  resourcepacks\bubbas_32x-$packVersion.zip"
+
+$options = Join-Path $modrinth "profiles\$Profile\options.txt"
+$gameRunning = Get-CimInstance Win32_Process -Filter "Name='javaw.exe' OR Name='java.exe'" -ErrorAction SilentlyContinue |
+	Where-Object { $_.CommandLine -and $_.CommandLine.Contains((Join-Path $modrinth "profiles\$Profile")) }
+if ($gameRunning) {
+	Write-Output "Minecraft is running on '$Profile': the 32x pack was copied but not switched on (the game would undo it on exit)."
+} elseif (Test-Path $options) {
+	$lines = @(Get-Content $options)
+	$i = [array]::FindIndex($lines, [Predicate[string]] { param($l) $l.StartsWith("resourcePacks:") })
+	$packs = if ($i -ge 0) { @(ConvertFrom-Json $lines[$i].Substring("resourcePacks:".Length)) } else { @("vanilla", "fabric") }
+	$entry = "file/bubbas_32x-$packVersion.zip"
+	$kept = @($packs | Where-Object { $_ -notmatch '^bubbas_[a-z0-9_]+:bubbas_[a-z0-9_]+_32x$' -and $_ -notmatch '^file/bubbas_32x-.*\.zip$' })
+	$cf = -1
+	for ($k = 0; $k -lt $kept.Count; $k++) { if ($kept[$k] -like "file/CF32J*") { $cf = $k } }
+	$new = if ($cf -ge 0) { @($kept[0..$cf]) + $entry + @($kept | Select-Object -Skip ($cf + 1)) } else { $kept + $entry }
+	$line = "resourcePacks:" + (ConvertTo-Json @($new) -Compress)
+	if ($i -ge 0) { $lines[$i] = $line } else { $lines += $line }
+	Set-Content -Path $options -Value $lines -Encoding utf8NoBOM
+	Write-Output "  options.txt: $entry switched on"
+} else {
+	Write-Output "No options.txt in '$Profile' yet: start the game once, then run this again to switch the 32x pack on."
+}
+
 # The test world (specs/testworld.md): copy the pristine world into saves/ if the profile has none. -ResetWorld
 # writes over the owner's copy with a fresh one (owner: no old copies kept).
 $pristine = Join-Path $root "testworlds\bubba-test-world"
