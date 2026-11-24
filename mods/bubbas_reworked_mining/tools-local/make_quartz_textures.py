@@ -5,8 +5,9 @@
 The look the owner asked for is "a sick white look": bright quartz white with subtle veining, vanilla-styled. The
 shapes come from vanilla's iron sprites (same silhouettes and shading bands, so the set sits next to vanilla gear);
 every grey band is remapped to a warm quartz palette, the sticks keep vanilla's wood colours, and thin rose-grey veins
-are drawn across the quartz. The 32x twins are made with tools/pixelart.py's render32 from the same grid (Faithful
-style: smoothed silhouette, thin outlines, bevel, grain), with finer veins drawn at 32x.
+are drawn across the quartz. The 32x twins are made with tools/pixelart.py's render32 in Classic Faithful 32x Jappa
+mode (cf=True: smoothed silhouette, crisp dark 1-px outline, bevels stepped along the palette, no in-between colours)
+from the unbrightened grid, with finer veins drawn at 32x in the palette's vein shades.
 
 Agent-made: listed in docs/art-todo.md for the owner to redo or tweak.
 
@@ -117,15 +118,18 @@ def vein_grid(grid, count, seed):
 
 
 def vein_32(img, count, seed):
-	"""Finer veins at 32x, only on quartz-white pixels (not sticks, not outlines)."""
+	"""Finer veins at 32x, only on quartz-white pixels (not sticks, not outlines), in the palette's vein shades."""
 	px = img.load()
 	w, h = img.size
+	light = {PAL[c] for c in "lhw"}
 	for pts in vein_paths(w, h, count, seed):
 		for x, y in pts:
 			if 0 <= x < w and 0 <= y < h:
 				r, g, b, a = px[x, y]
-				if a and r > 190 and abs(r - b) < 30:
-					px[x, y] = (int(r * 0.91), int(g * 0.87), int(b * 0.88), a)
+				if a and (r, g, b) in light:
+					px[x, y] = PAL["v"] + (a,)
+				elif a and (r, g, b) == PAL["m"]:
+					px[x, y] = PAL["u"] + (a,)
 	return img
 
 
@@ -136,13 +140,10 @@ def brighten_tool(grid):
 
 
 def make(src, rel, smooth, veins16, veins32, seed, tool=False):
-	grid = to_grid(Image.open(src))
-	if tool:
-		grid = brighten_tool(grid)
-	grid = vein_grid(grid, veins16, seed)
+	base = to_grid(Image.open(src))
+	grid = vein_grid(brighten_tool(base) if tool else base, veins16, seed)
 	img16 = render(grid, PAL)
-	img32 = render32(grid, PAL, material=MATERIAL, outline="oq", inner={"o": "p", "q": "d"}, grain=("quartz",), grain_amount=0.035,
-			seed=seed, smooth=smooth)
+	img32 = render32(base, PAL, material=MATERIAL, outline="o", inner={"o": "p"}, thin={"p": "d"}, bevel=1, seed=seed, smooth=smooth, cf=True)
 	img32 = vein_32(img32, veins32, seed + 100)
 	for out, img in ((OUT16, img16), (OUT32, img32)):
 		path = out / rel
