@@ -44,7 +44,7 @@ Obsidian and ancient debris get no bonus.
 
 ## Textures
 
-The set is bright quartz white with faint rose-grey veins. A 32x version comes in the mod's built-in resource pack.
+The set is bright quartz white with faint rose-grey veins. A 32x version comes in the **Bubba's Mods 32x** resource pack.
 
 ## History
 

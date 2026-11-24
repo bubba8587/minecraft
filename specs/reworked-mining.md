@@ -102,7 +102,7 @@ Owner: a full quartz set "for use in the nether". These are new items (B15 only 
   - **Ancient debris needs diamond** (owner), so quartz doesn't skip netherite progression.
   - Damage and attack speed are iron's. Armor protects like iron, lasts a little less, and sounds like iron when put on.
 - **Faster on the Nether's natural blocks** (owner), 1.6x **(builder)**. Tag `bubbas_reworked_mining:nether_blocks` **(builder)**: netherrack, nether bricks (plain, cracked, chiseled, red) and the nether brick fence, slab, stairs and wall, basalt (plain, polished, smooth), blackstone and gilded blackstone, soul sand and soil, both nyliums, magma, both wart blocks, glowstone, shroomlight, nether quartz and gold ore, crimson and warped stems and hyphae (stripped too), bone blocks. Ancient debris and obsidian are left out.
-- **Look** (owner: "a sick white look"): bright quartz white with faint rose-grey veins, vanilla-styled, at 16x and 32x (B16; 32x in the built-in "Bubba's Reworked Mining 32x (Faithful style)" pack). Agent-made until a person redoes it (`docs/art-todo.md`).
+- **Look** (owner: "a sick white look"): bright quartz white with faint rose-grey veins, vanilla-styled, at 16x and 32x (B16; 32x recoloured from Classic Faithful 32x Jappa's iron gear, shipped in the combined "Bubba's Mods 32x" pack). Agent-made until a person redoes it (`docs/art-todo.md`).
 - **Creative tabs:** the tools right after the iron tools, the armor right after the iron boots.
 - No new tooltip lines.
 - **Prior art:** Quartz Tools (fatlard1993, MIT, on 26.3) has smooth-quartz tools but no armor and no Nether bonus. Ours is built here because quartz has to sit on this mod's curve; its code can be read, and reused with credit since it's MIT.

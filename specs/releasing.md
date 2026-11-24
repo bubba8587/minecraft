@@ -20,3 +20,8 @@ Work happens on `develop`; `main` is the released state and never gets direct co
 ## Status
 
 `.github/workflows/build.yml` runs the full suite on release tags, but no publish step is wired in yet and no release tag exists, so nothing has been released.
+
+## Pack releases
+
+- Pack projects (`datapacks/`, `resourcepacks/`) publish to GitHub Releases from CI (`pack-release` job) on a tag `<name>/v<version>` matching the pack's `VERSION`, after the mod, client-test and datapack jobs pass. Mods have no publish step yet.
+- `bubbas_32x` (Bubba's Mods 32x) goes to GitHub Releases first; it can't go on Modrinth until it meets B14.

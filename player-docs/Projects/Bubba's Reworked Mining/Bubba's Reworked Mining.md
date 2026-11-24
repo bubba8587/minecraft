@@ -53,7 +53,7 @@ A white quartz set, about iron's strength, that mines the Nether's blocks much f
 
 ## Installation
 
-The mod installs like any Fabric mod (see [[Installing Fabric Mods]]) and is needed on both the server and every player's game. It includes a built-in 32x resource pack, "Bubba's Reworked Mining 32x (Faithful style)", switched on in the Resource Packs screen.
+The mod installs like any Fabric mod (see [[Installing Fabric Mods]]) and is needed on both the server and every player's game. Its 32x textures come in the separate **Bubba's Mods 32x** resource pack (see [[Installing Resource Packs]]).
 
 ## Compatibility
 

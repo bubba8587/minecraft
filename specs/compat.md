@@ -9,7 +9,7 @@ Status words: **ok** (checked), **easy win** (small change, queued or done), **t
 
 | Mod | What it means for us | Status |
 |---|---|---|
-| Classic Faithful 32x Jappa (resource pack) | Our 32x art matches its style (B16). Older 32x art in Faithful style gets restyled. | restyle over time |
+| Classic Faithful 32x Jappa (resource pack) | Our 32x art matches its style (B16; restyled 2026-11-23) and ships as one pack, Bubba's Mods 32x, meant to sit above it. | ok |
 | Mod Menu | Every mod has a name, player description, author, MIT licence and GitHub links, grouped under one "Bubba's Mods" parent; no icons yet (B14); config screens later. | ok (not yet seen in game) |
 | Explorer's Compass | Dropped from the owner's setup (2026-11-23: the Totem of Seeking does its job). Our structures keep their names (`structure.<ns>.<path>`), which other locator mods read too. | n/a |
 | Cristel Lib | Structure-spacing config library (used by Towns & Towers): could let players tune how often our camps, crypt yards, trader posts and relic vaults appear. | later |

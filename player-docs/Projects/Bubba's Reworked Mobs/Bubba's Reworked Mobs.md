@@ -156,7 +156,7 @@ Sleeping undead generate in [[Crypt Yards]] and their crypts. They are in the cr
 
 ## Textures
 
-The mod comes with vanilla-style 16x textures. A higher-resolution set, **Bubba's Reworked Mobs 32x (Faithful style)**, can be turned on in Options, Resource Packs; it goes above Faithful 32x if that pack is also used.
+The mod comes with vanilla-style 16x textures. Its 32x textures, in the style of Classic Faithful 32x Jappa, come in a separate resource pack, **Bubba's Mods 32x**, which covers all of Bubba's mods (see [[Installing Resource Packs]]). Put it above Classic Faithful 32x Jappa if you use that pack.
 
 ## Compatibility
 

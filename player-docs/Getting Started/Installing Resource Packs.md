@@ -8,7 +8,7 @@ This tutorial explains how to turn on a resource pack. Resource packs change how
 
 When two packs change the same thing, the pack higher in the list takes priority.
 
-Resource packs built into a mod, such as a mod's 32x textures, need no file: they already appear in the Resource Packs list once the mod is installed.
+**Bubba's Mods 32x** is one resource pack with the 32x textures of all of Bubba's mods (in the style of Classic Faithful 32x Jappa). Download its zip from the project's GitHub Releases and install it like any resource pack; put it above Classic Faithful 32x Jappa if you use that pack. Textures for mods you don't have are simply unused.
 
 ## See also
 
