@@ -245,31 +245,36 @@ public class GiantSpider extends Spider implements Gripper {
 		@Override
 		protected @Nullable Vec3 getPosition() {
 			if (task == Task.PROWL && larder != null) {
-				return standingSpotIn(around(Vec3.atBottomCenterOf(larder), SpiderTuning.PROWL_RADIUS));
+				return standingSpotIn(around(Vec3.atBottomCenterOf(larder), SpiderTuning.PROWL_RADIUS, SpiderTuning.WANDER_RISE), false);
 			}
 			List<SpunWeb> webs = ownWebs();
-			return standingSpotIn(webs.isEmpty() ? around(position(), SpiderTuning.ROAM_RANGE)
-					: webs.getLast().span().inflate(SpiderTuning.WEB_HOME_MARGIN, 0.0, SpiderTuning.WEB_HOME_MARGIN)
-							.expandTowards(0.0, -SpiderTuning.WANDER_DEPTH, 0.0));
+			if (webs.isEmpty()) {
+				return standingSpotIn(around(position(), SpiderTuning.ROAM_RANGE, 0), true);
+			}
+			return standingSpotIn(webs.getLast().span().inflate(SpiderTuning.WEB_HOME_MARGIN, 0.0, SpiderTuning.WEB_HOME_MARGIN)
+					.expandTowards(0.0, -SpiderTuning.WANDER_DEPTH, 0.0), false);
 		}
 	}
 
-	/** A box {@code range} out sideways round {@code centre}, from WANDER_DEPTH below it to WANDER_RISE above. */
-	private static AABB around(Vec3 centre, int range) {
-		return new AABB(centre.x - range, centre.y - SpiderTuning.WANDER_DEPTH, centre.z - range, centre.x + range, centre.y + SpiderTuning.WANDER_RISE,
-				centre.z + range);
+	/**
+	 * A box {@code range} out sideways round {@code centre}, from WANDER_DEPTH below it to {@code rise} above. Round
+	 * itself (no home yet) it doesn't rise, or the box would ratchet it up walls as it moves.
+	 */
+	private static AABB around(Vec3 centre, int range, int rise) {
+		return new AABB(centre.x - range, centre.y - SpiderTuning.WANDER_DEPTH, centre.z - range, centre.x + range, centre.y + rise, centre.z + range);
 	}
 
 	/**
 	 * A random spot it can stand on in {@code box}: a random point, dropped straight down to the first open block on
 	 * a sturdy top face (ground, roof, branch or canopy alike). Stormie's Spiders paths to these; it can't path to a
-	 * point on a wall.
+	 * point on a wall. {@code fromTop}: drop from the box's top instead of a random height (the first surface under a
+	 * random column).
 	 */
-	private @Nullable Vec3 standingSpotIn(AABB box) {
+	private @Nullable Vec3 standingSpotIn(AABB box, boolean fromTop) {
 		BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
 		BlockPos.MutableBlockPos below = new BlockPos.MutableBlockPos();
 		for (int i = 0; i < 10; i++) {
-			pos.set(Mth.lerp(random.nextDouble(), box.minX, box.maxX), Mth.lerp(random.nextDouble(), box.minY, box.maxY),
+			pos.set(Mth.lerp(random.nextDouble(), box.minX, box.maxX), fromTop ? box.maxY : Mth.lerp(random.nextDouble(), box.minY, box.maxY),
 					Mth.lerp(random.nextDouble(), box.minZ, box.maxZ));
 			if (!level().hasChunkAt(pos)) {
 				continue;

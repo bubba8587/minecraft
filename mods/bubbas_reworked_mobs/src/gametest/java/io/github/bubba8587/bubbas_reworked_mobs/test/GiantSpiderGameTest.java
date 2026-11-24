@@ -69,23 +69,23 @@ public class GiantSpiderGameTest {
 		helper.succeed();
 	}
 
-	/** Stranded on a canopy (leaves 10 up on a trunk), it lets itself down on silk to the floor. */
-	@GameTest(environment = SpiderGameTest.ENV, structure = SpiderGameTest.ROOM, maxTicks = 400)
+	/** Stranded on a canopy (leaves 10 up on a lone trunk, no web to be had), it climbs down off it (to the floor or the field's 4-high wall tops). */
+	@GameTest(environment = SpiderGameTest.ENV, structure = "bubbas_reworked_mobs-test:hearing_field", maxTicks = 1200)
 	public void strandedInTheCanopyComesDown(GameTestHelper helper) {
 		for (int y = 1; y < 10; y++) {
-			helper.setBlock(new BlockPos(4, y, 4), Blocks.SPRUCE_LOG);
+			helper.setBlock(new BlockPos(12, y, 8), Blocks.SPRUCE_LOG);
 		}
 		for (int dx = -1; dx <= 1; dx++) {
 			for (int dz = -1; dz <= 1; dz++) {
-				helper.setBlock(new BlockPos(4 + dx, 10, 4 + dz), Blocks.SPRUCE_LEAVES.defaultBlockState().setValue(net.minecraft.world.level.block.LeavesBlock.PERSISTENT, true));
+				helper.setBlock(new BlockPos(12 + dx, 10, 8 + dz), Blocks.SPRUCE_LEAVES.defaultBlockState().setValue(net.minecraft.world.level.block.LeavesBlock.PERSISTENT, true));
 			}
 		}
-		GiantSpider giant = giant(helper, 4.5, 4.5);
-		Vec3 top = helper.absoluteVec(new Vec3(4.5, 11.0, 4.5));
+		GiantSpider giant = giant(helper, 12.5, 8.5);
+		Vec3 top = helper.absoluteVec(new Vec3(12.5, 11.0, 8.5));
 		giant.snapTo(top.x, top.y, top.z, 0.0F, 0.0F);
 		double floor = helper.absoluteVec(new Vec3(0.0, 1.0, 0.0)).y;
-		helper.succeedWhen(() -> helper.assertTrue(giant.task() == GiantSpider.Task.ROAM && Math.abs(giant.getY() - floor) < 0.1,
-				"still up at y " + giant.getY() + " (" + giant.task() + ")"));
+		helper.succeedWhen(() -> helper.assertTrue(giant.task() == GiantSpider.Task.ROAM && giant.onGround() && giant.getY() < floor + 6.0, // off the canopy (11 up): the floor or the field's walls
+				"still up at y " + (giant.getY() - floor) + " over the floor (" + giant.task() + ")"));
 	}
 
 	/** Livestock is a distraction: hunting a player, it turns to a pig close by. */
