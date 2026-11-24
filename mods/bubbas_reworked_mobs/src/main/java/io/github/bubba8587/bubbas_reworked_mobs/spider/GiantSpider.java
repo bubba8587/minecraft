@@ -138,9 +138,25 @@ public class GiantSpider extends Spider implements Gripper {
 	/** Remembers {@code web} as its own (oldest forgotten past OWN_WEBS_MAX). Public for tests. */
 	public void rememberWeb(SpunWeb web) {
 		ownWebs.add(EntityReference.of(web));
-		while (ownWebs.size() > SpiderTuning.OWN_WEBS_MAX) {
-			ownWebs.removeFirst();
+		java.util.UUID home = null;
+		if (level() instanceof ServerLevel level) {
+			SpiderTerritories.Territory t = SpiderTerritories.of(level, getUUID());
+			if (t != null && !t.webs().isEmpty()) {
+				home = t.webs().getFirst().id();
+			}
 		}
+		for (int i = 0; ownWebs.size() > SpiderTuning.OWN_WEBS_MAX && i < ownWebs.size(); ) {
+			if (ownWebs.get(i).getUUID().equals(home)) {
+				i++;
+			} else {
+				ownWebs.remove(i);
+			}
+		}
+	}
+
+	/** Its territory (a 2x2 chunk square), or null if it has none. */
+	public SpiderTerritories.@Nullable Territory territory() {
+		return level() instanceof ServerLevel level ? SpiderTerritories.of(level, getUUID()) : null;
 	}
 
 	/** Whether its cocoon hangs in one of its own webs. */
@@ -224,8 +240,9 @@ public class GiantSpider extends Spider implements Gripper {
 	}
 
 	/**
-	 * Its wandering, to spots it can stand on in a box round its home. Roaming: under and round its newest web, or
-	 * with no web yet round itself. Prowling: round its cocoon.
+	 * Its wandering, to spots it can stand on in a box round its home. Roaming with a territory: anywhere in it while it
+	 * still has webs to spin there, else under and round its home web. Without a territory: round itself. Prowling:
+	 * round its cocoon.
 	 */
 	private class WanderGoal extends RandomStrollGoal {
 		WanderGoal() {
@@ -247,11 +264,17 @@ public class GiantSpider extends Spider implements Gripper {
 			if (task == Task.PROWL && larder != null) {
 				return standingSpotIn(around(Vec3.atBottomCenterOf(larder), SpiderTuning.PROWL_RADIUS, SpiderTuning.WANDER_RISE), false);
 			}
-			List<SpunWeb> webs = ownWebs();
-			if (webs.isEmpty()) {
+			ServerLevel level = (ServerLevel) level();
+			SpiderTerritories.Territory t = SpiderTerritories.of(level, getUUID());
+			if (t == null) {
 				return standingSpotIn(around(position(), SpiderTuning.ROAM_RANGE, 0), true);
 			}
-			return standingSpotIn(webs.getLast().span().inflate(SpiderTuning.WEB_HOME_MARGIN, 0.0, SpiderTuning.WEB_HOME_MARGIN)
+			SpunWeb home = SpiderTerritories.home(level, t);
+			if (home == null || t.webs().size() < SpiderTuning.TERRITORY_WEBS) {
+				double y = home != null ? home.getY() : getY();
+				return standingSpotIn(t.box(y - SpiderTuning.WANDER_DEPTH, y + SpiderTuning.WANDER_RISE), false);
+			}
+			return standingSpotIn(home.span().inflate(SpiderTuning.WEB_HOME_MARGIN, 0.0, SpiderTuning.WEB_HOME_MARGIN)
 					.expandTowards(0.0, -SpiderTuning.WANDER_DEPTH, 0.0), false);
 		}
 	}
@@ -271,21 +294,25 @@ public class GiantSpider extends Spider implements Gripper {
 	 * random column).
 	 */
 	private @Nullable Vec3 standingSpotIn(AABB box, boolean fromTop) {
+		return standingSpotIn(level(), random, box, fromTop);
+	}
+
+	static @Nullable Vec3 standingSpotIn(Level level, net.minecraft.util.RandomSource random, AABB box, boolean fromTop) {
 		BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
 		BlockPos.MutableBlockPos below = new BlockPos.MutableBlockPos();
 		for (int i = 0; i < 10; i++) {
 			pos.set(Mth.lerp(random.nextDouble(), box.minX, box.maxX), fromTop ? box.maxY : Mth.lerp(random.nextDouble(), box.minY, box.maxY),
 					Mth.lerp(random.nextDouble(), box.minZ, box.maxZ));
-			if (!level().hasChunkAt(pos)) {
+			if (!level.hasChunkAt(pos)) {
 				continue;
 			}
 			for (int y = pos.getY(); y > box.minY; y--) {
 				pos.setY(y);
 				below.setWithOffset(pos, Direction.DOWN);
-				if (!level().getBlockState(pos).getCollisionShape(level(), pos).isEmpty()) {
+				if (!level.getBlockState(pos).getCollisionShape(level, pos).isEmpty()) {
 					break;
 				}
-				if (level().getFluidState(pos).isEmpty() && level().getBlockState(below).isFaceSturdy(level(), below, Direction.UP)) {
+				if (level.getFluidState(pos).isEmpty() && level.getBlockState(below).isFaceSturdy(level, below, Direction.UP)) {
 					return Vec3.atBottomCenterOf(pos);
 				}
 			}
@@ -371,8 +398,17 @@ public class GiantSpider extends Spider implements Gripper {
 				spin(level); // no web of its own: it makes one first
 			}
 		}
+		if ((tickCount + getId()) % SpiderTuning.TERRITORY_CLAIM_RETRY_TICKS == 0 && SpiderTerritories.of(level, getUUID()) == null) {
+			List<SpunWeb> webs = ownWebs();
+			if (!webs.isEmpty()) {
+				SpiderTerritories.claim(level, getUUID(), webs.getLast());
+			}
+		}
 		if (getTarget() == null && --spinCooldown <= 0) {
-			spinCooldown = SpiderTuning.SPIN_INTERVAL_MIN + random.nextInt(SpiderTuning.SPIN_INTERVAL_MAX - SpiderTuning.SPIN_INTERVAL_MIN + 1);
+			SpiderTerritories.Territory t = SpiderTerritories.of(level, getUUID());
+			spinCooldown = t != null && t.webs().size() < SpiderTuning.TERRITORY_WEBS
+					? SpiderTuning.TERRITORY_SPIN_INTERVAL_MIN + random.nextInt(SpiderTuning.TERRITORY_SPIN_INTERVAL_MAX - SpiderTuning.TERRITORY_SPIN_INTERVAL_MIN + 1)
+					: SpiderTuning.SPIN_INTERVAL_MIN + random.nextInt(SpiderTuning.SPIN_INTERVAL_MAX - SpiderTuning.SPIN_INTERVAL_MIN + 1);
 			spin(level);
 		}
 	}
@@ -783,9 +819,19 @@ public class GiantSpider extends Spider implements Gripper {
 		return h >= minHeight;
 	}
 
-	/** Spins a web between two nearby trunks at canopy height. Returns its strand count, 0 if none (tests). */
+	/**
+	 * Spins a web between two nearby trunks at canopy height. With a territory, only inside it, up to TERRITORY_WEBS,
+	 * spaced apart; without one, only on unclaimed land (the area cap), and its first free web claims one. Returns its
+	 * strand count, 0 if none (tests).
+	 */
 	public int spin(ServerLevel level) {
-		if (websAround(level) >= SpiderTuning.AREA_WEB_CAP) {
+		SpiderTerritories.Territory mine = SpiderTerritories.of(level, getUUID());
+		if (mine != null) {
+			SpiderTerritories.liveWebs(level, mine);
+			if (mine.webs().size() >= SpiderTuning.TERRITORY_WEBS) {
+				return 0;
+			}
+		} else if (websAround(level) >= SpiderTuning.AREA_WEB_CAP) {
 			return 0;
 		}
 		List<BlockPos> trunks = trunks(level);
@@ -809,7 +855,10 @@ public class GiantSpider extends Spider implements Gripper {
 				Vec3 cb = new Vec3(b.getX() + 0.5, y + 0.5, b.getZ() + 0.5);
 				Vec3 along = cb.subtract(ca).normalize();
 				Vec3 hub = ca.lerp(cb, 0.5);
-				List<Vec3> extra = new ArrayList<>();
+				if (!SpiderTerritories.mayWeb(level, getUUID(), hub) || mine != null && crowded(mine, hub)) {
+						continue;
+					}
+					List<Vec3> extra = new ArrayList<>();
 				for (int k = -2; k <= 3; k++) {
 					extra.add(ca.add(along.scale(0.5)).add(0, k * 1.1 + random.nextDouble() * 0.4, 0));
 					extra.add(cb.subtract(along.scale(0.5)).add(0, k * 1.1 + random.nextDouble() * 0.4, 0));
@@ -817,13 +866,31 @@ public class GiantSpider extends Spider implements Gripper {
 				SpunWeb web = SpunWeb.spin(level, hub, BlockPos.containing(hub).asLong(), SpiderTuning.TREE_WEB_RAYS, 0.2,
 						SpiderTuning.TREE_WEB_REACH, extra, SpiderTuning.TREE_WEB_STRANDS, 0.0F, SpiderTuning.TREE_WEB_TIE_OFFS);
 				if (web != null) {
-					rememberWeb(web);
+					if (mine != null) {
+							SpiderTerritories.addWeb(level, mine, web);
+						}
+						rememberWeb(web);
+						if (mine == null) {
+							SpiderTerritories.claim(level, getUUID(), web);
+						}
 					playSound(SoundEvents.SPIDER_STEP, 0.6F, 0.5F);
 					return web.strands().size();
 				}
 			}
 		}
 		return 0;
+	}
+
+	/** Whether {@code hub} is within TERRITORY_WEB_SPACING (sideways) of one of the territory's webs. */
+	private static boolean crowded(SpiderTerritories.Territory t, Vec3 hub) {
+		for (SpiderTerritories.WebSpot spot : t.webs()) {
+			double dx = spot.hub().getX() + 0.5 - hub.x;
+			double dz = spot.hub().getZ() + 0.5 - hub.z;
+			if (dx * dx + dz * dz < SpiderTuning.TERRITORY_WEB_SPACING * SpiderTuning.TERRITORY_WEB_SPACING) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/** Bases of tree trunks tall enough to string a web between, nearest first. */

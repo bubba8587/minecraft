@@ -110,6 +110,33 @@ public final class SpiderTuning {
 	public static final int AREA_WEB_CAP = 5;
 	public static final int AREA_RADIUS = 12;
 
+	// --- territories ------------------------------------------------------------------------------------
+
+	/** Webs a giant keeps in its territory: its home web and 4 subsidiary webs. */
+	public static final int TERRITORY_WEBS = 5;
+	/** A new web in a territory has its hub at least this far (sideways) from the territory's other webs. */
+	public static final double TERRITORY_WEB_SPACING = 6.0;
+	/** Spinning while its territory has fewer than TERRITORY_WEBS webs: every 200-400 ticks. */
+	public static final int TERRITORY_SPIN_INTERVAL_MIN = 200;
+	public static final int TERRITORY_SPIN_INTERVAL_MAX = 400;
+	/** A giant with webs but no territory tries to claim one round its newest web this often. */
+	public static final int TERRITORY_CLAIM_RETRY_TICKS = 200;
+	/** Territories are checked for a missing giant this often, and released after it's been missing this long. */
+	public static final int TERRITORY_CHECK_TICKS = 200;
+	public static final int TERRITORY_STALE_TICKS = 6000;
+	/** Small spiders in a territory: how often they look for a subsidiary web, and how many settle at one. */
+	public static final int SETTLE_CHECK_TICKS = 100;
+	public static final int SETTLERS_PER_WEB = 2;
+	/** A settled spider's home is its web's hub, this radius (vanilla home restriction). */
+	public static final int SETTLE_HOME_RADIUS = 8;
+	/** It gives up walking to its web after this long. */
+	public static final int SETTLE_WALK_TICKS = 300;
+	/** Under its web, the chance it climbs up and rests in it, for how long, and its climb speed. */
+	public static final float REST_CHANCE = 0.5F;
+	public static final int REST_TICKS_MIN = 300;
+	public static final int REST_TICKS_MAX = 700;
+	public static final double REST_CLIMB_SPEED = 0.1;
+
 	/** Little spiders: summoned when it's hurt, this many, at most this many alive near it, then a cooldown. */
 	public static final int SPIDERLINGS_PER_CALL = 2;
 	public static final int SPIDERLINGS_CAP = 4;

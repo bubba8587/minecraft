@@ -49,6 +49,13 @@ public class GiantSpiderGameTest {
 		return giant;
 	}
 
+	/** Spins, then gives up the territory it claimed, so tests running beside this one can still spin (territories span 2x2 chunks). */
+	static int spinFree(GiantSpider giant, ServerLevel level) {
+		int strands = giant.spin(level);
+		io.github.bubba8587.bubbas_reworked_mobs.spider.SpiderTerritories.release(level, giant.getUUID());
+		return strands;
+	}
+
 	private static AABB room(GameTestHelper helper) {
 		return new AABB(helper.absolutePos(BlockPos.ZERO)).expandTowards(9, 16, 9);
 	}
@@ -61,7 +68,7 @@ public class GiantSpiderGameTest {
 		helper.assertTrue(Math.abs(giant.getAttributeValue(Attributes.SCALE) - SpiderTuning.GIANT_SCALE) < 1.0E-6, "scale");
 		giant.refreshDimensions(); // the scale attribute resizes the hitbox on its first tick in game
 		helper.assertTrue(giant.getBbWidth() > 1.4F * 1.5F, "hitbox not scaled: " + giant.getBbWidth());
-		int strands = giant.spin(helper.getLevel());
+		int strands = spinFree(giant, helper.getLevel());
 		helper.assertTrue(strands >= 3, "spun " + strands + " strands");
 		List<SpunWeb> webs = helper.getLevel().getEntitiesOfClass(SpunWeb.class, room(helper));
 		helper.assertTrue(webs.size() == 1, "webs " + webs.size());
@@ -130,7 +137,7 @@ public class GiantSpiderGameTest {
 		trunks(helper);
 		ServerLevel level = helper.getLevel();
 		GiantSpider giant = giant(helper, 4.5, 2.5);
-		giant.spin(level);
+		spinFree(giant, level);
 		SpunWeb web = level.getEntitiesOfClass(SpunWeb.class, room(helper)).getFirst();
 		SpunWeb.Strand strand = web.strands().getFirst();
 		Vec3 onIt = web.position().add(strand.a().lerp(strand.b(), 0.5));
@@ -145,7 +152,7 @@ public class GiantSpiderGameTest {
 		}
 		helper.assertTrue(web.isRemoved(), "three hits didn't cut it");
 
-		giant.spin(level);
+		spinFree(giant, level);
 		SpunWeb second = level.getEntitiesOfClass(SpunWeb.class, room(helper)).getFirst();
 		player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.SHEARS));
 		Vec3 cutAt = second.position().add(second.strands().getFirst().a().lerp(second.strands().getFirst().b(), 0.5));
@@ -215,7 +222,7 @@ public class GiantSpiderGameTest {
 		trunks(helper);
 		ServerLevel level = helper.getLevel();
 		GiantSpider giant = giant(helper, 4.5, 2.5);
-		helper.assertTrue(giant.spin(level) >= 3, "no web spun");
+		helper.assertTrue(spinFree(giant, level) >= 3, "no web spun");
 		SpunWeb own = giant.ownWebs().getFirst();
 		SpunWeb other = Spiders.SPUN_WEB.create(level, EntitySpawnReason.COMMAND);
 		Vec3 o = helper.absoluteVec(new Vec3(4.5, 4.0, 2.5));
@@ -241,7 +248,7 @@ public class GiantSpiderGameTest {
 		trunks(helper);
 		ServerLevel level = helper.getLevel();
 		GiantSpider giant = giant(helper, 4.5, 2.5);
-		giant.spin(level);
+		spinFree(giant, level);
 		SpunWeb web = giant.ownWebs().getFirst();
 		var output = net.minecraft.world.level.storage.TagValueOutput.createWithoutContext(net.minecraft.util.ProblemReporter.DISCARDING);
 		giant.saveWithoutId(output);

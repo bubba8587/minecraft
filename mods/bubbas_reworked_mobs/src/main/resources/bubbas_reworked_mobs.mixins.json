@@ -21,6 +21,7 @@
 		"ProjectileUtilGripMixin",
 		"ProjectileUtilWebMixin",
 		"SpawnStateMixin",
+		"SpiderSettleMixin",
 		"StormieDeactivatedSpiderMixin",
 		"TridentRiptideMixin",
 		"TraderLlamaTetherMixin",

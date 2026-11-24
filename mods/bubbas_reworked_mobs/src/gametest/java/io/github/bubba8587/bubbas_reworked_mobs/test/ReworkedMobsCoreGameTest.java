@@ -94,6 +94,12 @@ public class ReworkedMobsCoreGameTest {
 		new GiantSpiderGameTest().webHitsOnlyTheStrands(helper);
 	}
 
+	/** Its own environment: test environments run as separate batches, so no neighbouring test's giant is in its 2x2 chunks. */
+	@GameTest(environment = "bubbas_reworked_mobs-test:spider_territory_claim", structure = SpiderGameTest.ROOM)
+	public void giantClaimsATerritoryOthersCantWebIn(GameTestHelper helper) {
+		new SpiderTerritoryGameTest().claimsATerritoryOthersCantWebIn(helper);
+	}
+
 	// --- monster camps (specs/monster-camps.md) ---
 
 	@GameTest(environment = "bubbas_reworked_mobs-test:camp_night", structure = CampsGameTest.FIELD, maxTicks = 80)
