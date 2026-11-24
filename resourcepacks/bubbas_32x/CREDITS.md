@@ -2,7 +2,7 @@
 
 ## Classic Faithful 32x Jappa (Faithful)
 
-Some textures in this pack are recoloured from **Classic Faithful 32x Jappa** (Vattic's Classic Faithful, by Evorp and many others; release CF32J-2026r21) by the Faithful Resource Pack team. All other textures are our own.
+Some textures in this pack are recoloured from **Classic Faithful 32x Jappa** (Vattic's Classic Faithful, by Evorp and many others; release CF32J-2026r21, and the java-latest branch for Reworked Mobs) by the Faithful Resource Pack team. All other textures are our own.
 
 ### Bubba's Reworked Mining: quartz tools and armor
 
@@ -21,6 +21,19 @@ What changed: each grey shade is mapped to a quartz shade, and thin veins are dr
 | `particle/lava_geyser_plume_01.png` to `_08.png` | `particle/geyser_plume_01.png` to `_08.png` |
 
 What changed: each grey shade is mapped to a soot shade. The pixels and shapes are CF32J's.
+
+### Bubba's Reworked Mobs: biome creeper skins
+
+From the `java-latest` branch (commit 00321eab, November 2026).
+
+| Our texture (`assets/bubbas_reworked_mobs/textures/`) | Derived from (CF32J, `assets/minecraft/textures/`) |
+|---|---|
+| `entity/creeper/biome/*.png` (all 19) | `entity/creeper/creeper.png` |
+| `entity/creeper/biome/{oak,birch,spruce,jungle,acacia,dark_oak,mangrove,cherry,pale_oak,poplar}.png` | colours of `block/<name>_log.png` |
+| `entity/creeper/biome/plains.png`, `meadow.png` | colours of `block/grass_block_top.png` (biome grass tint applied) |
+| `entity/creeper/biome/{sand,red_sand,snow,stone}.png`, `dripstone.png`, `mycelium.png` | colours of `block/{sand,red_sand,snow,stone}.png`, `block/dripstone_block.png`, `block/mycelium_top.png` |
+
+What changed: each creeper pixel takes the closest colour (OKLch lightness match) from the block texture; the pixels and shading are CF32J's creeper's. `sulfur.png` uses vanilla's sulfur colours (CF32J has none).
 
 Website: https://faithfulpack.net
 Used under the Faithful License: https://faithfulpack.net/license

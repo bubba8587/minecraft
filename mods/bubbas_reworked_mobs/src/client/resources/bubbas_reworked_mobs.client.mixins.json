@@ -3,6 +3,8 @@
 	"package": "io.github.bubba8587.bubbas_reworked_mobs.client.mixin",
 	"compatibilityLevel": "JAVA_25",
 	"client": [
+		"CreeperRendererSkinMixin",
+		"CreeperRenderStateSkinMixin",
 		"DrownedModelMixin",
 		"DrownedRendererMixin",
 		"EntityRenderDispatcherAccessor",
