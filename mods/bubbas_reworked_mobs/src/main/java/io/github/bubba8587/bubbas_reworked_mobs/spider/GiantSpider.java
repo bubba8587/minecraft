@@ -9,6 +9,7 @@ import io.github.bubba8587.bubbas_reworked_mobs.drowned.DrownedMind;
 import io.github.bubba8587.bubbas_reworked_mobs.grip.Gripper;
 import io.github.bubba8587.bubbas_reworked_mobs.meter.Meters;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -31,7 +32,6 @@ import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import net.minecraft.world.entity.ai.goal.RandomStrollGoal;
-import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.animal.Animal;
@@ -69,9 +69,7 @@ public class GiantSpider extends Spider implements Gripper {
 		/** Down off its perch, strolling near its cocoon until it's hungry. */
 		PROWL,
 		/** Walking back to the foot of its perch to climb up and feed. */
-		RETURN,
-		/** Stranded up in the canopy (it spawned or wandered there): letting itself down on silk to the ground. */
-		DROP
+		RETURN
 	}
 
 	/** Marks the little spiders it calls, to count them. */
@@ -97,8 +95,8 @@ public class GiantSpider extends Spider implements Gripper {
 	private Vec3 backOff = Vec3.ZERO;
 	private @Nullable Vec3 waitAnchor;
 	private @Nullable Vec3 landing;
-	/** A stranded drop: the point over its landing at the height it starts from. */
-	private @Nullable Vec3 dropColumn;
+	/** Made in registerGoals (the Mob constructor runs that before field initialisers). */
+	private WanderGoal wander;
 	private static final net.minecraft.network.syncher.EntityDataAccessor<Boolean> DATA_UNDER =
 			net.minecraft.network.syncher.SynchedEntityData.defineId(GiantSpider.class, net.minecraft.network.syncher.EntityDataSerializers.BOOLEAN);
 	private float grip;
@@ -205,7 +203,8 @@ public class GiantSpider extends Spider implements Gripper {
 				.add(Attributes.ATTACK_DAMAGE, SpiderTuning.GIANT_ATTACK)
 				.add(Attributes.MOVEMENT_SPEED, SpiderTuning.GIANT_SPEED)
 				.add(Attributes.SCALE, SpiderTuning.GIANT_SCALE)
-				.add(Attributes.STEP_HEIGHT, 1.0);
+				.add(Attributes.STEP_HEIGHT, 1.0)
+				.add(Attributes.FOLLOW_RANGE, SpiderTuning.GIANT_FOLLOW_RANGE);
 	}
 
 	@Override
@@ -213,18 +212,8 @@ public class GiantSpider extends Spider implements Gripper {
 		goalSelector.addGoal(0, new BusyGoal());
 		goalSelector.addGoal(1, new FloatGoal(this));
 		goalSelector.addGoal(3, new MeleeAttackGoal(this, 1.0, true));
-		goalSelector.addGoal(4, new RandomStrollGoal(this, 0.8, SpiderTuning.STROLL_INTERVAL, false) {
-			@Override
-			public boolean canUse() {
-				return task == Task.PROWL && super.canUse();
-			}
-
-			@Override
-			public boolean canContinueToUse() {
-				return task == Task.PROWL && super.canContinueToUse();
-			}
-		});
-		goalSelector.addGoal(5, new WaterAvoidingRandomStrollGoal(this, 0.8));
+		wander = new WanderGoal();
+		goalSelector.addGoal(4, wander);
 		goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 8.0F));
 		goalSelector.addGoal(6, new RandomLookAroundGoal(this));
 		targetSelector.addGoal(1, new HurtByTargetGoal(this));
@@ -232,6 +221,96 @@ public class GiantSpider extends Spider implements Gripper {
 		targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Animal.class, true, (t, l) -> task == Task.ROAM && snatchable(t)));
 		targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Player.class, true,
 				(t, l) -> getLightLevelDependentMagicValue() < 0.5F));
+	}
+
+	/**
+	 * Its wandering. Roaming: to any spot it can cling to round its web (its home), or with no web yet toward the
+	 * ground. Prowling: on the ground round its cocoon.
+	 */
+	private class WanderGoal extends RandomStrollGoal {
+		WanderGoal() {
+			super(GiantSpider.this, 0.8, SpiderTuning.STROLL_INTERVAL, false);
+		}
+
+		@Override
+		public boolean canUse() {
+			return (task == Task.ROAM || task == Task.PROWL) && super.canUse();
+		}
+
+		@Override
+		public boolean canContinueToUse() {
+			return (task == Task.ROAM || task == Task.PROWL) && super.canContinueToUse();
+		}
+
+		@Override
+		protected @Nullable Vec3 getPosition() {
+			if (task == Task.PROWL && larder != null) {
+				return groundSpot(larder.getX(), larder.getZ(), SpiderTuning.PROWL_RADIUS);
+			}
+			List<SpunWeb> webs = ownWebs();
+			return webs.isEmpty() ? groundSpot(Mth.floor(getX()), Mth.floor(getZ()), SpiderTuning.ROAM_RANGE) : spotNear(webs.getLast());
+		}
+	}
+
+	/** A random open spot beside a solid face (ground, trunk, branch) in the box round {@code web}. */
+	private @Nullable Vec3 spotNear(SpunWeb web) {
+		AABB home = web.span().inflate(SpiderTuning.WEB_HOME_MARGIN, 0.0, SpiderTuning.WEB_HOME_MARGIN);
+		int floor = groundBelow(BlockPos.containing(home.getCenter().x, home.maxY, home.getCenter().z));
+		double minY = Math.min(home.minY, floor);
+		BlockPos.MutableBlockPos face = new BlockPos.MutableBlockPos();
+		for (int i = 0; i < 10; i++) {
+			BlockPos pos = BlockPos.containing(Mth.lerp(random.nextDouble(), home.minX, home.maxX), Mth.lerp(random.nextDouble(), minY, home.maxY),
+					Mth.lerp(random.nextDouble(), home.minZ, home.maxZ));
+			if (!level().hasChunkAt(pos) || !level().getBlockState(pos).getCollisionShape(level(), pos).isEmpty() || !level().getFluidState(pos).isEmpty()) {
+				continue;
+			}
+			for (Direction d : Direction.values()) {
+				face.setWithOffset(pos, d);
+				if (level().getBlockState(face).isFaceSturdy(level(), face, d.getOpposite())) {
+					return Vec3.atBottomCenterOf(pos);
+				}
+			}
+		}
+		return null;
+	}
+
+	/** A random spot on the ground below its height, within {@code range} sideways of x, z (under trunks and canopy, not water). */
+	private @Nullable Vec3 groundSpot(int cx, int cz, int range) {
+		for (int i = 0; i < 10; i++) {
+			int x = cx + random.nextInt(range * 2 + 1) - range;
+			int z = cz + random.nextInt(range * 2 + 1) - range;
+			BlockPos start = new BlockPos(x, Mth.floor(getY()) + 1, z);
+			if (!level().hasChunkAt(start) || !level().getBlockState(start).getCollisionShape(level(), start).isEmpty()) {
+				continue;
+			}
+			BlockPos feet = new BlockPos(x, groundBelow(start), z);
+			if (feet.getY() < start.getY() && level().getFluidState(feet).isEmpty() && level().getFluidState(feet.below()).isEmpty()) {
+				return Vec3.atBottomCenterOf(feet);
+			}
+		}
+		return null;
+	}
+
+	/** The y of the first free block above the ground under {@code from} (past air, leaves and trunks). */
+	private int groundBelow(BlockPos from) {
+		BlockPos.MutableBlockPos pos = from.mutable();
+		int lowest = Math.max(level().getMinY(), from.getY() - SpiderTuning.GROUND_SEARCH_DEPTH);
+		while (pos.getY() > lowest) {
+			pos.move(Direction.DOWN);
+			BlockState state = level().getBlockState(pos);
+			if (!state.getCollisionShape(level(), pos).isEmpty() && !state.is(BlockTags.LEAVES) && !state.is(BlockTags.LOGS)) {
+				return pos.getY() + 1;
+			}
+		}
+		return from.getY();
+	}
+
+	/** No web yet and up a trunk or on a canopy with nothing to do: heads for the ground at once. */
+	private void comeDownIfUp() {
+		BlockState on = getBlockStateOn();
+		if (getTarget() == null && getNavigation().isDone() && ownWebs().isEmpty() && (on.is(BlockTags.LEAVES) || on.is(BlockTags.LOGS))) {
+			wander.trigger();
+		}
 	}
 
 	/** Holds the body still (no stroll, no melee steering) while it hauls, climbs or feeds. */
@@ -282,7 +361,6 @@ public class GiantSpider extends Spider implements Gripper {
 			case DESCEND -> tickDescend(level);
 			case PROWL -> tickProwl(level);
 			case RETURN -> tickReturn(level);
-			case DROP -> tickDrop(level);
 		}
 		sentGrip = Meters.sync(this, Meters.GRIP, catchHeld != null ? grip : 0.0F, sentGrip, SpiderTuning.GRIP_FULL);
 	}
@@ -291,11 +369,14 @@ public class GiantSpider extends Spider implements Gripper {
 		if (catchHeld == null && isVehicle()) {
 			ejectPassengers(); // a catch left riding it by a reload
 		}
-		if ((tickCount + getId()) % 20 == 0 && onGround() && getBlockStateOn().is(BlockTags.LEAVES) && startDrop(level)) {
-			return;
-		}
 		if ((tickCount + getId()) % 20 == 0 && getTarget() instanceof Player player) {
 			lure(level, player);
+		}
+		if ((tickCount + getId()) % 20 == 0) {
+			comeDownIfUp();
+			if (getTarget() == null && ownWebs().isEmpty()) {
+				spin(level); // no web of its own: it makes one first
+			}
 		}
 		if (getTarget() == null && --spinCooldown <= 0) {
 			spinCooldown = SpiderTuning.SPIN_INTERVAL_MIN + random.nextInt(SpiderTuning.SPIN_INTERVAL_MAX - SpiderTuning.SPIN_INTERVAL_MIN + 1);
@@ -560,68 +641,6 @@ public class GiantSpider extends Spider implements Gripper {
 		setTask(Task.PROWL);
 	}
 
-	/** Up on leaves well above the ground: picks a clear column beside it and lets itself down there. True if it starts. */
-	private boolean startDrop(ServerLevel level) {
-		BlockPos here = blockPosition();
-		BlockPos best = null;
-		int bestDrop = SpiderTuning.STRANDED_HEIGHT - 1;
-		for (BlockPos col : BlockPos.betweenClosed(here.offset(-SpiderTuning.DROP_SEARCH, 0, -SpiderTuning.DROP_SEARCH),
-				here.offset(SpiderTuning.DROP_SEARCH, 0, SpiderTuning.DROP_SEARCH))) {
-			if (!level.noCollision(this, getBoundingBox().move(col.getX() + 0.5 - getX(), 0.0, col.getZ() + 0.5 - getZ()))) {
-				continue;
-			}
-			int y = col.getY();
-			BlockPos.MutableBlockPos below = new BlockPos.MutableBlockPos(col.getX(), y - 1, col.getZ());
-			while (y > level.getMinY() && level.getBlockState(below).getCollisionShape(level, below).isEmpty() && level.getFluidState(below).isEmpty()) {
-				y--;
-				below.setY(y - 1);
-			}
-			int drop = here.getY() - y;
-			if (drop > bestDrop && !level.getBlockState(below).is(BlockTags.LEAVES)) {
-				bestDrop = drop;
-				best = new BlockPos(col.getX(), y, col.getZ());
-			}
-		}
-		if (best == null) {
-			return false;
-		}
-		landing = Vec3.atBottomCenterOf(best);
-		dropColumn = new Vec3(landing.x, getY(), landing.z);
-		getNavigation().stop();
-		setTarget(null);
-		setNoGravity(true);
-		setTask(Task.DROP);
-		taskTicks = 0;
-		return true;
-	}
-
-	/** Over to the clear column, then straight down it on silk; it prowls from where it lands. */
-	private void tickDrop(ServerLevel level) {
-		taskTicks++;
-		if (landing == null || dropColumn == null || taskTicks > SpiderTuning.HAUL_GIVE_UP_TICKS) {
-			landing = null;
-			dropColumn = null;
-			endTask();
-			return;
-		}
-		setDeltaMovement(Vec3.ZERO);
-		resetFallDistance();
-		Vec3 goal = position().distanceToSqr(dropColumn) > 0.01 && getY() >= dropColumn.y - 0.01 ? dropColumn : landing;
-		Vec3 step = goal.subtract(position());
-		double len = step.length();
-		if (len > SpiderTuning.CLIMB_SPEED) {
-			Vec3 move = step.scale(SpiderTuning.CLIMB_SPEED / len);
-			setPos(getX() + move.x, getY() + move.y, getZ() + move.z);
-			return;
-		}
-		setPos(goal.x, goal.y, goal.z);
-		if (goal == landing) {
-			landing = null;
-			dropColumn = null;
-			endTask();
-		}
-	}
-
 	private boolean cocoonGone() {
 		SilkCocoon c = cocoon;
 		return c == null || c.isRemoved() || c.victim() == null || larder == null;
@@ -817,7 +836,8 @@ public class GiantSpider extends Spider implements Gripper {
 	/** Bases of tree trunks tall enough to string a web between, nearest first. */
 	private List<BlockPos> trunks(ServerLevel level) {
 		List<BlockPos> out = new ArrayList<>();
-		level.findBlocksInBoxByManhattanDistance(blockPosition(), SpiderTuning.SPIN_SEARCH, 3).filterState(state -> state.is(BlockTags.LOGS))
+		BlockPos here = blockPosition();
+		level.findBlocksInBoxByManhattanDistance(new BlockPos(here.getX(), groundBelow(here.above()), here.getZ()), SpiderTuning.SPIN_SEARCH, 3).filterState(state -> state.is(BlockTags.LOGS))
 				.forEach((pos, state) -> {
 					if (trunkBase(level, pos, SpiderTuning.LARDER_HEIGHT_MAX + 1)) {
 						out.add(pos.immutable());

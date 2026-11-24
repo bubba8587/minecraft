@@ -99,10 +99,6 @@ public final class SpiderTuning {
 	public static final int LARDER_HEIGHT_MAX = 7;
 	public static final double CLIMB_SPEED = 0.15;
 	public static final int HAUL_GIVE_UP_TICKS = 300;
-	/** A giant on leaves with at least this much drop beside it is stranded in the canopy and lets itself down on silk. */
-	public static final int STRANDED_HEIGHT = 4;
-	/** How far round it looks for a clear column to drop down. */
-	public static final int DROP_SEARCH = 3;
 
 	/** Spinning: every 400-800 ticks while roaming, an orb web between two trunks 3-7 apart. */
 	public static final int SPIN_INTERVAL_MIN = 400;
@@ -177,6 +173,14 @@ public final class SpiderTuning {
 	public static final int PROWL_RADIUS = 10;
 	/** Vanilla stroll interval (mean ticks between strolls). */
 	public static final int STROLL_INTERVAL = 60;
+	/** Roaming, it strolls to a spot on the ground up to this far off (sideways). */
+	public static final int ROAM_RANGE = 10;
+	/** Its home is the ground under its newest web, out to this far past the web's span. */
+	public static final double WEB_HOME_MARGIN = 3.0;
+	/** How far down it looks for the ground under it (past trunks and canopy). */
+	public static final int GROUND_SEARCH_DEPTH = 48;
+	/** How far a giant notices players and livestock (a vanilla spider: 16). */
+	public static final double GIANT_FOLLOW_RANGE = 32.0;
 	/** How many of its own webs it remembers, and how far it looks for one to take a catch to. */
 	public static final int OWN_WEBS_MAX = 6;
 	public static final double OWN_WEB_SEARCH = 24.0;
