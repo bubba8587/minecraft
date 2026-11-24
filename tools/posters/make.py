@@ -187,7 +187,7 @@ def cards(out, title, tex, bg_tex, mod, rows, hero_photo=None, hero_h=360, hero_
 def p00_title(out):
 	"""Title-screen look: panorama, logo, the mods as menu buttons."""
 	c = Image.new("RGBA", (W, H))
-	c.alpha_composite(cover(S("cairnF6"), W, H, focus=(0.45, 0.5)).filter(ImageFilter.GaussianBlur(2.5)))
+	c.alpha_composite(cover(S("skG_185"), W, H, focus=(0.5, 0.5)).filter(ImageFilter.GaussianBlur(2.5)))
 	c.alpha_composite(fade(H, 0, H, color=(0, 0, 0), max_alpha=110))
 	L1 = logo("BUBBA'S", 12, block("gold_block"))
 	L2 = logo("MODS", 17, block("cobblestone"))
@@ -229,7 +229,7 @@ def p02_mobs_world(out):
 @poster
 def p03_mobs_creatures(out):
 	cards(out, "REWORKED MOBS", "oxidized_copper", "deepslate_tiles", M, [
-		("Creepers are creepy", dict(photo=S("crO"), photo_kw={"crop": (520, 260, 1360, 733)})),
+		("Creepers are creepy", dict(photo=S("crW6"), photo_kw={"crop": (600, 330, 1300, 724)})),
 		("Endermen build cairns", dict(photo=S("cnX_70"), photo_kw={"crop": (400, 100, 1500, 719), "bright": 1.5})),
 		("Drowned lie in wait", dict(photo=S("drn_3"), photo_kw={"crop": (300, 150, 1500, 825)})),
 		("Spiders have real webs", dict(photo=S("rnL_60"))),
@@ -267,7 +267,7 @@ def p05_totems_more(out):
 		("Totem of Clear Skies", totem_icons("totem_of_clear_skies")),
 		("Totem of the North Wind", totem_icons("totem_of_north_wind")),
 		("Relic Map shreds", totem_icons("relic_map_shred_whole")),
-	], hero_photo=S("totT2"), hero_h=250, scale=7, hero_kw={"focus": (0.45, 0.5)})
+	], hero_photo=S("herdA"), hero_h=300, scale=7, hero_kw={"crop": (0, 140, 1920, 1000), "focus": (0.5, 0.5)})
 
 
 G = "Infused Gems"
@@ -281,23 +281,33 @@ def gem_grid(c, y, scale=5):
 	return y + 3 * 18 * scale + 24
 
 
+def _gems_top(c, y):
+	"""The gem grid, then the brewing stand mid-brew."""
+	y = gem_grid(c, y, 4)
+	b = _brew().convert("RGBA")
+	b = b.resize((860, round(b.height * 860 / b.width)), Image.LANCZOS)
+	f, off = framed(b, border=3, shadow=8)
+	c.alpha_composite(f, ((W - b.width) // 2 - off, y - off))
+	return y + b.height + 24
+
+
 @poster
 def p06_gems(out):
 	cards(out, "INFUSED GEMS", "amethyst_block", "deepslate_tiles", G, [
-		("Say goodbye", dict(icons=[I("potion"), I("infused_gem"), I("gem_speed")])),
+		("Say goodbye", dict(icons=[I("potion"), I("amethyst_shard"), I("gem_speed")])),
 		("12 perfect", dict(icons=[I("nether_star"), I("netherite_chestplate")])),
-		("secondary or tertiary", dict(image=tooltip_crop(SHOTS / "gear_slot0.png", 2))),
-	], tint=(70, 30, 110), extra=lambda c, y: gem_grid(c, y))
+	], tint=(70, 30, 110), extra=_gems_top)
 
 
 @poster
 def p07_gems_more(out):
 	cards(out, "INFUSED GEMS", "amethyst_block", "deepslate_tiles", G, [
+		("secondary or tertiary", dict(image=tooltip_crop(SHOTS / "gear_slot0.png", 2))),
 		("rare items, not potions", dict(icons=[I("golden_apple"), I("gem_absorption")])),
 		("can only be found", dict(icons=[I("gem_haste"), I("gem_luck"), I("gem_resistance")])),
-		("Place a Gem in a Beacon", dict(photo=S("bcC"))),
+		("Place a Gem in a Beacon", dict(image=Image.open(S("bgui3")).convert("RGBA").crop((520, 104, 1400, 500)))),
 		("Freezing", dict(icons=[I("infused_gem")])),
-	], hero_photo=S("bcB"), hero_h=300, tint=(70, 30, 110))
+	], hero_photo=S("gbA"), hero_h=300, scale=8, tint=(70, 30, 110), hero_kw={"focus": (0.5, 0.75)})
 
 
 @poster
@@ -332,7 +342,7 @@ def _quartz_hotbar(c, y):
 def p10_world_tweaks(out):
 	c = textured_bg(W, H, block("netherrack"), px=6)
 	hero_h = 1000
-	c.alpha_composite(cover(S("gyy_3"), W, hero_h, focus=(0.5, 0.4)), (0, 0))
+	c.alpha_composite(cover(S("gyw_5"), W, hero_h, focus=(0.5, 0.5)), (0, 0))
 	c.alpha_composite(fade(hero_h, hero_h - 300, hero_h, color=(8, 8, 10)), (0, 0))
 	title_area(c, "WORLD TWEAKS", "magma", None, scale=9)
 	layout_cards(c, "World Tweaks", [("Magma blocks", dict(icons=[block_icon("magma"), block_icon("lava_still")]))], H - 260, H - 40)
@@ -350,6 +360,11 @@ def p11_extra_recipes(out):
 	], hero_photo=_blast(), hero_h=290, scale=9)
 
 
+def _brew():
+	"""The brewing stand screen mid-brew (swiftness potions and amethyst to an Infused Gem), cut round the stand."""
+	return Image.open(S("brew2")).convert("RGB").crop((610, 210, 1310, 496))
+
+
 def _blast():
 	"""The blast furnace screen mid-blast (diorite to quartz), cut round the furnace panel."""
 	return Image.open(S("blast")).convert("RGB").crop((600, 170, 1320, 590))
@@ -364,7 +379,7 @@ def p12_story(out):
 	"""Story-format overview (1080x1920): the logo, then one tile per mod with a small block-letter name."""
 	SW, SH = 1080, 1920
 	c = textured_bg(SW, SH, block("deepslate_tiles"), px=6)
-	bg = cover(S("cairnF6"), SW, 560, focus=(0.45, 0.45)).filter(ImageFilter.GaussianBlur(1.5))
+	bg = cover(S("skG_185"), SW, 560, focus=(0.5, 0.45)).filter(ImageFilter.GaussianBlur(1.5))
 	c.alpha_composite(bg, (0, 0))
 	c.alpha_composite(fade(560, 300, 560, color=(14, 14, 18), w=SW), (0, 0))
 	L1 = logo("BUBBA'S", 11, block("gold_block"))
@@ -372,13 +387,13 @@ def p12_story(out):
 	c.alpha_composite(L1, ((SW - L1.width) // 2, 70))
 	c.alpha_composite(L2, ((SW - L2.width) // 2, 70 + L1.height - 8))
 	tiles = [
-		(S("skG_195"), "REWORKED MOBS", "mossy_stone_bricks", {}),
+		(S("sitA"), "REWORKED MOBS", "mossy_stone_bricks", {"crop": (240, 60, 1680, 900)}),
 		("GEMS", "INFUSED GEMS", "amethyst_block", {}),
 		(S("vaultE"), "TOTEMS & ARTIFACTS", "gold_block", {}),
 		(S("pcD"), "REWORKED BEACONS", "diamond_block", {}),
-		(S("glideK"), "EXTRA RECIPES", "oak_planks", {"focus": (0.5, 0.35)}),
+		(_blast(), "EXTRA RECIPES", "oak_planks", {}),
 		(S("mineB_3"), "REWORKED MINING", "quartz_block_side", {}),
-		(S("gyy_3"), "WORLD TWEAKS", "magma", {}),
+		(S("gyw_5"), "WORLD TWEAKS", "magma", {}),
 	]
 	top, gap = 480, 24
 	tw = (SW - 80 - gap) // 2

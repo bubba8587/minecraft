@@ -1,0 +1,13 @@
+place 712 102 -86 0 0
+wait 20
+window 1920 1080
+gui 4
+/setblock 714 101 -90 minecraft:brewing_stand
+/data merge block 714 101 -90 {BrewTime:180,total_brew_time:400,Fuel:14,total_fuel:20,Items:[{Slot:0b,id:"minecraft:lingering_potion",count:1,components:{"minecraft:potion_contents":{potion:"minecraft:long_swiftness"}}},{Slot:1b,id:"minecraft:lingering_potion",count:1,components:{"minecraft:potion_contents":{potion:"minecraft:long_swiftness"}}},{Slot:2b,id:"bubbas_infused_gems:infused_gem",count:1,components:{"bubbas_infused_gems:infused_gem":{effect:"minecraft:speed",variant:"long",form:"lingering",infusion:1}}},{Slot:3b,id:"minecraft:amethyst_shard",count:3},{Slot:4b,id:"minecraft:blaze_powder",count:5}]}
+chest brew2 714 101 -90
+/time set 1000
+/fill 723 101 -91 725 101 -89 minecraft:iron_block
+/setblock 724 102 -90 minecraft:beacon{"bubbas_reworked_beacons:item":{id:"bubbas_infused_gems:gem",count:1,components:{"bubbas_infused_gems:gem":{effect:"minecraft:speed",infusion:1,tier:3,main:0.9f,other:{effect:"minecraft:haste",strength:0.35f}}}}}
+place 721 102 -88 0 0
+wait 100
+chest bgui3 724 102 -90
