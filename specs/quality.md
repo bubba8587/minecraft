@@ -121,3 +121,11 @@ Still unexplained, and not seen since the fixes below: the light engine standing
 | `wardStopsSpawnsAndSendsMonstersOut` (zombie "stuck" inside; about 2 in 10) | One null `getPosTowards` roll marked the zombie trapped for `TRAPPED_RECHECK_TICKS` (200), longer than the rest of the test. | Leaving a ward tries up to 6 positions and counts as trapped only if none gives a path out. |
 
 Both verified with `-PrerunGametests`: 10/10 each alone and 10/10 of the whole core suite.
+
+## Shared name check (B20)
+
+- **Shared core test `NamesGameTest`** (`gradle/shared-gametest/java/io/github/bubba8587/shared/test/NamesGameTest.java`).
+  - `gradle/fabric-mod.gradle` adds it to the gametest source set and core `fabric-gametest` entrypoints of every published mod (no `internal=true`), so it runs in every mod's core suite with no per-mod setup.
+  - It fails when an item, block, entity type, mob effect, creative tab, enchantment, structure (`structure.<ns>.<path>`) or item tag (`tag.item.<ns>.<path>`, the Fabric convention that EMI and others use) in a loaded `bubbas_*` namespace has no en_us entry. It reads the server's language table, which Fabric fills with every mod's `en_us.json`.
+  - Its first run found 11 missing names (structures and item tags, listed above); all are fixed now.
+- Mobs' lang is generated: add names in `ModDataGenerator.EnglishLang` and run `./gradlew :bubbas_reworked_mobs:runDatagen`. Datagen rewrites every generated file with LF line endings, so commit only the files whose content changed.
