@@ -2,6 +2,7 @@
 package io.github.bubba8587.bubbas_totems_artifacts.relic;
 
 import com.mojang.serialization.MapCodec;
+import io.github.bubba8587.bubbas_totems_artifacts.mixin.StructureStateAccessor;
 import net.minecraft.world.level.chunk.ChunkGeneratorStructureState;
 import net.minecraft.world.level.levelgen.structure.placement.StructurePlacement;
 
@@ -15,7 +16,8 @@ public final class RelicVaultPlacement implements StructurePlacement {
 
 	@Override
 	public boolean isStructureChunk(ChunkGeneratorStructureState state, int sourceX, int sourceZ) {
-		return RelicSites.at(state.getLevelSeed(), sourceX, sourceZ) != null;
+		return RelicSites.at(state.getLevelSeed(), RelicSites.Land.notOcean(((StructureStateAccessor) state).bta$biomeSource(), state.randomState()), sourceX,
+				sourceZ) != null;
 	}
 
 	@Override

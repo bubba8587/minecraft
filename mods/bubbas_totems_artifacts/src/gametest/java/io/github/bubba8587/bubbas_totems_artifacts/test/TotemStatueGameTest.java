@@ -54,6 +54,26 @@ public class TotemStatueGameTest {
 		helper.succeed();
 	}
 
+	/** A held Totem of Warding on its pulse cooldown still sets down a statue through the real block-use path. */
+	@GameTest(structure = TestSupport.FIELD, maxTicks = 20)
+	public void wardingStatuePlacesWhileOnCooldown(GameTestHelper helper) {
+		ServerPlayer player = TestSupport.survivalPlayer(helper);
+		BlockPos floor = new BlockPos(2, 0, 2);
+		helper.setBlock(floor, Blocks.STONE);
+		Vec3 at = helper.absoluteVec(new Vec3(2.5, 1.0, 5.5));
+		player.snapTo(at.x, at.y, at.z, 180.0F, 45.0F);
+		ItemStack totem = new ItemStack(ModItems.TOTEM_OF_WARDING);
+		player.setItemInHand(InteractionHand.MAIN_HAND, totem);
+		player.getCooldowns().addCooldown(totem, 200);
+		BlockHitResult hit = new BlockHitResult(helper.absoluteVec(new Vec3(2.5, 1.0, 2.5)), Direction.UP, helper.absolutePos(floor), false);
+		player.setShiftKeyDown(true);
+		player.gameMode.useItemOn(player, helper.getLevel(), totem, InteractionHand.MAIN_HAND, hit);
+		BlockState placed = helper.getBlockState(floor.above());
+		helper.assertTrue(placed.is(ModBlocks.TOTEM_STATUE) && TotemStatueBlock.type(placed) == TotemType.WARDING, "no statue placed on cooldown: " + placed);
+		helper.getLevel().getServer().getPlayerList().remove(player);
+		helper.succeed();
+	}
+
 	/**
 	 * Core. Every totem has a statue now: sneak-using a Totem of the End on the floor sets down an End statue (and
 	 * doesn't teleport the player), and breaking it gives the Totem of the End back.

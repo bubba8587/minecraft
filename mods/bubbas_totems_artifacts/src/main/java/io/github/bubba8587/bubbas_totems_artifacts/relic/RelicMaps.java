@@ -51,7 +51,7 @@ public final class RelicMaps {
 	 */
 	public static ItemStack map(ServerLevel any, RelicShred shred) {
 		ServerLevel level = any.getServer().overworld();
-		RelicSites.Site site = RelicSites.site(level.getSeed(), shred.name(), shred.size());
+		RelicSites.Site site = RelicSites.site(level.getSeed(), RelicSites.Land.of(level), shred.name(), shred.size());
 		if (site == null) {
 			return ItemStack.EMPTY;
 		}

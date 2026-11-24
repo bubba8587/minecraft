@@ -6,7 +6,7 @@
 > | | |
 > |---|---|
 > | **Type** | Structure (underground) |
-> | **Location** | Overworld, about 20 blocks under the ground; one per relic name and size |
+> | **Location** | Overworld, about 12 blocks under the ground, never under the sea; one per relic name and size |
 > | **Found with** | A finished [[Relic Maps|relic map]] |
 > | **Sizes** | Small (four-piece map), grand (nine-piece map); smaller unnamed vaults behind some noble crypts |
 > | **Contains** | A pedestal with a totem statue or a fine weapon, stacked chests, armour stands, tables with cushioned chairs |
@@ -18,7 +18,7 @@ A **relic vault** is a sealed treasure room buried deep under the world. Each on
 
 Every world has exactly one vault for each relic name and size: 64 small vaults for the four-piece maps and 64 grand vaults for the nine-piece maps. Their places are fixed from the world seed. Small vaults lie 400 to 2,400 blocks from the world's centre, grand vaults 1,600 to 4,800 blocks, and no two lie close together.
 
-A vault's floor is about 20 blocks under the ground (under the sea floor beneath water). There is no way in from the surface: an old stone stair climbs seven steps from the vault's door and stops in solid rock. The way in is to dig down, following the map's X, which marks the door.
+A vault's floor is about 12 blocks under the ground, as deep as one dug off a crypt, and vaults are never under the sea. There is no way in from the surface: an old stone stair climbs seven steps from the vault's door and stops in solid rock. The way in is to dig down, following the map's X, which marks the door.
 
 ### Crypt vaults
 

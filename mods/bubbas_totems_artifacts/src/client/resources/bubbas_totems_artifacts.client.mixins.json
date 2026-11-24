@@ -3,7 +3,8 @@
 	"package": "io.github.bubba8587.bubbas_totems_artifacts.client.mixin",
 	"compatibilityLevel": "JAVA_25",
 	"client": [
-		"ClientLevelPrecipitationMixin"
+		"ClientLevelPrecipitationMixin",
+		"ClientStatuePlaceCooldownMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

@@ -19,8 +19,10 @@ public final class RelicTuning {
 	public static final int GRAND_MAX_DISTANCE = 4800;
 	/** At least this many chunks between two named vaults (when the attempts allow). */
 	public static final int SITE_SEPARATION_CHUNKS = 20;
-	/** A named vault's floor is this far under the ground (a crypt's floor is 5 under). */
-	public static final int NAMED_DEPTH = 20;
+	/** A named vault's floor is this far under the ground: a crypt's floor (5) plus the stair (STAIR_STEPS), as if it hung off a crypt. */
+	public static final int NAMED_DEPTH = 5 + 7;
+	/** A named vault's site has no ocean at sea level within this many blocks of its door. */
+	public static final int SITE_LAND_RADIUS = 16;
 	/** Steps in a vault's stair (it climbs this far toward the surface, then stops). */
 	public static final int STAIR_STEPS = 7;
 	/** A vault's pedestal holds a totem statue this often (else a fine weapon on display). */

@@ -13,6 +13,8 @@
 		"PlayerKeepingMixin",
 		"ServerExplosionMixin",
 		"ServerLevelPrecipitationMixin",
+		"StatuePlaceCooldownMixin",
+		"StructureStateAccessor",
 		"SwimNodeEvaluatorMixin",
 		"TemptGoalMixin",
 		"TemptingSensorMixin",

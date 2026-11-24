@@ -24,7 +24,7 @@ public class RelicVaultStructure extends Structure {
 	@Override
 	protected Optional<GenerationStub> findGenerationPoint(GenerationContext context) {
 		ChunkPos chunk = context.chunkPos();
-		RelicSites.Site site = RelicSites.at(context.seed(), chunk.x(), chunk.z());
+		RelicSites.Site site = RelicSites.at(context.seed(), RelicSites.Land.notOcean(context.biomeSource(), context.randomState()), chunk.x(), chunk.z());
 		if (site == null) {
 			return Optional.empty();
 		}

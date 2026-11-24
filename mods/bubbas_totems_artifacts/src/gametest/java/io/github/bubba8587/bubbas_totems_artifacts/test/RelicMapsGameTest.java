@@ -120,9 +120,9 @@ public class RelicMapsGameTest {
 
 	/** Sites: one per name and size, stable for a seed, different for another, in their bands and apart. */
 	public void sitesAreFixedPerSeed(GameTestHelper helper) {
-		List<RelicSites.Site> first = RelicSites.sites(1234L);
-		List<RelicSites.Site> other = RelicSites.sites(98765L);
-		List<RelicSites.Site> again = RelicSites.sites(1234L);
+		List<RelicSites.Site> first = RelicSites.sites(1234L, RelicSites.Land.ANY);
+		List<RelicSites.Site> other = RelicSites.sites(98765L, RelicSites.Land.ANY);
+		List<RelicSites.Site> again = RelicSites.sites(1234L, RelicSites.Land.ANY);
 		helper.assertTrue(first.equals(again), "the same seed gave different sites");
 		helper.assertTrue(!first.equals(other), "two seeds gave the same sites");
 		helper.assertTrue(first.size() == RelicNames.ALL.size() * 2, first.size() + " sites, expected " + RelicNames.ALL.size() * 2);
@@ -134,7 +134,7 @@ public class RelicMapsGameTest {
 			int min = site.size() == 9 ? RelicTuning.GRAND_MIN_DISTANCE : RelicTuning.SMALL_MIN_DISTANCE;
 			int max = site.size() == 9 ? RelicTuning.GRAND_MAX_DISTANCE : RelicTuning.SMALL_MAX_DISTANCE;
 			helper.assertTrue(d >= min - 16 && d <= max + 16, site + " is " + (int) d + " blocks out");
-			helper.assertTrue(RelicSites.site(1234L, site.name(), site.size()).equals(site), "lookup by name differs for " + site);
+			helper.assertTrue(RelicSites.site(1234L, RelicSites.Land.ANY, site.name(), site.size()).equals(site), "lookup by name differs for " + site);
 			for (RelicSites.Site o : first) {
 				int dx = o.chunk().x() - site.chunk().x();
 				int dz = o.chunk().z() - site.chunk().z();
@@ -144,14 +144,18 @@ public class RelicMapsGameTest {
 			}
 		}
 		helper.assertTrue(close == 0, close / 2 + " pairs of sites closer than " + RelicTuning.SITE_SEPARATION_CHUNKS + " chunks");
+		// Sites keep off spots the land rule forbids (oceans in a real world).
+		RelicSites.Land east = (x, z) -> x >= 0;
+		List<RelicSites.Site> eastOnly = RelicSites.sites(1234L, east);
+		helper.assertTrue(eastOnly.stream().allMatch(s -> s.centre().getX() >= 0), "a site sits where the land rule forbids");
 		// The structure set is loaded with the placement, and it marks exactly the site chunks.
 		ServerLevel level = helper.getLevel();
 		StructureSet set = level.registryAccess().lookupOrThrow(Registries.STRUCTURE_SET)
 				.getValueOrThrow(ResourceKey.create(Registries.STRUCTURE_SET, io.github.bubba8587.bubbas_totems_artifacts.BubbasTotemsArtifacts.id("relic_vaults")));
 		helper.assertTrue(set.placement() instanceof RelicVaultPlacement, "relic_vaults isn't placed by relic_sites");
-		RelicSites.Site site = RelicSites.sites(level.getSeed()).getFirst();
-		helper.assertTrue(RelicSites.at(level.getSeed(), site.chunk().x(), site.chunk().z()) == site
-				&& RelicSites.at(level.getSeed(), site.chunk().x() + 1, site.chunk().z()) == null, "site lookup by chunk is off");
+		RelicSites.Site site = RelicSites.sites(level.getSeed(), RelicSites.Land.of(level)).getFirst();
+		helper.assertTrue(RelicSites.at(level.getSeed(), RelicSites.Land.of(level), site.chunk().x(), site.chunk().z()) == site
+				&& RelicSites.at(level.getSeed(), RelicSites.Land.of(level), site.chunk().x() + 1, site.chunk().z()) == null, "site lookup by chunk is off");
 		helper.succeed();
 	}
 
@@ -164,7 +168,7 @@ public class RelicMapsGameTest {
 		whole.getItem().inventoryTick(whole, level, player, null);
 		ItemStack map = player.getInventory().getItem(3);
 		helper.assertTrue(map.is(Items.FILLED_MAP), "the whole shred didn't turn into a map: " + map);
-		RelicSites.Site site = RelicSites.site(level.getSeed(), A, 9);
+		RelicSites.Site site = RelicSites.site(level.getSeed(), RelicSites.Land.of(level), A, 9);
 		var decorations = map.get(DataComponents.MAP_DECORATIONS);
 		helper.assertTrue(decorations != null && decorations.decorations().values().stream()
 				.anyMatch(d -> (int) d.x() == site.centre().getX() && (int) d.z() == site.centre().getZ()), "the map's X isn't on " + site);
@@ -203,7 +207,7 @@ public class RelicMapsGameTest {
 			level.getEntitiesOfClass(net.minecraft.world.entity.Entity.class, box.inflate(1), e -> !(e instanceof net.minecraft.world.entity.player.Player))
 					.forEach(net.minecraft.world.entity.Entity::discard);
 		}
-		helper.assertTrue(RelicTuning.NAMED_DEPTH > 6 + 2, "named vaults aren't deeper than crypts");
+		helper.assertTrue(RelicTuning.NAMED_DEPTH == 5 + RelicTuning.STAIR_STEPS, "a named vault's stair top isn't at crypt floor depth");
 		helper.succeed();
 	}
 
