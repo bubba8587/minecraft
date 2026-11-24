@@ -38,7 +38,7 @@ Endermen are the world's **caretakers and builders** (owner's design).
 - **Water:** endermen keep their vanilla weakness to water.
 - **E1 what they touch:** no record of placed blocks. Endermen cheaply sort each spot by **"does this block generate naturally"**:
   - natural block types (dirt, stone, grass, sand...) are freely reverted toward the original, **including air where ground used to be** (dig out an area and they slowly fill it back; they might eventually bury a house);
-  - **unnatural** blocks (planks, glass, bricks, anything crafted) have only a **much smaller chance** of being touched. As built, builds are now left alone entirely ("Caretakers leave builds alone", below; see Open).
+  - **unnatural** blocks (planks, glass, bricks, anything crafted) have only a **much smaller chance** of being touched. As built, builds are left alone except where they stand in a cairn's footprint ("Caretakers leave builds alone", below). **Confirmed (owner, 2026-11-24):** players can decorate and build around a cairn (stands for the endermen and such); only blocks literally in the cairn's way are cleared.
 - **E2 protection, both:** cairn sites are fixed at worldgen and act as a **nexus**: a higher enderman spawn rate there, **significantly higher once the cairn is complete**. Killing endermen thins them but doesn't stop the flow from a nexus. **Wards definitely work**: a Totem of Warding area keeps endermen and their work out.
 - **E3 shutting a nexus down:**
   - (a) **Tearing a cairn down** drops its site back to the lower, unfinished rate, and endermen start rebuilding it. It works in reverse too: a player who repairs a cairn they broke brings the higher rate back ("complete" = matches its template).
