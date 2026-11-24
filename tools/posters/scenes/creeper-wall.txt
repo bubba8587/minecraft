@@ -1,0 +1,11 @@
+place -885 72 -838 90 0
+wait 60
+/time set 12900
+/kill @e[type=minecraft:creeper,x=-898,y=70,z=-832,distance=..20]
+/summon minecraft:creeper -900.2 69 -834.98 {NoAI:1b,PersistenceRequired:1b,Rotation:[-100f,0f]}
+/kill @e[type=minecraft:item,x=-898,y=70,z=-832,distance=..20]
+wait 10
+fov 50
+shot crW4 -892.3 70.5 -836.9 -900.2 70.3 -835.1
+shot crW5 -890.5 70.8 -837.6 -899.6 70.2 -834.6
+shot crW6 -894 70.4 -836.6 -900.2 70.3 -835.1

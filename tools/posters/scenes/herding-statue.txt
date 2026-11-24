@@ -1,0 +1,31 @@
+place 659 66 194 0 0
+wait 60
+/time set 11200
+/fill 640 60 190 680 90 225 minecraft:air replace minecraft:tall_grass
+/fill 640 60 190 680 90 225 minecraft:air replace minecraft:short_grass
+/fill 640 60 190 680 90 225 minecraft:air replace minecraft:short_dry_grass
+/fill 640 60 190 680 90 225 minecraft:air replace minecraft:tall_dry_grass
+/fill 640 60 190 680 90 225 minecraft:air replace minecraft:bush
+/fill 640 60 190 680 90 225 minecraft:air replace minecraft:dead_bush
+/fill 640 60 190 680 90 225 minecraft:air replace minecraft:acacia_leaves
+/fill 640 60 190 680 90 225 minecraft:air replace minecraft:acacia_log
+/fill 640 60 190 680 90 225 minecraft:air replace minecraft:oak_leaves
+/fill 640 60 190 680 90 225 minecraft:air replace minecraft:dark_oak_leaves
+/kill @e[type=!minecraft:player,x=659,y=64,z=203,distance=..10]
+/kill @e[type=minecraft:item,x=659,y=64,z=203,distance=..16]
+/setblock 659 64 204 minecraft:air
+/setblock 659 64 202 bubbas_totems_artifacts:totem_statue[totem=herding,facing=north]
+/summon minecraft:sheep 657.6 64 204.4 {NoAI:1b,PersistenceRequired:1b,Rotation:[-158f,0f]}
+/summon minecraft:cow 661.9 64 205.4 {NoAI:1b,PersistenceRequired:1b,Rotation:[158f,0f]}
+/summon minecraft:sheep 660.6 64 204.0 {NoAI:1b,PersistenceRequired:1b,Rotation:[166f,0f]}
+/summon minecraft:pig 656.0 64 206.0 {NoAI:1b,PersistenceRequired:1b,Rotation:[-151f,0f]}
+/summon minecraft:chicken 658.6 64 203.6 {NoAI:1b,PersistenceRequired:1b,Rotation:[-167f,0f]}
+/summon minecraft:cow 655.0 64 203.6 {NoAI:1b,PersistenceRequired:1b,Rotation:[-132f,0f]}
+/summon minecraft:sheep 663.8 64 203.6 {NoAI:1b,PersistenceRequired:1b,Rotation:[133f,0f]}
+/summon minecraft:sheep 659.4 64 207.0 {NoAI:1b,PersistenceRequired:1b,Rotation:[-179f,0f]}
+wait 20
+/kill @e[type=minecraft:item,x=659,y=64,z=203,distance=..30]
+fov 60
+shot herdA 659.5 64.85 199.6 659.5 65.0 204
+shot herdB 659.5 65.2 199 659.5 64.9 204
+shot herdC 661 64.9 199.8 659.3 64.9 204

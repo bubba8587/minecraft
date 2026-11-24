@@ -1,0 +1,30 @@
+place 668 g+2 195 90 0
+wait 60
+/time set 12600
+/fill 640 60 180 670 80 210 minecraft:air replace minecraft:acacia_leaves
+/fill 640 60 180 670 80 210 minecraft:air replace minecraft:acacia_log
+/fill 640 60 180 672 80 210 minecraft:air replace minecraft:tall_grass
+/fill 640 60 180 672 80 210 minecraft:air replace minecraft:short_grass
+/fill 640 60 180 672 80 210 minecraft:air replace minecraft:short_dry_grass
+/fill 640 60 180 672 80 210 minecraft:air replace minecraft:tall_dry_grass
+/fill 640 60 180 672 80 210 minecraft:air replace minecraft:bush
+/fill 640 60 180 672 80 210 minecraft:air replace minecraft:dead_bush
+set B 64
+/fill 653 $B-1 193 657 $B+2 197 minecraft:air
+/fill 653 $B-2 193 657 $B-2 197 minecraft:dirt
+/fill 653 $B-1 193 657 $B-1 197 minecraft:grass_block
+/fill 654 $B 194 656 $B 196 minecraft:iron_block
+/fill 654 $B+1 194 656 $B+30 196 minecraft:air
+/setblock 655 $B+1 195 minecraft:beacon{"bubbas_reworked_beacons:item":{id:"bubbas_infused_gems:gem",count:1,components:{"bubbas_infused_gems:gem":{effect:"minecraft:speed",infusion:1,tier:3,main:0.9f,other:{effect:"minecraft:haste",strength:0.35f}}}}}
+/kill @e[type=!minecraft:player,x=655,y=64,z=195,distance=..20]
+/kill @e[type=minecraft:item,x=655,y=64,z=195,distance=..25]
+run 660 g 193.2 summon minecraft:villager ~ ~ ~ {NoAI:1b,PersistenceRequired:1b,Rotation:[-100f,0f],VillagerData:{profession:"minecraft:farmer",level:2,type:"minecraft:savanna"}}
+run 657 g 200.8 summon minecraft:horse ~ ~ ~ {NoAI:1b,PersistenceRequired:1b,Rotation:[-100f,0f],Variant:2}
+run 659 g 189.8 summon minecraft:sheep ~ ~ ~ {NoAI:1b,PersistenceRequired:1b,Rotation:[-105f,0f]}
+run 661.5 g 197.8 summon minecraft:cow ~ ~ ~ {NoAI:1b,PersistenceRequired:1b,Rotation:[-80f,0f]}
+wait 100
+/kill @e[type=minecraft:item,x=655,y=64,z=195,distance=..25]
+fov 70
+let C 667 195
+shot gbA 667 $C+1.4 195.5 655.5 $B+4.5 195.5
+shot gbE 668.5 $C+1.0 195.5 655.5 $B+5.5 195.5

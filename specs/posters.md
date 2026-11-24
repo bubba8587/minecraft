@@ -53,6 +53,10 @@ Scene scripts used for the current posters are kept in `tools/posters/scenes/` (
 - Large camps only sometimes roll a skull rock (1 in 3, by seed): build a few seeds and look from above. Upright gravestones need a kept yard. Clear stray natural trees out of a hero subject (`fill ... air replace <log/leaves>`).
 - The camera's `poster-world` is kept between camera restarts (`gradle/fabric-mod.gradle` skips it when clearing client saves).
 - Photos are cropped tight to the subject in `make.py` (`photo_kw={"crop": (...)}` in 1920x1080 pixels).
+- **Screens as pictures:** `chest name x y z` opens any block with a menu (brewing stand, beacon, blast furnace) and shoots it; the player must be within reach or the screen closes at once. Fill the block first with `/data merge block` (brewing stand: `BrewTime` counts down from `total_brew_time` 400; a finished gem in a beacon: `{id:"bubbas_infused_gems:gem",components:{"bubbas_infused_gems:gem":{effect,infusion,tier,main,other}}}`). Screens go on posters with `image=` (fitted whole), not `photo=` (which crops to 16:9).
+- **Peeking creepers:** a NoAI creeper is placed by hand so the wall edge splits its face; work out the camera ray past the corner first (`creeper-wall.txt`).
+- **Kill dropped items** after clearing old posed mobs (`/kill @e[type=minecraft:item,...]`), or their loot floats in the next shot. `/locate structure #minecraft:village` and a top-down `shot` help find a real building fast; `execute if block` probes give exact wall lines.
+- The Nether lava sea's fog is strong red: keep the camera within about 8 blocks of a geyser and low over the lava so the smoke and bubbles read (`geyser-wide.txt`).
 
 ## Drawing (`tools/posters/`)
 
