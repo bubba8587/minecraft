@@ -87,6 +87,11 @@ public class BubbasTotemsArtifactsCoreGameTest {
 		new NewTotemsGameTest().statuesPulseTheirArea(helper);
 	}
 
+	@GameTest(structure = TestSupport.FIELD, maxTicks = 40)
+	public void northWindGustsGlidersOnly(GameTestHelper helper) {
+		new NorthWindGameTest().usedWhileGlidingBoosts(helper);
+	}
+
 	// --- relic maps and vaults (bodies in RelicMapsGameTest) ---
 
 	@GameTest

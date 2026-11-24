@@ -195,6 +195,25 @@
 									}
 								]
 							}
+						},
+						{
+							"type": "minecraft:item",
+							"name": "bubbas_totems_artifacts:totem_of_north_wind",
+							"condition": {
+								"type": "minecraft:all_of",
+								"terms": [
+									{
+										"type": "minecraft:survives_explosion"
+									},
+									{
+										"type": "minecraft:match_block",
+										"blocks": "bubbas_totems_artifacts:totem_statue",
+										"state": {
+											"totem": "north_wind"
+										}
+									}
+								]
+							}
 						}
 					]
 				}

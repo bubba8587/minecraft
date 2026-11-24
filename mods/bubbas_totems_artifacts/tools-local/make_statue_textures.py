@@ -265,6 +265,11 @@ def _statues():
 	# Clear Skies: pale calcite, blue eyes, blue sky with the sun on the chest, a gold sun crown of rays.
 	g = _shade_grid(29); _eyes(g, "k"); _put(g, R_EMBLEM, ["sSs", "SYS", "sSs"])
 	defs["clear_skies"] = (TT.SKY_PAL, TT.SKY_MAT, ("stone",), g, ["YyYy", "yYyY", "YyYy", "yYyY", "YyYy", "yYyY"], [])
+	# North Wind: packed ice, deep blue eyes, puffed cheeks and a blowing mouth, a snowflake on the chest, an icicle crown
+	# swept back by the wind.
+	g = _shade_grid(30); _eyes(g, "k"); _put(g, R_EMBLEM, ["FbF", "bfb", "FbF"])
+	g[EYE_ROW + 1][1] = "5"; g[EYE_ROW + 1][4] = "5"; g[EYE_ROW + 2][2] = "m"; g[EYE_ROW + 2][3] = "m"
+	defs["north_wind"] = (TT.NORTH_PAL, TT.NORTH_MAT, ("ice",), g, ["IiIi", "iIiI", "IiIi", "iiii", "iIii", "iiIi"], [])
 	for name, (pal, mat, grain, grid, topper, glow) in defs.items():
 		if topper:
 			_put(grid, R_TOPPER, topper)
@@ -331,6 +336,14 @@ def statue_model(name, glow):
 		el.append(box([5, 13, 5], [11, 13.5, 11], {**ring, "up": ts}))
 		for x, z, h in ((7.5, 4.5, 3), (7.5, 10.5, 2.5), (4.5, 7.5, 2.5), (10.5, 7.5, 2.5), (5, 5, 2), (10, 5, 2), (5, 10, 2), (10, 10, 2)):
 			el.append(box([x, 13.5, z], [x + 1, 13.5 + h, z + 1], {d: tf for d in (*sides, "up")}))
+	elif name == "north_wind":  # an icicle crown, swept back by the wind; a gust from the mouth
+		el.append(box([5, 13, 5], [11, 13.5, 11], {**ring, "up": ts}))
+		for x, z, h in ((5.5, 5.5, 3), (7.5, 5, 3.5), (9.5, 5.5, 3), (6, 7.5, 2.5), (9, 7.5, 2.5), (7.5, 8.5, 2)):
+			el.append(box([x, 13.5, z], [x + 1, 13.5 + h, z + 1], {d: tf for d in (*sides, "up")},
+				rotation={"origin": [8, 13.5, 8], "axis": "x", "angle": 22.5}))
+		gust = face([12, 10, 16, 11], F)
+		for x0, x1, y in ((6, 10, 10.25), (5, 8, 11.25)):
+			el.append(box([x0, y, 2.5], [x1, y + 0.5, 4.5], {d: gust for d in (*sides, "up", "down")}))
 	# Glowing parts, just proud of the face.
 	if "eyes" in glow:
 		for x, u in ((6, 1), (9, 4)):
@@ -345,11 +358,11 @@ def statue_model(name, glow):
 	}
 
 
-ORDER = ["warding", "keeping", "gathering", "fortification", "growth", "seeking", "beginning", "end", "herding", "clear_skies"]
+ORDER = ["warding", "keeping", "gathering", "fortification", "growth", "seeking", "beginning", "end", "herding", "clear_skies", "north_wind"]
 ITEMS = {"warding": "totem_of_warding", "keeping": "totem_of_keeping", "gathering": "totem_of_gathering",
 	"fortification": "totem_of_fortification", "growth": "totem_of_growth", "seeking": "totem_of_seeking",
 	"beginning": "totem_of_the_beginning", "end": "totem_of_the_end", "herding": "totem_of_herding",
-	"clear_skies": "totem_of_clear_skies"}
+	"clear_skies": "totem_of_clear_skies", "north_wind": "totem_of_north_wind"}
 
 
 def write_others():

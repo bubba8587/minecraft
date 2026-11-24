@@ -84,6 +84,10 @@ public final class TotemsTuning {
 			BuiltInLootTables.IGLOO_CHEST, 0.12F,
 			BuiltInLootTables.VILLAGE_DESERT_HOUSE, 0.06F,
 			BuiltInLootTables.SHIPWRECK_SUPPLY, 0.05F);
+	/** Totem of the North Wind loot: trial chamber vaults (normal and ominous). */
+	public static final Map<ResourceKey<LootTable>, Float> NORTH_WIND_LOOT = Map.of(
+			BuiltInLootTables.TRIAL_CHAMBERS_REWARD, 0.03F,
+			BuiltInLootTables.TRIAL_CHAMBERS_REWARD_OMINOUS, 0.06F);
 	/** Totem of Keeping: rare and deep. */
 	public static final Map<ResourceKey<LootTable>, Float> KEEPING_LOOT = Map.of(
 			BuiltInLootTables.ANCIENT_CITY, 0.06F,
@@ -137,6 +141,14 @@ public final class TotemsTuning {
 	public static final int BEGINNING_AREA_PULSE_TICKS = 300;
 	/** Beacon and statue: the area pulse spreads one block every this many ticks. */
 	public static final int BEGINNING_AREA_TICKS_PER_BLOCK = 2;
+
+	// --- Totem of the North Wind ------------------------------------------------------------------------
+	/** Used while gliding: the cooldown after a gust, shown with the item cooldown sweep. */
+	public static final int NORTH_WIND_COOLDOWN_TICKS = 60;
+	/** Beacon and statue areas: a glider's cooldown between gusts (the same cooldown group as the item). */
+	public static final int NORTH_WIND_AREA_COOLDOWN_TICKS = 60;
+	/** A gust's flight duration, as a firework rocket's (1 = a plain crafted rocket with one gunpowder). */
+	public static final int NORTH_WIND_FLIGHT = 1;
 
 	private TotemsTuning() {
 	}

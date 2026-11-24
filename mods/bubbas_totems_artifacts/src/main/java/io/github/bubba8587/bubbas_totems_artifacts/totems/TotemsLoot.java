@@ -32,6 +32,7 @@ public final class TotemsLoot {
 		all.put(ModItems.TOTEM_OF_THE_END, TotemsTuning.END_LOOT);
 		all.put(ModItems.TOTEM_OF_HERDING, TotemsTuning.HERDING_LOOT);
 		all.put(ModItems.TOTEM_OF_CLEAR_SKIES, TotemsTuning.CLEAR_SKIES_LOOT);
+		all.put(ModItems.TOTEM_OF_NORTH_WIND, TotemsTuning.NORTH_WIND_LOOT);
 		all.put(ModItems.GRAVE_TALISMAN, TotemsTuning.TALISMAN_LOOT);
 		return all;
 	}
