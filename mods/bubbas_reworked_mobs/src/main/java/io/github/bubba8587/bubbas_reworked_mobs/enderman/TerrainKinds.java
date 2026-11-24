@@ -101,16 +101,16 @@ public final class TerrainKinds {
 	/** Whether an enderman may lift this block at all. */
 	public static boolean liftable(BlockGetter level, BlockPos pos, BlockState state) {
 		if (state.isAir() || state.hasBlockEntity() || !state.getFluidState().isEmpty() || state.getDestroySpeed(level, pos) < 0.0F
-				|| state.is(BlockTags.WITHER_IMMUNE) || state.is(BlockTags.DRAGON_IMMUNE) || state.is(BlockTags.BEACON_BASE_BLOCKS)) {
+				|| state.is(BlockTags.WITHER_IMMUNE) || state.is(BlockTags.DRAGON_IMMUNE)) {
 			return false;
 		}
 		return state.is(CARETAKER_LIFTABLE);
 	}
 
-	/** Whether a builder may clear this block out of its cairn's footprint: holdable or a plain full cube, never a beacon base. */
+	/** Whether a builder may clear this block out of its cairn's footprint: holdable or a plain full cube. */
 	public static boolean clearable(BlockGetter level, BlockPos pos, BlockState state) {
 		if (state.isAir() || state.hasBlockEntity() || !state.getFluidState().isEmpty() || state.getDestroySpeed(level, pos) < 0.0F
-				|| state.is(BlockTags.WITHER_IMMUNE) || state.is(BlockTags.DRAGON_IMMUNE) || state.is(BlockTags.BEACON_BASE_BLOCKS)) {
+				|| state.is(BlockTags.WITHER_IMMUNE) || state.is(BlockTags.DRAGON_IMMUNE)) {
 			return false;
 		}
 		return state.is(BlockTags.ENDERMAN_HOLDABLE) || state.isCollisionShapeFullBlock(level, pos);

@@ -70,12 +70,13 @@ What endermen think belongs at a block: a cairn's design where a cairn site cove
   - terrain **families** are freely reverted: soil (dirt, grass, podzol, mycelium, coarse/rooted dirt, dirt path); stone (stone, cobblestone, mossy cobblestone, andesite, diorite, granite, tuff, calcite, smooth stone); deepslate and cobbled deepslate; sand and sandstone; red sand and red sandstone; gravel; clay; mud; snow block; terracotta;
   - other **natural** blocks (logs, leaves, flowers, ores, ice, pumpkins, melons, mushrooms, moss, bedrock, obsidian...) are never touched unless a nearby cairn wants exactly that block;
   - everything else is **unnatural** (planks, glass, bricks, End blocks...).
-- **Liftable at all** (repair pickups): in the block tag `#bubbas_reworked_mobs:caretaker_liftable` (vanilla's `#enderman_holdable`, dirt, sand, overworld and Nether base stones, terracotta, nylium, snow, gravel, clay, cobblestone kinds, sandstone and red sandstone); no block entity (chests, sleepers, loot displays are safe), no fluid, breakable, not wither/dragon-immune, not a beacon base. So of the unnatural blocks only a few in the tag (TNT, carved pumpkins, Nether stone, nylium) can be taken, at 5 % each time an enderman finds one where it doesn't belong.
+- **Liftable at all** (repair pickups): in the block tag `#bubbas_reworked_mobs:caretaker_liftable` (vanilla's `#enderman_holdable`, dirt, sand, overworld and Nether base stones, terracotta, nylium, snow, gravel, clay, cobblestone kinds, sandstone and red sandstone); no block entity (chests, sleepers, loot displays are safe), no fluid, breakable, not wither/dragon-immune. So of the unnatural blocks only a few in the tag (TNT, carved pumpkins, Nether stone, nylium) can be taken, at 5 % each time an enderman finds one where it doesn't belong.
 
 ### Caretakers leave builds alone (owner)
 
-- Terrain mending lifts only natural terrain: the `caretaker_liftable` tag above, never a beacon base (`#minecraft:beacon_base_blocks`) or anything with a block entity. This came from a Totem of the Beginning beacon whose caretakers took a pyramid block and broke the beacon.
-- Clearing a cairn's footprint keeps the broader rule (`TerrainKinds.clearable`: holdable or a full cube, never a beacon base or block entity), so trees and player blocks in the cairn's way still go.
+- Terrain mending lifts only natural terrain: the `caretaker_liftable` tag above, never anything with a block entity.
+- **No beacon exception (owner, 2026-11-24):** beacon bases get no extra protection from endermen. Don't build near a cairn or they may take your stuff.
+- Clearing a cairn's footprint keeps the broader rule (`TerrainKinds.clearable`: holdable or a full cube, never a block entity), so trees and player blocks in the cairn's way still go.
 
 ### Jobs (`EndermanJobGoal`, `EndermanWork`)
 
