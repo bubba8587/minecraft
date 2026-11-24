@@ -31,6 +31,7 @@
 	},
 	"mixins": [
 		"bubbas_reworked_mobs.mixins.json",
+		"bubbas_reworked_mobs.compat.mixins.json",
 		{
 			"config": "bubbas_reworked_mobs.client.mixins.json",
 			"environment": "client"

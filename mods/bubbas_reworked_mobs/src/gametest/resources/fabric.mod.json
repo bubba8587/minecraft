@@ -53,6 +53,7 @@
 			"io.github.bubba8587.bubbas_reworked_mobs.test.ShipwreckClientGameTest",
 			"io.github.bubba8587.bubbas_reworked_mobs.test.WispsClientGameTest",
 			"io.github.bubba8587.bubbas_reworked_mobs.test.MapsClientGameTest",
+			"io.github.bubba8587.bubbas_reworked_mobs.test.OracleClientGameTest",
 			"io.github.bubba8587.bubbas_reworked_mobs.test.YardKindsClientGameTest",
 			"io.github.bubba8587.bubbas_reworked_mobs.test.FactoriesClientGameTest",
 			"io.github.bubba8587.bubbas_reworked_mobs.test.SpiderClientGameTest",

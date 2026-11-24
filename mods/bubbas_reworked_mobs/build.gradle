@@ -17,6 +17,8 @@ evaluationDependsOn(':bubbas_infused_gems')
 def gemsJar = files(rootProject.project(':bubbas_infused_gems').tasks.named('jar').flatMap { it.archiveFile })
 dependencies {
 	// Extra mod dependencies go here; see docs/knowledge/libraries.md.
+	// MixinSquared (jar-in-jar): compat mixins into other mods' handlers (mixin/compat, specs/compat.md).
+	implementation include(annotationProcessor("com.github.bawnorton.mixinsquared:mixinsquared-fabric:0.3.8"))
 	// Stormie's Spiders (required; gradle/stormies-spiders.gradle): compiled against here, loaded in dev runs by that
 	// script. The nest spider opts out of its climbing while it's ours (spider/NestSpider).
 	compileOnly stormiesSpidersCoords

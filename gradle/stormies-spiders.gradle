@@ -21,5 +21,7 @@ dependencies {
 }
 def stormiesJar = configurations.stormiesSpiders.singleFile.absolutePath
 tasks.matching { it.name in ['runGameTest', 'runClientGameTest', 'runClient', 'runServer', 'runDatagen'] }.configureEach { t ->
-	t.jvmArgs("-Dfabric.addMods=${stormiesJar}")
+	// -PextraMods=<jar>[;<jar>...]: other mods' jars loaded into dev runs too, for compatibility checks (specs/compat.md)
+	def extra = providers.gradleProperty('extraMods').orNull
+	t.jvmArgs("-Dfabric.addMods=${stormiesJar}" + (extra ? File.pathSeparator + extra.split(';').join(File.pathSeparator) : ''))
 }

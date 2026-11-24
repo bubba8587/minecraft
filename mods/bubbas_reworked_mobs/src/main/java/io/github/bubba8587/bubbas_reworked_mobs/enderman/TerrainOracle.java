@@ -14,6 +14,7 @@ import java.util.function.Predicate;
 
 import io.github.bubba8587.bubbas_reworked_mobs.BubbasReworkedMobs;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.NoiseColumn;
@@ -149,6 +150,13 @@ public final class TerrainOracle {
 		return future.join();
 	}
 
+	/** The server's registries, for worldgen mods whose terrain hooks expect a region (mixin/compat). */
+	private static volatile @Nullable RegistryAccess registries;
+
+	public static @Nullable RegistryAccess registries() {
+		return registries;
+	}
+
 	/** Whether a regeneration failure was logged already (one warning per run, not one per chunk). */
 	private static final java.util.concurrent.atomic.AtomicBoolean WARNED = new java.util.concurrent.atomic.AtomicBoolean();
 
@@ -171,6 +179,7 @@ public final class TerrainOracle {
 				}
 			}
 		}
+		registries = level.registryAccess();
 		ChunkGenerator generator = level.getChunkSource().getGenerator();
 		RandomState randomState = level.getChunkSource().randomState();
 		long seed = level.getSeed();

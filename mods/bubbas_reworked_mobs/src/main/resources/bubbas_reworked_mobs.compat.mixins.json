@@ -1,0 +1,12 @@
+{
+	"required": true,
+	"package": "io.github.bubba8587.bubbas_reworked_mobs.mixin.compat",
+	"plugin": "io.github.bubba8587.bubbas_reworked_mobs.mixin.compat.CompatMixinPlugin",
+	"compatibilityLevel": "JAVA_25",
+	"mixins": [
+		"LithostitchedBandsMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

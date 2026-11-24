@@ -19,6 +19,7 @@ loom {
 
 repositories {
 	maven { name = 'Modrinth'; url = 'https://api.modrinth.com/maven'; content { includeGroup 'maven.modrinth' } }
+	maven { name = 'Bawnorton'; url = 'https://maven.bawnorton.com/releases'; content { includeGroup 'com.github.bawnorton.mixinsquared' } }
 }
 
 dependencies {

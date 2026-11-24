@@ -18,6 +18,7 @@ Status words: **ok** (checked), **easy win** (small change, queued or done), **t
 | Iris (shaders) | Custom rendering often breaks under shaders. | test |
 | Voxy | Far-distance view: our code-built structures should appear in it. Voxy 0.2.20-beta crashed on world join in "mod testing" (2026-11-23): its `sodium.MixinDefaultChunkRenderer` found no target in Sodium 0.9.3 (a Voxy/Sodium version mismatch, none of our mods in the trace). Owner playtests without it for now. | blocked (Voxy vs Sodium) |
 | Tectonic, Lithostitched | Taller, steeper terrain: our structures read ground height and skip steep ground, so they may be rarer or misplaced. | test |
+| Lithostitched (terrain oracle) | Its clay-band hook on `NoiseBasedChunkGenerator.buildTerrain` reads `carverBiomeRegion.registryAccess()` without a null check; our terrain oracle builds terrain with no region, so it crashed the server (2026-11-23). Fixed: `mixin/compat/LithostitchedBandsMixin` (MixinSquared `@TargetHandler`, applied only when Lithostitched is loaded) hands its handler the server's registries; and a failed regeneration now counts as unknown terrain instead of crashing. Checked by client part `oracle` with `-PextraMods=<lithostitched jar>`: 144 of 144 columns match. | ok |
 | Towns & Towers, Explorify | More structures: ours could land on theirs. | test |
 | Xaero's Minimap and World Map | Our helper entities (webs, cocoons, displays) may show as radar dots. | later |
 | Continuity, Visuality, AmbientSounds | Visual or sound only. | n/a |
@@ -74,6 +75,10 @@ None is in the owner's profile, so nothing could be run. From reading our recipe
 - `bubbas_infused_gems:socket` (`SocketRecipe`, smithing with no template, `isSpecial` true, output worked out from the inputs) probably shows badly or not at all.
 - `bubbas_infused_gems:invert_gem` (`InvertGemRecipe`, a 26.3 `BrewingRecipe` whose result depends on the gem) probably shows a gem going to a gem.
 - **Later:** run with EMI (and JEI) loaded. If they're missing, add a small soft-dependency plugin per viewer, or EMI's info pages, showing an example. That's more than an easy win without the viewer APIs at hand.
+
+## Testing with other mods loaded
+
+`-PextraMods=<jar>[;<jar>...]` loads other mods' jars into a mod's dev runs (game tests and client tests) through `fabric.addMods`, next to Stormie's Spiders (`gradle/stormies-spiders.gradle`; Reworked Mobs and runs that load it). Client part `oracle` (Reworked Mobs) checks the terrain oracle on a normal world.
 
 ## Open
 
