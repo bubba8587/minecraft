@@ -70,6 +70,17 @@ public class BubbasReworkedMiningCoreGameTest {
 
 		float efficient = speed(player, tool(helper, new ItemStack(Items.IRON_PICKAXE), Enchantments.EFFICIENCY, 5), deepslate);
 		near(helper, efficient / ironDeepslate, MiningTuning.efficiency(5), "Efficiency V multiplier");
+
+		BlockState log = Blocks.OAK_LOG.defaultBlockState();
+		player.setOnGround(true);
+		near(helper, speed(player, ItemStack.EMPTY, log), MiningTuning.FIST.other(), "fist on a log");
+		near(helper, speed(player, new ItemStack(Items.STICK), stone), MiningTuning.FIST.stone(), "stick (fist) on stone");
+		helper.assertTrue(speed(player, new ItemStack(Items.WOODEN_AXE), log) > speed(player, ItemStack.EMPTY, log), "wood axe beats fist on a log");
+		BlockPos grassPos = helper.absolutePos(new BlockPos(1, 2, 1));
+		helper.setBlock(new BlockPos(1, 1, 1), Blocks.GRASS_BLOCK);
+		helper.setBlock(new BlockPos(1, 2, 1), Blocks.SHORT_GRASS);
+		player.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
+		helper.assertTrue(helper.getLevel().getBlockState(grassPos).getDestroyProgress(player, helper.getLevel(), grassPos) >= 1.0F, "short grass still breaks instantly by hand");
 		helper.succeed();
 	}
 
