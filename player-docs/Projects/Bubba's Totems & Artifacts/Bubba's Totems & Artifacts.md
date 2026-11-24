@@ -19,9 +19,9 @@ side: client and server
 > | **Side** | Client and server |
 > | **Status** | Active |
 
-**Bubba's Totems & Artifacts** is a Fabric mod that adds **artifacts**: found items that do things potions and enchantments do not. It holds the Grave Talisman and the Totem of Warding, which were part of [[Bubba's Reworked Mobs]] before this mod existed, and found totems can be set down as decorative statues.
+**Bubba's Totems & Artifacts** is a Fabric mod that adds **artifacts**: found items that do things potions and enchantments do not. It holds the Grave Talisman and the Totem of Warding, which were part of [[Bubba's Reworked Mobs]] before this mod existed. Found totems can be set down as statues that give a small version of their effect.
 
-Item icons and statues use placeholder art in this early test version.
+Item icons and statues use placeholder art in this early test version. The statues are small, chunky figures, each in its own totem's look.
 
 ## Grave Talisman
 
@@ -46,7 +46,7 @@ A found item that makes nearby monsters run away while held, and in a beacon fro
 - [[Totem of the End]]: endermen treat its holder as one of their own; teleports its user to the block they aim at.
 - [[Totem of Herding]]: animals follow its holder; in a beacon, they stay in the area.
 - [[Totem of Clear Skies]]: ends a storm; in a beacon, keeps rain, snow and lightning off the area.
-- [[Totem of the North Wind]]: gives a gliding player a gust of wind, like a firework rocket; in a beacon, gliders in the area get a gust every 3 seconds.
+- [[Totem of the North Wind]]: gives a gliding player a gust of wind, like a firework rocket; in a beacon, gliders in the area get a gust every 5 seconds.
 
 ## Totem statues
 
@@ -76,12 +76,13 @@ The mod comes with vanilla-style 16x textures. A higher-resolution set, **Bubba'
 
 ## Compatibility
 
-The mod requires Fabric API and works on its own. Two of Bubba's mods add to it when installed, and neither is required:
+The mod requires Fabric API and works on its own. Three of Bubba's mods add to it when installed, and none is required:
 
 | Installed with | Adds |
 |---|---|
 | [[Bubba's Reworked Mobs]] | The Grave Talisman also senses [[Sleeping Undead|sleeping undead]]; the Totem of Warding calms sleeping undead, and a full ward keeps them asleep. [[Endermen|Enderman cairns]] sometimes offer the [[Totem of the Beginning]], and the Totem of the Beginning works only with this mod. Relic map shreds are also found in crypts, camps, Fabricator offices and cairn trades; some noble crypts hide a [[Relic Vaults|crypt vault]]; vault pedestals show their weapon planted point-down and a skeleton guard sits by it. |
-| [[Bubba's Reworked Beacons]] | Totems fit in a [[Beacon|beacon]] and work across its area: the Totem of Warding wards it, Gathering makes its item ring, Herding keeps animals in, Clear Skies keeps the weather off, the North Wind gives gliders gusts. The Totem of the Beginning in a beacon slowly returns its whole area's ground to how it was generated (with Bubba's Reworked Mobs). |
+| [[Bubba's Reworked Beacons]] | Totems fit in a [[Beacon|beacon]] and work across its area: the Totem of Warding wards it, Gathering makes its item ring, Fortification stops explosions breaking blocks, Growth speeds up plants, Seeking points held compasses, Herding keeps animals in, Clear Skies keeps the weather off, the North Wind gives gliders gusts. The Totem of the Beginning in a beacon slowly returns its whole area's ground to how it was generated (with Bubba's Reworked Mobs). |
+| [[Bubba's Infused Gems]] | The weapon on a relic vault's pedestal carries gems, the vault guard's chestplate and sword carry gems, and vault chests also hold rare gems. |
 
 ## History
 

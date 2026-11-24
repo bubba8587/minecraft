@@ -6,7 +6,7 @@
 > | | |
 > |---|---|
 > | **Type** | Item |
-> | **Obtained** | Family vault chests ([[Bubba's Reworked Mobs]]) |
+> | **Obtained** | Crypt chests ([[Bubba's Reworked Mobs]]); [[Relic Vaults|relic vault]] chests |
 > | **Detects** | Undead mobs; also sleeping undead with [[Bubba's Reworked Mobs]] |
 > | **Range** | 40 blocks |
 > | **Works from** | Either hand, hotbar or inventory |
@@ -15,7 +15,12 @@ The **Grave Talisman** is a small stone talisman whose gem glows when undead are
 
 ## Obtaining
 
-The Grave Talisman is found, not crafted. With [[Bubba's Reworked Mobs]] installed, the chest in a [[Crypt Yards|crypt yard's]] family vault holds one about 15 % of the time, and a noble crypt's chest about 25 % of the time. It is also in the creative inventory, under the **Bubba's Totems & Artifacts** tab.
+The Grave Talisman is found, not crafted:
+
+- With [[Bubba's Reworked Mobs]] installed, the chest in a [[Crypt Yards|crypt yard's]] family vault holds one about 15 % of the time, and a noble crypt's chest about 25 % of the time.
+- [[Relic Vaults|Relic vault]] chests sometimes hold one.
+
+It is also in the creative inventory, under the **Bubba's Totems & Artifacts** tab.
 
 ## Usage
 

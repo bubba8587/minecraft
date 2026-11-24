@@ -9,7 +9,7 @@
 > | **Rarity** | Uncommon |
 > | **Stackable** | No |
 > | **Renewable** | Yes (evokers) |
-> | **Obtained** | Found only: chests, vaults, evokers |
+> | **Obtained** | Found only: chests, trial chamber vaults, relic vaults, evokers |
 > | **Held** | Monsters within 8 blocks flee every 10 seconds |
 > | **In a beacon** | Wards the beacon's area (needs [[Bubba's Reworked Beacons]]) |
 > | **Placeable** | As a decorative [[Totem Statue]] (sneak and use) |
@@ -28,6 +28,8 @@ The Totem of Warding cannot be crafted. Each source adds a totem on top of its n
 | Ominous trial chambers vault | 15% per opening |
 | Evoker | 5%, a rare bonus drop |
 | Noble crypt chest (with [[Bubba's Reworked Mobs]]) | 12% per chest |
+
+[[Relic Vaults|Relic vault]] chests sometimes hold one too.
 
 ## Usage
 
