@@ -10,6 +10,8 @@
 > | **Used for** | [[Socketing Gems\|socketing]] into armor and weapons |
 
 **Enchanting** an Infused Gem at an enchanting table turns it into a finished **Gem**, rolling its final effects by tier.
+
+Finished gems shimmer with the enchantment glint, so they stand out from infused gems.
 
 ## Usage
 

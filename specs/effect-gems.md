@@ -191,7 +191,7 @@ Details:
 
 - Placeholders drawn by `tools/gem-textures.py` from shapes (not AI), at 16x and 32x, plus the icon. `tools/texcheck.py` passes.
 - Body: tinted, including a dark rim in the gem's own color. Shine: untinted white glints and a lit rim (file `*_outline.png`).
-- The finished gem is a regular octagon seen from above (owner). Both gems' rims are one solid mid-dark shade of the gem's own colour (40 % brightness; owner, 2026-11-23: less border contrast). A cut-gem redesign with iridescence was tried the same day and reverted (owner: "really bad").
+- The finished gem is a regular octagon seen from above (owner). Both gems' rims are one solid mid-dark shade of the gem's own colour (40 % brightness; owner, 2026-11-23: less border contrast). A cut-gem redesign with iridescence was tried the same day and reverted (owner: "really bad"). Finished gems always show the enchantment glint (owner, 2026-11-23; `DataComponents.ENCHANTMENT_GLINT_OVERRIDE` true by default on the `gem` item); infused gems don't.
 - Not done: real textures made by a person.
 
 ### Brewing
