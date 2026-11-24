@@ -24,11 +24,16 @@ side: client and server
 
 *Main article: [[Mining Curve]]*
 
-Wood barely gets anywhere and can't mine deepslate at all. Stone is a bit slower on stone and very slow on deepslate. Copper and iron are about normal on stone but slow on deepslate, which wears them down fast. Diamond mines deepslate as in vanilla, and netherite is faster than vanilla. Axes, shovels and hoes follow a gentler version of the same idea.
+- **Wood** barely gets anywhere and can't mine deepslate at all.
+- **Stone** is a bit slower on stone and very slow on deepslate.
+- **Copper and iron** are about normal on stone, but slow on deepslate, which wears them down fast.
+- **Diamond** mines deepslate as in vanilla, and **netherite** is faster than vanilla.
+- Axes, shovels and hoes follow a gentler version of the same idea.
 
 ## Enchantments
 
-Efficiency multiplies a tool's own speed, so an Efficiency V iron pickaxe mines deepslate a little faster than a bare diamond one. Unbreaking is stronger: at level III a tool loses about 1 durability in 7.
+- **Efficiency** multiplies a tool's own speed, so an Efficiency V iron pickaxe mines deepslate a little faster than a bare diamond one.
+- **Unbreaking** is stronger: at level III a tool loses about 1 durability in 7.
 
 *Main article: [[True Unbreaking]]*
 
