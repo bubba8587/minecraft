@@ -50,6 +50,8 @@ public final class CampTuning {
 	public static final double AWAY_RANGE = 96.0;
 	/** Chance a day that a camp with its roster dead and a banner standing resets (about 1 in 3, owner). */
 	public static final float RESET_CHANCE = 1.0F / 3.0F;
+	/** A camp mob chasing a player gives up and walks home once it is this many blocks from its home spot (owner: they stop following and return). */
+	public static final double LEASH_RANGE = 32.0;
 	/** Players are checked for nearby camps this often (ticks). */
 	public static final int CHECK_TICKS = 20;
 	/** Camps and outposts are looked for this many chunks round each player. */
@@ -66,8 +68,7 @@ public final class CampTuning {
 	/** Chance the leader drops its weapon, and each piece of armour. */
 	public static final float LEADER_WEAPON_DROP = 0.5F;
 	public static final float LEADER_ARMOR_DROP = 0.2F;
-	/** Chance a roster member wears a helmet, and holds a weapon (melee kinds). */
-	public static final float MEMBER_HELMET = 0.5F;
+	/** Chance a roster member holds a stone weapon (melee kinds). Armour is vanilla's own spawn roll only (owner: roughly vanilla frequency). */
 	public static final float MEMBER_WEAPON = 0.4F;
 	/** Nether outposts: chance a ground member is a piglin brute, and hoglins per pen by size (small, medium, large). */
 	public static final float OUTPOST_BRUTE = 0.25F;

@@ -144,7 +144,7 @@ public final class CampSites {
 			if (nearest(players, site.centre) <= CampTuning.AWAY_RANGE) {
 				changed |= refresh(level, site);
 			}
-			if (!site.isOutpost() && site.armed && !site.quiet && !site.spawned && !level.isBrightOutside() && nearest(fighters, site.centre) <= CampTuning.TRIGGER_RANGE
+			if (!site.isOutpost() && site.armed && !site.quiet && !site.spawned && nearest(fighters, site.centre) <= CampTuning.TRIGGER_RANGE
 					&& level.getChunkSource().getChunkNow(site.centre.getX() >> 4, site.centre.getZ() >> 4) != null) {
 				CampRoster.spawn(level, site);
 				changed = true;
