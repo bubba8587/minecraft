@@ -8,7 +8,7 @@
 > | **Type** | Artifact (item) |
 > | **Rarity** | Rare |
 > | **Stackable** | No |
-> | **Obtained** | Offering at some finished enderman cairns; grand [[Relic Vaults|relic vault]] chests and pedestal statues |
+> | **Obtained** | Offering at some finished enderman cairns; [[Relic Vaults|relic vault]] chests; grand relic vault pedestal statues |
 > | **Requires** | [[Bubba's Reworked Mobs]] |
 > | **Works in a beacon** | Yes, with [[Bubba's Reworked Beacons]] |
 
@@ -16,7 +16,11 @@ The **Totem of the Beginning** is a reusable artifact that slowly returns the gr
 
 ## Obtaining
 
-The Totem of the Beginning is found only at [[Endermen|enderman cairns]]. Once a cairn is finished, its endermen sometimes (at about one cairn in seven) leave one lying at the cairn's foot as an offering, which a player takes with an empty hand. Each such cairn leaves one only once, ever: rebuilding or finishing the cairn again does not bring another. It is also found, rarely, in the chests of grand [[Relic Vaults|relic vaults]], and a grand vault's pedestal can hold its statue. It cannot be crafted.
+The Totem of the Beginning cannot be crafted. It is found:
+
+- At [[Endermen|enderman cairns]]. About one finished cairn in seven has its endermen leave one lying at the cairn's foot as an offering, which a player takes with an empty hand. Each such cairn leaves one only once, ever: rebuilding or finishing the cairn again does not bring another.
+- Rarely, in the chests of any [[Relic Vaults|relic vault]].
+- As a statue on the pedestal of some grand relic vaults; breaking the statue gives the totem.
 
 ## Usage
 
@@ -47,3 +51,15 @@ Sneaking and using the totem on a block sets it down as a [[Totem Statue]] inste
 ## Textures
 
 A stone figure wearing a cap of grass, with purple eyes and a small grass block on its chest. Placeholder art in this early version.
+
+## History
+
+| Version | Changes |
+|---|---|
+| 0.1.0 | Added. |
+
+## See also
+
+- [[Endermen]]
+- [[Totem Statue]]
+- [[Bubba's Totems & Artifacts]]

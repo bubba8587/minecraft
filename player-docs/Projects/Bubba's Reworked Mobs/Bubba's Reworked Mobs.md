@@ -54,7 +54,7 @@ Weapons and tools lie on the ground, hang on walls, stand stuck in the ground or
 
 ## Grave Talisman and Totem of Warding
 
-The [[Grave Talisman]] and the [[Totem of Warding]] are now part of [[Bubba's Totems & Artifacts]]. With that mod installed, the talisman also senses sleeping undead and the totem calms them. Players upgrading from an earlier version of this mod should install it to keep their talismans and totems.
+The [[Grave Talisman]] and the [[Totem of Warding]] are part of [[Bubba's Totems & Artifacts]]. With that mod installed, the talisman also senses sleeping undead and the totem calms them. Worlds from an earlier version of this mod, where both items first appeared, need that mod to keep their talismans and totems.
 
 ## Undead at dawn, and fire
 
@@ -72,7 +72,7 @@ Shipwrecks hold their drowned crew asleep between decks.
 
 *Main articles: [[Will-o'-Wisps]], [[Explorer Maps]]*
 
-Faint soul flames lead you to graveyards you haven't found, and cartographers sell maps to graveyards, camps and Fabricators. With Infused Gems, noble crypt dead wear gemmed armor ([[Noble Finery]]).
+Faint soul flames lead the player to graveyards not yet found, and cartographers sell maps to graveyards, monster camps and Ancient Fabricators.
 
 ## Trading with endermen
 
@@ -102,19 +102,21 @@ Drowned are rare, tough lurkers that wait in shallow water, grab anyone who turn
 
 *Main articles: [[Crypt Yards]], [[Gravestone]]*
 
-Fenced graveyards in every state of decay stand on dry, flat ground, their graves holding skeletons that never wake; many have a crypt below (a pauper's ossuary, a family vault or a noble crypt) whose sleepers do wake. Gravestones work like signs, and players can cut their own in a stonecutter.
+Fenced graveyards in every state of decay stand on dry, flat ground. Their graves hold skeletons that never wake. Many have a crypt below (a pauper's ossuary, a family vault or a noble crypt) whose sleepers do wake. Gravestones work like signs, and players can cut their own in a stonecutter.
+
+With [[Bubba's Infused Gems]] installed, the dead in noble crypts wear gemmed armor (see [[Noble Finery]]).
 
 ## Spiders
 
 *Main article: [[Spiders]]*
 
-Spiders climb walls and ceilings. Cobweb nests cling to the ceilings of tall cave rooms. Walk underneath and a spider drops on a thread; if it lands, it reels you up and cocoons you. Giant spiders roam old-growth taiga, webbing the trees and snatching livestock into their own webs.
+Spiders climb walls and ceilings. Cobweb nests cling to the ceilings of tall cave rooms. When a player walks underneath, a spider drops on a thread; if it lands on the player, it reels them up and cocoons them. Giant spiders roam old-growth taiga, webbing the trees and snatching livestock into their own webs.
 
 ## Monster camps
 
 *Main article: [[Monster Camps]]*
 
-Dark camps of skeletons, zombies, husks, strays or bogged, each with a leader. Break every banner to clear a camp for good, leave one to let it refill, or light a fire to quiet it. Pillager outposts stop spawning when their banners are gone. In the Nether, piglin outposts with hoglin pens and a portal room stand in crimson forests and the Nether wastes.
+Dark camps of skeletons, zombies, husks, strays or bogged, each with a leader. Breaking every banner clears a camp for good, leaving one lets it refill, and a lit fire quiets it. Pillager outposts stop spawning when their banners are gone. In the Nether, piglin outposts with hoglin pens and a portal room stand in crimson forests and the Nether wastes.
 
 ## Trader posts
 
@@ -126,25 +128,25 @@ Small market squares with a striped stall, llama pens and a campfire on plains, 
 
 *Main article: [[Bogged]]*
 
-Bogged hide in swamp water and mud and ambush you when you turn your back.
+Bogged hide in swamp water and mud and ambush players who turn their back.
 
 ## Ancient Fabricators
 
 *Main article: [[Ancient Fabricators]]*
 
-Beside every ancient city, an Ancient Fabricator drips monsters onto a teleporter that sends them to the surface. Players can farm them on the teleporter, stop it with redstone, or break its hidden spawner, past a Warden.
+Beside every ancient city, an Ancient Fabricator drips monsters onto a teleporter that sends them to the surface. Players can farm the monsters on the teleporter, stop it with redstone, or get past its Warden and break its hidden spawner.
 
 ## Monster spawning
 
 *Main article: [[Monster Spawning]]*
 
-Natural monster spawning is cut to 15 % of normal everywhere. Structures and spawners are unchanged.
+Natural monster spawning is cut to 15 % of normal everywhere. Spawners and most structures are unchanged.
 
 ## Commands
 
 *Main article: [[Reworked Mobs Commands]]*
 
-Game rules control the spawn cut, watcher creepers, cairn endermen and visible meters; operator commands put items on display and find or build cairns, graveyards, camps, trader posts and Fabricators.
+Game rules control the spawn cut, watcher creepers, cairn endermen and visible meters. Operator commands put items on display and find or build cairns, graveyards, camps, trader posts, Fabricators, spider nests and giant spiders.
 
 ## Installation
 

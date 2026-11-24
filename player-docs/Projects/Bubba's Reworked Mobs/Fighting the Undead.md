@@ -6,7 +6,10 @@
 
 ## Armor shredding
 
-A single punch from a woken undead barely hurts. If one keeps hitting the same player, however, every further hit tears harder at that player's armor. A pause of a few seconds between hits resets it, so stepping away is the main defense against being cornered.
+- A single punch from a woken undead barely hurts.
+- If the same undead keeps hitting the same player, every further hit tears harder at that player's armor.
+- A pause of 3 seconds between hits resets it, so stepping away is the main defense against being cornered.
+- Only bare-handed hits shred armor, and hits blocked with a shield don't count.
 
 ## Smite
 
@@ -24,7 +27,7 @@ Each level of Smite gives a chance to destroy a woken undead in one hit, in a bu
 
 | Target | Arrow damage |
 |---|---|
-| Woken skeleton | A quarter of normal; arrows mostly rattle through the bones |
+| Woken skeleton | A quarter of normal; arrows mostly pass between the bones |
 | Woken zombie, body | Normal |
 | Woken zombie, head | Double |
 
@@ -32,7 +35,7 @@ Each level of Smite gives a chance to destroy a woken undead in one hit, in a bu
 
 *Main article: [[Noise and Waking]]*
 
-Sneaking, wool walls and keeping a distance let a player pass sleeping undead without waking them.
+Sneaking, wool walls and keeping a distance let a player pass sleeping undead without waking them. Woken undead are slow, so running away usually works.
 
 ## See also
 

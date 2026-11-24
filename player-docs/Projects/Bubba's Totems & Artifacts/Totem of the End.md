@@ -8,7 +8,7 @@
 > | **Type** | Artifact (item) |
 > | **Rarity** | Rare |
 > | **Stackable** | No |
-> | **Obtained** | End city chests |
+> | **Obtained** | End city chests; [[Relic Vaults|relic vaults]] |
 > | **Teleport range** | 32 blocks |
 > | **Cooldown** | 4 seconds |
 
@@ -16,9 +16,11 @@ The **Totem of the End** is a reusable artifact that makes endermen treat its ho
 
 ## Obtaining
 
-- End city treasure chests (5 % per chest).
+The Totem of the End cannot be crafted. It is found:
 
-It cannot be crafted.
+- In End city treasure chests (5 % per chest).
+- Rarely, in the chests of any [[Relic Vaults|relic vault]].
+- As a statue on the pedestal of some grand relic vaults; breaking the statue gives the totem.
 
 ## Usage
 
@@ -47,3 +49,15 @@ Sneaking and using the totem on a block sets it down as a [[Totem Statue]] inste
 ## Textures
 
 An end stone figure with a purpur crown, an enderman's dark face and magenta eyes, and an ender pearl on its chest. Placeholder art in this early version.
+
+## History
+
+| Version | Changes |
+|---|---|
+| 0.1.0 | Added. |
+
+## See also
+
+- [[Endermen]]
+- [[Totem Statue]]
+- [[Bubba's Totems & Artifacts]]

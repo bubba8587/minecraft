@@ -2,17 +2,35 @@
 
 *Part of [[Bubba's Reworked Mobs]].*
 
-The **bogged** in [[Bubba's Reworked Mobs]] is a swamp lurker, like the [[Drowned]], not a sleeper. When a bogged notices a player within about 32 blocks, it slips into a hiding spot nearby: shallow water, or mud beside reeds and tall grass. In water two blocks deep it's fully under. There it crouches still and holds its fire. When nobody is looking, it moves to a new spot now and then, and follows you if you walk off.
+> [!infobox] Bogged (reworked)
+> | | |
+> |---|---|
+> | **Behavior** | Hides in swamp water and mud, ambushes |
+> | **Notices players** | Within about 32 blocks |
+> | **From spawners** | Unchanged |
 
-It **ambushes** in three cases:
+The **bogged** in [[Bubba's Reworked Mobs]] is a swamp lurker, like the [[Drowned]], rather than a sleeper. It hides near a player, holds its fire and waits for a chance to ambush.
 
-- you turn your back on it within about 10 blocks;
-- you walk right up to it;
-- you hit it.
+## Behavior
 
-Then it fights normally, with poison arrows, and goes back to hiding once it loses you.
+### Hiding
 
-Bogged from trial spawners are unchanged.
+- When a bogged notices a player within about 32 blocks, it slips into a hiding spot nearby: shallow water, or mud beside reeds and tall grass.
+- In water two blocks deep it is fully under.
+- In its spot it crouches still and does not shoot.
+- While nobody is looking at it, it moves to a new spot now and then, and it follows a player who walks off.
+
+### Ambushing
+
+A bogged ambushes when:
+
+- the player turns their back on it within about 10 blocks;
+- the player walks right up to it;
+- the player hits it.
+
+It then fights normally, with poison arrows, and goes back to hiding once it loses the player.
+
+Bogged from spawners and trial spawners are unchanged.
 
 ## History
 

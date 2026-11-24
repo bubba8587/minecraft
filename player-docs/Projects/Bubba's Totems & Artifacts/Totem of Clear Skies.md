@@ -6,6 +6,7 @@
 > | | |
 > |---|---|
 > | **Type** | Artifact (item) |
+> | **Stackable** | No |
 > | **Obtained** | Found in chests |
 > | **Works in a beacon** | Yes, with [[Bubba's Reworked Beacons]] |
 
@@ -13,17 +14,24 @@ The **Totem of Clear Skies** is an artifact that keeps the weather off.
 
 ## Obtaining
 
-Found in igloos, desert village houses and shipwreck supply chests.
+The Totem of Clear Skies cannot be crafted. It is found in igloo chests, desert village houses and shipwreck supply chests, and in [[Relic Vaults|relic vault]] chests.
 
 ## Usage
 
-Used while it rains or storms, it ends the weather at once. The totem isn't used up, so you can use it again next time it rains. In clear weather nothing happens and it is kept.
+Used while it rains or storms, the totem ends the weather at once. It is not used up and has no cooldown, so the player can use it again the next time it rains. In clear weather, using it does nothing.
 
-In a reworked beacon, no rain, snow or lightning falls anywhere in the beacon's range: snow doesn't pile up and cauldrons don't fill. Ice still forms in cold places.
+### In a beacon
+
+In a [[Bubba's Reworked Beacons]] beacon, no rain, snow or lightning falls anywhere in the beacon's area, from the sky to the ground:
+
+- Snow does not pile up and cauldrons do not fill.
+- Ice still forms in cold places.
+
+The beacon screen reads "No rain, snow or lightning in the area".
 
 ## Statue
 
-Sneaking and using the totem on a block sets it down as a [[Totem Statue]]. The statue keeps the few blocks around it dry. Mining the statue gives the totem back.
+Sneaking and using the totem on a block sets it down as a [[Totem Statue]]. No rain, snow or lightning falls within 5 blocks of the statue. Mining the statue gives the totem back.
 
 ## History
 

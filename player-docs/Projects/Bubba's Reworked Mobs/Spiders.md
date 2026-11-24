@@ -13,33 +13,33 @@
 
 ## Nests
 
-A **spider nest** is a cluster of cobwebs clinging to the ceiling at the top of a tall cave room, with two or three spiders sleeping upside down in it. Now and then, while nobody is near, a nest gains another sleeper, up to four. Mine out its cobwebs and the nest dies, though its sleepers stay until they drop.
+A **spider nest** is a cluster of cobwebs clinging to the ceiling at the top of a tall cave room, with two or three spiders sleeping upside down in it. Now and then, while nobody is near, a nest gains another sleeper, up to four. If its cobwebs are mined out, the nest dies, though its sleepers stay until they drop.
 
 ## The drop
 
-Walk under a nest and the sleeper hanging closest above you lets go. It falls fast, head first, straight down on a white thread. It doesn't steer, so keep moving and it will probably miss. Shooting a sleeper wakes it, and it drops on whoever shot it.
+When a player walks under a nest, the sleeper hanging closest above them lets go. It falls fast, head first, straight down on a white thread. It doesn't steer, so a player who keeps moving will probably be missed. Shooting a sleeper wakes it, and it drops on whoever shot it.
 
 - **A miss:** it stops just above the floor and hangs on its thread for about a second, then the thread snaps and it is an ordinary spider.
-- **A hit:** it latches on and climbs its thread back up into the nest backwards, with you hanging below it.
+- **A hit:** it latches on and climbs its thread back up into the nest backwards, with the victim hanging below it.
 
 ## Getting free
 
-Its grip works like a [[Drowned|drowned]]'s, but it's much harder to break: it takes several solid hits with an axe, and more with a sword. Killing the spider works too. If you break free on the way up you fall, so the skill is breaking loose and surviving the drop. Spiders can drop on animals and carry them up too.
+Its grip works like a [[Drowned|drowned]]'s, but it's much harder to break: it takes several solid hits with an axe, and more with a sword. Killing the spider works too. A player who breaks free on the way up falls, so the skill is in breaking loose and surviving the drop. Spiders can drop on animals and carry them up too.
 
 ## Cocoons
 
 A victim the spider gets home is **wrapped in a cocoon** and poisoned. The poison never kills, and the victim can't move. The spider backs off and waits about 30 seconds, then comes back to feed, and those bites can kill.
 
-- **From inside,** attack to cut your way out. It takes many hits; a sword or shears cut faster than a fist.
+- **From inside,** the victim attacks to cut their way out. It takes many hits; a sword or shears cut faster than a fist.
 - **From outside,** anyone can cut a friend or an animal free.
 - Fire and explosions burst a cocoon open.
-- Cocooned animals cry out loudly, so you can hear where one was taken.
+- Cocooned animals cry out loudly, so a player can hear where one was taken.
 
 Upright victims hang head down in a tall cocoon. Animals are slung lengthwise.
 
 ## Giant spiders
 
-Giant spiders roam **old-growth taiga**. They're nearly twice the size of a normal spider. They:
+Giant spiders roam **old-growth taiga** and **jungles**. They're nearly twice the size of a normal spider. They:
 
 - spin big tangled webs between the tree trunks as they go, tied off with cobwebs;
 - snatch livestock and carry it up to the centre of the nearest web they spun themselves, where it hangs cocooned below them (with none of their own webs nearby, they haul it up a trunk instead);
@@ -51,9 +51,9 @@ Giant spiders roam **old-growth taiga**. They're nearly twice the size of a norm
 
 ## Webs
 
-The webs round nests and between trees are tangles of thick strands. Walking through them slows you like a cobweb (spiders aren't slowed). Three hits bring a strand down, shears cut it for string, and fire burns it away. Old webs grow ragged.
+The webs round nests and between trees are tangles of thick strands. Walking through them slows the player like a cobweb (spiders aren't slowed). Three hits bring a strand down, shears cut it for string, and fire burns it away. Old webs grow ragged.
 
-Only the strands themselves get in the way: you can hit, mine and use blocks and mobs through the gaps, from inside or outside a web. Swings, shears, arrows and other projectiles only hit a web when they pass close to a strand, so shears cut and fire arrows burn the web you actually aim at.
+Only the strands themselves get in the way: the player can hit, mine and use blocks and mobs through the gaps, from inside or outside a web. Swings, shears, arrows and other projectiles only hit a web when they pass close to a strand, so shears cut and fire arrows burn the web actually aimed at.
 
 ## History
 

@@ -6,6 +6,7 @@
 > | | |
 > |---|---|
 > | **Type** | Artifact (item) |
+> | **Stackable** | No |
 > | **Obtained** | Found in village chests |
 > | **Works in a beacon** | Yes, with [[Bubba's Reworked Beacons]] |
 
@@ -13,17 +14,26 @@ The **Totem of Herding** is an artifact for moving and keeping animals.
 
 ## Obtaining
 
-Found in village chests: shepherds' houses, butchers' shops and tanneries.
+The Totem of Herding cannot be crafted. It is found in village chests (shepherds' houses, butchers' shops and tanneries) and in [[Relic Vaults|relic vault]] chests.
 
 ## Usage
 
-Held, animals nearby follow its holder as if the player held their favourite food. Every animal follows except tamed pets.
+### Held
 
-In a reworked beacon, animals in the beacon's range don't wander out of it, like a pasture without fences. A lead still pulls them out, and so does a player holding the totem nearby, since they follow it.
+Animals nearby follow the holder as if the player held their favourite food. Every animal follows except tamed pets.
+
+### In a beacon
+
+In a [[Bubba's Reworked Beacons]] beacon, animals in the beacon's area do not wander out of it, like a pasture without fences. Two things still lead them out:
+
+- a lead;
+- a player holding the totem within 10 blocks, since the animals follow it.
+
+The beacon screen reads "Animals stay in the area".
 
 ## Statue
 
-Sneaking and using the totem on a block sets it down as a [[Totem Statue]]. The statue keeps animals in the few blocks around it. Mining the statue gives the totem back.
+Sneaking and using the totem on a block sets it down as a [[Totem Statue]]. Animals within 5 blocks of the statue stay there, like a small pasture. Mining the statue gives the totem back.
 
 ## History
 

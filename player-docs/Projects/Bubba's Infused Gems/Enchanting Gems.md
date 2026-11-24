@@ -13,7 +13,10 @@
 
 ## Usage
 
-The player places an Infused Gem and lapis lazuli in an enchanting table. The three rows are three **tiers**. As with gear, bookshelves around the table set each row's level cost, and the full cost shown is paid (about 10, 20 and 30 levels with 15 bookshelves), plus 1, 2 or 3 lapis lazuli. Tier 2 needs at least 8 bookshelves and tier 3 all 15; without them the row is unavailable.
+The player places an Infused Gem and lapis lazuli in an enchanting table. The three rows are three **tiers**.
+
+- **Cost:** as with gear, bookshelves around the table set each row's level cost, and the full cost shown is paid (about 10, 20 and 30 levels with 15 bookshelves), plus 1, 2 or 3 lapis lazuli.
+- **Bookshelves:** tier 2 needs at least 8 bookshelves and tier 3 all 15; without them the row is unavailable.
 
 Rows above the gem's form are disabled:
 
@@ -54,7 +57,9 @@ The Gem's tooltip shows each effect with its strength in brackets, as a percenta
 
 A finished Gem with a drawback can be **inverted** at a brewing stand: the Gem goes in a bottle slot and a fermented spider eye in the ingredient slot. The drawback becomes the Gem's main effect, and the old main effect becomes its drawback.
 
-Each inversion costs strength: the new main effect is one step weaker than the old one (strongest to medium, medium to weak), and the Gem drops one Gem Power level. A bonus effect stays as it is, so after inverting it works against the new main effect, and it is a bonus again if the Gem is inverted back. A Gem can be inverted back, with the same cost again.
+- **Cost:** the new main effect is one step weaker than the old one (strongest to medium, medium to weak), and the Gem drops one Gem Power level.
+- **Bonus effect:** it stays as it is, so after inverting it works against the new main effect. It is a bonus again if the Gem is inverted back.
+- **Inverting back** is allowed, with the same cost again.
 
 A Gem with only a drawback inverts too: the drawback becomes a weak main effect and the Gem drops a Gem Power level, with no drawback afterwards.
 
@@ -66,4 +71,8 @@ The brewing stand does not take a Gem that has no drawback, a Gem whose main eff
 
 ## Which effects come up
 
-Bonus effects and drawbacks are not all equally likely: effects that are easy to brew come up most often, harder ones (from rare ingredients, the End, the deep ocean or trial chambers, and Poison and Wither as drawbacks) about half as often, and effects that are only found in the world a quarter as often.
+Bonus effects and drawbacks are not all equally likely:
+
+- Effects that are easy to brew come up most often.
+- Harder ones (from rare ingredients, the End, the deep ocean or trial chambers, and Poison and Wither as drawbacks) come up about half as often.
+- Effects that are only found in the world come up a quarter as often.

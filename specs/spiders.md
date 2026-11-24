@@ -1,9 +1,9 @@
 <!-- dte:C1,B15,B17,B18 -->
 # Reworked Mobs: spiders (spec)
 
-**Status:** all built 2026-11-22: cave nests with dropping sleeper spiders, giant spiders, spun webs, cocoons, walls and ceilings through Stormie's Spiders. Open items below.
+**Status:** all built: cave nests with dropping sleeper spiders, giant spiders, spun webs, cocoons, walls and ceilings through Stormie's Spiders. Open items below.
 
-Owner's design (2026-11-22). Ordinary spiders stay **mostly vanilla**. What's new is a ceiling ambush in caves, and a giant variant in old forests.
+Owner's design. Ordinary spiders stay **mostly vanilla**. What's new is a ceiling ambush in caves, and a giant variant in old forests.
 
 ## Walls and ceilings (owner, 2026-11-22)
 
@@ -15,9 +15,9 @@ Owner's design (2026-11-22). Ordinary spiders stay **mostly vanilla**. What's ne
 - **A web nest clings to the ceiling of tall cave rooms** (worldgen). It's **decently common**, and only at the **top of tall rooms**, so there's a long drop under it. Cobweb blocks for the sticky core (owner: string looks bad in game), plus the spun webs below.
 - **Sleeper spiders** hang still in the nest, like the sleeping undead (`specs/undead.md`). The nest occasionally gains a new one over time (owner: "should occasionally spawn from it"), capped per nest.
 - **The drop:** when a player walks underneath, a sleeper **drops fast, vertically oriented (head down), with a thread attached** up to the nest, to hit them once.
-  - **It misses:** it **hangs on its thread for about a second** at the bottom of the drop (owner, 2026-11-22: the animation looks better), then the thread breaks and it becomes a **normal spider** on the ground.
+  - **It misses:** it **hangs on its thread for about a second** at the bottom of the drop (owner: the animation looks better), then the thread breaks and it becomes a **normal spider** on the ground.
   - **It lands the hit:** it **latches on** (owner: not expected to be very likely, since it has to actually hit). It reuses the drowned grab (`specs/drowned.md`, `drowned/DrownedMind`), but pulls **upward**: it reels the victim **up the thread into the nest**, where it keeps attacking among the cobwebs.
-- **Reeling backwards (owner, 2026-11-22):** a spider hauling a victim up climbs **rear-first**, facing down at its victim, and the **thread comes out of its abdomen** ("the string comes out of their butt"). The same goes for the drop and the dangle, and for a giant spider hauling livestock.
+- **Reeling backwards (owner):** a spider hauling a victim up climbs **rear-first**, facing down at its victim, and the **thread comes out of its abdomen** ("the string comes out of their butt"). The same goes for the drop and the dangle, and for a giant spider hauling livestock.
 - **The thread:** a visible line from the spider to the nest while it drops and while it reels. How it's drawn is technical; vanilla's lead and fishing-line rendering are the obvious models (B17).
 - What escapes a latch: the same rules as the drowned grab (hurting it enough, etc.). Builder adapts them and lists the choices.
 
@@ -25,7 +25,7 @@ Owner's design (2026-11-22). Ordinary spiders stay **mostly vanilla**. What's ne
 
 - Real designed webs, not just cobweb blocks: **a tangle of thick strings stretched diagonally between many random anchor points** (owner: not an orb web, for Minecraft fitting-in reasons), drawn as **crisp pixel art in the cobweb texture's own palette, lit by world light** (owner: smooth strands looked out of place; the pixel version "MUCH better, keep at this angle"), a little sag, torn and ragged in older webs. An entity type (not a block, so B15 doesn't apply; visual effects are fine as entities) with a custom renderer.
 - Used for the **cave nests** (spanning the top of the room round the cobweb core) and the **giant spider's webs between trees** (and the webs it spins as it roams).
-- Gameplay: **strands slow you like a vanilla cobweb** (owner, 2026-11-22: same stuck movement), and attacks, shears or fire cut them.
+- Gameplay: **strands slow you like a vanilla cobweb** (owner: same stuck movement), and attacks, shears or fire cut them.
 - It must stay cheap: culled when out of view, simple geometry, bounded strand counts.
 - Checked from several angles, in daylight and in a dark cave, at 16x and 32x. This is a showpiece: iterate on the look until it is genuinely striking.
 
@@ -36,7 +36,7 @@ Owner's design (2026-11-22). Ordinary spiders stay **mostly vanilla**. What's ne
 - **Breaking free (owner): attack the cocoon from inside.** Each swing weakens it, and a sword or shears cut faster than a bare hand.
 - **Others can cut a victim out** from outside, with attacks or shears, freeing a friend or a cocooned animal alive.
 - **Cocooned livestock make their distress sounds loudly and often**, so you can hear a snatched animal from a distance and go after it.
-- **Two cocoon shapes (owner, 2026-11-22):** **vertical** for upright victims (players, villagers, zombies), hanging head-down, and **horizontal** for four-legged ones (pigs, sheep, cows), slung lengthwise.
+- **Two cocoon shapes (owner):** **vertical** for upright victims (players, villagers, zombies), hanging head-down, and **horizontal** for four-legged ones (pigs, sheep, cows), slung lengthwise.
 - The cocoon's look: wrapped in the same crisp, pixel-art silk as the spun webs, hanging from the nest or the giant spider's web.
 
 ## Giant spiders (owner, 2026-11-22)
@@ -47,11 +47,11 @@ Owner's design (2026-11-22). Ordinary spiders stay **mostly vanilla**. What's ne
 - **Size (owner): "not too giant."** Roughly 1.5-2x a vanilla spider (builder tunes; it must still fit between the trees).
 - **It roams** the old forest. It doesn't sit in one lair.
 - **It spins new webs** as it goes: cobweb spans between nearby trunks and in the canopy, so its territory fills in over time (capped, so a forest isn't buried).
-- **Holding pose (owner, 2026-11-22):** hauling or holding a catch, a spider stays oriented to its surface: **upside down** under a branch, canopy or web anchor (preferred stopping spots), **sideways** on a trunk. It never flips upright while holding.
+- **Holding pose (owner):** hauling or holding a catch, a spider stays oriented to its surface: **upside down** under a branch, canopy or web anchor (preferred stopping spots), **sideways** on a trunk. It never flips upright while holding.
 - **It snatches livestock** (passive mobs: sheep, pigs, cows, chickens, goats...) and hauls them up into its webs, where they're stuck and it feeds. This reuses the grab, pulling up into the web.
 - **Livestock is a distraction (owner):** it goes for a nearby animal before a player, so players can bait or lure it with livestock.
 - **In a fight it summons little spiders**: smaller and weaker than vanilla spiders (owner). Builder tunes how many and how often, with a cap.
-- **Drops (default until the owner decides, 2026-11-22: "idk"):** vanilla spider drops, more of them (string and spider eyes). Revisit if it wants a unique drop.
+- **Drops (default until the owner decides; owner: "idk"):** vanilla spider drops, more of them (string and spider eyes). Revisit if it wants a unique drop.
 
 ## Milestone test objectives
 
@@ -62,7 +62,7 @@ Owner's design (2026-11-22). Ordinary spiders stay **mostly vanilla**. What's ne
 - A giant hauls its catch to the hub of its own nearest web, ignoring a nearer web another spider spun; the cocoon hangs within 1 block of the hub (`GiantSpiderGameTest.haulsToItsOwnWebCentre`). It remembers its webs across a save and load (`remembersItsWebsAcrossSaves`).
 - A giant with a cocoon comes down to the ground, strolls 3+ blocks from its perch, walks back and feeds (`leavesItsPerchAndComesBackToFeed`).
 
-## Step 1 as built: cave nests (2026-11-22)
+## Step 1 as built: cave nests
 
 Player-facing: `player-docs/Projects/Bubba's Reworked Mobs/Spiders.md`. Numbers in `spider/SpiderTuning`.
 
@@ -111,7 +111,7 @@ Player-facing: `player-docs/Projects/Bubba's Reworked Mobs/Spiders.md`. Numbers 
   - `aMissTurnsItIntoAVanillaSpider` (hangs on its thread first, then becomes a vanilla spider with AI).
   - `hitsBreakTheGrip` (four iron axe hits free you; it turns vanilla).
   - `nestsGenerateAtTheTopOfTallRooms` (cobwebs, one brain and at least 2 sleepers in a 14-high room; none under a 5-high ceiling).
-- Client part `spiders`: spider-nest, spider-nest-close, spider-drop, spider-dangle, spider-latch, spider-held, spider-held-below. Checked by eye on 2026-11-22:
+- Client part `spiders`: spider-nest, spider-nest-close, spider-drop, spider-dangle, spider-latch, spider-held, spider-held-below. Checked by eye:
   - Sleepers hang upside down in the cobwebs.
   - The dropping spider points head down, and the reeling one head up, with the thread to the nest.
   - The missed spider dangles above the floor.
@@ -121,20 +121,20 @@ Player-facing: `player-docs/Projects/Bubba's Reworked Mobs/Spiders.md`. Numbers 
   - A mined-out nest's brain goes away.
   - A shot sleeper drops on its shooter.
 
-## Step 2 as built (2026-11-22): giant spiders, spun webs, Stormie's, cocoons
+## Step 2 as built: giant spiders, spun webs, Stormie's, cocoons
 
-#### Owner decisions made during the build (2026-11-22)
+#### Owner decisions made during the build
 
 - **Spun webs replace the plain cobweb spans** round the cave nests and between trees. The nests keep their cobweb core.
 - **Not an orb web** (no hub, spokes or spiral): "for minecraft fitting-in reasons", a tangle of thick strings stretched diagonally between many random anchor points, criss-crossing through the space. Seeded per site, so it's stable.
-- **Big webs thick and clearly visible**, then "probably too thick", so they were trimmed.
+- **Big webs are thick and clearly visible**, but not too thick (owner: "probably too thick"; they were trimmed).
 - **Pixelated, not smooth:**
   - Smooth strands "look out of place next to vanilla webs" and went "much yellower in shadow".
   - The pixel version: "MUCH better, keep at this angle".
 
 #### Player-facing behaviour
 
-- **Giant spiders** live in old-growth pine and spruce taiga and in jungles (owner, 2026-11-23: tall jungles too; spawn weight 12 → 30, owner: "pretty rare, buff this a bit"; Reworked Mobs' monster spawn cut also applies to them). About 1.75x a normal spider (vanilla's scale attribute); they still fit between the trees. They:
+- **Giant spiders** live in old-growth pine and spruce taiga and in jungles (owner: tall jungles too; spawn weight 30, owner: "pretty rare, buff this a bit"; Reworked Mobs' monster spawn cut also applies to them). About 1.75x a normal spider (vanilla's scale attribute); they still fit between the trees. They:
   - spawn like other monsters, in the dark, and never within 48 blocks of another giant;
   - roam the forest;
   - every 20-40 s while roaming, spin a web between two nearby tree trunks. They stop once 5 webs are within 12 blocks;
@@ -142,7 +142,7 @@ Player-facing: `player-docs/Projects/Bubba's Reworked Mobs/Spiders.md`. Numbers 
   - go for nearby livestock before players, and turn from a player to an animal close by. Not if that player hurt them in the last 5 s;
   - call 2 little spiders when hurt: half size, 3 hearts, a weak bite. At most 4 alive, and a 10 s wait between calls;
   - take no fall damage (they come down on silk);
-  - **wander round their web (owner, 2026-11-23):** a giant's newest web is its home. Roaming, it wanders (`WanderGoal`, a vanilla `RandomStrollGoal` with its own targets, every ~3 s) to random spots it can **stand on** in a 3D box round its home: a random point dropped straight down to the first open block on a sturdy top face, whatever the block (ground, roof, branch, canopy), no block-type rules (owner, 2026-11-23). The box is its newest web's span, 3 wider (`WEB_HOME_MARGIN`), reaching 16 below it (`WANDER_DEPTH`) so the ground is in it; with no web, round itself (10 sideways, 16 down, none up: a box that moves with it and rises would ratchet it up walls, as a game test showed). Stormie's Spiders walks it there over trunks, walls and ceilings. Points on a wall were tried first but Stormie's pathfinder can't reach them (every path a one-step dead end; the giant stood turning on the spot). Stormie's also gives every spider a fixed 0.95 x 0.85 hitbox whatever its scale. With no web of its own it spins one first (checked once a second; trunks are searched from the ground under it, so it can from a treetop). Prowling, it wanders the same way round its cocoon (`PROWL_RADIUS`). *Why (owner playtest):* one placed on a treetop never came down. Stormie's can path down a trunk (checked), but vanilla's stroll only picks spots near its own height, so nothing ever sent it down. Milestone test `GiantSpiderGameTest.strandedInTheCanopyComesDown`;
+  - **wander round their web (owner):** a giant's newest web is its home. Roaming, it wanders (`WanderGoal`, a vanilla `RandomStrollGoal` with its own targets, every ~3 s) to random spots it can **stand on** in a 3D box round its home: a random point dropped straight down to the first open block on a sturdy top face, whatever the block (ground, roof, branch, canopy), no block-type rules (owner). The box is its newest web's span, 3 wider (`WEB_HOME_MARGIN`), reaching 16 below it (`WANDER_DEPTH`) so the ground is in it; with no web, round itself (10 sideways, 16 down, none up: a box that moves with it and rises would ratchet it up walls, as a game test showed). Stormie's Spiders walks it there over trunks, walls and ceilings. Points on a wall were tried first but Stormie's pathfinder can't reach them (every path a one-step dead end; the giant stood turning on the spot). Stormie's also gives every spider a fixed 0.95 x 0.85 hitbox whatever its scale. With no web of its own it spins one first (checked once a second; trunks are searched from the ground under it, so it can from a treetop). Prowling, it wanders the same way round its cocoon (`PROWL_RADIUS`). *Why (owner playtest):* one placed on a treetop never came down. Stormie's can path down a trunk (checked), but vanilla's stroll only picks spots near its own height, so nothing ever sent it down. Milestone test `GiantSpiderGameTest.strandedInTheCanopyComesDown`;
   - notice players and livestock out to 32 blocks (`GIANT_FOLLOW_RANGE`; a vanilla spider: 16);
   - drop more string (3-6) and spider eyes (1-3) than a vanilla spider. This is the default until the owner decides on a unique drop.
 - While a giant hauls an animal, hitting it loosens its grip (the drowned rules). At 0 it drops the animal.
@@ -171,8 +171,8 @@ Player-facing: `player-docs/Projects/Bubba's Reworked Mobs/Spiders.md`. Numbers 
 - **(builder) Spun webs are an entity (`spun_web`), not blocks (B15).** The client draws each strand as a stepped line of opaque square pixels:
   - Snapped to the world grid at the loaded cobweb texture's texel size: 1/16 with vanilla, 1/32 with a 32x pack such as Faithful, so they always match the cobweb blocks beside them.
   - Coloured with the three colours of vanilla's cobweb texture.
-  - Lit per pixel (sky and block light), refreshed every 2 s, with no glow floor. That fixed the yellow.
-- **The drop thread** (orchestrator, passing on the owner's rule): drawn the same way as the webs, as a crisp one-texel pixel line in the cobweb palette, lit by world light, taut from the spider's back to where it's tied in the nest. It replaces the smooth thin line. Shared code: `client/spider/PixelStrands`.
+  - Lit per pixel (sky and block light), refreshed every 2 s, with no glow floor, so they don't turn yellow in shadow.
+- **The drop thread** (orchestrator, passing on the owner's rule): drawn the same way as the webs, as a crisp one-texel pixel line in the cobweb palette, lit by world light, taut from the spider's back to where it's tied in the nest. Shared code: `client/spider/PixelStrands`.
 - **(builder) How strands are chosen:**
   - Random rays from the site's centre find anchors on blocks.
   - Strands join pairs of anchors at least 2.5 apart, with a clear line between them, passing near the centre, so they cross each other.
@@ -186,11 +186,10 @@ Player-facing: `player-docs/Projects/Bubba's Reworked Mobs/Spiders.md`. Numbers 
 
 #### Tests
 
-- **Milestone** (moved out of core 2026-11-22): `giantIsLargeAndSpinsBetweenTrees`.
+- **Milestone:** `giantIsLargeAndSpinsBetweenTrees`.
 - **Milestone (`GiantSpiderGameTest`):**
   - The snatch is checked in `CocoonGameTest.spiderComesBackToFeed`: a pig is hauled up into a cobweb larder and cocooned there, the giant waits, then feeds.
   - `livestockLuresItOffAPlayer`: hunting a player, it switches to a pig close by (or snatches it).
-  - `livestockLuresItOffAPlayer`.
   - `hurtCallsLittleSpiders`: 2, then 0 during the cooldown; small and weak.
   - `websSlowAndCut`: touching a strand slows; 3 hits cut it; shears give 2 string at the player.
 - **Client part `webs` (`-PclientTests=webs`):**
@@ -207,7 +206,7 @@ Player-facing: `player-docs/Projects/Bubba's Reworked Mobs/Spiders.md`. Numbers 
 
 - **Fall-damage fix:** the released spider takes no fall damage (fall distance reset on the thread and at release); checked in `aMissTurnsItIntoAVanillaSpider` (the released spider lands at full health).
 - **Stormie's Spiders is wired in.**
-  - Reworked Mobs now declares `"depends": {"stormiespiders": ">=3.3.1"}`, and the build compiles against it.
+  - Reworked Mobs declares `"depends": {"stormiespiders": ">=3.3.1"}`, and the build compiles against it.
   - `gradle/stormies-spiders.gradle` is pinned to the Modrinth version ID `jTOAPFV5`. Pinning matters because `3.3.1-fabric` is also the version number of a 1.21.1 build, and Modrinth's maven serves that one.
   - Dev runs need a workaround. The jar carries a root `log4j2.xml`, so on the runtime classpath Fabric Loader treats it as a game library and then reports "needs fabricloader, which is missing". So the script keeps it off the classpath and loads it with `-Dfabric.addMods`.
   - The script is applied by Reworked Mobs, by Totems with `-PwithMobs`, and by `testworldshots`.
@@ -228,7 +227,7 @@ Player-facing: `player-docs/Projects/Bubba's Reworked Mobs/Spiders.md`. Numbers 
   - The spider backs off and waits 600 ticks, then comes back and bites: 3 damage every 40 ticks. Those bites can kill.
     - The nest spider waits upside down on the ceiling, then hangs head down to feed.
     - The giant backs off along the underside, or up the trunk, then returns.
-  - Cutting: the victim hits from inside, or anyone hits from outside. Silk is 300 (raised from 100, see Harder to escape).
+  - Cutting: the victim hits from inside, or anyone hits from outside. Silk is 300 (see Harder to escape).
     - Points per hit: hand 13 (about 24 hits), other items 18, axe 28, sword 35 (9 hits), shears 40. Shears used from outside cut 50.
     - At 0 the victim drops out alive with the poison cleared.
     - Fire and explosions burn or blow the cocoon open.
@@ -239,19 +238,19 @@ Player-facing: `player-docs/Projects/Bubba's Reworked Mobs/Spiders.md`. Numbers 
 - **Giant pose (owner).**
   - The perch prefers an underside: the highest spot beside the trunk with leaves or wood above and room below for the cocoon. There the giant hangs upside down with the cocoon below. Without one, it clings head down on the trunk, belly to the bark.
   - It never flips upright while climbing, waiting or feeding. We pose it ourselves then, with Stormie's render pose skipped.
-  - Busy giants no longer despawn (`requiresCustomPersistence` while it has a task), so they never leave a cocoon behind.
+  - Busy giants don't despawn (`requiresCustomPersistence` while it has a task), so they never leave a cocoon behind.
 - **Stormie's Spiders and the Fabricator.**
   - With Stormie's loaded, a Fabricator's deactivated spider stuck to the walls instead of dropping onto its pad.
   - New mixin `StormieDeactivatedSpiderMixin` (Spider, priority 1500) makes Stormie's merged `onTravel` step aside for deactivated mobs.
-  - That fixed `fabricatorDropsDeactivatedMob`.
-- **Shear string** now falls where the web was cut, not at the player.
+  - Checked by `fabricatorDropsDeactivatedMob`.
+- **Shear string** falls where the web was cut, not at the player.
 - **Tests.**
   - New milestone class `CocoonGameTest`:
     - `swordCutsFreeFasterThanAHand`
     - `anotherPlayerCutsAPigFree`
     - `poisonNeverKills`
     - `spiderComesBackToFeed`
-  - The latch and snatch tests now expect a cocoon.
+  - The latch and snatch tests expect a cocoon.
   - Spider tests run in their own test environment `bubbas_reworked_mobs-test:spiders`, so they don't shift the big Fabricator tests' layout.
 - **Screenshots.** Client parts `spiders` and `webs`, all looked at:
   - cocoon-player-outside and cocoon-player-outside-back: a player head down in a vertical cocoon;
@@ -259,15 +258,15 @@ Player-facing: `player-docs/Projects/Bubba's Reworked Mobs/Spiders.md`. Numbers 
   - giant-haul-rear-first: on the trunk, head down, sheep below;
   - giant-cocoon-sheep-under-canopy and giant-cocoon-sheep-from-below: upside down under the canopy, sheep slung horizontally below.
 
-### Harder to escape (owner, 2026-11-22)
+### Harder to escape (owner)
 
 - **Owner's words:** "spiders should be a lot harder to break free of (unless you kill them) as should cocoons, the reason being that they don't kill you until after a little while. so if you can break free and survive the fall, that's where the skill comes into play."
-- **The grip.** Each hit on a spider holding you now loosens its grip by the drowned's points × `SpiderTuning.GRIP_HIT_FACTOR` = 0.45. The grip still tightens while it reels you up. This applies to nest spiders and to a giant hauling its catch.
+- **The grip.** Each hit on a spider holding a victim loosens its grip by the drowned's points × `SpiderTuning.GRIP_HIT_FACTOR` = 0.45. The grip still tightens while it reels the victim up. This applies to nest spiders and to a giant hauling its catch.
   - From a fresh grip, an iron axe takes 3 full hits and a sword about 6 quick ones. A drowned lets go after 1-2 axe hits.
-  - You come loose well up the thread. The test checks you're freed more than 5 blocks up.
+  - A victim who breaks free comes loose well up the thread. The test checks they're freed more than 5 blocks up.
   - Killing the spider is unchanged: an axe kills a nest spider in 2 hits.
-- **Cocoons.** Silk went from 100 to 300: about 24 fist hits or 9 sword hits; shears are still fastest. The feeding wait stays 30 s.
-- **Tests.** `hitsBreakTheGrip` now swings a full iron axe at its real pace against a spider made tough enough not to die first. It checks that it takes at least 3 hits and that the victim is freed high.
+- **Cocoons.** Silk is 300: about 24 fist hits or 9 sword hits; shears are still fastest. The feeding wait stays 30 s.
+- **Tests.** `hitsBreakTheGrip` swings a full iron axe at its real pace against a spider made tough enough not to die first. It checks that it takes at least 3 hits and that the victim is freed high.
 
 ## Open
 
@@ -279,12 +278,11 @@ Player-facing: `player-docs/Projects/Bubba's Reworked Mobs/Spiders.md`. Numbers 
 - **Milestone objectives without tests:** listed under each step's Tests.
 - **Giants away from the cocoon (owner to decide):** a prowling giant walks 1 block off the perch and the cocoon hangs low, so a player can reach under it and cut the catch free while the spider is away (intended?). Owner may want it to stay closer or guard. Tasks aren't saved: a giant reloaded mid-prowl roams again (its cocoon stays). In `BACKLOG.md`.
 
-## Waiting by the cocoon (owner, 2026-11-22)
+## Waiting by the cocoon (owner)
 
-- While a giant spider waits to come back and feed, it no longer sits still. Every `WAIT_PACE_TICKS` (50) it creeps to a new spot up to `WAIT_PACE_RADIUS` (2 blocks) from where it backed off to: along the overhang when perched under one, up the trunk otherwise. It only moves where its body fits (`noCollision`). It still feeds on time.
-- Replaced 2026-11-24 by real prowling off the perch and hauling to its own web (below).
+- During its short rest on the perch (`WAIT`, `WAIT_PERCH_TICKS` 120) a giant doesn't sit still. Every `WAIT_PACE_TICKS` (50) it creeps to a new spot up to `WAIT_PACE_RADIUS` (2 blocks) from where it backed off to: along the overhang when perched under one, up the trunk otherwise. It only moves where its body fits (`noCollision`). After the rest it prowls ("Prowling and own webs" below).
 
-## Strand hitboxes (2026-11-23)
+## Strand hitboxes
 
 - The `SpunWeb` entity box still spans all its strands, but only for culling and entity searches (`getEntities`). Hits never use the box.
 - Hit test: `SpunWeb.strandClip(from, to)` finds the closest points between the ray segment and each strand segment; a hit within `SpiderTuning.WEB_PICK_RADIUS` (0.3), hit point where the ray enters that radius.
@@ -299,7 +297,7 @@ Player-facing: `player-docs/Projects/Bubba's Reworked Mobs/Spiders.md`. Numbers 
 
 ### How it's built
 
-- New tasks: `DESCEND` (silk down to a landing spot one block off the perch, at `CLIMB_SPEED`), `PROWL` (on the ground, vanilla stroll), `RETURN` (paths to the perch foot, then `CLIMB` without a catch, then `FEED`). `WAIT` is now only the rest on the perch (`WAIT_PERCH_TICKS` 120); `COCOON_WAIT_TICKS` (600) counts across WAIT and PROWL. RETURN gives up pathing after `HAUL_GIVE_UP_TICKS` and climbs from where it is.
+- New tasks: `DESCEND` (silk down to a landing spot one block off the perch, at `CLIMB_SPEED`), `PROWL` (on the ground, vanilla stroll), `RETURN` (paths to the perch foot, then `CLIMB` without a catch, then `FEED`). `WAIT` is only the rest on the perch (`WAIT_PERCH_TICKS` 120); `COCOON_WAIT_TICKS` (600) counts across WAIT and PROWL. RETURN gives up pathing after `HAUL_GIVE_UP_TICKS` and climbs from where it is.
 - Prowl uses vanilla: `setHomeTo(larder, PROWL_RADIUS = 10)` plus a vanilla `RandomStrollGoal(0.8, STROLL_INTERVAL = 60, checkNoActionTime = false)` that only runs in PROWL. Not the existing `WaterAvoidingRandomStrollGoal`: it checks vanilla's monster "no action time", which climbs in daylight, so a giant never strolled by day. `RandomPos` already biases toward the home, so no hand-rolled wander.
 - Hand-rolled: the descent and climb (straight-line moves on silk, like the haul climb; vanilla has no rope-descent movement) and picking the larder web (a loop over the giant's own remembered webs; no vanilla search covers "entities this mob made").
 - Own webs: an `EntityReference<SpunWeb>` list saved as `OwnWebs` (vanilla's entity-reference codec, as Fox's trusted list). `OWN_WEBS_MAX` 6, `OWN_WEB_SEARCH` 24. A web hub qualifies if the two blocks under it are air.

@@ -24,7 +24,9 @@ side: client and server
 
 *Main article: [[Lava Bubbles and Geysers]]*
 
-Lava bubbles and plops wherever magma lies beneath it. Now and then a bubbling spot erupts as a lava geyser, throwing up black smoke. Lava geysers and sulfur geysers lift players and speed them up, so circling one climbs.
+- Lava bubbles and plops wherever magma lies beneath it.
+- Now and then a bubbling spot erupts as a lava geyser, throwing up black smoke.
+- Lava geysers and sulfur geysers lift players and speed them up, so circling one climbs.
 
 ## Installation
 

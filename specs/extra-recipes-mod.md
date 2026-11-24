@@ -2,70 +2,111 @@
 <!-- covers: mods/bubbas_extra_recipes/* -->
 # Bubba's Extra Recipes companion mod (spec)
 
-Builds the C3 craftingTweaksMod direction. Mod id `bubbas_extra_recipes` (same namespace as the datapack). The mod bundles `datapacks/bubbas_extra_recipes` as a built-in data pack and `resourcepacks/bubbas_extra_recipes` as a built-in resource pack, so mod users install one file; datapack-only players keep using the zip. On Modrinth: one project with both the datapack zip and the mod jar.
+**Status: built** (mod 0.1.0). Builds C3 (craftingTweaksMod). Mod id `bubbas_extra_recipes`, the same namespace as the datapack.
+
+- Code: `mods/bubbas_extra_recipes` (package `io.github.bubba8587.bubbas_extra_recipes`).
+- Requires Fabric API; `environment: "*"`, required on both sides.
+- Mod users install one file; datapack-only players keep using the zip. On Modrinth: one project with both the datapack zip and the mod jar.
+
+## Bundled packs
+
+- The jar carries `datapacks/bubbas_extra_recipes` as a built-in data pack and `resourcepacks/bubbas_extra_recipes` as a built-in resource pack.
+- `build.gradle` task `bundlePacks` copies them to `bundled/datapack/` and `bundled/resourcepack/` at build time, leaving out `VERSION`, `DISABLED`, `packtest.commands` and the PackTest functions. Nothing is duplicated in the mod's source: edit the repo packs.
+- `BubbasExtraRecipes#registerBundledPacks`:
+  - the datapack as `bubbas_extra_recipes:extra_recipes_datapack`, `ALWAYS_ENABLED`;
+  - the resource pack as `bubbas_extra_recipes:extra_recipes_resources`, `DEFAULT_ENABLED` (players can switch it off);
+  - the 32x texture pack `bubbas_extra_recipes:bubbas_extra_recipes_32x`, `NORMAL` (opt in), as `specs/textures.md` says.
 
 ## Glider
 
-- Its own registered item, `glider` (not a modified elytra), so it can have its own model, wings and flight rules. Worn in the chest slot with the vanilla `glider` and `equippable` components; its `equippable` asset points at our own wing model.
-- **No durability.** The owner dislikes durability; the Glider's nerf is entirely in how it flies. (Easy to add later if wanted.)
-- **Handling** (tunable, starting values): turns more slowly toward where the player looks (vanilla blends 10% per tick; the Glider 3%: halved at first, then cut further after the owner's playtest, "nerf the glider's handling even more. speed is fine."), and firework rocket boosts are weaker. Done with a small mixin on the elytra flight code that applies only when the worn glider item is ours. Lift and sink rate stay vanilla to start.
-- **Recipe:** the owner's original elytra recipe from Extra Recipes: diamond, bamboo, diamond / phantom membrane, empty, phantom membrane / feather, empty, feather. Result: one Glider.
-- **Look:** its own item model and wing texture at 16x and 32x (B16), to be made by a person. Agent-made hang-glider art until then (As built, Glider); nothing ships to Modrinth with it.
-- **Tests:** game tests compare a Glider flight against an elytra flight from the same start (it turns slower, rockets add less speed) and check the recipe; client screenshots of the item and the wings on a player, front and back.
+A craftable, weaker cousin of the elytra.
+
+### The item
+
+- Its own registered item, `registry/ModItems.GLIDER` (not a modified elytra), so it can have its own model, wings and flight rules.
+- Plain `Item`, stack size 1, uncommon rarity (yellow name, below the elytra's purple: owner confirmed).
+- Components `minecraft:glider` and `minecraft:equippable`: chest slot, elytra equip sound, asset `bubbas_extra_recipes:glider` (our own wing model), no damage on hurt.
+- **No durability** (no `max_damage`). The owner dislikes durability; the Glider's nerf is entirely in how it flies. Easy to add later if wanted.
+- In the Tools & Utilities creative tab after the elytra (owner confirmed).
+- **Recipe** `data/bubbas_extra_recipes/recipe/glider.json` (mod data, not the datapack): the owner's original elytra recipe. Diamond, bamboo, diamond / phantom membrane, empty, phantom membrane / feather, empty, feather. Result: one Glider.
+
+### Handling
+
+Constants in `glider/GliderHandling`. They apply only while the chest slot holds our Glider; everything else, including an elytra worn by the same player, is vanilla. Lift, gravity, drag and sink rate stay vanilla.
+
+- **Turning:** vanilla blends horizontal velocity 10 % per tick toward where the player looks; the Glider blends 3 % (`GLIDER_TURN_BLEND` 0.03). Owner, after a playtest: "nerf the glider's handling even more. speed is fine."
+  - `LivingEntityGliderMixin`: `@ModifyExpressionValue` on the two `0.1` constants (used once each for x and z) in `LivingEntity#updateFallFlyingMovement`.
+- **Rockets:** weaker. `GLIDER_ROCKET_POWER` = 0.6 (owner confirmed this starting strength).
+  - `FireworkRocketGliderMixin`: `@WrapOperation` on the first `Vec3#add(DDD)` in `FireworkRocketEntity#tick`, the boost to the attached fall-flying entity (`look*0.1 + (look*1.5 - v)*0.5`).
+  - The 0.1 push and the 1.5 target speed are both scaled by 0.6, so a rocket accelerates less and tops out at about 60 % of an elytra's rocket speed (about 1.0 instead of 1.7 blocks a tick).
+- Movement runs on the client for the local player and on the server for everything else; both mixins are common code, so both sides agree.
+
+### Look
+
+- Item model `items/glider.json` → `item/glider` (generated).
+- Wings `equipment/glider.json` (layer `wings`) → `textures/entity/equipment/wings/glider.png` (elytra UV layout, 64x32).
+- Agent-made art at 16x and 32x (B16), drawn in code by `tools-local/make_placeholder_textures.py`:
+  - the icon is a home-made hang glider seen from the front: a swept chevron wing with a bamboo leading edge and membrane sail, a triangle control frame, feather tassels;
+  - the wings are phantom-membrane sails on a bamboo spar and battens, with diamond spar caps and feathered tips.
+- Listed in `docs/art-todo.md`. A person replaces both before any Modrinth release; nothing ships to Modrinth with the agent-made art.
 
 ## Synthetic Diamond Ore
 
-- The datapack's blasting recipe (block of coal → "Synthetic Diamond Ore") also sets `minecraft:block_state: {synthetic: "true"}` on the result. Without the mod that component is ignored and placed ore behaves like natural ore (today's behavior).
-- With the mod: a boolean `synthetic` property is added to vanilla `deepslate_diamond_ore` (default false, so natural and existing ore is unchanged); placing the item sets it. The mod's own data (not the datapack) overrides the ore's loot table to branch on the property with `match_block`: natural keeps vanilla drops exactly; synthetic uses `bubbas_extra_recipes:blocks/synthetic_diamond_ore`.
-- That table (owner: "may not actually drop anything, so it feels much more rare"): 25 % chance of 1 diamond, Fortune doesn't help, no XP. Silk Touch returns the Synthetic Diamond Ore item unchanged. Starting numbers; tune by playtest.
-- Technique, tests and tradeoffs: `docs/knowledge/item-keyed-block-drops.md` (approach C), proven first in refmod (requirement 18). Removing the mod turns synthetic ore into natural ore. The mod is required on client and server (a configuration-phase handshake turns away clients without it).
+The datapack's blasting recipe (coal block → "Synthetic Diamond Ore") sets `minecraft:block_state {synthetic:"true"}` on the result, next to its `item_name`. Without the mod that component is ignored and placed ore behaves like natural ore.
 
-## As built (2026-11-14; everything above is built)
+### Behaviour with the mod
 
-Code: `mods/bubbas_extra_recipes` (package `io.github.bubba8587.bubbas_extra_recipes`). Requires Fabric API; `environment: "*"`, required on both sides.
+- A boolean `synthetic` property is added to vanilla `deepslate_diamond_ore` (default false, so natural and existing ore is unchanged). Placing the item sets it.
+- The mod's own data (not the datapack) overrides the ore's loot table to branch on the property with `match_block`: natural ore keeps vanilla drops exactly; synthetic ore uses `bubbas_extra_recipes:blocks/synthetic_diamond_ore`.
+- **That table** (owner: "may not actually drop anything, so it feels much more rare"): 25 % chance of 1 diamond, Fortune doesn't help, no XP. Silk Touch returns the Synthetic Diamond Ore item unchanged. Starting numbers; tune by playtest.
+- Pick-block on synthetic ore gives plain ore (as in refmod; creative only).
+- Removing the mod turns synthetic ore into natural ore.
+- The mod is required on client and server: a configuration-phase handshake turns away clients without it.
 
-### Bundled packs
-- `build.gradle` task `bundlePacks` copies `datapacks/bubbas_extra_recipes` to `bundled/datapack/` and `resourcepacks/bubbas_extra_recipes` to `bundled/resourcepack/` in the jar at build time (`VERSION`, `DISABLED`, `packtest.commands` and PackTest functions left out). Nothing is duplicated in the mod's source; edit the repo packs.
-- `BubbasExtraRecipes#registerBundledPacks`: the datapack as built-in pack `bubbas_extra_recipes:extra_recipes_datapack`, `ALWAYS_ENABLED`; the resource pack as `bubbas_extra_recipes:extra_recipes_resources`, `DEFAULT_ENABLED` (players can switch it off). The 32x texture pack `bubbas_extra_recipes:bubbas_extra_recipes_32x` is `NORMAL` (opt in), as `specs/textures.md` says.
+### How it's built
 
-### Glider
-- `registry/ModItems.GLIDER`: plain `Item`, stack size 1, uncommon rarity (yellow name, below the elytra's purple: owner confirmed), components `minecraft:glider` and `minecraft:equippable` (chest, elytra equip sound, asset `bubbas_extra_recipes:glider`, no damage on hurt). No `max_damage`. In the Tools & Utilities creative tab after the elytra (owner confirmed).
-- Handling constants in `glider/GliderHandling` (apply only while the chest slot holds our Glider; everything else, including an elytra worn by the same player, is vanilla):
-  - `LivingEntityGliderMixin`: `@ModifyExpressionValue` on the two `0.1` constants (used once each for x and z) in `LivingEntity#updateFallFlyingMovement` (the per-tick blend of horizontal velocity toward the look direction). Glider: `0.03` (was `0.05`; owner asked for worse handling, same speed). Lift, gravity and drag untouched.
-  - `FireworkRocketGliderMixin`: `@WrapOperation` on the first `Vec3#add(DDD)` in `FireworkRocketEntity#tick`, the boost to the attached fall-flying entity (`look*0.1 + (look*1.5 - v)*0.5`). Glider: the 0.1 push and the 1.5 target speed are scaled by `GLIDER_ROCKET_POWER = 0.6`, so a rocket both accelerates less and tops out at about 60 % of an elytra's rocket speed (about 1.0 instead of 1.7 blocks/tick). Owner confirmed this starting strength.
-  - Movement runs on the client for the local player and on the server for everything else; both mixins are common code, so both sides agree.
-- Recipe `data/bubbas_extra_recipes/recipe/glider.json` (mod data, not the datapack): the old `elytra2` shape, result `bubbas_extra_recipes:glider`.
-- Look: item model `items/glider.json` → `item/glider` (generated); wings `equipment/glider.json` (layer `wings`) → `textures/entity/equipment/wings/glider.png` (elytra UV layout, 64x32). Agent-made art at 16x and 32x, drawn in code by `tools-local/make_placeholder_textures.py` (art pass 2026-11-16): the icon is a home-made hang glider seen from the front (swept chevron wing with a bamboo leading edge and membrane sail, a triangle control frame, feather tassels); the wings are phantom-membrane sails on a bamboo spar and battens, diamond spar caps, feathered tips. Listed in `docs/art-todo.md`; a person replaces both before any Modrinth release.
+Technique, tests and tradeoffs: `docs/knowledge/item-keyed-block-drops.md` (approach C), proven first in refmod (requirement 18). This is a port of refmod's approach C; refmod keeps its copy as the reference.
 
-### Synthetic Diamond Ore
-- Port of refmod's approach C (refmod keeps its copy as the reference): `blockstate/SyntheticOre`, `mixin/BlockExtraPropertyMixin` (adds `synthetic`, default false), `mixin/BlockPropertiesAccessor`, `mixin/DropExperienceBlockMixin` (no XP from synthetic ore), `network/ExtraStatesHandshake` (configuration-phase check; the client registers the receiver in `BubbasExtraRecipesClient`).
-- The datapack's `blast2diamond` result carries `minecraft:block_state {synthetic:"true"}` next to its `item_name` (packcheck's table row checks it; the datapack alone still loads clean and the ore still mines like natural ore without the mod: packcheck `ItemKeyedDropsGameTest.syntheticOreFromBlastingPlacesPlainOre`).
-- Mod data: `data/minecraft/loot_table/blocks/deepslate_diamond_ore.json` (a `match_block` `synthetic=true` child sends to the synthetic table; the other two children are vanilla's unchanged; re-check on each Minecraft update) and `data/bubbas_extra_recipes/loot_table/blocks/synthetic_diamond_ore.json` (one `alternatives`: silk touch → the ore item with the same `item_name` and `block_state` as the recipe result; otherwise `random_chance 0.25` → one diamond with `explosion_decay` only, so Fortune adds nothing).
-- Pick-block on synthetic ore gives plain ore (as refmod; creative only).
-- Technique notes (moved from code comments, B38):
+- **Classes:**
+  - `blockstate/SyntheticOre`;
+  - `mixin/BlockExtraPropertyMixin` (adds `synthetic`, default false);
+  - `mixin/BlockPropertiesAccessor`;
+  - `mixin/DropExperienceBlockMixin` (no XP from synthetic ore; XP is code, not loot data);
+  - `network/ExtraStatesHandshake` (configuration-phase check; the client registers the receiver in `BubbasExtraRecipesClient`).
+- **Mod data:**
+  - `data/minecraft/loot_table/blocks/deepslate_diamond_ore.json`: a `match_block` `synthetic=true` child sends to the synthetic table; the other two children are vanilla's, unchanged. Re-check on each Minecraft update.
+  - `data/bubbas_extra_recipes/loot_table/blocks/synthetic_diamond_ore.json`: one `alternatives`. Silk Touch gives the ore item with the same `item_name` and `block_state` as the recipe result; otherwise `random_chance 0.25` gives one diamond, with `explosion_decay` only, so Fortune adds nothing.
+- **The datapack side:** packcheck's recipe table row checks the `block_state` on the `blast2diamond` result. The datapack alone still loads clean and the ore still mines like natural ore without the mod (packcheck `ItemKeyedDropsGameTest.syntheticOreFromBlastingPlacesPlainOre`).
+- **Technique notes:**
   - `BlockExtraPropertyMixin` wraps the `createBlockStateDefinition` call in the `Block` constructor rather than injecting into the method, so it also works for blocks whose override doesn't call super. It recognises the block by the id in its `Properties`, which `Blocks.register` sets before construction (`BlockPropertiesAccessor`).
   - `StateDefinition#any()` is the first state and `BooleanProperty` lists `true` first, so the mixin sets `synthetic=false` as the default explicitly. Otherwise worldgen, `/setblock` and old saves would give synthetic ore.
   - `SyntheticOre` is loaded while `Blocks` is initialising, so it must not touch any registry.
-  - XP is code, not loot data, hence `DropExperienceBlockMixin`.
   - Why the handshake: an added property shifts every block state id after that block. Fabric's registry sync rebuilds state ids from each side's own blocks and sends nothing when no registry has modded entries, so a client without the property would join and decode chunks with shifted ids.
 - **Reopen if:** Minecraft adds more data-driven blocks, or lets blocks without a block entity carry item data. Then the added `synthetic` property moves to pure data and merges back toward vanilla (see `docs/knowledge/item-keyed-block-drops.md`, Reopen if).
 
-### Tests
-Server (core in `./gradlew :bubbas_extra_recipes:build`, all with `-PmilestoneTests`; see Milestone test objectives):
-- `BundledPacksGameTest.bundledDatapackIsEnabledAndItsRecipesExist`: the built-in datapack is selected and every recipe file in the bundled copy is loaded, with only this mod installed.
-- `GliderGameTest.gliderHasGliderAndEquippableAndNoDurability`, `gliderRecipeCraftsOneGlider`, `gliderTurnsSlowerThanElytra` (same start, east at 1 block/tick looking north, 20 steps of the game's `updateFallFlyingMovement`: the Glider is still well off its heading and keeps ~0.29 of its sideways speed vs ~0.10 for the elytra; vertical speed identical), `rocketAddsLessSpeedToGlider` (same start, 8 ticks of an attached rocket: elytra > 1.4 blocks/tick, Glider < 75 % of that).
-- `SyntheticOreGameTest` (ported from refmod): `syntheticPropertyIsAddedAndNaturalIsTheDefault`, `naturalOreKeepsVanillaDropsAndXp` (drops, Fortune III 1..4, silk touch, XP), `syntheticOreUsesItsOwnTableAndGivesNoXp` (survival player places the recipe result and mines it six times with plain and Fortune III picks: at most one diamond, never XP; silk touch gives back an item identical to the recipe result, which places synthetic ore again), `syntheticOreDropsADiamondAboutOneTimeInFour` (2000 rolls of the ore's loot table with a fixed seed, plain and Fortune III: 420..580 diamonds, the rest empty; natural ore always drops one), `pickBlockOnSyntheticGivesPlainOre`, `savesWithAndWithoutThePropertyLoad`.
+## Milestone test objectives
 
-Client (milestone: `runClientGameTest -PmilestoneTests`, screenshots in `build/run/clientGameTest/screenshots/`): `glider-tooltip`, `glider-standing-back`, `glider-standing-front`, `glider-gliding-back`, `glider-gliding-front` (gliding started with the jump key in mid-air, which also proves the client and server agree the Glider can glide), `synthetic-ore-left-natural-right`, and with the 32x pack on `glider-tooltip-32x`, `glider-gliding-back-32x`. The test also checks the bundled resource pack is on by default and that a modded client passes the handshake.
+All objectives have tests. Test-lite (`specs/quality.md`, "Test suites"): `ExtraRecipesCoreGameTest` runs on every build (`./gradlew :bubbas_extra_recipes:build`); everything else is milestone (`-PmilestoneTests`).
 
-### Milestone test objectives
-
-Test-lite policy (`specs/quality.md`, Test suites): `ExtraRecipesCoreGameTest` runs on every build and push; the rest is the milestone suite (release tags, manual CI dispatch, `-PmilestoneTests`). What each part proves:
-
-- Core (`ExtraRecipesCoreGameTest`, 3): the bundled datapack is on and its recipes load; the Glider turns slower than an elytra; synthetic ore uses its own loot table and gives no XP.
-- `GliderGameTest` (milestone part): the Glider has the glider and equippable components and no durability; the Glider recipe crafts one Glider; a rocket adds less speed to it than to an elytra.
-- `SyntheticOreGameTest` (milestone part): the `synthetic` property exists with natural as the default, natural ore keeps vanilla drops, Fortune and XP, synthetic ore drops a diamond about one time in four over 2000 fixed-seed rolls, pick-block gives plain ore, saves with and without the property load.
-- Client (screenshots listed above): the Glider's tooltip, worn standing and gliding from both sides (and the client agrees it can glide), synthetic vs natural ore, the bundled resource pack on by default, a modded client passes the handshake.
+- **Core** (`ExtraRecipesCoreGameTest`, 3 tests): the bundled datapack is on and its recipes load; the Glider turns slower than an elytra; synthetic ore uses its own loot table and gives no XP.
+- **`BundledPacksGameTest.bundledDatapackIsEnabledAndItsRecipesExist`:** the built-in datapack is selected and every recipe file in the bundled copy is loaded, with only this mod installed.
+- **`GliderGameTest`:**
+  - `gliderHasGliderAndEquippableAndNoDurability`
+  - `gliderRecipeCraftsOneGlider`
+  - `gliderTurnsSlowerThanElytra`: same start, east at 1 block a tick looking north, 20 steps of the game's `updateFallFlyingMovement`. The Glider is still well off its heading and keeps ~0.29 of its sideways speed, against ~0.10 for the elytra; vertical speed identical.
+  - `rocketAddsLessSpeedToGlider`: same start, 8 ticks of an attached rocket. Elytra above 1.4 blocks a tick, Glider below 75 % of that.
+- **`SyntheticOreGameTest`** (ported from refmod):
+  - `syntheticPropertyIsAddedAndNaturalIsTheDefault`
+  - `naturalOreKeepsVanillaDropsAndXp`: drops, Fortune III 1..4, Silk Touch, XP.
+  - `syntheticOreUsesItsOwnTableAndGivesNoXp`: a survival player places the recipe result and mines it six times with plain and Fortune III picks: at most one diamond, never XP. Silk Touch gives back an item identical to the recipe result, which places synthetic ore again.
+  - `syntheticOreDropsADiamondAboutOneTimeInFour`: 2000 rolls of the ore's loot table with a fixed seed, plain and Fortune III: 420..580 diamonds, the rest empty; natural ore always drops one.
+  - `pickBlockOnSyntheticGivesPlainOre`
+  - `savesWithAndWithoutThePropertyLoad`
+- **Client** (`BubbasExtraRecipesClientGameTest`, milestone, `runClientGameTest -PmilestoneTests`; screenshots in `build/run/clientGameTest/screenshots/`):
+  - `glider-tooltip`, `glider-standing-back`, `glider-standing-front`, `glider-gliding-back`, `glider-gliding-front`. Gliding starts with the jump key in mid-air, which also proves the client and server agree the Glider can glide.
+  - `synthetic-ore-left-natural-right`.
+  - With the 32x pack on: `glider-tooltip-32x`, `glider-gliding-back-32x`.
+  - The test also checks the bundled resource pack is on by default and that a modded client passes the handshake.
 
 ## Open
 

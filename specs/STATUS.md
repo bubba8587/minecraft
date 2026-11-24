@@ -9,8 +9,15 @@ Every feature of every project, and where it stands. Last checked against the co
 | **in progress** | an agent is building it (branch named) |
 | **designed** | decided by the owner, nobody building it yet |
 | **parked** | waiting; see `BACKLOG.md` |
+| **dropped** | decided against; kept here so nobody builds it |
 
-**Keeping it current.** Whoever merges a branch moves its lines to **built** in the same commit. Whoever starts a feature marks it **in progress** with the branch name. A newly decided feature gets a **designed** line. Before marking a line **built**, check it in the mod's source; the specs are not proof. Each line is one short phrase and a link to the spec section. Owner decisions still open are in each spec's "Open" section, not here.
+**Keeping it current:**
+- Whoever merges a branch moves its lines to **built** in the same commit.
+- Whoever starts a feature marks it **in progress** with the branch name.
+- A newly decided feature gets a **designed** line.
+- Before marking a line **built**, check it in the mod's source; the specs are not proof.
+- Each line is one short phrase and a link to the spec section.
+- Owner decisions still open are in each spec's "Open" section, not here.
 
 Nothing is released yet: every mod is 0.1.0 in `develop`.
 
@@ -18,42 +25,43 @@ Nothing is released yet: every mod is 0.1.0 in `develop`.
 
 **Undead** ([spec](undead.md))
 - built: sleeping undead as blocks, noise meter, stirring, chain waking ([§](undead.md#hearing-and-waking))
-- built: waking in tight spots ([§](undead.md#waking-in-tight-spots-2026-11-22))
-- built: husk sleepers burst from sand, stray sleepers crack out of ice ([§](undead.md#undead-variants-owner-2026-11-22))
-- built: bogged lurk in water instead of sleeping ([§](undead.md#undead-variants-owner-2026-11-22))
+- built: face-down sleepers for every kind ([§](undead.md#face-down-sleepers))
+- built: waking in tight spots ([§](undead.md#waking-in-tight-spots))
+- built: husk sleepers burst from sand, stray sleepers crack out of ice ([§](undead.md#undead-variants))
+- built: bogged lurk in water instead of sleeping ([§](undead.md#undead-variants))
 - built: robbing sleepers ([§](undead.md#robbing))
 - built: mining and placing sleepers with Silk Touch ([§](undead.md#mining-and-placing-sleepers))
-- built: loot on display, buried loot, undead grab loot ([§](undead.md#loot-on-display-shared-block))
+- built: loot on display, buried loot, undead grab loot ([§](undead.md#loot-on-display))
 - built: woken undead: armor-shred streaks, Smite kills, arrow rules, zombie shamble, drifting into groups ([§](undead.md#tuning))
 - built: light and bells calm or wake sleepers ([§](undead.md#calming-sleepers-light-and-bells))
 - built: natural monster spawns cut to 15 % ([§](undead.md#natural-spawning))
-- built: back to sleep at dawn ([§](undead.md#back-to-sleep-at-dawn-owner-2026-11-22-built))
-- built: fire as a weak ward ([§](undead.md#fire-as-a-weak-ward-owner-idea-2026-11-22-built))
-- built: drowned sleepers in shipwrecks ([§](undead.md#drowned-sleepers-in-shipwrecks-owner-2026-11-22-built))
-- built: sneak + middle click lays the held item on the ground anywhere ([§](undead.md#laying-a-held-item-anywhere-built-2026-11-22-agent-3-owner-sneak--middle-click))
+- built: back to sleep at dawn ([§](undead.md#back-to-sleep-at-dawn))
+- built: fire as a weak ward ([§](undead.md#fire-as-a-weak-ward))
+- built: drowned sleepers in shipwrecks ([§](undead.md#drowned-sleepers-in-shipwrecks))
+- built: sneak + middle click lays the held item on the ground anywhere ([§](undead.md#placing-displays))
 - designed: hybrid sleeper bodies and real 16x/32x body art, before release ([§](undead.md#dormant-undead-are-real-blocks))
 - parked: the bury-break system, more sleeper kinds ([§](undead.md#scope-and-variants))
 
 **Graveyards** ([spec](graveyards.md))
-- built: gravestone block ([§](graveyards.md#gravestones-a-new-block-owner-approved-2026-11-22))
+- built: gravestone block ([§](graveyards.md#gravestones))
 - built: crypt yards, 4 sizes, 5 states of decay ([§](graveyards.md#crypt-yards-surface))
-- built: the resting dead ([§](graveyards.md#the-resting-dead-owner-2026-11-22))
+- built: the resting dead ([§](graveyards.md#the-resting-dead))
 - built: pauper, family and noble crypts ([§](graveyards.md#crypts-underground))
-- built: noble crypt burial goods ([§](graveyards.md#noble-crypt-loot-built-agents-call-owner-2026-11-22-do-whatever-you-like-with-the-noble-crypt-loot))
-- built: desert and snowy yards ([§](graveyards.md#desert-and-snowy-yards-built-2026-11-22))
-- built: will-o'-wisps ([§](graveyards.md#will-o-wisps-owner-2026-11-22-built))
-- built: noble dead in gemmed armor (with Infused Gems) ([§](graveyards.md#noble-dead-in-gemmed-armor-owner-2026-11-22-built))
+- built: noble crypt burial goods ([§](graveyards.md#noble-crypt-loot))
+- built: desert and snowy yards ([§](graveyards.md#desert-and-snowy-yards))
+- built: will-o'-wisps ([§](graveyards.md#will-o-wisps))
+- built: noble dead in gemmed armor (with Infused Gems) ([§](graveyards.md#noble-dead-in-gemmed-armor))
 - designed: standalone hillside crypts (owner to confirm) ([§](graveyards.md#crypts-underground))
 
 **Monster camps** ([spec](monster-camps.md))
-- built: camps with rosters, leaders, banner keys, daily reset ([§](monster-camps.md#as-built-2026-11-22))
-- built: camp shade and underground room ([§](monster-camps.md#as-built-2026-11-22))
-- built: a lit fire quiets a camp ([§](monster-camps.md#lighting-a-fire-quiets-a-camp-owner-2026-11-22))
+- built: camps with rosters, leaders, banner keys, daily reset ([§](monster-camps.md#what-a-camp-is))
+- built: camp shade and underground room ([§](monster-camps.md#shade-and-the-underground-room-owner))
+- built: a lit fire quiets a camp ([§](monster-camps.md#lighting-a-fire-quiets-a-camp-owner))
 - built: pillager outposts as camps ([§](monster-camps.md#pillager-outposts-become-camps-too-owner))
-- built: explorer maps from cartographers to graveyards, camps and Fabricators (Fabricator map marks its city for now) ([§](monster-camps.md#maps-owner-2026-11-22-built))
-- built: Nether outposts, the piglin kind: crimson forest and Nether wastes, gilded gate, hoglin pen, portal room ([§](monster-camps.md#nether-outposts-owner-2026-11-24-built-2026-11-24))
-- built: trader posts; the wandering trader arrives at a nearby post with its llamas penned ([§](monster-camps.md#trader-posts-built-2026-11-24))
-- dropped: overworld piglin outposts (owner, 2026-11-24: vanilla zombification) ([§](monster-camps.md#nether-outposts-owner-2026-11-24-built-2026-11-24))
+- built: explorer maps from cartographers to graveyards, camps and Fabricators (the Fabricator map marks the Fabricator itself) ([§](monster-camps.md#maps-owner))
+- built: Nether outposts, the piglin kind: crimson forest and Nether wastes, gilded gate, hoglin pen, portal room ([§](monster-camps.md#nether-outposts))
+- built: trader posts; the wandering trader arrives at a nearby post with its llamas penned ([§](monster-camps.md#trader-posts))
+- dropped: overworld piglin outposts (owner: vanilla zombification) ([§](monster-camps.md#nether-outposts))
 
 **Spiders** ([spec](spiders.md))
 - built: cave nests, dropping and latching spiders ([§](spiders.md#cave-nests))
@@ -66,7 +74,7 @@ Nothing is released yet: every mod is 0.1.0 in `develop`.
 **Creepers** ([spec](creepers.md))
 - built: watcher creepers, startle meter, peekaboo, one per player at night ([§](creepers.md#how-its-built))
 - built: charged and spawner creepers stay vanilla ([§](creepers.md#charged-creepers))
-- built: `show_meters` game rule for the creeper and drowned meters ([§](creepers.md#how-its-built))
+- built: `show_meters` game rule for the creeper and drowned meters (off by default) ([§](creepers.md#how-its-built))
 
 **Drowned** ([spec](drowned.md))
 - built: shore lurkers that sink when stared at ([§](drowned.md#the-lurker))
@@ -82,29 +90,26 @@ Nothing is released yet: every mod is 0.1.0 in `develop`.
 - built: endermen trading at cairns (trade pad, random answers) ([§](endermen.md#trading-at-cairns-owner-2026-11-22-built))
 
 **Ancient Fabricators** ([spec](mob-factory.md))
-- built: a Fabricator beside every ancient city: look, teleporter, hidden spawner, Warden, debuffs, loot ([§](mob-factory.md#mechanics-as-built-2026-11-17))
-- built: secrets and the lower city ([§](mob-factory.md#secrets-and-the-lower-city-owner-2026-11-16))
-- designed (ready to assign): Fabricators as real structures with their own placement grid, near ancient cities when possible; then maps, `/locate` and Seeking point straight at them ([§](mob-factory.md#fabricators-as-real-structures-owner-2026-11-22-designed-not-built))
+- built: a Fabricator beside every ancient city: look, teleporter, hidden spawner, Warden, debuffs, loot ([§](mob-factory.md#mechanics))
+- built: secrets and the lower city ([§](mob-factory.md#secrets-and-the-lower-city))
+- designed (ready to assign): Fabricators as real structures with their own placement grid, near ancient cities when possible; then `/locate` and Seeking point straight at them ([§](mob-factory.md#fabricators-as-real-structures-designed-not-built))
 - parked: why challenge a Fabricator, office jukebox loop, totem of spawning ([§](mob-factory.md#parked))
 
 ## Bubba's Totems & Artifacts ([spec](totems-artifacts.md))
 - built: Grave Talisman, glows near undead, in crypt chests ([§](totems-artifacts.md#grave-talisman))
 - built: Totem of Warding, held and in a beacon ([§](totems-artifacts.md#totem-of-warding))
 - built: Totem of Keeping ([§](totems-artifacts.md#totem-of-keeping-keepingkeeping-mixinplayerkeepingmixin))
-- built: Totem of Gathering, held ([§](totems-artifacts.md#totem-of-gathering-gatheringgathering-totemofgatheringitem-compatgatheringbeaconpayload))
+- built: Totem of Gathering: held; in a beacon, a floating ring of items and XP for a side hopper ([§](totems-artifacts.md#totem-of-gathering-gatheringgathering-totemofgatheringitem-compatgatheringbeaconpayload))
 - built: Totem of Fortification ([§](totems-artifacts.md#totem-of-fortification-fortificationfortification-mixinserverexplosionmixin-compatfortificationbeaconpayload))
-- built: Totem of Growth ([§](totems-artifacts.md#totem-of-growth-working-name-growthgrowth-totemofgrowthitem-compatgrowthbeaconpayload))
+- built: Totem of Growth, also plants dropped seeds ([§](totems-artifacts.md#totem-of-growth-working-name-growthgrowth-totemofgrowthitem-compatgrowthbeaconpayload))
 - built: Totem of Seeking ([§](totems-artifacts.md#totem-of-seeking-seekingtotemofseekingitem-seekingtypes-structureseeker-seekingbeacon-mixincompassitemmixin-compatseekingbeaconpayload))
-- built: Totems of the Beginning and the End ([§](totems-artifacts.md#totems-of-the-beginning-and-the-end-built-2026-11-22))
-- built: the Beginning reworked into a reusable pulse with a cooldown and per-block odds ([§](totems-artifacts.md#totem-of-the-beginning-rework-owner-2026-11-24-built-2026-11-24))
-- built: the Beginning without a hidden window; beacons and statues pulse the ground directly every 15 s ([§](totems-artifacts.md#totem-of-the-beginning-rework-owner-2026-11-24-built-2026-11-24))
-- built: relic map shreds, combined into relic maps that lead to seeded relic vaults; vaults behind some noble crypts ([§](totems-artifacts.md#relic-maps-and-relic-vaults-owner-2026-11-24-built-2026-11-24))
-- built: a statue for every totem, decorative ([§](totems-artifacts.md#totem-statue-block-b15-exception))
-- built: Gathering beacon makes a floating ring of items and XP for a side hopper ([§](totems-artifacts.md#gathering-in-a-beacon-a-floating-ring-built-2026-11-22-replaced-into-a-chest-below))
-- built: Growth plants dropped seeds ([§](totems-artifacts.md#growth-also-plants-seeds-built-2026-11-22-harvest-folded-in-owner))
-- built: Totem of Herding ([§](totems-artifacts.md#totem-of-herding-herdingherding-built-2026-11-22))
-- built: Totem of Clear Skies ([§](totems-artifacts.md#totem-of-clear-skies-skiesclearskies-built-2026-11-22))
-- built: statues give their totem's effect in a tiny radius ([§](totems-artifacts.md#statues-give-their-totems-effect-built-2026-11-22))
+- built: Totem of Herding ([§](totems-artifacts.md#totem-of-herding-herdingherding))
+- built: Totem of Clear Skies ([§](totems-artifacts.md#totem-of-clear-skies-skiesclearskies))
+- built: Totem of the North Wind: a rocket boost while gliding; in a beacon or as a statue, for gliders in the area ([§](totems-artifacts.md#totem-of-the-north-wind-northwindtotemofnorthwinditem-northwindnorthwind-compatnorthwindbeaconpayload))
+- built: Totem of the Beginning: a reusable pulse with a cooldown and per-block odds; beacons and statues pulse the ground directly every 15 s ([§](totems-artifacts.md#totem-of-the-beginning-beginningtotemofthebeginningitem-beginningbeginningareas-compatbeginningbeaconpayload))
+- built: Totem of the End ([§](totems-artifacts.md#totem-of-the-end-endtotemoftheenditem-endendteleport-mixinendermankinmixin))
+- built: a statue for every totem, giving its totem's effect in a small radius ([§](totems-artifacts.md#totem-statue-block-b15-exception))
+- built: relic map shreds, combined into relic maps that lead to seeded relic vaults; vaults behind some noble crypts ([§](totems-artifacts.md#relic-maps-and-relic-vaults))
 - parked: Grave Talisman as a rare sleeper drop ([§](totems-artifacts.md#grave-talisman))
 
 ## Bubba's Infused Gems ([spec](effect-gems.md))
@@ -149,5 +154,5 @@ Nothing is released yet: every mod is 0.1.0 in `develop`.
 
 ## Repo
 - designed (low priority, owner): settings for every mod: game rules in a per-mod category, structure datapacks at world creation, optional Mod Menu button ([§](settings.md))
-- built: test world with stations for most features; missing ones listed in [testworld.md](testworld.md)
+- built: test world with stations for most features, and a natural world with examples of the rest; gaps listed in [testworld.md](testworld.md#stations)
 - parked: compatibility tests before releases (`BACKLOG.md`, Repo)
