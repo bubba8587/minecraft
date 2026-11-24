@@ -30,7 +30,7 @@ Each project has a folder in `Projects/`: an overview page named after the proje
 
 **[[Bubba's Totems & Artifacts]]**
 - The [[Grave Talisman]] glows near undead; the [[Totem of Warding]] keeps monsters away.
-- [[Totem of Keeping|Keeping]], [[Totem of Gathering|Gathering]], [[Totem of Fortification|Fortification]], [[Totem of Growth|Growth]], [[Totem of Seeking|Seeking]], [[Totem of Herding|Herding]] and [[Totem of Clear Skies|Clear Skies]]; most also work in a beacon.
+- [[Totem of Keeping|Keeping]], [[Totem of Gathering|Gathering]], [[Totem of Fortification|Fortification]], [[Totem of Growth|Growth]], [[Totem of Seeking|Seeking]], [[Totem of Herding|Herding]], [[Totem of Clear Skies|Clear Skies]] and [[Totem of the North Wind|the North Wind]]; most also work in a beacon.
 - The [[Totem of the Beginning]] restores the land; the [[Totem of the End]] makes endermen kin and teleports.
 - Any totem can be set down as a [[Totem Statue]], which gives a small version of its effect.
 - [[Relic Maps|Relic map shreds]] from chests combine into maps that lead to buried [[Relic Vaults]].

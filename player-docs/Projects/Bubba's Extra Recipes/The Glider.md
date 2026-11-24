@@ -52,4 +52,5 @@ The Glider looks like a home-made hang glider: phantom membrane stretched over a
 ## See also
 
 - [[Recipe List]]
+- [[Totem of the North Wind]], from [[Bubba's Totems & Artifacts]], which gives a gliding player a rocket-like gust (weaker on the Glider, as with rockets).
 - [[Bubba Test World]], which has a tower for comparing the Glider with the elytra.

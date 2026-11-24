@@ -33,6 +33,7 @@ Every statue works on the blocks within 5 of it, all the time:
 | [[Totem of Growth]] | Plants grow twice as fast, and dropped seeds get planted. |
 | [[Totem of Herding]] | Animals stay put, like a small pasture. |
 | [[Totem of Clear Skies]] | No rain, snow or lightning. |
+| [[Totem of the North Wind]] | Gliding players get a gust of wind every 3 seconds. |
 | [[Totem of the Beginning]] | Every 15 seconds, some of the dug-out ground comes back to how it was generated (with [[Bubba's Reworked Mobs]]). |
 | [[Totem of Keeping]], [[Totem of Seeking]], [[Totem of the End]] | Nothing. |
 

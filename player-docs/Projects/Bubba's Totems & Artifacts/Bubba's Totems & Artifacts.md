@@ -46,6 +46,7 @@ A found item that makes nearby monsters run away while held, and in a beacon fro
 - [[Totem of the End]]: endermen treat its holder as one of their own; teleports its user to the block they aim at.
 - [[Totem of Herding]]: animals follow its holder; in a beacon, they stay in the area.
 - [[Totem of Clear Skies]]: ends a storm; in a beacon, keeps rain, snow and lightning off the area.
+- [[Totem of the North Wind]]: gives a gliding player a gust of wind, like a firework rocket; in a beacon, gliders in the area get a gust every 3 seconds.
 
 ## Totem statues
 
@@ -80,7 +81,7 @@ The mod requires Fabric API and works on its own. Two of Bubba's mods add to it 
 | Installed with | Adds |
 |---|---|
 | [[Bubba's Reworked Mobs]] | The Grave Talisman also senses [[Sleeping Undead|sleeping undead]]; the Totem of Warding calms sleeping undead, and a full ward keeps them asleep. [[Endermen|Enderman cairns]] sometimes offer the [[Totem of the Beginning]], and the Totem of the Beginning works only with this mod. Relic map shreds are also found in crypts, camps, Fabricator offices and cairn trades; some noble crypts hide a [[Relic Vaults|crypt vault]]; vault pedestals show their weapon planted point-down and a skeleton guard sits by it. |
-| [[Bubba's Reworked Beacons]] | Totems fit in a [[Beacon|beacon]] and work across its area: the Totem of Warding wards it, Gathering makes its item ring, Herding keeps animals in, Clear Skies keeps the weather off. The Totem of the Beginning in a beacon slowly returns its whole area's ground to how it was generated (with Bubba's Reworked Mobs). |
+| [[Bubba's Reworked Beacons]] | Totems fit in a [[Beacon|beacon]] and work across its area: the Totem of Warding wards it, Gathering makes its item ring, Herding keeps animals in, Clear Skies keeps the weather off, the North Wind gives gliders gusts. The Totem of the Beginning in a beacon slowly returns its whole area's ground to how it was generated (with Bubba's Reworked Mobs). |
 
 ## History
 

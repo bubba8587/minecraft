@@ -14,6 +14,7 @@ A separate mod for **artifacts**: found items that do things potions and enchant
 | Totem of the Beginning, Totem of the End | built 2026-11-22; the Beginning reworked 2026-11-24 into a reusable pulse (below; unreleased) |
 | Totem statue for every totem (decorative) | built 2026-11-22 |
 | Totems of Herding and Clear Skies | built (2026-11-22) |
+| Totem of the North Wind | built (below; unreleased) |
 | Relic map shreds, relic maps, relic vaults (named, seeded) and crypt vaults | built (2026-11-24; below) |
 | Gathering beacon ring, Growth seed planting, statues giving an area effect | built (2026-11-22) |
 | One statue radius (5) for every statue, Gathering statue ring | built (2026-11-24) |
@@ -73,6 +74,28 @@ No new blocks (B15). New ids, so no old-id alias. Numbers all in `totems/TotemsT
   - Client: rectangles are sent once a second and when the areas end (payload `bubbas_totems_artifacts:clear_skies`, with the dimension); `ClientLevelPrecipitationMixin` on `ClientLevel.getPrecipitationAt` stops rain drawing, splashes and sounds there. A copy older than 3 s, or from another dimension, is ignored.
 - **Found:** igloos 12 %, desert village houses 6 %, shipwreck supply chests 5 %.
 - Neither totem overlaps a gem effect.
+
+#### Totem of the North Wind (`northwind/TotemOfNorthWindItem`, `northwind/NorthWind`, `compat/NorthWindBeaconPayload`)
+
+Owner's design; *(builder's choice)* marks what the owner didn't pick.
+
+- **Item:** `bubbas_totems_artifacts:totem_of_north_wind`, one per stack, uncommon, found only. Look: a pale packed-ice idol with an icicle crown, blowing a gust from puffed cheeks, a snowflake on the chest. Tooltip: "Use while gliding: a gust of wind".
+- **Used while gliding** (anything that makes the player fall-fly: Elytra, or Bubba's Extra Recipes' Glider): a firework rocket boost, then a 3 s item cooldown sweep. Not used up. Not gliding: PASS, nothing happens, no cooldown.
+  - The gust is vanilla's rocket boost: an attached `FireworkRocketEntity(level, stack, player)` spawned with `Projectile.spawnProjectile`, as `FireworkRocketItem.use` does. The stack is a rocket with `Fireworks(NORTH_WIND_FLIGHT, no explosions)`, so it never explodes or hurts; the entity is silent.
+  - On the Glider the push is the Glider's weaker rocket boost: Extra Recipes' `FireworkRocketGliderMixin` scales any attached rocket, so no compat code is needed here.
+  - Sound and look *(builder's choice)*: the wind charge burst sound (quieter, higher pitch) instead of the rocket's bang, a puff of snowflakes and a small gust; the rocket's spark trail stays. A held leash breaks, as with a rocket.
+- **In a beacon** (Reworked Beacons): every player gliding anywhere in the beacon's area (vanilla's beacon box, full height) gets the same gust, then a 3 s cooldown before the next, so a glider is kept aloft with a gust every 3 s. Beacon text: "Gliders in the area get a gust of wind".
+- **As a statue:** the same, within the statue radius (5). *(Builder's choice, not yet confirmed by the owner: it follows the rule that a statue gives its totem's area effect in a small radius, making a statue a launch pad or boost ring. The owner may prefer a decorative-only statue.)*
+- **Cooldown (B19 noHiddenCooldowns):** hand use, beacon and statue share one timer: the item cooldown group of the totem's id (`ItemCooldowns`). So a North Wind totem anywhere in the inventory shows the sweep, and there are no double gusts. Without a totem on the player, the gusts themselves are the rhythm (one fires the moment the cooldown ends), like the other beacon totems. Only players glide, so there is no mob path.
+- **Area tick:** beacon pulses (`TotemAreas.put`, `AREA_LIFETIME_TICKS`) and statue pulses (`StatueEffects`) set a `TotemAreas.Kind.NORTH_WIND` area. `ServerTickEvents.END_LEVEL_TICK` walks `level.players()` only while the level has a live North Wind area: fall-flying, not spectator, off cooldown, inside a box → gust and `NORTH_WIND_AREA_COOLDOWN_TICKS`.
+- **Found** *(builder's choice of numbers)*: trial chamber vaults only, 3 % per normal vault opening, 6 % per ominous one (`chests/trial_chambers/reward`, `reward_ominous`, through `TotemsLoot`). Vaults roll once per player per vault, so a full trial chamber gives roughly a 15 to 25 % chance. Not in the chambers' ordinary chests or in relic vault chests; a relic vault pedestal can hold its statue.
+- **Numbers** (`TotemsTuning`): `NORTH_WIND_COOLDOWN_TICKS` 60, `NORTH_WIND_AREA_COOLDOWN_TICKS` 60, `NORTH_WIND_FLIGHT` 1, `NORTH_WIND_LOOT` 0.03 / 0.06.
+- **Tests:**
+  - Core `BubbasTotemsArtifactsCoreGameTest.northWindGustsGlidersOnly` (body `NorthWindGameTest.usedWhileGlidingBoosts`): not gliding → PASS, no cooldown, no rocket; gliding → success, cooldown on, the totem still in hand, one rocket owned by the player, the player pushed along their look (> 0.5 blocks/tick).
+  - Milestone `NorthWindGameTest.statueAreaGustsGliders` (a glider inside gets a gust and the cooldown; outside the radius, or not gliding, nothing) and `beaconAreaGustsGliders` (`-PwithBeacons`: the payload accepts only this totem; a 1-layer beacon's area reaches 15 out and 80 up; a glider in it gets a gust). Each runs in its own test environment (`north_wind_statue`, `north_wind_beacon`), so in its own batch: an area gusts every glider in the level, which would hit other tests' players.
+  - Also covered by `totemsAreFoundInLoot` (vault odds), `totemsAreArtifacts` and the statue place/drop loop over every `TotemType`.
+  - Client part `northwind` (`NorthWindClientGameTest`): held and in the hotbar, the cooldown sweep, the statue from the front and at 3/4 view, at 16x and 32x. Part `statues` lays out 11 statues.
+- **Art:** item by `tools/totems-textures.py`, statue by `tools-local/make_statue_textures.py`; rows in `docs/art-todo.md`.
 
 #### Growth also plants seeds (built 2026-11-22; Harvest folded in, owner)
 
@@ -462,6 +485,7 @@ Owner's goal (2026-11-15): mob-free zones without spamming torches. Owner decisi
   - Fortification: no blast damage to blocks.
   - Growth: plants grow twice as fast, plus planting.
   - Herding: a small pasture. Clear Skies: dry.
+  - North Wind: gliders get a gust every 3 s (builder's choice, see the North Wind section).
   - The Beginning (2026-11-24): an area pulse every 15 s ("Totem of the Beginning rework", follow-up).
   - Keeping, Seeking and the End: nothing (no area form).
 
@@ -471,7 +495,7 @@ Owner's goal (2026-11-15): mob-free zones without spamming torches. Owner decisi
 - **Placing (owner-approved, 2026-11-16; every totem since 2026-11-22):** sneak and use any totem on a block (sneaking, so holding a totem for its pulse never places it by accident; without sneaking the click does nothing). The statue faces the player and the totem is used up (creative keeps it). The Grave Talisman is not a totem and has no statue.
 - **Effects:** see "Statues give their totem's effect" above. No block entity.
 - **Breaking** (any tool, pickaxe fastest, strength 1) drops the totem back; pistons pop it off as its totem. Shape: 10x10 footprint, 14 high (plinth and column).
-- **Which totem:** `statue/TotemType`: WARDING (first, so it's the default and statues saved before the `totem` property load as warding), KEEPING, GATHERING, FORTIFICATION, GROWTH, SEEKING, BEGINNING, END, HERDING, CLEAR_SKIES, with `forItem(Item)`. `statue/StatueTotemItem` is an `Item` whose `useOn` places the statue when sneaking (PASS otherwise, so `use()` still runs); every totem item is or extends `StatueTotemItem`, so sneak-to-place lives in one place (Warding and Seeking joined it in the 2026-11-22 audit). **Sneak-use always places the statue** (builder's choice): a sneaking Totem of the End doesn't teleport, the Beginning doesn't ripple, Seeking doesn't pick a structure.
+- **Which totem:** `statue/TotemType`: WARDING (first, so it's the default and statues saved before the `totem` property load as warding), KEEPING, GATHERING, FORTIFICATION, GROWTH, SEEKING, BEGINNING, END, HERDING, CLEAR_SKIES, NORTH_WIND, with `forItem(Item)`. `statue/StatueTotemItem` is an `Item` whose `useOn` places the statue when sneaking (PASS otherwise, so `use()` still runs); every totem item is or extends `StatueTotemItem`, so sneak-to-place lives in one place (Warding and Seeking joined it in the 2026-11-22 audit). **Sneak-use always places the statue** (builder's choice): a sneaking Totem of the End doesn't teleport, the Beginning doesn't ripple, Seeking doesn't pick a structure.
 - **Loot (26.3 format):** one pool, an `alternatives` entry with one item per totem, each with `"condition": {"type": "minecraft:all_of", "terms": [survives_explosion, match_block {state: {totem}}]}`. The pre-26.x `conditions` / `block_state_property` keys are silently ignored by 26.3 (they made every statue drop all eight totems).
 - **Art (initial, 2026-11-22; owner will redesign):** generated by `tools-local/make_statue_textures.py` (`main()` Warding's hooded figure, unchanged; `write_others()` the seven new ones). Builder's choices: one generic figure for the seven (body, arms, head, chest emblem) on Warding's plinth, told apart by per-totem tops and emblems in each item's palette: Fortification's helm brim, Growth's leaf crown and blossom, Seeking's gold band, the Beginning's grass cap, the End's purpur crown with four spikes; Gathering raises its hands, Keeping hugs a deeper chest. Glowing parts: the Beginning's and the End's eyes (light 12), Fortification's visor (10). 16x and 32x (`pixelart.render32`); rows in `docs/art-todo.md`.
 - **Tests:** core `endStatuePlacesWithoutTeleportingAndDropsItsTotem`; milestone `TotemStatueGameTest.everyStatueDropsItsTotemAndOldOnesLoadAsWarding`; client part `statues` (row, close pairs, night, each at 32x too).
