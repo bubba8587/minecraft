@@ -134,7 +134,7 @@ Player-facing: `player-docs/Projects/Bubba's Reworked Mobs/Spiders.md`. Numbers 
 
 #### Player-facing behaviour
 
-- **Giant spiders** live in old-growth pine and spruce taiga. About 1.75x a normal spider (vanilla's scale attribute); they still fit between the trees. They:
+- **Giant spiders** live in old-growth pine and spruce taiga and in jungles (owner, 2026-11-23: tall jungles too; spawn weight 12 → 30, owner: "pretty rare, buff this a bit"; Reworked Mobs' monster spawn cut also applies to them). About 1.75x a normal spider (vanilla's scale attribute); they still fit between the trees. They:
   - spawn like other monsters, in the dark, and never within 48 blocks of another giant;
   - roam the forest;
   - every 20-40 s while roaming, spin a web between two nearby tree trunks. They stop once 5 webs are within 12 blocks;
@@ -142,7 +142,7 @@ Player-facing: `player-docs/Projects/Bubba's Reworked Mobs/Spiders.md`. Numbers 
   - go for nearby livestock before players, and turn from a player to an animal close by. Not if that player hurt them in the last 5 s;
   - call 2 little spiders when hurt: half size, 3 hearts, a weak bite. At most 4 alive, and a 10 s wait between calls;
   - take no fall damage (they come down on silk);
-  - **wander round their web (owner, 2026-11-23):** a giant's newest web is its home. Roaming, it wanders (`WanderGoal`, a vanilla `RandomStrollGoal` with its own targets, every ~3 s) to random **ground** spots under its web's span, 3 blocks wider (`WEB_HOME_MARGIN`), found by scanning down from the web's middle through canopy and trunks; Stormie's Spiders walks it there over trunks, walls and ceilings. Targets on a trunk side or in the canopy were tried first (owner: "any spots?") but Stormie's pathfinder can't reach a point on a wall: every path was a one-step dead end, and the giant stood turning on the spot. Stormie's also gives every spider a fixed 0.95 x 0.85 hitbox whatever its scale, so the giant's body is no wider than a spider's for pathing. With no web of its own it spins one first (checked once a second; trunks are searched from the ground under it, so it can from a treetop), and until then wanders to ground spots within 10 (`ROAM_RANGE`), heading down at once when it stands on leaves or logs. Prowling, it wanders on the ground within 10 of its cocoon (`PROWL_RADIUS`). *Why (owner playtest):* one placed on a treetop never came down. Stormie's can path down a trunk (checked), but vanilla's stroll only picks spots near its own height, so nothing ever sent it down. Milestone test `GiantSpiderGameTest.strandedInTheCanopyComesDown`;
+  - **wander round their web (owner, 2026-11-23):** a giant's newest web is its home. Roaming, it wanders (`WanderGoal`, a vanilla `RandomStrollGoal` with its own targets, every ~3 s) to random spots it can **stand on** in a 3D box round its home: a random point dropped straight down to the first open block on a sturdy top face, whatever the block (ground, roof, branch, canopy), no block-type rules (owner, 2026-11-23). The box is its newest web's span, 3 wider (`WEB_HOME_MARGIN`), reaching 16 below it (`WANDER_DEPTH`) so the ground is in it; with no web, round itself (10 sideways, 16 down, 3 up). Stormie's Spiders walks it there over trunks, walls and ceilings. Points on a wall were tried first but Stormie's pathfinder can't reach them (every path a one-step dead end; the giant stood turning on the spot). Stormie's also gives every spider a fixed 0.95 x 0.85 hitbox whatever its scale. With no web of its own it spins one first (checked once a second; trunks are searched from the ground under it, so it can from a treetop). Prowling, it wanders the same way round its cocoon (`PROWL_RADIUS`). *Why (owner playtest):* one placed on a treetop never came down. Stormie's can path down a trunk (checked), but vanilla's stroll only picks spots near its own height, so nothing ever sent it down. Milestone test `GiantSpiderGameTest.strandedInTheCanopyComesDown`;
   - notice players and livestock out to 32 blocks (`GIANT_FOLLOW_RANGE`; a vanilla spider: 16);
   - drop more string (3-6) and spider eyes (1-3) than a vanilla spider. This is the default until the owner decides on a unique drop.
 - While a giant hauls an animal, hitting it loosens its grip (the drowned rules). At 0 it drops the animal.
@@ -157,7 +157,7 @@ Player-facing: `player-docs/Projects/Bubba's Reworked Mobs/Spiders.md`. Numbers 
 
 | What | Value |
 |---|---|
-| Giant | scale 1.75, health 40, attack 5, speed 0.3, step height 1, spawn weight 12 (monster), spacing 48 |
+| Giant | scale 1.75, health 40, attack 5, speed 0.3, step height 1, spawn weight 30 (monster), spacing 48 |
 | Snatch and lure | sees animals 16 blocks off; lure radius 10; lure ignored for 100 ticks after a player hurt it |
 | Haul and feed | larder search 14; web 4-7 above the trunk base; climb 0.15/tick; gives up hauling after 300 ticks; feeds 300 ticks, a 2-damage bite every 30 |
 | Spinning | every 400-800 ticks; trunks 3-7 apart, at least 8 tall, within 8 blocks; cap 5 webs within 12 |

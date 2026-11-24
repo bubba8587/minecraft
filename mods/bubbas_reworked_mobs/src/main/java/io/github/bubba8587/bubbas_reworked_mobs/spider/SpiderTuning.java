@@ -86,7 +86,7 @@ public final class SpiderTuning {
 	public static final double GIANT_ATTACK = 5.0;
 	public static final double GIANT_SPEED = 0.3;
 	/** Spawning: weight among the biome's monsters, and never within this many blocks of another giant. */
-	public static final int GIANT_SPAWN_WEIGHT = 12;
+	public static final int GIANT_SPAWN_WEIGHT = 30;
 	public static final double GIANT_SPACING = 48.0;
 
 	public static final double LURE_RADIUS = 10.0;
@@ -179,6 +179,9 @@ public final class SpiderTuning {
 	public static final double WEB_HOME_MARGIN = 3.0;
 	/** How far down it looks for the ground under it (past trunks and canopy). */
 	public static final int GROUND_SEARCH_DEPTH = 48;
+	/** Its wander box reaches this far below its home (its web, its cocoon or itself), so the ground is in it, and this far above. */
+	public static final int WANDER_DEPTH = 16;
+	public static final int WANDER_RISE = 3;
 	/** How far a giant notices players and livestock (a vanilla spider: 16). */
 	public static final double GIANT_FOLLOW_RANGE = 32.0;
 	/** How many of its own webs it remembers, and how far it looks for one to take a catch to. */

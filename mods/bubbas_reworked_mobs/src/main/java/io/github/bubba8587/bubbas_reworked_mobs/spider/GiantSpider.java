@@ -224,8 +224,8 @@ public class GiantSpider extends Spider implements Gripper {
 	}
 
 	/**
-	 * Its wandering, always to ground spots (Stormie's Spiders can't path to a point on a trunk side). Roaming: under
-	 * and round its web (its home), or with no web yet within ROAM_RANGE. Prowling: round its cocoon.
+	 * Its wandering, to spots it can stand on in a box round its home. Roaming: under and round its newest web, or
+	 * with no web yet round itself. Prowling: round its cocoon.
 	 */
 	private class WanderGoal extends RandomStrollGoal {
 		WanderGoal() {
@@ -245,44 +245,50 @@ public class GiantSpider extends Spider implements Gripper {
 		@Override
 		protected @Nullable Vec3 getPosition() {
 			if (task == Task.PROWL && larder != null) {
-				return groundSpot(larder.getX(), larder.getZ(), SpiderTuning.PROWL_RADIUS);
+				return standingSpotIn(around(Vec3.atBottomCenterOf(larder), SpiderTuning.PROWL_RADIUS));
 			}
 			List<SpunWeb> webs = ownWebs();
-			return webs.isEmpty() ? groundSpot(Mth.floor(getX()), Mth.floor(getZ()), SpiderTuning.ROAM_RANGE) : spotNear(webs.getLast());
+			return standingSpotIn(webs.isEmpty() ? around(position(), SpiderTuning.ROAM_RANGE)
+					: webs.getLast().span().inflate(SpiderTuning.WEB_HOME_MARGIN, 0.0, SpiderTuning.WEB_HOME_MARGIN)
+							.expandTowards(0.0, -SpiderTuning.WANDER_DEPTH, 0.0));
 		}
 	}
 
-	/** A random spot on the ground under and round {@code web} (its span, WEB_HOME_MARGIN wider). */
-	private @Nullable Vec3 spotNear(SpunWeb web) {
-		AABB home = web.span().inflate(SpiderTuning.WEB_HOME_MARGIN, 0.0, SpiderTuning.WEB_HOME_MARGIN);
-		int range = (int) Math.ceil(Math.max(home.getXsize(), home.getZsize()) / 2.0);
-		return groundSpot(Mth.floor(home.getCenter().x), Mth.floor(home.getCenter().z), range, Mth.floor(home.getCenter().y));
+	/** A box {@code range} out sideways round {@code centre}, from WANDER_DEPTH below it to WANDER_RISE above. */
+	private static AABB around(Vec3 centre, int range) {
+		return new AABB(centre.x - range, centre.y - SpiderTuning.WANDER_DEPTH, centre.z - range, centre.x + range, centre.y + SpiderTuning.WANDER_RISE,
+				centre.z + range);
 	}
 
-	/** A random spot on the ground below its height, within {@code range} sideways of x, z (under trunks and canopy, not water). */
-	private @Nullable Vec3 groundSpot(int cx, int cz, int range) {
-		return groundSpot(cx, cz, range, Mth.floor(getY()) + 1);
-	}
-
-	/** As above, looking down from {@code fromY}. */
-	private @Nullable Vec3 groundSpot(int cx, int cz, int range, int fromY) {
+	/**
+	 * A random spot it can stand on in {@code box}: a random point, dropped straight down to the first open block on
+	 * a sturdy top face (ground, roof, branch or canopy alike). Stormie's Spiders paths to these; it can't path to a
+	 * point on a wall.
+	 */
+	private @Nullable Vec3 standingSpotIn(AABB box) {
+		BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
+		BlockPos.MutableBlockPos below = new BlockPos.MutableBlockPos();
 		for (int i = 0; i < 10; i++) {
-			int x = cx + random.nextInt(range * 2 + 1) - range;
-			int z = cz + random.nextInt(range * 2 + 1) - range;
-			BlockPos start = new BlockPos(x, fromY, z);
-			if (!level().hasChunkAt(start)) {
+			pos.set(Mth.lerp(random.nextDouble(), box.minX, box.maxX), Mth.lerp(random.nextDouble(), box.minY, box.maxY),
+					Mth.lerp(random.nextDouble(), box.minZ, box.maxZ));
+			if (!level().hasChunkAt(pos)) {
 				continue;
 			}
-			BlockPos feet = new BlockPos(x, groundBelow(start), z);
-			if (feet.getY() < start.getY() && level().getBlockState(feet).getCollisionShape(level(), feet).isEmpty()
-					&& level().getFluidState(feet).isEmpty() && level().getFluidState(feet.below()).isEmpty()) {
-				return Vec3.atBottomCenterOf(feet);
+			for (int y = pos.getY(); y > box.minY; y--) {
+				pos.setY(y);
+				below.setWithOffset(pos, Direction.DOWN);
+				if (!level().getBlockState(pos).getCollisionShape(level(), pos).isEmpty()) {
+					break;
+				}
+				if (level().getFluidState(pos).isEmpty() && level().getBlockState(below).isFaceSturdy(level(), below, Direction.UP)) {
+					return Vec3.atBottomCenterOf(pos);
+				}
 			}
 		}
 		return null;
 	}
 
-	/** The y of the first free block above the ground under {@code from} (past air, leaves and trunks). */
+	/** For finding trunk bases to spin between: the y of the first free block over the ground under {@code from} (past air, leaves and trunks). */
 	private int groundBelow(BlockPos from) {
 		BlockPos.MutableBlockPos pos = from.mutable();
 		int lowest = Math.max(level().getMinY(), from.getY() - SpiderTuning.GROUND_SEARCH_DEPTH);
@@ -294,14 +300,6 @@ public class GiantSpider extends Spider implements Gripper {
 			}
 		}
 		return from.getY();
-	}
-
-	/** No web yet and up a trunk or on a canopy with nothing to do: heads for the ground at once. */
-	private void comeDownIfUp() {
-		BlockState on = getBlockStateOn();
-		if (getTarget() == null && getNavigation().isDone() && ownWebs().isEmpty() && (on.is(BlockTags.LEAVES) || on.is(BlockTags.LOGS))) {
-			wander.trigger();
-		}
 	}
 
 	/** Holds the body still (no stroll, no melee steering) while it hauls, climbs or feeds. */
@@ -364,7 +362,6 @@ public class GiantSpider extends Spider implements Gripper {
 			lure(level, player);
 		}
 		if ((tickCount + getId()) % 20 == 0) {
-			comeDownIfUp();
 			if (getTarget() == null && ownWebs().isEmpty()) {
 				spin(level); // no web of its own: it makes one first
 			}

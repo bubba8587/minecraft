@@ -194,7 +194,7 @@ GIANT_OFFSET = 5
 
 
 def place_giants(s, examples):
-    """A persistent giant spider at the taiga example: giants only spawn in the dark, and this world never spawns or gets dark."""
+    """A persistent giant spider at the taiga example, so one is always there to see (giants spawn only in the dark, and rarely)."""
     for l1, _, x, z, _ in examples:
         if l1 != "Giant spiders":
             continue
@@ -222,8 +222,7 @@ def build(seed, jars, timeout):
     t0 = time.time()
     s = tw.Server(WORK, launcher, timeout)
     print(f"server up in {time.time() - t0:.0f}s; locating")
-    s.run([("rules", c) for c in ("gamerule advance_time true", "time set 1000",
-                                  "gamerule advance_weather false", "weather clear")], quiet=True)
+    s.run([("rules", c) for c in ("time set 1000", "weather clear")], quiet=True)
     examples = find_examples(s)
     camps = load_around(s, examples)
     check_camp_kinds(s, examples)

@@ -52,7 +52,7 @@ public final class Spiders {
 		net.minecraft.world.entity.SpawnPlacements.register(GIANT_SPIDER, net.minecraft.world.entity.SpawnPlacementTypes.ON_GROUND,
 				net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, GiantSpider::checkGiantSpawnRules);
 		BiomeModifications.addSpawn(BiomeSelectors.includeByKey(net.minecraft.world.level.biome.Biomes.OLD_GROWTH_PINE_TAIGA,
-				net.minecraft.world.level.biome.Biomes.OLD_GROWTH_SPRUCE_TAIGA), MobCategory.MONSTER, GIANT_SPIDER, SpiderTuning.GIANT_SPAWN_WEIGHT, 1, 1);
+				net.minecraft.world.level.biome.Biomes.OLD_GROWTH_SPRUCE_TAIGA, net.minecraft.world.level.biome.Biomes.JUNGLE), MobCategory.MONSTER, GIANT_SPIDER, SpiderTuning.GIANT_SPAWN_WEIGHT, 1, 1);
 		Registry.register(BuiltInRegistries.FEATURE_TYPE, BubbasReworkedMobs.id("spider_nest"), SpiderNestFeature.CODEC);
 		BiomeModifications.addFeature(BiomeSelectors.foundInOverworld(), GenerationStep.Decoration.UNDERGROUND_DECORATION, NEST_FEATURE);
 	}
