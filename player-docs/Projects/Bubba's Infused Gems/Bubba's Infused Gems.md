@@ -57,7 +57,7 @@ The mod comes with vanilla-style 16x textures. A higher resolution set is availa
 
 ## Compatibility
 
-Requires Fabric API. Mods that also give armor effects (such as trim-effect mods) work alongside it; their effects and gem effects do not interact.
+Requires Fabric API. Mods that also give armor effects (such as trim-effect mods) can be installed alongside it; how their effects combine with gem effects has not been checked yet.
 
 With [[Bubba's Reworked Beacons]] installed, a Gem can be placed in a beacon, which gives the gem's effects to every living thing in its area; the beacon then no longer takes the plain base-gem payments. *Main article: [[Gem Effects#In beacons]]*. Without it, the mod works the same.
 

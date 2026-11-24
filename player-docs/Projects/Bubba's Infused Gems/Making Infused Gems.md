@@ -53,15 +53,20 @@ The base gem sets the gem's **Gem Power level**, which affects strength only, an
 
 - **Effect**: from the potion or item used.
 - **Potion strength**: a strong (glowstone) potion makes a stronger gem, a long (redstone) potion a slightly stronger one.
-- **Form**: normal, splash or lingering. The form is the potion's form and can't be changed after brewing. It sets the highest enchanting tier: normal reaches tier 1, splash tier 2, lingering tier 3. Items in the bottle slot (golden apples, wither roses, stews and the rest) have no form: their Infused Gems show no form in the name, for example *Infused Gem: Gem Power IV, Absorption*, and reach tier 3 like a lingering potion's. Collecting the items is the cost. *Main article: [[Enchanting Gems]]*
+- **Form**: normal, splash or lingering, the potion's form. It can't be changed after brewing. It sets the highest enchanting tier: normal reaches tier 1, splash tier 2, lingering tier 3. *Main article: [[Enchanting Gems]]*
+- Gems brewed from items (golden apples, wither roses, stews and the rest) have no form. Their names show none, for example *Infused Gem: Gem Power IV, Absorption*, and they reach tier 3 like a lingering potion's; collecting the items is the cost.
 
 The item name shows these, for example *Infused Gem: Gem Power III, Speed (Splash)*.
 
 ## Supported potions
 
-Every potion: Swiftness, Strength, Leaping, Regeneration, Turtle Master, Fire Resistance, Water Breathing, Night Vision, Invisibility, Slow Falling, Luck, Healing, Poison, Slowness, Weakness, Harming, Wind Charged (it makes a **Wind Burst** gem), Weaving, Oozing and Infested, plus the items in the table above. A Turtle Master potion makes a **Turtle Master** gem, which gives its Resistance and its Slowness together. The Luck potion has no survival recipe, so Luck gems are mostly found. Haste, Health Boost, Hero of the Village, Mining Fatigue and Resistance gems have no brewing source and are only found in the world. *Main article: [[Finding Gems]]*
+Every potion brews a gem: Swiftness, Strength, Leaping, Regeneration, Turtle Master, Fire Resistance, Water Breathing, Night Vision, Invisibility, Slow Falling, Luck, Healing, Poison, Slowness, Weakness, Harming, Wind Charged, Weaving, Oozing and Infested. So do the items in the table above.
 
-A suspicious stew counts by its effect, so any stew with the Saturation or Blindness effect of those flowers works; other stews do not.
+- A Wind Charged potion makes a **Wind Burst** gem.
+- A Turtle Master potion makes a **Turtle Master** gem, which gives its Resistance and its Slowness together.
+- The Luck potion has no survival recipe, so Luck gems are mostly found.
+- Haste, Health Boost, Hero of the Village, Mining Fatigue and Resistance gems have no brewing source and are only found in the world. *Main article: [[Finding Gems]]*
+- A suspicious stew counts by its effect, so any stew with the Saturation or Blindness effect of those flowers works; other stews do not.
 
 ## Notes
 

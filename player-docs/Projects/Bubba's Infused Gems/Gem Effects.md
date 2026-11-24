@@ -10,7 +10,15 @@ Any Gem fits armor or a weapon; **where it is set decides who gets its effects**
 
 ### Strength
 
-Gems below the best are weaker than a real potion. The best possible build is twelve perfect gems of one effect in a full set of netherite armor (or two in a netherite weapon), and only that build reaches the top, so a perfect set is worth chasing. In armor it gives the full strongest potion permanently for fighting effects (Strength, Resistance, Turtle Master, Regeneration, Health Boost, Absorption); it makes on/off effects complete (Fire Resistance and Water Breathing become the real effect, and Night Vision, Conduit Power and Invisibility work fully); and it goes past any potion for movement effects (Haste, Speed, Jump Boost, Dolphin's Grace, Slow Falling) and Luck. Harmful gems in armor stay at 90%. A perfect weapon hits with the strongest potion's level.
+Gems below the best are weaker than a real potion. The best possible build is twelve perfect gems of one effect in a full set of netherite armor (or two in a netherite weapon). Only that build reaches the top, so a perfect set is worth chasing. The perfect armor set:
+
+- gives the full strongest potion permanently for fighting effects (Strength, Resistance, Turtle Master, Regeneration, Health Boost, Absorption);
+- makes on/off effects complete: Fire Resistance and Water Breathing become the real effect, and Night Vision, Conduit Power and Invisibility work fully;
+- goes past any potion for movement effects (Haste, Speed, Jump Boost, Dolphin's Grace, Slow Falling) and Luck.
+
+Harmful gems in armor stay at 90%. A perfect weapon hits with the strongest potion's level.
+
+What else sets a gem's strength:
 
 - **Stacking:** gems of the same effect add up, each extra one counting a little less than the one before.
 - **Base gem:** the gem's Gem Power level (its base gem) matters most: a full iron set of amethyst gems reaches about a third of the best, diamond-base gems in diamond armor about 70%, and prismarine-base gems in netherite 88%.
@@ -50,7 +58,7 @@ Values are for the best build (the perfect set); weaker builds give less.
 | Absorption | A shield of extra health (up to 16, an enchanted golden apple's). It fills as soon as the gems are put on (or on joining the game), then refills 30 seconds after the wearer was last hurt. Swapping the armor off and on again does not refill it more than once every 30 seconds. While the shield waits to refill, the Absorption armor shows the usual cooldown sweep in the inventory and hotbar (like a wind charge after throwing). |
 | Health Boost | More maximum health (up to +8, Health Boost II's; found gems only) |
 | Dolphin's Grace | Faster swimming; the best build gains 1.8 times the potion's swim speed |
-| Saturation | Restores food and saturation over time, like the potion but slower: a single weak gem about half a drumstick every 22 seconds, the best build about half a drumstick every second. How full it keeps the wearer grows with strength too: weak gems fill the bar only to about a third (7 of 20), a middling build to about two thirds, and only a perfect set fills it completely, so only a perfect set speeds up healing the way a full bar does. Weaker gems also give less saturation per point |
+| Saturation | Restores food and saturation over time, like the potion but slower: a single weak gem about half a drumstick every 22 seconds, the best build about half a drumstick every second. The stronger the gems, the fuller they keep the food bar: weak gems only to about a third (7 of 20), a middling build to about two thirds, and only a perfect set all the way. So only a perfect set speeds up healing the way a full bar does. Weaker gems also give less saturation per food point |
 | Conduit Power | In water or rain: air lasts longer, faster mining underwater, clearer sight underwater (at the best build, air never runs out, as with a conduit) |
 | Hero of the Village | Cheaper villager trades (up to 30% cheaper; found gems only) |
 | Luck | A little more luck, up to a bit more than a Luck potion (mostly found; a Luck potion also brews one) |
@@ -81,13 +89,20 @@ Some gems do what their source does, rather than apply its potion.
 | Oozing | Oozing potion | Bounces off landings like a slime block, and falls hurt less (not at all with the best build) | A kill splits off small slimes that belong to the wielder: they never attack anyone and drop nothing; at most 8 near the player at a time; they stay while the player is around, and slimes left behind dissolve when their area unloads |
 | Silence | Echo shard | The wearer's footsteps, swimming, landing and other movement make no vibrations (sculk sensors, wardens), some of the time with weak gems and always at the best build | Silences the target (pointless) |
 | Ender | Chorus fruit | A chance that a projectile about to hurt the wearer teleports them away instead (not harmless ones like snowballs, and never explosions), like chorus fruit; stronger gems teleport further, and the perfect set always tries, but a wearer boxed in with nowhere safe to go is hit. Other damage still hurts | Gives it to the target (pointless) |
-| Breeze | Breeze rod | A chance to deflect incoming projectiles, like a breeze: about half the time at 90% of the best, every time with the perfect set. Wind charges get through, as they do with a real breeze | Gives it to the target (pointless) |
+| Breeze | Breeze rod | A chance to deflect incoming projectiles, like a breeze: the chance grows with strength (about half the time at half strength), and the perfect set deflects every time. Wind charges get through, as they do with a real breeze | Gives it to the target (pointless) |
 
 Gem effects look the same as the real effect: poisoned or withered hearts, the green food bar of Hunger, the healing heart wave of Regeneration, the effect's icon and particles.
 
 ## In weapons
 
-Each hit gives the target an effect for a few seconds, refreshed (never added up) by every hit. Each effect has one thing that grows with the gem's strength. Damage and weakening effects (Poison, Wither, Slowness, Weakness, Mining Fatigue, Hunger) get **stronger**: the best weapon matches a Poison II or Slowness IV potion; they last 4 seconds with a weak gem up to 8 seconds with the best. Screen effects (Blindness, Darkness, Nausea, Glowing) last **longer**. Levitation lifts **faster and longer**. Weaving and Ender work by **chance**. The effect appears in the target's effects as a percentage, for example *Poison 46%*. Mobs and players are affected the same way.
+Each hit gives the target an effect for a few seconds, refreshed (never added up) by every hit. Mobs and players are affected the same way. Each effect has one thing that grows with the gem's strength:
+
+- Damage and weakening effects (Poison, Wither, Slowness, Weakness, Mining Fatigue, Hunger) get **stronger**: the best weapon matches a Poison II or Slowness IV potion. They last 4 seconds with a weak gem, up to 8 seconds with the best.
+- Screen effects (Blindness, Darkness, Nausea, Glowing) last **longer**.
+- Levitation lifts **faster and longer**.
+- Weaving and Ender work by **chance**.
+
+The effect appears in the target's effects as a percentage, for example *Poison 46%*.
 
 | Gem | Effect on the target |
 |---|---|
