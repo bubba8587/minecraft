@@ -4,6 +4,8 @@
 
 Shareable images of the mods (social posts, friends), made from real in-game shots. Not for Modrinth or project pages: B14 keeps AI-made images off those.
 
+What the posters may and may not say: `specs/copy-strings.md`.
+
 ## Poster camera (`mods/postershots`)
 
 An internal client game test (never published, `internal=true`). It opens a copy of the natural test world (`testworlds/bubba-natural-world`, built by `tools/build-naturalworld.py`) with all seven mods loaded, then waits for scene scripts instead of running a fixed tour.
