@@ -2,23 +2,40 @@
 
 *Part of [[Bubba's Reworked Mobs]].*
 
-Every enderman cairn has a **trade pad**: a purpur plinth skirted by four end stone brick slabs, a few blocks outside the cairn. Each cairn keeps its pad in its own spot around it. The endermen build and repair it with the rest of the cairn, so an older cairn gets one too (and counts as unfinished until it does).
+> [!infobox] Trade pad
+> | | |
+> |---|---|
+> | **Where** | Beside every enderman cairn |
+> | **Accepts** | Any item |
+> | **Answer** | Random, after 4 to 10 seconds |
+
+**Trading at cairns** is a way for the player to swap any item for a random one from the endermen. Every enderman cairn has a **trade pad**: a purpur plinth skirted by four end stone brick slabs, a few blocks outside the cairn.
+
+- Each cairn keeps its pad in its own spot around it.
+- The endermen build and repair the pad with the rest of the cairn. An older cairn gets one too, and counts as unfinished until it has it.
 
 ## How to trade
 
 1. Lay any item on the plinth with **sneak + middle click** (see [[Placing Items Anywhere]]).
-2. Walk away. Once nobody is within 16 blocks, an enderman teleports in beside the pad and stares at your item for a few seconds, then takes it and vanishes with portal particles. Pick the item back up before it's taken and the enderman leaves without it.
-3. 4 to 10 seconds later an enderman teleports in beside the pad, holding its answer, and lays it on the plinth. It stays there until you pick it up.
-
-What you give doesn't matter: the answer is random. About 4 in 10 answers are good (ender pearls, chorus fruit, emeralds, bottles o' enchanting, end rods, the odd enchanted book, diamond, golden apple, name tag, disc fragment, shulker shell or echo shard). The rest are weird: a poppy, dirt, end stone, a poisonous potato, a carved pumpkin, string, rotten flesh, now and then TNT or a cake. It's a good way to get rid of junk, and maybe get something better back. Or not.
+2. Walk away. Once nobody is within 16 blocks, an enderman teleports in beside the pad and stares at the item for a few seconds. Then it takes the item and vanishes with portal particles. If the player picks the item back up before then, the enderman leaves without it.
+3. 4 to 10 seconds later an enderman teleports in beside the pad, holding its answer, and lays it on the plinth. The answer stays there until the player picks it up.
 
 No trades happen while the cairn is warded.
+
+## Answers
+
+What the player gives doesn't matter: the answer is random.
+
+- **Good (about 4 in 10):** ender pearls, chorus fruit, emeralds, bottles o' enchanting, end rods, popped chorus fruit, and now and then an enchanted book, a diamond, a golden apple, a name tag, a disc fragment, a nautilus shell, a shulker shell or an echo shard.
+- **Weird (the rest):** a poppy, dirt, end stone, a poisonous potato, a carved pumpkin, string, rotten flesh and other oddments, now and then TNT or a cake.
+
+It is a way to get rid of junk, and maybe get something better back. Or not.
 
 ## History
 
 | Version | Changes |
 |---|---|
-| 0.1.0 | Added. The enderman stares at the offer before taking it, answers come back sooner, and each cairn's pad has its own spot. |
+| 0.1.0 | Added. |
 
 ## See also
 
