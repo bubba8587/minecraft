@@ -1,8 +1,8 @@
 # Home
 
-Welcome to the player guide for **Bubba's** Minecraft mods, datapacks and resource packs. The guide describes what each project adds, how to install it and what it works with. It is written for players; it says nothing about how the projects are built.
+Welcome to the player guide for **Bubba's** Minecraft mods, datapacks and resource packs. It describes what each project adds, how to install it and what it works with. It is written for players, so it says nothing about how the projects are built.
 
-All projects target the latest full release of Minecraft. *See also: [[Version Status]]*, which names the current version and any project paused while it catches up.
+All projects target the latest full release of Minecraft. [[Version Status]] names the current version and any project paused while it catches up.
 
 ## Projects
 
@@ -12,7 +12,7 @@ All projects target the latest full release of Minecraft. *See also: [[Version S
 | [[Bubba's Reworked Mobs]] | Fabric mod | Dormant undead, graveyards, monster camps, and reworked creepers, drowned, spiders and endermen. |
 | [[Bubba's Infused Gems]] | Fabric mod | Potions brewed into gems, enchanted and socketed into armor and weapons for permanent effects. |
 | [[Bubba's Reworked Beacons]] | Fabric mod | Beacons with one item slot instead of fixed powers, and paired beacons that work underground. |
-| [[Bubba's Totems & Artifacts]] | Fabric mod | Found artifacts: the Grave Talisman and ten totems, many of which also work in a beacon; totems set down as statues give a small version of their effect; relic maps that lead to buried vaults. |
+| [[Bubba's Totems & Artifacts]] | Fabric mod | Found artifacts: the Grave Talisman and eleven totems, many of which also work in a beacon or as a statue, and relic maps that lead to buried vaults. |
 | [[Bubba's Reworked Mining]] | Fabric mod | A steep tool curve from slow bare tools to an enchanted machine, rare finds in stone, True Unbreaking, and quartz gear for the Nether. |
 | [[Bubba's World Tweaks]] | Fabric mod | Small touches to the world: bubbling lava, lava geysers, and geyser updrafts to ride. |
 
@@ -46,7 +46,7 @@ Each project has a folder in `Projects/`: an overview page named after the proje
 - A steep [[Mining Curve]] from slow bare tools to an enchanted machine, [[Rare Finds]] in plain stone, the [[True Unbreaking]] book, and [[Quartz Tools and Armor]] for the Nether.
 
 **[[Bubba's World Tweaks]]**
-- [[Lava Bubbles and Geysers]]: lava bubbles over magma, erupts as black-smoke geysers, and lifts and speeds up anyone circling a geyser.
+- [[Lava Bubbles and Geysers]]: lava bubbles over magma and erupts in geysers of black smoke; lava and sulfur geysers lift and speed up players above them, so circling one climbs.
 
 **[[Bubba's Extra Recipes]]**
 - A [[Recipe List]] for awkward or grindy items, as a datapack.
