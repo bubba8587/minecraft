@@ -78,15 +78,23 @@ test {
 // manual CI dispatch, or an agent asking for it. Client game tests are milestone too (see runClientGameTest below).
 def milestoneTests = providers.gradleProperty('milestoneTests').isPresent()
 def suite = milestoneTests ? 'full' : 'core'
+// Shared core tests for published mods (gradle/shared-gametest/): added to every published mod's gametest source set and
+// core entrypoints. NamesGameTest: every id other mods display has an en_us name (specs/compat.md).
+def publishedMod = !(project.findProperty('internal') == 'true')
+def sharedCoreTests = publishedMod ? ['io.github.bubba8587.shared.test.NamesGameTest'] : []
+if (publishedMod) {
+	afterEvaluate { sourceSets.findByName('gametest')?.java?.srcDir(rootProject.file('gradle/shared-gametest/java')) }
+}
 tasks.matching { it.name == 'processGametestResources' }.configureEach { t ->
 	t.inputs.property('milestoneTests', milestoneTests)
+	t.inputs.property('sharedCoreTests', sharedCoreTests)
 	def outDir = t.destinationDir
 	t.doLast {
 		def f = new File(outDir, 'fabric.mod.json')
-		if (!milestoneTests || !f.exists()) return
+		if (!f.exists() || (!milestoneTests && sharedCoreTests.isEmpty())) return
 		def json = new groovy.json.JsonSlurper().parse(f)
-		def milestone = json.entrypoints?.get('bubba-milestone-gametest') ?: []
-		json.entrypoints['fabric-gametest'] = (json.entrypoints['fabric-gametest'] ?: []) + milestone
+		def milestone = milestoneTests ? (json.entrypoints?.get('bubba-milestone-gametest') ?: []) : []
+		json.entrypoints['fabric-gametest'] = (json.entrypoints['fabric-gametest'] ?: []) + sharedCoreTests + milestone
 		f.text = groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson(json)) + '\n'
 	}
 }

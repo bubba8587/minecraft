@@ -44,5 +44,11 @@
   "item.bubbas_reworked_mobs.sleeper.pose.sitting": "Sitting",
   "itemGroup.bubbas_reworked_mobs": "Bubba's Reworked Mobs",
   "sign.bubbas_reworked_mobs.trader_post.line1": "Trader Post",
-  "sign.bubbas_reworked_mobs.trader_post.line2": "All welcome"
+  "sign.bubbas_reworked_mobs.trader_post.line2": "All welcome",
+  "structure.bubbas_reworked_mobs.crypt_yard": "Crypt Yard",
+  "structure.bubbas_reworked_mobs.monster_camp": "Monster Camp",
+  "structure.bubbas_reworked_mobs.nether_outpost": "Nether Outpost",
+  "structure.bubbas_reworked_mobs.trader_post": "Trader Post",
+  "tag.item.bubbas_reworked_mobs.preferred_on_wake": "Weapons Woken Undead Prefer",
+  "tag.item.bubbas_reworked_mobs.sleeper_harvest_tools": "Sleeper Harvest Tools"
 }

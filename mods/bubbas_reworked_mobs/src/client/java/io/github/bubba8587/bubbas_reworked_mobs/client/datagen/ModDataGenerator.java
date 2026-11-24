@@ -209,6 +209,13 @@ public class ModDataGenerator implements DataGeneratorEntrypoint {
 			builder.add("bubbas_reworked_mobs.spider.grabbed", "A spider has you! Hit it hard and fast to break free");
 			builder.add(io.github.bubba8587.bubbas_reworked_mobs.traderpost.TraderPosts.SIGN_LINE_1, "Trader Post");
 			builder.add(io.github.bubba8587.bubbas_reworked_mobs.traderpost.TraderPosts.SIGN_LINE_2, "All welcome");
+			// Structure and item tag names (Explorer's Compass, recipe viewers; specs/compat.md)
+			builder.add("structure.bubbas_reworked_mobs.monster_camp", "Monster Camp");
+			builder.add("structure.bubbas_reworked_mobs.crypt_yard", "Crypt Yard");
+			builder.add("structure.bubbas_reworked_mobs.nether_outpost", "Nether Outpost");
+			builder.add("structure.bubbas_reworked_mobs.trader_post", "Trader Post");
+			builder.add("tag.item.bubbas_reworked_mobs.sleeper_harvest_tools", "Sleeper Harvest Tools");
+			builder.add("tag.item.bubbas_reworked_mobs.preferred_on_wake", "Weapons Woken Undead Prefer");
 		}
 	}
 

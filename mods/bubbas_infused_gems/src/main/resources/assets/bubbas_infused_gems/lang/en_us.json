@@ -59,5 +59,9 @@
 	"bubbas_infused_gems.effect.wind_charged": "Wind Burst",
 	"effect.bubbas_infused_gems.silence": "Silence",
 	"effect.bubbas_infused_gems.ender": "Ender",
-	"effect.bubbas_infused_gems.breeze": "Breeze"
+	"effect.bubbas_infused_gems.breeze": "Breeze",
+	"tag.item.bubbas_infused_gems.socketable": "Socketable Gear",
+	"tag.item.bubbas_infused_gems.socketable_armor": "Socketable Armor",
+	"tag.item.bubbas_infused_gems.socketable_weapons": "Socketable Weapons",
+	"tag.item.bubbas_infused_gems.not_socketable": "Not Socketable"
 }
