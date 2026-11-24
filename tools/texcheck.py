@@ -74,7 +74,7 @@ def main(names):
                 checked.append(f"mods/{d.name} ({n} textures)")
     rps = ROOT / "resourcepacks"
     for d in sorted(rps.iterdir()) if rps.is_dir() else []:
-        if d.name.endswith("-32x") or (names and d.name not in names) or (d / "DISABLED").is_file():
+        if d.name.endswith("-32x") or (names and d.name not in names) or (d / "DISABLED").is_file() or (d / "COMBINE").is_file():
             continue
         pr, n = compare(d, rps / f"{d.name}-32x", f"resourcepacks/{d.name}")
         problems += pr

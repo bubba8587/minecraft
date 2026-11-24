@@ -1,0 +1,2 @@
+# Every published mod's 32x set (tools/pack.py, specs/textures.md).
+mods/*/src/main/resources/resourcepacks/*_32x

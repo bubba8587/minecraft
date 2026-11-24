@@ -57,7 +57,8 @@ def main(argv):
                  "mixins" if not env else "client": [], "injectors": {"defaultRequire": 1}}
         write(d / f"src/{src}/resources/{modid}{env}.mixins.json", json.dumps(mixin, indent="\t") + "\n")
     write(d / f"src/main/resources/assets/{modid}/lang/en_us.json", "{\n}\n")
-    # B16 textures16and32: the 32x set ships in the jar as a built-in resource pack (specs/textures.md).
+    # B16 textures16and32: the 32x set's source folder; it ships in the combined pack resourcepacks/bubbas_32x, not
+    # the jar, and test runs register it as a built-in pack (specs/textures.md).
     rp = {"pack": {"description": f"{name} 32x textures (Classic Faithful style)", "min_format": 97, "max_format": 97}}
     write(d / f"src/main/resources/resourcepacks/{modid}_32x/pack.mcmeta", json.dumps(rp, indent=2) + "\n")
     (d / f"src/main/resources/resourcepacks/{modid}_32x/assets/{modid}/textures").mkdir(parents=True, exist_ok=True)
@@ -85,20 +86,11 @@ public class {cls} implements ModInitializer {{
 """)
     write(d / f"src/client/java/{pdir}/client/{cls}Client.java", f"""package {pkg}.client;
 
-import {pkg}.{cls};
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
-import net.fabricmc.fabric.api.resource.v1.pack.PackActivationType;
-import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.network.chat.Component;
 
 public class {cls}Client implements ClientModInitializer {{
 	@Override
 	public void onInitializeClient() {{
-		// 32x textures (Classic Faithful style) as an optional built-in resource pack: specs/textures.md.
-		FabricLoader.getInstance().getModContainer({cls}.MOD_ID).ifPresent(mod ->
-			ResourceLoader.registerBuiltinPack({cls}.id({cls}.MOD_ID + "_32x"), mod,
-				Component.literal("{name} 32x (Classic Faithful style)"), PackActivationType.NORMAL));
 	}}
 }}
 """)

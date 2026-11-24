@@ -31,10 +31,11 @@ def bundleDatapacks = tasks.register('bundleDatapacks', Sync) {
 sourceSets.main.resources.srcDir(bundleDatapacks)
 
 // resourcepacks/<name>/ -> jar path resourcepacks/<name>/, registered as always-enabled built-in resource packs
-// so client game tests render with them.
+// so client game tests render with them. Combined packs (a COMBINE file, e.g. bubbas_32x) have no assets of their own
+// and are left out.
 def resourcepacksRoot = rootProject.file('resourcepacks')
 def bundledResourcePacks = (resourcepacksRoot.listFiles() ?: [] as File[])
-	.findAll { it.isDirectory() && new File(it, 'pack.mcmeta').exists() && !new File(it, 'DISABLED').exists() }
+	.findAll { it.isDirectory() && new File(it, 'pack.mcmeta').exists() && !new File(it, 'DISABLED').exists() && !new File(it, 'COMBINE').exists() }
 	.sort { it.name }
 def bundleResourcePacks = tasks.register('bundleResourcePacks', Sync) {
 	description = 'Copies every enabled resource pack in resourcepacks/ into packcheck\'s resources as a built-in pack.'

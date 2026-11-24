@@ -91,3 +91,33 @@ jobs:
         with:
           name: packtest-log
           path: build/pack*/latest.log
+
+  # Release tag of a pack project (<name>/v<version>, <name> a folder in datapacks/ or resourcepacks/ and not a mod):
+  # GitHub Release with its zip(s) (specs/releasing.md; Modrinth only once it meets B14). The tag's version must match
+  # the pack's VERSION file.
+  pack-release:
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: [mods, client-gametests, datapacks]
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+      - name: Build and publish the pack
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          name="${TAG%%/v*}"; ver="${TAG#*/v}"
+          if [ -d "mods/$name" ] || { [ ! -d "datapacks/$name" ] && [ ! -d "resourcepacks/$name" ]; }; then
+            echo "$TAG is not a pack project; nothing to publish here."; exit 0
+          fi
+          zips=()
+          for kind in datapacks resourcepacks; do
+            [ -f "$kind/$name/pack.mcmeta" ] || continue
+            have="$(cat "$kind/$name/VERSION" 2>/dev/null || echo 0.1.0)"
+            [ "$have" = "$ver" ] || { echo "$kind/$name/VERSION is $have, tag says $ver"; exit 1; }
+            zips+=("build/packs/$kind/$name-$ver.zip")
+          done
+          python3 tools/pack.py build "$name"
+          gh release create "$TAG" "${zips[@]}" --title "$name $ver" --notes "See the project's README and CREDITS.md."

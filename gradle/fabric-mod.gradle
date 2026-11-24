@@ -55,6 +55,13 @@ jar {
 	from(rootProject.file('LICENSE')) { rename { "${it}_${name}" } }
 }
 
+// 32x sets (src/main/resources/resourcepacks/<modid>_32x/) ship in the combined resource pack resourcepacks/bubbas_32x
+// (B16, specs/textures.md), not in the mod jars. Dev and test runs still read them from build/resources/main.
+if (project.findProperty('internal') != 'true') {
+	tasks.named('jar') { exclude 'resourcepacks/**' }
+	tasks.named('sourcesJar') { exclude 'resourcepacks/**' }
+}
+
 // Game tests (specs/quality.md): src/gametest/ is its own source set with its own fabric.mod.json.
 // Server game tests run as part of `build` (core suite; -PmilestoneTests adds the rest); client game tests run with
 // `runClientGameTest -PclientTests=<names>` or `-PmilestoneTests`.
@@ -82,6 +89,9 @@ def suite = milestoneTests ? 'full' : 'core'
 // core entrypoints. NamesGameTest: every id other mods display has an en_us name (specs/compat.md).
 def publishedMod = !(project.findProperty('internal') == 'true')
 def sharedCoreTests = publishedMod ? ['io.github.bubba8587.shared.test.NamesGameTest'] : []
+// Dev32xPacks (client entrypoint of the test mod): registers each mod's resourcepacks/<modid>_32x/ as a built-in pack
+// in test runs only, for the -32x screenshots. Players get those textures from resourcepacks/bubbas_32x (B16).
+def sharedDev32xPacks = 'io.github.bubba8587.shared.test.Dev32xPacks'
 if (publishedMod) {
 	afterEvaluate { sourceSets.findByName('gametest')?.java?.srcDir(rootProject.file('gradle/shared-gametest/java')) }
 }
@@ -95,6 +105,7 @@ tasks.matching { it.name == 'processGametestResources' }.configureEach { t ->
 		def json = new groovy.json.JsonSlurper().parse(f)
 		def milestone = milestoneTests ? (json.entrypoints?.get('bubba-milestone-gametest') ?: []) : []
 		json.entrypoints['fabric-gametest'] = (json.entrypoints['fabric-gametest'] ?: []) + sharedCoreTests + milestone
+		if (publishedMod) json.entrypoints['client'] = (json.entrypoints['client'] ?: []) + [sharedDev32xPacks]
 		f.text = groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson(json)) + '\n'
 	}
 }
