@@ -80,6 +80,7 @@ public class WebsClientGameTest implements FabricClientGameTest {
 				for (double[] st : stands) {
 					giant.snapTo(st[0], y, st[1], 160.0F, 0.0F);
 					total += giant.spin(level);
+					io.github.bubba8587.bubbas_reworked_mobs.spider.SpiderTerritories.release(level, giant.getUUID()); // these scenes predate territories
 				}
 				giant.snapTo(x + 0.5, y, tz - 2.5, 160.0F, 0.0F);
 				return total;

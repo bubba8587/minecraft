@@ -13,13 +13,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
  * Stormie's Spiders (a required dependency) replaces spider movement (wall and ceiling walking) through an
  * {@code onTravel} hook it merges into vanilla's Spider. An Ancient Fabricator's deactivated spider is limp and must fall
  * onto the pad like any deactivated mob (specs/mob-factory.md), so for it the hook steps aside and vanilla movement
- * runs. Applied after Stormie's (higher priority number), which merged the method.
+ * runs. The same for a spider resting up in a territory web (held still in the air, specs/spiders.md "Territories").
+ * Applied after Stormie's (higher priority number), which merged the method.
  */
 @Mixin(value = Spider.class, priority = 1500)
 abstract class StormieDeactivatedSpiderMixin {
 	@Inject(method = "onTravel", at = @At("HEAD"), cancellable = true, remap = false)
 	private void brm$limpWhenDeactivated(Vec3 relative, boolean pre, CallbackInfoReturnable<Boolean> cir) {
-		if (FabricatorMobs.isDeactivated((Spider) (Object) this)) {
+		if (FabricatorMobs.isDeactivated((Spider) (Object) this) || io.github.bubba8587.bubbas_reworked_mobs.spider.WebSettleGoal.resting((Spider) (Object) this)) {
 			cir.setReturnValue(false);
 		}
 	}

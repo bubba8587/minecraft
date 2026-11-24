@@ -53,6 +53,13 @@ public final class Spiders {
 				net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, GiantSpider::checkGiantSpawnRules);
 		BiomeModifications.addSpawn(BiomeSelectors.includeByKey(net.minecraft.world.level.biome.Biomes.OLD_GROWTH_PINE_TAIGA,
 				net.minecraft.world.level.biome.Biomes.OLD_GROWTH_SPRUCE_TAIGA, net.minecraft.world.level.biome.Biomes.JUNGLE), MobCategory.MONSTER, GIANT_SPIDER, SpiderTuning.GIANT_SPAWN_WEIGHT, 1, 1);
+		net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents.END_LEVEL_TICK.register(SpiderTerritories::tick);
+		net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents.ENTITY_UNLOAD.register((entity, level) -> {
+			var reason = entity.getRemovalReason();
+			if (entity instanceof GiantSpider && reason != null && reason.shouldDestroy()) {
+				SpiderTerritories.release(level, entity.getUUID());
+			}
+		});
 		Registry.register(BuiltInRegistries.FEATURE_TYPE, BubbasReworkedMobs.id("spider_nest"), SpiderNestFeature.CODEC);
 		BiomeModifications.addFeature(BiomeSelectors.foundInOverworld(), GenerationStep.Decoration.UNDERGROUND_DECORATION, NEST_FEATURE);
 	}
