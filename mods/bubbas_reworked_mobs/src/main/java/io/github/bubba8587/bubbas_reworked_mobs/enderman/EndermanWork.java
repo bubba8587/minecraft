@@ -156,7 +156,7 @@ public final class EndermanWork {
 	 */
 	public static boolean readyCairnBlock(ServerLevel level, BlockPos pos, BlockState real) {
 		if (real.isAir() || real.hasBlockEntity() || !real.getFluidState().isEmpty() || real.getDestroySpeed(level, pos) < 0.0F
-				|| !offCairn(level, pos)) {
+				|| !offCairn(level, pos) || BeaconBases.inWorkingBase(level, pos, real)) {
 			return false;
 		}
 		BlockState target = TargetWorld.target(level, pos);

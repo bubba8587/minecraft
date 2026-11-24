@@ -351,7 +351,8 @@ public final class EndermanJobGoal extends Goal {
 		BlockState real = level.getBlockState(pos);
 		BlockState target = TargetWorld.target(level, pos);
 		if (enderman.getCarriedBlock() != null || real.isAir() || target == null || TerrainKinds.matches(real, target)
-				|| !(real.is(Blocks.FARMLAND) || TerrainKinds.clearable(level, pos, real) || EndermanWork.readyCairnBlock(level, pos, real))) {
+				|| !(real.is(Blocks.FARMLAND) || TerrainKinds.clearable(level, pos, real) || EndermanWork.readyCairnBlock(level, pos, real))
+				|| BeaconBases.inWorkingBase(level, pos, real)) {
 			mind.clear();
 			return;
 		}
