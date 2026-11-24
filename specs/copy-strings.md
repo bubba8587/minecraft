@@ -113,3 +113,21 @@ Feature names: Reworked Beacons, Paired Beacons, Upside-Down Beacons.
 ### Not allowed
 - Pyramid size or range as a selling point (it's unchanged from vanilla).
 - Agent drafts replaced by the owner's wording above (2026-11-24): "Beacons are reworked: put one item in the slot...", "Pick a beacon's power with Amethyst, Quartz...", "Your pyramid sets how far the beacon reaches...", "No more power buttons, and no more emerald and iron payments."
+
+## Reworked Mining
+
+### Must
+- (none yet)
+
+### Allowed
+
+Descriptive strings (owner's wording):
+- Overhauled tool progression: Fists, Wood and Stone Pickaxes are slower and weaker. Deepslate is significantly slower to mine and does higher durability damage to everything weaker than a diamond pickaxe. However, the Efficiency enchantment is stronger and much more valuable.
+- Mining stone and deepslate has a small chance of dropping iron & gold nuggets, and a tiny chance of dropping more valuable gems.
+- The rare True Unbreaking enchanted book can completely prevent your item from ever taking durability damage again.
+- Quartz tools and armor are similar to copper and iron, with extra efficiency in the Nether.
+
+Feature names: Reworked Mining, Rare Finds, True Unbreaking, Quartz Tools, Quartz Armor.
+
+### Not allowed
+- Agent drafts replaced by the owner's wording above (2026-11-24): "Tools are now a real progression...", "Netherite now mines faster than vanilla.", "Efficiency and Unbreaking are worth chasing...", "Find the rare True Unbreaking enchantment in chests...", "Quartz tools and armor: a white set about as strong as iron..."
