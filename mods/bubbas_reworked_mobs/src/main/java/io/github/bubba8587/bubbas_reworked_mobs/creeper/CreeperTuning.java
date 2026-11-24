@@ -64,8 +64,7 @@ public final class CreeperTuning {
 	public static final double BACKOFF_SPEED = 1.2;
 	/** Walking to a watch spot or toward its target. */
 	public static final double WATCH_SPEED = 1.0;
-	/** Peek spots (half behind cover) are picked between these distances from the target, best near the preferred one ... */
-	public static final double PEEK_MIN_DISTANCE = 10.0;
+	/** A first peek spot (half behind cover) is picked up to this far from the target (and no nearer than APPROACH_MIN_DISTANCE), best near the preferred one ... */
 	public static final double PEEK_PREFERRED_DISTANCE = 15.0;
 	public static final double PEEK_MAX_DISTANCE = 22.0;
 	/** ... from cells sampled within this many blocks of the creeper and on its side of a ring round the target (owner: it seeks walls much farther off) ... */
@@ -76,16 +75,72 @@ public final class CreeperTuning {
 	public static final int SPOT_SEARCH_SAMPLES = 72;
 	/** ... no farther than this from the creeper (it walks there). */
 	public static final double SPOT_MAX_WALK = 22.0;
-	/** At most this many candidate cells get the (raycast) cover test per search. */
+	/** At most this many sampled cells, and this many cells behind cover edges, get the raycast cover test per search (most fail after 2 rays). */
 	public static final int SPOT_MAX_EVALUATIONS = 16;
+	public static final int SPOT_EDGE_EVALUATIONS = 24;
+	/** Cover sweep: this many level rays fanned out from the target's eyes over the creeper's side ... */
+	public static final int SWEEP_RAYS = 32;
+	/** ... within this many degrees either side of the creeper's bearing ... */
+	public static final double SWEEP_HALF_ANGLE = 75.0;
+	/** ... and this many extra rays to pin down each cover edge found between two neighbours. */
+	public static final int SWEEP_BISECTIONS = 2;
+	/** This many searches in a row finding nothing before it takes the open-ground stance (C5: only with no cover at all). */
+	public static final int OPEN_GROUND_AFTER_FAILED_SEARCHES = 3;
+
+	// --- creeping closer, cover to cover ----------------------------------------------------------
+	/** The closest peek spot it creeps to (e.g. outside your wall, peeking in at a window). */
+	public static final double APPROACH_MIN_DISTANCE = 3.0;
+	/** A new spot must be at least this much closer than where it is ... */
+	public static final double APPROACH_STEP = 2.0;
+	/** ... and it prefers one about this much closer. */
+	public static final double APPROACH_STRIDE = 6.0;
+	/** Not looked at for this long before it moves closer. */
+	public static final int APPROACH_UNSEEN_TICKS = 60;
+	/** Ticks between tries to move closer, plus up to APPROACH_JITTER more. */
+	public static final int APPROACH_INTERVAL = 100;
+	public static final int APPROACH_JITTER = 60;
+	/** After running off it waits this long before creeping closer again. */
+	public static final int APPROACH_AFTER_FLEE = 200;
+	/** Closer spots compared per try (the one with the least-seen route and a hidden place out of sight wins). */
+	public static final int APPROACH_CANDIDATES = 4;
+	/** Points along a route checked for being in the target's view. */
+	public static final int ROUTE_SAMPLES = 6;
+
+	// --- running off when approached ----------------------------------------------------------------
+	/** The player's own movement toward it is measured over this many ticks ... */
+	public static final int APPROACH_WINDOW = 20;
+	/** ... and this many blocks closer in that time (0.1 a tick; a sneak is 0.065, a walk 0.216) means "coming at it". */
+	public static final double FLEE_CLOSING = 2.0;
+	/** A sneaking player this many blocks closer in that time is sneaking up on it. */
+	public static final double SNEAK_CLOSING = 0.3;
+	/** Approaches from this far or nearer count. */
+	public static final double FLEE_NOTICE_RANGE = 20.0;
+	/** Running off: speed modifier on its 0.25 base (0.35 blocks a tick, faster than a sprint). */
+	public static final double FLEE_SPEED = 1.4;
+	/** The spot it runs to is at least this much farther than it is now, at most this much, best near the preferred gain. */
+	public static final double FLEE_MIN_GAIN = 3.0;
+	public static final double FLEE_MAX_GAIN = 14.0;
+	public static final double FLEE_PREFERRED_GAIN = 7.0;
+
+	// --- leaving by day (mod-spawned watchers only) ------------------------------------------------
+	/** Once it's day, each watcher starts leaving after a random delay in this range (10 s to 2.5 min) ... */
+	public static final int LEAVE_DELAY_MIN = 200;
+	public static final int LEAVE_DELAY_MAX = 3000;
+	/** ... which runs twice as fast while its player hasn't looked at it for this long. */
+	public static final int LEAVE_UNSEEN_TICKS = 600;
+	/** Leaving and seen by no player: chance a second that it is gone, plus this much per second since its player last looked at it. */
+	public static final double LEAVE_CHANCE = 0.2;
+	public static final double LEAVE_CHANCE_PER_UNSEEN_SECOND = 0.05;
+	/** Players farther than this don't count as seeing it (vanilla despawns anything past 128). */
+	public static final double LEAVE_SEEN_RANGE = 128.0;
 	/** Ticks between spot searches when it has none. */
 	public static final int SPOT_SEARCH_INTERVAL = 20;
 	/** Ticks between re-checks that its spot still half-hides it from the target (the target moves). */
 	public static final int SPOT_RECHECK_INTERVAL = 10;
 	/** Out of sight this long and it walks to see its target again. */
 	public static final int LOST_VIEW_TICKS = 20;
-	/** Half-hiding: the creeper's middle sits this far on the open side of the cover's edge (its eyes peek, about half its body is hidden). */
-	public static final double HALF_HIDE_INSET = 0.05;
+	/** Half-hiding: the creeper's middle sits this far on the open side of the cover's edge (its face peeks out, a bit under half its body is hidden; less and a window's frame hides it). */
+	public static final double HALF_HIDE_INSET = 0.12;
 	/** Peekaboo: looked at, it slides this far past the edge into cover (body 0.6 wide: about 95 % hidden). */
 	public static final double HIDDEN_DEPTH = 0.27;
 	/** Sideways slide speed into and out of cover (blocks a tick). */

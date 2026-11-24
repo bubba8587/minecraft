@@ -84,6 +84,7 @@ public class CreeperClientGameTest implements FabricClientGameTest {
 			// Look away (east) until it eases back out, then turn straight back.
 			tp(context, server, x + 0.5, y, z - 0.5, -90.0F, 0.0F);
 			waitAt(context, server, true);
+			context.waitTicks(10);
 			server.runCommand("tp @p %.2f %d %.2f 0 0".formatted(x + 0.5, y, z - 0.5));
 			context.waitFor(mc -> Math.abs(net.minecraft.util.Mth.wrapDegrees(mc.player.getYRot())) < 1.0F);
 			context.takeScreenshot("creeper-caught");
@@ -107,6 +108,40 @@ public class CreeperClientGameTest implements FabricClientGameTest {
 			server.runCommand("gamemode spectator @p");
 			tp(context, server, x - 3.5, y + 0.4, z + 0.5, 0.0F, 0.0F);
 			context.takeScreenshot("creeper-startle-bar");
+
+			// A small plank house with a glass-pane window facing south; the creeper outside peeks round the frame.
+			server.runCommand("kill @e[tag=%s_bar]".formatted(TAG));
+			server.runCommand("gamerule bubbas_reworked_mobs:show_meters false");
+			server.runCommand("fill %d %d %d %d %d %d minecraft:oak_planks".formatted(x - 3, y, z + 13, x + 3, y + 3, z + 19));
+			server.runCommand("fill %d %d %d %d %d %d minecraft:air".formatted(x - 2, y, z + 14, x + 2, y + 2, z + 18));
+			server.runCommand("setblock %d %d %d minecraft:glass_pane".formatted(x, y + 1, z + 19));
+			server.runCommand("setblock %d %d %d minecraft:lantern".formatted(x - 2, y, z + 14));
+			server.runCommand("summon minecraft:creeper %d.5 %d %d.5 {Silent:1b,PersistenceRequired:1b,Rotation:[180f,0f],Tags:[\"%s\"]}".formatted(x + 4, y, z + 23, TAG));
+			server.runCommand("gamemode creative @p");
+			context.runOnClient(mc -> {
+				mc.player.getAbilities().flying = false;
+				mc.player.onUpdateAbilities();
+			});
+			// Inside, looking at the side wall (not at the window) while it creeps up.
+			tp(context, server, x + 0.5, y, z + 16.5, -90.0F, 0.0F);
+			onCreeper(server, (creeper, stand) -> {
+				CreeperAccess.mind(creeper).watch(creeper.level().players().getFirst(), creeper.level().getGameTime());
+				return null;
+			});
+			waitAt(context, server, true);
+			// Held in its peek pose for the shot (turning round, the player would catch it like this before it ducks).
+			onCreeper(server, (creeper, stand) -> {
+				creeper.setNoAi(true);
+				return null;
+			});
+			// The client shows mob moves a few ticks late.
+			context.waitTicks(10);
+			server.runCommand("tp @p %.2f %d %.2f 0 0".formatted(x + 0.5, y, z + 16.5));
+			context.waitFor(mc -> Math.abs(net.minecraft.util.Mth.wrapDegrees(mc.player.getYRot())) < 1.0F);
+			context.takeScreenshot("creeper-window");
+			server.runCommand("gamemode spectator @p");
+			tp(context, server, x + 4.0, y + 1.2, z + 26.0, 149.0F, 10.0F);
+			context.takeScreenshot("creeper-window-outside");
 		}
 	}
 
