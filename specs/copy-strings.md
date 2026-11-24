@@ -94,3 +94,22 @@ Feature names: Infused Gems, Gems.
 
 ### Not allowed
 - Agent drafts replaced by the owner's wording above (2026-11-24): "Brew any potion into a gem, enchant it, and socket it...", "Stack gems of the same effect to make it stronger...", "Some gems are powerful but come with a drawback...", "Use a golden apple instead of a potion...", "Type /gems to see every effect your gear is giving you."
+
+## Reworked Beacons
+
+### Must
+- (none yet)
+
+### Allowed
+
+Descriptive strings (owner's wording):
+- Reworked Beacons: the default behavior switches from consumed ingots to an un-consumed set of gems (Amethyst....etc).
+- Beacon effects now apply equally to all entities in range
+- Paired Beacons: a beacon can be paired with another upside down beacon for a more horizontal area of effect which works without reaching the sky.
+- Highly recommended to use this mod with Infused Gems and/or Totems & Artifacts. With Infused Gems installed, both vanilla ingots and this mod's default gems are replaced by Infused Gems which broadcast their specific effect. Totems, from Totems and Artifacts, also broadcast their effects (Totem of Undying not included).
+
+Feature names: Reworked Beacons, Paired Beacons, Upside-Down Beacons.
+
+### Not allowed
+- Pyramid size or range as a selling point (it's unchanged from vanilla).
+- Agent drafts replaced by the owner's wording above (2026-11-24): "Beacons are reworked: put one item in the slot...", "Pick a beacon's power with Amethyst, Quartz...", "Your pyramid sets how far the beacon reaches...", "No more power buttons, and no more emerald and iron payments."
