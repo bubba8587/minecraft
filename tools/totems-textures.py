@@ -15,6 +15,7 @@ Warding (tools/warding-textures.py): same body and pose, its own material, head 
   Growth         oak wood, a leafy crown with a pink blossom, a green sprout on the chest
   Beginning      weathered stone wearing a grass cap, purple ender eyes, a strata emblem (grass, dirt, stone)
   End            end stone with a purpur crown, an enderman's black face and magenta eyes, an ender pearl on the chest
+  North Wind     packed ice, an icicle crown, cheeks puffed blowing a gust to the side, a snowflake on the chest
   Seeking        lapis stone, a gold-rimmed hood, a compass dial on the chest; 16 needle frames
                  (totem_of_seeking_00..15, frame i = needle turned i/16 clockwise from up, as the item model's
                  minecraft:compass dispatch expects). At 32x the needle is drawn at 32x, not scaled up.
@@ -253,6 +254,31 @@ CLEAR_SKIES = check([
 ])
 SKY_MAT = {**{k: "stone" for k in "123456"}, **{k: "gold" for k in "yY"}, "k": "eye", **{k: "sky" for k in "sS"}}
 
+# --- North Wind: packed-ice blue, an icicle crown, puffed cheeks blowing a gust, a snowflake on the chest (2026-11-23) --
+NORTH_PAL = {**shades((26, 44, 76), (56, 92, 138), (86, 128, 176), (120, 164, 208), (156, 196, 232), (194, 222, 246), (232, 244, 255)),
+	"i": (150, 200, 236), "I": (236, 248, 255), "k": (24, 62, 128), "m": (44, 66, 104),
+	"w": (196, 228, 250), "W": (255, 255, 255), "b": (40, 86, 156), "f": (186, 224, 252), "F": (255, 255, 255)}
+NORTH_WIND = check([
+	"................",
+	"....I..I..I.....",
+	"....ioIiiIoi....",
+	"....o566543o....",
+	"...o56654332o.ww",
+	"...o5k44k332o...",
+	"...o5443355moWWw",
+	"....o443321o....",
+	".oooo5FbbF1oooo.",
+	"o56655bffb22221o",
+	"o54544bffb32211o",
+	".oooo4FbbF1oooo.",
+	"...o54433221o...",
+	"....o543321o....",
+	"...o65544321o...",
+	"...oooooooooo...",
+])
+NORTH_MAT = {**{k: "ice" for k in "123456"}, **{k: "icicle" for k in "iI"}, "k": "eye", "m": "mouth",
+	**{k: "gust" for k in "wW"}, **{k: "flake" for k in "bfF"}}
+
 
 def dial_centre(grid):
 	"""Centre of the dial face (the 'y' pixels), in 16x pixel units (edges, so 8.0 is between pixels 7 and 8)."""
@@ -299,6 +325,7 @@ def main():
 		("totem_of_the_end", END, END_PAL, END_MAT, ("stone",), 17),
 		("totem_of_herding", HERDING, HERD_PAL, HERD_MAT, ("wood", "wool"), 18),
 		("totem_of_clear_skies", CLEAR_SKIES, SKY_PAL, SKY_MAT, ("stone",), 19),
+		("totem_of_north_wind", NORTH_WIND, NORTH_PAL, NORTH_MAT, ("ice",), 20),
 	]
 	for name, grid, pal, mat, grain, seed in plain:
 		write(name, render(grid, pal), render32(grid, pal, mat, inner={"o": "1"}, grain=grain, seed=seed))

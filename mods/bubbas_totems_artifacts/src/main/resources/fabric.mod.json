@@ -3,7 +3,7 @@
 	"id": "${mod_id}",
 	"version": "${version}",
 	"name": "Bubba's Totems & Artifacts",
-	"description": "Found artifacts that do what potions and enchantments don't: the Grave Talisman and the Totems of Warding, Keeping, Gathering, Fortification, Growth, Seeking, the Beginning and the End.",
+	"description": "Found artifacts that do what potions and enchantments don't: the Grave Talisman and the Totems of Warding, Keeping, Gathering, Fortification, Growth, Seeking, the Beginning, the End and the North Wind.",
 	"authors": [
 		"bubba8587"
 	],
@@ -25,7 +25,8 @@
 			"io.github.bubba8587.bubbas_totems_artifacts.compat.SeekingBeaconPayload",
 			"io.github.bubba8587.bubbas_totems_artifacts.compat.BeginningBeaconPayload",
 			"io.github.bubba8587.bubbas_totems_artifacts.compat.HerdingBeaconPayload",
-			"io.github.bubba8587.bubbas_totems_artifacts.compat.ClearSkiesBeaconPayload"
+			"io.github.bubba8587.bubbas_totems_artifacts.compat.ClearSkiesBeaconPayload",
+			"io.github.bubba8587.bubbas_totems_artifacts.compat.NorthWindBeaconPayload"
 		]
 	},
 	"mixins": [

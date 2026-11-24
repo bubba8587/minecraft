@@ -16,7 +16,7 @@ import net.minecraft.world.phys.AABB;
 /** Active totem areas set by beacons and statues. */
 public final class TotemAreas {
 	public enum Kind {
-		FORTIFICATION, GROWTH, HERDING, CLEAR_SKIES
+		FORTIFICATION, GROWTH, HERDING, CLEAR_SKIES, NORTH_WIND
 	}
 
 	/** One area. */

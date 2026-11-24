@@ -65,6 +65,9 @@ public final class ModItems {
 	/** Totem of Clear Skies (skies/ClearSkies): used, ends a storm; in a beacon or as a statue, no weather in the area. */
 	public static final Item TOTEM_OF_CLEAR_SKIES = registerNew("totem_of_clear_skies", io.github.bubba8587.bubbas_totems_artifacts.skies.TotemOfClearSkiesItem::new, totem());
 
+	/** Totem of the North Wind (northwind/NorthWind): used while gliding, a rocket boost; in a beacon or as a statue, gliders get it. */
+	public static final Item TOTEM_OF_NORTH_WIND = registerNew("totem_of_north_wind", io.github.bubba8587.bubbas_totems_artifacts.northwind.TotemOfNorthWindItem::new, totem());
+
 	private ModItems() {
 	}
 

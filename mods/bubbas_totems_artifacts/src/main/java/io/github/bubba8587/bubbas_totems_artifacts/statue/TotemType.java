@@ -23,7 +23,8 @@ public enum TotemType implements StringRepresentable {
 	BEGINNING("beginning", () -> ModItems.TOTEM_OF_THE_BEGINNING),
 	END("end", () -> ModItems.TOTEM_OF_THE_END),
 	HERDING("herding", () -> ModItems.TOTEM_OF_HERDING),
-	CLEAR_SKIES("clear_skies", () -> ModItems.TOTEM_OF_CLEAR_SKIES);
+	CLEAR_SKIES("clear_skies", () -> ModItems.TOTEM_OF_CLEAR_SKIES),
+	NORTH_WIND("north_wind", () -> ModItems.TOTEM_OF_NORTH_WIND);
 
 	private final String name;
 	private final Supplier<Item> item;

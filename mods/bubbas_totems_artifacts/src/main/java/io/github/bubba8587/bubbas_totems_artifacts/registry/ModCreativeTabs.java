@@ -30,6 +30,7 @@ public final class ModCreativeTabs {
 						output.accept(ModItems.TOTEM_OF_THE_END);
 						output.accept(ModItems.TOTEM_OF_HERDING);
 						output.accept(ModItems.TOTEM_OF_CLEAR_SKIES);
+						output.accept(ModItems.TOTEM_OF_NORTH_WIND);
 					})
 					.build());
 
