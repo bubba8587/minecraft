@@ -28,6 +28,8 @@ public final class MiningTuning {
 	public static final Tier DIAMOND = new Tier(1.0F, 1.0F, 1.0F, 1, 1);
 	public static final Tier NETHERITE = new Tier(1.2F, 1.2F, 1.1F, 1, 1);
 	public static final Tier QUARTZ = new Tier(1.0F, 0.40F, 1.0F, 1.6F, 1, 3);
+	/** Bare hands and anything without a Tool component; wear unused. */
+	public static final Tier FIST = new Tier(0.16F, 0.16F, 0.65F, 0, 0);
 
 	// The quartz set
 	/** Tool durability. */

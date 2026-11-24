@@ -107,7 +107,6 @@ Left for next session:
 - Owner to read and ratify (or rewrite) the goal drafts A1-A4 (`python3 tools/dte.py unratified`).
 
 ## Bubba's Reworked Mining (C7)
-- **Nerf fist breaking speed (owner, 2026-11-24):** bare hands mine slower than vanilla, in line with the wood and stone curve (`specs/reworked-mining.md`). Poster copy already says fists are slower and weaker (`specs/copy-strings.md`).
 - Built (`specs/reworked-mining.md`). Owner to playtest every number in `MiningTuning`, decide whether stronger Efficiency should beat vanilla at Efficiency V diamond, how progress shows to the player, and review the builder's calls (spec "Open").
 
 ## Bubba's World Tweaks (C8)
