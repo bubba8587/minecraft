@@ -69,8 +69,8 @@ public class GiantSpiderGameTest {
 		helper.succeed();
 	}
 
-	/** Stranded on a canopy (leaves 10 up on a lone trunk, no web to be had), it climbs down off it (to the floor or the field's 4-high wall tops). */
-	@GameTest(environment = SpiderGameTest.ENV, structure = "bubbas_reworked_mobs-test:hearing_field", maxTicks = 1200)
+	/** Stranded on a canopy (leaves 10 up on a lone trunk, no web to be had), it heads down off it (Stormie's may stop it partway down the trunk; that's fine). */
+	@GameTest(environment = SpiderGameTest.ENV, structure = "bubbas_reworked_mobs-test:hearing_field", maxTicks = 600)
 	public void strandedInTheCanopyComesDown(GameTestHelper helper) {
 		for (int y = 1; y < 10; y++) {
 			helper.setBlock(new BlockPos(12, y, 8), Blocks.SPRUCE_LOG);
@@ -84,7 +84,7 @@ public class GiantSpiderGameTest {
 		Vec3 top = helper.absoluteVec(new Vec3(12.5, 11.0, 8.5));
 		giant.snapTo(top.x, top.y, top.z, 0.0F, 0.0F);
 		double floor = helper.absoluteVec(new Vec3(0.0, 1.0, 0.0)).y;
-		helper.succeedWhen(() -> helper.assertTrue(giant.task() == GiantSpider.Task.ROAM && giant.onGround() && giant.getY() < floor + 6.0, // off the canopy (11 up): the floor or the field's walls
+		helper.succeedWhen(() -> helper.assertTrue(giant.task() == GiantSpider.Task.ROAM && giant.getY() < floor + 9.0, // off the canopy top (11 up); stopping partway down the trunk is fine (owner)
 				"still up at y " + (giant.getY() - floor) + " over the floor (" + giant.task() + ")"));
 	}
 
