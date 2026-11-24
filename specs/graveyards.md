@@ -108,7 +108,7 @@ Common to all crypts:
 - **Sleepers** (`Build.sleeper`): skeleton or zombie 60/40 (climate-swapped in desert and snowy yards: `specs/undead.md` "Undead variants"). Skeleton kinds get a bow half the time; zombies a stone sword or iron shovel a quarter of the time. 30 % of lying sleepers lie face down.
 
 The three kinds:
-- **Pauper's ossuary** (small and medium yards): a cramped tunnel dug through the ground, 3 wide and 3 high, 11 long, walled in cobblestone and packed dirt with bone blocks set in. Niches nearly every block on both sides, nearly all holding a sleeper with little or nothing on them; some niches stack a second sleeper two above the floor niche. A candle or two, most out; one chest of poor things at the end (`chests/crypt_pauper`, 2-5 rolls).
+- **Pauper's ossuary** (small and medium yards): a cramped tunnel dug through the ground, 3 wide and 3 high, 11 long, walled in cobblestone, packed mud and coarse dirt with bone blocks and mossy cobblestone set in (`ossuaryWall`). Niches nearly every block on both sides, nearly all holding a sleeper with little or nothing on them; some niches stack a second sleeper two above the floor niche. A candle or two, most out; one chest of poor things at the end (`chests/crypt_pauper`, 2-5 rolls).
 - **Family vault:** 7 wide, 9 long, 4 high inside. Stone brick shell (cracked and mossy mixed in), polished andesite and cobblestone floor.
   - Niches every other block on both long walls, with a slab over each; 80 % hold a lying sleeper. Vault sleepers wear a chain or iron helmet 30 % of the time.
   - Altar at the far end (chiseled stone bricks, 3 lit candles) and the chest (`chests/crypt_family`, 3-6 rolls). More candles along the walls, about a quarter of them lit; cobwebs.

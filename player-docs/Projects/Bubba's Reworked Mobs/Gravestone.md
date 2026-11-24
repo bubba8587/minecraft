@@ -10,15 +10,21 @@
 > | **Tool** | Pickaxe |
 > | **Stacks** | 16 |
 
-A **gravestone** is a stone headstone on a small plinth. It works exactly like a standing sign: the player can write on its front and back, and the edit screen opens right after you place it. The edit screen shows the gravestone's own face, with your text in the same place and size as it will appear on the stone. Dyes colour the text, glow ink makes it glow, and honeycomb waxes it so it can't be edited. It can face any of 16 directions. You can't walk through it.
+A **gravestone** is a stone headstone on a small plinth. It works like a standing sign: the player can write on its front and back, it can face any of 16 directions, and it is solid (players can't walk through it).
 
 ## Obtaining
 
-Cut one from a single stone in a stonecutter. Gravestones also stand over the graves in [[Crypt Yards]]. Those never carry names: they're blank, or carved with a few letters of the enchanting-table alphabet. They aren't waxed, so you can carve your own words on a found stone.
+- **Stonecutter:** one gravestone from one stone.
+- **Generation:** gravestones stand over the graves in [[Crypt Yards]]. These never carry names: they are blank, or carved with a few letters of the enchanting-table alphabet. They aren't waxed, so the player can carve new words on a found stone.
+
+## Usage
+
+- **Writing:** the edit screen opens right after the gravestone is placed. It shows the gravestone's own face, with the text in the same place and size as it will appear on the stone.
+- **Dyes** colour the text, **glow ink** makes it glow, and **honeycomb** waxes it so it can't be edited.
 
 ## Breaking
 
-Mine it with a pickaxe to get it back. Without a pickaxe it drops nothing.
+Mining it with a pickaxe gives the gravestone back. Without a pickaxe it drops nothing.
 
 ## History
 

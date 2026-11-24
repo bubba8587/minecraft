@@ -2,9 +2,14 @@
 
 *Part of [[Bubba's Reworked Mobs]].*
 
-**With [[Bubba's Infused Gems]] installed**, the armoured dead in **noble crypts** ([[Crypt Yards]]) are buried in gemmed finery: one or two gems in their armor and one in their weapon, a little richer than ordinary gemmed mob gear. Woken, they fight with those effects; rob them or kill them and the gemmed pieces are the prize.
+**Noble finery** is the gemmed burial gear worn by the armoured dead in **noble crypts** ([[Crypt Yards]]) when [[Bubba's Infused Gems]] is installed.
 
-Without Infused Gems, noble crypts are unchanged.
+## Behavior
+
+- Their armor carries one or two gems and their weapon one, a little richer than ordinary gemmed mob gear. A few pieces may carry none.
+- Woken, they fight with those gem effects.
+- Robbing or killing them yields the gemmed pieces.
+- Without Infused Gems, noble crypts are unchanged.
 
 ## History
 

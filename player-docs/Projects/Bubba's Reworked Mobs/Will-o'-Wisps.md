@@ -2,11 +2,13 @@
 
 *Part of [[Bubba's Reworked Mobs]].*
 
-Faint, occasional blue soul flames lead you to [[Crypt Yards]] you haven't found yet.
+**Will-o'-wisps** are faint, occasional blue soul flames that lead the player to [[Crypt Yards]] they haven't found yet.
 
-- **Hints:** while an unfound yard is within about 96 blocks, now and then a single wisp appears a few blocks from you, drifting toward it.
+## Behavior
+
+- **Hints:** while an unfound yard is within about 96 blocks, now and then a single wisp appears 6 to 12 blocks from the player, drifting toward the yard.
 - **Over the graves at night:** within about 48 blocks, wisps rise over the yard's graves and drift slowly toward the crypt entrance (or the gate, if the yard has no crypt).
-- **Once you've walked into a yard, its wisps stop showing for you**, for good, even after you die. Other players who haven't found it still see them.
+- **Found yards:** once the player has walked into a yard, its wisps stop showing for that player for good, even after death. Other players who haven't found it still see them.
 
 ## History
 

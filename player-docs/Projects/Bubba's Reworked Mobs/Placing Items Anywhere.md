@@ -2,12 +2,17 @@
 
 *Part of [[Bubba's Reworked Mobs]].*
 
-**Sneak + middle click** with an item in your hand, aiming at a block, lays one of it on the ground as a display, the way loot lies in crypts ([[Loot on Display]]): on top of the block you aim at, or in front of the side you aim at, wherever there's a floor under it. A plain middle click is still vanilla's pick block.
+**Placing items anywhere** lets the player lay a held item on the ground as [[Loot on Display|loot on display]], the way loot lies in crypts.
 
-- Works in survival and adventure wherever you're allowed to use items (spawn protection and adventure rules apply), within block reach.
-- In creative it lays a copy and keeps your stack.
-- Take it back with an empty hand.
-- It's how you offer an item at an enderman cairn ([[Trading at Cairns]]).
+## Usage
+
+- **Sneak + middle click** with an item in hand, aiming at a block, lays one of that item on the ground: on top of the block aimed at, or in front of the side aimed at, wherever there's a floor under it.
+- A plain middle click is still vanilla's pick block.
+- It works in Survival and Adventure mode wherever the player is allowed to use items (spawn protection and adventure rules apply), within block reach.
+- In Creative mode it lays a copy and keeps the stack.
+- Only one item fits on a spot, and it can't be laid on top of another display or in mid-air.
+- Using the laid item with an empty hand picks it back up.
+- It is how the player offers an item at an enderman cairn ([[Trading at Cairns]]).
 
 ## History
 
