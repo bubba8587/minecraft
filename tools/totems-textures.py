@@ -1,22 +1,25 @@
 #!/usr/bin/env python3
 # dte:B16,C6
-"""Item textures for the five totems of 2026-11-16 in Bubba's Totems & Artifacts (Keeping, Gathering, Fortification,
-Growth, Seeking), 16x and their Faithful-style 32x twins (specs/textures.md). Agent-made, listed in docs/art-todo.md
-for the owner to redo or tweak; never AI-generated.
+"""Item textures for the totems of Bubba's Totems & Artifacts other than Warding (tools/warding-textures.py), 16x and
+their Faithful-style 32x twins (specs/textures.md). Agent-made, listed in docs/art-todo.md for the owner to redo or
+tweak; never AI-generated.
 
   python tools/totems-textures.py
 
-Each is a small carved idol in the Totem of Undying's idiom (head, arms out, body, foot), drawn like the Totem of
-Warding (tools/warding-textures.py): same body and pose, its own material, head and chest emblem.
+Each is a small carved idol in the family of vanilla's Totem of Undying: head, arms out, body, a dark belt with a gem
+and the Undying's tapered foot, cast in its own precious material with gem eyes (X light, Z dark), plus the head and
+chest emblem of its power.
 
-  Keeping        purple obsidian stone, gold eyes, clutching a small gold-bound chest
-  Gathering      copper with green patina, arms ending in upturned hands, a patina ring (a pull) on the chest
-  Fortification  iron, a flat-topped helm with a glowing visor slit, an obsidian shield on the chest
-  Growth         oak wood, a leafy crown with a pink blossom, a green sprout on the chest
-  Beginning      weathered stone wearing a grass cap, purple ender eyes, a strata emblem (grass, dirt, stone)
-  End            end stone with a purpur crown, an enderman's black face and magenta eyes, an ender pearl on the chest
-  North Wind     packed ice, an icicle crown, cheeks puffed blowing a gust to the side, a snowflake on the chest
-  Seeking        lapis stone, a gold-rimmed hood, a compass dial on the chest; 16 needle frames
+  Keeping        crying obsidian, magenta gem eyes, clutching a small gold-bound chest
+  Gathering      polished copper, arms ending in upturned hands, an oxidised-copper ring on the chest, verdigris eyes
+  Fortification  netherite, a gold-banded helm with a glowing visor slit, a gold shield with a lapis field
+  Growth         resin amber, a leafy crown with a pink blossom, emerald eyes, a green sprout on the chest
+  Beginning      emerald wearing a grass cap, amethyst eyes, a grass block (grass, dirt) on the chest
+  End            amethyst, a pale end-stone crown, an enderman's black face and magenta eyes, an ender pearl
+  Herding        ruby-red redstone, a woolly ram's head with ivory horns, gold eyes, a gold bell
+  Clear Skies    quartz, a gold sun crown of rays, sky-blue gem eyes, blue sky with the sun on the chest
+  North Wind     diamond, an icicle crown, cheeks puffed blowing a gust to the side, deep-blue eyes, a snowflake
+  Seeking        lapis, a gold-rimmed hood, gold eyes, a compass dial on the chest; 16 needle frames
                  (totem_of_seeking_00..15, frame i = needle turned i/16 clockwise from up, as the item model's
                  minecraft:compass dispatch expects). At 32x the needle is drawn at 32x, not scaled up.
 
