@@ -8,6 +8,11 @@
 		"bubba8587"
 	],
 	"license": "MIT",
+	"contact": {
+		"homepage": "https://github.com/bubba8587/minecraft",
+		"sources": "https://github.com/bubba8587/minecraft",
+		"issues": "https://github.com/bubba8587/minecraft/issues"
+	},
 	"icon": "assets/bubbas_totems_artifacts/icon.png",
 	"environment": "*",
 	"entrypoints": {
@@ -45,5 +50,14 @@
 	"suggests": {
 		"bubbas_reworked_mobs": "*",
 		"bubbas_reworked_beacons": "*"
+	},
+	"custom": {
+		"modmenu": {
+			"parent": {
+				"id": "bubbas_mods",
+				"name": "Bubba's Mods",
+				"description": "Mods by bubba8587: reworked mobs, beacons and mining, totems and artifacts, infused gems and more."
+			}
+		}
 	}
 }

@@ -3,11 +3,16 @@
 	"id": "${mod_id}",
 	"version": "${version}",
 	"name": "Bubba's Reworked Mobs",
-	"description": "Reworks Minecraft's mobs. Part 1: undead lie dormant as blocks until disturbed.",
+	"description": "Reworks Minecraft's mobs: dormant undead, giant spiders and nests, watcher creepers, cairn endermen, grabbing drowned, monster camps and more.",
 	"authors": [
 		"bubba8587"
 	],
 	"license": "MIT",
+	"contact": {
+		"homepage": "https://github.com/bubba8587/minecraft",
+		"sources": "https://github.com/bubba8587/minecraft",
+		"issues": "https://github.com/bubba8587/minecraft/issues"
+	},
 	"icon": "assets/bubbas_reworked_mobs/icon.png",
 	"environment": "*",
 	"entrypoints": {
@@ -41,5 +46,14 @@
 	"suggests": {
 		"bubbas_totems_artifacts": "*",
 		"bubbas_reworked_beacons": "*"
+	},
+	"custom": {
+		"modmenu": {
+			"parent": {
+				"id": "bubbas_mods",
+				"name": "Bubba's Mods",
+				"description": "Mods by bubba8587: reworked mobs, beacons and mining, totems and artifacts, infused gems and more."
+			}
+		}
 	}
 }

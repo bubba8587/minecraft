@@ -3,11 +3,16 @@
 	"id": "${mod_id}",
 	"version": "${version}",
 	"name": "Bubba's World Tweaks",
-	"description": "",
+	"description": "Small world touches: magma under lava makes bubbling lava and smoking lava geysers, and geysers lift you into the air.",
 	"authors": [
 		"bubba8587"
 	],
 	"license": "MIT",
+	"contact": {
+		"homepage": "https://github.com/bubba8587/minecraft",
+		"sources": "https://github.com/bubba8587/minecraft",
+		"issues": "https://github.com/bubba8587/minecraft/issues"
+	},
 	"icon": "assets/bubbas_world_tweaks/icon.png",
 	"environment": "*",
 	"entrypoints": {
@@ -30,5 +35,14 @@
 		"minecraft": "~${minecraft_version}",
 		"java": ">=${java_version}",
 		"fabric-api": "*"
+	},
+	"custom": {
+		"modmenu": {
+			"parent": {
+				"id": "bubbas_mods",
+				"name": "Bubba's Mods",
+				"description": "Mods by bubba8587: reworked mobs, beacons and mining, totems and artifacts, infused gems and more."
+			}
+		}
 	}
 }

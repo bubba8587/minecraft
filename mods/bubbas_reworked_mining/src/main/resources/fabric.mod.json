@@ -3,11 +3,16 @@
 	"id": "${mod_id}",
 	"version": "${version}",
 	"name": "Bubba's Reworked Mining",
-	"description": "",
+	"description": "Mining gets a real progression curve: early tools are slow, deepslate is tough, and Efficiency and Unbreaking matter much more.",
 	"authors": [
 		"bubba8587"
 	],
 	"license": "MIT",
+	"contact": {
+		"homepage": "https://github.com/bubba8587/minecraft",
+		"sources": "https://github.com/bubba8587/minecraft",
+		"issues": "https://github.com/bubba8587/minecraft/issues"
+	},
 	"icon": "assets/bubbas_reworked_mining/icon.png",
 	"environment": "*",
 	"entrypoints": {
@@ -30,5 +35,14 @@
 		"minecraft": "~${minecraft_version}",
 		"java": ">=${java_version}",
 		"fabric-api": "*"
+	},
+	"custom": {
+		"modmenu": {
+			"parent": {
+				"id": "bubbas_mods",
+				"name": "Bubba's Mods",
+				"description": "Mods by bubba8587: reworked mobs, beacons and mining, totems and artifacts, infused gems and more."
+			}
+		}
 	}
 }
