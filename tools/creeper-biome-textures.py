@@ -9,9 +9,9 @@ treeless biomes, its natural ground block, by OKLch lightness matching:
   darkest bark shade, lightest -> lightest; 3rd/97th percentiles, weighted by pixel count);
 - each creeper colour takes the palette colour nearest that stretched lightness, near-ties broken by matching the
   colour's relative chroma (vanilla's grey-ish speckles take the palette's greyest shades) and hue;
-- every output pixel is a colour of the source palette, except the face's clearly darkest pixels (most of each eye and
-  the mouth: DARK16 / DARK32), which take the source's darkest colour blended FACE_BLEND toward black; the face (eyes and mouth) is left out of the
-  range statistics only, and its pixels, darker than the body's range, land on the palette's darkest colours;
+- every output pixel is a colour of the source palette, except on the face (owner): the base's black face pixels stay
+  black, and its noticeably darker face pixels (below DARK16 / DARK32) take their own matched colour blended FACE_BLEND
+  toward black; the face is left out of the range statistics;
 - palette colours brighter than the stretched range's top (single-pixel highlights) are not used.
 
 The 16x set recolours vanilla's creeper with vanilla's log/ground textures. The 32x set runs the same recolour on
@@ -65,7 +65,8 @@ SKINS = {
 FACE = (8, 8, 16, 16)  # head front in the 64x32 UV layout
 DARK16 = 0.405  # vanilla's dark eye and mouth pixels: L 0.00-0.40 (the rest of the face is 0.42 and up)
 DARK32 = 0.395  # CF32J's: L 0.00-0.39 (its eye and mouth rims are 0.40 and up)
-FACE_BLEND = 0.5  # those pixels: the source's darkest colour, this far toward black
+FACE_BLEND = 0.5  # those pixels: their matched colour, this far toward black
+BLACK = 0.05  # face pixels darker than this are black and stay black
 
 
 # OKLab / OKLCh
@@ -156,25 +157,27 @@ def palette(src, rel, tint, colormap):
 	return cnt
 
 
-def face_dark(pal):
-	"""The source texture's darkest colour, FACE_BLEND of the way to black."""
-	d = min(pal, key=lambda c: oklch(c)[0])
-	return tuple(round(v * (1 - FACE_BLEND)) for v in d)
-
-
 def is_face(x, y, L):
 	x0, y0, x1, y1 = FACE
 	return x0 <= x < x1 and y0 <= y < y1 and L < 0.42
 
 
 def dark_face_pixels(base, threshold):
-	"""The face's clearly darkest pixels: head front (UV 8..16, 8..16), OKLab L below threshold."""
+	"""The face's noticeably darker pixels, not black: head front (UV 8..16, 8..16), OKLab L from BLACK to threshold."""
 	sc = base.size[0] // 64
 	px = base.load()
-	return [(x, y) for y in range(8 * sc, 16 * sc) for x in range(8 * sc, 16 * sc) if px[x, y][3] and oklch(px[x, y])[0] < threshold]
+	return [(x, y) for y in range(8 * sc, 16 * sc) for x in range(8 * sc, 16 * sc)
+			if px[x, y][3] and BLACK <= oklch(px[x, y])[0] < threshold]
 
 
-def recolor(base, pal, dark=(), dark_rgb=None):
+def black_face_pixels(base):
+	"""The face's black pixels."""
+	sc = base.size[0] // 64
+	px = base.load()
+	return [(x, y) for y in range(8 * sc, 16 * sc) for x in range(8 * sc, 16 * sc) if px[x, y][3] and oklch(px[x, y])[0] < BLACK]
+
+
+def recolor(base, pal, dark=(), black=()):
 	"""base: RGBA creeper image (any size, 64:32 layout). pal: Counter of rgb -> count. Returns (image, mapping)."""
 	w, h = base.size
 	sc = w // 64
@@ -224,8 +227,11 @@ def recolor(base, pal, dark=(), dark_rgb=None):
 					cache[c[:3]] = pick(c[:3])
 				op[x, y] = cache[c[:3]] + (c[3],)
 	for x, y in dark:
-		op[x, y] = dark_rgb + (px[x, y][3],)
-	return out, (cl0, cl1, pl0, pl1, dark_rgb)
+		c = op[x, y]
+		op[x, y] = tuple(round(v * (1 - FACE_BLEND)) for v in c[:3]) + (c[3],)
+	for x, y in black:
+		op[x, y] = px[x, y]
+	return out, (cl0, cl1, pl0, pl1)
 
 
 def contact_sheet(rows, path):
@@ -289,6 +295,8 @@ def main():
 		sys.exit(f"base creepers must be 64x32 and 128x64, got {v16.size} and {v32.size}")
 	dark16 = dark_face_pixels(v16, DARK16)
 	dark32 = dark_face_pixels(v32, DARK32)
+	black16 = black_face_pixels(v16)
+	black32 = black_face_pixels(v32)
 	print(f"dark face pixels 16x ({len(dark16)}): {dark16}")
 	print(f"dark face pixels 32x ({len(dark32)}): {dark32}")
 	os.makedirs(os.path.join(root, OUT16), exist_ok=True)
@@ -297,15 +305,15 @@ def main():
 	for name, (src, tint) in SKINS.items():
 		rel = src.removeprefix("textures/")
 		pal16 = palette(van, rel, tint, colormap)
-		a, info = recolor(v16, pal16, dark16, face_dark(pal16))
+		a, info = recolor(v16, pal16, dark16, black16)
 		src32 = cf if cf.has(rel) else van
 		pal32 = palette(src32, rel, tint, colormap)
-		b, _ = recolor(v32, pal32, dark32, face_dark(pal32))
+		b, _ = recolor(v32, pal32, dark32, black32)
 		a.save(os.path.join(root, OUT16, name + ".png"))
 		b.save(os.path.join(root, OUT32, name + ".png"))
 		rows.append((name, a, b))
 		print(f"{name:10s} {rel:24s} 32x from {'CF32J' if src32 is cf else 'vanilla'}; creeper L {info[0]:.2f}-{info[1]:.2f} -> "
-				f"palette L {info[2]:.2f}-{info[3]:.2f}, face {info[4]}")
+				f"palette L {info[2]:.2f}-{info[3]:.2f}")
 	if args.sheet:
 		contact_sheet(rows, args.sheet)
 
