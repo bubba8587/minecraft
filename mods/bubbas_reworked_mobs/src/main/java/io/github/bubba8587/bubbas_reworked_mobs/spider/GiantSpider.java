@@ -224,8 +224,8 @@ public class GiantSpider extends Spider implements Gripper {
 	}
 
 	/**
-	 * Its wandering. Roaming: to any spot it can cling to round its web (its home), or with no web yet toward the
-	 * ground. Prowling: on the ground round its cocoon.
+	 * Its wandering, always to ground spots (Stormie's Spiders can't path to a point on a trunk side). Roaming: under
+	 * and round its web (its home), or with no web yet within ROAM_RANGE. Prowling: round its cocoon.
 	 */
 	private class WanderGoal extends RandomStrollGoal {
 		WanderGoal() {
@@ -252,39 +252,30 @@ public class GiantSpider extends Spider implements Gripper {
 		}
 	}
 
-	/** A random open spot beside a solid face (ground, trunk, branch) in the box round {@code web}. */
+	/** A random spot on the ground under and round {@code web} (its span, WEB_HOME_MARGIN wider). */
 	private @Nullable Vec3 spotNear(SpunWeb web) {
 		AABB home = web.span().inflate(SpiderTuning.WEB_HOME_MARGIN, 0.0, SpiderTuning.WEB_HOME_MARGIN);
-		int floor = groundBelow(BlockPos.containing(home.getCenter().x, home.maxY, home.getCenter().z));
-		double minY = Math.min(home.minY, floor);
-		BlockPos.MutableBlockPos face = new BlockPos.MutableBlockPos();
-		for (int i = 0; i < 10; i++) {
-			BlockPos pos = BlockPos.containing(Mth.lerp(random.nextDouble(), home.minX, home.maxX), Mth.lerp(random.nextDouble(), minY, home.maxY),
-					Mth.lerp(random.nextDouble(), home.minZ, home.maxZ));
-			if (!level().hasChunkAt(pos) || !level().getBlockState(pos).getCollisionShape(level(), pos).isEmpty() || !level().getFluidState(pos).isEmpty()) {
-				continue;
-			}
-			for (Direction d : Direction.values()) {
-				face.setWithOffset(pos, d);
-				if (level().getBlockState(face).isFaceSturdy(level(), face, d.getOpposite())) {
-					return Vec3.atBottomCenterOf(pos);
-				}
-			}
-		}
-		return null;
+		int range = (int) Math.ceil(Math.max(home.getXsize(), home.getZsize()) / 2.0);
+		return groundSpot(Mth.floor(home.getCenter().x), Mth.floor(home.getCenter().z), range, Mth.floor(home.getCenter().y));
 	}
 
 	/** A random spot on the ground below its height, within {@code range} sideways of x, z (under trunks and canopy, not water). */
 	private @Nullable Vec3 groundSpot(int cx, int cz, int range) {
+		return groundSpot(cx, cz, range, Mth.floor(getY()) + 1);
+	}
+
+	/** As above, looking down from {@code fromY}. */
+	private @Nullable Vec3 groundSpot(int cx, int cz, int range, int fromY) {
 		for (int i = 0; i < 10; i++) {
 			int x = cx + random.nextInt(range * 2 + 1) - range;
 			int z = cz + random.nextInt(range * 2 + 1) - range;
-			BlockPos start = new BlockPos(x, Mth.floor(getY()) + 1, z);
-			if (!level().hasChunkAt(start) || !level().getBlockState(start).getCollisionShape(level(), start).isEmpty()) {
+			BlockPos start = new BlockPos(x, fromY, z);
+			if (!level().hasChunkAt(start)) {
 				continue;
 			}
 			BlockPos feet = new BlockPos(x, groundBelow(start), z);
-			if (feet.getY() < start.getY() && level().getFluidState(feet).isEmpty() && level().getFluidState(feet.below()).isEmpty()) {
+			if (feet.getY() < start.getY() && level().getBlockState(feet).getCollisionShape(level(), feet).isEmpty()
+					&& level().getFluidState(feet).isEmpty() && level().getFluidState(feet.below()).isEmpty()) {
 				return Vec3.atBottomCenterOf(feet);
 			}
 		}
