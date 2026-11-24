@@ -19,6 +19,10 @@ Creepers no longer spawn randomly. At night, each player has one creeper of thei
 - It appears 15 to 21 blocks away, behind cover and out of the player's view, and watches them.
 - A player who turns around quickly can catch it half behind a tree or a wall, looking at them.
 
+### Leaving in the morning
+
+Night watchers leave when day comes. Some time between 10 seconds and about 2.5 minutes after daybreak, each one walks off to a place hidden from its player, or simply walks away when there is nowhere to hide, and vanishes once no player can see it. It leaves sooner when the player has not looked its way for a while. A hissing creeper does not vanish, and hitting or startling a leaving creeper works as usual. Creepers from spawners, structures, spawn eggs and commands never leave this way.
+
 Creepers from spawners and trial spawners are ordinary creepers: they hunt players and explode next to them.
 
 ## Behavior
@@ -27,10 +31,13 @@ Creepers from spawners and trial spawners are ordinary creepers: they hunt playe
 
 A creeper notices things that move where it can see them, players first. It never stops watching a player within 24 blocks.
 
-- **With cover:** it looks for a spot halfway behind a tree, wall or boulder about 10 to 22 blocks from what it watches, walking a long way round to reach one, and peeks out from there.
+- **With cover:** it looks for a spot halfway behind a tree, wall or boulder up to 22 blocks from what it watches, walking a long way round to reach one, and peeks out from there. As long as there is any cover around, it always hides behind something.
 - **Peekaboo:** when the player looks its way, even out of the corner of the screen, it slides fully behind its cover. When they look away, it eases back out.
-- **On open ground** with nothing to hide behind: it stays about 12 blocks off and stares. It edges back while the player looks at it, and backs away if the player comes closer than about 10 blocks.
-- **Sneaking up:** a player who sneaks toward a creeper makes it retreat behind cover farther away.
+- **Creeping closer:** while the player is not looking its way, every few seconds it moves to a closer hiding spot, choosing spots and routes the player cannot see. It can come right up to the wall of a house and peek in round a window frame or doorway, as close as 3 blocks. A player who catches it walking up in the open sends it back to where it came from.
+- **Windows:** glass, glass panes and iron bars do not hide it, so it can watch through a window. Leaves still block its view.
+- **Running off:** a player who walks or runs toward it, even from inside a house through a window, makes it run (faster than a sprint) to a hiding spot farther away, for example back to the tree it started from. It waits about 10 seconds before creeping closer again.
+- **Sneaking up:** a player who sneaks toward a creeper makes it walk back behind cover farther away and stay hidden.
+- **On open ground** with nothing at all to hide behind: it stays about 12 blocks off and stares. It edges back while the player looks at it, and backs away if the player comes closer than about 10 blocks.
 
 ### Startling
 
