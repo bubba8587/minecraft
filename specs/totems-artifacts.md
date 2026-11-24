@@ -356,11 +356,12 @@ Owner's design. Player page: `Totem of the End.md`.
 - **Held (either hand): endermen treat the holder as kin.** `EndermanKinMixin`: HEAD of `Enderman.isBeingStaredBy` returns false (vanilla's own disguise check is the carved pumpkin on the head; this is the same check for the hand).
   - Covers eye contact for every enderman (vanilla, Nether and End too) and Reworked Mobs' cairn anger *(builder's choice)*.
   - Hitting an enderman still makes that one fight (vanilla); the others near a cairn stay calm.
-- **Used: teleports to the aimed block** within 32 blocks (`END_RANGE`), then a 4 s cooldown sweep (`END_COOLDOWN_TICKS` 80, `ItemCooldowns.addCooldown`, B19). Each teleport deals an ender pearl's damage (owner): 5 (`END_TELEPORT_DAMAGE`, `damageSources().enderPearl()`). No hit or no safe landing: nothing happens, no cooldown.
+- **Used: teleports to the aimed block** within 32 blocks (`END_RANGE`), then a 4 s cooldown sweep (`END_COOLDOWN_TICKS` 80, `ItemCooldowns.addCooldown`, B19). No damage (owner, 2026-11-24; was an ender pearl's 5). No hit or no safe landing: nothing happens, no cooldown.
   - **Landing rules (owner):** top face: stand on it. Side face: on top if the 2 blocks above are open, else straight down from in front of it to the nearest safe footing. Bottom face: straight down to the nearest safe footing.
-  - *Builder's choices:* top face with no room or unsafe → nothing (no fallback downward). Fire, campfire, powder snow, magma, cactus, berry bush, wither rose and lava count as unsafe. Aims through grass, flowers and water, so it can land on a lake bed, as an ender pearl can.
+  - *Builder's choices:* top face with no room or unsafe → nothing (no fallback downward). Fire, campfire, powder snow, magma, cactus, berry bush, wither rose, lava and **water** (owner: any fluid in or under the box) count as unsafe. Aims through grass, flowers and water, but never lands in water.
   - **Aim:** `level.clip` from the eyes, `ClipContext.Block.COLLIDER` (through grass and flowers) and `Fluid.NONE` (through water). Landing uses vanilla's `noCollision` for the entity's box (as `randomTeleport` does).
   - **Teleport like the ender pearl:** `stopRiding`, `ServerPlayer.teleport(TeleportTransition(..., Vec3.ZERO, Relative.ROTATION, DO_NOTHING))`, `resetFallDistance`, `resetCurrentImpulseContext`, `GameEvent.TELEPORT`; sound `ENDERMAN_TELEPORT` and `PORTAL` particles at both ends.
+- **Held in water (owner, 2026-11-24, like an enderman):** `end/EndWater`, a level tick over players: holding it (either hand) while `isInWater()` (not rain, builder's choice) deals 1 drown damage (`END_WATER_DAMAGE`, vanilla's hurt cooldown makes it 2 a second, as an enderman's), and every hit that lands tries an enderman's escape: up to 64 random spots within 32 blocks (`END_WATER_TELEPORT_RADIUS`, `END_WATER_TELEPORT_TRIES`) via `LivingEntity.randomTeleport` with the landing hazards plus `ENDERMAN_DOES_NOT_TELEPORT_TO`. No cooldown. Creative players take no damage, so no escape. Players only.
 - No beacon use and no statue effect.
 
 ## Totem statue (block, B15 exception)
@@ -696,6 +697,7 @@ Most bodies live in the milestone classes below and are called from the core cla
 - Using Clear Skies in rain clears the weather and the totem isn't used up; in clear weather nothing happens.
 - The client draws no rain over a Clear Skies area.
 - XP leaves the Gathering ring for a nearby player.
+- A player holding the Totem of the End in water takes damage and lands on dry ground (`endInWaterHurtsAndTeleportsOut`); an aimed teleport does no damage and never lands in water (`endLandingRules`, `endTeleportsWhereAimedWithCooldown`).
 - With Reworked Mobs, a player holding the Totem of the End breaks a cairn block and no enderman turns on them.
 - Ten Beginning pulses over a dug field bring back most terrain but far less ore, and never touch a build (partly covered by Reworked Mobs' `pulseOddsTerrainOverOre` and `pulseRepeatsAndBuilds`).
 - A relic vault actually generating at its site in a real (non-flat) world (game test worlds are flat).

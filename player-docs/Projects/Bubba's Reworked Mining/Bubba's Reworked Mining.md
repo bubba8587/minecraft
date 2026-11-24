@@ -24,6 +24,7 @@ side: client and server
 
 *Main article: [[Mining Curve]]*
 
+- **Bare hands** are slower than in vanilla, a step below wood: about 1.5x slower on logs, dirt and other soft blocks, and very slow on stone.
 - **Wood** barely gets anywhere and can't mine deepslate at all.
 - **Stone** is a bit slower on stone and very slow on deepslate.
 - **Copper and iron** are about normal on stone, but slow on deepslate, which wears them down fast.

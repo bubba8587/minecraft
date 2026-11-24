@@ -30,7 +30,7 @@ The pack adds recipes for the crafting table, blast furnace and smoker. No vanil
 
 The companion mod contains the datapack and its resource pack in a single file, and adds two features of its own:
 
-- **[[The Glider]]**: a craftable, weaker relative of the elytra that never breaks.
+- **[[The Glider]]**: a craftable, weaker relative of the elytra.
 - **[[Synthetic Diamond Ore]]**: diamond ore made in a blast furnace, which rarely drops a diamond when mined.
 
 ## Installation

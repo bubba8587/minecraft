@@ -4,6 +4,7 @@
 Parked ideas and open items, newest first within each project. Agents add to it when the owner parks something; details live in the linked spec. What is built, being built or designed and unassigned is on the status board, `specs/STATUS.md`; once an item is built, delete it here.
 
 ## Bubba's Reworked Mobs
+- **Creeper ideas (owner, 2026-11-24, parked):** (A) per-biome creepers. Creeper Overhaul does this but has no 26.3 build (latest 1.21.1) and is All Rights Reserved, so no dependency and no copying its art; ours would need our own models and textures. (B) on flat ground with no cover, a creeper digs up to 2 natural blocks, stacks them into a little pillar and hides behind it. Build B after the cover-hugging rework lands.
 - **26.4 Frostbites (owner, 2026-11-24, for the 26.4 port):** Frostbites as Sleeping Undead, frozen in ice in Ice Caves, and in Monster Camps in cold biomes. Already promised on posters as [Coming in 26.4] (`specs/copy-strings.md`).
 - **Trader posts (owner to decide, `specs/monster-camps.md` "Trader posts"):** rarity (spacing 18 chunks, about 0.08 per km² near spawn in seed 20261116; commoner?); is the llama tether mixin OK (vanilla never despawns a trader llama tied to a fence, so the post's tether counts as the trader's lead)?; a village bell within 48 beats a post (vanilla): keep?; lit campfire (unlike dark camps): keep?
 - **Flaky or failing tests seen 2026-11-24 (untouched):** `CryptWardsGameTest.cryptStatuesStandInEveryWing` failed with `-PwithMobs` in two builders' worktrees ("PAUPER: the statues split the crypt floor into 2 walkable areas") but passed on merged develop with `-PmilestoneTests -PwithMobs` (2026-11-24): flaky, watch it. Passed on rerun: `GiantSpiderGameTest.leavesItsPerchAndComesBackToFeed` ("only wandered 1.0"), and once with `-PwithGems` `CampsGameTest.exposedCampMobsSeekShade`.
@@ -29,10 +30,8 @@ Parked ideas and open items, newest first within each project. Agents add to it 
 - **Monster camps** (`specs/monster-camps.md`): Owner to playtest spacing (10 chunks, ~6 camps per km²) and leader numbers. Natural forest camps sit among uncleared trees (leaves crowd the towers); worth a look. Builder's calls to review: resting dead follow the yard climate (husks/strays), bogged hide fully underwater.
 
 ## Bubba's Totems & Artifacts (C6)
-- **Totem of the End rework idea (owner, 2026-11-24, parked):** instead of hurting its user on teleport, teleport them away from water and hurt them if they touch water, like an enderman.
 - **Relic vaults (owner to decide, `specs/totems-artifacts.md` "Relic maps and relic vaults"):** crypt vaults are unnamed (no map leads there): should some carry a name (two places per name)?; the whole shred becomes a map only once in a player's inventory: OK, or unfold on right-click?; tuning: 35 % of noble crypts with a vault, 45 % totem chance per grand vault chest. Decided (owner, 2026-11-24): no vanilla `/locate` for vaults (skip; maps are the way).
 - **Gathering statue ring size** (builder's numbers, owner to playtest): radius 1.0, 1.1 above the statue's base, so a side hopper catches it and a chest or hopper beside the statue is just cleared (`specs/totems-artifacts.md` "Statue ring").
-- **Enderman broke a Beginning beacon's pyramid (owner playtest, 2026-11-23):** an enderman drawn to a Totem of the Beginning beacon took a block from the beacon's own pyramid. Owner recalled the enderman summoning being changed in a session on their PC; checked 2026-11-23 on that PC (branches, stashes, worktrees, lost commits, session logs): nothing unpushed, the only local Beginning work was the original build (628894e) and statues, both on develop. The Beginning beacon now reverts blocks directly (2026-11-24), but endermen should never take beacon pyramid blocks (or any block that is part of a working beacon base) anywhere.
 - Warding open question (builder): should mobs holding a Totem of Warding pulse, and may woken undead pick one up (built as yes). `specs/totems-artifacts.md`.
 - **Totem icon borders (owner, 2026-11-24: "better, but some of the borders are still borked"):** the precious-material icons' outlines are uneven on some totems (sheet: `build/art-review/now-totem-icons-16x-top-32x-bottom.png`). Look at each icon's outline at 16x and 32x against vanilla's and Classic Faithful's Totem of Undying (one clean dark outline shade, no gaps or doubled pixels where arms, crowns and emblems meet the body); fix in `tools/totems-textures.py` / `tools/warding-textures.py` and `tools/pixelart.py` (`render32` snap/inner outline). Evolve, don't redesign.
 - **Statues:** every totem has an agent-made statue; person-made statue designs and the mod icon later (`docs/art-todo.md`).
@@ -40,10 +39,10 @@ Parked ideas and open items, newest first within each project. Agents add to it 
 - **Totem ideas dropped** (owner, 2026-11-16): Fold (animal breeding), Stillness (no despawning).
 
 ## Bubba's Extra Recipes
-- **Glider durability (owner, 2026-11-24):** the Glider should have durability instead of never breaking (`player-docs` "The Glider" says it never breaks today).
 - **Renewability (owner, 2026-11-24):** trades and barters don't count. Still open: a deepslate recipe (owner undecided). Candidates noted: lapis, crying obsidian, gilded blackstone, end stone/netherrack (dimension-only). Horse armor and sponge: skipped. The andesite quartz loop (+1 quartz per cycle) stays as is (owner).
 - Person-made mod icon (none yet).
 - Real Glider art (16x and 32x, made by a person).
+- **Glider durability:** playtest 324 (elytra 432). No broken icon (owner, 2026-11-24: skip).
 
 ## Bubba's Infused Gems
 - **26.4 Freezing gem (owner, 2026-11-24, for the 26.4 port):** 26.4 adds a Freezing potion; make a craftable (brewed) Freezing gem from it. Already promised on posters as [Coming in 26.4] (`specs/copy-strings.md`).
@@ -107,8 +106,9 @@ Left for next session:
 - Owner to read and ratify (or rewrite) the goal drafts A1-A4 (`python3 tools/dte.py unratified`).
 
 ## Bubba's Reworked Mining (C7)
-- **Nerf fist breaking speed (owner, 2026-11-24):** bare hands mine slower than vanilla, in line with the wood and stone curve (`specs/reworked-mining.md`). Poster copy already says fists are slower and weaker (`specs/copy-strings.md`).
 - Built (`specs/reworked-mining.md`). Owner to playtest every number in `MiningTuning`, decide whether stronger Efficiency should beat vanilla at Efficiency V diamond, how progress shows to the player, and review the builder's calls (spec "Open").
+- **Fist speed (built 2026-11-24):** playtest the builder's fist numbers (0.65 on soft blocks, 0.16 on stone and deepslate).
+- **Wrong tool vs fist:** a tool on a block it isn't meant for (pickaxe on a log) mines at vanilla hand speed, a little faster than our slowed fist. Should it count as a fist too?
 
 ## Bubba's World Tweaks (C8)
 - Built (`specs/world-tweaks.md`). Owner to playtest bubble and eruption frequency and the boost numbers.

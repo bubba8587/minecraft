@@ -38,9 +38,9 @@ Using the totem teleports the player to the block they are aiming at, up to 32 b
 | The side of a block | On top of that block if there is room; otherwise straight down from in front of it, onto the nearest safe ground below. |
 | The underside of a block | Straight down from under it, onto the nearest safe ground below. |
 
-A landing spot is safe when the player fits there and it has no lava, fire, campfire, powder snow, magma block, cactus, sweet berry bush or wither rose in or under it. The void is never a landing spot. Water is allowed, and the aim passes through grass, flowers and water.
+A landing spot is safe when the player fits there and it has no lava, fire, campfire, powder snow, magma block, cactus, sweet berry bush or wither rose or water in or under it. The void is never a landing spot. The aim passes through grass, flowers and water, but it never lands you in water.
 
-The player is taken off any mount first, keeps facing the same way and takes no fall damage from the jump. Like an ender pearl, each teleport deals 2.5 hearts of damage. An enderman's teleport sound and portal particles mark both ends.
+The player is taken off any mount first, keeps facing the same way and takes no fall damage from the jump. The teleport doesn't hurt. An enderman's teleport sound and portal particles mark both ends.
 
 ## Statue
 
@@ -61,3 +61,7 @@ An end stone figure with a purpur crown, an enderman's dark face and magenta eye
 - [[Endermen]]
 - [[Totem Statue]]
 - [[Bubba's Totems & Artifacts]]
+
+## Water
+
+While you hold the totem, water hurts you like it hurts an enderman: about a heart a second while you're in it. Each time it hurts, the totem tries to teleport you to dry ground within about 32 blocks. Far out at sea there may be nowhere to go, so put it away before you swim. Rain doesn't count.

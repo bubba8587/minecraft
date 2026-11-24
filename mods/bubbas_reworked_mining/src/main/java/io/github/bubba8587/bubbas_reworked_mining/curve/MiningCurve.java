@@ -6,6 +6,7 @@ import io.github.bubba8587.bubbas_reworked_mining.MiningTuning;
 import io.github.bubba8587.bubbas_reworked_mining.MiningTuning.Tier;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
@@ -62,6 +63,11 @@ public final class MiningCurve {
 		return null;
 	}
 
+	/** Whether the player is mining bare-handed: an empty hand or an item without a Tool component. */
+	public static boolean isFist(ItemStack stack) {
+		return stack.isEmpty() || !stack.has(DataComponents.TOOL);
+	}
+
 	/** Efficiency level on a stack. */
 	public static int efficiencyLevel(ItemStack stack) {
 		for (Object2IntMap.Entry<Holder<Enchantment>> entry : stack.getEnchantments().entrySet()) {
@@ -74,6 +80,9 @@ public final class MiningCurve {
 
 	/** The tool's speed on a block after the curve and Efficiency, given its vanilla speed. */
 	public static float speed(ItemStack stack, BlockState state, float vanillaSpeed) {
+		if (isFist(stack)) {
+			return vanillaSpeed * factor(MiningTuning.FIST, stack, state);
+		}
 		if (vanillaSpeed <= 1.0F) {
 			return vanillaSpeed;
 		}

@@ -27,7 +27,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * the same two goals, once, the first time they tick (goals aren't saved, so this also covers a reload). Husks don't
  * burn and are left alone. The camp's lean-to, roofed towers and underground room are the shade they find.
  *
- * <p>Also the camp leash: camp mobs that chase too far from home turn back (see {@link #brm$leash}).
+ * <p>Also the camp leash.
  */
 @Mixin(Mob.class)
 abstract class CampMemberMixin {
@@ -37,7 +37,7 @@ abstract class CampMemberMixin {
 	@Final
 	protected GoalSelector goalSelector;
 
-	/** Camp mobs walking back to their camp after chasing too far (not saved: a reload just lets them chase again). */
+	/** Camp mobs walking home after a chase. */
 	private static final Set<Mob> BRM$RETURNING = Collections.newSetFromMap(new WeakHashMap<>());
 
 	@Inject(method = "customServerAiStep", at = @At("HEAD"))
@@ -52,10 +52,7 @@ abstract class CampMemberMixin {
 		}
 	}
 
-	/**
-	 * The camp leash (owner): a camp mob that chases a player more than {@link CampTuning#LEASH_RANGE} blocks from its
-	 * home gives up, drops its target and walks home, ignoring players until it is back inside its home radius.
-	 */
+	/** Camp leash (specs/monster-camps.md). */
 	private static void brm$leash(Mob mob) {
 		BlockPos home = mob.getHomePosition();
 		double away = mob.distanceToSqr(home.getX() + 0.5, home.getY(), home.getZ() + 0.5);
@@ -65,7 +62,7 @@ abstract class CampMemberMixin {
 				return;
 			}
 			mob.setTarget(null);
-			mob.getBrain().eraseMemory(MemoryModuleType.ATTACK_TARGET); // brain mobs (piglins)
+			mob.getBrain().eraseMemory(MemoryModuleType.ATTACK_TARGET); // brain mobs
 			if (mob.tickCount % 20 == 0 || mob.getNavigation().isDone()) {
 				mob.getNavigation().moveTo(home.getX() + 0.5, home.getY(), home.getZ() + 0.5, 1.1);
 			}

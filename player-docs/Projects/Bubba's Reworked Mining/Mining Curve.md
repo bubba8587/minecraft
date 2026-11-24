@@ -32,6 +32,21 @@ Axes, shovels, hoes, and pickaxes on other blocks follow a gentler curve:
 
 Swords wear as in vanilla. Spears, shears and maces are unchanged.
 
+## Bare hands
+
+Mining by hand is slower than in vanilla, a step below wooden tools. Holding something that isn't a tool (a stick, a block, food) counts as bare hands, as in vanilla.
+
+| Block | Vanilla | Now |
+|---|---|---|
+| Oak log or planks | 3 s | about 4.7 s |
+| Dirt or sand | 0.75 s | about 1.2 s |
+| Gravel | 0.9 s | about 1.4 s |
+| Leaves | 0.3 s | 0.5 s |
+| Stone (drops nothing, as in vanilla) | 7.5 s | about 47 s |
+| Deepslate (drops nothing, as in vanilla) | 15 s | about 94 s |
+
+Other soft blocks are also about 1.5x slower by hand. Blocks that break instantly in vanilla (grass, flowers, torches, crops, saplings and so on) still break instantly. Haste still speeds up bare hands.
+
 ## Enchantments and Haste
 
 - **Efficiency** multiplies the tool's own speed: x1.5, 2.1, 2.8, 3.5 and 4.25 at levels I to V. An Efficiency V iron pickaxe beats a bare diamond one on deepslate; Efficiency V diamond is as fast as in vanilla.
