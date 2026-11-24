@@ -138,6 +138,64 @@ Charged creepers keep vanilla's suicide-bomber behavior.
 9. Sneaking means holding sneak (`isShiftKeyDown`), checked every tick during the hiss.
 10. Spawns only at night (`isDarkOutside`), above ground or in caves, as long as vanilla's darkness rule passes at the spot; every 10 s.
 
+## Biome skins
+
+Look only: every creeper wears a skin from the biome it first appeared in, recoloured from vanilla's creeper. Tree biomes take their trunk's bark colours, treeless biomes their ground block's colours. No behaviour change and no new mob. Goal (owner): near-perfect camouflage against the biome's trunk or ground, with a readable face.
+
+### Skins
+
+| Skin id | Palette source | Biomes |
+|---|---|---|
+| oak | oak log | forest, flower forest, swamp |
+| birch | birch log | birch forest, old growth birch forest |
+| spruce | spruce log | all taigas, grove, windswept forest |
+| jungle | jungle log | all jungles |
+| acacia | acacia log | all savannas |
+| dark_oak | dark oak log | dark forest |
+| mangrove | mangrove log | mangrove swamp |
+| cherry | cherry log | cherry grove |
+| pale_oak | pale oak log | pale garden |
+| poplar | poplar log | dappled forest |
+| plains | `grass_block_top`, colormap 0.8/0.4 | plains, sunflower plains |
+| meadow | `grass_block_top`, colormap 0.5/0.8 | meadow |
+| sand | sand | desert, beach |
+| red_sand | red sand | all badlands |
+| snow | snow | snowy plains, ice spikes, snowy slopes, snowy beach, frozen peaks, jagged peaks, frozen river |
+| stone | stone | stony peaks, stony shore, windswept hills, windswept gravelly hills |
+| mycelium | `mycelium_top` | mushroom fields |
+| dripstone | `dripstone_block` | dripstone caves |
+| sulfur | sulfur | sulfur caves |
+
+Everywhere else (rivers, oceans, lush caves, deep dark, the Nether, the End, modded biomes) a creeper keeps the vanilla look. Snow creepers come out almost plain white (the snow texture's own colours). Charged creepers keep the normal charge overlay on top of their skin.
+
+### How it's built
+
+- The skin is the attachment `bubbas_reworked_mobs:creeper_skin` (an Identifier) on the creeper: a persistent Fabric data attachment, saved with the entity and synced to all clients (`AttachmentSyncPredicate.all()`). The value `bubbas_reworked_mobs:vanilla` means the vanilla look. A creeper keeps its skin for life, even in another biome.
+- Picked in `ServerEntityEvents.ENTITY_LOAD` when the creeper has no skin yet, from the biome at its block position. That covers every spawn path (natural, spawner, egg, command with or without NBT, structure, conversion), because `finalizeSpawn` always runs before the entity is added, and creepers from old saves get a skin the first time they load. No mixin on `finalizeSpawn`.
+- Mapping: biome tags `data/<ns>/tags/worldgen/biome/creeper_skin/<skin>.json`. A biome in several such tags takes the first by tag id (alphabetical). Skin id = tag namespace + the path after `creeper_skin/`. Packs extend it: add biomes to `bubbas_reworked_mobs:creeper_skin/<skin>`, or add a tag `<ns>:creeper_skin/<name>` plus a texture `<ns>:textures/entity/creeper/biome/<name>.png` for a new skin.
+- Client: `CreeperRendererSkinMixin` stores the texture in the render state (`CreeperRenderStateSkinMixin`) at extract time and swaps `getTextureLocation`'s result only while it is still vanilla's `creeper.png`, so another mod that changes the creeper texture wins. `CreeperPowerLayer` (charged overlay) is untouched.
+- Code: `creeper/look/CreeperSkins.java` (main), `client/creeper/CreeperSkinState.java`, `client/mixin/CreeperRenderer{,State}SkinMixin.java`, one line in the `BubbasReworkedMobs` init.
+
+### Art method (`tools/creeper-biome-textures.py`)
+
+- Skins are vanilla's creeper recoloured pixel for pixel, no redraw (owner). Rerun the script with `--base16`/`--base32` for a new base creeper. Inputs: `--base16`, `--base32` (base creepers), `--mcsrc` (vanilla assets), `--cf32j` (CF32J zip or folder), `--sheet` (contact sheet).
+- Palettes: the log side texture for tree biomes; the ground block for treeless ones (sand, red_sand, snow, stone, mycelium_top, dripstone_block, sulfur); `grass_block_top` tinted by the grass colormap at the biome's temperature/downfall for plains (0.8/0.4) and meadow (0.5/0.8).
+- OKLch match, per creeper colour: the palette's lightness range (3rd to 97th percentile, pixel-weighted) is stretched onto the creeper body's range (0.41 to 0.89); each creeper colour takes the palette colour whose lightness is nearest its stretched lightness; cost = dL^2 + 0.04 * dC^2 in range-normalised units, so near-ties go to the palette colour with the matching relative chroma (vanilla's greyish speckles take the palette's greyest shades).
+- Exact colours only (owner): every output pixel is a colour that exists in the source texture (after the grass tint for plains and meadow), with one exception (owner): the face's clearly darkest pixels take the source texture's darkest colour blended 50 % toward black (`FACE_BLEND`). The rest of the face maps like any other pixel. The face is left out of the range statistics.
+- Dark face pixels, found by value on the head front (UV 8..16, 8..16):
+  - 16x vanilla: OKLab L below 0.405 (values 0.00 to 0.40; the rest of the face is 0.42 and up), 17 pixels: left eye (9,10) (9,11) (10,11); right eye (13,10) (13,11) (14,11); mouth top (11,12) (12,12); next row (11,13) (12,13) (13,13); full row (10,14) (11,14) (12,14) (13,14); bottom (10,15) (13,15). Owner to confirm: row 13's right pixel (13,13), L 0.40, is in; (10,13), L 0.42, is out.
+  - 32x CF32J: L below 0.395 (its eye and mouth rims are 0.40 and up), 53 pixels: eyes x 19-21 and 26-28, y 21-23 (3x3 each); mouth (22-25,25), (22-26,26), (20-27,27), (20-27,28), (20-27,29), (27,30), (27,31).
+- 32x (owner): the same recolour run on Classic Faithful 32x Jappa's own creeper (128x64) with CF32J's own log and ground textures (java-latest branch, commit 00321eab; the script's default input is the owner's CF32J-2026r21 zip, `--cf32j` overrides). Grass at 32x: CF32J's grass_block_top with vanilla's colormap tint. CF32J has no sulfur texture, so the 32x sulfur skin uses vanilla sulfur's colours on CF32J's creeper. The 16x set stays vanilla creeper plus vanilla textures.
+- Credit: `mods/bubbas_reworked_mobs/CREDITS.md` and `resourcepacks/bubbas_32x/CREDITS.md`. Before release, the Reworked Mobs Modrinth listing and player docs page need the CF32J credit and links too (`specs/textures.md` Credit).
+- Checked in game: a birch creeper peeking from behind a birch trunk, and a sand creeper against a sand wall.
+
+### Builder's choices (biome skins; owner to review)
+
+1. Poplar (new in 26.3, dappled forest) is on the trunk list.
+2. Plains and meadow get separate grass skins (different grass tints).
+3. Mixed biomes: windswept hills -> stone (mostly grass and stone, few trees); windswept forest -> spruce; swamp -> oak; wooded badlands -> red sand; frozen river -> snow; lush caves and deep dark stay vanilla.
+4. `ENTITY_LOAD` instead of a `finalizeSpawn` mixin (same result, also covers old saves and NBT summons).
+
 ## Test world station
 
 The creeper grove (`specs/testworld.md`, Layout).
@@ -145,6 +203,7 @@ The creeper grove (`specs/testworld.md`, Layout).
 ## Milestone test objectives
 
 - **Core** (every build, `ReworkedMobsCoreGameTest`): `creeperSprintingNearbyStartlesWalkingDoesNot`.
+- **Core** (`ReworkedMobsCoreGameTest`): `biomeCreepersKeepTheirSkins`: creepers spawned after `fillbiome` to birch forest, desert and nether wastes get birch, sand and vanilla, and keep them after a save/load round trip.
 - **`CreeperGameTest`** (milestone):
   - `hitsFillTheMeterAndItDrains`;
   - `fullMeterHissesAndDefuses` (sneak, then backing out of range; then a hit during the hiss means sneaking no longer saves the player);
@@ -154,6 +213,7 @@ The creeper grove (`specs/testworld.md`, Layout).
   - `hidesWhenLookedAt` (behind a wall it walks to a half-hidden spot with its eyes in view; peekaboo: hidden when looked at, half out again when looked away);
   - `oneWatcherSpawnsBehindCoverOutOfView` (spawns out of sight, outside the view cone, 15-21 blocks away, watching; one per player; vanilla random spawns blocked). It failed once in about 12 runs early on and never again (maxTicks 200); watch it.
 - **`CreeperClientGameTest`** (client part `creepers`): screenshots `creeper-peek` (from the watched armor stand: half behind a one-log tree), `creeper-peek-side`, `creeper-hidden` (player looking at it), `creeper-caught` (looked away, then straight back), `creeper-startle-bar` (the `show_meters` bar after two hits).
+- **`BiomeCreepersClientGameTest`** (client part `biomecreepers`): every skin in a row, four per shot left to right, plus charged vanilla and charged birch, a birch creeper half behind a birch trunk and a sand creeper against sand, at 16x and 32x.
 - **Not yet tested (objectives):**
   - with cover 18 blocks off and none nearer, it walks there (far cover);
   - in the open it holds 12 and edges back while looked at;
@@ -170,3 +230,4 @@ The creeper grove (`specs/testworld.md`, Layout).
 
 - Owner to playtest the numbers (all in `CreeperTuning`) and C5's open-ground distances.
 - Owner to review the 10 builder's choices above.
+- Owner to review the 4 biome skin choices and confirm the 17 dark face pixels (Biome skins).

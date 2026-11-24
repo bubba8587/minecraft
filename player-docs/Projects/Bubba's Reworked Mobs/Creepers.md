@@ -7,6 +7,7 @@
 > |---|---|
 > | **Behavior** | Watches, explodes when startled |
 > | **Spawning** | One watcher per player at night |
+> | **Skins** | One per biome, kept for life |
 > | **Charged creepers** | Unchanged |
 
 A **creeper** in [[Bubba's Reworked Mobs]] is a nervous watcher rather than a hunter. It follows moving things with its eyes, hides half behind cover to look at them, and explodes only when it is startled too often.
@@ -58,6 +59,39 @@ A creeper with Blindness senses nothing: it is not startled by movement or hits,
 ### Charged creepers
 
 Charged creepers keep the normal behavior: they hunt players and explode next to them.
+
+## Biome skins
+
+Every creeper wears a skin from the biome it first appeared in. In biomes with trees it takes the colours of that tree's bark; in biomes without trees, the colours of the ground. The skin changes only the creeper's look, not its behavior.
+
+| Skin | Biomes |
+|---|---|
+| Oak | Forest, flower forest, swamp |
+| Birch | Birch forest, old growth birch forest |
+| Spruce | All taigas, grove, windswept forest |
+| Jungle | All jungles |
+| Acacia | All savannas |
+| Dark oak | Dark forest |
+| Mangrove | Mangrove swamp |
+| Cherry | Cherry grove |
+| Pale oak | Pale garden |
+| Poplar | Dappled forest |
+| Plains grass | Plains, sunflower plains |
+| Meadow grass | Meadow |
+| Sand | Desert, beach |
+| Red sand | All badlands |
+| Snow | Snowy plains, ice spikes, snowy slopes, snowy beach, frozen peaks, jagged peaks, frozen river |
+| Stone | Stony peaks, stony shore, windswept hills, windswept gravelly hills |
+| Mycelium | Mushroom fields |
+| Dripstone | Dripstone caves |
+| Sulfur | Sulfur caves |
+
+- Everywhere else (rivers, oceans, lush caves, the deep dark, the Nether, the End and biomes from other mods) creepers keep the normal look.
+- A creeper keeps its skin for life, even if it walks into another biome. Creepers in worlds made before the mod was added get a skin from where they stand the first time they load.
+- Snow creepers are almost plain white.
+- Charged creepers keep the normal blue charge glow on top of their skin.
+- The "Bubba's Mods 32x" resource pack has 32x versions of every skin.
+- Data packs can add biomes to a skin through the biome tag `bubbas_reworked_mobs:creeper_skin/<skin>`, or make a new skin with a tag `<namespace>:creeper_skin/<name>` and a texture `<namespace>:textures/entity/creeper/biome/<name>.png`.
 
 ## Commands
 
