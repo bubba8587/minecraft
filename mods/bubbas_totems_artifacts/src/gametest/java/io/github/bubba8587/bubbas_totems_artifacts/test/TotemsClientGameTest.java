@@ -85,7 +85,24 @@ public class TotemsClientGameTest implements FabricClientGameTest {
 			context.runOnClient(mc -> mc.player.getInventory().setSelectedSlot(0));
 			context.waitTicks(10);
 			context.takeScreenshot("totems-hotbar-32x");
+			// The rest beside vanilla's Totem of Undying, 32x then 16x.
+			Item[] rest = {ModItems.TOTEM_OF_WARDING, ModItems.TOTEM_OF_SEEKING, ModItems.TOTEM_OF_NORTH_WIND, Items.TOTEM_OF_UNDYING};
+			server.runOnServer(s -> {
+				ServerPlayer p = s.getPlayerList().getPlayers().getFirst();
+				for (int i = 0; i < totems.length; i++) {
+					p.getInventory().setItem(i + 1, i < rest.length ? new ItemStack(rest[i]) : ItemStack.EMPTY);
+				}
+			});
+			context.waitTicks(10);
+			context.takeScreenshot("totems-hotbar2-32x");
 			setPack(context, false);
+			context.takeScreenshot("totems-hotbar2");
+			server.runOnServer(s -> {
+				ServerPlayer p = s.getPlayerList().getPlayers().getFirst();
+				for (int i = 0; i < totems.length; i++) {
+					p.getInventory().setItem(i + 1, new ItemStack(totems[i]));
+				}
+			});
 
 			// --- Beginning: the revert puff on the blocks a pulse changes (Reworked Mobs only) -----------------
 			if (net.fabricmc.loader.api.FabricLoader.getInstance().isModLoaded("bubbas_reworked_mobs")) {

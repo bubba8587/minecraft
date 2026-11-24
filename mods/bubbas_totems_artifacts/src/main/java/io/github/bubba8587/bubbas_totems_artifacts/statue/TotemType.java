@@ -6,6 +6,7 @@ import java.util.function.Supplier;
 import io.github.bubba8587.bubbas_totems_artifacts.registry.ModItems;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 
 /**
  * Which totem a {@link TotemStatueBlock} shows (its {@code totem} block state property). Add a constant for each new
@@ -24,7 +25,9 @@ public enum TotemType implements StringRepresentable {
 	END("end", () -> ModItems.TOTEM_OF_THE_END),
 	HERDING("herding", () -> ModItems.TOTEM_OF_HERDING),
 	CLEAR_SKIES("clear_skies", () -> ModItems.TOTEM_OF_CLEAR_SKIES),
-	NORTH_WIND("north_wind", () -> ModItems.TOTEM_OF_NORTH_WIND);
+	NORTH_WIND("north_wind", () -> ModItems.TOTEM_OF_NORTH_WIND),
+	// Vanilla's Totem of Undying: decorative, placed through UndyingStatue.
+	UNDYING("undying", () -> Items.TOTEM_OF_UNDYING);
 
 	private final String name;
 	private final Supplier<Item> item;

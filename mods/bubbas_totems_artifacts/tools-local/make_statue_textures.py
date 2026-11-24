@@ -6,7 +6,7 @@ in docs/art-todo.md for the owner to redo or tweak; never AI-generated).
 
   python mods/bubbas_totems_artifacts/tools-local/make_statue_textures.py
 
-The statue is the Totem of Warding item (tools/warding-textures.py) carved life-size in soul stone and set on a polished
+The statue is the Totem of Warding item (tools/warding-textures.py) cast life-size in silver and set on a polished
 deepslate plinth: a robed figure with stub arms held out, a deep hood with two soul-fire eyes in its shadow, a ward
 rune glowing on its chest, and a soul flame burning from the crown of the hood. Eyes, rune and flame are small elements
 with light_emission, so they glow at night like the item's. Fits 10x10 and 16 high (TotemStatueBlock.SHAPE).
@@ -31,9 +31,9 @@ MOD = "bubbas_totems_artifacts"
 # Polished deepslate, vanilla's own ramp (block/polished_deepslate.png).
 DEEP = {"0": (36, 36, 36), "1": (45, 45, 45), "2": (56, 55, 55), "3": (65, 65, 65), "4": (75, 76, 79),
 	"5": (88, 88, 88), "6": (110, 110, 110)}
-# Soul stone, the item's ramp (tools/warding-textures.py), on letters here: o (darkest) .. u (lightest).
-SOUL = {"o": (24, 26, 38), "p": (40, 46, 64), "q": (57, 66, 88), "r": (78, 90, 116), "s": (104, 118, 146),
-	"t": (136, 150, 176), "u": (170, 182, 204)}
+# Silver, the item's ramp (tools/warding-textures.py), on letters here: o (darkest) .. u (lightest).
+SOUL = {"o": (30, 32, 42), "p": (58, 62, 76), "q": (96, 102, 118), "r": (138, 144, 158), "s": (176, 182, 194),
+	"t": (210, 214, 224), "u": (240, 242, 248)}
 # Soul fire, vanilla's soul fire ramp.
 FIRE = {"a": (1, 128, 133), "b": (10, 206, 212), "c": (106, 247, 252), "d": (207, 253, 255)}
 PALETTE = {**DEEP, **SOUL, **FIRE}
@@ -231,10 +231,10 @@ def _statues():
 	"""name -> (palette, materials, grain, grid, topper rows (4 x 6) or None, glowing parts)."""
 	defs = {}
 	# Keeping: purple obsidian, gold eyes, a gold-bound chest held to the chest.
-	g = _shade_grid(21); _eyes(g, "c"); _put(g, R_EMBLEM, ["abb", "bdb", "aaa"])
+	g = _shade_grid(21); _eyes(g, "X"); _put(g, R_EMBLEM, ["abb", "bdb", "aaa"])
 	defs["keeping"] = (TT.KEEPING_PAL, TT.KEEPING_MAT, ("stone",), g, None, [])
 	# Gathering: copper with patina, patina eyes, a patina ring (a pull); hands raised to gather.
-	g = _shade_grid(22); _eyes(g, "e"); _put(g, R_EMBLEM, ["qpq", "p4p", "qpq"])
+	g = _shade_grid(22); _eyes(g, "X"); _put(g, R_EMBLEM, ["qpq", "p4p", "qpq"])
 	defs["gathering"] = (TT.GATHERING_PAL, TT.GATHERING_MAT, ("metal",), g, None, [])
 	# Fortification: iron, a flat-topped helm with a glowing visor slit, an obsidian shield on the chest.
 	g = _shade_grid(23)
@@ -243,14 +243,14 @@ def _statues():
 	_put(g, R_EMBLEM, ["tut", "sts", "tst"])
 	defs["fortification"] = (TT.FORT_PAL, TT.FORT_MAT, ("metal",), g, ["6655", "4433", "4433", "5554", "5444", "4433"], ["visor"])
 	# Growth: oak wood, green eyes, a sprout on the chest, a leafy crown with a pink blossom.
-	g = _shade_grid(24); _eyes(g, "n"); _put(g, R_EMBLEM, ["n4n", "4m4", "4l4"])
+	g = _shade_grid(24); _eyes(g, "X"); _put(g, R_EMBLEM, ["n4n", "4m4", "4l4"])
 	defs["growth"] = (TT.GROWTH_PAL, TT.GROWTH_MAT, ("wood", "leaf"), g, ["mnmn", "lmml", "lkyl", "mnmm", "nmnm", "mmnm"], [])
 	# Seeking: lapis, gold eyes, a compass dial on the chest (needle to the north), a gold-rimmed hood band.
 	g = _shade_grid(25); _eyes(g, "c"); _put(g, R_EMBLEM, ["bRb", "bwb", "bbb"])
 	defs["seeking"] = (dict(TT.SEEK_PAL, R=TT.NEEDLE_RED), dict(TT.SEEK_MAT, R="dial"), ("stone",), g,
 		["cbba", "bbaa", "cbba", "bbaa", "cbba", "bbaa"], [])
 	# The Beginning: weathered stone, purple ender eyes (glowing), strata on the chest, a cap of grass.
-	g = _shade_grid(26); _eyes(g, "e"); _put(g, R_EMBLEM, ["HhH", "dDd", "343"])
+	g = _shade_grid(26); _eyes(g, "X"); _put(g, R_EMBLEM, ["HhH", "dDd", "343"])
 	defs["beginning"] = (TT.BEGIN_PAL, TT.BEGIN_MAT, ("stone", "grass"), g, ["HHhH", "hghh", "hhhh", "dDdD", "DdDd", "dddD"], ["eyes"])
 	# The End: end stone, an enderman's black face with magenta eyes (glowing), an ender pearl, a purpur crown.
 	g = _shade_grid(27)
@@ -258,20 +258,33 @@ def _statues():
 	_put(g, R_EMBLEM, ["tTt", "TwT", "tTt"])
 	defs["end"] = (TT.END_PAL, TT.END_MAT, ("stone",), g, ["qqqq", "pppp", "pppp", "pppp", "pqqp", "pppp"], ["eyes"])
 	# Herding: spruce, a woolly ram's head (wool cap, curled horns either side), a gold bell on the chest.
-	g = _shade_grid(28); _eyes(g, "e"); _put(g, R_EMBLEM, ["bBb", "BcB", "aba"])
+	g = _shade_grid(28); _eyes(g, "X"); _put(g, R_EMBLEM, ["bBb", "BcB", "aba"])
 	defs["herding"] = (TT.HERD_PAL, TT.HERD_MAT, ("wood", "wool"), g, ["WWWW", "WwWW", "WWwW", "HHHH", "hhhh", "HHHH"], [])
 	# Clear Skies: pale calcite, blue eyes, blue sky with the sun on the chest, a gold sun crown of rays.
-	g = _shade_grid(29); _eyes(g, "k"); _put(g, R_EMBLEM, ["sSs", "SYS", "sSs"])
+	g = _shade_grid(29); _eyes(g, "X"); _put(g, R_EMBLEM, ["sSs", "SYS", "sSs"])
 	defs["clear_skies"] = (TT.SKY_PAL, TT.SKY_MAT, ("stone",), g, ["YYYY", "YYYY", "yyyy", "yyyy", "yYYy", "yyyy"], [])
 	# North Wind: packed ice, deep blue eyes, puffed cheeks and a blowing mouth, a snowflake on the chest, an icicle crown
 	# swept back by the wind.
-	g = _shade_grid(30); _eyes(g, "k"); _put(g, R_EMBLEM, ["bFb", "FfF", "bFb"])
+	g = _shade_grid(30); _eyes(g, "X"); _put(g, R_EMBLEM, ["bFb", "FfF", "bFb"])
 	g[EYE_ROW + 1][0] = g[EYE_ROW + 1][1] = g[EYE_ROW + 1][4] = g[EYE_ROW + 1][5] = "6"; g[EYE_ROW + 2][2] = "m"; g[EYE_ROW + 2][3] = "m"
 	defs["north_wind"] = (TT.NORTH_PAL, TT.NORTH_MAT, ("ice",), g, ["IIII", "IIII", "iiii", "iiii", "iIIi", "iiii"], [])
+	belts = {"keeping": "XZ", "gathering": "XZ", "fortification": "ut", "growth": "XZ", "seeking": "cb", "beginning": "XZ",
+		"end": "XZ", "herding": "XZ", "clear_skies": "Yy", "north_wind": "XZ"}
 	for name, (pal, mat, grain, grid, topper, glow) in defs.items():
 		if topper:
 			_put(grid, R_TOPPER, topper)
+		_belt(grid, belts[name])
 	return defs
+
+
+def _belt(grid, gem):
+	"""The bottom row of the robe is a dark belt, its gem at the front."""
+	for region in (R_BODY_FRONT, R_BODY_SIDE, R_BODY_BACK):
+		u0, v0, u1, v1 = region
+		for u in range(u0, u1):
+			grid[v1 - 1][u] = "1"
+	grid[R_BODY_FRONT[3] - 1][2] = gem[0]
+	grid[R_BODY_FRONT[3] - 1][3] = gem[1]
 
 
 def _uv(region):
@@ -365,11 +378,12 @@ def statue_model(name, glow):
 	}
 
 
-ORDER = ["warding", "keeping", "gathering", "fortification", "growth", "seeking", "beginning", "end", "herding", "clear_skies", "north_wind"]
+ORDER = ["warding", "keeping", "gathering", "fortification", "growth", "seeking", "beginning", "end", "herding", "clear_skies", "north_wind",
+	"undying"]
 ITEMS = {"warding": "totem_of_warding", "keeping": "totem_of_keeping", "gathering": "totem_of_gathering",
 	"fortification": "totem_of_fortification", "growth": "totem_of_growth", "seeking": "totem_of_seeking",
 	"beginning": "totem_of_the_beginning", "end": "totem_of_the_end", "herding": "totem_of_herding",
-	"clear_skies": "totem_of_clear_skies", "north_wind": "totem_of_north_wind"}
+	"clear_skies": "totem_of_clear_skies", "north_wind": "totem_of_north_wind", "undying": "minecraft:totem_of_undying"}
 
 
 def write_others():
@@ -395,7 +409,8 @@ def write_others():
 	# Loot: each statue drops its own totem (26.3 format: an entry's "condition" object; match_block on the state).
 	entries = []
 	for name in ORDER:
-		entries.append({"type": "minecraft:item", "name": f"{MOD}:{ITEMS[name]}",
+		item = ITEMS[name] if ":" in ITEMS[name] else f"{MOD}:{ITEMS[name]}"
+		entries.append({"type": "minecraft:item", "name": item,
 			"condition": {"type": "minecraft:all_of", "terms": [{"type": "minecraft:survives_explosion"},
 				{"type": "minecraft:match_block", "blocks": f"{MOD}:totem_statue", "state": {"totem": name}}]}})
 	loot = {"type": "minecraft:block", "pools": [{"entries": [{"type": "minecraft:alternatives", "children": entries}], "rolls": 1}],
@@ -404,6 +419,76 @@ def write_others():
 	print("wrote blockstate and loot")
 
 
+# --- the Totem of Undying's statue: vanilla's item carved as a chunky illager idol in gold, emerald eyes ------------
+# Vanilla's own item colours (textures/item/totem_of_undying.png), darkest to lightest, and its emerald.
+UNDYING_PAL = {"o": (133, 64, 15), "1": (160, 91, 35), "2": (197, 135, 66), "3": (209, 167, 93), "4": (234, 219, 132),
+	"5": (248, 238, 165), "6": (253, 251, 238), "g": (65, 230, 127), "h": (0, 187, 70)}
+UNDYING_MAT = {**{k: "gold" for k in "o123456"}, "g": "gem", "h": "gem"}
+# Regions: head front (0,0)-(8,6) with a unibrow, 2x2 emerald eyes either side of the nose; head side (8,0)-(16,6), also
+# its back; head top (0,6)-(8,14), also its bottom; body front (8,6)-(14,11) with a belt and emerald; body back
+# (8,11)-(14,16), its first four columns the body side; nose (14,6)-(16,9); arm band side (14,9)-(16,11); arm band
+# front and top (0,14)-(8,16).
+UNDYING_FIG = check([
+	"45555554" + "55555554",
+	"43333332" + "44444433",
+	"36g336g3" + "44443333",
+	"3gh44gh2" + "43333332",
+	"33444332" + "33333222",
+	"22333221" + "22222211",
+	"66555554" + "433332" + "56",
+	"65555543" + "433332" + "45",
+	"55555443" + "433322" + "34",
+	"55554443" + "332222" + "54",
+	"55544433" + "11gh11" + "32",
+	"55444333" + "433332" + "33",
+	"54443332" + "433322" + "33",
+	"44433322" + "332222" + "33",
+	"56555543" + "322221" + "33",
+	"44433322" + "111111" + "33",
+])
+
+
+def undying_model():
+	P, F = "#plinth", "#figure"
+	side4 = lambda uv: {d: face(uv, P) for d in ("north", "east", "south", "west")}
+	head_side = face([8, 0, 16, 6], F)
+	band = face([0, 14, 8, 16], F)
+	el = [
+		box([3, 0, 3], [13, 3, 13], {**side4([0, 0, 10, 3]), "up": face([0, 3, 10, 13], P), "down": face([0, 3, 10, 13], P, cullface="down")}),
+		box([4, 3, 4], [12, 4, 12], {**side4([0, 13, 8, 14]), "up": face([1, 4, 9, 12], P)}),
+		# Robe.
+		box([5, 4, 6], [11, 9, 10], {"north": face([8, 6, 14, 11], F), "south": face([8, 11, 14, 16], F),
+			"east": face([8, 11, 12, 16], F), "west": face([8, 11, 12, 16], F)}),
+		# Crossed arms, a band across the chest standing out at the sides.
+		box([4, 6, 5], [12, 8, 7], {"north": band, "south": band, "up": band, "down": band,
+			"east": face([14, 9, 16, 11], F), "west": face([14, 9, 16, 11], F)}),
+		# Head.
+		box([4, 9, 4], [12, 15, 12], {"north": face([0, 0, 8, 6], F), "south": head_side, "east": head_side, "west": head_side,
+			"up": face([0, 6, 8, 14], F), "down": face([0, 6, 8, 14], F)}),
+		# The illager's long nose.
+		box([7, 9, 3], [9, 12, 4], {"north": face([14, 6, 16, 9], F), "east": face([14, 6, 15, 9], F), "west": face([14, 6, 15, 9], F),
+			"up": face([14, 6, 16, 7], F), "down": face([14, 8, 16, 9], F)}),
+	]
+	return {
+		"parent": "minecraft:block/block",
+		"textures": {"particle": f"{MOD}:block/totem_statue_plinth", "plinth": f"{MOD}:block/totem_statue_plinth",
+			"figure": f"{MOD}:block/totem_statue_undying"},
+		"elements": el,
+	}
+
+
+def write_undying():
+	for s, base in ((1, RES / f"assets/{MOD}"), (2, RES / f"resourcepacks/{MOD}_32x/assets/{MOD}")):
+		out = base / "textures/block"
+		img = render(UNDYING_FIG, UNDYING_PAL) if s == 1 else render32(UNDYING_FIG, UNDYING_PAL, UNDYING_MAT, smooth=False, bevel=0,
+			grain=("gold",), grain_amount=0.03, seed=41)
+		img.save(out / "totem_statue_undying.png")
+	text = json.dumps(undying_model(), indent="\t")
+	(RES / f"assets/{MOD}/models/block/totem_statue_undying.json").write_text(text + "\n", encoding="utf-8")
+	print("wrote statue undying")
+
+
 if __name__ == "__main__":
 	main()
 	write_others()
+	write_undying()

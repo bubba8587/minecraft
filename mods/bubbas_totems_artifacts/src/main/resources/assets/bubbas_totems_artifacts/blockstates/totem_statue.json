@@ -164,6 +164,21 @@
 		"facing=west,totem=north_wind": {
 			"model": "bubbas_totems_artifacts:block/totem_statue_north_wind",
 			"y": 270
+		},
+		"facing=north,totem=undying": {
+			"model": "bubbas_totems_artifacts:block/totem_statue_undying"
+		},
+		"facing=east,totem=undying": {
+			"model": "bubbas_totems_artifacts:block/totem_statue_undying",
+			"y": 90
+		},
+		"facing=south,totem=undying": {
+			"model": "bubbas_totems_artifacts:block/totem_statue_undying",
+			"y": 180
+		},
+		"facing=west,totem=undying": {
+			"model": "bubbas_totems_artifacts:block/totem_statue_undying",
+			"y": 270
 		}
 	}
 }

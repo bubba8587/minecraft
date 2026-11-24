@@ -41,8 +41,8 @@ public class StatuesClientGameTest implements FabricClientGameTest {
 			server.runCommand("gamerule advance_time false");
 			server.runCommand("weather clear");
 			server.runCommand("gamemode spectator @p");
-			server.runCommand("fill %d %d %d %d %d %d minecraft:air".formatted(x - 10, y, z - 6, x + 12, y + 4, z + 8));
-			server.runCommand("fill %d %d %d %d %d %d minecraft:smooth_stone".formatted(x - 10, y - 1, z - 6, x + 12, y - 1, z + 8));
+			server.runCommand("fill %d %d %d %d %d %d minecraft:air".formatted(x - 10, y, z - 6, x + 14, y + 4, z + 8));
+			server.runCommand("fill %d %d %d %d %d %d minecraft:smooth_stone".formatted(x - 10, y - 1, z - 6, x + 14, y - 1, z + 8));
 			TotemType[] types = TotemType.values();
 			for (int i = 0; i < types.length; i++) {
 				server.runCommand("setblock %d %d %d bubbas_totems_artifacts:totem_statue[facing=south,totem=%s]".formatted(
@@ -58,7 +58,7 @@ public class StatuesClientGameTest implements FabricClientGameTest {
 
 	private static void shots(ClientGameTestContext context, TestServerContext server, int x, int y, int z, String suffix) {
 		server.runCommand("time set noon");
-		tp(context, server, x + 1.5, y + 1.0, z + 7.5, 180, 15);
+		tp(context, server, x + 2.5, y + 1.0, z + 8.5, 180, 15);
 		context.takeScreenshot("statues-row" + suffix);
 		// Close up, two at a time
 		for (int pair = 0; pair < 6; pair++) {

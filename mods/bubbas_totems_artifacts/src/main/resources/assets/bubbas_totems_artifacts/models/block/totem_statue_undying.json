@@ -1,0 +1,383 @@
+{
+	"parent": "minecraft:block/block",
+	"textures": {
+		"particle": "bubbas_totems_artifacts:block/totem_statue_plinth",
+		"plinth": "bubbas_totems_artifacts:block/totem_statue_plinth",
+		"figure": "bubbas_totems_artifacts:block/totem_statue_undying"
+	},
+	"elements": [
+		{
+			"from": [
+				3,
+				0,
+				3
+			],
+			"to": [
+				13,
+				3,
+				13
+			],
+			"faces": {
+				"north": {
+					"uv": [
+						0,
+						0,
+						10,
+						3
+					],
+					"texture": "#plinth"
+				},
+				"east": {
+					"uv": [
+						0,
+						0,
+						10,
+						3
+					],
+					"texture": "#plinth"
+				},
+				"south": {
+					"uv": [
+						0,
+						0,
+						10,
+						3
+					],
+					"texture": "#plinth"
+				},
+				"west": {
+					"uv": [
+						0,
+						0,
+						10,
+						3
+					],
+					"texture": "#plinth"
+				},
+				"up": {
+					"uv": [
+						0,
+						3,
+						10,
+						13
+					],
+					"texture": "#plinth"
+				},
+				"down": {
+					"uv": [
+						0,
+						3,
+						10,
+						13
+					],
+					"texture": "#plinth",
+					"cullface": "down"
+				}
+			}
+		},
+		{
+			"from": [
+				4,
+				3,
+				4
+			],
+			"to": [
+				12,
+				4,
+				12
+			],
+			"faces": {
+				"north": {
+					"uv": [
+						0,
+						13,
+						8,
+						14
+					],
+					"texture": "#plinth"
+				},
+				"east": {
+					"uv": [
+						0,
+						13,
+						8,
+						14
+					],
+					"texture": "#plinth"
+				},
+				"south": {
+					"uv": [
+						0,
+						13,
+						8,
+						14
+					],
+					"texture": "#plinth"
+				},
+				"west": {
+					"uv": [
+						0,
+						13,
+						8,
+						14
+					],
+					"texture": "#plinth"
+				},
+				"up": {
+					"uv": [
+						1,
+						4,
+						9,
+						12
+					],
+					"texture": "#plinth"
+				}
+			}
+		},
+		{
+			"from": [
+				5,
+				4,
+				6
+			],
+			"to": [
+				11,
+				9,
+				10
+			],
+			"faces": {
+				"north": {
+					"uv": [
+						8,
+						6,
+						14,
+						11
+					],
+					"texture": "#figure"
+				},
+				"south": {
+					"uv": [
+						8,
+						11,
+						14,
+						16
+					],
+					"texture": "#figure"
+				},
+				"east": {
+					"uv": [
+						8,
+						11,
+						12,
+						16
+					],
+					"texture": "#figure"
+				},
+				"west": {
+					"uv": [
+						8,
+						11,
+						12,
+						16
+					],
+					"texture": "#figure"
+				}
+			}
+		},
+		{
+			"from": [
+				4,
+				6,
+				5
+			],
+			"to": [
+				12,
+				8,
+				7
+			],
+			"faces": {
+				"north": {
+					"uv": [
+						0,
+						14,
+						8,
+						16
+					],
+					"texture": "#figure"
+				},
+				"south": {
+					"uv": [
+						0,
+						14,
+						8,
+						16
+					],
+					"texture": "#figure"
+				},
+				"up": {
+					"uv": [
+						0,
+						14,
+						8,
+						16
+					],
+					"texture": "#figure"
+				},
+				"down": {
+					"uv": [
+						0,
+						14,
+						8,
+						16
+					],
+					"texture": "#figure"
+				},
+				"east": {
+					"uv": [
+						14,
+						9,
+						16,
+						11
+					],
+					"texture": "#figure"
+				},
+				"west": {
+					"uv": [
+						14,
+						9,
+						16,
+						11
+					],
+					"texture": "#figure"
+				}
+			}
+		},
+		{
+			"from": [
+				4,
+				9,
+				4
+			],
+			"to": [
+				12,
+				15,
+				12
+			],
+			"faces": {
+				"north": {
+					"uv": [
+						0,
+						0,
+						8,
+						6
+					],
+					"texture": "#figure"
+				},
+				"south": {
+					"uv": [
+						8,
+						0,
+						16,
+						6
+					],
+					"texture": "#figure"
+				},
+				"east": {
+					"uv": [
+						8,
+						0,
+						16,
+						6
+					],
+					"texture": "#figure"
+				},
+				"west": {
+					"uv": [
+						8,
+						0,
+						16,
+						6
+					],
+					"texture": "#figure"
+				},
+				"up": {
+					"uv": [
+						0,
+						6,
+						8,
+						14
+					],
+					"texture": "#figure"
+				},
+				"down": {
+					"uv": [
+						0,
+						6,
+						8,
+						14
+					],
+					"texture": "#figure"
+				}
+			}
+		},
+		{
+			"from": [
+				7,
+				9,
+				3
+			],
+			"to": [
+				9,
+				12,
+				4
+			],
+			"faces": {
+				"north": {
+					"uv": [
+						14,
+						6,
+						16,
+						9
+					],
+					"texture": "#figure"
+				},
+				"east": {
+					"uv": [
+						14,
+						6,
+						15,
+						9
+					],
+					"texture": "#figure"
+				},
+				"west": {
+					"uv": [
+						14,
+						6,
+						15,
+						9
+					],
+					"texture": "#figure"
+				},
+				"up": {
+					"uv": [
+						14,
+						6,
+						16,
+						7
+					],
+					"texture": "#figure"
+				},
+				"down": {
+					"uv": [
+						14,
+						8,
+						16,
+						9
+					],
+					"texture": "#figure"
+				}
+			}
+		}
+	]
+}
