@@ -76,13 +76,13 @@ public class MapsClientGameTest implements FabricClientGameTest {
 						var d = decorations.decorations().values().iterator().next();
 						var site = io.github.bubba8587.bubbas_reworked_mobs.factory.FabricatorSites.nearest(level,
 								net.minecraft.core.BlockPos.containing(d.x(), 0, d.z()), 400);
-						fabricator = site == null ? " (no Fabricator near the X)"
+						fabricator = site == null || Math.hypot(site.pad().getX() - d.x(), site.pad().getZ() - d.z()) > 1.5 ? " (no Fabricator at the X)"
 								: " (Fabricator " + Math.round(Math.hypot(site.pad().getX() - d.x(), site.pad().getZ() - d.z())) + " blocks from the X)";
 					}
 					return map.getHoverName().getString() + " -> " + target + " for " + offer.getCostA().getCount() + " emeralds" + fabricator;
 				});
 				System.out.println("[maps] " + trade + ": " + result);
-				if (result.startsWith("missing") || result.startsWith("no offer") || result.contains("no Fabricator near")) {
+				if (result.startsWith("missing") || result.startsWith("no offer") || result.contains("no Fabricator at")) {
 					throw new AssertionError("trade " + trade + ": " + result);
 				}
 			}

@@ -79,6 +79,7 @@ public final class Fabricators {
 
 	public static void initialize() {
 		Registry.register(BuiltInRegistries.FEATURE_TYPE, BubbasReworkedMobs.id("ancient_fabricator"), FabricatorFeature.CODEC);
+		Registry.register(BuiltInRegistries.LOOT_FUNCTION_TYPE, BubbasReworkedMobs.id("fabricator_map"), FabricatorMapFunction.MAP_CODEC);
 		BiomeModifications.addFeature(BiomeSelectors.foundInOverworld(), GenerationStep.Decoration.TOP_LAYER_MODIFICATION, FEATURE);
 		ServerTickEvents.END_LEVEL_TICK.register(Fabricators::tick);
 		PlayerBlockBreakEvents.AFTER.register((world, player, pos, state, blockEntity) -> {

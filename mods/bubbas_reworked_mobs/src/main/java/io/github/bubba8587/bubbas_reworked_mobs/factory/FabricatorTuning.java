@@ -50,4 +50,7 @@ public final class FabricatorTuning {
 
 	private FabricatorTuning() {
 	}
+	/** Fabricator Explorer Map: how far it looks for a Fabricator, and its zoom (vanilla explorer maps use 2). */
+	public static final int MAP_SEARCH_RADIUS = 3000;
+	public static final byte MAP_ZOOM = 2;
 }

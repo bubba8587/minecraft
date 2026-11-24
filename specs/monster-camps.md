@@ -66,17 +66,17 @@ Owner's design (2026-11-22), building on the earlier idea in `docs/research/camp
 - **Cartographers** sell three new explorer maps (a compass plus emeralds, like vanilla's):
   - **Graveyard Explorer Map** (journeyman, level 2): 8 emeralds, marks the nearest crypt yard with a red X.
   - **Monster Camp Explorer Map** (journeyman, level 2): 8 emeralds, marks the nearest camp with a white X.
-  - **Fabricator Explorer Map** (expert, level 4): 20 emeralds, marks the **ancient city** of the nearest Ancient Fabricator; the Fabricator itself is about **150 blocks** from the X (every natural Fabricator sits that far from its city).
+  - **Fabricator Explorer Map** (expert, level 4): 20 emeralds, marks the nearest **Ancient Fabricator** itself (its teleporter pad), within 3000 blocks.
 - Fabricator office chests hold **no** Fabricator Explorer Map (owner, 2026-11-23: removed; the map is only sold by cartographers).
 - They join vanilla's trade pools for those levels (so a cartographer offers them now and then among its usual trades).
 
 #### The Fabricator map's X
 
-- The Fabricator map marks the Fabricator's **ancient city** for now: vanilla explorer maps only find structures, and Fabricators are placed features. The owner chose (2026-11-22) to make Fabricators real structures with their own placement grid (`specs/mob-factory.md` "Fabricators as real structures"); then the map's destination tag `#bubbas_reworked_mobs:on_fabricator_maps` switches from `minecraft:ancient_city` to the Fabricator structure, a one-line data change.
+- The Fabricator map is made by our own item modifier `bubbas_reworked_mobs:fabricator_map` (`factory/FabricatorMapFunction`, owner 2026-11-23: the city X was wrong): it finds the site with `FabricatorSites.nearest` (as `ancient_fabricator locate` does; `FabricatorTuning.MAP_SEARCH_RADIUS` 3000), then does what vanilla's `exploration_map` does (`MapItem.applyNewSavedData`, zoom 2, `renderBiomePreviewMap`, a trial-chambers X on the pad). The `on_fabricator_maps` tag is gone. `MapsClientGameTest` checks the X is on a Fabricator's pad.
 
 #### Spec facts
 
-- All data, vanilla systems: structure tags `bubbas_reworked_mobs:on_graveyard_maps` (crypt_yard), `on_camp_maps` (monster_camp), `on_fabricator_maps` (minecraft:ancient_city); villager trades `data/bubbas_reworked_mobs/villager_trade/cartographer/{graveyard,camp,fabricator}_map.json` (vanilla `exploration_map` + `filtered` on map id, `filled_map` with an `item_name`); added to `#minecraft:cartographer/level_2` and `level_4` (`replace: false`). Map names in the lang file. (26.3 has no map colour component, so the maps keep the default look.)
+- All data, vanilla systems: structure tags `bubbas_reworked_mobs:on_graveyard_maps` (crypt_yard), `on_camp_maps` (monster_camp); villager trades `data/bubbas_reworked_mobs/villager_trade/cartographer/{graveyard,camp,fabricator}_map.json` (vanilla `exploration_map` + `filtered` on map id, `filled_map` with an `item_name`); added to `#minecraft:cartographer/level_2` and `level_4` (`replace: false`). Map names in the lang file. (26.3 has no map colour component, so the maps keep the default look.)
 
 #### Tests
 

@@ -4,11 +4,7 @@
   },
   "given_item_modifier": [
     {
-      "type": "minecraft:exploration_map",
-      "decoration": "minecraft:trial_chambers",
-      "destination": "#bubbas_reworked_mobs:on_fabricator_maps",
-      "search_radius": 50,
-      "skip_existing_chunks": false
+      "type": "bubbas_reworked_mobs:fabricator_map"
     },
     {
       "type": "minecraft:filtered",
