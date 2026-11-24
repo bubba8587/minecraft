@@ -172,7 +172,11 @@ tasks.matching { it.name == 'runClientGameTest' }.configureEach { t ->
 	}
 	// Disk: client tests create a new world per run in saves/; start from none.
 	def clientSaves = file('build/run/clientGameTest/saves')
-	t.doFirst { clientSaves.deleteDir() }
+	def keepPosterWorld = project.name == 'postershots'
+	t.doFirst {
+		// The poster camera's world is kept between runs (specs/posters.md); everything else starts from none.
+		clientSaves.listFiles()?.each { if (!(keepPosterWorld && it.name == 'poster-world')) it.deleteDir() }
+	}
 	if (clientTestsFilter.isPresent()) {
 		t.jvmArgs("-Dbubba.clientTests=${clientTestsFilter.get()}")
 	}

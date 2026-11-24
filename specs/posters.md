@@ -49,6 +49,9 @@ Scene scripts used for the current posters are kept in `tools/posters/scenes/` (
 - **Find real features, don't build fakes (owner):** a natural spider nest is found from its hanging `bubbas_reworked_mobs:nest_spider` (`execute at @p run tag @e[type=...,sort=nearest,limit=1] add x`, then `entity N x`). Never `execute as @e[...] run tp @s ~ ~ ~` without `at @s`: it moves every match to the command's origin.
 - **Light dark places with invisible light blocks** (`fill ... minecraft:light[level=11] replace minecraft:air`); night vision alone is too dim in caves. Light blocks aren't air, so add them after anything that measures open space (the spider nest command).
 - Sleepers are blocks with gear in `Items` (slot 0 main hand, 1 off hand, 2-5 head to feet); beacon items go in `bubbas_reworked_beacons:item`; `upside_down=true` hangs a beacon.
+- `grab drownedTag victimTag` makes a drowned grab now (the AI won't while the camera stares at it); `attack`/`release` hold the attack key, for mid-break shots in survival (switch back to spectator after). In survival, keep away from spider nests: a nest cocoons the camera.
+- Large camps only sometimes roll a skull rock (1 in 3, by seed): build a few seeds and look from above. Upright gravestones need a kept yard. Clear stray natural trees out of a hero subject (`fill ... air replace <log/leaves>`).
+- The camera's `poster-world` is kept between camera restarts (`gradle/fabric-mod.gradle` skips it when clearing client saves).
 - Photos are cropped tight to the subject in `make.py` (`photo_kw={"crop": (...)}` in 1920x1080 pixels).
 
 ## Drawing (`tools/posters/`)

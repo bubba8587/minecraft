@@ -1,0 +1,21 @@
+/effect clear @a
+place -38 -48 -2044 0 0
+wait 100
+/execute at @p run tag @e[type=minecraft:warden,sort=nearest,limit=1] add wd
+entity W wd
+orbit fb -38 -47 -2044 14 5 0,90,180,270
+/gamemode survival @a
+wait 40
+/gamemode spectator @a
+/execute at @p run tag @e[type=minecraft:warden,sort=nearest,limit=1] add wd
+orbit fb -38 -46 -2044 16 5 0,60,300
+shot fbX -45 -44 -2034 -26 -45 -2044
+entity W wd
+/data merge entity @e[tag=wd,limit=1] {NoAI:1b}
+fov 70
+shot fbW1 -48 -44 -2040 $Wx $Wy+1 $Wz
+shot fbW2 $Wx-12 $Wy+1 $Wz+6 $Wx $Wy+1.5 $Wz
+shot fbW3 -44 -42 -2034 $Wx-4 $Wy $Wz-2
+/tp @e[tag=wd] -39.5 -50 -2039.5 36 0
+fov 72
+shot fbV3 -43.5 -46.6 -2034.0 -38.5 -45.5 -2042

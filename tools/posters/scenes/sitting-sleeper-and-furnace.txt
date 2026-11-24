@@ -1,0 +1,16 @@
+dim overworld
+/effect clear @s minecraft:night_vision
+place 708 102 -93 0 0
+wait 60
+/time set 6000
+fov 50
+shot sitA 710.5 102.15 -95.4 710.5 101.75 -97.6
+shot sitB 709.2 102.0 -95.8 710.4 101.7 -97.6
+/setblock 712 101 -90 minecraft:blast_furnace[facing=south,lit=true]{Items:[{Slot:0b,id:"minecraft:diorite",count:12},{Slot:1b,id:"minecraft:coal",count:6},{Slot:2b,id:"minecraft:quartz",count:4}],cooking_time_spent:52,cooking_total_time:100,lit_time_remaining:1100,lit_total_time:1600}
+gui 4
+chest blast 712 101 -90
+place 780 70 -140 0 0
+wait 60
+run 780 64 -140 bubbas_totems_artifacts relic_vault grand
+wait 40
+pos

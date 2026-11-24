@@ -1,0 +1,61 @@
+/time set 6000
+place 620 110 320 0 0
+wait 40
+run 620 g 320 bubbas_reworked_mobs camp build skeleton large 4
+wait 20
+shot seed4 620 125 321 620 60 320
+place 690 110 320 0 0
+wait 40
+run 690 g 320 bubbas_reworked_mobs camp build skeleton large 5
+wait 20
+shot seed5 690 125 321 690 60 320
+place 760 110 320 0 0
+wait 40
+run 760 g 320 bubbas_reworked_mobs camp build skeleton large 6
+wait 20
+shot seed6 760 125 321 760 60 320
+place 830 110 320 0 0
+wait 40
+run 830 g 320 bubbas_reworked_mobs camp build skeleton large 7
+wait 20
+shot seed7 830 125 321 830 60 320
+place 620 110 390 0 0
+wait 40
+run 620 g 390 bubbas_reworked_mobs camp build skeleton large 8
+wait 20
+shot seed8 620 125 391 620 60 390
+place 690 110 390 0 0
+wait 40
+run 690 g 390 bubbas_reworked_mobs camp build skeleton large 9
+wait 20
+shot seed9 690 125 391 690 60 390
+place 760 110 390 0 0
+wait 40
+run 760 g 390 bubbas_reworked_mobs camp build skeleton large 10
+wait 20
+shot seed10 760 125 391 760 60 390
+place 830 110 390 0 0
+wait 40
+run 830 g 390 bubbas_reworked_mobs camp build skeleton large 11
+wait 20
+shot seed11 830 125 391 830 60 390
+place 760 100 320 0 0
+wait 40
+/time set 12300
+orbit s6 758 66 322 30 12 0,60,120,180,240,300
+/kill @e[type=minecraft:skeleton,x=758,y=66,z=322,distance=..40]
+run 755.5 g 316.5 summon minecraft:skeleton ~ ~ ~ {NoAI:1b,PersistenceRequired:1b,Rotation:[-166f,0f],equipment:{head:{id:"minecraft:chainmail_helmet",count:1},mainhand:{id:"minecraft:bow",count:1}}}
+run 761.5 g 316.5 summon minecraft:skeleton ~ ~ ~ {NoAI:1b,PersistenceRequired:1b,Rotation:[176f,0f],equipment:{head:{id:"minecraft:chainmail_helmet",count:1},mainhand:{id:"minecraft:stone_sword",count:1}}}
+run 758.5 g 314.5 summon minecraft:skeleton ~ ~ ~ {NoAI:1b,PersistenceRequired:1b,Rotation:[-174f,0f],equipment:{head:{id:"minecraft:chainmail_helmet",count:1},mainhand:{id:"minecraft:bow",count:1}}}
+run 752.5 g 319.5 summon minecraft:skeleton ~ ~ ~ {NoAI:1b,PersistenceRequired:1b,Rotation:[-160f,0f],equipment:{head:{id:"minecraft:chainmail_helmet",count:1},mainhand:{id:"minecraft:iron_sword",count:1}}}
+run 764.5 g 318.5 summon minecraft:skeleton ~ ~ ~ {NoAI:1b,PersistenceRequired:1b,Rotation:[168f,0f],equipment:{head:{id:"minecraft:chainmail_helmet",count:1},mainhand:{id:"minecraft:bow",count:1}}}
+wait 5
+shot skG_185 760.1 g+13 298.1 758 67 322
+/kill @e[type=minecraft:skeleton,x=758,y=66,z=322,distance=..40]
+run 755.5 g 316.5 summon minecraft:skeleton ~ ~ ~ {NoAI:1b,PersistenceRequired:1b,Rotation:[-149f,0f],equipment:{head:{id:"minecraft:chainmail_helmet",count:1},mainhand:{id:"minecraft:bow",count:1}}}
+run 761.5 g 316.5 summon minecraft:skeleton ~ ~ ~ {NoAI:1b,PersistenceRequired:1b,Rotation:[-174f,0f],equipment:{head:{id:"minecraft:chainmail_helmet",count:1},mainhand:{id:"minecraft:stone_sword",count:1}}}
+run 758.5 g 314.5 summon minecraft:skeleton ~ ~ ~ {NoAI:1b,PersistenceRequired:1b,Rotation:[-157f,0f],equipment:{head:{id:"minecraft:chainmail_helmet",count:1},mainhand:{id:"minecraft:bow",count:1}}}
+run 752.5 g 319.5 summon minecraft:skeleton ~ ~ ~ {NoAI:1b,PersistenceRequired:1b,Rotation:[-146f,0f],equipment:{head:{id:"minecraft:chainmail_helmet",count:1},mainhand:{id:"minecraft:iron_sword",count:1}}}
+run 764.5 g 318.5 summon minecraft:skeleton ~ ~ ~ {NoAI:1b,PersistenceRequired:1b,Rotation:[172f,0f],equipment:{head:{id:"minecraft:chainmail_helmet",count:1},mainhand:{id:"minecraft:bow",count:1}}}
+wait 5
+shot skG_195 762.7 g+10 304.6 758 67 322

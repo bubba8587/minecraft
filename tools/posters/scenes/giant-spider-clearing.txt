@@ -1,0 +1,26 @@
+place 1376 90 1824 0 0
+wait 80
+/kill @e[type=bubbas_reworked_mobs:giant_spider]
+/kill @e[type=bubbas_reworked_mobs:spun_web]
+/fill 1368 63 1816 1384 100 1832 minecraft:air replace minecraft:spruce_log
+/fill 1368 63 1816 1384 100 1832 minecraft:air replace minecraft:spruce_leaves
+/fill 1368 63 1816 1384 100 1832 minecraft:air replace minecraft:red_mushroom_block
+/fill 1368 63 1816 1384 100 1832 minecraft:air replace minecraft:mushroom_stem
+/fill 1368 63 1816 1384 100 1832 minecraft:air replace minecraft:cobweb
+let T 1376 1824
+run 1376 g 1824 bubbas_reworked_mobs spider giant
+wait 300
+/time set 15000
+/tag @e[type=bubbas_reworked_mobs:giant_spider,limit=1] add gs
+/data merge entity @e[tag=gs,limit=1] {NoAI:1b}
+entity G gs
+fov 70
+orbit gn $Gx $Gy+1.5 $Gz 11 2.5 0,90,180,270
+/time set 14200
+/tp @e[tag=gs] 1379.9 69 1826.1 180 0
+/fill 1374 69 1820 1386 72 1832 minecraft:light[level=8] replace minecraft:air
+fov 68
+shot gnA 1379.9 72 1815.5 1379.9 69.8 1826.1
+shot gnB 1377 71 1817 1380 69.8 1826
+fov 70
+shot gnC 1378.5 70.2 1820.5 1379.9 70 1826.1

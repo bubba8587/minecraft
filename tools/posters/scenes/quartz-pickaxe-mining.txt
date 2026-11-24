@@ -1,0 +1,39 @@
+/time set 5000
+/fill 668 68 -37 676 72 -28 minecraft:air
+/fill 668 67 -37 676 67 -28 minecraft:grass_block
+/fill 669 68 -36 675 71 -35 minecraft:stone
+/fill 670 72 -36 674 72 -35 minecraft:stone
+/setblock 670 70 -35 minecraft:coal_ore
+/setblock 674 68 -35 minecraft:iron_ore
+/setblock 669 68 -34 minecraft:andesite
+/setblock 675 68 -34 minecraft:gravel
+/effect clear @a
+/effect give @a minecraft:instant_health 1 5
+/gamemode survival @a
+/item replace entity @a weapon.mainhand with bubbas_reworked_mining:quartz_pickaxe
+place 672.5 68 -32.6 180 22
+window 1920 1080
+gui 3
+fov 70
+hud on
+wait 20
+attack
+burst mine 8 1
+release
+hud off
+/gamemode spectator @a
+/gamemode spectator @a
+/fill 669 68 -36 675 71 -35 minecraft:stone
+/fill 670 72 -36 674 72 -35 minecraft:stone
+/setblock 670 70 -35 minecraft:coal_ore
+/setblock 674 68 -35 minecraft:iron_ore
+/kill @e[type=minecraft:item]
+/gamemode survival @a
+place 672.5 68 -32.2 180 2
+hud on
+wait 20
+attack
+burst mineB 5 1
+release
+hud off
+/gamemode spectator @a

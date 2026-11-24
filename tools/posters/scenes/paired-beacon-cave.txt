@@ -1,0 +1,15 @@
+/fill 711 0 -19 713 0 -17 minecraft:iron_block
+/fill 711 10 -19 713 10 -17 minecraft:iron_block
+/setblock 712 9 -18 minecraft:beacon[upside_down=true]
+/setblock 712 1 -18 minecraft:beacon{"bubbas_reworked_beacons:item":{id:"minecraft:amethyst_shard",count:1}}
+/effect clear @a
+/effect give @a minecraft:night_vision infinite 0 true
+wait 80
+fov 75
+shot pcA 712 5 -36 712 5 -18
+shot pcB 698 6 -30 712 5 -18
+shot pcC 726 5 -32 712 5 -18
+fov 75
+shot pcD 691 6.5 -21 712 5 -18
+shot pcE 732 7 -35 712 5 -18
+shot pcF 693 8 -24 712 5 -18

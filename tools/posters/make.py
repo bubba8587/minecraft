@@ -209,32 +209,32 @@ M = "Reworked Mobs"
 @poster
 def p01_mobs_graveyards(out):
 	cards(out, "REWORKED MOBS", "mossy_stone_bricks", "deepslate_bricks", M, [
-		("New Graveyard structures", dict(photo=S("yardF2"), photo_kw={"crop": (300, 200, 1500, 875)})),
+		("New Graveyard structures", dict(photo=S("gyL3"), photo_kw={"crop": (100, 120, 1800, 1076)})),
 		("woken by sound", dict(photo=S("wake1"), photo_kw={"crop": (380, 250, 1460, 858)})),
 		("You can loot the sleeping undead", dict(photo=S("row5"), photo_kw={"crop": (300, 250, 1400, 869)})),
 		("pick up nearby weapons", dict(photo=S("woke4"), photo_kw={"crop": (500, 200, 1500, 763)})),
-	], hero_photo=S("ysun_270"), hero_kw={"focus": (0.5, 0.6)})
+	], hero_photo=S("sitA"), hero_h=460, hero_kw={"crop": (240, 60, 1680, 700)})
 
 
 @poster
 def p02_mobs_world(out):
 	cards(out, "REWORKED MOBS", "mossy_stone_bricks", "deepslate_bricks", M, [
-		("random natural mob spawning", dict(photo=S("campC_20"), photo_kw={"focus": (0.5, 0.6)})),
-		("Ancient Fabricators", dict(photo=S("fabC"))),
+		("random natural mob spawning", dict(photo=S("skG_195"), photo_kw={"crop": (300, 150, 1700, 937)})),
+		("Ancient Fabricators", dict(photo=S("fbV3"), photo_kw={"crop": (300, 150, 1600, 881), "bright": 1.25})),
 		("Will-o-wisps", dict(photo=S("wispD_0"), photo_kw={"crop": (300, 100, 1400, 719)})),
 		("Frostbites", dict(icons=[block_icon("packed_ice"), block_icon("blue_ice"), block_icon("snow")])),
-	], hero_photo=S("fabA"), hero_kw={"focus": (0.5, 0.5)})
+	], hero_photo=S("skG_185"), hero_kw={"focus": (0.5, 0.45)})
 
 
 @poster
 def p03_mobs_creatures(out):
 	cards(out, "REWORKED MOBS", "oxidized_copper", "deepslate_tiles", M, [
 		("Creepers are creepy", dict(photo=S("crO"), photo_kw={"crop": (520, 260, 1360, 733)})),
-		("Endermen build cairns", dict(photo=S("cairnF3"))),
-		("Drowned lie in wait", dict(photo=PREV / "drowned/drowned-grab-land.png", photo_kw={"crop": (170, 110, 700, 420)})),
+		("Endermen build cairns", dict(photo=S("cnX_70"), photo_kw={"crop": (400, 100, 1500, 719), "bright": 1.5})),
+		("Drowned lie in wait", dict(photo=S("drn_3"), photo_kw={"crop": (300, 150, 1500, 825)})),
 		("Spiders have real webs", dict(photo=S("rnL_60"))),
-		("giant spiders", dict(photo=S("spZ4"), photo_kw={"focus": (0.5, 0.45)})),
-	], hero_photo=S("cairnF1"), hero_h=300, scale=8)
+		("giant spiders", dict(photo=S("gnC"), photo_kw={"crop": (300, 100, 1600, 831), "bright": 1.3})),
+	], hero_photo=S("cnX_40"), hero_h=300, scale=8, hero_kw={"bright": 1.5, "focus": (0.5, 0.3)})
 
 
 T = "Totems & Artifacts"
@@ -254,7 +254,7 @@ def p04_totems(out):
 		("Totem of Gathering", totem_icons("totem_of_gathering")),
 		("Totem of Fortification", totem_icons("totem_of_fortification")),
 		("Totem of Growth", totem_icons("totem_of_growth")),
-	], hero_photo=S("totT1"), hero_h=250, scale=7)
+	], hero_photo=S("vaultE"), hero_h=250, scale=7, hero_kw={"focus": (0.5, 0.55)})
 
 
 @poster
@@ -306,9 +306,9 @@ def p08_beacons(out):
 		("un-consumed set of gems", dict(icons=[I("amethyst_shard"), I("quartz"), I("ender_pearl"), I("diamond"),
 			I("prismarine_shard"), I("nether_star")])),
 		("apply equally", dict(photo=S("bcE"))),
-		("Paired Beacons", dict(photo=S("pairA"), photo_kw={"focus": (0.5, 0.4)})),
+		("Paired Beacons", dict(photo=S("pcF"))),
 		("Highly recommended", dict(icons=[I("gem_speed"), I("totem_of_warding")])),
-	], hero_photo=S("bcB"), hero_h=320, scale=8)
+	], hero_photo=S("pcD"), hero_h=320, scale=8, hero_kw={"focus": (0.5, 0.45)})
 
 
 @poster
@@ -318,7 +318,7 @@ def p09_mining(out):
 		("nuggets", dict(icons=[I("iron_nugget"), I("gold_nugget"), I("emerald"), I("diamond")])),
 		("True Unbreaking", dict(icons=[I("true_unbreaking_book")])),
 		("Quartz tools", dict(photo=S("qtzC0"), photo_kw={"focus": (0.5, 0.6)})),
-	], scale=8, extra=lambda c, y: _quartz_hotbar(c, y))
+	], hero_photo=S("mineB_3"), hero_h=420, scale=8, hero_kw={"crop": (420, 260, 1500, 860)})
 
 
 def _quartz_hotbar(c, y):
@@ -347,7 +347,12 @@ def p11_extra_recipes(out):
 		("Tools, equipment", dict(icons=[I("trident"), I("leather"), I("glider")])),
 		("Materials", dict(icons=[I("quartz"), I("iron_nugget"), I("glowstone_dust"), I("synthetic_diamond_ore")])),
 		("Mod-only", dict(photo=S("glideK"), photo_kw={"focus": (0.5, 0.35)})),
-	], hero_photo=S("glideF"), hero_h=290, scale=9)
+	], hero_photo=_blast(), hero_h=290, scale=9)
+
+
+def _blast():
+	"""The blast furnace screen mid-blast (diorite to quartz), cut round the furnace panel."""
+	return Image.open(S("blast")).convert("RGB").crop((600, 170, 1320, 590))
 
 
 def block_icon(name):
@@ -367,12 +372,12 @@ def p12_story(out):
 	c.alpha_composite(L1, ((SW - L1.width) // 2, 70))
 	c.alpha_composite(L2, ((SW - L2.width) // 2, 70 + L1.height - 8))
 	tiles = [
-		(S("ysun_270"), "REWORKED MOBS", "mossy_stone_bricks", {"focus": (0.5, 0.6)}),
+		(S("skG_195"), "REWORKED MOBS", "mossy_stone_bricks", {}),
 		("GEMS", "INFUSED GEMS", "amethyst_block", {}),
-		(S("totT3"), "TOTEMS & ARTIFACTS", "gold_block", {"focus": (0.3, 0.6)}),
-		(S("bcA"), "REWORKED BEACONS", "diamond_block", {"focus": (0.5, 0.4)}),
+		(S("vaultE"), "TOTEMS & ARTIFACTS", "gold_block", {}),
+		(S("pcD"), "REWORKED BEACONS", "diamond_block", {}),
 		(S("glideK"), "EXTRA RECIPES", "oak_planks", {"focus": (0.5, 0.35)}),
-		(S("qtzC0"), "REWORKED MINING", "quartz_block_side", {"focus": (0.5, 0.6)}),
+		(S("mineB_3"), "REWORKED MINING", "quartz_block_side", {}),
 		(S("gyy_3"), "WORLD TWEAKS", "magma", {}),
 	]
 	top, gap = 480, 24
