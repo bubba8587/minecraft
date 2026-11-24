@@ -46,6 +46,10 @@ Every statue works on the blocks within 5 of it, all the time:
 
 Mining a statue with any tool, or by hand, drops the totem it was made from. A piston pushing the statue also pops it off as its totem.
 
+## Totem of Undying statue
+
+Sneak and use a vanilla Totem of Undying on a block to set it down as a gold illager idol with emerald eyes. Breaking it gives the Totem of Undying back. It is decoration only, with no effect. A Totem of Undying in your hand still saves you from death as usual, and using it without sneaking does nothing new.
+
 ## History
 
 | Version | Changes |

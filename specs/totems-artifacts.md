@@ -415,6 +415,55 @@ A statue gives a weaker form of its totem's area effect in an **11x11x11 box** r
 | Keeping, Seeking, the End | nothing (no area form) |
 
 <a id="relic-maps-and-relic-vaults-owner-2026-11-24-built-2026-11-24"></a>
+### Totem art: precious-material idols (owner, 2026-11-23)
+
+Owner: "more totem art variety ... something in between what we have now and the Undying one ... precious materials". Materials are the builder's picks (owner to swap any: one palette edit in `tools/totems-textures.py`; the statue follows).
+
+| Totem | Material (was) | Gem eyes | Kept motif |
+|---|---|---|---|
+| Warding | silver, cool polished iron (soul stone) | soul-fire slits (now 2 px tall) | hood, soul flame, glowing ward rune |
+| Keeping | crying obsidian (purple obsidian) | magenta | gold-bound chest held to the chest |
+| Gathering | polished copper (copper with patina) | verdigris | upturned hands, oxidised-copper ring |
+| Fortification | netherite (iron) | glowing visor | helm (now gold-banded), shield (now gold with a lapis field) |
+| Growth | resin amber (oak) | emerald | leafy crown with blossom, sprout |
+| Seeking | lapis (lapis, richer) | gold | gold-rimmed hood, compass dial with needle |
+| the Beginning | emerald (weathered stone) | amethyst | grass cap, grass block on the chest |
+| the End | amethyst (end stone) | enderman face, magenta eyes | crown (now pale end stone, was purpur), ender pearl |
+| Herding | ruby-red redstone (spruce) | gold | woolly ram's head, horns (now ivory), gold bell |
+| Clear Skies | quartz (calcite) | sky blue | gold sun crown, sky-and-sun emblem |
+| North Wind | diamond (packed ice) | deep blue | icicle crown, gust, snowflake |
+
+Shared changes to every icon (agent's choice, to land "in between"): 2x2 gem eyes in vanilla's pattern (highlight, gem,
+gem, dark gem) where the face allows; a dark belt row with a 2 px gem; the lower body tapers like the Undying's
+(8 wide belt, 6 wide skirt, 4 wide foot) instead of the old 10 wide pedestal. Heads, arms and emblems are unchanged in
+shape. Statues: same shapes, recoloured from the item palettes, gem eyes, and a dark belt with a gem on the robe's
+bottom row.
+
+### Totem of Undying statue (owner: "give Totem of Undying a statue")
+
+Decorative only (no area effect; owner may want one).
+
+- `TotemType.UNDYING` (`totem=undying`), item `minecraft:totem_of_undying`. Decorative: `StatueEffects.pulses` is
+  false for it (no area effect, no ticking).
+- Placement: `statue/UndyingStatue` registers a Fabric `UseBlockCallback`. It acts only when the player is sneaking
+  (`isSecondaryUseActive`), isn't a spectator, may build, and holds a Totem of Undying in the hand used. It then runs
+  the same `TotemStatueBlock.placeFrom` as our totems (faces the player, uses one totem in survival). Everything else
+  passes through, so vanilla's death protection and a plain right-click are untouched.
+- Loot: the statue loot table's undying entry drops `minecraft:totem_of_undying` (the generator now accepts a
+  namespaced item in `ITEMS`).
+- Relic vaults never pick the undying statue for their pedestal (`RelicVaultPiece.primeStatue` drops UNDYING from the
+  list first, so existing vault seeds keep their old picks).
+- Model: `write_undying` in `tools-local/make_statue_textures.py` makes an 8x6x8 head with a 2x1x3 nose box, a crossed-arms
+  band (8x2x2, one pixel proud at the front and sides), a 6x5x4 robe, and the shared plinth. All on whole pixels, with
+  textures sized to each face. It uses vanilla's own totem colours.
+- Warding's item art still comes from `tools/warding-textures.py` (palette and eyes changed there).
+
+Tests: - `TotemStatueGameTest.undyingStatuePlacesFromVanillaTotemAndDropsIt`: a plain right-click with a Totem of Undying on a
+  floor places nothing and keeps the totem. Sneak-using it through `ServerPlayerGameMode.useItemOn` places the undying
+  statue facing the player and uses the totem up. The statue drops the vanilla Totem of Undying.
+- Client part `totems` now also takes `totems-hotbar2` / `totems-hotbar2-32x`: Warding, Seeking and North Wind beside
+  vanilla's Totem of Undying. Part `statues` fits 12 statues (floor widened, row shot pulled back a block).
+
 ## Relic maps and relic vaults
 
 Owner's design (C6 detail, spec not leaf): torn **relic map shreds** turn up in loot; shreds of one relic combine into a real filled map; each map leads to that relic's one **relic vault**, a sealed treasure room buried under the world. Player pages: `Relic Maps.md` and `Relic Vaults.md`.
