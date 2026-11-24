@@ -84,9 +84,9 @@ Charged creepers keep vanilla's suicide-bomber behavior.
   - Runs at most once a second while it has no spot.
   - Its navigation plans paths up to 32 blocks (`setRequiredPathLength`; vanilla uses its 16-block follow range; targeting range unchanged).
 - *Peekaboo (owner):* while it sits at its spot and the watched player looks within 45 degrees of any of five points on its body or its half-hidden place, it slides into the hidden place; when they look away it eases back out to half. `sense/Gaze` uses a cone round several points, not one line to its eyes, and no sight check, so once tucked away it stays hidden while the player looks its way. Slides are 0.08 blocks a tick, sideways, still staring.
-- *Creeping closer (APPROACH):* at a reached spot, once it hasn't been looked at (peekaboo cone) for 3 s, it tries every 100-160 ticks: `CoverFinder.findAll` for up to 4 spots between 3 blocks and (distance - 2), best near (distance - 6). Each gets a path (`PathNavigation.createPath`), scored by the share of 6 points along the route the player can see, plus 1 if its hidden place is in view; the lowest wins. So it prefers spots whose hiding place and route are out of view, and can come right up to a house wall and peek in round a window frame or doorway (closest 3 blocks). Caught walking up in the open (looked at while it can be seen), it goes back to the spot it came from.
-- *Running off (FLEE):* every 10 ticks it compares the player's own position now and 20 ticks ago against its current position (its own movement doesn't count). A player within 20 blocks, not sneaking, who closed by 2+ blocks in 20 ticks (0.1 a tick; walk 0.216, sneak 0.065) makes it run: flee spot (distance + 3) to max(22, distance + 14), capped at 23, best near distance + 7, at speed x1.4 (0.35 blocks/tick, faster than a sprint). No spot: it backs away (`DefaultRandomPos.getPosAway`, 10 blocks) at that speed until 3 blocks farther. No new approach for 10 s after. This works through walls and windows (no line of sight needed, builder's choice 11). Its own running startles nothing, since creepers never count on the startle meter (builder's choice 5).
-- *Sneaking up (HIDE):* a sneaking player within 18 blocks who closed by 0.3+ blocks in 20 ticks makes it look for cover farther away (1.5-8 blocks beyond its current distance) and sit hidden there, staring, at a walk. With no cover it backs away.
+- *Creeping closer (APPROACH):* at a reached spot, once it hasn't been looked at (peekaboo cone) for 3 s, it tries every 100-160 ticks: `CoverFinder.findAll` for up to 4 spots between 2 blocks and (distance - 2), best near (distance - 6). Each gets a path (`PathNavigation.createPath`), scored by the share of 6 points along the route the player can see, plus 1 if its hidden place is in view; the lowest wins. So it prefers spots whose hiding place and route are out of view, and can come right up to a house wall and peek in round a window frame or doorway (closest 2 blocks, owner). Caught walking up in the open (looked at while it can be seen), it goes back to the spot it came from.
+- *Running off (FLEE):* every 10 ticks it compares the player's own position now and 20 ticks ago against its current position (its own movement doesn't count). A player within 20 blocks, not sneaking, who closed by 2+ blocks in 20 ticks (0.1 a tick; walk 0.216, sneak 0.065) makes it run: flee spot (distance + 3) to max(22, distance + 14), capped at 23, best near distance + 7, at speed x1.4 (0.35 blocks/tick, faster than a sprint). No spot: it backs away (`DefaultRandomPos.getPosAway`, 10 blocks) at that speed until 3 blocks farther. No new approach for 10 s after. Only when it can see the player at that moment (owner): `CreeperWatchGoal.noticeApproach`, every 10 ticks, `hasLineOfSight` with `ClipContext.Block.VISUAL` from its eyes to the player's eyes or middle, so glass, panes and bars don't block it but solid blocks and leaves do; tucked fully behind its cover it doesn't notice. A player walking straight at it while looking makes it duck (peekaboo), and once ducked it can't see them, so it may not run (playtest). Its own running startles nothing, since creepers never count on the startle meter (builder's choice 5).
+- *Sneaking up (HIDE):* a sneaking player within 18 blocks who closed by 0.3+ blocks in 20 ticks makes it look for cover farther away (1.5-8 blocks beyond its current distance) and sit hidden there, staring, at a walk. Same sight rule as running off. With no cover it backs away.
 - *Open ground (C5; owner reworked the distances: "far too close"):* only when it finds no cover at all in 3 searches in a row in WATCH (`CreeperMind.openGround()`); any later find clears it. With a tree or wall around it always holds a cover spot. In the open it holds about 12 blocks off and stares.
   - Looked at (the cone above) within 16 blocks: it edges away.
   - Closer than 10: it backs away (speed x1.2), so dashing at it makes it back up. With cover, coming at it makes it run to farther cover instead.
@@ -137,7 +137,7 @@ Charged creepers keep vanilla's suicide-bomber behavior.
 | First peek spot | 3-22 blocks from target (best near min(distance, 15)); dropped outside 2-24; every cell within 5 of the creeper plus 72 random ones up to 22 blocks' walk |
 | Cover sweep | 32 rays, ±75 degrees, 2 bisections; 24 edge + 16 other evaluations |
 | Half-hide inset | 0.12 blocks |
-| Closest peek spot | 3 blocks (`APPROACH_MIN_DISTANCE`) |
+| Closest peek spot | 2 blocks (`APPROACH_MIN_DISTANCE`, owner) |
 | Creeping closer | not looked at 3 s; tries every 5-8 s; at least 2 closer, prefers 6 closer; 4 candidates; 6 route points |
 | Approach noticed | 2 blocks closer in 1 s (not sneaking), within 20; sneaking 0.3 in 1 s within 18 |
 | Running off | x1.4 speed (0.35 b/t); farther by 3-14 (best 7), max 23; no new approach for 10 s after |
@@ -159,7 +159,7 @@ Charged creepers keep vanilla's suicide-bomber behavior.
 8. The fuse target is whoever startled it last (the last attacker, mover or shooter), else what it watches.
 9. Sneaking means holding sneak (`isShiftKeyDown`), checked every tick during the hiss.
 10. Spawns only at night (`isDarkOutside`), above ground or in caves, as long as vanilla's darkness rule passes at the spot; every 10 s.
-11. Approaching is noticed without line of sight: it reacts even while tucked fully behind its cover, and through walls (owner asked, BACKLOG).
+11. *(Decided by the owner: approaching needs sight; see Running off.)*
 12. Only players trigger running off and creeping closer's peekaboo; a watched animal never makes it flee.
 13. A teleport toward it counts as an approach.
 14. "Seen by a player" for vanishing is a clear line from any player's eyes, whatever they face; "looked at" for the leave timing is the peekaboo cone.
@@ -241,7 +241,9 @@ The creeper grove (`specs/testworld.md`, Layout).
   - `hidesWhenLookedAt` (behind a wall it walks to a half-hidden spot with its eyes in view; peekaboo: hidden when looked at, half out again when looked away);
   - `oneWatcherSpawnsBehindCoverOutOfView` (spawns out of sight, outside the view cone, 15-21 blocks away, watching; one per player; vanilla random spawns blocked). It failed once in about 12 runs early on and never again (maxTicks 200); watch it;
   - `creepsToCloserCoverWhenUnseen` (far wall spot first, over 14 blocks, then a spot 3+ blocks closer, never closer than 3);
-  - `runsToFartherCoverWhenApproached` (player walks at it for 24 ticks; meter stays 0; it reaches a spot 3+ blocks farther);
+  - `runsToFartherCoverWhenApproached` (player walks at it for 24 ticks; it notices; meter stays 0; it reaches a spot 3+ blocks farther);
+  - `approachThroughSolidWallGoesUnnoticed` (stone wall between: no reaction; fails with the sight check off) and `approachThroughGlassIsNoticed`;
+  - client part `pillarmock` (`PillarMockClientGameTest`, named-only, never in the full suite): staged mock-ups of the planned pillar creeper, six biomes; no feature code;
   - `neverOpenGroundWithCoverAround` (one 3-tall log 9 blocks out; never open ground for 240 ticks, and it reaches a spot);
   - `watcherLeavesOutOfSightByDay` (day, watcher with `leaveIn(0)`; seen while leaving for 20+ ticks without vanishing, then vanishes where no player can see it).
 - **`CreeperClientGameTest`** (client part `creepers`): screenshots `creeper-peek` (from the watched armor stand: half behind a one-log tree), `creeper-peek-side`, `creeper-hidden` (player looking at it), `creeper-caught` (looked away, then straight back), `creeper-startle-bar` (the `show_meters` bar after two hits), `creeper-window` (from inside a small plank house, it peeks round the pane's frame) and `creeper-window-outside`. `creeper-caught` and `creeper-window` wait 10 ticks after it settles, since the client shows mob movement a few ticks late.
@@ -264,5 +266,5 @@ The creeper grove (`specs/testworld.md`, Layout).
 ## Open
 
 - Owner to playtest the numbers (all in `CreeperTuning`) and C5's open-ground distances.
-- Owner to review the 16 builder's choices above (BACKLOG also asks: should it need to see you to notice you approaching; is 3 blocks the right minimum distance).
+- Owner to review the 16 builder's choices above
 - Owner to review the 4 biome skin choices (Biome skins).

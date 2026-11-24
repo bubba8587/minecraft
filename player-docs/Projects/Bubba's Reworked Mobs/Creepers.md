@@ -33,9 +33,9 @@ A creeper notices things that move where it can see them, players first. It neve
 
 - **With cover:** it looks for a spot halfway behind a tree, wall or boulder up to 22 blocks from what it watches, walking a long way round to reach one, and peeks out from there. As long as there is any cover around, it always hides behind something.
 - **Peekaboo:** when the player looks its way, even out of the corner of the screen, it slides fully behind its cover. When they look away, it eases back out.
-- **Creeping closer:** while the player is not looking its way, every few seconds it moves to a closer hiding spot, choosing spots and routes the player cannot see. It can come right up to the wall of a house and peek in round a window frame or doorway, as close as 3 blocks. A player who catches it walking up in the open sends it back to where it came from.
+- **Creeping closer:** while the player is not looking its way, every few seconds it moves to a closer hiding spot, choosing spots and routes the player cannot see. It can come right up to the wall of a house and peek in round a window frame or doorway, as close as 2 blocks. A player who catches it walking up in the open sends it back to where it came from.
 - **Windows:** glass, glass panes and iron bars do not hide it, so it can watch through a window. Leaves still block its view.
-- **Running off:** a player who walks or runs toward it, even from inside a house through a window, makes it run (faster than a sprint) to a hiding spot farther away, for example back to the tree it started from. It waits about 10 seconds before creeping closer again.
+- **Running off:** a player who walks or runs toward it, even from inside a house through a window, makes it run (faster than a sprint) to a hiding spot farther away, for example back to the tree it started from. It has to see you coming (glass doesn't stop it, walls and leaves do), so while it's tucked fully behind its cover it won't notice. It waits about 10 seconds before creeping closer again.
 - **Sneaking up:** a player who sneaks toward a creeper makes it walk back behind cover farther away and stay hidden.
 - **On open ground** with nothing at all to hide behind: it stays about 12 blocks off and stares. It edges back while the player looks at it, and backs away if the player comes closer than about 10 blocks.
 
