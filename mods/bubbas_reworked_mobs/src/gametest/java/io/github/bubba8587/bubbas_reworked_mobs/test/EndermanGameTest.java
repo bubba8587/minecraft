@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import io.github.bubba8587.bubbas_reworked_mobs.enderman.BeaconBases;
 import io.github.bubba8587.bubbas_reworked_mobs.enderman.CairnDesign;
 import io.github.bubba8587.bubbas_reworked_mobs.enderman.CairnSite;
 import io.github.bubba8587.bubbas_reworked_mobs.enderman.CairnSites;
@@ -507,6 +508,70 @@ public class EndermanGameTest {
 		} finally {
 			EndermanWards.remove(level, key);
 			CairnSites.removeSite(level, site);
+		}
+		helper.succeed();
+	}
+
+	/**
+	 * Beacon bases: vanilla's take-block goal (iron blocks made holdable by the test data) never takes a block of a
+	 * working beacon's pyramid but takes stray iron beside it, and takes pyramid blocks once the beacon is gone. The
+	 * base check also covers pyramids above upside-down beacons and stops at an incomplete layer.
+	 */
+	@GameTest(structure = FIELD, maxTicks = 20)
+	public void endermenNeverTakeWorkingBeaconBases(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		List<BlockPos> pyramid = new ArrayList<>();
+		for (int x = 4; x <= 6; x++) {
+			for (int z = 4; z <= 6; z++) {
+				pyramid.add(new BlockPos(x, 1, z));
+				helper.setBlock(new BlockPos(x, 1, z), Blocks.IRON_BLOCK);
+			}
+		}
+		BlockPos beacon = new BlockPos(5, 2, 5);
+		helper.setBlock(beacon, Blocks.BEACON);
+		List<BlockPos> strays = List.of(new BlockPos(8, 1, 4), new BlockPos(8, 1, 7), new BlockPos(9, 1, 6));
+		strays.forEach(p -> helper.setBlock(p, Blocks.IRON_BLOCK));
+		Enderman enderman = enderman(helper, 7.5, 5.5, false);
+		((io.github.bubba8587.bubbas_reworked_mobs.enderman.EndermanAccess) enderman).brm$makeVanilla();
+		net.minecraft.world.entity.ai.goal.Goal take = ((io.github.bubba8587.bubbas_reworked_mobs.test.mixin.MobAccessor) enderman).brmTest$goals()
+				.getAvailableGoals().stream().map(w -> w.getGoal()).filter(g -> g.getClass().getSimpleName().equals("EndermanTakeBlockGoal"))
+				.findFirst().orElseThrow();
+		try {
+			helper.assertTrue(BeaconBases.inWorkingBase(level, helper.absolutePos(pyramid.get(0)), Blocks.IRON_BLOCK.defaultBlockState()),
+					"a pyramid corner should count as a working base");
+			helper.assertFalse(BeaconBases.inWorkingBase(level, helper.absolutePos(strays.get(0)), Blocks.IRON_BLOCK.defaultBlockState()),
+					"a stray iron block is no base");
+			for (int i = 0; i < 3000; i++) {
+				take.tick();
+				enderman.setCarriedBlock(null);
+			}
+			for (BlockPos p : pyramid) {
+				helper.assertBlockPresent(Blocks.IRON_BLOCK, p);
+			}
+			for (BlockPos p : strays) {
+				helper.assertBlockPresent(Blocks.AIR, p);
+			}
+			helper.setBlock(beacon, Blocks.AIR);
+			for (int i = 0; i < 3000; i++) {
+				take.tick();
+				enderman.setCarriedBlock(null);
+			}
+			helper.assertTrue(pyramid.stream().anyMatch(p -> helper.getBlockState(p).isAir()), "without the beacon its old pyramid is fair game");
+
+			BlockPos hanging = new BlockPos(5, 2, 12);
+			helper.setBlock(hanging, Blocks.BEACON);
+			for (int x = 4; x <= 6; x++) {
+				for (int z = 11; z <= 13; z++) {
+					helper.setBlock(new BlockPos(x, 3, z), Blocks.GOLD_BLOCK);
+				}
+			}
+			BlockPos above = helper.absolutePos(new BlockPos(4, 3, 11));
+			helper.assertTrue(BeaconBases.inWorkingBase(level, above, Blocks.GOLD_BLOCK.defaultBlockState()),
+					"a full layer above a beacon (upside-down pair) counts");
+			helper.setBlock(new BlockPos(6, 3, 13), Blocks.STONE);
+			helper.assertFalse(BeaconBases.inWorkingBase(level, above, Blocks.GOLD_BLOCK.defaultBlockState()), "an incomplete layer is no working base");
+		} finally {
+			enderman.discard();
 		}
 		helper.succeed();
 	}
