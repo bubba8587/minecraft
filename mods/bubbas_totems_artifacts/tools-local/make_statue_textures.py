@@ -130,12 +130,12 @@ def model():
 	el.append(box([6, 9, 6.5], [10, 12, 11], {"north": face([12, 6, 16, 9], F), "south": face([1, 7, 5, 10], F)}))
 	# Soul-fire eyes in the hood's shadow, the rune on the chest, the flame on the crown: they glow.
 	for x in (6.5, 8.5):
-		el.append(box([x, 10, 6.4], [x + 1, 11, 6.5], {"north": face([12, 9, 13, 10], F)}, light_emission=15))
+		el.append(box([x, 10, 6.25], [x + 1, 11, 6.5], {"north": face([12, 9, 13, 10], F)}, light_emission=15))
 	rune = face([13, 9, 15, 11], F)
 	# The rune is a small square turned 45 degrees: a diamond, like the item's.
-	el.append(box([7.25, 5.75, 5.8], [8.75, 7.25, 6], {"north": rune, "east": face([13, 9, 13.2, 11], F),
-		"west": face([13, 9, 13.2, 11], F), "up": face([13, 9, 15, 9.2], F), "down": face([13, 10.8, 15, 11], F)},
-		rotation={"origin": [8, 6.5, 5.9], "axis": "z", "angle": 45}, light_emission=12))
+	el.append(box([7, 5.5, 5], [9, 7.5, 6], {"north": rune, "east": face([13, 9, 14, 11], F),
+		"west": face([13, 9, 14, 11], F), "up": face([13, 9, 15, 10], F), "down": face([13, 10, 15, 11], F)},
+		rotation={"origin": [8, 6.5, 5.5], "axis": "z", "angle": 45}, light_emission=12))
 	# The flame stands on the hood's crown; its tip reaches a pixel above the block, like a torch flame.
 	flame = face([10, 12, 14, 16], F)
 	el.append(box([6, 13, 8], [10, 17, 8], {"north": flame, "south": flame},
@@ -207,7 +207,9 @@ def _shade_grid(seed):
 					level += 1
 				if u == u1 - 1 or v == v1 - 1:
 					level -= 1
-				level += rnd.choice((0, 0, 0, 1, -1))
+				grain = rnd.choice((0, 0, 0, 1, -1))
+				if region != R_HEAD_FRONT:  # the face stays clean so its features read
+					level += grain
 				grid[v][u] = str(max(2, min(6, level)))
 	return grid
 
@@ -233,43 +235,39 @@ def _statues():
 	defs["keeping"] = (TT.KEEPING_PAL, TT.KEEPING_MAT, ("stone",), g, None, [])
 	# Gathering: copper with patina, patina eyes, a patina ring (a pull); hands raised to gather.
 	g = _shade_grid(22); _eyes(g, "e"); _put(g, R_EMBLEM, ["qpq", "p4p", "qpq"])
-	for v in range(0, 5):
-		for u in (1, 4):
-			if (u + v) % 3 == 0:
-				g[v][u] = "q"  # patina streaks down the front
 	defs["gathering"] = (TT.GATHERING_PAL, TT.GATHERING_MAT, ("metal",), g, None, [])
 	# Fortification: iron, a flat-topped helm with a glowing visor slit, an obsidian shield on the chest.
 	g = _shade_grid(23)
 	for u in range(1, 5):
 		g[EYE_ROW][u] = "f" if u in (1, 4) else "g"
 	_put(g, R_EMBLEM, ["tut", "sts", "tst"])
-	defs["fortification"] = (TT.FORT_PAL, TT.FORT_MAT, ("metal",), g, ["6655", "5544", "4433", "5544", "4433", "3322"], ["visor"])
+	defs["fortification"] = (TT.FORT_PAL, TT.FORT_MAT, ("metal",), g, ["6655", "4433", "4433", "5554", "5444", "4433"], ["visor"])
 	# Growth: oak wood, green eyes, a sprout on the chest, a leafy crown with a pink blossom.
 	g = _shade_grid(24); _eyes(g, "n"); _put(g, R_EMBLEM, ["n4n", "4m4", "4l4"])
-	defs["growth"] = (TT.GROWTH_PAL, TT.GROWTH_MAT, ("wood", "leaf"), g, ["mnml", "nkyn", "lmnm", "mlnm", "nmlm", "lmml"], [])
+	defs["growth"] = (TT.GROWTH_PAL, TT.GROWTH_MAT, ("wood", "leaf"), g, ["mnmn", "lmml", "lkyl", "mnmm", "nmnm", "mmnm"], [])
 	# Seeking: lapis, gold eyes, a compass dial on the chest (needle to the north), a gold-rimmed hood band.
 	g = _shade_grid(25); _eyes(g, "c"); _put(g, R_EMBLEM, ["bRb", "bwb", "bbb"])
 	defs["seeking"] = (dict(TT.SEEK_PAL, R=TT.NEEDLE_RED), dict(TT.SEEK_MAT, R="dial"), ("stone",), g,
 		["cbba", "bbaa", "cbba", "bbaa", "cbba", "bbaa"], [])
 	# The Beginning: weathered stone, purple ender eyes (glowing), strata on the chest, a cap of grass.
 	g = _shade_grid(26); _eyes(g, "e"); _put(g, R_EMBLEM, ["HhH", "dDd", "343"])
-	defs["beginning"] = (TT.BEGIN_PAL, TT.BEGIN_MAT, ("stone", "grass"), g, ["HhHh", "hgHh", "ghhg", "dDdD", "DdDd", "dddD"], ["eyes"])
+	defs["beginning"] = (TT.BEGIN_PAL, TT.BEGIN_MAT, ("stone", "grass"), g, ["HHhH", "hghh", "hhhh", "dDdD", "DdDd", "dddD"], ["eyes"])
 	# The End: end stone, an enderman's black face with magenta eyes (glowing), an ender pearl, a purpur crown.
 	g = _shade_grid(27)
 	_put(g, R_HEAD_FRONT, ["kkkkkk", "kMkkMk", "kkkkkk", "kkkkkk"])
 	_put(g, R_EMBLEM, ["tTt", "TwT", "tTt"])
-	defs["end"] = (TT.END_PAL, TT.END_MAT, ("stone",), g, ["qppq", "pqqp", "qppq", "pqqp", "qppq", "pqqp"], ["eyes"])
+	defs["end"] = (TT.END_PAL, TT.END_MAT, ("stone",), g, ["qqqq", "pppp", "pppp", "pppp", "pqqp", "pppp"], ["eyes"])
 	# Herding: spruce, a woolly ram's head (wool cap, curled horns either side), a gold bell on the chest.
 	g = _shade_grid(28); _eyes(g, "e"); _put(g, R_EMBLEM, ["bBb", "BcB", "aba"])
-	defs["herding"] = (TT.HERD_PAL, TT.HERD_MAT, ("wood", "wool"), g, ["WWwW", "WwWW", "wWWw", "hHhH", "HhhH", "hhHh"], [])
+	defs["herding"] = (TT.HERD_PAL, TT.HERD_MAT, ("wood", "wool"), g, ["WWWW", "WwWW", "WWwW", "HHHH", "hhhh", "HHHH"], [])
 	# Clear Skies: pale calcite, blue eyes, blue sky with the sun on the chest, a gold sun crown of rays.
 	g = _shade_grid(29); _eyes(g, "k"); _put(g, R_EMBLEM, ["sSs", "SYS", "sSs"])
-	defs["clear_skies"] = (TT.SKY_PAL, TT.SKY_MAT, ("stone",), g, ["YyYy", "yYyY", "YyYy", "yYyY", "YyYy", "yYyY"], [])
+	defs["clear_skies"] = (TT.SKY_PAL, TT.SKY_MAT, ("stone",), g, ["YYYY", "YYYY", "yyyy", "yyyy", "yYYy", "yyyy"], [])
 	# North Wind: packed ice, deep blue eyes, puffed cheeks and a blowing mouth, a snowflake on the chest, an icicle crown
 	# swept back by the wind.
 	g = _shade_grid(30); _eyes(g, "k"); _put(g, R_EMBLEM, ["bFb", "FfF", "bFb"])
-	g[EYE_ROW + 1][1] = "5"; g[EYE_ROW + 1][4] = "5"; g[EYE_ROW + 2][2] = "m"; g[EYE_ROW + 2][3] = "m"
-	defs["north_wind"] = (TT.NORTH_PAL, TT.NORTH_MAT, ("ice",), g, ["IiIi", "iIiI", "IiIi", "iiii", "iIii", "iiIi"], [])
+	g[EYE_ROW + 1][0] = g[EYE_ROW + 1][1] = g[EYE_ROW + 1][4] = g[EYE_ROW + 1][5] = "6"; g[EYE_ROW + 2][2] = "m"; g[EYE_ROW + 2][3] = "m"
+	defs["north_wind"] = (TT.NORTH_PAL, TT.NORTH_MAT, ("ice",), g, ["IIII", "IIII", "iiii", "iiii", "iIIi", "iiii"], [])
 	for name, (pal, mat, grain, grid, topper, glow) in defs.items():
 		if topper:
 			_put(grid, R_TOPPER, topper)
@@ -304,52 +302,61 @@ def statue_model(name, glow):
 	el.append(box([5, 9, 5], [11, 13, 11], {"north": face(_uv(R_HEAD_FRONT), F), "south": face(_uv(R_HEAD_BACK), F),
 		"east": face(_uv(R_HEAD_SIDE), F), "west": face(_uv(R_HEAD_SIDE), F), "up": face(_uv(R_HEAD_TOP), F),
 		"down": face(_uv(R_HEAD_TOP), F)}))
-	# Chest emblem, standing proud of the robe (Keeping's chest further: a small box hugged to the chest).
-	depth = 5.0 if name == "keeping" else 5.6
-	edge = face([12, 7, 13, 10], F)
+	# Chest emblem, a pixel proud of the robe (Keeping's chest two: a small box hugged to the chest).
+	depth = 4.0 if name == "keeping" else 5.0
+	edge = face([12, 7, 12 + (6 - depth), 10], F)
 	el.append(box([6.5, 5.5, depth], [9.5, 8.5, 6], {"north": face(_uv(R_EMBLEM), F), "east": edge, "west": edge,
 		"up": face([12, 7, 15, 8], F), "down": face([12, 9, 15, 10], F)}))
-	# Toppers.
-	tf = face([12, 10, 16, 13], F)
+	# Toppers. Topper texture: rows 10-12 the sides of bands, spikes and rays (lit on top), rows 13-15 the top of the head.
+	def tf(w, h):
+		return face([12, 10, 12 + min(w, 4), 10 + min(h, 3)], F)
 	ts = face([12, 13, 16, 16], F)
-	ring = {d: tf for d in sides}
+
+	def ring(h):
+		return {d: tf(4, h) for d in sides}
+
+	def post(x, z, w, d, y0, h, **extra):
+		return box([x, y0, z], [x + w, y0 + h, z + d], {"north": tf(w, h), "south": tf(w, h), "east": tf(d, h), "west": tf(d, h),
+			"up": tf(w, d)}, **extra)
 	if name == "fortification":  # a flat-topped helm brim
-		el.append(box([4.5, 12, 4.5], [11.5, 13.5, 11.5], {**ring, "up": ts, "down": ts}))
+		el.append(box([4.5, 12, 4.5], [11.5, 13.5, 11.5], {**ring(1.5), "up": ts, "down": ts}))
 	elif name == "growth":  # a leafy crown, a blossom on top
-		el.append(box([4.5, 13, 4.5], [11.5, 15, 11.5], {**ring, "up": ts}))
-		el.append(box([7, 15, 7], [9, 16, 9], {d: face([13, 11, 14, 12], F) for d in (*sides, "up")}))
+		el.append(box([4.5, 13, 4.5], [11.5, 15, 11.5], {**ring(2), "up": ts}))
+		el.append(box([7, 15, 7], [9, 16, 9], {d: face([13, 12, 14, 13], F) for d in (*sides, "up")}))
 	elif name == "seeking":  # a gold-rimmed hood band
-		el.append(box([4.5, 11.5, 4.5], [11.5, 13.5, 11.5], {**ring, "up": ts}))
+		el.append(box([4.5, 11.5, 4.5], [11.5, 13.5, 11.5], {**ring(2), "up": ts}))
 	elif name == "beginning":  # a cap of grass
-		el.append(box([4.5, 13, 4.5], [11.5, 14.5, 11.5], {**ring, "up": face([12, 10, 16, 12], F)}))
+		el.append(box([4.5, 13, 4.5], [11.5, 14.5, 11.5], {**ring(1.5), "up": face([12, 10, 16, 12], F)}))
 	elif name == "end":  # a purpur crown: a band and four corner spikes
-		el.append(box([5, 13, 5], [11, 13.5, 11], {**ring, "up": ts}))
+		el.append(box([5, 13, 5], [11, 14, 11], {**ring(1), "up": ts}))
 		for x, z in ((5, 5), (10, 5), (5, 10), (10, 10)):
-			el.append(box([x, 13.5, z], [x + 1, 15.5, z + 1], {d: tf for d in (*sides, "up")}))
+			el.append(post(x, z, 1, 1, 14, 2))
 	elif name == "herding":  # a wool cap and a curled ram's horn either side of the head
-		el.append(box([5, 13, 5], [11, 14, 11], {**{d: face([12, 10, 16, 11], F) for d in sides}, "up": face([12, 10, 16, 13], F)}))
-		hf = face([12, 13, 16, 16], F)
-		for x0, x1 in ((3.5, 5), (11, 12.5)):
-			el.append(box([x0, 10, 6.5], [x1, 13, 9.5], {d: hf for d in (*sides, "up", "down")}))
-			el.append(box([x0, 9, 5.5], [x1, 10.5, 7], {d: hf for d in (*sides, "up", "down")}))
-	elif name == "clear_skies":  # a gold sun crown: a band and rays all round
-		el.append(box([5, 13, 5], [11, 13.5, 11], {**ring, "up": ts}))
-		for x, z, h in ((7.5, 4.5, 3), (7.5, 10.5, 2.5), (4.5, 7.5, 2.5), (10.5, 7.5, 2.5), (5, 5, 2), (10, 5, 2), (5, 10, 2), (10, 10, 2)):
-			el.append(box([x, 13.5, z], [x + 1, 13.5 + h, z + 1], {d: tf for d in (*sides, "up")}))
+		el.append(box([5, 13, 5], [11, 14, 11], {**ring(1), "up": face([12, 10, 16, 13], F)}))
+		for x0 in (3, 11):
+			el.append(box([x0, 10, 6], [x0 + 2, 13, 9], {"north": face([12, 13, 14, 16], F), "south": face([12, 13, 14, 16], F),
+				"east": face([12, 13, 15, 16], F), "west": face([12, 13, 15, 16], F), "up": face([12, 13, 14, 16], F),
+				"down": face([12, 13, 14, 16], F)}))
+			curl = {d: face([12, 13, 14, 14], F) for d in sides}
+			el.append(box([x0, 9, 5], [x0 + 2, 10, 7], {**curl, "up": face([12, 13, 14, 15], F), "down": face([12, 13, 14, 15], F)}))
+	elif name == "clear_skies":  # a gold sun crown: a band, broad rays at the sides, narrow ones at the corners
+		el.append(box([5, 13, 5], [11, 14, 11], {**ring(1), "up": ts}))
+		for x, z, w, d, h in ((7, 5, 2, 1, 3), (7, 10, 2, 1, 2), (5, 7, 1, 2, 2), (10, 7, 1, 2, 2),
+				(5, 5, 1, 1, 2), (10, 5, 1, 1, 2), (5, 10, 1, 1, 2), (10, 10, 1, 1, 2)):
+			el.append(post(x, z, w, d, 14, h))
 	elif name == "north_wind":  # an icicle crown, swept back by the wind; a gust from the mouth
-		el.append(box([5, 13, 5], [11, 13.5, 11], {**ring, "up": ts}))
-		for x, z, h in ((5.5, 5.5, 3), (7.5, 5, 3.5), (9.5, 5.5, 3), (6, 7.5, 2.5), (9, 7.5, 2.5), (7.5, 8.5, 2)):
-			el.append(box([x, 13.5, z], [x + 1, 13.5 + h, z + 1], {d: tf for d in (*sides, "up")},
-				rotation={"origin": [8, 13.5, 8], "axis": "x", "angle": 22.5}))
-		gust = face([12, 10, 13, 11], F)
-		for x0, x1, y in ((9, 14.5, 10), (10, 13.5, 11), (9.5, 15.5, 9)):
-			el.append(box([x0, y, 4.25], [x1, y + 0.5, 4.75], {d: gust for d in (*sides, "up", "down")}))
-	# Glowing parts, just proud of the face.
+		el.append(box([5, 13, 5], [11, 14, 11], {**ring(1), "up": ts}))
+		for x, z, h in ((5.5, 5.5, 3), (7.5, 5, 4), (9.5, 5.5, 3), (7.5, 8, 2.5)):
+			el.append(post(x, z, 1, 1, 14, h, rotation={"origin": [8, 14, 8], "axis": "x", "angle": 22.5}))
+		for x0, x1, y in ((9, 15, 9), (11, 15, 11)):
+			el.append(box([x0, y, 4], [x1, y + 1, 5], {"north": tf(4, 1), "south": tf(4, 1), "up": tf(4, 1), "down": tf(4, 1),
+				"east": tf(1, 1), "west": tf(1, 1)}))
+	# Glowing parts, a quarter pixel proud of the face.
 	if "eyes" in glow:
 		for x, u in ((6, 1), (9, 4)):
-			el.append(box([x, 11, 4.95], [x + 1, 12, 5], {"north": face([u, EYE_ROW, u + 1, EYE_ROW + 1], F)}, light_emission=12))
+			el.append(box([x, 11, 4.75], [x + 1, 12, 5], {"north": face([u, EYE_ROW, u + 1, EYE_ROW + 1], F)}, light_emission=12))
 	if "visor" in glow:
-		el.append(box([6, 11, 4.95], [10, 12, 5], {"north": face([1, EYE_ROW, 5, EYE_ROW + 1], F)}, light_emission=10))
+		el.append(box([6, 11, 4.75], [10, 12, 5], {"north": face([1, EYE_ROW, 5, EYE_ROW + 1], F)}, light_emission=10))
 	return {
 		"parent": "minecraft:block/block",
 		"textures": {"particle": f"{MOD}:block/totem_statue_plinth", "plinth": f"{MOD}:block/totem_statue_plinth",
