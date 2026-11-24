@@ -77,6 +77,9 @@ public class CampPiece extends StructurePiece {
 	static BoundingBox box(BlockPos centre, CampTuning.Size size, CampKind kind) {
 		// clearing plus edge outcrops (up to 3 past the radius), or the stair tunnel
 		int r = Math.max(size.radius + 5, size.maxRoomHalf + 10) + (kind.nether() ? 3 : 0);
+		if (size == CampTuning.Size.LARGE && !kind.nether()) {
+			r = Math.max(r, 10 + Plan.SKULL_YARD_CLEARING + 1); // a skull rock 10 out and its yard
+		}
 		return new BoundingBox(centre.getX() - r, centre.getY() - (kind.nether() ? 8 : 6), centre.getZ() - r, centre.getX() + r, centre.getY() + 22, centre.getZ() + r);
 	}
 
@@ -256,6 +259,9 @@ public class CampPiece extends StructurePiece {
 						break;
 					}
 				}
+				if (skull != null) {
+					skullYard(random, cx, cz);
+				}
 			}
 			if (!kind.nether() && size == CampTuning.Size.LARGE && random.nextInt(4) == 0) {
 				int risers = 12 + random.nextInt(3);
@@ -397,6 +403,44 @@ public class CampPiece extends StructurePiece {
 			}
 		}
 
+		/**
+		 * Dressing round a skull rock's sides and back (its front faces the fire): pikes, small outcrops and a banner
+		 * SKULL_YARD_REACH out from its middle, so the skull sits in the camp rather than at its edge.
+		 */
+		private void skullYard(RandomSource random, int cx, int cz) {
+			double front = Math.atan2(cz - skull.z, cx - skull.x);
+			int count = SKULL_YARD_MIN + random.nextInt(SKULL_YARD_MAX - SKULL_YARD_MIN + 1);
+			for (int i = 0; i < count; i++) {
+				// spread over the sides and back: from 70 degrees off the front round to 290
+				double base = front + Math.toRadians(70.0 + 220.0 * (i + 0.5) / count);
+				int what = i == 0 ? 2 : random.nextInt(2);
+				long pieceSeed = random.nextLong();
+				for (int t = 0; t < TRIES; t++) {
+					double a = base + (random.nextDouble() - 0.5) * 0.5;
+					int d = SKULL_YARD_REACH + random.nextInt(2);
+					int x = skull.x + (int) Math.round(Math.cos(a) * d);
+					int z = skull.z + (int) Math.round(Math.sin(a) * d);
+					if (what == 1 && claim(Footprint.around("outcrop", x, z, 2))) {
+						outcrops.add(new Spot(x, z, 1, pieceSeed));
+						break;
+					}
+					if (what == 2 && claim(Footprint.around("banner", x, z, 0))) {
+						banners.add(new Spot(x, z, 0, pieceSeed));
+						break;
+					}
+					if (what == 0 && claim(Footprint.around("pike", x, z, 0))) {
+						pikes.add(new Spot(x, z, 0, pieceSeed));
+						break;
+					}
+				}
+			}
+		}
+
+		static final int SKULL_YARD_MIN = 4;
+		static final int SKULL_YARD_MAX = 6;
+		static final int SKULL_YARD_REACH = 8;
+		/** Trodden ground round a skull rock's middle, out to this. */
+		static final int SKULL_YARD_CLEARING = 10;
 		static final int NETHER_ROOM_HALF = 3;
 		static final int GATE_REACH = 5;
 		static final int PEN_HALF = 2;
@@ -500,10 +544,15 @@ public class CampPiece extends StructurePiece {
 		int r = size.radius;
 		int cx = centre.getX();
 		int cz = centre.getZ();
-		// Clearing: trees and plants out, trodden ground, weeds at the edge.
-		for (int x = cx - r - 1; x <= cx + r + 1; x++) {
-			for (int z = cz - r - 1; z <= cz + r + 1; z++) {
+		// Clearing: trees and plants out, trodden ground, weeds at the edge (round the fire, and round a skull rock).
+		int reach = plan.skull == null ? r + 1 : 10 + Plan.SKULL_YARD_CLEARING + 1;
+		for (int x = cx - reach; x <= cx + reach; x++) {
+			for (int z = cz - reach; z <= cz + reach; z++) {
 				double d = Math.sqrt((x - cx) * (x - cx) + (z - cz) * (z - cz));
+				if (plan.skull != null) {
+					double ds = Math.sqrt((x - plan.skull.x) * (x - plan.skull.x) + (z - plan.skull.z) * (z - plan.skull.z));
+					d = Math.min(d, ds - Plan.SKULL_YARD_CLEARING + r);
+				}
 				if (b instanceof NetherBuild nether && d <= r + 1.5) {
 					nether.seal(x, z, centre.getY() - 9, centre.getY() + HEADROOM);
 				}

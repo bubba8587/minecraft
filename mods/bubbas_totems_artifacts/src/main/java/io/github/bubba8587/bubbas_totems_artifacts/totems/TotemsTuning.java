@@ -144,9 +144,9 @@ public final class TotemsTuning {
 
 	// --- Totem of the North Wind ------------------------------------------------------------------------
 	/** Used while gliding: the cooldown after a gust, shown with the item cooldown sweep. */
-	public static final int NORTH_WIND_COOLDOWN_TICKS = 60;
+	public static final int NORTH_WIND_COOLDOWN_TICKS = 100;
 	/** Beacon and statue areas: a glider's cooldown between gusts (the same cooldown group as the item). */
-	public static final int NORTH_WIND_AREA_COOLDOWN_TICKS = 60;
+	public static final int NORTH_WIND_AREA_COOLDOWN_TICKS = 100;
 	/** A gust's flight duration, as a firework rocket's (1 = a plain crafted rocket with one gunpowder). */
 	public static final int NORTH_WIND_FLIGHT = 1;
 
