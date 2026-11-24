@@ -24,9 +24,13 @@ public final class ModItems {
 	/** assets/bubbas_extra_recipes/equipment/glider.json: the wings drawn on the player. */
 	public static final ResourceKey<EquipmentAsset> GLIDER_ASSET = ResourceKey.create(EquipmentAssets.ROOT_ID, BubbasExtraRecipes.id("glider"));
 
+	/** Glider durability. */
+	public static final int GLIDER_DURABILITY = 324;
+
 	/** The Glider. */
 	public static final Item GLIDER = register("glider", new Item.Properties()
-			.stacksTo(1)
+			.durability(GLIDER_DURABILITY)
+			.repairable(Items.PHANTOM_MEMBRANE)
 			.rarity(Rarity.UNCOMMON)
 			.component(DataComponents.GLIDER, Unit.INSTANCE)
 			.component(DataComponents.EQUIPPABLE, Equippable.builder(EquipmentSlot.CHEST)
