@@ -5,24 +5,28 @@
 The look the owner asked for is "a sick white look": bright quartz white with subtle veining, vanilla-styled. The
 shapes come from vanilla's iron sprites (same silhouettes and shading bands, so the set sits next to vanilla gear);
 every grey band is remapped to a warm quartz palette, the sticks keep vanilla's wood colours, and thin rose-grey veins
-are drawn across the quartz. The 32x twins are made with tools/pixelart.py's render32 in Classic Faithful 32x Jappa
-mode (cf=True: smoothed silhouette, crisp dark 1-px outline, bevels stepped along the palette, no in-between colours)
-from the unbrightened grid, with finer veins drawn at 32x in the palette's vein shades.
+are drawn across the quartz. The 32x twins are Classic Faithful 32x Jappa's own iron sprites recoloured: every grey
+shade maps to one quartz shade (CF32J's pixels, outline and shading kept exactly), its stick colours stay, and a few
+thin veins in the palette's vein shades cross the armor. CF32J-derived: credited in the mod's CREDITS.md (Faithful
+License, https://faithfulpack.net/license).
 
 Agent-made: listed in docs/art-todo.md for the owner to redo or tweak.
 
-Usage: python3 make_quartz_textures.py <path to build/mcsrc/26.3/vanilla>
-(worktrees lack build/, so pass the main checkout's copy).
+Usage: python3 make_quartz_textures.py <path to build/mcsrc/26.3/vanilla> [<path to the CF32J zip>]
+(worktrees lack build/, so pass the main checkout's copy; the zip defaults to the owner's Modrinth copy).
 """
+import io
+import os
 import random
 import sys
+import zipfile
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 REPO = HERE.parents[2]
 sys.path.insert(0, str(REPO / "tools"))
 from PIL import Image  # noqa: E402
-from pixelart import render, render32  # noqa: E402
+from pixelart import render  # noqa: E402
 
 NS = "bubbas_reworked_mining"
 MOD = REPO / "mods" / NS / "src" / "main" / "resources"
@@ -117,19 +121,42 @@ def vein_grid(grid, count, seed):
 	return ["".join(r) for r in rows]
 
 
-def vein_32(img, count, seed):
-	"""Finer veins at 32x, only on quartz-white pixels (not sticks, not outlines), in the palette's vein shades."""
+# CF32J iron greys -> quartz shades (warm white, darkest a soft brown-grey, never black).
+CF_QUARTZ = {
+	24: (58, 48, 50), 25: (58, 48, 50), 40: (90, 78, 79), 45: (90, 78, 79), 68: (124, 112, 111), 107: (164, 152, 149),
+	130: (182, 171, 167), 150: (198, 188, 183), 183: (214, 206, 201), 190: (222, 215, 209), 193: (224, 217, 211),
+	194: (224, 217, 211), 198: (228, 221, 215), 209: (236, 231, 226), 216: (242, 238, 233), 217: (242, 238, 233),
+	229: (248, 245, 241), 255: (255, 255, 255),
+}
+CF_VEIN = {(236, 231, 226): PAL["v"], (242, 238, 233): PAL["v"], (248, 245, 241): PAL["v"], (228, 221, 215): PAL["u"],
+	(224, 217, 211): PAL["u"]}
+CF32J_ZIP = Path(os.environ.get("APPDATA", "")) / "ModrinthApp/profiles/porp/resourcepacks/CF32J-2026r21.zip"
+
+
+def cf_recolour(img):
+	"""A CF32J iron sprite in quartz: greys mapped through CF_QUARTZ, everything else (the sticks) kept."""
+	img = img.convert("RGBA")
+	px = img.load()
+	for y in range(img.height):
+		for x in range(img.width):
+			r, g, b, a = px[x, y]
+			if a and r == g == b:
+				if r not in CF_QUARTZ:
+					raise ValueError(f"unmapped CF32J grey {r}")
+				px[x, y] = CF_QUARTZ[r] + (a,)
+	return img
+
+
+def cf_veins(img, count, seed):
+	"""Thin veins over light quartz only."""
 	px = img.load()
 	w, h = img.size
-	light = {PAL[c] for c in "lhw"}
 	for pts in vein_paths(w, h, count, seed):
 		for x, y in pts:
 			if 0 <= x < w and 0 <= y < h:
 				r, g, b, a = px[x, y]
-				if a and (r, g, b) in light:
-					px[x, y] = PAL["v"] + (a,)
-				elif a and (r, g, b) == PAL["m"]:
-					px[x, y] = PAL["u"] + (a,)
+				if a and (r, g, b) in CF_VEIN:
+					px[x, y] = CF_VEIN[(r, g, b)] + (a,)
 	return img
 
 
@@ -139,12 +166,13 @@ def brighten_tool(grid):
 	return ["".join({"o": "q", "p": "d"}.get(ch, ch) for ch in row) for row in grid]
 
 
-def make(src, rel, smooth, veins16, veins32, seed, tool=False):
+def make(src, cf, rel, veins16, veins32, seed, tool=False):
 	base = to_grid(Image.open(src))
 	grid = vein_grid(brighten_tool(base) if tool else base, veins16, seed)
 	img16 = render(grid, PAL)
-	img32 = render32(base, PAL, material=MATERIAL, outline="o", inner={"o": "p"}, thin={"p": "d"}, bevel=1, seed=seed, smooth=smooth, cf=True)
-	img32 = vein_32(img32, veins32, seed + 100)
+	img32 = cf_recolour(cf)
+	if veins32:
+		img32 = cf_veins(img32, veins32, seed + 100)
 	for out, img in ((OUT16, img16), (OUT32, img32)):
 		path = out / rel
 		path.parent.mkdir(parents=True, exist_ok=True)
@@ -154,14 +182,20 @@ def make(src, rel, smooth, veins16, veins32, seed, tool=False):
 
 def main():
 	van = Path(sys.argv[1]) / "assets" / "minecraft" / "textures"
+	zf = zipfile.ZipFile(sys.argv[2] if len(sys.argv) > 2 else CF32J_ZIP)
+
+	def cf(rel):
+		return Image.open(io.BytesIO(zf.read(f"assets/minecraft/textures/{rel}")))
 	seed = 7
 	for part in ("sword", "shovel", "pickaxe", "axe", "hoe", "helmet", "chestplate", "leggings", "boots"):
 		seed += 1
-		make(van / "item" / f"iron_{part}.png", f"item/quartz_{part}.png", True, 1, 2, seed,
-				tool=part in ("sword", "shovel", "pickaxe", "axe", "hoe"))
+		tool = part in ("sword", "shovel", "pickaxe", "axe", "hoe")
+		make(van / "item" / f"iron_{part}.png", cf(f"item/iron_{part}.png"), f"item/quartz_{part}.png", 1, 0 if tool else 2, seed,
+				tool=tool)
 	for layer in ("humanoid", "humanoid_leggings"):
 		seed += 1
-		make(van / "entity" / "equipment" / layer / "iron.png", f"entity/equipment/{layer}/quartz.png", False, 4, 10, seed)
+		make(van / "entity" / "equipment" / layer / "iron.png", cf(f"entity/equipment/{layer}/iron.png"),
+				f"entity/equipment/{layer}/quartz.png", 4, 10, seed)
 
 
 if __name__ == "__main__":
