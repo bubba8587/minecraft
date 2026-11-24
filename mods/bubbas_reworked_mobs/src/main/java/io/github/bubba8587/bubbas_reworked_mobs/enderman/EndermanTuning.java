@@ -64,6 +64,10 @@ public final class EndermanTuning {
 	public static final int VIGIL_GAP = 3;
 	/** A vigil lasts this long, then it looks around for work (and most likely takes up its place again). */
 	public static final int VIGIL_TICKS = 1200;
+	/** A vigil's gaze drifts to a new point on the cairn every MIN-MAX ticks, within SPREAD blocks sideways of its middle. */
+	public static final int VIGIL_GAZE_MIN_TICKS = 40;
+	public static final int VIGIL_GAZE_MAX_TICKS = 120;
+	public static final double VIGIL_GAZE_SPREAD = 3.0;
 	/** By day a caretaker under open sky leaves with a 1-in-this chance each tick. */
 	public static final int DAY_LEAVE_ONE_IN = 400;
 	/** A builder whose block can't go in yet sets it down this many blocks outside its cairn's footprint (a random one of these). */

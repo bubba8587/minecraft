@@ -222,7 +222,7 @@ def build(seed, jars, timeout):
     t0 = time.time()
     s = tw.Server(WORK, launcher, timeout)
     print(f"server up in {time.time() - t0:.0f}s; locating")
-    s.run([("rules", c) for c in ("gamerule advance_time false", "time set 1000",
+    s.run([("rules", c) for c in ("gamerule advance_time true", "time set 1000",
                                   "gamerule advance_weather false", "weather clear")], quiet=True)
     examples = find_examples(s)
     camps = load_around(s, examples)

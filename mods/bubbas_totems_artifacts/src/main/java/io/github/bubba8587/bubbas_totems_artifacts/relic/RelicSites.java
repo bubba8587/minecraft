@@ -7,13 +7,11 @@ import java.util.List;
 import java.util.Map;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Holder;
 import net.minecraft.core.QuartPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BiomeTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.BiomeResolver;
 import net.minecraft.world.level.biome.BiomeSource;
 import net.minecraft.world.level.levelgen.RandomState;
@@ -40,21 +38,11 @@ public final class RelicSites {
 
 		boolean allows(int blockX, int blockZ);
 
-		/** Not under an ocean: no ocean biome at sea level at the spot or around it. */
+		/** Not under an ocean: the biome at sea level there isn't an ocean. */
 		static Land notOcean(BiomeSource source, RandomState randomState) {
 			BiomeResolver resolver = source.createUncachedResolver(randomState);
 			int qy = QuartPos.fromBlock(63);
-			int r = RelicTuning.SITE_LAND_RADIUS;
-			int[][] offsets = {{0, 0}, {r, 0}, {-r, 0}, {0, r}, {0, -r}};
-			return (x, z) -> {
-				for (int[] d : offsets) {
-					Holder<Biome> biome = resolver.getNoiseBiome(QuartPos.fromBlock(x + d[0]), qy, QuartPos.fromBlock(z + d[1]));
-					if (biome.is(BiomeTags.IS_OCEAN)) {
-						return false;
-					}
-				}
-				return true;
-			};
+			return (x, z) -> !resolver.getNoiseBiome(QuartPos.fromBlock(x), qy, QuartPos.fromBlock(z)).is(BiomeTags.IS_OCEAN);
 		}
 
 		/** The land rule of this server's overworld. */

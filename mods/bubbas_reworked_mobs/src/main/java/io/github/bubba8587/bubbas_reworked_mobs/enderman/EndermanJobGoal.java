@@ -38,6 +38,9 @@ public final class EndermanJobGoal extends Goal {
 	private int stuckTicks;
 	/** What a vigil stares at: the middle of its cairn. */
 	private BlockPos vigilCentre = BlockPos.ZERO;
+	/** Where a vigil's gaze rests now (drifts over the cairn). */
+	private Vec3 vigilGaze = Vec3.ZERO;
+	private int nextGaze;
 
 	public EndermanJobGoal(Enderman enderman, EndermanMind mind) {
 		this.enderman = enderman;
@@ -78,6 +81,10 @@ public final class EndermanJobGoal extends Goal {
 			}
 			// set it down near its cairn for a later enderman to bring in
 			CairnSite waitingFor = siteWanting(level, here, carried);
+			if (waitingFor == null) {
+				// a block no cairn wants any more (its cairn was finished without it): set it down by the nearest one
+				waitingFor = CairnSites.nearest(level, here, EndermanTuning.SITE_WORK_RADIUS);
+			}
 			if (waitingFor != null) {
 				BlockPos ground = setDownSpot(level, waitingFor, carried);
 				if (ground != null) {
@@ -216,7 +223,14 @@ public final class EndermanJobGoal extends Goal {
 				} else {
 					enderman.getNavigation().stop();
 				}
-				enderman.getLookControl().setLookAt(vigilCentre.getX() + 0.5, vigilCentre.getY() + 0.5, vigilCentre.getZ() + 0.5);
+				if (enderman.tickCount >= nextGaze || vigilGaze == Vec3.ZERO) {
+					var random = enderman.getRandom();
+					double half = site.box().getYSpan() / 2.0;
+					vigilGaze = Vec3.atCenterOf(vigilCentre).add((random.nextDouble() - 0.5) * EndermanTuning.VIGIL_GAZE_SPREAD, (random.nextDouble() - 0.5) * half * 2.0,
+							(random.nextDouble() - 0.5) * EndermanTuning.VIGIL_GAZE_SPREAD);
+					nextGaze = enderman.tickCount + Mth.nextInt(random, EndermanTuning.VIGIL_GAZE_MIN_TICKS, EndermanTuning.VIGIL_GAZE_MAX_TICKS);
+				}
+				enderman.getLookControl().setLookAt(vigilGaze.x, vigilGaze.y, vigilGaze.z, 3.0F, 3.0F);
 			}
 		}
 	}
@@ -414,7 +428,7 @@ public final class EndermanJobGoal extends Goal {
 			BlockPos feet = new BlockPos(x, level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z), z);
 			if (Math.abs(feet.getY() - site.origin().getY()) <= 4 && standable(level, feet)) {
 				int top = site.box().maxY();
-				vigilCentre = new BlockPos(site.origin().getX(), (site.origin().getY() + top) / 2, site.origin().getZ());
+				vigilCentre = new BlockPos(site.origin().getX(), (site.origin().getY() + top) / 2, site.origin().getZ()); vigilGaze = Vec3.ZERO;
 				return feet;
 			}
 		}

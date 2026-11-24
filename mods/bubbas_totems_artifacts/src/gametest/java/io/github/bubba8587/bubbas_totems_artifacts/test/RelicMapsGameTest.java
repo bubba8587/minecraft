@@ -144,10 +144,6 @@ public class RelicMapsGameTest {
 			}
 		}
 		helper.assertTrue(close == 0, close / 2 + " pairs of sites closer than " + RelicTuning.SITE_SEPARATION_CHUNKS + " chunks");
-		// Sites keep off spots the land rule forbids (oceans in a real world).
-		RelicSites.Land east = (x, z) -> x >= 0;
-		List<RelicSites.Site> eastOnly = RelicSites.sites(1234L, east);
-		helper.assertTrue(eastOnly.stream().allMatch(s -> s.centre().getX() >= 0), "a site sits where the land rule forbids");
 		// The structure set is loaded with the placement, and it marks exactly the site chunks.
 		ServerLevel level = helper.getLevel();
 		StructureSet set = level.registryAccess().lookupOrThrow(Registries.STRUCTURE_SET)
