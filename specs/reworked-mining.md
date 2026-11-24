@@ -193,3 +193,5 @@ Owner: a full quartz set "for use in the nether". These are new items (B15 only 
   - explosions give finds;
   - the quartz recipe (12 quartz per pickaxe), Nether speed 1.6x and block list, quartz durability 220 and armor multiplier 13;
   - no armor trims on quartz armor.
+
+- **Fists "weaker" (owner, 2026-11-24):** the poster's "slower and weaker" means mining only; fist attack damage stays vanilla.

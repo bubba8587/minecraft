@@ -41,7 +41,7 @@ Parked ideas and open items, newest first within each project. Agents add to it 
 - **Renewability (owner, 2026-11-24):** trades and barters don't count. Still open: a deepslate recipe (owner undecided). Candidates noted: lapis, crying obsidian, gilded blackstone, end stone/netherrack (dimension-only). Horse armor and sponge: skipped. The andesite quartz loop (+1 quartz per cycle) stays as is (owner).
 - Person-made mod icon (none yet).
 - Real Glider art (16x and 32x, made by a person).
-- **Glider broken icon:** should the Glider switch to a "broken" icon at 1 durability like the elytra? Needs art (would go on `docs/art-todo.md`). Also playtest durability 324 (elytra 432).
+- **Glider durability:** playtest 324 (elytra 432). No broken icon (owner, 2026-11-24: skip).
 
 ## Bubba's Infused Gems
 - **26.4 Freezing gem (owner, 2026-11-24, for the 26.4 port):** 26.4 adds a Freezing potion; make a craftable (brewed) Freezing gem from it. Already promised on posters as [Coming in 26.4] (`specs/copy-strings.md`).
@@ -107,7 +107,6 @@ Left for next session:
 ## Bubba's Reworked Mining (C7)
 - Built (`specs/reworked-mining.md`). Owner to playtest every number in `MiningTuning`, decide whether stronger Efficiency should beat vanilla at Efficiency V diamond, how progress shows to the player, and review the builder's calls (spec "Open").
 - **Fist speed (built 2026-11-24):** playtest the builder's fist numbers (0.65 on soft blocks, 0.16 on stone and deepslate).
-- **Fist "weaker" wording:** the poster copy says fists are "slower and weaker", but only mining speed changed; fist attack damage is still vanilla (1). Nerf fist attack too, or is "weaker" fine as poster wording?
 - **Wrong tool vs fist:** a tool on a block it isn't meant for (pickaxe on a log) mines at vanilla hand speed, a little faster than our slowed fist. Should it count as a fist too?
 
 ## Bubba's World Tweaks (C8)
