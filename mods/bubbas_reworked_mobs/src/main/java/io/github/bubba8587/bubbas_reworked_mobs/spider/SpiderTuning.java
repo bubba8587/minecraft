@@ -99,6 +99,10 @@ public final class SpiderTuning {
 	public static final int LARDER_HEIGHT_MAX = 7;
 	public static final double CLIMB_SPEED = 0.15;
 	public static final int HAUL_GIVE_UP_TICKS = 300;
+	/** A giant on leaves with at least this much drop beside it is stranded in the canopy and lets itself down on silk. */
+	public static final int STRANDED_HEIGHT = 4;
+	/** How far round it looks for a clear column to drop down. */
+	public static final int DROP_SEARCH = 3;
 
 	/** Spinning: every 400-800 ticks while roaming, an orb web between two trunks 3-7 apart. */
 	public static final int SPIN_INTERVAL_MIN = 400;

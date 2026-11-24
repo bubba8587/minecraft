@@ -69,7 +69,9 @@ public class GiantSpider extends Spider implements Gripper {
 		/** Down off its perch, strolling near its cocoon until it's hungry. */
 		PROWL,
 		/** Walking back to the foot of its perch to climb up and feed. */
-		RETURN
+		RETURN,
+		/** Stranded up in the canopy (it spawned or wandered there): letting itself down on silk to the ground. */
+		DROP
 	}
 
 	/** Marks the little spiders it calls, to count them. */
@@ -95,6 +97,8 @@ public class GiantSpider extends Spider implements Gripper {
 	private Vec3 backOff = Vec3.ZERO;
 	private @Nullable Vec3 waitAnchor;
 	private @Nullable Vec3 landing;
+	/** A stranded drop: the point over its landing at the height it starts from. */
+	private @Nullable Vec3 dropColumn;
 	private static final net.minecraft.network.syncher.EntityDataAccessor<Boolean> DATA_UNDER =
 			net.minecraft.network.syncher.SynchedEntityData.defineId(GiantSpider.class, net.minecraft.network.syncher.EntityDataSerializers.BOOLEAN);
 	private float grip;
@@ -278,6 +282,7 @@ public class GiantSpider extends Spider implements Gripper {
 			case DESCEND -> tickDescend(level);
 			case PROWL -> tickProwl(level);
 			case RETURN -> tickReturn(level);
+			case DROP -> tickDrop(level);
 		}
 		sentGrip = Meters.sync(this, Meters.GRIP, catchHeld != null ? grip : 0.0F, sentGrip, SpiderTuning.GRIP_FULL);
 	}
@@ -285,6 +290,9 @@ public class GiantSpider extends Spider implements Gripper {
 	private void tickRoam(ServerLevel level) {
 		if (catchHeld == null && isVehicle()) {
 			ejectPassengers(); // a catch left riding it by a reload
+		}
+		if ((tickCount + getId()) % 20 == 0 && onGround() && getBlockStateOn().is(BlockTags.LEAVES) && startDrop(level)) {
+			return;
 		}
 		if ((tickCount + getId()) % 20 == 0 && getTarget() instanceof Player player) {
 			lure(level, player);
@@ -550,6 +558,68 @@ public class GiantSpider extends Spider implements Gripper {
 		setClimbing(false);
 		setHomeTo(larder, SpiderTuning.PROWL_RADIUS);
 		setTask(Task.PROWL);
+	}
+
+	/** Up on leaves well above the ground: picks a clear column beside it and lets itself down there. True if it starts. */
+	private boolean startDrop(ServerLevel level) {
+		BlockPos here = blockPosition();
+		BlockPos best = null;
+		int bestDrop = SpiderTuning.STRANDED_HEIGHT - 1;
+		for (BlockPos col : BlockPos.betweenClosed(here.offset(-SpiderTuning.DROP_SEARCH, 0, -SpiderTuning.DROP_SEARCH),
+				here.offset(SpiderTuning.DROP_SEARCH, 0, SpiderTuning.DROP_SEARCH))) {
+			if (!level.noCollision(this, getBoundingBox().move(col.getX() + 0.5 - getX(), 0.0, col.getZ() + 0.5 - getZ()))) {
+				continue;
+			}
+			int y = col.getY();
+			BlockPos.MutableBlockPos below = new BlockPos.MutableBlockPos(col.getX(), y - 1, col.getZ());
+			while (y > level.getMinY() && level.getBlockState(below).getCollisionShape(level, below).isEmpty() && level.getFluidState(below).isEmpty()) {
+				y--;
+				below.setY(y - 1);
+			}
+			int drop = here.getY() - y;
+			if (drop > bestDrop && !level.getBlockState(below).is(BlockTags.LEAVES)) {
+				bestDrop = drop;
+				best = new BlockPos(col.getX(), y, col.getZ());
+			}
+		}
+		if (best == null) {
+			return false;
+		}
+		landing = Vec3.atBottomCenterOf(best);
+		dropColumn = new Vec3(landing.x, getY(), landing.z);
+		getNavigation().stop();
+		setTarget(null);
+		setNoGravity(true);
+		setTask(Task.DROP);
+		taskTicks = 0;
+		return true;
+	}
+
+	/** Over to the clear column, then straight down it on silk; it prowls from where it lands. */
+	private void tickDrop(ServerLevel level) {
+		taskTicks++;
+		if (landing == null || dropColumn == null || taskTicks > SpiderTuning.HAUL_GIVE_UP_TICKS) {
+			landing = null;
+			dropColumn = null;
+			endTask();
+			return;
+		}
+		setDeltaMovement(Vec3.ZERO);
+		resetFallDistance();
+		Vec3 goal = position().distanceToSqr(dropColumn) > 0.01 && getY() >= dropColumn.y - 0.01 ? dropColumn : landing;
+		Vec3 step = goal.subtract(position());
+		double len = step.length();
+		if (len > SpiderTuning.CLIMB_SPEED) {
+			Vec3 move = step.scale(SpiderTuning.CLIMB_SPEED / len);
+			setPos(getX() + move.x, getY() + move.y, getZ() + move.z);
+			return;
+		}
+		setPos(goal.x, goal.y, goal.z);
+		if (goal == landing) {
+			landing = null;
+			dropColumn = null;
+			endTask();
+		}
 	}
 
 	private boolean cocoonGone() {

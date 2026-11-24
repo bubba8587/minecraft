@@ -142,6 +142,7 @@ Player-facing: `player-docs/Projects/Bubba's Reworked Mobs/Spiders.md`. Numbers 
   - go for nearby livestock before players, and turn from a player to an animal close by. Not if that player hurt them in the last 5 s;
   - call 2 little spiders when hurt: half size, 3 hearts, a weak bite. At most 4 alive, and a 10 s wait between calls;
   - take no fall damage (they come down on silk);
+  - **stranded in the canopy** (owner, 2026-11-23: one placed on a treetop never got down; the pathfinder won't plan big drops or go through leaves): a roaming giant standing on leaves checks once a second for a clear column within 3 blocks (`DROP_SEARCH`) with at least a 4-block drop (`STRANDED_HEIGHT`) to non-leaf ground, moves over to it and lets itself down on silk (task `DROP`, `CLIMB_SPEED`), then roams. Milestone test `GiantSpiderGameTest.strandedInTheCanopyComesDown`;
   - drop more string (3-6) and spider eyes (1-3) than a vanilla spider. This is the default until the owner decides on a unique drop.
 - While a giant hauls an animal, hitting it loosens its grip (the drowned rules). At 0 it drops the animal.
 - **Spun webs:**

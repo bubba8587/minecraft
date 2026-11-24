@@ -69,6 +69,25 @@ public class GiantSpiderGameTest {
 		helper.succeed();
 	}
 
+	/** Stranded on a canopy (leaves 10 up on a trunk), it lets itself down on silk to the floor. */
+	@GameTest(environment = SpiderGameTest.ENV, structure = SpiderGameTest.ROOM, maxTicks = 400)
+	public void strandedInTheCanopyComesDown(GameTestHelper helper) {
+		for (int y = 1; y < 10; y++) {
+			helper.setBlock(new BlockPos(4, y, 4), Blocks.SPRUCE_LOG);
+		}
+		for (int dx = -1; dx <= 1; dx++) {
+			for (int dz = -1; dz <= 1; dz++) {
+				helper.setBlock(new BlockPos(4 + dx, 10, 4 + dz), Blocks.SPRUCE_LEAVES.defaultBlockState().setValue(net.minecraft.world.level.block.LeavesBlock.PERSISTENT, true));
+			}
+		}
+		GiantSpider giant = giant(helper, 4.5, 4.5);
+		Vec3 top = helper.absoluteVec(new Vec3(4.5, 11.0, 4.5));
+		giant.snapTo(top.x, top.y, top.z, 0.0F, 0.0F);
+		double floor = helper.absoluteVec(new Vec3(0.0, 1.0, 0.0)).y;
+		helper.succeedWhen(() -> helper.assertTrue(giant.task() == GiantSpider.Task.ROAM && Math.abs(giant.getY() - floor) < 0.1,
+				"still up at y " + giant.getY() + " (" + giant.task() + ")"));
+	}
+
 	/** Livestock is a distraction: hunting a player, it turns to a pig close by. */
 	@GameTest(environment = SpiderGameTest.ENV, structure = SpiderGameTest.ROOM, maxTicks = 60)
 	public void livestockLuresItOffAPlayer(GameTestHelper helper) {
