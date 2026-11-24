@@ -40,7 +40,7 @@ Using the totem teleports the player to the block they are aiming at, up to 32 b
 
 A landing spot is safe when the player fits there and it has no lava, fire, campfire, powder snow, magma block, cactus, sweet berry bush or wither rose in or under it. The void is never a landing spot. Water is allowed, and the aim passes through grass, flowers and water.
 
-The player is taken off any mount first, keeps facing the same way and takes no fall damage from the jump. An enderman's teleport sound and portal particles mark both ends.
+The player is taken off any mount first, keeps facing the same way and takes no fall damage from the jump. Like an ender pearl, each teleport deals 2.5 hearts of damage. An enderman's teleport sound and portal particles mark both ends.
 
 ## Statue
 

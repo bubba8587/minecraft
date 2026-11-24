@@ -23,7 +23,7 @@ The owner's design started from the idea in `docs/research/camps-blood-moon-idea
 | Medium | 35 % | 8 | 5 + 1 | 2 | 0-2 | 1-2 |
 | Large | 20 % | 11 | 7 + 1 | 3 | 0-3 | 1-2 |
 
-- **Roster:** appears when a player comes within **48 blocks**.
+- **Roster:** appears when a player comes within **48 blocks**, **only at night** (owner; `!level.isBrightOutside()` in `CampSites.tick`, so always in the Nether). By day a camp's mobs are there only if they appeared the night before. Trigger tests run in the `camp_night` test environment.
   - Archers (skeleton, stray, bogged) man the towers first; the rest stand round the fire (by day, in the shade).
   - Camp monsters stay at their camp (a home radius) and never despawn. Zombie camps have no babies.
   - About half wear a leather or chain helmet; some zombies and husks (40 %) carry stone swords or axes.
@@ -83,6 +83,7 @@ Prior art taken: Breath of the Wild bokoblin camps (skull rocks entered by the m
   - detail-lite (owner): bold features only. A big cranium over a narrower jaw, a brow ledge one out over two 3 x 3 eye sockets, a nose hole, and the mouth (5 wide, 2 high) as the door. Eyes and nose are plain holes into the hollow;
   - materials (`skullBone`): the brow (dy 9, w 5) is quartz pillar across the face; otherwise 70 % bone block, 15 % calcite, 10 % smooth quartz, 5 % quartz block; base ring bone block;
   - inside: a trodden floor and a mob skull, dark; the inside floor cells are shade spots.
+- **Skull yard (owner: stuff on all sides of the skull):** a skull rock gets 4-6 pieces round its sides and back (70°-290° from its front), 8-9 blocks from its middle: the first a banner, the rest skull pikes or small outcrops (`Plan.skullYard`, `SKULL_YARD_*`). Trodden ground spreads 10 round the skull's middle too, and large overworld camps' bounding box reaches 21 out to hold it.
 - **Half-buried skull:** half of all skull rocks (from the skull's own seed bit), sunk 4: the cranium, brow and eyes show. The left eye (seen from the front) is the way in, with a bone-block step; the other eye stays dark.
 - **Winding tower** (large camps, 1 in 4; footprint 7 x 7): a 5 x 5 log-and-plank core 12 to 14 high, a 1-wide stair winding clockwise round the outside (corner landings on log posts), log bands every 5 blocks, fence window slits, doorways off the stair, a railed top with a slab roof on posts. Archer spot at the top; the top 3 x 3 are shade spots.
 - **Ribcage arch** (large camps, 1 in 3; footprint 9 x 7, 7 from the centre): a bone spine 5 up, 4 ribs each side curling in at the ground, a 3-wide path under it.

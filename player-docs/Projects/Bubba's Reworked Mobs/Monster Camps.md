@@ -45,7 +45,7 @@ The number of each part varies, so no two camps look alike. No part is ever buil
 
 Large camps can have bigger landmarks, so a camp often reads as a plan from a distance:
 
-- **Skull rocks:** a huge hollow skull of bone, calcite and quartz, with a heavy brow over dark eye sockets. The way in is through the mouth. Half of them are **half-buried**, with only the top of the skull and the eyes showing; the way in is through one eye.
+- **Skull rocks:** a huge hollow skull of bone, calcite and quartz, with a heavy brow over dark eye sockets. The way in is through the mouth. Half of them are **half-buried**, with only the top of the skull and the eyes showing; the way in is through one eye. Pikes, rock piles and a banner stand round its sides and back, so the skull sits inside the camp.
 - **Winding towers:** a tall log tower, 12 to 14 blocks high, with a wooden stair winding round the outside and an archer on the railed top.
 - **Ribcage arches:** a giant bone spine with ribs curling down to the ground, and a path running under it.
 
@@ -57,7 +57,7 @@ A stair tunnel leads down to a dark room under the camp, with rock walls, a beam
 
 ## The roster
 
-- The camp's monsters appear when a player comes within about 48 blocks.
+- The camp's monsters appear when a player comes within about 48 blocks at night. By day they are only there if they appeared the night before.
 - Archers man the towers and the rest stand round the fire.
 - They stay at their camp and never despawn. Zombie camps have no babies.
 - About half wear a leather or chain helmet, and some zombies and husks carry stone swords or axes.
