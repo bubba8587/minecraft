@@ -24,9 +24,14 @@ A craftable, weaker cousin of the elytra.
 ### The item
 
 - Its own registered item, `registry/ModItems.GLIDER` (not a modified elytra), so it can have its own model, wings and flight rules.
-- Plain `Item`, stack size 1, uncommon rarity (yellow name, below the elytra's purple: owner confirmed).
+- Plain `Item`, stack size 1 (set by `durability`), uncommon rarity (yellow name, below the elytra's purple: owner confirmed).
 - Components `minecraft:glider` and `minecraft:equippable`: chest slot, elytra equip sound, asset `bubbas_extra_recipes:glider` (our own wing model), no damage on hurt.
-- **No durability** (no `max_damage`). The owner dislikes durability; the Glider's nerf is entirely in how it flies. Easy to add later if wanted.
+- **Durability 324** (`ModItems.GLIDER_DURABILITY`), via `Item.Properties#durability` (components `max_damage` 324, `damage` 0, `max_stack_size` 1; no explicit `stacksTo(1)`, `durability` sets it). **Repairable** with phantom membrane (`minecraft:repairable`, `Properties#repairable(Items.PHANTOM_MEMBRANE)`), same as the elytra.
+  - 324 is three quarters of the elytra's 432 (builder's number, owner to playtest; one constant): the Glider is far cheaper and craftable any time, so it wears out sooner, but it flies slower and turns worse, so trips take longer; half (216, about 3.6 minutes of gliding) felt too punishing.
+  - One phantom membrane restores 25 % (81 points, about 81 seconds of gliding).
+- **No wear code of our own:** vanilla `LivingEntity#updateFallFlying` damages a random worn `glider` item by 1 every 20 gliding ticks (server side), and `LivingEntity#canGlideUsing` refuses any glider item whose next damage would break it (`ItemStack#nextDamageWillBreak`), so gliding stops at 1 durability and the item never breaks in flight. A creative player (infinite materials) takes no wear. Armor hits don't wear it (no damage on hurt).
+- **Enchanting:** item tags (mod data) `data/minecraft/tags/item/enchantable/durability.json` (Mending, Unbreaking, Curse of Vanishing) and `enchantable/equippable.json` (Curse of Binding) list the Glider, matching the elytra's tag memberships. Not in `enchantable/armor`, so Unbreaking uses the non-armor chance, as on the elytra. No `enchantable` component, so no enchanting table, as on the elytra (books at an anvil only).
+- **No broken-look icon:** the elytra swaps to a "broken" item model at 1 durability; the Glider keeps its normal icon (the durability bar shows the state). A broken icon is open for the owner (`BACKLOG.md`).
 - In the Tools & Utilities creative tab after the elytra (owner confirmed).
 - **Recipe** `data/bubbas_extra_recipes/recipe/glider.json` (mod data, not the datapack): the owner's original elytra recipe. Diamond, bamboo, diamond / phantom membrane, empty, phantom membrane / feather, empty, feather. Result: one Glider.
 
@@ -91,7 +96,8 @@ All objectives have tests. Test-lite (`specs/quality.md`, "Test suites"): `Extra
 - **Core** (`ExtraRecipesCoreGameTest`, 3 tests): the bundled datapack is on and its recipes load; the Glider turns slower than an elytra; synthetic ore uses its own loot table and gives no XP.
 - **`BundledPacksGameTest.bundledDatapackIsEnabledAndItsRecipesExist`:** the built-in datapack is selected and every recipe file in the bundled copy is loaded, with only this mod installed.
 - **`GliderGameTest`:**
-  - `gliderHasGliderAndEquippableAndNoDurability`
+  - `gliderHasGliderEquippableAndDurability`: max damage 324, damage 0, repaired by phantom membrane (not diamond), in `enchantable/durability` and `enchantable/equippable`, glides from the chest slot, stack size 1.
+  - `gliderWearsWhileGlidingAndStopsAtOneDurability`: a survival mock player gliding; 200 steps of the game's `updateFallFlying` cost exactly 10 durability; a Glider two points from breaking drops to its last point, then gliding stops, the Glider is still there with 1 durability left and `canGlideUsing` is false.
   - `gliderRecipeCraftsOneGlider`
   - `gliderTurnsSlowerThanElytra`: same start, east at 1 block a tick looking north, 20 steps of the game's `updateFallFlyingMovement`. The Glider is still well off its heading and keeps ~0.29 of its sideways speed, against ~0.10 for the elytra; vertical speed identical.
   - `rocketAddsLessSpeedToGlider`: same start, 8 ticks of an attached rocket. Elytra above 1.4 blocks a tick, Glider below 75 % of that.
@@ -111,4 +117,5 @@ All objectives have tests. Test-lite (`specs/quality.md`, "Test suites"): `Extra
 ## Open
 
 - Real Glider art (item and wings, 16x and 32x) and a mod icon, both made by a person (`BACKLOG.md`).
-- Glider numbers (turn blend 0.03, rocket power 0.6) and Synthetic Diamond Ore's 25 % are starting values to tune by playtest.
+- Whether the Glider gets a "broken" icon at 1 durability like the elytra (needs art; would go on `docs/art-todo.md`).
+- Glider numbers (turn blend 0.03, rocket power 0.6, durability 324) and Synthetic Diamond Ore's 25 % are starting values to tune by playtest.

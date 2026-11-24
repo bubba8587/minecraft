@@ -174,5 +174,5 @@ Descriptive strings (owner's wording; the renewable list was filled in from the 
 Feature names: Extra Recipes, The Glider, Synthetic Diamond Ore.
 
 ### Not allowed
-- "Never breaks" for the Glider (it's getting durability, see `BACKLOG.md`).
+- "Never breaks" for the Glider (it has durability now, like the elytra).
 - Agent drafts replaced by the owner's wording above (2026-11-24): "New recipes for grindy and hard-to-get items...", "Craft your own Trident from prismarine shards and crystals.", "The Glider: a craftable, weaker cousin of the Elytra that never breaks.", "Cook a block of coal for long enough and it becomes Synthetic Diamond Ore...", "Works as a datapack in plain vanilla, or as a Fabric mod with extra features."

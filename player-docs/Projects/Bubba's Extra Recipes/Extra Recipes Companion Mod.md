@@ -21,7 +21,7 @@ The mod must be installed on **both the server and every player's game**. A play
 
 ## Features
 
-- **[[The Glider]]**: a craftable glider that never breaks but handles worse than an elytra.
+- **[[The Glider]]**: a craftable glider that handles worse than an elytra and wears out a little sooner.
 - **[[Synthetic Diamond Ore]]**: placed ore from the blast-furnace recipe rarely drops a diamond when mined.
 
 ## History

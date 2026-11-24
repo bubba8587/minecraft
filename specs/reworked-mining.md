@@ -36,6 +36,7 @@ Nothing on 26.3 does this. The nearest mods go the other way (Deepslate Tweaks: 
 - **Other tools** (axes, shovels, hoes, and pickaxes on non-stone blocks): wood and stone are a little slower, iron and up are vanilla, netherite a little faster.
 - **Efficiency multiplies the tool's own speed**, so it matters on every tier. An Efficiency V iron pickaxe mines deepslate a little faster than a bare diamond one; Efficiency V diamond is as fast as in vanilla.
 - **Unbreaking:** at level III a tool loses about 1 durability in 7 (vanilla 1 in 4). Armor gets the same extra protection on top of its vanilla odds.
+- **Bare hands** mine slower than vanilla, a step below wooden tools: soft blocks (logs, planks, dirt, sand, gravel, leaves) about 1.5x slower, stone and deepslate very slow (and still no drops, as in vanilla). Blocks that break instantly in vanilla still do. Holding a non-tool item counts as bare hands.
 - **Haste** (potion, beacon) and Infused Gems' Haste gems still multiply on top of all of this.
 - No new tooltip lines (owner's minimal-tooltips preference).
 
@@ -52,8 +53,10 @@ Speed factor multiplies the tool's vanilla speed (0.5 = takes twice as long). We
 | Gold **(builder)** | 0.67 | 0.33, no drops | 1.0 | 1 | 3 |
 | Diamond | 1.0 | 1.0 | 1.0 | 1 | 1 |
 | Netherite | 1.2 | 1.2 | 1.1 | 1 | 1 |
+| Fist **(builder)** | 0.16 | 0.16 | 0.65 | none | none |
 
 - In seconds (on the ground, no Haste): iron on deepslate about 1.9 s per block (vanilla 0.75 s); stone pickaxe on deepslate about 9 s; wood on stone about 3.4 s (vanilla 1.15 s).
+- Fists (`MiningTuning.FIST`; Nether blocks use "other"), on the ground, no Haste, vanilla -> now: oak log or planks (hardness 2) 3.0 s -> 4.65 s (60 -> 93 ticks; our wooden axe takes 2.15 s, vanilla 1.5 s); dirt, sand 0.75 s -> 1.2 s; gravel 0.9 s -> 1.4 s; leaves 0.3 s -> 0.5 s; stone (not harvestable by hand) 7.5 s -> about 47 s; deepslate 15 s -> about 94 s. Hardness-0 blocks stay instant (vanilla's progress is speed / hardness).
 - An iron pickaxe lasts about 83 deepslate blocks bare, about 580 with Unbreaking III.
 - Efficiency multiplier by level 0-V: 1.0, 1.5, 2.1, 2.8, 3.5, 4.25. Higher levels (commands, other mods) keep adding 0.75 per level.
 - Extra Unbreaking cancel chance at I/II/III: 0.333, 0.40, 0.43. Tools then keep a point with odds 1/3, 1/5, 1/7.
@@ -126,6 +129,8 @@ Owner: a full quartz set "for use in the nether". These are new items (B15 only 
   - Other mods' tools stay vanilla unless a datapack adds them to a tier tag.
   - Swords keep vanilla wear (2 per block).
   - Spears, shears and maces aren't on the curve.
+- **Fist factors:** each is wood's factor times the wood/stone ratio on that kind of block, so fists sit one step below wood the way wood sits below stone. Stone: 0.33 x (0.33 / 0.67) ~ 0.16. Other: 0.70 x (0.70 / 0.75) ~ 0.65. Deepslate copies stone (wood can't mine deepslate, so there is no ratio to follow).
+- **What counts as a fist:** an empty hand or any item without a `minecraft:tool` component. A tool on a block it isn't meant for (a pickaxe on a log) keeps vanilla's speed 1, so it is a little faster than a fist there.
 - **Wood wears 3 per deepslate block** even though nothing drops, so trying it is a bad deal.
 - **Unbreaking on armor** gets the same extra roll as tools (the owner said Unbreaking is stronger; armor wasn't singled out).
 - **True Unbreaking chest list and odds** (table above; the noble crypt 20 % is the owner's). Fabricator offices don't have it.
@@ -140,6 +145,7 @@ Owner: a full quartz set "for use in the nether". These are new items (B15 only 
   - Haste, Mining Fatigue, `block_break_speed` (gems), water and air apply after it, as in vanilla.
   - It runs on both sides, and both sides read only synced data (tags, components).
   - Like vanilla's Efficiency, the curve leaves the speed alone when the tool isn't meant for the block (speed 1, the hand's). A tool in no tier tag stays exactly vanilla.
+  - Fists: when `MiningCurve.isFist(stack)`, `MiningCurve.speed` multiplies the held item's speed by `MiningTuning.FIST`'s factor for the block kind, in the same mixin.
 - **Wear:** a mixin on `Item.mineBlock` replaces the Tool component's damage-per-block on harsh blocks. It still goes through `hurtAndBreak`, so Unbreaking rolls for every point.
 - **Wood and gold can't harvest deepslate:** data only (`#harsh_deepslate` added to `minecraft:incorrect_for_wooden_tool` and `incorrect_for_gold_tool`).
 - **Stronger Unbreaking:** Fabric `EnchantmentEvents.MODIFY_WITH_LOOKUP` appends a second `remove_binomial` item-damage effect to vanilla Unbreaking. Vanilla's file is untouched.
@@ -150,7 +156,7 @@ Owner: a full quartz set "for use in the nether". These are new items (B15 only 
 ## Tests
 
 - **Core** (`BubbasReworkedMiningCoreGameTest`, every build):
-  - `curveSlowsDeepslateAndEfficiencyMultiplies`: tier factors and the Efficiency V multiplier reach `Player.getDestroySpeed`.
+  - `curveSlowsDeepslateAndEfficiencyMultiplies`: tier factors and the Efficiency V multiplier reach `Player.getDestroySpeed`. Fists: an empty hand on an oak log gets `FIST.other()`, a stick on stone `FIST.stone()`, a wooden axe beats a fist on a log, and short grass still breaks instantly by hand (`getDestroyProgress >= 1`).
   - `deepslateWearsToolsAndWoodCantHarvestIt`: iron wear on deepslate and on stone; wood can't harvest deepslate, stone can.
   - `findsFromStoneButNotWithSilkTouch`: 3000 rolls with Fortune III give about the tuned rate; Silk Touch gives zero.
   - `unbreakingStrongerAndTrueUnbreakingIsTotal`: Unbreaking III keeps about 1/7. True Unbreaking takes zero damage on an elytra, is incompatible with Mending, and is in none of the enchanting table, tradeable or random-loot tags.
@@ -169,6 +175,7 @@ Owner: a full quartz set "for use in the nether". These are new items (B15 only 
 - Efficiency and Unbreaking levels give the stronger values, including Unbreaking I and II and the armor odds.
 - Finds drop from stone and deepslate (placed or natural) at the tuned odds, with the deepslate diamond weight, never with Silk Touch; explosions give them only at no-Fortune odds.
 - Haste and gem `block_break_speed` stack on top.
+- Fist factors on deepslate and a Nether block match `MiningTuning.FIST`; Haste and gem `block_break_speed` stack on fists.
 - True Unbreaking stops all durability loss, isn't offered by the enchanting table or villagers, and can't combine with Mending (core); books in noble crypts at about 20 % with Reworked Mobs.
 - Every quartz recipe crafts; repairing with a quartz block works; quartz on each Nether block is 1.6x; quartz armor protection values.
 
@@ -181,6 +188,7 @@ Owner: a full quartz set "for use in the nether". These are new items (B15 only 
   - gold can't mine deepslate;
   - which blocks count as stone or deepslate, and which give finds;
   - swords, spears, shears and maces off the curve;
+  - fist factors (0.65 soft, 0.16 stone and deepslate), and whether a tool on the wrong block (pickaxe on a log) should count as a fist;
   - Unbreaking's extra roll on armor;
   - explosions give finds;
   - the quartz recipe (12 quartz per pickaxe), Nether speed 1.6x and block list, quartz durability 220 and armor multiplier 13;
