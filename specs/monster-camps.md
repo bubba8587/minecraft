@@ -23,10 +23,11 @@ The owner's design started from the idea in `docs/research/camps-blood-moon-idea
 | Medium | 35 % | 8 | 5 + 1 | 2 | 0-2 | 1-2 |
 | Large | 20 % | 11 | 7 + 1 | 3 | 0-3 | 1-2 |
 
-- **Roster:** appears when a player comes within **48 blocks**, **only at night** (owner; `!level.isBrightOutside()` in `CampSites.tick`, so always in the Nether). By day a camp's mobs are there only if they appeared the night before. Trigger tests run in the `camp_night` test environment.
+- **Roster:** appears when a player comes within **48 blocks**, day or night (owner, 2026-11-24, reversing the earlier night-only rule); by day it appears in the shade. Trigger tests still run in the `camp_night` test environment.
   - Archers (skeleton, stray, bogged) man the towers first; the rest stand round the fire (by day, in the shade).
   - Camp monsters stay at their camp (a home radius) and never despawn. Zombie camps have no babies.
-  - About half wear a leather or chain helmet; some zombies and husks (40 %) carry stone swords or axes.
+  - Armour is vanilla's own spawn roll only (owner: roughly vanilla frequency; `Mob.populateDefaultEquipmentSlots`, at most 15 % times the regional difficulty multiplier, helmet first). No extra helmet roll, so most members burn by day. Some zombies and husks (40 %) carry stone swords or axes.
+  - **Leash (owner):** a camp mob more than `CampTuning.LEASH_RANGE` (32) blocks from its home spot drops its target and walks home, ignoring players until back inside its home radius (`CampMemberMixin`; not saved, so a reload lets it chase again).
 - **Leader (owner):** one per camp, the same mob type, **slightly larger, tougher, better gear**, and **no banner**.
   - **1.25x size** (vanilla `scale` attribute), **2.5x health**, +3 attack damage (melee kinds), half knockback resistance.
   - Iron helmet and chestplate; an **iron axe** (zombie, husk) or a **Power II bow** (archer kinds).
@@ -204,7 +205,8 @@ The owner asked for guaranteed shade spots and one small-to-medium underground r
 
 ## Milestone test objectives
 
-- A camp's roster appears when a player comes within range, with one larger, tougher, better-geared leader.
+- A camp's roster appears when a player comes within range, by day or night, with one larger, tougher, better-geared leader.
+- A camp mob lured more than 32 blocks from home drops its target and walks back inside its home radius.
 - Breaking every banner in a camp stops it for good. Placing a matching banner back in its area brings it back.
 - An outpost with every banner broken spawns no pillagers. Putting one back restores them.
 - Camp pieces never overlap, 32 seeds per kind and size (`CampsGameTest.campPiecesNeverOverlap`).

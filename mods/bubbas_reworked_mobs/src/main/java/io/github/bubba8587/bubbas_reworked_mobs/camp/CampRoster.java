@@ -193,9 +193,6 @@ public final class CampRoster {
 	}
 
 	private static void gear(Mob mob, CampKind kind, RandomSource random) {
-		if (random.nextFloat() < CampTuning.MEMBER_HELMET) {
-			mob.setItemSlot(EquipmentSlot.HEAD, new ItemStack(random.nextBoolean() ? Items.LEATHER_HELMET : Items.CHAINMAIL_HELMET));
-		}
 		if (!kind.archers() && mob.getMainHandItem().isEmpty() && random.nextFloat() < CampTuning.MEMBER_WEAPON) {
 			mob.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(random.nextBoolean() ? Items.STONE_SWORD : Items.STONE_AXE));
 		}

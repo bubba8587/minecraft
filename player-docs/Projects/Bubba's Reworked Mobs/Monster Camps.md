@@ -57,10 +57,11 @@ A stair tunnel leads down to a dark room under the camp, with rock walls, a beam
 
 ## The roster
 
-- The camp's monsters appear when a player comes within about 48 blocks at night. By day they are only there if they appeared the night before.
+- The camp's monsters appear when a player comes within about 48 blocks, day or night. By day they appear in the shade.
 - Archers man the towers and the rest stand round the fire.
 - They stay at their camp and never despawn. Zombie camps have no babies.
-- About half wear a leather or chain helmet, and some zombies and husks carry stone swords or axes.
+- They wear armor about as often as ordinary monsters do (rarely), and some zombies and husks carry stone swords or axes.
+- They guard their camp rather than hunt you down: chase one more than about 32 blocks from camp and it gives up and walks back.
 - By day they keep to the shade: under the lean-to, under the tower roofs, or down in the underground room. Caught in the sun, they burn like any other undead (husks don't).
 
 **The leader** is the same kind of monster, a bit bigger and much tougher, with more than twice the health. It wears an iron helmet and chestplate and carries an iron axe (zombies and husks) or a strong bow (skeletons, strays and bogged). It does not carry a banner. It drops its weapon half the time, and each armor piece one time in five.
