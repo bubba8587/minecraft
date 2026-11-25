@@ -314,7 +314,7 @@ Mobs had trouble climbing the stair tunnel out of the lower room. Reproduced wit
 - **Ideas:** bridges to outcrops or skull tops, ramps up rock outcrops; nether fossil templates (`nether_fossils/fossil_*` via StructureTemplate through the plan) as bone dressing near skulls or outcrops; levelling rough ground. Ramps and towers on rough ground are only checked on flat ground and the natural camp.
 - **Builder's calls to review:** the Builder's choices list above (camp bogged don't lurk, re-arming waits for the next daily check, rosters show for creative players).
 - **Patrols, playtest:** the spawner reads camp structure starts within 320 blocks (forcing chunks to structure starts, as vanilla locate does); watch for hitches flying fast into new land. Patrol state isn't saved (see Builder's choices).
-- **Bogged camp weeds:** brown mushrooms can fail to survive once daylight reaches them; weed placement should check light.
+- **Bogged camp weeds:** brown mushrooms can fail to survive in daylight on 26.3; no fix: 26.4 stops light from breaking mushrooms (owner).
 - **Relic map shreds** in the tower and skull chests: owner to decide (`BACKLOG.md`).
 - **Nether outposts (owner to decide):** rarity (spacing 22), whether piglins may hunt the penned hoglins (now they can't), whether netherite scrap stays in the room chest. In `BACKLOG.md`.
 
