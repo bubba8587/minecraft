@@ -67,4 +67,7 @@ public final class CaptainTuning {
 	public static final float CHARGE_BURN_SECONDS = 5.0F;
 	/** How often (ticks) a summoned blaze checks its captain is still alive. */
 	public static final int BLAZE_LINK_CHECK = 20;
+
+	/** A Soulfire Blaze's smoke: each of vanilla's two large smoke puffs a tick becomes a soul particle 1 in this many times. */
+	public static final int SOUL_SMOKE_ONE_IN = 6;
 }

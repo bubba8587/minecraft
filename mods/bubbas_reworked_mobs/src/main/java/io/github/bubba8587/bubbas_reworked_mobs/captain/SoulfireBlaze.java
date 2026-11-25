@@ -62,7 +62,7 @@ public class SoulfireBlaze extends Blaze {
 			return;
 		}
 		level.sendParticles(ParticleTypes.SOUL_FIRE_FLAME, this.getX(), this.getY(0.5), this.getZ(), 25, 0.3, 0.5, 0.3, 0.03);
-		level.sendParticles(ParticleTypes.LARGE_SMOKE, this.getX(), this.getY(0.5), this.getZ(), 10, 0.3, 0.5, 0.3, 0.02);
+		level.sendParticles(ParticleTypes.SOUL, this.getX(), this.getY(0.5), this.getZ(), 6, 0.3, 0.5, 0.3, 0.02);
 		this.playSound(SoundEvents.FIRE_EXTINGUISH, 1.0F, 0.8F);
 		this.discard();
 	}

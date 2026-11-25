@@ -5,6 +5,7 @@
 	"mixins": [
 		"BellBlockMixin",
 		"BlazeAttackGoalMixin",
+		"BlazeSmokeMixin",
 		"BoggedLurkMixin",
 		"CampMemberMixin",
 		"FireWardMixin",
