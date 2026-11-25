@@ -15,8 +15,8 @@ import net.minecraft.world.phys.Vec3;
  * The Boss Piglin's throne, vanilla blocks: a 2 x 2 seat of polished blackstone brick slabs with a backrest row behind
  * it, and crimson shelf armrests either side of the seat (4 wide x 3 deep in all). Offsets are from the front seat cell
  * on the seated boss's left; the other cell of a row is {@code facing.getClockWise()} of it and the rows go back along
- * {@code facing.getOpposite()}; the left armrest is at across -1. Backrest, bottom to top: polished blackstone bricks,
- * gilded blackstone, chiseled polished blackstone, gold blocks.
+ * {@code facing.getOpposite()}; the left armrest is at across -1. Backrest, bottom to top: stripped crimson hyphae,
+ * gilded blackstone, chiseled polished blackstone, gold blocks, framed by stripped crimson stem posts with fence tops.
  */
 public final class ThroneDesign {
 	public static final int WIDTH = 2;
@@ -46,12 +46,20 @@ public final class ThroneDesign {
 				out.add(new Placed(at(side, back, across, 0, depth), seat));
 			}
 		}
-		// armrests: crimson shelves beside the seat, their backs outward
+		// armrests: crimson shelves beside the seat, their backs inward against the seat
 		for (int depth = 0; depth < 2; depth++) {
-			out.add(new Placed(at(side, back, -1, 0, depth), Blocks.CRIMSON_SHELF.defaultBlockState().setValue(ShelfBlock.FACING, side)));
-			out.add(new Placed(at(side, back, WIDTH, 0, depth), Blocks.CRIMSON_SHELF.defaultBlockState().setValue(ShelfBlock.FACING, side.getOpposite())));
+			out.add(new Placed(at(side, back, -1, 0, depth), Blocks.CRIMSON_SHELF.defaultBlockState().setValue(ShelfBlock.FACING, side.getOpposite())));
+			out.add(new Placed(at(side, back, WIDTH, 0, depth), Blocks.CRIMSON_SHELF.defaultBlockState().setValue(ShelfBlock.FACING, side)));
 		}
-		Block[] column = {Blocks.POLISHED_BLACKSTONE_BRICKS, Blocks.GILDED_BLACKSTONE, Blocks.CHISELED_POLISHED_BLACKSTONE, Blocks.GOLD_BLOCK};
+		// crimson posts at the back corners, framing the backrest
+		BlockState post = Blocks.STRIPPED_CRIMSON_STEM.defaultBlockState();
+		for (int y = 0; y < HEIGHT - 1; y++) {
+			out.add(new Placed(at(side, back, -1, y, 2), post));
+			out.add(new Placed(at(side, back, WIDTH, y, 2), post));
+		}
+		out.add(new Placed(at(side, back, -1, HEIGHT - 1, 2), Blocks.CRIMSON_FENCE.defaultBlockState()));
+		out.add(new Placed(at(side, back, WIDTH, HEIGHT - 1, 2), Blocks.CRIMSON_FENCE.defaultBlockState()));
+		Block[] column = {Blocks.STRIPPED_CRIMSON_HYPHAE, Blocks.GILDED_BLACKSTONE, Blocks.CHISELED_POLISHED_BLACKSTONE, Blocks.GOLD_BLOCK};
 		for (int y = 0; y < column.length; y++) {
 			for (int across = 0; across < WIDTH; across++) {
 				out.add(new Placed(at(side, back, across, y, 2), column[y].defaultBlockState()));
