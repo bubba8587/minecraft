@@ -33,6 +33,10 @@ public final class ModCreativeTabs {
 							}
 						}
 						output.accept(ModItems.GRAVESTONE);
+						output.accept(ModItems.CAPTAINS_HELM);
+						output.accept(ModItems.NETHER_STAR_SHARD);
+						output.accept(ModItems.WITHER_CAPTAIN_SPAWN_EGG);
+						output.accept(ModItems.SOULFIRE_BLAZE_SPAWN_EGG);
 					})
 					.build());
 

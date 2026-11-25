@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:entity",
+  "pools": [
+    {
+      "entries": [
+        {
+          "type": "minecraft:loot_table",
+          "value": "minecraft:entities/blaze"
+        }
+      ],
+      "rolls": 1
+    }
+  ],
+  "random_sequence": "bubbas_reworked_mobs:entities/soulfire_blaze"
+}

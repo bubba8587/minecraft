@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "bubbas_reworked_mobs:nether_star_shard",
+    "bubbas_reworked_mobs:nether_star_shard",
+    "bubbas_reworked_mobs:nether_star_shard",
+    "bubbas_reworked_mobs:nether_star_shard"
+  ],
+  "result": {
+    "id": "minecraft:nether_star"
+  }
+}
