@@ -262,8 +262,8 @@ def main():
 		material=lambda pal: {k: ("crack" if lch(c)[1] > 0.05 else "rock") for k, c in pal.items()})
 
 	icon = soulguard_flame_lock(v)
-	save_pair(icon, "mob_effect/soulguard.png", outline_lum=0,
-		material=lambda pal: {k: ("flame" if lch(c)[1] > 0.06 else "metal") for k, c in pal.items()})
+	mc.save(icon, "mob_effect/soulguard.png")
+	mc.save32(icon.resize((icon.width * 2, icon.height * 2), Image.NEAREST), "mob_effect/soulguard.png")  # the flame is already doubled
 
 
 if __name__ == "__main__":
