@@ -89,6 +89,10 @@ public class BossPiglinClientGameTest implements FabricClientGameTest {
 			context.waitTicks(20);
 			tp(context, server, x - 8.5, y + 1.6, z - 3.5, 0.0F, 12.0F);
 			context.takeScreenshot("bosspiglin-cape-back");
+			// egg-spawned (no throne, so fleeing) and standing still: no flailing
+			tp(context, server, x - 8.5, y + 1.6, z + 5.5, 180.0F, 12.0F);
+			context.waitTicks(10);
+			context.takeScreenshot("bosspiglin-standing-front");
 			onServer(server, level -> {
 				for (BossPiglin b : level.getEntitiesOfClass(BossPiglin.class, new net.minecraft.world.phys.AABB(x - 30, y - 5, z - 30, x + 40, y + 10, z + 30),
 						b -> !b.isNoAi())) {

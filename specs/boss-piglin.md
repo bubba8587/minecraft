@@ -11,7 +11,7 @@ A fat piglin boss on a throne in Nether outposts (`specs/monster-camps.md`, "Net
 - **Trimmed gold armour:** vanilla gold helmet, chestplate, leggings and boots, each with a vanilla trim (snout, rib or eye pattern; gold/ netherite/ redstone materials), fitted to the fat body.
 - **A cape**, like a player's: crimson or red with a gold trim or a piglin-banner motif.
 - **Seated** on its throne while its outpost fights.
-- **Waddle:** when it runs, a short-stepped, side-to-side waddle with arms flailing a little.
+- **Waddle:** when it runs, a short-stepped, side-to-side waddle with arms flailing a little. The fleeing look (lean, flailing arms, head wobble, flapping cape) scales with vanilla's walk-animation speed (`BossPiglinRenderer`, full at a quarter stride), so a fleeing boss standing still, such as one from a spawn egg (no throne, so always fleeing), stands normally (owner playtest, 2026-11-25; client shot bosspiglin-standing-front).
 
 ## The throne (owner)
 

@@ -46,8 +46,12 @@ public class BossPiglinRenderer extends HumanoidMobRenderer<BossPiglin, BossPigl
 		state.armPose = entity.getArmPose();
 		state.isConverting = entity.isConverting();
 		state.seated = entity.seatedBlend(partialTicks);
-		state.fleeing = entity.fleeingBlend(partialTicks);
+		// the fleeing look only while it moves (vanilla's smoothed walk speed), so a fleeing boss standing still stands still
+		state.fleeing = entity.fleeingBlend(partialTicks) * Math.min(1.0F, state.walkAnimationSpeed * FLEE_LOOK_PER_WALK);
 	}
+
+	/** Walk-animation speed (vanilla's 0..1) times this is how much of the fleeing look shows: a quarter of full stride is full flail. */
+	private static final float FLEE_LOOK_PER_WALK = 4.0F;
 
 	@Override
 	protected boolean isShaking(BossPiglinRenderState state) {
