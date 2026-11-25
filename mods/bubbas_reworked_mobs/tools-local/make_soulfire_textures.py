@@ -87,6 +87,12 @@ def recolour(img, fn):
 	return out
 
 
+def soul_flame(c):
+	"""Soulguard icon: vanilla Fire Resistance with its flame on the soul ramp; the shield kept."""
+	L, C, h = lch(c)
+	return soul(c) if C > 0.03 and 15 < h < 120 else c
+
+
 def charge_colour(c):
 	"""Fire charge: orange cracks (and the warm glow around them) to soul, the rock body to dark blackstone."""
 	L, C, h = lch(c)
@@ -219,8 +225,9 @@ def main():
 	save_pair(charge, "item/soul_fire_charge.png", outline_lum=0,
 		material=lambda pal: {k: ("crack" if lch(c)[1] > 0.05 else "rock") for k, c in pal.items()})
 
-	mc.save(soulguard_icon(1), "mob_effect/soulguard.png")
-	mc.save32(soulguard_icon(2), "mob_effect/soulguard.png")
+	icon = recolour(Image.open(v / "mob_effect/fire_resistance.png"), soul_flame)
+	save_pair(icon, "mob_effect/soulguard.png", outline_lum=0,
+		material=lambda pal: {k: ("flame" if lch(c)[1] > 0.08 else "metal") for k, c in pal.items()})
 
 
 if __name__ == "__main__":
