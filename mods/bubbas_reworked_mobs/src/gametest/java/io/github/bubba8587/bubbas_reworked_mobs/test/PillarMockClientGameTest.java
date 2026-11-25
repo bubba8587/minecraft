@@ -21,7 +21,7 @@ import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContex
 
 /**
  * Mock-up of a planned creeper feature, static scenes only (client test part {@code pillarmock}, run only when named):
- * on flat ground of six biomes a 2-block pillar of the ground block, the 2-deep hole beside it the blocks came from,
+ * on flat ground of six biomes a 2-block pillar of the ground block, two 1-deep holes beside it the blocks came from,
  * and a NoAI creeper with that biome's skin half behind the pillar, facing the camera. Screenshots pillarmock-*.
  */
 @SuppressWarnings("UnstableApiUsage")
@@ -35,7 +35,7 @@ public class PillarMockClientGameTest implements FabricClientGameTest {
 	}
 
 	private static final List<Station> STATIONS = List.of(
-			new Station("plains", "plains", "grass_block", "dirt", "plains"),
+			new Station("plains", "plains", "grass_block", "dirt", "dirt"),
 			new Station("desert", "desert", "sand", "sandstone", "sand"),
 			new Station("badlands", "badlands", "red_sand", "orange_terracotta", "red_sand"),
 			new Station("snowy", "snowy_plains", "snow_block", "dirt", "snow"),
@@ -81,7 +81,7 @@ public class PillarMockClientGameTest implements FabricClientGameTest {
 				}
 				close(context, sp, server, cx, y, cz, "pillarmock-" + s.name() + "-close");
 			}
-			// Plains from the side: the creeper behind the pillar, the hole in front.
+			// Plains from the side: the creeper behind the pillar, the holes in front.
 			shot(context, sp, server, cx(base, 0) - 4.5, y + 0.6, cz(base) + 1.2, -90.0F, 14.0F, "pillarmock-plains-side");
 			server.runCommand("time set 12600");
 			shot(context, sp, server, cx(base, 0) + 0.5, y, cz(base) - 15.0, 0.0F, 2.0F, "pillarmock-plains-dusk");
@@ -107,7 +107,7 @@ public class PillarMockClientGameTest implements FabricClientGameTest {
 		return base.getZ() + 16;
 	}
 
-	/** Ground, biome, pillar at (cx, cz), hole beside it at (cx + 1, cz - 1), creeper half behind the pillar's left edge. */
+	/** Ground, biome, pillar at (cx, cz), 1-deep holes at (cx + 1, cz - 1) and (cx - 1, cz - 2), creeper half behind the pillar's left edge. */
 	private static void build(ClientGameTestContext context, TestSingleplayerContext sp, TestServerContext server, Station s, int cx, int y, int cz) {
 		tp(context, sp, server, cx + 0.5, y + 1, cz - 15.0, 0.0F, 0.0F);
 		int x0 = cx - SPACING / 2 + 1;
@@ -118,7 +118,8 @@ public class PillarMockClientGameTest implements FabricClientGameTest {
 		server.runCommand("fill %d %d %d %d %d %d minecraft:%s".formatted(x0, y - 3, z0, x1, y - 2, z1, s.under()));
 		server.runCommand("fill %d %d %d %d %d %d minecraft:%s".formatted(x0, y - 1, z0, x1, y - 1, z1, s.ground()));
 		server.runCommand("fill %d %d %d %d %d %d minecraft:%s".formatted(cx, y, cz, cx, y + 1, cz, s.ground()));
-		server.runCommand("fill %d %d %d %d %d %d minecraft:air".formatted(cx + 1, y - 2, cz - 1, cx + 1, y - 1, cz - 1));
+		server.runCommand("setblock %d %d %d minecraft:air".formatted(cx + 1, y - 1, cz - 1));
+		server.runCommand("setblock %d %d %d minecraft:air".formatted(cx - 1, y - 1, cz - 2));
 		// Camera at (cx + 0.5, cz - 15): the pillar's near left corner, projected to the creeper's depth, is the edge.
 		double depth = 1.3;
 		double camX = cx + 0.5;

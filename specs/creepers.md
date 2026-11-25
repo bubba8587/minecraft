@@ -184,8 +184,7 @@ Look only: every creeper wears a skin from the biome it first appeared in, recol
 | cherry | cherry log | cherry grove |
 | pale_oak | pale oak log | pale garden |
 | poplar | poplar log | dappled forest |
-| plains | `grass_block_top`, colormap 0.8/0.4 | plains, sunflower plains |
-| meadow | `grass_block_top`, colormap 0.5/0.8 | meadow |
+| dirt | `dirt` | plains, sunflower plains, meadow (owner: pillar creepers there stack grass blocks as they are, so the dirt side is what they hide against) |
 | sand | sand | desert, beach |
 | red_sand | red sand | all badlands |
 | snow | snow | snowy plains, ice spikes, snowy slopes, snowy beach, frozen peaks, jagged peaks, frozen river |
@@ -207,13 +206,13 @@ Everywhere else (rivers, oceans, lush caves, deep dark, the Nether, the End, mod
 ### Art method (`tools/creeper-biome-textures.py`)
 
 - Skins are vanilla's creeper recoloured pixel for pixel, no redraw (owner). Rerun the script with `--base16`/`--base32` for a new base creeper. Inputs: `--base16`, `--base32` (base creepers), `--mcsrc` (vanilla assets), `--cf32j` (CF32J zip or folder), `--sheet` (contact sheet).
-- Palettes: the log side texture for tree biomes; the ground block for treeless ones (sand, red_sand, snow, stone, mycelium_top, dripstone_block, sulfur); `grass_block_top` tinted by the grass colormap at the biome's temperature/downfall for plains (0.8/0.4) and meadow (0.5/0.8).
-- OKLch match, per creeper colour: the palette's lightness range (3rd to 97th percentile, pixel-weighted) is stretched onto the creeper body's range (0.41 to 0.89); each creeper colour takes the palette colour whose lightness is nearest its stretched lightness; cost = dL^2 + 0.04 * dC^2 in range-normalised units, so near-ties go to the palette colour with the matching relative chroma (vanilla's greyish speckles take the palette's greyest shades).
+- Palettes: the log side texture for tree biomes; the ground block for treeless ones (sand, red_sand, snow, stone, mycelium_top, dripstone_block, sulfur); dirt for plains and meadow.
+- Distribution match by OKLch lightness (owner asked for a better match, 2026-11-25): each creeper colour's rank among the body's pixels (dark to light, pixel-weighted, mid-rank) picks the source colour at the same rank among the source texture's pixels. So each source colour turns up on the creeper about as often as in the source (dirt mostly brown with few grey pebbles; birch mostly white with few dark marks). The earlier nearest-lightness match with a chroma tie-break over-used rare colours (dirt came out grey).
 - Exact colours only (owner): every output pixel is a colour that exists in the source texture (after the grass tint for plains and meadow), except on the face (owner, 2026-11-24): the base's **black** face pixels stay black, and its **noticeably darker** face pixels take their own matched colour blended 50 % toward black (`FACE_BLEND`). The rest of the face maps like any other pixel. The face is left out of the range statistics.
 - Face pixels, found by value on the head front (UV 8..16, 8..16): black below OKLab L 0.05 (`BLACK`); noticeably darker from 0.05 to 0.405 at 16x (`DARK16`), 0.395 at 32x (`DARK32`).
   - 16x vanilla: black (10,11) (13,11) (11,13) (12,13) (10..13,14), the inner bottom of each eye and the middle of the mouth; darker (9,10) (9,11) (13,10) (14,11) (11,12) (12,12) (13,13) (10,15) (13,15).
   - 32x CF32J: its black eye and mouth centres stay black; 23 darker pixels round them are blended.
-- 32x (owner): the same recolour run on Classic Faithful 32x Jappa's own creeper (128x64) with CF32J's own log and ground textures (java-latest branch, commit 00321eab; the script's default input is the owner's CF32J-2026r21 zip, `--cf32j` overrides). Grass at 32x: CF32J's grass_block_top with vanilla's colormap tint. CF32J has no sulfur texture, so the 32x sulfur skin uses vanilla sulfur's colours on CF32J's creeper. The 16x set stays vanilla creeper plus vanilla textures.
+- 32x (owner): the same recolour run on Classic Faithful 32x Jappa's own creeper (128x64) with CF32J's own log and ground textures (java-latest branch, commit 00321eab; the script's default input is the owner's CF32J-2026r21 zip, `--cf32j` overrides). CF32J has no sulfur texture, so the 32x sulfur skin uses vanilla sulfur's colours on CF32J's creeper. The 16x set stays vanilla creeper plus vanilla textures.
 - Credit: `mods/bubbas_reworked_mobs/CREDITS.md` and `resourcepacks/bubbas_32x/CREDITS.md`. Before release, the Reworked Mobs Modrinth listing and player docs page need the CF32J credit and links too (`specs/textures.md` Credit).
 - Checked in game: a birch creeper peeking from behind a birch trunk, and a sand creeper against a sand wall.
 

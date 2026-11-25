@@ -5,19 +5,17 @@ Recolours vanilla's creeper texture pixel by pixel once per skin, with the palet
 treeless biomes, its natural ground block, by OKLch lightness matching:
 
 - both palettes go to OKLCh;
-- the ground/bark palette's lightness range is stretched onto the creeper body's range (darkest creeper shade ->
-  darkest bark shade, lightest -> lightest; 3rd/97th percentiles, weighted by pixel count);
-- each creeper colour takes the palette colour nearest that stretched lightness, near-ties broken by matching the
-  colour's relative chroma (vanilla's grey-ish speckles take the palette's greyest shades) and hue;
+- distribution match by OKLch lightness: each creeper colour's rank among the body's pixels (dark to light, pixel-weighted)
+  picks the source colour at the same rank among the source texture's pixels, so each source colour turns up about as
+  often on the creeper as in the source (dirt stays mostly brown, its few grey pebbles stay few);
 - every output pixel is a colour of the source palette, except on the face (owner): the base's black face pixels stay
   black, and its noticeably darker face pixels (below DARK16 / DARK32) take their own matched colour blended FACE_BLEND
   toward black; the face is left out of the range statistics;
-- palette colours brighter than the stretched range's top (single-pixel highlights) are not used.
 
 The 16x set recolours vanilla's creeper with vanilla's log/ground textures. The 32x set runs the same recolour on
 Classic Faithful 32x Jappa's own creeper with CF32J's own log/ground textures (credited in the mod's CREDITS.md and
 resourcepacks/bubbas_32x/CREDITS.md); a texture CF32J doesn't have (sulfur) falls back to vanilla's palette. Grass
-(plains, meadow) is the grass block top times the biome's grass colour from vanilla's colormap, at both sizes.
+Plains and meadow take dirt (owner: pillar creepers there stack dirt-and-grass blocks as they are).
 
 A new base creeper regenerates every skin: --base16 (64x32) and --base32 (128x64). The face is only left out of the
 range statistics; it is found in the head-front square (UV 8..16, 8..16) as its pixels darker than OKLab L 0.42.
@@ -51,8 +49,7 @@ SKINS = {
 	"cherry": ("block/cherry_log.png", None),
 	"pale_oak": ("block/pale_oak_log.png", None),
 	"poplar": ("block/poplar_log.png", None),
-	"plains": ("block/grass_block_top.png", (0.8, 0.4)),
-	"meadow": ("block/grass_block_top.png", (0.5, 0.8)),
+	"dirt": ("block/dirt.png", None),
 	"sand": ("block/sand.png", None),
 	"red_sand": ("block/red_sand.png", None),
 	"snow": ("block/snow.png", None),
@@ -202,19 +199,26 @@ def recolor(base, pal, dark=(), black=()):
 	cand = [c for c in pal if pl[c][0] <= pl1 + 0.02] or list(pal)
 	span = max(pl1 - pl0, 1e-6)
 
-	def pick(c):
-		L, C, H = bl[c] if c in bl else oklch(c)
-		t = (L - cl0) / max(cl1 - cl0, 1e-6)
-		t = min(1, t)
-		target = pl0 + t * (pl1 - pl0)
-		cn = (C - cc0) / max(cc1 - cc0, 1e-6)
+	# Distribution match: a creeper colour's lightness rank among the body's pixels picks the source colour at the same
+	# rank among the source's pixels, so each source colour turns up about as often as it does in the source texture.
+	body_sorted = sorted(((bl[c][0], n) for c, n in body.items()))
+	body_total = sum(n for _, n in body_sorted)
+	src_sorted = sorted(((pl[c][0], n, c) for c, n in pal.items()))
+	src_total = sum(n for _, n, _ in src_sorted)
 
-		def cost(p):
-			pL, pC, pH = pl[p]
-			dl = (pL - target) / span
-			dc = cn - (pC - pc0) / max(pc1 - pc0, 1e-6)
-			return dl * dl + 0.04 * dc * dc
-		return min(cand, key=cost)
+	def rank(L):
+		below = sum(n for l, n in body_sorted if l < L)
+		same = sum(n for l, n in body_sorted if l == L)
+		return (below + same / 2) / body_total
+
+	def pick(c):
+		q = rank(oklch(c)[0])
+		acc = 0
+		for _, n, sc in src_sorted:
+			acc += n
+			if acc / src_total >= q:
+				return sc
+		return src_sorted[-1][2]
 
 	out = Image.new("RGBA", base.size)
 	op = out.load()
