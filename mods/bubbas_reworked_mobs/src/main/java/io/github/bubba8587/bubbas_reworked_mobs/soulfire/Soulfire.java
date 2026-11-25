@@ -96,6 +96,7 @@ public final class Soulfire {
 					.when(LootItemRandomChanceCondition.randomChance(SoulfireTuning.BOOK_CHANCE))));
 		});
 		SoulBurning.initialize();
+		io.github.bubba8587.bubbas_reworked_mobs.soulfire.phasing.Phasing.initialize();
 	}
 
 	/** A loot table key of one of the chests that can hold a Soulguard book. */

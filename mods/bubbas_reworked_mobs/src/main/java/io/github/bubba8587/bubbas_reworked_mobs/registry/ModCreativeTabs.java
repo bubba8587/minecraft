@@ -41,6 +41,7 @@ public final class ModCreativeTabs {
 						output.accept(io.github.bubba8587.bubbas_reworked_mobs.soulfire.Soulfire.SOUL_BLAZE_ROD);
 						output.accept(io.github.bubba8587.bubbas_reworked_mobs.soulfire.Soulfire.SOUL_BLAZE_POWDER);
 						output.accept(io.github.bubba8587.bubbas_reworked_mobs.soulfire.Soulfire.SOUL_FIRE_CHARGE);
+						output.accept(io.github.bubba8587.bubbas_reworked_mobs.soulfire.phasing.Phasing.EYE_OF_THE_SOUL);
 					})
 					.build());
 

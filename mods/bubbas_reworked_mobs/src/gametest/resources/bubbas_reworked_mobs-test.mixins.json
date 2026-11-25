@@ -10,7 +10,8 @@
 		"TestAreaCleanupMixin",
 		"MobAccessor",
 		"FrozenClockMixin",
-		"GameTestHelperAccessor"
+		"GameTestHelperAccessor",
+		"MoveCheckInvoker"
 	],
 	"injectors": {
 		"defaultRequire": 1

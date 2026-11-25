@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "bubbas_reworked_mobs:soul_blaze_powder",
+    "minecraft:ender_pearl"
+  ],
+  "result": {
+    "id": "bubbas_reworked_mobs:eye_of_the_soul"
+  }
+}

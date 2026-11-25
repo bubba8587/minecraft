@@ -39,7 +39,8 @@
 			"io.github.bubba8587.bubbas_reworked_mobs.test.TraderPostGameTest",
 			"io.github.bubba8587.bubbas_reworked_mobs.test.CaptainGameTest",
 			"io.github.bubba8587.bubbas_reworked_mobs.test.BossPiglinGameTest",
-			"io.github.bubba8587.bubbas_reworked_mobs.test.SoulfireGameTest"
+			"io.github.bubba8587.bubbas_reworked_mobs.test.SoulfireGameTest",
+			"io.github.bubba8587.bubbas_reworked_mobs.test.PhasingGameTest"
 		],
 		"fabric-client-gametest": [
 			"io.github.bubba8587.bubbas_reworked_mobs.test.BubbasReworkedMobsClientGameTest",
@@ -71,7 +72,8 @@
 			"io.github.bubba8587.bubbas_reworked_mobs.test.TraderPostsClientGameTest",
 			"io.github.bubba8587.bubbas_reworked_mobs.test.CaptainClientGameTest",
 			"io.github.bubba8587.bubbas_reworked_mobs.test.BossPiglinClientGameTest",
-			"io.github.bubba8587.bubbas_reworked_mobs.test.SoulfireClientGameTest"
+			"io.github.bubba8587.bubbas_reworked_mobs.test.SoulfireClientGameTest",
+			"io.github.bubba8587.bubbas_reworked_mobs.test.PhasingClientGameTest"
 		]
 	},
 	"mixins": [

@@ -31,6 +31,16 @@ public final class SoulfireTuning {
 	/** Seconds before a player can throw another Soul Fire Charge (a wind charge: 0.5). */
 	public static final float THROW_COOLDOWN_SECONDS = 0.5F;
 
+	// --- Eye of the Soul: Phasing ----------------------------------------------------------------------
+
+	/** Phasing from one Eye of the Soul (ticks): 5 s. */
+	public static final int PHASING_TICKS = 100;
+	/** Eyes of the Soul per stack, and seconds before a player can use another. */
+	public static final int EYE_STACK_SIZE = 16;
+	public static final float EYE_COOLDOWN_SECONDS = 1.0F;
+	/** Phasing effect colour: a deep soul teal. */
+	public static final int PHASING_COLOR = 0x0B5F63;
+
 	// --- Soulguard ------------------------------------------------------------------------------------
 
 	/** Potion of Soulguard (ticks): 3:00, and 8:00 with redstone. */

@@ -244,6 +244,9 @@ public class ModDataGenerator implements DataGeneratorEntrypoint {
 			builder.add("death.attack.bubbas_reworked_mobs.soul_burn", "%1$s burned away with Soulfire");
 			builder.add("death.attack.bubbas_reworked_mobs.soul_burn.player", "%1$s burned away with Soulfire while fighting %2$s");
 			builder.add("tag.damage_type.bubbas_reworked_mobs.bypasses_totems", "Bypasses Totems");
+			// Eye of the Soul (specs/soulfire.md)
+			builder.add(io.github.bubba8587.bubbas_reworked_mobs.soulfire.phasing.Phasing.EYE_OF_THE_SOUL, "Eye of the Soul");
+			builder.add(io.github.bubba8587.bubbas_reworked_mobs.soulfire.phasing.Phasing.PHASING.value().getDescriptionId(), "Phasing");
 		}
 	}
 
@@ -317,6 +320,7 @@ public class ModDataGenerator implements DataGeneratorEntrypoint {
 			gen.generateFlatItem(io.github.bubba8587.bubbas_reworked_mobs.soulfire.Soulfire.SOUL_BLAZE_ROD, ModelTemplates.FLAT_HANDHELD_ITEM);
 			gen.generateFlatItem(io.github.bubba8587.bubbas_reworked_mobs.soulfire.Soulfire.SOUL_BLAZE_POWDER, ModelTemplates.FLAT_ITEM);
 			gen.generateFlatItem(io.github.bubba8587.bubbas_reworked_mobs.soulfire.Soulfire.SOUL_FIRE_CHARGE, ModelTemplates.FLAT_ITEM);
+			gen.generateFlatItem(io.github.bubba8587.bubbas_reworked_mobs.soulfire.phasing.Phasing.EYE_OF_THE_SOUL, ModelTemplates.FLAT_ITEM);
 			gen.itemModelOutput.accept(ModItems.WITHER_CAPTAIN_SPAWN_EGG,
 					net.minecraft.client.data.models.model.ItemModelUtils.plainModel(net.minecraft.resources.Identifier.withDefaultNamespace("item/wither_skeleton_spawn_egg")));
 			gen.itemModelOutput.accept(ModItems.SOULFIRE_BLAZE_SPAWN_EGG,
