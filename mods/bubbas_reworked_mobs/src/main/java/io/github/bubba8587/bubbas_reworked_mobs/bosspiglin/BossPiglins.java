@@ -23,7 +23,7 @@ import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRe
 /** The Boss Piglin (specs/boss-piglin.md): its entity type, and seating one on an outpost's throne. */
 public final class BossPiglins {
 	public static final EntityType<BossPiglin> BOSS_PIGLIN = register("boss_piglin",
-			EntityType.Builder.of(BossPiglin::new, MobCategory.MONSTER).sized(1.4F, 2.6F).eyeHeight(2.25F).passengerAttachments(2.65F)
+			EntityType.Builder.of(BossPiglin::new, MobCategory.MONSTER).sized(1.8F, 2.6F).eyeHeight(2.2F).passengerAttachments(2.65F)
 					.ridingOffset(-0.7F).clientTrackingRange(8));
 
 	private BossPiglins() {

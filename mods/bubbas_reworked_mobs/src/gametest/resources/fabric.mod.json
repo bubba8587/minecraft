@@ -68,7 +68,8 @@
 			"io.github.bubba8587.bubbas_reworked_mobs.test.WebsClientGameTest",
 			"io.github.bubba8587.bubbas_reworked_mobs.test.TerritoriesClientGameTest",
 			"io.github.bubba8587.bubbas_reworked_mobs.test.TraderPostsClientGameTest",
-			"io.github.bubba8587.bubbas_reworked_mobs.test.CaptainClientGameTest"
+			"io.github.bubba8587.bubbas_reworked_mobs.test.CaptainClientGameTest",
+			"io.github.bubba8587.bubbas_reworked_mobs.test.BossPiglinClientGameTest"
 		]
 	},
 	"mixins": [

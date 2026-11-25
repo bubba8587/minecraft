@@ -31,7 +31,7 @@ public final class BossPiglinTuning {
 	/** Voice pitch against a piglin's. */
 	public static final float VOICE_PITCH = 0.75F;
 	/** Getting up: it steps this far forward off the seat (blocks), the first that is clear. */
-	public static final double[] STAND_STEPS = { 1.8, 1.5, 2.2 };
+	public static final double[] STAND_STEPS = { 2.0, 1.95, 2.1 };
 	/** How often (ticks) it checks whether its outpost's roster still lives. */
 	public static final int ROSTER_CHECK = 10;
 
