@@ -13,6 +13,13 @@ public final class Creepers {
 
 	public static void initialize() {
 		java.util.Objects.requireNonNull(WatcherSpawning.WATCHER_FOR); // registers the attachment now
+		java.util.Objects.requireNonNull(CreeperPillar.CARRIED);
+		// A carried pillar block is set down when it dies.
+		ServerLivingEntityEvents.AFTER_DEATH.register((entity, source) -> {
+			if (entity instanceof Creeper creeper && creeper.hasAttached(CreeperPillar.CARRIED)) {
+				CreeperPillar.putDown(creeper, null);
+			}
+		});
 		// One attack fills the meter partway (owner). Only damage with an attacker counts (hits, arrows, thrown things);
 		// a fall or a cactus doesn't startle it (vanilla's fall-swell still happens).
 		ServerLivingEntityEvents.AFTER_DAMAGE.register((entity, source, baseTaken, taken, blocked) -> {

@@ -21,8 +21,8 @@ import org.jspecify.annotations.Nullable;
 /**
  * The nervous watcher (specs/creepers.md): holds a spot half behind cover where it can see what it watches and
  * stares; peekaboo; creeps to closer cover while not looked at; runs to farther cover when the player comes at it;
- * backs behind cover from a sneaking player; by day a watcher heads out of sight to leave; open ground only with no
- * cover at all. Replaces vanilla's MeleeAttackGoal slot (priority 4) for uncharged creepers; vanilla's strolling and
+ * backs behind cover from a sneaking player; by day a watcher heads out of sight to leave; with no cover at all it
+ * stacks its own pillar (mobGriefing on, {@link CreeperPillar}), else holds open ground. Replaces vanilla's MeleeAttackGoal slot (priority 4) for uncharged creepers; vanilla's strolling and
  * looking around run when it has nothing to watch.
  */
 public final class CreeperWatchGoal extends Goal {
@@ -44,9 +44,11 @@ public final class CreeperWatchGoal extends Goal {
 	private @Nullable Vec3 targetBefore;
 	private @Nullable Vec3 targetNow;
 	private @Nullable LivingEntity spotFor;
+	private final CreeperPillar pillar;
 
 	public CreeperWatchGoal(Creeper creeper) {
 		this.creeper = creeper;
+		this.pillar = new CreeperPillar(creeper);
 		this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
 		creeper.getNavigation().setRequiredPathLength(CreeperTuning.WATCH_PATH_LENGTH);
 	}
@@ -80,6 +82,7 @@ public final class CreeperWatchGoal extends Goal {
 
 	@Override
 	public void stop() {
+		pillar.abort();
 		creeper.getNavigation().stop();
 	}
 
@@ -97,6 +100,7 @@ public final class CreeperWatchGoal extends Goal {
 		}
 		ticks++;
 		if (spotFor != target) {
+			pillar.abort();
 			spotFor = target;
 			plan = Plan.WATCH;
 			previous = null;
@@ -123,6 +127,20 @@ public final class CreeperWatchGoal extends Goal {
 			noticeApproach(mind, target, distance);
 		}
 
+		if (pillar.active()) {
+			if (plan != Plan.WATCH || mind.spot != null) {
+				pillar.abort();
+			} else {
+				if (pillar.tick(mind, target, looked)) {
+					nextSearch = ticks;
+					failedSearches = 0;
+				}
+				return;
+			}
+		} else if (creeper.hasAttached(CreeperPillar.CARRIED)) {
+			CreeperPillar.putDown(creeper, null);
+		}
+
 		CoverFinder.PeekSpot spot = mind.spot;
 		if (spot != null) {
 			tickSpot(mind, spot, target, distance, looked);
@@ -142,6 +160,10 @@ public final class CreeperWatchGoal extends Goal {
 				plan = Plan.WATCH;
 			}
 			if (plan == Plan.WATCH && failedSearches >= CreeperTuning.OPEN_GROUND_AFTER_FAILED_SEARCHES) {
+				if (pillar.tryStart(mind, target, distance)) {
+					mind.setOpenGround(false);
+					return;
+				}
 				mind.setOpenGround(true);
 			}
 		}
