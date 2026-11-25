@@ -7,7 +7,7 @@
 
 Player-visible names come from the mods' own lang files, so a rename in a mod reaches the test world on the next run:
 effect names from Infused Gems (falling back to vanilla's lang in build/mcsrc/, then to the key), and the gem level
-label ("Gem Power") from the gem item's name pattern. Wording that only exists on signs is in the constants below.
+label ("Base Power") from the gem tooltip's Base Power row. Wording that only exists on signs is in the constants below.
 Every sign line is checked against the sign limits (15 characters, 13 bold). Standard library only.
 """
 import json
@@ -30,13 +30,13 @@ def _lang(path):
 
 LANG = _lang(GEMS_LANG)
 VANILLA = _lang(VANILLA_LANG)
-# The gem level label, from "Gem: Gem Power %s, %s" (item.bubbas_infused_gems.gem.named).
-_m = re.match(r"[^:]*:\s*(.+?)\s*%s", LANG.get("item.bubbas_infused_gems.gem.named", ""))
-LEVEL = _m.group(1) if _m else "Gem Power"
+# The gem level label, from the tooltip row "Base Power %s" (bubbas_infused_gems.tooltip.base_power).
+_m = re.match(r"\s*(.+?)\s*%s", LANG.get("bubbas_infused_gems.tooltip.base_power", ""))
+LEVEL = _m.group(1) if _m else "Base Power"
 
 # Sign-only wording (not in any mod's lang file).
 PERFECT_SET = "perfect set"                      # a perfect netherite kit sign
-TWIN_SET = f"{LEVEL} V 88%"                      # its Gem Power V twin, one-word effect names
+TWIN_SET = f"{LEVEL} V 88%" if len(f"{LEVEL} V 88%") <= 15 else f"{LEVEL.split()[-1]} V 88%"  # its Base Power V twin, one-word effect names
 TWIN_SET_SHORT = f"{LEVEL.split()[-1]} V 88% +"  # the twin's line under a two-line effect name
 TWIN_KEY_1, TWIN_KEY_2 = "birch: Gem", f"{LEVEL.split()[-1]} V (88%)"  # wardrobe entrance sign
 FILES = {}
@@ -167,7 +167,7 @@ def loot_give(items):
 
 def kit_sign(x, y, z, block, key, material="netherite", note="click to wear", infusion=6):
     """Click: take off worn armor, /gems kit <effect> [material] [infusion], equip sound (and tools for KIT_TOOLS
-    gems). Perfect netherite sets say "perfect set"; Gem Power V twins (88%) say so (owner: test what the perfect set's
+    gems). Perfect netherite sets say "perfect set"; Base Power V twins (88%) say so (owner: test what the perfect set's
     extras add)."""
     color = "dark_red" if key in HARMFUL else "dark_green"
     kit = f"gems kit {key}" + ("" if material == "netherite" and infusion == 6 else f" {material}")
@@ -201,7 +201,7 @@ def kit_sign(x, y, z, block, key, material="netherite", note="click to wear", in
 
 
 def kit_pair(x, y, z, block, block_v, key, note="click to wear", dx=1, dz=0):
-    """A perfect kit sign and its Gem Power V twin (on a birch sign) next to it."""
+    """A perfect kit sign and its Base Power V twin (on a birch sign) next to it."""
     kit_sign(x, y, z, block, key, note=note)
     kit_sign(x + dx, y, z + dz, block_v, key, note=note, infusion=5)
 
@@ -755,7 +755,7 @@ def pyramid(cx, y0, cz, layers, block="minecraft:iron_block", down=False):
 
 
 begin("grounds_beacons", "Beacon yard x 20..37, z 64..86: sky beacons on 1, 2, 3 and 4-layer pyramids, each with a sign and a chest"
-      "\n# of finished gems (perfect and Gem Power V). Poison trap beacon x -41..-39, z 87..89 (loaded; its 20-block area"
+      "\n# of finished gems (perfect and Base Power V). Poison trap beacon x -41..-39, z 87..89 (loaded; its 20-block area"
       "\n# x -60..-20, z 68..108 is poisonous). Bell lane x 31..46, z 54. Light-calm rings around (43, 80) lit and (43, 90) dark.")
 path(27, 52, 28, 68)
 GEMS = ["speed", "regeneration", "jump_boost", "night_vision", "strength", "resistance", "fire_resistance", "slow_falling", "haste"]

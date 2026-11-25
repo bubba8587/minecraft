@@ -1,5 +1,5 @@
 # Beacon yard x 20..37, z 64..86: sky beacons on 1, 2, 3 and 4-layer pyramids, each with a sign and a chest
-# of finished gems (perfect and Gem Power V). Poison trap beacon x -41..-39, z 87..89 (loaded; its 20-block area
+# of finished gems (perfect and Base Power V). Poison trap beacon x -41..-39, z 87..89 (loaded; its 20-block area
 # x -60..-20, z 68..108 is poisonous). Bell lane x 31..46, z 54. Light-calm rings around (43, 80) lit and (43, 90) dark.
 fill 27 -61 52 28 -61 68 minecraft:dirt_path replace minecraft:grass_block
 fill 22 -60 69 24 -60 71 minecraft:iron_block
