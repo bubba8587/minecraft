@@ -11,6 +11,10 @@
   "functions": [
     {
       "type": "bubbas_infused_gems:socket_random_gems",
+      "condition": {
+        "type": "minecraft:random_chance",
+        "chance": 0.7
+      },
       "gear": "armor",
       "count": 1,
       "infusion": [2, 3, 3, 4],
@@ -19,6 +23,10 @@
     },
     {
       "type": "bubbas_infused_gems:socket_random_gems",
+      "condition": {
+        "type": "minecraft:random_chance",
+        "chance": 0.7
+      },
       "gear": "weapon",
       "count": 1,
       "infusion": [2, 3, 3, 4],
