@@ -65,6 +65,7 @@ The item name shows these, for example *Infused Gem: Base Power III, Speed (Spla
 Every potion brews a gem: Swiftness, Strength, Leaping, Regeneration, Turtle Master, Fire Resistance, Water Breathing, Night Vision, Invisibility, Slow Falling, Luck, Healing, Poison, Slowness, Weakness, Harming, Wind Charged, Weaving, Oozing and Infested. So do the items in the table above.
 
 - A Wind Charged potion makes a **Wind Burst** gem.
+- With [[Bubba's Reworked Mobs]] installed, the Potion of [[Soulguard]] brews a **Soulguard** gem too. Without that mod there is no Soulguard gem.
 - A Turtle Master potion makes a **Turtle Master** gem, which gives its Resistance and its Slowness together.
 - The Luck potion has no survival recipe, so Luck gems are mostly found.
 - Haste, Health Boost, Hero of the Village, Mining Fatigue and Resistance gems have no brewing source and are only found in the world. *Main article: [[Finding Gems]]*

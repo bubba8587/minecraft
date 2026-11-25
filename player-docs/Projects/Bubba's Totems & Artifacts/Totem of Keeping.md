@@ -32,6 +32,8 @@ The totem works from anywhere in the player's inventory, not only from a hand. W
 
 With the `keep_inventory` game rule already on, the totem is not used. It does nothing in a beacon.
 
+With [[Bubba's Reworked Mobs]] installed, the totem does not work against a death from [[Soulfire]] (its burning, soul fire or a soul campfire): it is not used and the player's things drop as normal. A player with [[Soulguard]] is kept as usual. A Totem of Undying is skipped the same way.
+
 ## Statue
 
 Sneaking and using the totem on a block sets it down as a [[Totem Statue]] instead of using it. The statue has no effect. Mining it gives the totem back.

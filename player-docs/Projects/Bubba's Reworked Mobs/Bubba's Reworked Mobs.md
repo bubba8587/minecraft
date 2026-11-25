@@ -18,7 +18,7 @@ side: client and server
 > | **Side** | Client and server |
 > | **Status** | Active |
 
-**Bubba's Reworked Mobs** is a Fabric mod that reworks Minecraft's mobs one family at a time. Far fewer monsters spawn on their own; instead they come from places: undead lie dormant in graveyards and crypts until noise wakes them, spiders nest in caves, monster camps hold skeletons and zombies (and piglins in the Nether), and Ancient Fabricators beside ancient cities send monsters to the surface. In the Nether, rare Wither Captains lead fortress garrisons and summon Soulfire Blazes. Creepers are nervous watchers that explode only when startled, endermen mend the land and build cairns, and drowned and bogged lurk at the water's edge.
+**Bubba's Reworked Mobs** is a Fabric mod that reworks Minecraft's mobs one family at a time. Far fewer monsters spawn on their own; instead they come from places: undead lie dormant in graveyards and crypts until noise wakes them, spiders nest in caves, monster camps hold skeletons and zombies (and piglins in the Nether), and Ancient Fabricators beside ancient cities send monsters to the surface. In the Nether, rare Wither Captains lead fortress garrisons and summon Soulfire Blazes, soul fire burns harder as Soulfire, and a fat Boss Piglin sits enthroned in piglin outposts. Creepers are nervous watchers that explode only when startled, endermen mend the land and build cairns, and drowned and bogged lurk at the water's edge.
 
 In this early test version, sleeping bodies use the normal mob look, and sleeper item icons are the matching mob heads.
 
@@ -116,7 +116,7 @@ Spiders climb walls and ceilings. Cobweb nests cling to the ceilings of tall cav
 
 *Main articles: [[Monster Camps]], [[Camp Patrols]]*
 
-Dark camps of skeletons, zombies, husks, strays or bogged, each with a leader. Breaking every banner clears a camp for good, leaving one lets it refill, and a lit fire quiets it. Armed camps send patrols over the land around them at night (see [[Camp Patrols]]); bigger camps keep a stable of mounts, and chests by the fire, in the underground room, in winding towers and in skull rocks hold better loot in that order. Pillager outposts stop spawning when their banners are gone. In the Nether, piglin outposts with hoglin pens and a portal room stand in crimson forests and the Nether wastes.
+Dark camps of skeletons, zombies, husks, strays or bogged, each with a leader. Breaking every banner clears a camp for good, leaving one lets it refill, and a lit fire quiets it. Armed camps send patrols over the land around them at night (see [[Camp Patrols]]); bigger camps keep a stable of mounts, and chests by the fire, in the underground room, in winding towers and in skull rocks hold better loot in that order. Pillager outposts stop spawning when their banners are gone. In the Nether, piglin brute outposts with hoglin pens and a portal room stand in crimson forests and the Nether wastes; bigger ones have a [[Boss Piglin]] on a throne.
 
 ## Trader posts
 
@@ -140,7 +140,19 @@ Beside every ancient city, an Ancient Fabricator drips monsters onto a teleporte
 
 *Main articles: [[Wither Captain]], [[Soulfire Blaze]]*
 
-Rarely, a wither skeleton in a Nether fortress is a Wither Captain: a tougher mini-boss with a boss bar that stops to summon blue Soulfire Blazes, taking little damage while it does. It drops Nether Star Shards, four of which craft a nether star, a wither skeleton skull about one time in three, and sometimes its horned Captain's Helm, which makes the wearer immune to soul fire. Soulfire Blazes also turn up rarely in soul sand valleys.
+Rarely, a wither skeleton in a Nether fortress is a Wither Captain: a tougher mini-boss with a boss bar that stops to summon blue Soulfire Blazes, taking little damage while it does. It drops Nether Star Shards, four of which craft a nether star, a wither skeleton skull about one time in three, and sometimes its horned Captain's Helm, enchanted with Soulguard. Soulfire Blazes also turn up rarely in soul sand valleys, and drop Soul Blaze Rods.
+
+## Boss Piglin
+
+*Main article: [[Boss Piglin]]*
+
+Medium and large Nether outposts have a throne where a huge, fat Boss Piglin in trimmed gold armor and a crimson cape sits while his brutes fight. Once they are dead he waddles off for the outpost's portal to escape with his gold, though he is too fat for the tunnel down to it.
+
+## Soulfire and Soulguard
+
+*Main articles: [[Soulfire]], [[Soulguard]], [[Soul Blaze Items]]*
+
+Soul fire, lit soul campfires and Soulfire charges set mobs and players burning with blue Soulfire, which hurts the living more than ordinary fire (undead take the normal amount), gets partly through Fire Resistance, and can't be stopped by a Totem of Undying. Soulguard (a potion, a treasure enchantment found in Nether chests, and a gem with Bubba's Infused Gems) protects fully. Soulfire Blazes drop Soul Blaze Rods, which make Soul Blaze Powder, Soul Fire Charges and the Potion of Soulguard.
 
 ## Monster spawning
 
@@ -168,13 +180,13 @@ The mod comes with vanilla-style 16x textures. Its 32x textures, in the style of
 
 The mod requires Fabric API and [Stormie's Spiders](https://modrinth.com/mod/stormies-spiders), which makes spiders climb walls. Only this mod's own undead are changed: normal zombies and skeletons from spawners and other mods behave as usual.
 
-Optional: [[Bubba's Totems & Artifacts]], whose [[Grave Talisman]] and [[Totem of Warding]] sense and calm this mod's sleeping undead. Everything here works the same without it.
+Optional: [[Bubba's Totems & Artifacts]], whose [[Grave Talisman]] and [[Totem of Warding]] sense and calm this mod's sleeping undead, and whose [[Totem of Keeping]] does not work against Soulfire deaths without Soulguard. With [[Bubba's Infused Gems]], Soulguard potions brew a Soulguard gem. Everything here works the same without them.
 
 ## History
 
 | Version | Changes |
 |---|---|
-| 0.1.0 (not released yet) | Added the undead (sleeping and woken skeletons, zombies, husks and strays, loot on display, loud bells, light that calms sleepers), crypt yards and gravestones, the monster spawn cut, watcher creepers, caretaker endermen and cairns, lurking drowned and bogged, spiders and their nests, monster camps and their patrols, trader posts, Ancient Fabricators, the Wither Captain with its Captain's Helm and Nether Star Shards, and Soulfire Blazes. (The Grave Talisman and Totem of Warding, first added here, moved to Bubba's Totems & Artifacts.) |
+| 0.1.0 (not released yet) | Added the undead (sleeping and woken skeletons, zombies, husks and strays, loot on display, loud bells, light that calms sleepers), crypt yards and gravestones, the monster spawn cut, watcher creepers, caretaker endermen and cairns, lurking drowned and bogged, spiders and their nests, monster camps and their patrols, trader posts, Ancient Fabricators, the Wither Captain with its Captain's Helm and Nether Star Shards, Soulfire Blazes, Soulfire and Soulguard with the soul blaze items, and the Boss Piglin. (The Grave Talisman and Totem of Warding, first added here, moved to Bubba's Totems & Artifacts.) |
 
 ## See also
 

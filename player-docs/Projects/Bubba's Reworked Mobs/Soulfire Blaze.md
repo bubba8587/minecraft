@@ -9,7 +9,7 @@
 > | **Health** | As a blaze |
 > | **Attack** | Soulfire charges, 7.5 damage (a blaze's: 5) |
 > | **Spawns** | Summoned by the [[Wither Captain]]; rarely in soul sand valleys |
-> | **Drops** | As a blaze (blaze rods) |
+> | **Drops** | Soul Blaze Rods |
 
 A **Soulfire Blaze** is a blue blaze that burns with soul fire. It is summoned by the [[Wither Captain]] and is also found, rarely, in soul sand valleys.
 
@@ -20,14 +20,16 @@ A **Soulfire Blaze** is a blue blaze that burns with soul fire. It is summoned b
 
 ## Behavior
 
-A Soulfire Blaze moves and fights like a blaze. Its fireballs, **soulfire charges**, hit half again as hard as a blaze's (7.5 instead of 5) and set their target alight. Where a charge lands, it leaves soul fire on soul sand and soul soil, and ordinary fire everywhere else. Water and other fire rules work as for a blaze.
+A Soulfire Blaze moves and fights like a blaze. Its fireballs, **soulfire charges**, look like [[Soul Blaze Items#Soul Fire Charge|Soul Fire Charges]], hit half again as hard as a blaze's (7.5 instead of 5) and set their target [[Soulfire|soul-burning]] for 5 seconds. Where a charge lands, it leaves soul fire on soul sand and soul soil, and ordinary fire everywhere else. Water and other fire rules work as for a blaze.
 
-A player wearing the [[Wither Captain#Captain's Helm|Captain's Helm]] is not set alight by soulfire charges, though the hit still hurts.
+A player with [[Soulguard]] (for example from the [[Wither Captain#Captain's Helm|Captain's Helm]]) is not set alight by soulfire charges, though the hit still hurts.
 
 ## Drops
 
-The same as a blaze: blaze rods. Blazes summoned by a captain drop nothing.
+[[Soul Blaze Items#Soul Blaze Rod|Soul Blaze Rods]] instead of blaze rods, at a blaze's odds: 0 or 1 when killed by a player, with Looting adding up to 1 more. Blazes summoned by a captain that burn out when it dies drop nothing.
 
 ## See also
 
 - [[Wither Captain]]
+- [[Soul Blaze Items]]
+- [[Soulfire]]

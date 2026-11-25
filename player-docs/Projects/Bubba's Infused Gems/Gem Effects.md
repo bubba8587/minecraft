@@ -90,6 +90,9 @@ Some gems do what their source does, rather than apply its potion.
 | Silence | Echo shard | The wearer's footsteps, swimming, landing and other movement make no vibrations (sculk sensors, wardens), some of the time with weak gems and always at the best build | Silences the target (pointless) |
 | Ender | Chorus fruit | A chance that a projectile about to hurt the wearer teleports them away instead (not harmless ones like snowballs, and never explosions), like chorus fruit; stronger gems teleport further, and the perfect set always tries, but a wearer boxed in with nowhere safe to go is hit. Other damage still hurts | Gives it to the target (pointless) |
 | Breeze | Breeze rod | A chance to deflect incoming projectiles, like a breeze: the chance grows with strength (about half the time at half strength), and the perfect set deflects every time. Wind charges get through, as they do with a real breeze | Gives it to the target (pointless) |
+| Soulguard (needs [[Bubba's Reworked Mobs]]) | Potion of Soulguard | Full [[Soulguard]] from any Soulguard gem, however strong; the tooltip just says *+ Soulguard* | Gives the target Soulguard for a few seconds |
+
+The **Soulguard** gem exists only with [[Bubba's Reworked Mobs]] installed. It has no strength: any one gem worn, or one in a beacon, gives the whole effect, full protection from [[Soulfire]]. It is never another gem's bonus or drawback.
 
 Gem effects look the same as the real effect: poisoned or withered hearts, the green food bar of Hunger, the healing heart wave of Regeneration, the effect's icon and particles.
 
@@ -157,6 +160,7 @@ With [[Bubba's Reworked Beacons]] installed, a finished Gem can be placed in a b
 | Fire Resistance | Half fire damage; fire goes out twice as fast |
 | Breeze, Ender | 50% chance to deflect or teleport away from a projectile |
 | Saturation | 1 food point every 5.3 seconds, up to 13 food |
+| Soulguard | Full [[Soulguard]] for everyone in range (any Soulguard gem, any pyramid) |
 | Poison (harmful) | 0.75 health per second, never below 1 health, for everyone in range |
 | Slowness (harmful) | 27% slower, for everyone in range |
 

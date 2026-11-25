@@ -61,6 +61,8 @@ Requires Fabric API. Mods that also give armor effects (such as trim-effect mods
 
 With [[Bubba's Reworked Beacons]] installed, a Gem can be placed in a beacon, which gives the gem's effects to every living thing in its area; the beacon then no longer takes the plain base-gem payments. *Main article: [[Gem Effects#In beacons]]*. Without it, the mod works the same.
 
+With [[Bubba's Reworked Mobs]] installed, its Potion of [[Soulguard]] brews a Soulguard gem, which protects its wearer fully from [[Soulfire]]. *Main article: [[Gem Effects#Gems beyond potions]]*
+
 ## History
 
 | Version | Changes |

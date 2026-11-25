@@ -113,10 +113,11 @@ A **Nether outpost** is the piglin kind of monster camp, found only in crimson f
 
 - **Look:** crimson-wood watchtowers with nether brick railings and polished blackstone roofs, a gilded blackstone gate in a stretch of rampart hung with soul lanterns, rock piles studded with gilded blackstone and gold, piglin heads and lanterns on pikes, and nether brick bridges between towers. Unlike overworld camps, outposts are lit.
 - **Hoglin pen:** a fenced pen of crimson nylium with one to three hoglins kept as livestock, the first tied to a post in the middle. Piglins don't hunt them. They don't count toward clearing the outpost, and they come back with the roster if the pen is empty and its post still stands.
-- **The roster:** piglins, about one in four of them a piglin brute. Lookouts on the towers carry crossbows; the rest carry crossbows or golden swords, and brutes golden axes. As in vanilla, piglins leave a player wearing gold alone.
+- **The roster:** piglin brutes, every one of them, lookouts on the towers included, each with a golden axe. As in vanilla, brutes attack players even when they wear gold, and they don't trade.
 - **The leader** is a big piglin brute in enchanted gold armor with an enchanted golden axe.
+- **The Boss Piglin:** medium and large outposts have a throne of blackstone and gold near the fire, where a huge, fat [[Boss Piglin]] sits watching. He doesn't fight. When the last brute dies he gets up and runs for the portal room, to escape through the portal if it is lit; he is too fat for the stair tunnel, though, so mostly he ends up running round the outpost. He comes back with the roster when the outpost refills. *Main article: [[Boss Piglin]]*
 - **The portal room:** the stair tunnel leads deeper than in overworld camps, to a room with an obsidian Nether portal frame at the back, like a ruined portal. Some portals are lit and work as normal, some are whole but unlit with crying obsidian in the frame, and some are broken.
-- **Loot:** a chest by the fire holds gold, crimson fungus, porkchops, quartz, a worn crossbow and sometimes the outpost's banner. The room's chest holds better gold gear, obsidian, crying obsidian, flint and steel, the piglin banner pattern, a snout armor trim and, rarely, netherite scrap. About 1 room chest in 7 also holds a netherite upgrade smithing template.
+- **Loot:** a chest by the fire holds gold, crimson fungus, porkchops, quartz, a worn crossbow and sometimes the outpost's banner. The room's chest holds better gold gear, obsidian, crying obsidian, flint and steel, the piglin banner pattern, a snout armor trim and, rarely, netherite scrap. About 1 room chest in 7 also holds a netherite upgrade smithing template, and about 1 in 25 a [[Soulguard]] enchanted book.
 
 Banners, refilling and lit fires work the same as in every other camp. The outpost's banner is black with a yellow piglin snout.
 
@@ -133,11 +134,12 @@ Banners, refilling and lit fires work the same as in every other camp. The outpo
 
 | Version | Changes |
 |---|---|
-| 0.1.0 | Added: monster camps with banners, leaders, shade and an underground room. Pillager outposts stop spawning when their banners are gone. Nether outposts. Camp patrols, stables, tower and skull chests. |
+| 0.1.0 | Added: monster camps with banners, leaders, shade and an underground room. Pillager outposts stop spawning when their banners are gone. Nether outposts, with the Boss Piglin on his throne. Camp patrols, stables, tower and skull chests. |
 
 ## See also
 
 - [[Camp Patrols]]
+- [[Boss Piglin]]
 - [[Monster Spawning]]
 - [[Woken Undead]]
 - [[Explorer Maps]]

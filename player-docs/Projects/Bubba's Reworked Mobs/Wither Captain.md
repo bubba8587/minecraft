@@ -59,11 +59,12 @@ It also drops 50 experience.
 > | **Durability** | As a netherite helmet |
 > | **Repair** | Netherite ingot |
 > | **Fireproof** | Yes, survives lava |
+> | **Enchantment** | [[Soulguard]] (always) |
 > | **Obtained** | Wither Captain drop (1 in 4) |
 
 The **Captain's Helm** is a polished blackstone helmet with two curved horns. It protects like a netherite helmet, including its knockback resistance, survives lava as an item, and is repaired with netherite ingots.
 
-Its wearer is **immune to soul fire**: soul fire and lit soul campfires do no damage and put out the wearer's flames, and Soulfire Blaze charges do not set them alight (the charge's hit still hurts). Ordinary fire and lava still burn.
+Every Captain's Helm comes enchanted with **[[Soulguard]]**, shown in its tooltip, so it has the enchanted shimmer. Its wearer is fully protected from [[Soulfire]]: soul fire and lit soul campfires do no damage and put out the wearer's flames, Soulfire charges do not set them alight (the hit still hurts), and totems work against Soulfire deaths. Ordinary fire and lava still burn.
 
 The horns show whenever it is worn, by players, armor stands and mobs.
 
@@ -86,4 +87,5 @@ The Wither Captain, its helm and the shard have vanilla-style 16x textures, with
 ## See also
 
 - [[Soulfire Blaze]]
+- [[Soulguard]]
 - [[Monster Spawning]]

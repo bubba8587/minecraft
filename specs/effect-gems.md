@@ -441,6 +441,14 @@ These do what the thing does, not just apply its potion (`effect/GemActions`; nu
 - On a weapon, Silence gives the target the effect for the hit's seconds (pointless, but allowed); Ender and Breeze on a weapon have their own dials (below).
 - Frost waits for the next Minecraft drop's freezing effect.
 
+### Soulguard gem (an effect from Reworked Mobs; owner)
+
+The Soulguard effect, enchantment and potion belong to Reworked Mobs (`specs/soulfire.md`); this is its gem.
+
+- **Another mod's effect:** `OTHER_MOD_EFFECTS` in `tools/gem-balance.py` (`requires_mod: bubbas_reworked_mobs` in `balance.json`, colour #01A7AC). Its 36 brewing recipes carry a `fabric:all_mods_loaded` condition. Without Reworked Mobs, `Balance` drops the effect, so it isn't brewable, in loot or in `/gems`. `ModEffects.vanilla` resolves any id that isn't the mod's own, so it finds Reworked Mobs' effect by id (no compile dependency).
+- **No levels** (`NO_LEVELS`): worn, it is always-on like Glowing: any Soulguard gem in worn armour, any strength, keeps the real Soulguard effect on the wearer; a beacon holding one gives it the same way. On a weapon it is an on/off hit (the target gets Soulguard for the hit's seconds). The tooltip shows "+ Soulguard"; strength does nothing for it.
+- Never another gem's bonus or drawback roll. Rarity "common" in the model *(builder)*; it only matters for loot gems.
+
 ### Weapons and arrows
 
 - **Hook:** `EnchantmentHelper.doPostAttackEffectsWithItemSourceOnBreak`, which every vanilla post-attack path reaches with the weapon that hit: a player's melee and stab attacks (they call the item-source variant directly, so a hook on `doPostAttackEffects` would miss them), mobs' melee, sweeps, and thrown tridents. Bows and crossbows are skipped there (their arrows carry the gems).

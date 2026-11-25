@@ -28,21 +28,17 @@
 ## Soulfire Blazes
 
 - **Entity:** `bubbas_reworked_mobs:soulfire_blaze`, a `Blaze` subclass with blaze attributes and vanilla blaze AI. Texture: the vanilla blaze recoloured to a soul ramp (owner, 2026-11-25: keep vanilla soul colours, match the vanilla blaze's contrast): each step keeps the vanilla blaze colour's OKLCh lightness, the hue sweeps from the soul lantern's deep blue-violet (h 267) in the shadows to soul fire cyan (h 198) from the mids up, and chroma runs near the vanilla blaze's (0.055-0.15); the brightest yellow step becomes vanilla soul fire's bright cyan (L 0.90, C 0.13), since cyan can't be both that light and saturated. Table `BLAZE_TO_SOUL` in `tools-local/make_captain_textures.py`. The renderer hides the orange burning overlay a charged blaze shows; soul fire flame particles drift off it instead, and vanilla's large blaze smoke becomes soul particles (owner, 2026-11-25), each of the two puffs a tick 1 in `CaptainTuning.SOUL_SMOKE_ONE_IN` (6) times (`mixin/BlazeSmokeMixin`); its burn-out puff is soul particles too.
-- **Soulfire charges:** their own entity `bubbas_reworked_mobs:soulfire_charge`, a `SmallFireball` subclass: 7.5 damage (blaze fireball 5), 5 s burn, soul fire flame trail, drawn as a fire charge like a blaze fireball. The blaze's attack goal is vanilla's; a mixin swaps the fireball it creates. Where a charge lands it places fire through vanilla `BaseFireBlock.getState`, so soul fire on soul sand and soul soil and ordinary fire elsewhere (no new block, B15). No change to water or other fire rules.
+- **Soulfire charges:** their own entity `bubbas_reworked_mobs:soulfire_charge`, a `SmallFireball` subclass: 7.5 damage (blaze fireball 5), 5 s of Soulfire burning (`specs/soulfire.md`), soul fire flame trail, drawn as the Soul Fire Charge item. The same entity is what a thrown or dispensed Soul Fire Charge fires. The blaze's attack goal is vanilla's; a mixin swaps the fireball it creates. Where a charge lands it places fire through vanilla `BaseFireBlock.getState`, so soul fire on soul sand and soul soil and ordinary fire elsewhere (no new block, B15). No change to water or other fire rules.
 - **Summoned blazes** remember their captain (looked for within 48 blocks) and burn out (a puff of soul fire, no drops) when it dies or is gone, checked every 20 ticks.
 - **Natural spawns:** soul sand valley monster spawns, weight 2 (skeleton 20, ghast 50, enderman 1), groups of 1.
-- **Drops:** the vanilla blaze table (`loot_table/entities/soulfire_blaze.json`).
+- **Drops:** the vanilla blaze table with **soul blaze rods** in place of blaze rods (`loot_table/entities/soulfire_blaze.json`; `specs/soulfire.md`).
 
 ## Captain's Helm
 
 - **Item:** `captains_helm`, its own armour material with netherite's numbers (3 armour, 3 toughness, knockback resistance, netherite durability), repaired with netherite ingots, fire-resistant item, default rarity. Equipment asset `bubbas_reworked_mobs:captains_helm` (`assets/.../equipment/captains_helm.json`, humanoid layer only).
 - **Look:** a netherite helmet palette-swapped to polished blackstone (icon and worn layer), plus two horns, each three box segments bent up twice (`CaptainsHelmHorns`).
 - **Worn horns:** `CaptainsHelmHornsLayer`, a render layer added to every humanoid renderer (players, armour stands, zombies, skeletons, the captain), drawing the horns with the root then head transform, armour render type (glint when enchanted). Chosen over Fabric's `ArmorRenderer`, which replaces vanilla's helmet drawing (and trims) instead of adding to it.
-- **Soul fire immunity** (Fabric `ServerLivingEntityEvents.ALLOW_DAMAGE`): vanilla's fire damage names no block (soul fire and fire both deal `in_fire`, both campfires `campfire`, the burning after `on_fire`). So for a wearer:
-  - `in_fire` and `campfire` damage is cancelled when the blocks inside their box hold soul fire or a lit soul campfire and no fire, lit campfire or lava; that also puts their flames out;
-  - a wearer last lit by soul fire has `on_fire` cancelled too, until they touch ordinary fire or lava;
-  - Soulfire charges don't light a wearer at all (the hit still hurts);
-  - lava damage always applies; ordinary fire still burns.
+- **Soulguard:** the helm carries the Soulguard I enchantment as its default enchantments component, so every helm has it, its tooltip shows it and it glints. Soulguard (`specs/soulfire.md`) gives full Soulfire immunity; ordinary fire and lava still hurt. The old hard-coded soul fire perk (`captain/CaptainsHelm`) is gone. `enchantment_glint_override: false` on the item would hide the glint if the owner prefers.
 
 ## Nether Star Shard
 
@@ -60,7 +56,7 @@
 ## Tests
 
 - **Core:** `captainSummonsWhenItFightsAPlayer` (body in `CaptainGameTest`).
-- **Milestone `CaptainGameTest`:** the phase cuts damage to a quarter, summons 1-3, ends, and comes back after 4 hits; melee within 1.5x a wither skeleton's; 400 loot rolls (1-2 shards each, helm 15-35 %, bones; 400 player kills: a skull 24-44 %; no skull without a player kill); four shards craft a star; a Soulfire Blaze shoots charges, never vanilla fireballs; a charge hits harder than a fireball; charges place soul fire on soul sand and fire on netherrack; a helm-wearing mob takes nothing in soul fire and is hurt in fire; summoned blazes burn out on the captain's death; no captain outside a fortress.
+- **Milestone `CaptainGameTest`:** the phase cuts damage to a quarter, summons 1-3, ends, and comes back after 4 hits; melee within 1.5x a wither skeleton's; 400 loot rolls (1-2 shards each, helm 15-35 %, bones; 400 player kills: a skull 24-44 %; no skull without a player kill); four shards craft a star; a Soulfire Blaze shoots charges, never vanilla fireballs; a charge hits harder than a fireball; charges place soul fire on soul sand and fire on netherrack; a helm-wearing mob takes nothing in soul fire and is hurt in fire (with the Soulguard tests in `SoulfireGameTest`, which also checks the helm carries Soulguard I); summoned blazes burn out on the captain's death; no captain outside a fortress.
 - **Client part `captain`** (`CaptainClientGameTest`): captain-summon-front/side, soulfire-blaze, helm-front/side/close (armour stand), captain-normal, helm-icon (hotbar).
 
 ## Milestone test objectives (no test yet)
