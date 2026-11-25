@@ -30,26 +30,34 @@ public class BossPiglinModel extends AbstractPiglinModel<BossPiglinRenderState> 
 	static final float HIP_Y = 17.0F;
 	private static final PartPose HEAD = PartPose.offset(0.0F, 3.0F, -1.5F);
 	private static final PartPose BODY = PartPose.offset(0.0F, HIP_Y, 0.0F);
-	private static final PartPose RIGHT_ARM = PartPose.offset(-12.0F, 4.0F, 0.0F);
-	private static final PartPose LEFT_ARM = PartPose.offset(12.0F, 4.0F, 0.0F);
+	private static final PartPose RIGHT_ARM = PartPose.offset(-13.0F, 4.0F, 0.0F);
+	private static final PartPose LEFT_ARM = PartPose.offset(13.0F, 4.0F, 0.0F);
 	private static final PartPose RIGHT_LEG = PartPose.offset(-5.0F, HIP_Y, 0.0F);
 	private static final PartPose LEFT_LEG = PartPose.offset(5.0F, HIP_Y, 0.0F);
-	private static final PartPose LEFT_EAR = PartPose.offsetAndRotation(4.5F, -6.0F, 0.0F, 0.0F, 0.0F, (float) (-Math.PI / 6));
-	private static final PartPose RIGHT_EAR = PartPose.offsetAndRotation(-4.5F, -6.0F, 0.0F, 0.0F, 0.0F, (float) (Math.PI / 6));
+	private static final float EAR_ANGLE = 20.0F * Mth.DEG_TO_RAD;
+	private static final PartPose LEFT_EAR = PartPose.offsetAndRotation(4.5F, -6.0F, 0.0F, 0.0F, 0.0F, -EAR_ANGLE);
+	private static final PartPose RIGHT_EAR = PartPose.offsetAndRotation(-4.5F, -6.0F, 0.0F, 0.0F, 0.0F, EAR_ANGLE);
 
-	// armour clearances over the skin
-	private static final float OUTER = 0.75F;
-	private static final float INNER = 0.45F;
-	private static final float BOOTS = 0.8F;
+	// armour pieces: the painted band of each vanilla texture and where it sits (part space, clearance included)
+	private static final float BREASTPLATE_TOP = -14.0F;
+	private static final float BREASTPLATE_BOTTOM = -8.75F;
+	private static final float PAULDRON_TOP = -3.6F;
+	private static final float PAULDRON_BOTTOM = 0.6F;
+	private static final float GIRDLE_TOP = -2.45F;
+	private static final float GIRDLE_BOTTOM = 0.9F;
+	private static final float THIGH_GUARD_TOP = -0.45F;
+	private static final float THIGH_GUARD_BOTTOM = 2.6F;
+	private static final float BOOT_TOP = 5.0F;
+	private static final float BOOT_BOTTOM = 7.3F;
 
-	// seated: model drop so the thighs rest on the entity position, lean back, thighs forward, hands by the belly
+	// seated: model drop so the thighs rest on the entity position, lean back, thighs forward, hands on the armrests
 	static final float SEAT_DROP = 3.5F;
-	private static final float SEAT_LEAN = -0.1F;
+	private static final float SEAT_LEAN = -0.08F;
 	private static final float SEAT_THIGH_X = -1.45F;
 	private static final float SEAT_THIGH_SPREAD = 0.28F;
 	private static final float SEAT_THIGH_Z = 0.05F;
-	private static final float SEAT_ARM_X = -0.8F;
-	private static final float SEAT_ARM_Z = 0.1F;
+	private static final float SEAT_ARM_X = -0.75F;
+	private static final float SEAT_ARM_Z = 0.15F;
 	private static final float SEAT_HEAD_X = -0.08F;
 	// waddle: short steps, splayed stance, body roll and yaw, a bob
 	private static final float STEP_SCALE = 0.5F;
@@ -80,31 +88,55 @@ public class BossPiglinModel extends AbstractPiglinModel<BossPiglinRenderState> 
 		return LayerDefinition.create(mesh(part -> switch (part) {
 			case "head" -> CubeListBuilder.create()
 				.texOffs(0, 0).addBox(-5.0F, -8.0F, -4.0F, 10.0F, 8.0F, 8.0F)
-				.texOffs(31, 1).addBox(-2.0F, -4.0F, -5.0F, 4.0F, 4.0F, 1.0F)
-				.texOffs(2, 4).addBox(2.0F, -2.0F, -5.0F, 1.0F, 2.0F, 1.0F)
-				.texOffs(2, 0).addBox(-3.0F, -2.0F, -5.0F, 1.0F, 2.0F, 1.0F);
-			case "left_ear" -> CubeListBuilder.create().texOffs(51, 6).addBox(0.0F, 0.0F, -2.0F, 1.0F, 5.0F, 4.0F);
-			case "right_ear" -> CubeListBuilder.create().texOffs(39, 6).addBox(-1.0F, 0.0F, -2.0F, 1.0F, 5.0F, 4.0F);
+				.texOffs(60, 104).addBox(-3.5F, -4.0F, -6.0F, 7.0F, 4.0F, 2.0F)
+				.texOffs(56, 84).addBox(-4.0F, -6.0F, -5.0F, 8.0F, 1.0F, 1.0F)
+				.texOffs(114, 39).addBox(-4.5F, -3.0F, -6.0F, 1.0F, 3.0F, 1.0F)
+				.texOffs(114, 35).addBox(3.5F, -3.0F, -6.0F, 1.0F, 3.0F, 1.0F);
+			case "left_ear" -> CubeListBuilder.create()
+				.texOffs(118, 22).addBox(0.0F, 0.0F, -2.0F, 1.0F, 5.0F, 4.0F);
+			case "right_ear" -> CubeListBuilder.create()
+				.texOffs(118, 31).addBox(-1.0F, 0.0F, -2.0F, 1.0F, 5.0F, 4.0F);
 			case "body" -> CubeListBuilder.create()
-				.texOffs(0, 16).addBox(-10.0F, -15.0F, -7.0F, 20.0F, 15.0F, 14.0F)
-				.texOffs(0, 45).addBox(-11.0F, -11.0F, -8.0F, 22.0F, 9.0F, 16.0F)
-				.texOffs(68, 16).addBox(-9.0F, -12.0F, -10.0F, 18.0F, 11.0F, 3.0F)
-				.texOffs(68, 30).addBox(-7.0F, -10.5F, -12.0F, 14.0F, 8.0F, 2.0F)
-				.texOffs(0, 70).addBox(-8.0F, -6.0F, 8.0F, 16.0F, 6.0F, 2.0F)
-				.texOffs(36, 70).addBox(-8.0F, -14.0F, 7.0F, 16.0F, 9.0F, 2.0F)
-				.texOffs(64, 0).addBox(-10.0F, -16.0F, -4.5F, 6.0F, 3.0F, 9.0F)
-				.texOffs(94, 0).addBox(4.0F, -16.0F, -4.5F, 6.0F, 3.0F, 9.0F);
-			case "right_arm" -> CubeListBuilder.create().texOffs(0, 81).addBox(-4.0F, -2.0F, -3.0F, 6.0F, 12.0F, 6.0F);
-			case "left_arm" -> CubeListBuilder.create().texOffs(24, 81).addBox(-2.0F, -2.0F, -3.0F, 6.0F, 12.0F, 6.0F);
-			case "right_leg" -> CubeListBuilder.create().texOffs(48, 81).addBox(-3.5F, 0.0F, -3.5F, 7.0F, 7.0F, 7.0F);
-			case "left_leg" -> CubeListBuilder.create().texOffs(76, 81).addBox(-3.5F, 0.0F, -3.5F, 7.0F, 7.0F, 7.0F);
+				.texOffs(36, 0).addBox(-10.0F, -16.0F, -7.0F, 20.0F, 10.0F, 14.0F)
+				.texOffs(0, 47).addBox(-11.0F, -11.0F, -8.0F, 22.0F, 3.0F, 16.0F)
+				.texOffs(0, 24).addBox(-12.0F, -8.0F, -8.5F, 24.0F, 6.0F, 17.0F)
+				.texOffs(0, 66).addBox(-11.0F, -2.0F, -8.0F, 22.0F, 2.0F, 16.0F)
+				.texOffs(76, 57).addBox(-9.5F, -9.0F, -11.0F, 19.0F, 7.0F, 3.0F)
+				.texOffs(60, 97).addBox(-7.5F, -8.0F, -13.0F, 15.0F, 5.0F, 2.0F)
+				.texOffs(20, 106).addBox(-5.5F, -7.0F, -14.0F, 11.0F, 3.0F, 1.0F)
+				.texOffs(0, 16).addBox(-8.0F, -6.0F, 8.0F, 16.0F, 6.0F, 2.0F)
+				.texOffs(82, 24).addBox(-8.0F, -14.0F, 7.0F, 16.0F, 9.0F, 2.0F)
+				.texOffs(76, 77).addBox(-10.0F, -17.0F, -4.5F, 7.0F, 1.0F, 9.0F)
+				.texOffs(76, 67).addBox(3.0F, -17.0F, -4.5F, 7.0F, 1.0F, 9.0F)
+				.texOffs(0, 103).addBox(-9.0F, -18.0F, -3.0F, 4.0F, 1.0F, 6.0F)
+				.texOffs(94, 101).addBox(5.0F, -18.0F, -3.0F, 4.0F, 1.0F, 6.0F);
+			case "right_arm" -> CubeListBuilder.create()
+				.texOffs(80, 87).addBox(-4.5F, -3.0F, -3.0F, 6.0F, 4.0F, 6.0F)
+				.texOffs(108, 76).addBox(-4.0F, 1.0F, -2.5F, 5.0F, 4.0F, 5.0F)
+				.texOffs(104, 11).addBox(-4.5F, 5.0F, -3.0F, 6.0F, 5.0F, 6.0F)
+				.texOffs(104, 93).addBox(-4.0F, 10.0F, -3.0F, 5.0F, 3.0F, 5.0F);
+			case "left_arm" -> CubeListBuilder.create()
+				.texOffs(56, 87).addBox(-1.5F, -3.0F, -3.0F, 6.0F, 4.0F, 6.0F)
+				.texOffs(108, 67).addBox(-1.0F, 1.0F, -2.5F, 5.0F, 4.0F, 5.0F)
+				.texOffs(104, 0).addBox(-1.5F, 5.0F, -3.0F, 6.0F, 5.0F, 6.0F)
+				.texOffs(108, 85).addBox(-1.0F, 10.0F, -3.0F, 5.0F, 3.0F, 5.0F);
+			case "right_leg" -> CubeListBuilder.create()
+				.texOffs(82, 46).addBox(-4.0F, 0.0F, -4.0F, 8.0F, 3.0F, 8.0F)
+				.texOffs(28, 84).addBox(-3.5F, 3.0F, -3.5F, 7.0F, 3.0F, 7.0F)
+				.texOffs(30, 97).addBox(-3.5F, 6.0F, -5.0F, 7.0F, 1.0F, 8.0F);
+			case "left_leg" -> CubeListBuilder.create()
+				.texOffs(82, 35).addBox(-4.0F, 0.0F, -4.0F, 8.0F, 3.0F, 8.0F)
+				.texOffs(0, 84).addBox(-3.5F, 3.0F, -3.5F, 7.0F, 3.0F, 7.0F)
+				.texOffs(0, 94).addBox(-3.5F, 6.0F, -5.0F, 7.0F, 1.0F, 8.0F);
+
 			default -> CubeListBuilder.create();
 		}), TEXTURE_WIDTH, TEXTURE_HEIGHT);
 	}
 
 	/**
-	 * Gold (vanilla humanoid) armour fitted to the big body: helmet; chest as a plate over chest and shoulders plus a
-	 * belly plate, and the arms; leggings as a hip band plus the legs; boots. 64x32 armour textures.
+	 * Gold (vanilla humanoid) armour fitted to the big body as separate pieces with skin between: helmet; breastplate
+	 * over the upper chest and pauldrons on the shoulders; a girdle under the gut and thigh guards; boots. Each piece is
+	 * a vanilla-UV box stretched so the painted part of its texture lands where wanted. 64x32 armour textures.
 	 */
 	public static ArmorModelSet<LayerDefinition> createArmorLayers() {
 		return new ArmorModelSet<>(
@@ -114,25 +146,24 @@ public class BossPiglinModel extends AbstractPiglinModel<BossPiglinRenderState> 
 				default -> CubeListBuilder.create();
 			}),
 			armour(part -> switch (part) {
-				case "body" -> CubeListBuilder.create()
-					.texOffs(16, 16).addBox(-4.0F, -18.5F, -2.0F, 8.0F, 12.0F, 4.0F, new CubeDeformation(6.0F + OUTER, -2.5F + OUTER, 5.0F + OUTER))
-					.texOffs(16, 16).addBox(-4.0F, -12.5F, -13.0F, 8.0F, 12.0F, 4.0F, new CubeDeformation(3.0F + OUTER, -2.0F + OUTER, -1.0F + OUTER));
-				case "right_arm" -> CubeListBuilder.create()
-					.texOffs(40, 16).addBox(-3.0F, -2.0F, -2.0F, 4.0F, 12.0F, 4.0F, new CubeDeformation(1.0F + OUTER, OUTER, 1.0F + OUTER));
-				case "left_arm" -> CubeListBuilder.create()
-					.texOffs(40, 16).mirror().addBox(-1.0F, -2.0F, -2.0F, 4.0F, 12.0F, 4.0F, new CubeDeformation(1.0F + OUTER, OUTER, 1.0F + OUTER));
+				case "body" -> fit(CubeListBuilder.create(), 16, 16, 8, 12, 4, false,
+					-7.5F, BREASTPLATE_TOP, -8.7F, 7.5F, topBand(BREASTPLATE_TOP, BREASTPLATE_BOTTOM, 10.0F / 12.0F), -6.0F);
+				case "right_arm" -> fit(CubeListBuilder.create(), 40, 16, 4, 12, 4, false,
+					-5.25F, PAULDRON_TOP, -3.75F, 2.25F, topBand(PAULDRON_TOP, PAULDRON_BOTTOM, 5.0F / 12.0F), 3.75F);
+				case "left_arm" -> fit(CubeListBuilder.create(), 40, 16, 4, 12, 4, true,
+					-2.25F, PAULDRON_TOP, -3.75F, 5.25F, topBand(PAULDRON_TOP, PAULDRON_BOTTOM, 5.0F / 12.0F), 3.75F);
 				default -> CubeListBuilder.create();
 			}),
 			armour(part -> switch (part) {
-				case "body" -> CubeListBuilder.create()
-					.texOffs(16, 16).addBox(-4.0F, -9.0F, -1.0F, 8.0F, 12.0F, 4.0F, new CubeDeformation(7.0F + INNER, -3.0F + INNER, 7.0F + INNER));
-				case "right_leg" -> leg(false, INNER);
-				case "left_leg" -> leg(true, INNER);
+				case "body" -> fit(CubeListBuilder.create(), 16, 16, 8, 12, 4, false,
+					-11.45F, bottomBand(GIRDLE_TOP, GIRDLE_BOTTOM, 5.0F / 12.0F), -8.45F, 11.45F, GIRDLE_BOTTOM, 8.45F);
+				case "right_leg" -> thighGuard(false);
+				case "left_leg" -> thighGuard(true);
 				default -> CubeListBuilder.create();
 			}),
 			armour(part -> switch (part) {
-				case "right_leg" -> leg(false, BOOTS);
-				case "left_leg" -> leg(true, BOOTS);
+				case "right_leg" -> boot(false);
+				case "left_leg" -> boot(true);
 				default -> CubeListBuilder.create();
 			})
 		);
@@ -143,9 +174,31 @@ public class BossPiglinModel extends AbstractPiglinModel<BossPiglinRenderState> 
 		return createArmorLayers().map(layer -> new BossPiglinModel(layer.bakeRoot()));
 	}
 
-	private static CubeListBuilder leg(boolean mirror, float clearance) {
-		return CubeListBuilder.create().texOffs(0, 16).mirror(mirror)
-			.addBox(-2.0F, -2.5F, -2.0F, 4.0F, 12.0F, 4.0F, new CubeDeformation(1.5F + clearance, -2.5F + clearance, 1.5F + clearance));
+	private static CubeListBuilder thighGuard(boolean mirror) {
+		return fit(CubeListBuilder.create(), 0, 16, 4, 12, 4, mirror,
+			-4.45F, THIGH_GUARD_TOP, -4.45F, 4.45F, topBand(THIGH_GUARD_TOP, THIGH_GUARD_BOTTOM, 9.0F / 12.0F), 4.45F);
+	}
+
+	private static CubeListBuilder boot(boolean mirror) {
+		return fit(CubeListBuilder.create(), 0, 16, 4, 12, 4, mirror,
+			-4.3F, bottomBand(BOOT_TOP, BOOT_BOTTOM, 6.0F / 12.0F), -4.3F, 4.3F, BOOT_BOTTOM, 4.3F);
+	}
+
+	/** A box with vanilla UVs (texture size w x h x d) stretched to span exactly x0..x1, y0..y1, z0..z1. */
+	private static CubeListBuilder fit(CubeListBuilder cubes, int u, int v, float w, float h, float d, boolean mirror,
+			float x0, float y0, float z0, float x1, float y1, float z1) {
+		return cubes.texOffs(u, v).mirror(mirror).addBox((x0 + x1 - w) / 2.0F, (y0 + y1 - h) / 2.0F, (z0 + z1 - d) / 2.0F, w, h, d,
+			new CubeDeformation((x1 - x0 - w) / 2.0F, (y1 - y0 - h) / 2.0F, (z1 - z0 - d) / 2.0F));
+	}
+
+	/** Bottom of a box whose top {@code fraction} (the painted rows of its texture) covers top..bottom. */
+	private static float topBand(float top, float bottom, float fraction) {
+		return top + (bottom - top) / fraction;
+	}
+
+	/** Top of a box whose bottom {@code fraction} covers top..bottom. */
+	private static float bottomBand(float top, float bottom, float fraction) {
+		return bottom - (bottom - top) / fraction;
 	}
 
 	private static LayerDefinition armour(Function<String, CubeListBuilder> cubes) {
@@ -170,7 +223,7 @@ public class BossPiglinModel extends AbstractPiglinModel<BossPiglinRenderState> 
 
 	@Override
 	protected float getDefaultEarAngleInDegrees() {
-		return 30.0F;
+		return 20.0F;
 	}
 
 	@Override

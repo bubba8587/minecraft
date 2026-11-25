@@ -41,12 +41,12 @@ public class BossPiglinCapeLayer<S extends BossPiglinRenderState, M extends Boss
 		// hang point on the top of the humped back
 		private static final float TOP_Y = -16.0F;
 		private static final float BACK_Z = 9.25F;
-		// tilt back from the body (clears the hip band and rear), more when walking and fleeing, flat against the throne
+		// tilt back from the body (clears the rear), more when walking and fleeing; seated it lies flat on the backrest
 		private static final float TILT = 0.15F;
 		private static final float TILT_WALK = 0.35F;
 		private static final float TILT_FLEE = 0.25F;
 		private static final float FLAP_FLEE = 0.08F;
-		private static final float TILT_SEATED = 0.03F;
+		private static final float TILT_SEATED = 0.08F;
 		private static final float SEATED_LENGTH = 0.8F;
 		private static final float SWAY = 0.02F;
 		private static final float ROLL_FOLLOW = 0.3F;
