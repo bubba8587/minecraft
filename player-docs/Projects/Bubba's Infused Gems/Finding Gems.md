@@ -56,16 +56,16 @@ Mobs that spawn with armor or a weapon sometimes have gems set in them, and they
 
 ## Strength
 
-A found Gem is made as if it had been brewed and enchanted: its Gem Power level and enchanting tier depend on where it was found.
+A found Gem is made as if it had been brewed and enchanted: its Base Power level and Enchant level depend on where it was found.
 
-| Level | Gem Power | Tier | Potion strength | Gemmed armor | Gemmed weapons | Gems per piece |
+| Level | Base Power | Enchant | Potion strength | Gemmed armor | Gemmed weapons | Gems per piece |
 |---|---|---|---|---|---|---|
-| Common | I or II | 1 | Plain potion | Leather, copper, gold or chainmail | Stone sword, copper sword, stone axe, bow | 1 |
-| Rare | I to III | 1 or 2 | Plain potion | Chainmail, gold or iron | Iron sword, iron axe, golden sword, bow, crossbow | 1 |
-| Hard | II to IV | 1 or 2 | Any | Iron or diamond | Iron or diamond sword, diamond axe, bow, crossbow, trident | 1 or 2 |
-| Ominous | III to VI | 2 or 3 | Any | Diamond | Diamond sword, diamond axe, bow, crossbow, trident, mace | 1 to 3 (weapons hold 2) |
+| Common | I or II | I | Plain potion | Leather, copper, gold or chainmail | Stone sword, copper sword, stone axe, bow | 1 |
+| Rare | I to III | I or II | Plain potion | Chainmail, gold or iron | Iron sword, iron axe, golden sword, bow, crossbow | 1 |
+| Hard | II to IV | I or II | Any | Iron or diamond | Iron or diamond sword, diamond axe, bow, crossbow, trident | 1 or 2 |
+| Ominous | III to VI | II or III | Any | Diamond | Diamond sword, diamond axe, bow, crossbow, trident, mace | 1 to 3 (weapons hold 2) |
 
-Only ominous vaults give Gem Power VI gems, and those are always **perfect** (tier 3, full strength) of any effect. A perfect gem from a vault nearly always comes with a drawback; about 1 in 20 is clean. Everywhere else, found brewable gems stay below Gem Power VI.
+Only ominous vaults give Base Power VI gems, and those are always **perfect** (Enchant III, full strength) of any effect. A perfect gem from a vault nearly always comes with a drawback; about 1 in 20 is clean. Everywhere else, found brewable gems stay below Base Power VI.
 
 ## Compatibility
 

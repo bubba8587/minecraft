@@ -21,7 +21,7 @@ Harmful gems in armor stay at 90%. A perfect weapon hits with the strongest poti
 What else sets a gem's strength:
 
 - **Stacking:** gems of the same effect add up, each extra one counting a little less than the one before.
-- **Base gem:** the gem's Gem Power level (its base gem) matters most: a full iron set of amethyst gems reaches about a third of the best, diamond-base gems in diamond armor about 70%, and prismarine-base gems in netherite 88%.
+- **Base gem:** the gem's Base Power level (its base gem) matters most: a full iron set of amethyst gems reaches about a third of the best, diamond-base gems in diamond armor about 70%, and prismarine-base gems in netherite 88%.
 - **Material:** the same gem is stronger in better armor or weapons, from leather and wood up to netherite. Gold counts like diamond, for its strong enchanting. Bows, crossbows, tridents and maces count like diamond.
 - **Matching set:** armor pieces of the same material next to each other (helmet, chestplate, leggings, boots) add strength. A matching helmet and chestplate beat a matching helmet and boots; a full matching set is best.
 - **Drawbacks** are small and fixed, about a tenth of the effect's strongest potion level. Several of the same drawback add up a little, but stay weaker than the weakest real potion.
@@ -141,7 +141,7 @@ With [[Bubba's Reworked Beacons]] installed, a finished Gem can be placed in a b
 
 - The beacon gives the gem's effects, as if worn, to **every living thing in its area**: players and mobs, including the player who built it. A harmful gem makes a trap for everyone; only the player's own gems protect against it.
 - Everything on the gem counts: its main effect, its bonus and its drawback.
-- The pyramid limits the gem's Gem Power: 1 layer Gem Power I, 2 layers up to III, 3 layers up to V, 4 layers VI. A stronger gem works at the limit, and the beacon screen says *Only outputting Gem Power N*. The screen shows the gem's own tooltip lines, for example *Speed (100%)*.
+- The pyramid limits the gem's Base Power: 1 layer Base Power I, 2 layers up to III, 3 layers up to V, 4 layers VI. A stronger gem works at the limit, and the beacon screen says *Only outputting Base Power N*. The screen shows the gem's effect lines, for example *+ Speed*.
 - A perfect gem in a full 4-layer beacon is worth half a perfect armor set of that gem.
 - A beacon and the player's own armor (or another beacon, or a potion) of the same effect do not add up: the stronger one applies.
 - The effect lasts a little longer than the beacon's pulse (9 seconds plus 2 per pyramid layer, as in vanilla), so it fades soon after leaving the area.

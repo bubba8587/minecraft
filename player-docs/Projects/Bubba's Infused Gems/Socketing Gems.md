@@ -12,7 +12,15 @@
 |---|---|---|---|
 | *(empty)* | Armor or weapon | Gem | The same gear with the gem socketed |
 
-The template slot is left empty. The gear's tooltip lists its gems.
+The template slot is left empty. The gear's tooltip lists its gems under *Gems (n):*, one row per gem with its main effect, and its bonus effect and drawback on indented rows under it:
+
+> Gems (2):
+>  ◆ Speed
+>      + Minor Haste
+>      - Minor Poison
+>  ◆ Strength
+
+Levels are not shown on gear. The combined effect of all worn gems, with real values, is shown by the `/gems` command. *See also: [[Infused Gems Commands]]*
 
 | Gear | Gem slots |
 |---|---|

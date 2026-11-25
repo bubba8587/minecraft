@@ -265,7 +265,7 @@ The Warden and the debuffs carry on.
 - **With Reworked Beacons, without Infused Gems:** the floor beacon holds a **Fabricator Heart** (an echo shard, named, marked with custom data). Our payload (`compat/FabricatorBeaconPayload`, loaded only through that mod's entrypoint; `compileOnly`, `suggests`) gives the same three debuffs to players in the pair's area. Take it out or break the beacon and they end.
   - The heart works in any beacon, so a player can make a debuff beacon with it (taking over).
   - Small Reworked Beacons API it needed: `api/BeaconSlots.item/setItem` (fill a beacon's slot from another mod).
-- **With Reworked Beacons and Infused Gems:** the floor beacon holds a real **perfect Mining Fatigue gem with a Slowness bonus** (Gem Power VI, capped to III by the 2-layer pyramid). It is built by name, with no link to Infused Gems, and Infused Gems' own payload gives it to everything in the area (B18). Take it out and that ends.
+- **With Reworked Beacons and Infused Gems:** the floor beacon holds a real **perfect Mining Fatigue gem with a Slowness bonus** (Base Power VI, capped to III by the 2-layer pyramid). It is built by name, with no link to Infused Gems, and Infused Gems' own payload gives it to everything in the area (B18). Take it out and that ends.
 
 ### Office loot
 
@@ -274,7 +274,7 @@ The Warden and the debuffs carry on.
 - **valuables, 2-4 rolls:** diamonds 1-4, emeralds 2-6, gold 2-6, iron 3-8, echo shards 2-4, experience bottles 3-8;
 - **one treasure, always** (weights): Swift Sneak book (5), level 30-39 enchanted book (4), diamond chestplate, leggings, sword or pickaxe (3 each), enchanted golden apple, totem of undying, netherite upgrade template, recovery compass, ward trim (2 each), silence trim (1), disc 13 (2), disc 11 (1), Otherside (1).
 
-**Spare parts (owner):** with Infused Gems installed, the chests use `fabricator_office_with_gems` instead. It loads only with that mod (a Fabric load condition) and is chosen in code by `isModLoaded`. It adds a **1-in-3** chance of a harmful gem: Mining Fatigue 3 / Slowness 2 / Weakness 2 (weights) at Gem Power III tier 2, or 1 the beacon's own perfect Mining Fatigue gem. Without Infused Gems, no gems.
+**Spare parts (owner):** with Infused Gems installed, the chests use `fabricator_office_with_gems` instead. It loads only with that mod (a Fabric load condition) and is chosen in code by `isModLoaded`. It adds a **1-in-3** chance of a harmful gem: Mining Fatigue 3 / Slowness 2 / Weakness 2 (weights) at Base Power III tier 2, or 1 the beacon's own perfect Mining Fatigue gem. Without Infused Gems, no gems.
 - The pool's chance uses 26.3's form, `"condition": {"type": "minecraft:random_chance", "chance": 0.3333}`. The pre-26.x `"conditions"` list is ignored by 26.3 (the pool would roll every time); `lootFilesUseCurrentKeys` guards against it.
 
 Office chests hold **no** Fabricator Explorer Map (owner); the map is only sold by cartographers (`specs/monster-camps.md` "Maps").
@@ -284,7 +284,7 @@ Office chests hold **no** Fabricator Explorer Map (owner); the map is only sold 
 1. **Powered stops the teleporter** (like a hopper). The lodestone is the input.
 2. **Starting numbers:** a rest of about a minute (1 in 60 a second), then a 17 s count; pile cap 12; 2 s wake; 96-block reach.
 3. **Placement:** 150 blocks from the city, deck at -50. The tunnel cuts into the city's outer ring; the doorway 96 from the city's centre is a guess at where the city's edge is. The first real one looks right in screenshots (a deepslate city wall beside the door), but the owner should walk one.
-4. **Two-layer pyramids**, so an Infused Gems beacon gem isn't stuck at Gem Power I: 68 iron blocks per Fabricator.
+4. **Two-layer pyramids**, so an Infused Gems beacon gem isn't stuck at Base Power I: 68 iron blocks per Fabricator.
 5. **Dropped mobs and the sculk:** falls are vibrations, so deck sensors twitch. Shriekers only answer players; the passive Warden hears nothing.
 6. **Natural Fabricators generate only in new chunks.** In an existing world, Fabricators appear beside cities whose surroundings haven't generated yet.
 7. **Set-up timing:** office chests get their loot when worldgen places them; the Warden, the beacon item and the jukebox disc are set up the first time a player comes near.

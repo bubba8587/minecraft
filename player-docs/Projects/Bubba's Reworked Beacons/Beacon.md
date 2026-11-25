@@ -29,15 +29,15 @@ The screen shows the beacon's state, then the item's name and what it does, in t
 | *Idle: needs a pyramid below* | No pyramid |
 | *Idle: needs a clear sky above, or an upside-down beacon to pair with* | The beam is blocked |
 | *Needs a N-layer pyramid* (red) | The item needs a bigger pyramid to work at all |
-| *Only outputting Gem Power N* (yellow) | The item is stronger than the pyramid allows; it works at the limit |
+| *Only outputting Base Power N* (yellow) | The item is stronger than the pyramid allows; it works at the limit |
 
 ### Effects
 
 Every 4 seconds the beacon gives its effect to every living thing in its area, players and mobs (not spectators). The effect lasts 9 seconds plus 2 seconds per pyramid layer, as in vanilla, so it fades soon after leaving the area.
 
-The pyramid limits the item's Gem Power (for items from other mods that have one):
+The pyramid limits the item's Base Power (for items from other mods that have one):
 
-| Pyramid layers | Highest Gem Power |
+| Pyramid layers | Highest Base Power |
 |---|---|
 | 1 | I |
 | 2 | III |

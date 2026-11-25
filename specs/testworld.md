@@ -44,8 +44,8 @@ A superflat world with a station for every playable feature, so the owner can tr
 - `build.mcfunction` calls one function per station: `setup`, `hub`, `crafting`, `tower`, `arena`, `loot`, `graveyard`, `gems`, `grounds`, `cairn` (the preview), `creepers`, `cairns`, `showcase`.
 - `grounds` calls one `grounds_*` function per testing-grounds area, including `grounds_beacons` (beacon yard, poison trap, bell lane, light rings) and `grounds_paired` (paired beacons room and spawn test boxes).
 - **The `grounds*.mcfunction` files are generated** by `tools/testworld-grounds.py` (owner: a regenerate from an old scratch copy once undid a rename). Edit the script, not the generated files, then run `python tools/testworld-grounds.py` and `python tools/build-testworld.py`.
-  - Effect names on signs come from Infused Gems' `en_us.json` (falling back to vanilla's lang in `build/mcsrc/`), and the level label ("Gem Power") from the gem item's name pattern, so a rename in a mod reaches the signs on the next generate.
-  - Sign-only wording ("perfect set", the Gem Power V twin lines) is in named constants at the top of the script.
+  - Effect names on signs come from Infused Gems' `en_us.json` (falling back to vanilla's lang in `build/mcsrc/`), and the level label from the gem item's name pattern, so a rename in a mod reaches the signs on the next generate. Players see the level as "Base Power"; since 2026-11-25 the finished gem has no name pattern (the `gem.named` key is gone), so `tools/testworld-grounds.py` falls back to its built-in label, which still reads "Gem Power" until the script reads the new `tooltip.base_power` key.
+  - Sign-only wording ("perfect set", the Base Power V twin lines) is in named constants at the top of the script.
   - Every sign line is checked against the 15/13 character limits.
 - The pack is installed so the server parses every function at load: a bad line is a load ERROR, which fails the build.
 - The tool then sends each command through the console itself, following `function` lines (so no macros), and checks every reply. Unknown commands, bad arguments, `Test failed`, `Could not set the block`, "No blocks were filled" and similar fail the build, as does any ERROR in the log.
@@ -166,16 +166,16 @@ Each station has a sign naming it and saying what to try.
   - Checked in the source: `SignBlock.useWithoutItem`, `SignBlockEntity.executeClickCommandsIfPresent`. Vanilla has nothing faster for armor: an armor stand swaps one slot per click into the hand, and the shelf block swaps hotbar items only.
 - **Kit sign:**
   - line 1 `item override entity @s armor.* with minecraft:air` (takes the worn armor off; it is deleted, not returned);
-  - line 2 `gems kit <effect> [material] [power]` (Infused Gems: a full worn set with 3 gems a piece, plus a sword with 2; Gem Power 6 is perfect);
+  - line 2 `gems kit <effect> [material] [power]` (Infused Gems: a full worn set with 3 gems a piece, plus a sword with 2; Base Power 6 is perfect);
   - line 3 an equip sound.
   - Gems whose test needs a tool also give it (owner: Haste needs mining tools, not a sword), in one `loot give @s loot {pools:[...]}` command with an inline loot table: Haste a netherite pickaxe, shovel and axe; Mining Fatigue and Conduit Power a netherite pickaxe; Luck a fishing rod (the equip sound moves to line 4).
   - The verify step tries the take-off command on an armor stand; the screenshot test clicks the Speed sign as the player and checks the worn chestplate, then the Take off sign.
 - **Command blocks:** 26.3's `command_blocks_work` game rule (default true) enables them, in singleplayer or on a server. They sit under the floor at y -62.
   - Arrow gallery: a lever on the floor at (-35, -60, 20) powers a repeating command block at (-35, -62, 20). Its chain (west to x -45) counts `#gallery tw_clock` and puts a redstone block behind each dispenser in turn (ticks 20, 40, 60: one arrow a second), refilling each to 64 arrows.
   - Dummies: an always-on repeating block at (9, -62, 37) stores each dummy's health in `tw_hp` and shows it on the action bar of players in x 7..25, z 35..46. The Reset dummies sign places a redstone block at (9, -61, 39) over an impulse chain (x 9..16, y -62, z 39) that kills and re-summons the five dummies and puts the grass back.
-- **Perfect vs Gem Power V (owner: perfect sets have extras, so test what is missing without them):** every wardrobe gem, and every station gem with a perfect-only extra, has two signs: the perfect netherite set on an oak sign ("perfect set") and a Gem Power V twin (`gems kit <effect> netherite 5`, 88%) on a birch sign ("Gem Power V 88%"). The lava moat's twin is warped like its other signs. Stations with twins: gallery and live range (Ender, Breeze), cobweb field (Weaving), pool (Water Breathing, Conduit Power), mob pen (Invisibility), lava moat (Fire Resistance), dark room (Night Vision), food bench (Saturation).
+- **Perfect vs Base Power V (owner: perfect sets have extras, so test what is missing without them):** every wardrobe gem, and every station gem with a perfect-only extra, has two signs: the perfect netherite set on an oak sign ("perfect set") and a Base Power V twin (`gems kit <effect> netherite 5`, 88%) on a birch sign ("Base Power V 88%"). The lava moat's twin is warped like its other signs. Stations with twins: gallery and live range (Ender, Breeze), cobweb field (Weaving), pool (Water Breathing, Conduit Power), mob pen (Invisibility), lava moat (Fire Resistance), dark room (Night Vision), food bench (Saturation).
 - **Wardrobe** x -4..4, z 18..32 (dark oak floor; walls at x -4 and x 4, z 19..31, 4 high). Entrance signs at (-3/3, -60, 18).
-  - West wall, signs facing east: the brewable gems Speed..Healing perfect at y -57, their Gem Power V twins below at y -58; then Wind Burst..Hero of the Village perfect at y -59, twins at y -60.
+  - West wall, signs facing east: the brewable gems Speed..Healing perfect at y -57, their Base Power V twins below at y -58; then Wind Burst..Hero of the Village perfect at y -59, twins at y -60.
   - East wall: the 13 harmful gems perfect at y -57, twins at y -58; at y -59, Speed in all seven materials (z 19..25), then Take off, Empty bag, No effects, Survival, Creative (z 27..31).
   - **Wardrobe totem:** a Totem of Warding sign at (3, -60, 27) on the east wall's bottom row (gives one).
 - **Armor stands** x -4..4, z 37 (facing north, no gravity): Speed netherite, Fire Resistance diamond, Water Breathing iron, Slow Falling gold, Jump Boost leather, every piece and the sword with perfect gems; a sign in front of each (z 35). Name tags are off on purpose: vanilla name tags show through walls, into the dark room too.
@@ -184,7 +184,7 @@ Each station has a sign naming it and saying what to try.
   - A backstop wall x -40..-34, z 19: kit signs on its north face (Resistance x -40, Breeze twin and perfect -39/-38, Ender perfect and twin -36/-35, Turtle Master -34); the lever, Survival and Creative on its south face.
 - **Live range** x -46..-32, z 37..47, walls 5 high, door in the west wall at (-46, 38) (path at x -47), so the archers can't see the avenues.
   - Two skeletons and a pillager in oak boats on a ledge (z 45..46, y -57), tagged `tw_turret`. Archers only shoot survival players.
-  - Signs inside on the north wall: Turrets on (re-summons), Turrets off, Ender and Breeze (perfect and Gem Power V), Survival, Creative.
+  - Signs inside on the north wall: Turrets on (re-summons), Turrets off, Ender and Breeze (perfect and Base Power V), Survival, Creative.
 - **Drop pads** x -22..-10, z 19..31: stone brick pillars at z 23 with ladders at z 22, tops running to z 25, heights 4, 8, 12, 16, 24 at x -22, -19, -16, -13, -10. Stepping off does height minus 3 damage; 24 kills at full health. Signs at z 21; kit signs (Wind Burst, Oozing, Slow Falling, Jump Boost, Healing), Heal me, Survival, Creative at z 19.
 - **Jump steps** x -13..-7 at z 40, 1 to 4 high.
 - **Cobweb field** x -23..-17, z 38..46: webs 2 high at x -23..-21, a stone brick wall at x -20, an open lane x -19..-17. Reset webs refills only air; a Shears sign.
@@ -229,8 +229,8 @@ Each station has a sign naming it and saying what to try.
   | 4 | (33, 81) | (33, -56, 81) | (32, 75) | (34, 75) |
 
   - Each sign: layers, "up to Power I/III/V/VI", range 20/30/40/50.
-  - Each chest: finished gems of Speed, Regeneration, Jump Boost, Night Vision, Strength, Resistance, Fire Resistance, Slow Falling, Haste, perfect (Gem Power VI, top row) and Gem Power V (second row); plus amethyst shards, quartz, diamonds and nether stars, the standalone payments. With Infused Gems installed those payments are switched off, so they show the "no" case.
-- **Poison trap zone:** a 1-layer sky beacon at (-40, -59, 88) loaded with a perfect Poison gem (block entity NBT `"bubbas_reworked_beacons:item"`), capped to Gem Power I.
+  - Each chest: finished gems of Speed, Regeneration, Jump Boost, Night Vision, Strength, Resistance, Fire Resistance, Slow Falling, Haste, perfect (Base Power VI, top row) and Base Power V (second row); plus amethyst shards, quartz, diamonds and nether stars, the standalone payments. With Infused Gems installed those payments are switched off, so they show the "no" case.
+- **Poison trap zone:** a 1-layer sky beacon at (-40, -59, 88) loaded with a perfect Poison gem (block entity NBT `"bubbas_reworked_beacons:item"`), capped to Base Power I.
   - Its area is x -60..-20, z 68..108, full height; nothing else is in it.
   - A NoAI pig, cow and zombie (tag `tw_trap`) in an oak fence pen x -44..-36, z 79..83 show it (the zombie, being undead, ignores Poison).
   - Warning signs at (-36, 67) (end of a path x -36..-35 from avenue C) and (-19, 84) (facing east).

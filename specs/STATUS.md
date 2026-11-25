@@ -126,7 +126,7 @@ Nothing is released yet: every mod is 0.1.0 in `develop`.
 
 ## Bubba's Reworked Beacons ([spec](reworked-beacons.md))
 - built: one item slot; payload API for other mods ([§](reworked-beacons.md#payload-api-the-hook-other-mods-use))
-- built: pyramid caps Gem Power; every living thing in range ([§](reworked-beacons.md#the-beacon-owner-decisions))
+- built: pyramid caps Base Power; every living thing in range ([§](reworked-beacons.md#the-beacon-owner-decisions))
 - built: standalone payments for the six vanilla powers ([§](reworked-beacons.md#standalone-reworked-beacons-without-infused-gems-owner-2026-11-16))
 - built: upside-down beacons and underground pairs ([§](reworked-beacons.md#range))
 - parked: compatibility tests against other beacon mods ([§](reworked-beacons.md#open))

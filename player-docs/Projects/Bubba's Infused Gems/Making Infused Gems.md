@@ -38,9 +38,9 @@ The player places a potion in a bottle slot of a brewing stand and a **base gem*
 
 ### Base gems
 
-The base gem sets the gem's **Gem Power level**, which affects strength only, and matters a lot: a nether star gem is two and a half times as strong as an amethyst one.
+The base gem sets the gem's **Base Power level**, which affects strength only, and matters a lot: a nether star gem is two and a half times as strong as an amethyst one.
 
-| Gem Power | Base gem | Strength |
+| Base Power | Base gem | Strength |
 |---|---|---|
 | I | Amethyst shard | 40% |
 | II | Nether quartz | 50% |
@@ -52,11 +52,11 @@ The base gem sets the gem's **Gem Power level**, which affects strength only, an
 ## Properties
 
 - **Effect**: from the potion or item used.
-- **Potion strength**: a strong (glowstone) potion makes a stronger gem, a long (redstone) potion a slightly stronger one.
-- **Form**: normal, splash or lingering, the potion's form. It can't be changed after brewing. It sets the highest enchanting tier: normal reaches tier 1, splash tier 2, lingering tier 3. *Main article: [[Enchanting Gems]]*
-- Gems brewed from items (golden apples, wither roses, stews and the rest) have no form. Their names show none, for example *Infused Gem: Gem Power IV, Absorption*, and they reach tier 3 like a lingering potion's; collecting the items is the cost.
+- **Potion strength**: a strong (glowstone) potion makes a stronger gem, a long (redstone) potion a slightly stronger one. The finished Gem's tooltip shows it as *Infusion I* (normal), *II* (long) or *III* (strong); gems brewed from an item show *Infusion III*.
+- **Form**: normal, splash or lingering, the potion's form. It can't be changed after brewing. It sets the highest enchant level: normal reaches Enchant I, splash Enchant II, lingering Enchant III. *Main article: [[Enchanting Gems]]*
+- Gems brewed from items (golden apples, wither roses, stews and the rest) have no form. Their names show none, for example *Infused Gem: Base Power IV, Absorption*, and they reach Enchant III like a lingering potion's; collecting the items is the cost.
 
-The item name shows these, for example *Infused Gem: Gem Power III, Speed (Splash)*.
+The item name shows these, for example *Infused Gem: Base Power III, Speed (Splash)*, and the tooltip names the potion and the highest enchant level, for example *Strong potion, up to Enchant III*.
 
 ## Supported potions
 

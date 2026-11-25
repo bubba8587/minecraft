@@ -54,7 +54,7 @@ The **gem testing grounds** are a set of stations for trying [[Gem Effects|gem e
 
 1. Walk south from the spawn plaza into the wardrobe, the hall lined with signs.
 2. Right-click the sign of a gem. The worn armor is taken off (and deleted), and a full netherite set with three perfect gems in every piece is put on; a sword with two of the same gems goes into the inventory. Gems that need a tool to test also give one: Haste a netherite pickaxe, shovel and axe, Mining Fatigue and Conduit Power a netherite pickaxe, Luck a fishing rod.
-3. Every gem has two signs, one above the other: the oak sign gives the perfect set, the birch sign below it gives the same set at Gem Power V (88% strength). Perfect sets have extras that weaker sets lack (for example, only a perfect Breeze set deflects every projectile), so trying both shows what the perfect set adds. Stations that test such an extra have both signs as well.
+3. Every gem has two signs, one above the other: the oak sign gives the perfect set, the birch sign below it gives the same set at Base Power V (88% strength). Perfect sets have extras that weaker sets lack (for example, only a perfect Breeze set deflects every projectile), so trying both shows what the perfect set adds. Stations that test such an extra have both signs as well.
 4. Signs on the right are helpful gems, signs on the left harmful ones. The lower row on the left gives Speed in every armor material, for comparing materials, and holds the Take off, Empty bag, No effects, Survival and Creative signs.
 
 Each station below also has signs for the gems it tests. The armor stands past the wardrobe wear showcase sets; clicking a piece takes it.
@@ -116,7 +116,7 @@ The **beacons and warding** stations are for trying [[Beacon|beacons]] from [[Bu
 
 | Station | What to try |
 |---|---|
-| Beacon yard | Four beacons open to the sky on pyramids of 1, 2, 3 and 4 layers, each with a sign and a chest. A gem from the chest goes into the beacon: the pyramid caps its Gem Power (I, III, V or VI) and sets the range (20 to 50 blocks). Each chest holds perfect and Gem Power V gems, plus the old payment items, which are not accepted while [[Bubba's Infused Gems]] is installed. |
+| Beacon yard | Four beacons open to the sky on pyramids of 1, 2, 3 and 4 layers, each with a sign and a chest. A gem from the chest goes into the beacon: the pyramid caps its Base Power (I, III, V or VI) and sets the range (20 to 50 blocks). Each chest holds perfect and Base Power V gems, plus the old payment items, which are not accepted while [[Bubba's Infused Gems]] is installed. |
 | Poison trap | A beacon west of the boss arena holding a Poison gem poisons everything around it, the player included. A pig and a cow in a pen show it; the zombie beside them is undead and immune. Signs mark the edge. |
 | Paired beacons | A sign south of the mining wall teleports the player up to a closed room with a beacon in the floor and an upside-down beacon above it. A Totem of Warding from the chest goes into the floor beacon: the area 150 blocks around is warded at that height, and with the 4-layer pyramids the sleepers in the room stay asleep even when the bell rings. A sign on the wall leads back down. |
 | Spawn test | Two dark boxes near the paired beacons room, one inside the ward and one above it. The Spawns on sign turns natural spawning on for the whole world; after a while on the ground, the Count spawns sign tells how many mobs are in each box. The Spawns off sign turns spawning off again, and Clear boxes empties them. |

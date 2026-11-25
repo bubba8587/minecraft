@@ -198,7 +198,7 @@ Totals: **87 advancements** (80 for single mods and 7 that need two mods). **46 
 - **Second Thoughts** (`grind`): C `gems_ground`: in the grindstone take hook that returns gems
 - **Silver Lining** (`invert`): C `gem_inverted`: in the inversion brew
 - **All Downside** (`all_downside`): C `gem_enchanted` with a drawback-only result
-- **Star Power** (`star_power`): C `gem_brewed` with Gem Power VI (or a custom item test on the infused gem)
+- **Star Power** (`star_power`): C `gem_brewed` with Base Power VI (or a custom item test on the infused gem)
 - **Flawless** (`flawless`): C `gem_enchanted` with a 100 % result and no drawback
 - **You Can't Brew That** (`found_only`): C: `inventory_changed` with a custom item test on the gem's main effect
 - **Share the Wealth** (`beacon_gem`): **Needs: Reworked Beacons**. C `beacon_payload` with a Gem

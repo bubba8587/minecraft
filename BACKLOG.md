@@ -50,6 +50,7 @@ Parked ideas and open items, newest first within each project. Agents add to it 
 - **Glider durability:** playtest 324 (elytra 432). No broken icon (owner, 2026-11-24: skip).
 
 ## Bubba's Infused Gems
+- **An inventory screen showing your gems' combined effects** (owner, 2026-11-25; /gems covers it for now).
 - **26.4 Freezing gem (owner, 2026-11-24, for the 26.4 port):** 26.4 adds a Freezing potion; make a craftable (brewed) Freezing gem from it. Already promised on posters as [Coming in 26.4] (`specs/copy-strings.md`).
 - **Per-weapon tuning for gems in bows, crossbows, tridents and maces** (owner, 2026-11-14): they have no material, so they count as diamond level for now; each probably needs its own factor.
 - **Drawback sizes** (owner will playtest): currently 10% each, under 20% stacked.

@@ -40,16 +40,17 @@ Builds the C4 effectGems direction.
    - **Tier 2:** a medium form of the main effect, alone or with a weak other effect (plain medium added by the owner), or with a weak drawback.
    - **Tier 3:** the strongest form, alone or with a weak or medium other effect, or with a weak or medium drawback.
    - Exact outcomes and odds: Enchanting, below.
+   - Players see the tiers as **Enchant I, II, III** (tooltips, the Infused Gem's "up to Enchant N"); "tier" in this spec is the code's `tier` field.
 3. The result is the finished **Gem**, ready for the smithing table.
 
 - **The potion form sets the highest tier (owner):** normal potion tier 1, splash tiers 1-2, lingering all three. An Infused Gem brewed from an item reaches all three (owner: every gem should be able to reach the cap unless it proves too strong; collecting twelve of the item is the cost). So gems start early and the strongest results stay endgame. The enchanting preview and vanilla's reroll trick keep bad rolls from feeling final.
 - **Nothing raises an Infused Gem's form afterwards (owner):** the form is the potion's.
 
-### One item, Gem Power levels
+### One item, Base Power levels
 
-- To keep the item count down there is **one Infused Gem item with one model**, not six. The base gem becomes its **Gem Power level**, a second progression line ordered by how hard the base gem is to get (owner):
+- To keep the item count down there is **one Infused Gem item with one model**, not six. The base gem becomes its **Base Power level**, a second progression line ordered by how hard the base gem is to get (owner):
 
-  | Gem Power | Base gem | Factor | Where from |
+  | Base Power | Base gem | Factor | Where from |
   |---|---|---|---|
   | I | Amethyst shard | 0.40 | first trip underground |
   | II | Nether quartz | 0.50 | first Nether trip |
@@ -60,18 +61,18 @@ Builds the C4 effectGems direction.
 
 - **Base gems affect strength only (owner):** no special traits, nether star included; anything more is too complicated. No loot tables change for them.
 - The finished, enchanted gem is also **one item**, its rolled effects in the tooltip (confirmed by the owner).
-- Names carry the rest: *Infused Gem: Gem Power III, Speed (Splash)*, *Gem: Gem Power VI, Speed*.
+- The Infused Gem's name carries the rest: *Infused Gem: Base Power III, Speed (Splash)*. A finished gem is just named *Gem*; its tooltip lists the rest (Tooltips, below).
 - **Color (owner's intent):** each gem is one color, its main effect's potion color, made more saturated and shiny than the potion so it reads as a jewel. A second-effect highlight layer was tried and dropped (owner: didn't look good).
-- **Player-facing name "Gem Power" (owner):** used wherever players see the level (item names, `/gems kit ... [power]` and its feedback, docs, this spec, the balance report). Internal names stay "infusion" so saved items and data packs keep working: the `infusion` field of the `infused_gem` and `gem` components, `Balance.infusion(...)`, `INFUSION` in the model, the loot functions' `infusion` field and `balance.json`'s `infusion` table.
+- **Player-facing name "Base Power" (owner, 2026-11-25; was "Gem Power"):** used wherever players see the level (item names, tooltips, the beacon cap line, `/gems kit ... [power]` and its feedback, docs, this spec, the balance report). Internal names stay "infusion" so saved items and data packs keep working: the `infusion` field of the `infused_gem` and `gem` components, `Balance.infusion(...)`, `INFUSION` in the model, the loot functions' `infusion` field and `balance.json`'s `infusion` table. In this spec, "infusion level" means that I-VI level (players see Base Power); it is **not** the gem tooltip's "Infusion" row, which is the potion strength (Tooltips, below).
 
 ### Strength
 
-- A gem's contribution = potion x Gem Power factor x enchant grade x armor or weapon material x matching run (armor only).
+- A gem's contribution = potion x Base Power factor x enchant grade x armor or weapon material x matching run (armor only).
 - **Potion:** strong (glowstone) and long (redstone) variants make stronger gems; variant factors lie in [0.8, 1].
 - **Armor material:** the same gem is stronger in better armor (netherite above leather). Gold counts as diamond (0.93, "magic bonus", owner); netherite is the only material at the cap. Weapon material counts the same way. Bows, crossbows, tridents and maces count as diamond (per-weapon tuning is open).
 - **Matching run:** neighbouring pieces of the same material along helmet -> chestplate -> leggings -> boots add strength. A connected run (helmet + chestplate) beats the same number of separated pieces (helmet + boots); a full matching set is best.
 - **Stacking:** gems of the same effect stack, strongest first, each extra counting a little less.
-- **Top end:** only the perfect build reaches the top: lingering (or item) gem of the strongest variant + Gem Power VI + tier 3 + full contiguous netherite (armor, 12 gems), or netherite + 2 perfect gems (weapons). Every step below it must be a visible upgrade (owner). The balance tables were presented to the owner before building.
+- **Top end:** only the perfect build reaches the top: lingering (or item) gem of the strongest variant + Base Power VI + tier 3 + full contiguous netherite (armor, 12 gems), or netherite + 2 perfect gems (weapons). Every step below it must be a visible upgrade (owner). The balance tables were presented to the owner before building.
 - **Mobs and players are treated the same (B18 equalTreatment):** gems affect both the same way, as close to vanilla as possible, with no mob-only or player-only cases.
 - **No hidden cooldowns (B19 noHiddenCooldowns):** tune strength, chance and duration instead. Where a wait exists, it is shown (Absorption, below).
 - **A gem and a vanilla effect of the same kind never add up: the stronger applies** (Q31; how: Gem and vanilla effect of the same kind, below).
@@ -106,7 +107,7 @@ In short:
 - **Scale:** worn strength is measured against the effect's strongest vanilla level (1.0).
 - **Cap:** the build cap is **0.90** (`CAP`, owner). Weapons and harmful worn effects stay at it; each beneficial effect's worn total is rescaled to its own `worn_cap` (Per-effect worn caps, below).
 - **Hits:** potency is measured against the strongest vanilla potion level; a hit lasts at most 8 s (the best weapon) and never less than the effect's floor (Owner's answers, Q15).
-- **Gem strength:** potion x Gem Power factor x enchant grade x material x matching run (Strength, above). Grades: weak 0.50, medium 0.75, strongest 1.00.
+- **Gem strength:** potion x Base Power factor x enchant grade x material x matching run (Strength, above). Grades: weak 0.50, medium 0.75, strongest 1.00.
 - **Drawbacks** are fixed and small: one weak drawback is 10 % of the effect's strongest level (`DRAWBACK_ONE`), a medium one 15 % (the grade ratio); drawbacks of one effect add up saturating under 20 % (`DRAWBACK_CAP`, `drawback_sum`).
 - **Healing** returns at most 25 % of each non-lethal hit at 0.90 (26.9 % at 1.0).
 - **Every 26.3 status effect is classified** as a craftable gem (from a potion or a vanilla item that carries the effect), a found-only gem, drawback-only (Bad Luck: too little effect to be worth a slot), or not a gem (`NOT_GEMS`, e.g. Bad Omen). Turtle Master is a combined gem of its own.
@@ -169,15 +170,37 @@ Technical choices, not leaves: change them freely when a better way turns up.
 Two items, `bubbas_infused_gems:infused_gem` and `bubbas_infused_gems:gem`, one model each, no blocks (B15). Components:
 
 - `bubbas_infused_gems:infused_gem`: `{effect, variant: "normal"|"long"|"strong", form: "normal"|"splash"|"lingering"|"item", infusion: 1-6}`.
-- `bubbas_infused_gems:gem`: `{effect, infusion, tier: 1-3, main: 0-1 (0 = drawback only), other?: {effect, strength}, drawback?: {effect, strength}}`. Strengths are gem quality: the main is potion x Gem Power x grade, an "other" is Gem Power x grade, a drawback is its fixed size.
+- `bubbas_infused_gems:gem`: `{effect, infusion: 1-6 (Base Power), tier: 1-3 (Enchant row), main: 0-1 (0 = drawback only), other?: {effect, strength}, drawback?: {effect, strength}, potion_level?: 0-3, main_grade?: 0-3}`. `potion_level` (the tooltip's Infusion row) and `main_grade` (its Enchant row) are recorded when the gem is made; 0 means unrecorded (older gems, tests) and the tooltip works them out from the main strength. Strengths are gem quality: the main is potion x Base Power x grade, an "other" is Base Power x grade, a drawback is its fixed size.
 - `bubbas_infused_gems:socketed_gems`: a list of up to 3 `gem` values on armor and weapons.
 
 Details:
 
 - `effect` is a status effect id: vanilla's, or `bubbas_infused_gems:turtle_master` (`balance.json` effect `id`).
-- Names come from the data ("Infused Gem: Gem Power III, Speed (Splash)", "Gem: Gem Power VI, Speed"). A drawback-only gem is named like any gem (owner); its socketed summary shows just its drawback.
+- Infused Gem names come from the data ("Infused Gem: Base Power III, Speed (Splash)"); a finished gem is named "Gem". A drawback-only gem is named like any gem (owner).
 - Tooltips go through Fabric's `ItemComponentTooltipProviderRegistry`.
-- The creative tab holds a Gem Power VI Infused Gem (lingering, or item form for item-sourced gems) and a perfect Gem of each of the 39 gem effects (`balance.json` has 40; Bad Luck is drawback-only).
+
+### Tooltips (owner, 2026-11-25)
+
+- **Infused Gem:** the name (above), then one grey line: "Strong potion, up to Enchant III" (the variant and the form's highest tier), or "Up to Enchant III" for item-sourced gems.
+- **Finished gem:** grey level rows, then effect lines (`Gem.addToTooltip`):
+
+  ```
+  Gem
+  Base Power V        (grey: the infusion level, I-VI)
+  Infusion III        (grey: the potion it was brewed with: normal I, long II, strong III; item-sourced gems III)
+  Enchant III         (grey: the main effect's grade: weak I, medium II, strongest III; an inverted gem's drops one)
+  + Speed             (main effect, jewel color)
+  + Minor Haste       (extra "other" effect; "Minor" = weak roll, no word = medium)
+  - Minor Poison      (drawback, red; "Minor" = weak size)
+  ```
+
+  - Exact strengths (as %, dark grey after each "+" line) show only with advanced tooltips (F3+H). No "Tier N" line and no "(69%)" brackets otherwise.
+  - A drawback-only gem shows its rows and just the "-" line.
+- **Socketed gear:** "Gems (n):", then per gem a row "◆ Speed" (a drawback-only gem: "◆ - Poison" in red), with its extra effect ("+ ...") and drawback ("- ...") indented under it. No levels or percentages there.
+- **Beacon screen:** the gem's "+"/"-" effect lines (no level rows), then the beacon's own lines.
+- `/gems` is unchanged and keeps real values and the bracketed share (Command, below).
+- An inventory screen of combined effects is parked in `BACKLOG.md`; `/gems` covers it for now.
+- The creative tab holds a Base Power VI Infused Gem (lingering, or item form for item-sourced gems) and a perfect Gem of each of the 39 gem effects (`balance.json` has 40; Bad Luck is drawback-only).
 
 ### Color
 
@@ -200,7 +223,7 @@ Details:
 - **Potions:** every effect with a potion, Invisibility, Luck, Wind Charged, Weaving, Oozing and Infested included. Luck's potion has no survival recipe, so Luck gems are mostly found. Turtle Master potions brew Turtle Master gems.
 - **Source items** (the owner's item-sources table): golden and enchanted golden apple, wither rose, glowstone dust, shulker shell, echo shard, sculk shrieker, chorus fruit, breeze rod, heart of the sea, nautilus shell, rotten flesh, pufferfish, and suspicious stews. Golden and enchanted golden apples are the normal and strong variants.
 - **Stews** match by their stew effect, using Fabric API's `fabric:components` ingredient as the recipe's `input.item` (26.3's `PotionIngredient.item` is a plain `Ingredient`, so custom ingredients work there). Every vanilla flower of one effect gives the same component (dandelion, golden dandelion, blue orchid: Saturation 7 ticks; azure bluet, open eyeblossom: Blindness 220 ticks), so one recipe per effect and base gem covers them all. Other stews brew nothing.
-- **Item-sourced Infused Gems** carry form `item`: no form in the name, tooltip "Up to tier 3". The model's `ITEM_MAX_TIER_OVERRIDE` (per effect and variant, exported as the variant's `max_tier`) can cap one source later; it is empty now.
+- **Item-sourced Infused Gems** carry form `item`: no form in the name, tooltip "Up to Enchant III". The model's `ITEM_MAX_TIER_OVERRIDE` (per effect and variant, exported as the variant's `max_tier`) can cap one source later; it is empty now.
 - Side effect: side hoppers also push those source items into bottle slots.
 - Game tests brew every brewable effect and variant from the model and every stew flower; a real brewing stand brews an echo shard and a stew.
 
@@ -209,7 +232,7 @@ Details:
 - Mixins on `EnchantmentMenu.slotsChanged` / `clickMenuButton`, for Infused Gems only.
 - **Costs (owner: like gear enchanting):** vanilla's bookshelf formula (copied from `EnchantmentHelper.getEnchantmentCost`, seeded by the enchantment seed), about 10 / 20 / 30 levels at 15 shelves; the full level cost shown is paid, plus 1-3 lapis. The seed is reset after.
 - **Gates:** rows above the form's max tier are set to 0. Tier 2 needs 8 bookshelves, tier 3 all 15 (`TIER_MIN_SHELVES`); a row below its gate shows as unavailable, like a form-capped row.
-- **Roll:** `GemEnchanting.roll(seed, tier, gem)`, deterministic from the seed and the gem's effect, variant and Gem Power, so the client draws the hint (`EnchantmentScreenMixin`) exactly as the server will roll it.
+- **Roll:** `GemEnchanting.roll(seed, tier, gem)`, deterministic from the seed and the gem's effect, variant and Base Power, so the client draws the hint (`EnchantmentScreenMixin`) exactly as the server will roll it.
 - **Odds (owner, Q34: the plain result is the most common at every tier, so people who invest a lot keep control):**
 
   | Tier | Outcome | Chance |
@@ -241,12 +264,12 @@ Both the bonus and the drawback pool are weighted by how hard the effect is to g
 
 - A finished gem with a drawback in a brewing stand's bottle slot + a fermented spider eye inverts it. Code: `station/InvertGemRecipe` (a vanilla `BrewingRecipe` subclass, data `recipe/invert_gem.json`, so the stand's slots, timing and hoppers work), `station/GemInversion`.
 - **Swap:** the old drawback's effect becomes the main; the old main becomes the drawback, at the old drawback's size.
-- **Nerf every time:** the new main is one grade below the old (strongest -> medium -> weak; read back from the main's strength and Gem Power level, unambiguous because potion variant factors lie in [0.8, 1]), and the gem loses a Gem Power level.
+- **Nerf every time:** the new main is one grade below the old (strongest -> medium -> weak; read back from the main's strength and Base Power level, unambiguous because potion variant factors lie in [0.8, 1]), and the gem loses a Base Power level.
 - **The bonus ("other") is kept unchanged both ways.** After inverting it is the opposite kind to the new main and acts as a second drawback; inverted back, it is a bonus again.
 - Inverting back is allowed, with the nerfs again.
-- **A drawback-only gem inverts too (owner):** its drawback becomes a weak-grade main (Gem Power factor x weak grade), Gem Power one lower, no drawback after, bonus kept.
-- **Refused** (the bottle slot doesn't take the gem: `PotionIngredient.isPotionInput`): no drawback, a weak main, Gem Power I, or a drawback that isn't a gem effect (Bad Luck).
-- The model checks an inverted gem is never perfect (at most 0.66: medium 0.75 x Gem Power V 0.88).
+- **A drawback-only gem inverts too (owner):** its drawback becomes a weak-grade main (Base Power factor x weak grade), Base Power one lower, no drawback after, bonus kept.
+- **Refused** (the bottle slot doesn't take the gem: `PotionIngredient.isPotionInput`): no drawback, a weak main, Base Power I, or a drawback that isn't a gem effect (Bad Luck).
+- The model checks an inverted gem is never perfect (at most 0.66: medium 0.75 x Base Power V 0.88).
 - The tooltip shows the result like any gem.
 
 ### Smithing table
@@ -284,14 +307,14 @@ What the perfect armor set (12 perfect gems in netherite) reaches, as a share of
 
 With a vanilla effect of the same kind, the stronger-applies top-up still holds (a perfect Speed set adds only its part above Speed II).
 
-**Gem Power ladder in practice.** Reference full sets of 12 tier-3 gems from the strongest potion:
+**Base Power ladder in practice.** Reference full sets of 12 tier-3 gems from the strongest potion:
 
 | Set | Total | Share of the cap |
 |---|---|---|
 | amethyst in iron | 0.31 | 35 % |
 | quartz in gold | 0.42 | 47 % |
 | diamond-base in diamond | 0.63 | 70 % |
-| Gem Power V in netherite | | 88 % of the perfect set |
+| Base Power V in netherite | | 88 % of the perfect set |
 | the perfect set | 0.90 | 100 % |
 
 The model's early-game floors: weakest single gem 0.015, early kit band 0.08-0.30, early Healing kit 4.5 %.
@@ -454,7 +477,7 @@ Dials set per build are `HIT_CURVES` in the model: (weak, mid, perfect) at the r
 
 **One table in the model:**
 
-- `LOOT`: four levels (common, rare, hard, ominous), each with weighted Gem Power levels and tiers, the potion variant (weakest or any), the armor materials and weapons of gemmed gear, and gems per piece.
+- `LOOT`: four levels (common, rare, hard, ominous), each with weighted Base Power levels and tiers, the potion variant (weakest or any), the armor materials and weapons of gemmed gear, and gems per piece.
 - `ARMOR_SHARE` 20 % and `WEAPON_SHARE` 15 % of a level's rolls are gemmed gear; the rest are loose gems. Weapon gems are harmful `WEAPON_HARMFUL_SHARE` 75 % of the time, any gem otherwise (owner: they hit the player).
 - `LOOT_PLACES`: 40 vanilla tables, chance per opening 4-20 %, found-only gems listed per place.
 - `MOB_GEMS`, first matching row wins, per armor piece or weapon (owner: farms of ordinary mobs give little, harder areas keep more; no other farm limits, since there are too many gems to farm a chosen one):
@@ -465,11 +488,11 @@ Dials set per build are `HIT_CURVES` in the model: (weak, mid, perfect) at the r
 - `TRIAL_EQUIPMENT`: ominous trial spawner mobs, 10 %, armor and weapons, hard.
 - Loot gem strengths by level: common 0.20-0.25, rare 0.20-0.46, hard 0.25-0.56, ominous vaults 0.46-1.00.
 
-**Perfect loot (owner).** Only ominous vaults (`PERFECT_LOOT`) use Gem Power VI. There a Gem Power VI pick always makes a perfect gem of any effect (strongest variant, tier 3, full strength) carrying a tier 3 drawback (weak or medium, in tier 3's proportions), except `PERFECT_CLEAN_CHANCE` 1 in 20, which are clean. Below ominous vaults, craftable gems from loot never use Gem Power VI.
+**Perfect loot (owner).** Only ominous vaults (`PERFECT_LOOT`) use Base Power VI. There a Base Power VI pick always makes a perfect gem of any effect (strongest variant, tier 3, full strength) carrying a tier 3 drawback (weak or medium, in tier 3's proportions), except `PERFECT_CLEAN_CHANCE` 1 in 20, which are clean. Below ominous vaults, craftable gems from loot never use Base Power VI.
 
 **Model checks:** only `PERFECT_LOOT` levels reach a perfect craftable gem; each level's best gem beats the level below; every table and item exists in 26.3.
 
-**Making a loot gem:** as if brewed and enchanted (`GemRollSpec`: effect, variant, Gem Power and tier picked, then `GemEnchanting.roll`).
+**Making a loot gem:** as if brewed and enchanted (`GemRollSpec`: effect, variant, Base Power and tier picked, then `GemEnchanting.roll`).
 
 **Data files** (written by the script, all overridable by a datapack):
 
@@ -493,14 +516,14 @@ Dials set per build are `HIT_CURVES` in the model: (weak, mid, perfect) at the r
 - Drawbacks: the same line in red, no extra words.
 - Then `Target, on hit:` and the held weapon's per-hit plan (`Poison 1.15 HP/s for 5.5 s (48%)`).
 - Sent as system messages, so it shows with `send_command_feedback` off.
-- Gem tooltips show the strength in brackets too, `Speed (69%)`, and a drawback as just its name in red.
+- Gem tooltips no longer show brackets: exact percentages only on advanced tooltips (Tooltips, above).
 
 **`/gems kit <effect> [material] [power]`** (owner, for testing; permission level 2):
 
 - A full armor set (netherite unless named: leather, chainmail, copper, iron, gold, diamond, netherite) with 3 gems of the effect per piece, and a matching sword with 2 (leather: wooden, chainmail: stone).
-- Gems are tier 3 at full strength at the Gem Power level (1-6, default 6 = perfect), no extras.
+- Gems are tier 3 at full strength at the Base Power level (1-6, default 6 = perfect), no extras.
 - Worn armor goes back to the inventory or drops. Effect keys tab-complete.
-- One feedback line, e.g. "Gem Power V Invisibility set (netherite)".
+- One feedback line, e.g. "Base Power V Invisibility set (netherite)".
 
 ### Tests
 
@@ -512,7 +535,7 @@ Server: 75 `@GameTest` methods; classes and what they prove are in Milestone tes
 - `BreezeMeasureGameTest`: a survival player in the perfect `/gems kit breeze` netherite set is shot by 30 real dispenser arrows and 30 skeleton arrows through vanilla's arrow tick; every one that reaches the wearer is deflected.
 - `LootGameTest`:
   - core: every place is hooked into its table, and 8 fixed-seed rolls each keep vanilla loot, with gems turning up;
-  - milestone: every listed vanilla table rolled 400 times with fixed seeds (gems at about the model's chance, vanilla loot still there); each level table's Gem Power, tier, gear and effect pool, never a perfect craftable gem; every found-only gem from its places, and Mining Fatigue only from player-killed elder guardians; spawn gear rates through the real spawn-equipment method (zombie and piglin armor; skeleton bows, drowned tridents, piglin and vindicator weapons); a raid vindicator's axe at the hard-area 7 % (a test can't register a structure start, so the structure row is checked through the generated data); the trial chamber equipment tables (armor and weapons); gemmed weapons in each level, mostly harmful; ominous perfect gems always tier 3 at full strength, about 1 in 20 clean; a zombie in gemmed armor gets Speed and Glowing, a piglin regenerates and an undead skeleton doesn't; dropped mob armor keeps its gems.
+  - milestone: every listed vanilla table rolled 400 times with fixed seeds (gems at about the model's chance, vanilla loot still there); each level table's Base Power, tier, gear and effect pool, never a perfect craftable gem; every found-only gem from its places, and Mining Fatigue only from player-killed elder guardians; spawn gear rates through the real spawn-equipment method (zombie and piglin armor; skeleton bows, drowned tridents, piglin and vindicator weapons); a raid vindicator's axe at the hard-area 7 % (a test can't register a structure start, so the structure row is checked through the generated data); the trial chamber equipment tables (armor and weapons); gemmed weapons in each level, mostly harmful; ominous perfect gems always tier 3 at full strength, about 1 in 20 clean; a zombie in gemmed armor gets Speed and Glowing, a piglin regenerates and an undead skeleton doesn't; dropped mob armor keeps its gems.
 
 Client: `GemsClientGameTest` parts `beyond`, `colors`, `dials`, `enchanting`, `hits`, `inventory`, `invisible`, `jump`, `levitation`, `looks`, `mobs` (a zombie in gemmed iron armor glowing, two angles; a hard-place loot tooltip), `screen`, `smithing`, `weaving`, `worn` (`-PclientTests=`).
 
@@ -521,11 +544,11 @@ Client: `GemsClientGameTest` parts `beyond`, `colors`, `dials`, `enchanting`, `h
 With Bubba's Reworked Beacons installed (`specs/reworked-beacons.md`), a finished Gem goes in a beacon's item slot and stays there (removable). Without it, nothing here loads and the mod works as before.
 
 - **Who and what (owner):** every living thing in the beacon's area gets the gem's effects as if worn: main effect, bonus and drawback; players and mobs, the builder included. No protection from a harmful gem but one's own gems (B18 equalTreatment).
-- **Pyramid caps Gem Power (owner):** 1 layer I, 2 up to III, 3 up to V, 4 VI. The beacon screen shows the gem's tooltip lines plus the beacon's "Only outputting Gem Power N".
+- **Pyramid caps Base Power (owner):** 1 layer I, 2 up to III, 3 up to V, 4 VI. The beacon screen shows the gem's tooltip lines plus the beacon's "Only outputting Base Power N".
 - **Strength:** `BEACON_SHARE = 0.5` in the model (exported `beacon_share`). Builder's proposal, **approved by the owner for now; revisit after playtesting.**
   - Each effect gets `BEACON_SHARE x the effect's worn cap x the gem's quality`: half of what a full netherite set of 12 copies of that gem gives (armor totals are linear in quality).
   - The bonus works the same way; the drawback counts as one worn drawback (`drawbackSum([size])`).
-  - The pyramid cap rescales quality by `factor(capped Gem Power) / factor(gem's Gem Power)`.
+  - The pyramid cap rescales quality by `factor(capped Base Power) / factor(gem's Base Power)`.
   - A perfect gem in a full beacon lands at about a vanilla beacon's level I to II, below a perfect armor set.
   - Examples (perfect gem, 4 layers): Speed +37.5 %, Strength +3 damage, Resistance -20 % damage, Regeneration 0.4 HP/s, Haste +50 % mining and +25 % attack speed, Breeze and Ender 50 % chance, Saturation up to 13 food; harmful Poison 0.75 HP/s (never below 1 HP), Slowness 27 %.
 - **Stronger applies:** beacon totals join the receiver's worn totals per effect with `max` (`GemTotals.stronger`), against armor and other beacons; potions compare as for worn gems (`GemValues`). Never added.
@@ -534,7 +557,7 @@ With Bubba's Reworked Beacons installed (`specs/reworked-beacons.md`), a finishe
 - **Code:**
   - `compat/GemBeaconPayload` is the only class touching the beacons API, registered under the `bubbas_reworked_beacons:payload` entrypoint; `suggests` (not `depends`) in `fabric.mod.json`.
   - Build: `compileOnly` / `gametestCompileOnly project(':bubbas_reworked_beacons')`; `-PwithBeacons` puts the beacons jar on the game test classpath.
-  - Each pulse calls `GemBeacons.receive` on every entity in `context.livingEntities()`. A receipt (beacon pos, gem, capped Gem Power, end time = now + `effectDurationTicks`) is kept in the attachment `bubbas_infused_gems:beacon_gems` (not saved; synced to the player itself for its client-side effects). The worn tick drops receipts that ran out.
+  - Each pulse calls `GemBeacons.receive` on every entity in `context.livingEntities()`. A receipt (beacon pos, gem, capped Base Power, end time = now + `effectDurationTicks`) is kept in the attachment `bubbas_infused_gems:beacon_gems` (not saved; synced to the player itself for its client-side effects). The worn tick drops receipts that ran out.
   - Worn totals are recomputed only when a receipt is new or changed, so the Absorption equip-fill rule isn't re-triggered each pulse. The client recomputes its own totals when the attachment changes or a receipt runs out.
 - Verified both ways: core suite without the beacons jar, full suite with it (`-PwithBeacons -PmilestoneTests`).
 - Not done: a client screenshot of the beacon screen holding a gem.
@@ -565,6 +588,7 @@ Test-lite policy (`specs/quality.md`, Test suites): `InfusedGemsCoreGameTest` ru
 - Core (`InfusedGemsCoreGameTest`, 8): balance.json loads and the Java math matches the model's check numbers; a potion and a base gem brew an Infused Gem; the enchanting table finishes a gem; the smithing table sockets up to the limit (armor and one weapon); worn effects match the JSON; melee weapon gems hit the target; `/gems` lists combined effects; every listed loot table keeps its loot and gems turn up.
 - `BalanceGameTest` (milestone part): the model's example builds (best build included) come out the same from real items.
 - `BrewingGameTest` (milestone part): every brewable source and variant brews, suspicious stews brew by their effect, nothing raises an Infused Gem's form, a real brewing stand accepts and brews.
+- `GemNameGameTest` (milestone): gems made at every effect, variant and tier read back the Infusion and Enchant levels they were made with, and an inverted gem's Enchant drops one.
 - `EnchantingGameTest` (milestone part): the form and the bookshelves cap the tiers (item-sourced gems reach tier 3), fixed seeds follow the model and its rarity weights (common effects about 4 to 1 over rare ones), rolls keep their kind and never the direct opposite.
 - `SocketingGameTest` (milestone part): every weapon kind takes two gems, tools and elytras none; the grindstone returns all gems; broken armor drops its gems.
 - `GemEffectsGameTest` (milestone part): bows tip arrows while pickup stays plain; gem Poison never kills but Wither can.
@@ -576,14 +600,14 @@ Test-lite policy (`specs/quality.md`, Test suites): `InfusedGemsCoreGameTest` ru
 - `BalanceReviewGameTest`: each bug found in the balance review stays fixed (falls, Harming cooldown, hit stacking, the Absorption equip-fill throttle and refill share, Hero floor, Ender and harmless projectiles, weak and mid Saturation stops and fast regeneration).
 - `LootGameTest` (milestone part): level tables make weak rare gems, found-only gems have sources, spawn gear and raid rates, mobs in gemmed armor get its effects, dropped mob armor keeps its gems.
 - `BreezeMeasureGameTest`: the perfect Breeze set deflects every dispenser and skeleton arrow (30 of each).
-- `TopEndGameTest`: perfect Ender always blinks, perfect Invisibility hides armor and every exit restores it, hidden armor drops visible. (The caps and the 88 % netherite Gem Power V build are checked by `tools/gem-balance.py`.)
+- `TopEndGameTest`: perfect Ender always blinks, perfect Invisibility hides armor and every exit restores it, hidden armor drops visible. (The caps and the 88 % netherite Base Power V build are checked by `tools/gem-balance.py`.)
 - Client (`GemsClientGameTest` parts via `ClientTests`; screenshots): the gems in the inventory, colors, enchanting, smithing, worn and hit views, gemmed mobs, invisible perfect sets (and the wearer's own inventory), gem effects looking like vanilla (`looks`: poisoned hearts, green food bar).
 - `StrengthAnswersGameTest`: a perfect Levitation hit lifts a pig 2-4.5 blocks in 2 s, a perfect Ender weapon blinks about 40 % of targets, worn Breeze lets wind charges through and a Breeze hit veers shots x12, a perfect Weaving hit drops 2-3 webs.
 - Client part `dials`: a perfect Levitation hit lifting a pig, a perfect Weaving hit's webs around a pig.
-- `GemBeaconGameTest` (passes trivially without Reworked Beacons; real with `-PwithBeacons -PmilestoneTests`): a perfect Speed gem pulsed from a 4-layer sky beacon gives a pig and a player in range 0.5 x Speed's worn cap and makes the pig faster; a 1-layer pyramid caps it to Gem Power I (x 0.40); the payload switches the standalone payments off.
+- `GemBeaconGameTest` (passes trivially without Reworked Beacons; real with `-PwithBeacons -PmilestoneTests`): a perfect Speed gem pulsed from a 4-layer sky beacon gives a pig and a player in range 0.5 x Speed's worn cap and makes the pig faster; a 1-layer pyramid caps it to Base Power I (x 0.40); the payload switches the standalone payments off.
 - Objectives without code yet:
   - Ender hits: a piglin (brain-driven) blinked by an Ender hit has no attack-target memory for 20 ticks with an enemy in reach, then attacks again; a zombie targeting a player and blinked has no target for 20 ticks, even with the player in reach, then targets again; a blinked player keeps control.
   - Beacons: with both mods installed an amethyst shard no longer fits the beacon slot; leaving the area ends the effect after the effect time; a beacon and armor of the same effect give the stronger, not the sum; a harmful gem beacon hurts its builder; the beacon screen shows the gem's tooltip lines and the cap line.
   - Breeze hits: a Breeze-hit witch's potions and a Breeze-hit shulker's bullets miss a still target more often than unaffected ones; a Breeze-hit skeleton's arrows mostly miss a target 10 blocks away; a Breeze-hit blaze's fireballs spread.
   - A Nausea hit on a player lasts 4 / 6 / 10 s by build; a weak worn Wind Burst landing bounces at least 0.25.
-  - (Confident changes, test-lite) `/gems kit <effect> <material> <power>` gives tier 3 gems at that Gem Power's factor and names it; a boxed-in perfect Ender wearer (no safe spot in 16 tries) is hit; `/gems` and tooltip lines carry no "of max" or "drawback" words; gem Wither shows withered hearts and gem Regeneration the heart wave, like Poison and Hunger in the `looks` part.
+  - (Confident changes, test-lite) `/gems kit <effect> <material> <power>` gives tier 3 gems at that Base Power's factor and names it; a boxed-in perfect Ender wearer (no safe spot in 16 tries) is hit; `/gems` and tooltip lines carry no "of max" or "drawback" words; gem Wither shows withered hearts and gem Regeneration the heart wave, like Poison and Hunger in the `looks` part.

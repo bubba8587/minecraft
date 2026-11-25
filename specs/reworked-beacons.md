@@ -27,7 +27,7 @@ Reworked Beacons offers one hook: "this item in a beacon does X at power Y" (Pay
 
 - **One item slot** replaces vanilla's primary/secondary powers and the iron/gold/emerald/diamond payment. The screen says what the beacon will do, in the item's own tooltip words.
 - **The item stays in the beacon** (removable), not consumed. Revisit if too strong; the beacon itself already costs a nether star.
-- **Pyramid size caps the item's power:** 1 layer Gem Power I, 2 layers up to III, 3 layers up to V, 4 layers VI. A stronger item is capped, with a message like "Only outputting Gem Power III".
+- **Pyramid size caps the item's power:** 1 layer Base Power I, 2 layers up to III, 3 layers up to V, 4 layers VI. A stronger item is capped, with a message like "Only outputting Base Power III".
 - **Affects every living thing in range, mobs included** (B18; spectators excluded). A Regeneration gem heals nearby mobs too.
 - **No protection from a harmful item, the builder included (owner).** Players can counter with gems (e.g. matching resistances), and it enables designed area debuff environments (hostile structures, boss arenas).
 - **Existing beacons are simply wiped** of their vanilla powers when the mod is installed; no conversion (owner). They keep working as sky beacons with no power until an item goes in.
@@ -85,7 +85,7 @@ Other mods (Infused Gems, Totems & Artifacts, Reworked Mobs) supply beacon items
 |---|---|
 | `boolean accepts(ItemStack)` | Whether this payload handles the stack. The beacon slot only accepts stacks some payload accepts. |
 | `int priority()` (default 0) | Highest wins when several accept the same stack. The standalone payments are -1000. |
-| `int power(ItemStack)` (default 1) | The item's Gem Power, 1-6. The beacon caps it by pyramid (1 layer I, 2 III, 3 V, 4 VI) and shows "Only outputting Gem Power N" when it does. |
+| `int power(ItemStack)` (default 1) | The item's Base Power, 1-6. The beacon caps it by pyramid (1 layer I, 2 III, 3 V, 4 VI) and shows "Only outputting Base Power N" when it does. |
 | `int requiredLevels(ItemStack)` (default 1) | Pyramid layers needed before it works at all; below that the screen says "Needs a N-layer pyramid" and the beacon idles. |
 | `List<Component> describe(ItemStack, BeaconContext)` | The screen text, in the item's own tooltip words. Client and server; no world access. `context.levels()` is at least 1 here. |
 | `void apply(ServerLevel, ItemStack, BeaconContext)` | One pulse (every 80 ticks, vanilla's rhythm) of an active beacon, server only. `context.livingEntities()` is every living thing in the area, players and mobs. Effects should last `context.effectDurationTicks()` (vanilla's (9 + 2 x layers) s). |
@@ -137,7 +137,7 @@ Technical choices, not leaves: change them when a better way turns up.
 - Screen text *(wording and the item-name line: agent's choice)*:
   - the state: "Sky beacon: N-layer pyramid, R blocks out", "Paired beacons: N-layer pyramids, R blocks out", "Idle: needs a pyramid below", "Idle: needs a clear sky above, or an upside-down beacon to pair with", "No item";
   - the item's name above its `describe` lines;
-  - then "Needs a N-layer pyramid" (red) or "Only outputting Gem Power N" (yellow).
+  - then "Needs a N-layer pyramid" (red) or "Only outputting Base Power N" (yellow).
 
 **Pulse.**
 
@@ -176,7 +176,7 @@ Technical choices, not leaves: change them when a better way turns up.
 **Core suite** (`ReworkedBeaconsCoreGameTest`, 4 tests; bodies in `BeaconGameTest`, which has no tests of its own):
 
 - Standalone payment: an amethyst shard on a 1-layer sky beacon gives Speed I to a pig (real ticks).
-- Pyramid cap: the standalone table, pyramid caps, and a test payload (Gem Power V echo shard, registered through the entrypoint from the test mod) capped to III on 2 layers, with `BeaconAreas.isInside` true at 25 blocks and false at 35.
+- Pyramid cap: the standalone table, pyramid caps, and a test payload (Base Power V echo shard, registered through the entrypoint from the test mod) capped to III on 2 layers, with `BeaconAreas.isInside` true at 25 blocks and false at 35.
 - Paired box: a pair through glass gives the 3x-wide, height-limited box, its pulse reaches a pig, and stone in the beam turns it off.
 - Hanging beacon: a beacon placed under a block hangs upside down; on top of one it stands upright.
 
