@@ -99,7 +99,7 @@ Numbers (`MiningTuning`):
 Owner: a full quartz set "for use in the nether". These are new items (B15 only limits new blocks).
 
 - **Quartz Sword, Shovel, Pickaxe, Axe, Hoe, Helmet, Chestplate, Leggings and Boots.**
-- **Crafting (builder):** vanilla's iron shapes with **blocks of quartz** where the iron ingots go (sticks as usual). That's 4 quartz per block, so a pickaxe costs 12 nether quartz. Repaired at an anvil with blocks of quartz. Tag `bubbas_reworked_mining:quartz_tool_materials` (crafting and repair).
+- **Crafting (builder):** vanilla's iron shapes with **nether quartz** where the iron ingots go (sticks as usual), so a pickaxe costs 3 quartz (owner, 2026-11-24: blocks of quartz didn't feel right). Repaired at an anvil with nether quartz. Tag `bubbas_reworked_mining:quartz_tool_materials` (crafting and repair).
 - **Iron level** (owner: "roughly iron/copper level"):
   - They harvest what iron harvests (so they mine diamond ore) and mine deepslate like iron: slow, with heavy wear.
   - **Ancient debris needs diamond** (owner), so quartz doesn't skip netherite progression.
@@ -191,7 +191,7 @@ Owner: a full quartz set "for use in the nether". These are new items (B15 only 
   - fist factors (0.65 soft, 0.16 stone and deepslate), and whether a tool on the wrong block (pickaxe on a log) should count as a fist;
   - Unbreaking's extra roll on armor;
   - explosions give finds;
-  - the quartz recipe (12 quartz per pickaxe), Nether speed 1.6x and block list, quartz durability 220 and armor multiplier 13;
+  - the quartz recipe (3 quartz per pickaxe), Nether speed 1.6x and block list, quartz durability 220 and armor multiplier 13;
   - no armor trims on quartz armor.
 
 - **Fists "weaker" (owner, 2026-11-24):** the poster's "slower and weaker" means mining only; fist attack damage stays vanilla.

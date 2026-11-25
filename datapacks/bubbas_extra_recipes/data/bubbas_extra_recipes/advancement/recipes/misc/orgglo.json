@@ -1,0 +1,36 @@
+{
+	"parent": "minecraft:recipes/root",
+	"criteria": {
+		"has_glow_berries": {
+			"conditions": {
+				"items": [
+					{
+						"items": [
+							"minecraft:glow_berries",
+							"minecraft:glow_lichen",
+							"minecraft:glow_ink_sac"
+						]
+					}
+				]
+			},
+			"trigger": "minecraft:inventory_changed"
+		},
+		"has_the_recipe": {
+			"conditions": {
+				"recipes": "bubbas_extra_recipes:orgglo"
+			},
+			"trigger": "minecraft:recipe_unlocked"
+		}
+	},
+	"requirements": [
+		[
+			"has_glow_berries",
+			"has_the_recipe"
+		]
+	],
+	"rewards": {
+		"recipes": [
+			"bubbas_extra_recipes:orgglo"
+		]
+	}
+}

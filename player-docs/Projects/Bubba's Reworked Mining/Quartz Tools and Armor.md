@@ -6,7 +6,7 @@
 > | | |
 > |---|---|
 > | **Type** | Tools and armor |
-> | **Crafted from** | Blocks of quartz |
+> | **Crafted from** | Nether quartz |
 > | **Strength** | About iron's |
 > | **Tool durability** | 220 uses |
 
@@ -14,9 +14,9 @@
 
 ## Crafting
 
-- Crafted like iron gear, with **blocks of quartz** where the iron ingots go (sticks as usual).
+- Crafted like iron gear, with **nether quartz** where the iron ingots go (sticks as usual).
 - A pickaxe takes 3 blocks, so 12 nether quartz.
-- Repaired at an anvil with blocks of quartz.
+- Repaired at an anvil with nether quartz.
 
 ## Strength
 

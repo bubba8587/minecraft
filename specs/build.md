@@ -22,3 +22,7 @@ All mods are subprojects under `mods/`, datapacks live under `datapacks/` and re
 ## Author bubba8587, Java packages under io.github.bubba8587
 
 The author name is "bubba8587" on Modrinth and in every mod, and Java packages live under `io.github.bubba8587.<modid>`.
+
+## Recipe book unlocks are generated
+
+Every recipe-book recipe (crafting, cooking, smithing, stonecutting) in our mods and datapacks gets a vanilla-style unlock advancement, `data/<ns>/advancement/recipes/<category>/<recipe>.json`: the recipe shows in the book once the player holds any of its ingredients (sticks ignored). `python3 tools/recipe-unlocks.py` writes them; rerun after adding or changing a recipe, `--check` lists missing or stale ones. Don't hand-edit the generated files.
