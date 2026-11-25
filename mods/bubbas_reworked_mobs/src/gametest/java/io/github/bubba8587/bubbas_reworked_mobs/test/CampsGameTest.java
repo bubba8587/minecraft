@@ -262,6 +262,144 @@ public class CampsGameTest {
 		});
 	}
 
+	/**
+	 * Room stairs: a zombie in the underground room, and one the size of a leader, can path up the tunnel and out onto
+	 * the clearing beside the fire, every kind and size, several seeds each (the field is put back between camps), and
+	 * once each on land rising round the camp.
+	 */
+	@GameTest(structure = FIELD, maxTicks = 20)
+	public void zombieCanClimbOutOfTheRoom(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		BlockPos at = helper.absolutePos(new BlockPos(16, 8, 24));
+		List<String> stuck = new ArrayList<>();
+		int tried = 0;
+		for (CampKind kind : CampKind.values()) {
+			for (CampTuning.Size size : CampTuning.Size.values()) {
+				for (long seed = 0; seed < 4; seed++) {
+					resetField(helper);
+					if (seed == 3) {
+						if (kind.nether()) {
+							continue;
+						}
+						bowl(helper); // the land rising round the camp, so the tunnel surfaces into a slope
+					}
+					long s = seed * 104729L + kind.ordinal() * 31L + size.ordinal();
+					CampPiece piece = CampCommand.build(level, at, kind, size, s);
+					for (int k = 1; k <= 2; k++) {
+						BlockPos past = piece.tunnelTop().relative(piece.stairsOut(), k);
+						boolean flush = !level.getBlockState(past).getCollisionShape(level, past).isEmpty()
+								&& level.getBlockState(past.above()).getCollisionShape(level, past.above()).isEmpty()
+								&& level.getBlockState(past.above(2)).getCollisionShape(level, past.above(2)).isEmpty();
+						if (!flush) {
+							stuck.add(kind.id() + "/" + size.id() + "/" + s + (seed == 3 ? " on a slope" : "") + ": the way out isn't flush with the top step: "
+									+ mouth(level, piece));
+							break;
+						}
+					}
+					BlockPos target = piece.fireSide();
+					for (double scale : new double[] { 1.0, CampTuning.LEADER_SCALE }) {
+						net.minecraft.world.entity.monster.zombie.Zombie walker = net.minecraft.world.entity.EntityTypes.ZOMBIE.create(level,
+								net.minecraft.world.entity.EntitySpawnReason.COMMAND);
+						walker.setBaby(false);
+						walker.getAttribute(Attributes.SCALE).setBaseValue(scale);
+						walker.refreshDimensions();
+						BlockPos start = piece.roomSpot();
+						walker.snapTo(start.getX() + 0.5, start.getY(), start.getZ() + 0.5, 0.0F, 0.0F);
+						level.addFreshEntity(walker);
+						walker.setOnGround(true);
+						var path = walker.getNavigation().createPath(target, 1);
+						walker.discard();
+						tried++;
+						if (path == null || !path.canReach()) {
+							stuck.add(kind.id() + "/" + size.id() + "/" + s + (scale > 1.0 ? " leader-sized" : "") + " "
+									+ (path == null ? "no path" : "ends at " + path.getEndNode().asBlockPos().subtract(start).toShortString()) + " target "
+									+ target.subtract(start).toShortString() + " top " + mouth(level, piece));
+						}
+					}
+				}
+			}
+		}
+		resetField(helper);
+		helper.assertTrue(stuck.isEmpty(), stuck.size() + " faults in " + tried + " walks out of the room: " + stuck.subList(0, Math.min(4, stuck.size())));
+		helper.succeed();
+	}
+
+	/** What stands at the tunnel's top: the top step and the two cells past it, ground block and the two above (diagnostics). */
+	private static String mouth(ServerLevel level, CampPiece piece) {
+		StringBuilder out = new StringBuilder();
+		BlockPos top = piece.tunnelTop();
+		for (int k = 0; k <= 2; k++) {
+			BlockPos cell = top.relative(piece.stairsOut(), k);
+			out.append(k).append(':');
+			for (int dy = 0; dy <= 2; dy++) {
+				out.append(level.getBlockState(cell.above(dy)).getBlock().getDescriptionId().replaceFirst("^.*[.]", "")).append(dy < 2 ? "/" : " ");
+			}
+		}
+		for (int dy = 0; dy <= 3; dy++) {
+			out.append("\n room+").append(dy).append(' ');
+			for (int dz = -5; dz <= 5; dz++) {
+				out.append('|');
+				for (int dx = -5; dx <= 5; dx++) {
+					BlockPos c = piece.roomSpot().offset(dx, dy, dz);
+					var st = level.getBlockState(c);
+					out.append(st.isAir() ? '.' : st.getBlock() instanceof net.minecraft.world.level.block.StairBlock ? 'S' : st.is(Blocks.BONE_BLOCK) ? 'b'
+							: st.is(Blocks.CHEST) ? 'c' : st.is(Blocks.COBWEB) ? 'w' : '#');
+				}
+			}
+		}
+		return out.toString();
+	}
+
+	/** Re-reads the worldgen surface heightmap camps build from (a live chunk keeps it as first read). */
+	private static void reprimeSurface(GameTestHelper helper) {
+		BlockPos a = helper.absolutePos(new BlockPos(-6, 0, -6));
+		BlockPos b = helper.absolutePos(new BlockPos(37, 0, 53));
+		for (int cx = Math.min(a.getX(), b.getX()) >> 4; cx <= Math.max(a.getX(), b.getX()) >> 4; cx++) {
+			for (int cz = Math.min(a.getZ(), b.getZ()) >> 4; cz <= Math.max(a.getZ(), b.getZ()) >> 4; cz++) {
+				net.minecraft.world.level.levelgen.Heightmap.primeHeightmaps(helper.getLevel().getChunk(cx, cz),
+						java.util.EnumSet.of(net.minecraft.world.level.levelgen.Heightmap.Types.WORLD_SURFACE_WG));
+			}
+		}
+	}
+
+	/** Raises the field's ground round its middle (16, 24): a block per two blocks out past 6, three at most. */
+	private static void bowl(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		for (int x = 0; x < 32; x++) {
+			for (int z = 0; z < 48; z++) {
+				int raise = Math.clamp((int) (Math.hypot(x - 16, z - 24) - 6.0) / 2, 0, 3);
+				for (int y = 8; y <= 7 + raise; y++) {
+					level.setBlock(helper.absolutePos(new BlockPos(x, y - 1, z)), Blocks.DIRT.defaultBlockState(), net.minecraft.world.level.block.Block.UPDATE_CLIENTS);
+					level.setBlock(helper.absolutePos(new BlockPos(x, y, z)), Blocks.GRASS_BLOCK.defaultBlockState(), net.minecraft.world.level.block.Block.UPDATE_CLIENTS);
+				}
+			}
+		}
+		reprimeSurface(helper);
+	}
+
+	/** Puts the camp field back as it was (stone, dirt, grass, air above) and clears what camps left round it; no entities. */
+	static void resetField(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		for (int x = -6; x < 38; x++) {
+			for (int z = -6; z < 54; z++) {
+				boolean field = x >= 0 && x < 32 && z >= 0 && z < 48;
+				for (int y = field ? 0 : 8; y < 32; y++) {
+					var state = y < 5 ? Blocks.STONE.defaultBlockState() : y < 7 ? Blocks.DIRT.defaultBlockState() : y == 7 ? Blocks.GRASS_BLOCK.defaultBlockState()
+							: Blocks.AIR.defaultBlockState();
+					BlockPos pos = helper.absolutePos(new BlockPos(x, y, z));
+					if (level.getBlockState(pos) != state) {
+						level.setBlock(pos, state, net.minecraft.world.level.block.Block.UPDATE_CLIENTS);
+					}
+				}
+			}
+		}
+		BoundingBox box = new BoundingBox(helper.absolutePos(new BlockPos(-6, 0, -6))).encapsulate(helper.absolutePos(new BlockPos(37, 31, 53)));
+		for (Entity e : level.getEntitiesOfClass(Entity.class, net.minecraft.world.phys.AABB.of(box).inflate(8.0), e -> !(e instanceof net.minecraft.world.entity.player.Player))) {
+			e.discard();
+		}
+		reprimeSurface(helper);
+	}
+
 	/** At noon the roster appears in shade, and a camp zombie burning in the sun takes cover (vanilla's sun goals). */
 	@GameTest(environment = "bubbas_reworked_mobs-test:camp_noon", structure = FIELD, maxTicks = 300)
 	public void exposedCampMobsSeekShade(GameTestHelper helper) {

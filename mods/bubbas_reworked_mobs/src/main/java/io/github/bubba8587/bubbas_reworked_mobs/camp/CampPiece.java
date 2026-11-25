@@ -221,10 +221,11 @@ public class CampPiece extends StructurePiece {
 			int hz = 1 + random.nextInt(alongX ? max : reach);
 			int dx = random.nextInt(3) - 1;
 			int dz = random.nextInt(3) - 1;
-			if (alongX && dx * stairs.getStepX() > 0) {
+			// never toward the stairs; a room one wide toward them stays centred (its tunnel opens from the first step)
+			if (alongX && (dx * stairs.getStepX() > 0 || hx == 1)) {
 				dx = 0;
 			}
-			if (!alongX && dz * stairs.getStepZ() > 0) {
+			if (!alongX && (dz * stairs.getStepZ() > 0 || hz == 1)) {
 				dz = 0;
 			}
 			roomHalfX = kind.nether() ? NETHER_ROOM_HALF : hx;
@@ -241,8 +242,8 @@ public class CampPiece extends StructurePiece {
 			int h = alongX ? roomHalfX : roomHalfZ;
 			int fx = cx + dx;
 			int fz = cz + dz;
-			int ax = fx + stairs.getStepX() * (h + 4) - side.getStepX();
-			int az = fz + stairs.getStepZ() * (h + 4) - side.getStepZ();
+			int ax = fx + stairs.getStepX() * (h + 2) - side.getStepX();
+			int az = fz + stairs.getStepZ() * (h + 2) - side.getStepZ();
 			int bx = fx + stairs.getStepX() * (h + 10 + (kind.nether() ? 2 : 0)) + side.getStepX() * 2;
 			int bz = fz + stairs.getStepZ() * (h + 10 + (kind.nether() ? 2 : 0)) + side.getStepZ() * 2;
 			footprints.add(new Footprint("stairs", Math.min(ax, bx), Math.min(az, bz), Math.max(ax, bx), Math.max(az, bz)));
@@ -1474,6 +1475,21 @@ public class CampPiece extends StructurePiece {
 		return roomCentre().relative(plan.stairs, h + 1 + i).atY(roomFloor() + i + 1);
 	}
 
+	/** The tunnel's top stair block (its first column; tests). */
+	public BlockPos tunnelTop() {
+		return roomCentre().relative(plan.stairs, roomHalf() + 1 + roomDepth()).atY(roomFloor() + roomDepth());
+	}
+
+	/** Which way the stair tunnel climbs out of the room. */
+	public Direction stairsOut() {
+		return plan.stairs;
+	}
+
+	/** A cell on the clearing beside the fire, on its open side (no seat), one above the ground (tests). */
+	public BlockPos fireSide() {
+		return centre.relative(plan.chestSide.getOpposite(), 2).above();
+	}
+
 	/** The lean-to's front middle (screenshots, tests). */
 	public BlockPos leanToSpot() {
 		Spot first = plan.leanTos.getFirst();
@@ -1524,6 +1540,9 @@ public class CampPiece extends StructurePiece {
 	}
 
 	// --- the underground room ---------------------------------------------------------------------
+
+	/** Air above each tunnel step (and above the room's doorway cell). */
+	static final int TUNNEL_HEADROOM = 4;
 
 	/** The room's interior half-width toward the stairs. */
 	private int roomHalf() {
@@ -1682,7 +1701,8 @@ public class CampPiece extends StructurePiece {
 				boolean corner = Math.abs(dx) == hx && Math.abs(dz) == hz;
 				if (corner && roll < 0.7F) {
 					b.put(x, floor + roomDepth() - 2, z, Blocks.COBWEB.defaultBlockState());
-				} else if (!wall && !corner && !kind.nether() && roll < 0.06F) {
+				} else if (!wall && !corner && !kind.nether() && roll < 0.06F && dx * out.getStepX() + dz * out.getStepZ() < h) {
+					// (none in the row by the stairs, so a leader isn't stopped at the doorway)
 					b.put(x, floor + 1, z, Blocks.BONE_BLOCK.defaultBlockState());
 				}
 			}
@@ -1709,9 +1729,14 @@ public class CampPiece extends StructurePiece {
 				} else if (i == 0) {
 					b.put(x, step, z, fullBlock(kind.trodden(0.1F)));
 				}
-				int clearTo = i >= 3 ? Math.max(step + 3, centre.getY() + 2) : step + 3;
+				// headroom for a hopping mob, leaders included
+				int clearTo = i >= 3 ? Math.max(step + TUNNEL_HEADROOM, centre.getY() + 2) : step + TUNNEL_HEADROOM;
 				for (int y = step + 1; y <= clearTo; y++) {
 					b.put(x, y, z, Blocks.AIR.defaultBlockState());
+				}
+				// no sand or gravel left hanging over the tunnel
+				if (b.inside(x, clearTo + 1, z) && b.level().getBlockState(new BlockPos(x, clearTo + 1, z)).getBlock() instanceof net.minecraft.world.level.block.FallingBlock) {
+					b.put(x, clearTo + 1, z, kind.rock(0.1F));
 				}
 				int wx = x + side.getStepX() * (w == 0 ? -1 : 1);
 				int wz = z + side.getStepZ() * (w == 0 ? -1 : 1);
@@ -1734,6 +1759,16 @@ public class CampPiece extends StructurePiece {
 						centre.getZ() + out.getStepZ() * (size.radius + i) + side.getStepZ() * w, 20);
 			}
 		}
+		if (!kind.nether()) {
+			// the mouth flush with the top step, then back up to the land a block a block at most
+			for (int i = roomDepth() + 1; i <= roomDepth() + MOUTH_LEVEL + MOUTH_SLOPE; i++) {
+				int cap = centre.getY() + Math.max(0, i - roomDepth() - MOUTH_LEVEL);
+				for (int w = 0; w <= 1; w++) {
+					mouthColumn(b, cx + out.getStepX() * (h + 1 + i) + side.getStepX() * w, cz + out.getStepZ() * (h + 1 + i) + side.getStepZ() * w, cap,
+							i <= roomDepth() + MOUTH_LEVEL);
+				}
+			}
+		}
 		if (b instanceof NetherBuild nether) {
 			// under a ceiling: a level walk from the clearing's edge out round the tunnel to its mouth
 			int end = h + 1 + roomDepth() + 4;
@@ -1749,6 +1784,56 @@ public class CampPiece extends StructurePiece {
 				}
 			}
 		}
+	}
+
+	/** Tunnel cells past the top step kept level with it, then cells over which the way out may rise a block each. */
+	static final int MOUTH_LEVEL = 3;
+	static final int MOUTH_SLOPE = 6;
+
+	/**
+	 * One column of the tunnel's way out: land above {@code cap} cut back to it (only earth, and only where nothing
+	 * stands on it), and with {@code fill} a dip filled up to it.
+	 */
+	private void mouthColumn(ClippedBuild b, int x, int z, int cap, boolean fill) {
+		int g = b.ground(x, z);
+		if (g == Integer.MIN_VALUE) {
+			return;
+		}
+		if (g > cap) {
+			for (int y = cap + 1; y <= g + 3; y++) {
+				BlockState state = b.level().getBlockState(new BlockPos(x, y, z));
+				if (!(y <= g ? earth(state) || ClippedBuild.cover(state) : ClippedBuild.cover(state) || weed(state))) {
+					return;
+				}
+			}
+			b.clearCover(x, z, 20);
+			for (int y = cap + 1; y <= g + 1; y++) {
+				b.put(x, y, z, Blocks.AIR.defaultBlockState());
+			}
+		} else if (g < cap && fill) {
+			for (int y = g + 1; y <= cap + 3; y++) {
+				if (!ClippedBuild.cover(b.level().getBlockState(new BlockPos(x, y, z)))) {
+					return;
+				}
+			}
+			for (int y = g + 1; y < cap; y++) {
+				b.put(x, y, z, kind.rock(0.1F));
+			}
+			b.put(x, cap, z, fullBlock(kind.trodden(0.1F)));
+		}
+	}
+
+	/** The camp's own weeds that aren't counted as cover (they need the ground under them). */
+	private static boolean weed(BlockState state) {
+		return state.is(Blocks.MOSS_CARPET) || state.is(Blocks.BROWN_MUSHROOM) || state.is(Blocks.RED_MUSHROOM) || state.is(Blocks.DEAD_BUSH);
+	}
+
+	/** Natural ground and rock (and the camp's trodden ground). */
+	private static boolean earth(BlockState state) {
+		return natural(state) || state.is(BlockTags.BASE_STONE_OVERWORLD) || state.is(BlockTags.TERRACOTTA) || state.is(Blocks.SANDSTONE)
+				|| state.is(Blocks.SMOOTH_SANDSTONE) || state.is(Blocks.PACKED_MUD) || state.is(Blocks.PACKED_ICE) || state.is(Blocks.ICE)
+				|| state.is(Blocks.SNOW_BLOCK) || state.is(Blocks.POWDER_SNOW) || state.is(Blocks.CLAY) || state.is(Blocks.MOSS_BLOCK)
+				|| state.is(Blocks.CALCITE);
 	}
 
 	/** Under a ceiling: one column of walkway at the outpost's own height, its growth and rock cleared over it and filled under it. */
