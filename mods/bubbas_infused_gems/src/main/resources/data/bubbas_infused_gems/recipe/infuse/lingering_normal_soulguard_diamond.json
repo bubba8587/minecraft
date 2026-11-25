@@ -1,0 +1,31 @@
+{
+	"type": "minecraft:brewing",
+	"input": {
+		"item": "minecraft:lingering_potion",
+		"potion_contents": {
+			"potions": "bubbas_reworked_mobs:soulguard"
+		}
+	},
+	"reagent": {
+		"item": "minecraft:diamond"
+	},
+	"output": {
+		"id": "bubbas_infused_gems:infused_gem",
+		"components": {
+			"bubbas_infused_gems:infused_gem": {
+				"effect": "bubbas_reworked_mobs:soulguard",
+				"variant": "normal",
+				"form": "lingering",
+				"infusion": 4
+			}
+		}
+	},
+	"fabric:load_conditions": [
+		{
+			"condition": "fabric:all_mods_loaded",
+			"values": [
+				"bubbas_reworked_mobs"
+			]
+		}
+	]
+}

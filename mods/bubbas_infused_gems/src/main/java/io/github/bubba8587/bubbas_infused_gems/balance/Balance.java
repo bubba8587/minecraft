@@ -164,14 +164,23 @@ public final class Balance {
 			}
 			this.tiers.put(Integer.parseInt(e.getKey()), List.copyOf(list));
 		});
-		o.getAsJsonObject("effects").entrySet().forEach(e -> this.effects.put(e.getKey(), effect(e.getKey(), e.getValue().getAsJsonObject())));
-		this.brewable = Set.copyOf(strings(o.getAsJsonArray("brewable")));
+		o.getAsJsonObject("effects").entrySet().forEach(e -> {
+			if (available(e.getValue().getAsJsonObject())) {
+				this.effects.put(e.getKey(), effect(e.getKey(), e.getValue().getAsJsonObject()));
+			}
+		});
+		this.brewable = Set.copyOf(strings(o.getAsJsonArray("brewable")).stream().filter(this.effects::containsKey).toList());
 		this.gemEffects = this.effects.values().stream().filter(e -> !e.role().equals("negative")).map(EffectData::key).toList();
 		JsonObject rules = o.getAsJsonObject("rules");
 		this.strongerApplies = rules.get("gem_vs_potion").getAsString().equals("stronger");
 		this.variantMin = o.getAsJsonObject("inversion").get("variant_min").getAsDouble();
 		this.undeadInversion = rules.get("undead_inversion").getAsBoolean();
 
+	}
+
+	/** A gem effect from another of our mods (Soulguard: Reworked Mobs) exists only with that mod. */
+	private static boolean available(JsonObject e) {
+		return !e.has("requires_mod") || net.fabricmc.loader.api.FabricLoader.getInstance().isModLoaded(e.get("requires_mod").getAsString());
 	}
 
 	private static EffectData effect(String key, JsonObject e) {

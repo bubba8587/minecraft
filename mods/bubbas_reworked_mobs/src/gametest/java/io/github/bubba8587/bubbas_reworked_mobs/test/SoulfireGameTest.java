@@ -180,6 +180,39 @@ public class SoulfireGameTest {
 		});
 	}
 
+	/**
+	 * With Bubba's Infused Gems (-PwithGems): the Soulguard potion brews a Soulguard Infused Gem, and a Soulguard gem worn,
+	 * even at Base Power I, makes a mob immune to soul fire.
+	 * The gems come from its /gems kit, by command, so this mod needs no compile dependency. Passes without the mod.
+	 */
+	@GameTest(maxTicks = 120)
+	public void soulguardGemMakesImmuneToSoulFire(GameTestHelper helper) {
+		if (!net.fabricmc.loader.api.FabricLoader.getInstance().isModLoaded("bubbas_infused_gems")) {
+			helper.succeed();
+			return;
+		}
+		ItemStack infused = brew(helper, potion(Items.LINGERING_POTION, Soulfire.LONG_SOULGUARD_POTION), new ItemStack(Items.DIAMOND));
+		helper.assertTrue(net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(infused.getItem()).toString().equals("bubbas_infused_gems:infused_gem")
+				&& infused.getComponents().toString().contains("bubbas_reworked_mobs:soulguard"), "the Soulguard potion brewed " + infused);
+		TestFloors.stone(helper);
+		ServerLevel level = helper.getLevel();
+		ServerPlayer player = TestPlayers.survivalAt(helper, 6.5, 6.5);
+		TestCleanup.whenDone(helper, () -> TestPlayers.remove(helper, player));
+		level.getServer().getCommands().performPrefixedCommand(level.getServer().createCommandSourceStack().withEntity(player).withSuppressedOutput(),
+				"gems kit soulguard leather 1");
+		ItemStack boots = player.getItemBySlot(EquipmentSlot.FEET).copy();
+		helper.assertTrue(boots.is(Items.LEATHER_BOOTS), "no gem kit: " + boots);
+		Pig pig = penned(helper, 2, 2, Blocks.SOUL_SAND, Blocks.GLASS.defaultBlockState());
+		pig.setItemSlot(EquipmentSlot.FEET, boots);
+		helper.startSequence()
+				.thenWaitUntil(() -> helper.assertTrue(pig.hasEffect(Soulfire.SOULGUARD), "no Soulguard from the gem yet"))
+				.thenExecute(() -> helper.setBlock(2, 1, 2, Blocks.SOUL_FIRE))
+				.thenIdle(60)
+				.thenExecute(() -> helper.assertTrue(pig.getHealth() == pig.getMaxHealth() && !SoulBurning.isSoulBurning(pig),
+						"a Soulguard gem wearer was hurt in soul fire: " + pig.getHealth()))
+				.thenSucceed();
+	}
+
 	/** The Captain's Helm carries the Soulguard enchantment; the enchantment is a treasure: never at the table or from villagers. */
 	@GameTest(maxTicks = 5)
 	public void helmCarriesSoulguardAndItIsTreasure(GameTestHelper helper) {

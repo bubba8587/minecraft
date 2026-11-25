@@ -36,7 +36,7 @@ public class EnchantingGameTest {
 	public void formAndBookshelvesCapTheTiers(GameTestHelper helper) {
 		InfusedGem lingeringGem = infused("speed", GemForm.LINGERING);
 		ItemStack apple = GemKit.infused("absorption", "strong", GemForm.ITEM, 6);
-		check(helper, apple.getHoverName().getString().equals("Infused Gem: Gem Power VI, Absorption"), "item gem name " + apple.getHoverName().getString());
+		check(helper, apple.getHoverName().getString().equals("Infused Gem: Base Power VI, Absorption"), "item gem name " + apple.getHoverName().getString());
 		for (int seed = 0; seed < 200; seed++) {
 			int[] normal = GemEnchanting.costs(seed, 15, infused("speed", GemForm.NORMAL));
 			int[] splash = GemEnchanting.costs(seed, 15, infused("speed", GemForm.SPLASH));
