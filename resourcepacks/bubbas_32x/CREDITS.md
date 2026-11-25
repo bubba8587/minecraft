@@ -53,5 +53,11 @@ What changed: each creeper pixel takes the closest colour (OKLch lightness match
 |---|---|
 | `entity/boss_piglin.png` (head, ears, snout, brow and tusk regions only) | `entity/piglin/piglin.png` (head and ears as they are; snout widened and deepened, tusks stretched, brow from its forehead; our palette, our gold tusk caps and earring) |
 
+### Bubba's Reworked Mobs: Wither Captain spawn egg
+
+| Our texture (`assets/bubbas_reworked_mobs/textures/`) | Derived from (CF32J, `assets/minecraft/textures/`) |
+|---|---|
+| `item/wither_captain_spawn_egg.png` | `item/wither_skeleton_spawn_egg.png` (egg unchanged, moved down 2 px; our horns on top) |
+
 Website: https://faithfulpack.net
 Used under the Faithful License: https://faithfulpack.net/license

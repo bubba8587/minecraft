@@ -46,7 +46,7 @@
 
 ## Items and art
 
-- Spawn eggs `wither_captain_spawn_egg` and `soulfire_blaze_spawn_egg` use vanilla's wither skeleton and blaze egg icons. All four items are in the Reworked Mobs creative tab.
+- Spawn eggs `wither_captain_spawn_egg` and `soulfire_blaze_spawn_egg`: the Captain's egg is vanilla's wither skeleton egg with the Captain's Helm horns on top (`textures/item/wither_captain_spawn_egg.png`, 16x + 32x, `tools-local/make_captain_egg_texture.py`); the Soulfire Blaze's reuses vanilla's blaze egg icon. All four items are in the Reworked Mobs creative tab.
 - Textures (16x and 32x, B16) come from `mods/bubbas_reworked_mobs/tools-local/make_captain_textures.py`: Soulfire Blaze, Nether Star Shard, helm icon, helm worn layer, horn texture. Rows in `docs/art-todo.md`.
 
 ## Prior art
@@ -68,7 +68,7 @@
 
 ## Open
 
-- Spawn eggs reuse vanilla icons (row in `docs/art-todo.md`; own icons if the owner wants them).
+- The Soulfire Blaze spawn egg reuses vanilla's icon (row in `docs/art-todo.md`; own icon if the owner wants one).
 - Tests missing for fortress captain spawning, the 48-block spacing and soul sand valley blazes (above).
 - The helm immunity test uses pigs, not a player.
 - A few javadocs in `captain/` are longer than labels (B38): trim.

@@ -10,6 +10,7 @@ import io.github.bubba8587.bubbas_reworked_mobs.registry.ModItems;
 import net.minecraft.client.gui.screens.worldselection.WorldCreationUiState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.packs.repository.PackRepository;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -24,10 +25,12 @@ import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContex
 /**
  * The Wither Captain by eye (specs/wither-captain.md; client part {@code captain}). On a blackstone platform in the
  * sky, night vision on. Shots: captain-summon-front, captain-summon-side (the summoning pose, aura and particles),
- * captain-normal, soulfire-blaze, helm-front, helm-side, helm-close (worn on an armour stand), helm-icon (hotbar), helm-player-front/side (third person).
+ * captain-normal, soulfire-blaze, helm-front, helm-side, helm-close (worn on an armour stand), helm-icon and helm-icon-32x (hotbar, with the spawn eggs), helm-player-front/side (third person).
  */
 @SuppressWarnings("UnstableApiUsage")
 public class CaptainClientGameTest implements FabricClientGameTest {
+	private static final String PACK_32X = "bubbas_reworked_mobs:bubbas_reworked_mobs_32x";
+
 	@Override
 	public void runTest(ClientGameTestContext context) {
 		if (!ClientTests.run("captain")) {
@@ -123,6 +126,9 @@ public class CaptainClientGameTest implements FabricClientGameTest {
 			server.runCommand("item replace entity @p hotbar.3 with bubbas_reworked_mobs:soulfire_blaze_spawn_egg");
 			tp(context, server, x + 0.5, y + 0.4, z - 8.5, 180.0F, 0.0F);
 			context.takeScreenshot("helm-icon");
+			setPack(context, true);
+			context.takeScreenshot("helm-icon-32x");
+			setPack(context, false);
 
 			// --- a player wearing the helm, third person front and side --------------------------------------
 			server.runCommand("item replace entity @p armor.head with bubbas_reworked_mobs:captains_helm");
@@ -135,6 +141,30 @@ public class CaptainClientGameTest implements FabricClientGameTest {
 			context.waitTicks(10);
 			context.takeScreenshot("helm-player-side");
 			context.runOnClient(mc -> mc.options.setCameraType(net.minecraft.client.CameraType.FIRST_PERSON));
+		}
+	}
+
+	private static void setPack(ClientGameTestContext context, boolean on) {
+		boolean changed = context.computeOnClient(mc -> {
+			PackRepository repo = mc.getResourcePackRepository();
+			if (!repo.getAvailableIds().contains(PACK_32X)) {
+				throw new AssertionError("no resource pack " + PACK_32X + "; available: " + repo.getAvailableIds());
+			}
+			if (repo.getSelectedIds().contains(PACK_32X) == on) {
+				return false;
+			}
+			if (on) {
+				repo.addPack(PACK_32X);
+			} else {
+				repo.removePack(PACK_32X);
+			}
+			mc.options.updateResourcePacks(repo);
+			return true;
+		});
+		if (changed) {
+			context.waitTicks(2);
+			context.waitFor(mc -> mc.gui.overlay() == null, 1200);
+			context.waitTicks(5);
 		}
 	}
 

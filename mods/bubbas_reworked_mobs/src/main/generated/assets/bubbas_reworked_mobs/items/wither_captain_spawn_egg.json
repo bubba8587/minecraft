@@ -1,6 +1,6 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "minecraft:item/wither_skeleton_spawn_egg"
+    "model": "bubbas_reworked_mobs:item/wither_captain_spawn_egg"
   }
 }

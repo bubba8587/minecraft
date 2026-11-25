@@ -27,5 +27,9 @@ Made by `tools/creeper-biome-textures.py`.
 
 The head of `resourcepacks/bubbas_reworked_mobs_32x/assets/bubbas_reworked_mobs/textures/entity/boss_piglin.png` (its head, ears, snout, brow and tusk regions; the body is our own) is derived from **Classic Faithful 32x Jappa**'s `assets/minecraft/textures/entity/piglin/piglin.png` (`java-latest` branch, November 2026): head and ears as they are, the snout widened and deepened to our bigger snout, the tusks stretched taller, the brow taken from its forehead, recoloured to our palette, with our own gold tusk caps and earring. Made by `tools-local/make_boss_piglin_textures.py`.
 
+### Wither Captain spawn egg (32x)
+
+`resourcepacks/bubbas_reworked_mobs_32x/assets/bubbas_reworked_mobs/textures/item/wither_captain_spawn_egg.png` is derived from **Classic Faithful 32x Jappa**'s `assets/minecraft/textures/item/wither_skeleton_spawn_egg.png` (`java-latest` branch, November 2026): CF32J's egg unchanged, moved down 2 pixels, with our own horns drawn on top. (The 16x is vanilla's wither skeleton spawn egg treated the same way.) Made by `tools-local/make_captain_egg_texture.py`.
+
 Website: https://faithfulpack.net
 Used under the Faithful License: https://faithfulpack.net/license

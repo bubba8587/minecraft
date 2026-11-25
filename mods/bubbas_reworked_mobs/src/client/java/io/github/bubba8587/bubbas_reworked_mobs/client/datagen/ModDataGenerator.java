@@ -313,7 +313,7 @@ public class ModDataGenerator implements DataGeneratorEntrypoint {
 			// The gravestone item shows the stone itself (models/item/gravestone, hand-made).
 			gen.itemModelOutput.accept(ModItems.GRAVESTONE,
 					net.minecraft.client.data.models.model.ItemModelUtils.plainModel(io.github.bubba8587.bubbas_reworked_mobs.BubbasReworkedMobs.id("item/gravestone")));
-			// Wither Captain: flat icons; the spawn eggs reuse vanilla's wither skeleton and blaze eggs
+			// Wither Captain: flat icons
 			gen.generateFlatItem(ModItems.CAPTAINS_HELM, ModelTemplates.FLAT_ITEM);
 			gen.generateFlatItem(ModItems.NETHER_STAR_SHARD, ModelTemplates.FLAT_ITEM);
 			// Soul blaze items: flat icons
@@ -321,8 +321,8 @@ public class ModDataGenerator implements DataGeneratorEntrypoint {
 			gen.generateFlatItem(io.github.bubba8587.bubbas_reworked_mobs.soulfire.Soulfire.SOUL_BLAZE_POWDER, ModelTemplates.FLAT_ITEM);
 			gen.generateFlatItem(io.github.bubba8587.bubbas_reworked_mobs.soulfire.Soulfire.SOUL_FIRE_CHARGE, ModelTemplates.FLAT_ITEM);
 			gen.generateFlatItem(io.github.bubba8587.bubbas_reworked_mobs.soulfire.phasing.Phasing.EYE_OF_THE_SOUL, ModelTemplates.FLAT_ITEM);
-			gen.itemModelOutput.accept(ModItems.WITHER_CAPTAIN_SPAWN_EGG,
-					net.minecraft.client.data.models.model.ItemModelUtils.plainModel(net.minecraft.resources.Identifier.withDefaultNamespace("item/wither_skeleton_spawn_egg")));
+			// Spawn eggs: the Wither Captain's own icon; the others reuse vanilla eggs
+			gen.generateFlatItem(ModItems.WITHER_CAPTAIN_SPAWN_EGG, ModelTemplates.FLAT_ITEM);
 			gen.itemModelOutput.accept(ModItems.SOULFIRE_BLAZE_SPAWN_EGG,
 					net.minecraft.client.data.models.model.ItemModelUtils.plainModel(net.minecraft.resources.Identifier.withDefaultNamespace("item/blaze_spawn_egg")));
 			gen.itemModelOutput.accept(ModItems.BOSS_PIGLIN_SPAWN_EGG,
