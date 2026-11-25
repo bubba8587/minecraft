@@ -1,4 +1,4 @@
-// dte:C1
+// dte:C1,B15,B17,B21
 package io.github.bubba8587.bubbas_reworked_mobs.camp;
 
 import io.github.bubba8587.bubbas_reworked_mobs.worldgen.ClippedBuild;
@@ -40,6 +40,10 @@ public final class CampCommand {
 					c.getSource().sendSuccess(() -> Component.literal("Reset " + n + " camp(s)."), true);
 					return n;
 				}))
+				.then(Commands.literal("patrol").executes(c -> patrol(c, null, null))
+						.then(Commands.argument("kind", StringArgumentType.word()).executes(c -> patrol(c, StringArgumentType.getString(c, "kind"), null))
+								.then(Commands.literal("mounted").executes(c -> patrol(c, StringArgumentType.getString(c, "kind"), true)))
+								.then(Commands.literal("foot").executes(c -> patrol(c, StringArgumentType.getString(c, "kind"), false)))))
 				.then(Commands.literal("locate").then(Commands.argument("kind", StringArgumentType.word()).executes(CampCommand::locate)))
 				.then(Commands.literal("list").executes(c -> {
 					var all = CampSites.all(c.getSource().getLevel());
@@ -73,6 +77,46 @@ public final class CampCommand {
 	}
 
 	private static final int LOCATE_RADIUS = 6144;
+
+	/** {@code camp patrol [kind] [mounted|foot]}: a patrol from the nearest camp (of the kind) at the player now. */
+	private static int patrol(CommandContext<CommandSourceStack> c, String kindName, Boolean mounted) throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+		ServerLevel level = c.getSource().getLevel();
+		var player = c.getSource().getPlayerOrException();
+		BlockPos at = player.blockPosition();
+		CampSite site;
+		if (kindName == null) {
+			site = CampPatrols.campFor(level, at);
+		} else {
+			CampKind kind;
+			try {
+				kind = CampKind.valueOf(kindName.toUpperCase(java.util.Locale.ROOT));
+			} catch (IllegalArgumentException e) {
+				kind = null;
+			}
+			if (kind == null || kind.nether()) {
+				c.getSource().sendFailure(Component.literal("Kinds: skeleton, zombie, husk, stray, bogged."));
+				return 0;
+			}
+			site = CampPatrols.nearestOf(level, at, kind);
+			if (site == null) {
+				CampPiece piece = nearest(level, at, kind, LOCATE_RADIUS);
+				site = piece == null ? null : CampPatrols.known(level, piece);
+			}
+		}
+		if (site == null) {
+			c.getSource().sendFailure(Component.literal("No camp near enough."));
+			return 0;
+		}
+		var members = CampPatrols.spawnNear(level, site, player, mounted);
+		CampSite from = site;
+		if (members.isEmpty()) {
+			c.getSource().sendFailure(Component.literal("No room for a patrol here."));
+			return 0;
+		}
+		c.getSource().sendSuccess(() -> Component.literal("A %s patrol of %d from the camp at %s.".formatted(from.kind().id(), members.size(),
+				from.centre().toShortString())), true);
+		return members.size();
+	}
 
 	/** The nearest natural camp of {@code kind} within {@code radius} (horizontal), read from structure starts; or null. */
 	public static CampPiece nearest(ServerLevel level, BlockPos at, CampKind kind, int radius) {

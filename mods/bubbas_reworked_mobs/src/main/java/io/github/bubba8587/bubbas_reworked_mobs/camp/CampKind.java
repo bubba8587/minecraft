@@ -1,4 +1,4 @@
-// dte:C1,B15
+// dte:C1,B15,B17,B21
 package io.github.bubba8587.bubbas_reworked_mobs.camp;
 
 import java.util.List;
@@ -17,6 +17,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BannerPattern;
 import net.minecraft.world.level.block.entity.BannerPatterns;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jspecify.annotations.Nullable;
 
 /**
  * The kinds of monster camp (specs/monster-camps.md): skeletons and zombies, and the biome versions with the
@@ -70,6 +71,21 @@ public enum CampKind {
 	/** Whether its mobs shoot (archers on the towers, a bow for the leader). */
 	public boolean archers() {
 		return this != ZOMBIE && this != HUSK;
+	}
+
+	/** Whether its mobs burn by day (patrols only at night). */
+	public boolean burns() {
+		return this != HUSK && this != PIGLIN;
+	}
+
+	/** Its patrols' mount, or null (bogged and piglins go on foot). */
+	public @Nullable EntityType<? extends Mob> mount() {
+		return switch (this) {
+			case ZOMBIE -> EntityTypes.ZOMBIE_HORSE;
+			case SKELETON, STRAY -> EntityTypes.SKELETON_HORSE;
+			case HUSK -> EntityTypes.CAMEL_HUSK;
+			default -> null;
+		};
 	}
 
 	/** The Nether outpost kind. */
