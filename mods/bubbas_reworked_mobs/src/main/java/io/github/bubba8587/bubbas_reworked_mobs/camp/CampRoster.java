@@ -1,4 +1,4 @@
-// dte:C1
+// dte:C1,B15,B17,B21
 package io.github.bubba8587.bubbas_reworked_mobs.camp;
 
 import java.util.ArrayList;
@@ -77,9 +77,7 @@ public final class CampRoster {
 		for (Mob mob : mobs) {
 			site.members.add(mob.getUUID());
 		}
-		if (kind.nether()) {
-			livestock(level, site, random);
-		}
+		livestock(level, site, random);
 		return mobs;
 	}
 
@@ -87,8 +85,9 @@ public final class CampRoster {
 	public static final String LIVESTOCK_TAG = CampTuning.CAMP_TAG + ".livestock";
 
 	/**
-	 * A Nether outpost's hoglins: in each pen that has none left, {@link CampTuning#OUTPOST_HOGLINS} of them, the first
-	 * leashed to the pen's tether post; never hunted by the piglins, as in a bastion's stable.
+	 * Tethered livestock, in each pen or stable that has none left and whose tether post stands: a Nether outpost's
+	 * hoglins, {@link CampTuning#OUTPOST_HOGLINS} of them, the first leashed to the pen's post, never hunted by the
+	 * piglins (as in a bastion's stable); a camp stable's mounts ({@link #mounts}).
 	 */
 	private static void livestock(ServerLevel level, CampSite site, RandomSource random) {
 		for (BlockPos post : site.pens) {
@@ -96,7 +95,11 @@ public final class CampRoster {
 				continue; // the pen was taken down
 			}
 			var box = new net.minecraft.world.phys.AABB(post).inflate(4.0, 2.0, 4.0);
-			if (!level.getEntitiesOfClass(Hoglin.class, box, h -> h.entityTags().contains(LIVESTOCK_TAG)).isEmpty()) {
+			if (!level.getEntitiesOfClass(Mob.class, box, h -> h.entityTags().contains(LIVESTOCK_TAG)).isEmpty()) {
+				continue;
+			}
+			if (site.kind != null && !site.kind.nether()) {
+				mounts(level, site, site.kind, post, random);
 				continue;
 			}
 			int count = site.size == null ? 1 : CampTuning.OUTPOST_HOGLINS[site.size.ordinal()];
@@ -119,6 +122,36 @@ public final class CampRoster {
 				if (level.addFreshEntity(hoglin) && i == 0) {
 					hoglin.setLeashedTo(LeashFenceKnotEntity.getOrCreateKnot(level, post), true);
 				}
+			}
+		}
+	}
+
+	/**
+	 * A camp stable's mounts: 1 to {@link CampTuning#STABLE_MOUNTS_MAX}, each the kind's undead mount or a captive horse
+	 * or donkey, all leashed to the post (a player takes the leads at the knot). Persistent; not on the roster.
+	 */
+	private static void mounts(ServerLevel level, CampSite site, CampKind kind, BlockPos post, RandomSource random) {
+		net.minecraft.core.Direction front = net.minecraft.core.Direction.getApproximateNearest(site.centre.getX() - post.getX(), 0.0,
+				site.centre.getZ() - post.getZ());
+		int count = 1 + random.nextInt(CampTuning.STABLE_MOUNTS_MAX);
+		LeashFenceKnotEntity knot = LeashFenceKnotEntity.getOrCreateKnot(level, post);
+		for (int i = 0; i < count; i++) {
+			EntityType<? extends Mob> type = random.nextFloat() < CampTuning.STABLE_UNDEAD ? kind.undeadMount()
+					: random.nextFloat() < CampTuning.STABLE_DONKEY ? EntityTypes.DONKEY : EntityTypes.HORSE;
+			Mob mount = type.create(level, EntitySpawnReason.STRUCTURE);
+			if (mount == null) {
+				continue;
+			}
+			BlockPos at = post.relative(front, 2).relative(i == 0 ? front.getClockWise() : front.getCounterClockWise());
+			mount.snapTo(at.getX() + 0.5, at.getY(), at.getZ() + 0.5, random.nextFloat() * 360.0F, 0.0F);
+			mount.finalizeSpawn(level, level.getCurrentDifficultyAt(at), EntitySpawnReason.STRUCTURE, null);
+			if (mount instanceof net.minecraft.world.entity.AgeableMob young) {
+				young.setAge(0);
+			}
+			mount.setPersistenceRequired();
+			mount.addTag(LIVESTOCK_TAG);
+			if (level.addFreshEntity(mount)) {
+				mount.setLeashedTo(knot, true);
 			}
 		}
 	}

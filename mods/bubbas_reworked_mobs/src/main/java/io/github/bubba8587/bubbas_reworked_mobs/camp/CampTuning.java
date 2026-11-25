@@ -73,6 +73,14 @@ public final class CampTuning {
 	/** Nether outposts: chance a ground member is a piglin brute, and hoglins per pen by size (small, medium, large). */
 	public static final float OUTPOST_BRUTE = 0.25F;
 	static final int[] OUTPOST_HOGLINS = { 1, 2, 3 };
+	/** Stables: every large camp has one, a medium camp this often (from its plan seed). */
+	public static final float MEDIUM_STABLE_CHANCE = 0.5F;
+	/** Mounts per stable: at least one, up to this many. */
+	public static final int STABLE_MOUNTS_MAX = 2;
+	/** Chance each stable mount is the kind's undead mount; otherwise a captive horse or donkey. */
+	public static final float STABLE_UNDEAD = 0.5F;
+	/** Of the captive ones, the share that are donkeys. */
+	public static final float STABLE_DONKEY = 0.3F;
 
 	/** Entity tag on every camp mob; a second tag {@code CAMP_TAG + ":" + id} says which camp. */
 	public static final String CAMP_TAG = "bubbas_reworked_mobs.camp";

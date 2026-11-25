@@ -81,9 +81,9 @@ public final class CampPatrols {
 		return LEVELS.computeIfAbsent(level, l -> new State());
 	}
 
-	/** stand-in until CampSite.hasStable() */
+	/** Whether the camp keeps a stable (it can send riders). */
 	public static boolean campHasStable(CampSite site) {
-		return site.size() == CampTuning.Size.LARGE;
+		return site.hasStable();
 	}
 
 	// --- the timer ------------------------------------------------------------------------------

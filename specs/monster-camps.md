@@ -32,7 +32,7 @@ The owner's design started from the idea in `docs/research/camps-blood-moon-idea
   - **1.25x size** (vanilla `scale` attribute), **2.5x health**, +3 attack damage (melee kinds), half knockback resistance.
   - Iron helmet and chestplate; an **iron axe** (zombie, husk) or a **Power II bow** (archer kinds).
   - Drops its weapon half the time and each armour piece 1 time in 5.
-- **Loot chest** (`chests/monster_camp`, by the fire): 3-6 of bones, arrows, rotten flesh, string, leather, bread, iron and gold ingots, emeralds, gunpowder; plus one roll (nothing: weight 35 of 90, about 39 %) of an enchanted iron sword, axe or bow, an enchanted book, a chain helmet or chestplate, a saddle, a name tag, a golden apple or 1-2 diamonds.
+- **Loot chest** (`chests/monster_camp`, by the fire): the lowest of four chest tiers (Chest tiers, below).
 - **Alarms: none (owner).** Camp alarm bells, and a raid horn for outposts, were designed and dropped ("i dont think we should do camp alarm bells").
 
 ## Look and layout
@@ -66,10 +66,10 @@ Each camp picks its own count of each element (zero is allowed where it reads we
 Pieces are laid out in a footprint plan before building, so nothing overlaps.
 - **Order:**
   1. the room and its stair side;
-  2. reserved footprints: the fire (centre ±2: ring, seats, chest) and the stair tunnel where it opens to the surface (from step 3 of the tunnel to its cleared mouth at step 9, plus a wall column either side);
+  2. reserved footprints: the fire (centre ±2: ring, seats, chest) and the stair tunnel where it opens to the surface (from step 1 of the tunnel to its cleared mouth at step 9, plus a wall column either side);
   3. big pieces: skull rock, winding tower, ribcage (Nether outposts: gate, hoglin pen);
-  4. lean-tos, towers (+ ramp, + twin and bridge), outcrops, pikes, banners.
-- **Footprints:** tower 6 x 6 (4 x 4 plus a ladder ring), lean-to 3 x 3, outcrop (2m+3)², pike and banner 1 cell.
+  4. lean-tos, the stable (its own random stream), towers (+ ramp, + twin and bridge), outcrops, pikes, banners.
+- **Footprints:** tower 6 x 6 (4 x 4 plus a ladder ring), lean-to 3 x 3, stable 7 x 5, outcrop (2m+3)², pike and banner 1 cell.
 - A claim needs a gap of at least 1 cell (`MARGIN`) from every earlier footprint; a lean-to may sit right against the fire's (it opens onto the seats).
 - Each piece tries 16 spots (first at its planned angle, then random angles; lean-tos alternate distance r-3 and r-2), then is dropped, so a camp can have fewer pieces than it rolled. Lean-tos go first, so the guaranteed lean-to always fits.
 - `CampPiece.footprints()` lists the plan's footprints (tests); `CampPiece.roomSpot()` is the room's middle floor cell (camera, path checks).
@@ -99,7 +99,7 @@ Prior art taken: Breath of the Wild bokoblin camps (skull rocks entered by the m
 The owner asked for guaranteed shade spots and one small-to-medium underground room the mobs can go in; otherwise they burn. Camp mobs burn in daylight like any others. Every camp has:
 - a **lean-to:** open toward the fire, 3 wide and 2 deep, the roof four blocks up (three blocks of headroom; the owner asked for it taller after mobs got stuck), fence posts, a plank back wall, bedrolls;
 - **roofed towers:** lookouts on the platform and mobs under it are shaded;
-- **one underground room** under the fire: 3 high, dark, rock walls, a beamed plank ceiling, cobwebs in the corners, a few bones, and a small chest (`chests/camp_room`: bones, arrows, rotten flesh, coal, iron and gold nuggets, string, candles; half the time also an iron or gold ingot, an emerald, golden carrots or a book). Its size varies (Variety, above). It is reached by a 2-wide stair tunnel, and skipped where the world isn't deep enough (superflat).
+- **one underground room** under the fire: 3 high, dark, rock walls, a beamed plank ceiling, cobwebs in the corners, a few bones, and a small chest (`chests/camp_room`: bones, arrows, rotten flesh, coal, iron and gold nuggets, string, candles; usually also an iron or gold ingot, emeralds, golden carrots, an enchanted book, sword or bow, or a golden apple; Chest tiers, below). Its size varies (Variety, above). It is reached by a 2-wide stair tunnel, and skipped where the world isn't deep enough (superflat).
 
 **Taking cover is vanilla's own behaviour** (owner: don't reinvent it):
 - skeletons, strays and bogged already have `RestrictSunGoal` and `FleeSunGoal` (they keep out of the sun and run for shade once burning); camp zombies are given the same two goals;
@@ -161,23 +161,32 @@ The owner asked for guaranteed shade spots and one small-to-medium underground r
 - **Command:** `/bubbas_reworked_mobs camp patrol [kind] [mounted|foot]` spawns a patrol 12-20 blocks from the player now, from the nearest camp of the kind (or the camp whose territory holds the player), ignoring the timer, cooldown and time of day.
 - **Code:** `camp/CampPatrols` (timer, territory, spot, spawn, map), `camp/CampPatrolGoal`, numbers in `CampTuning` (`PATROL_*`); the goal is added in `CampMemberMixin`; `Camps` registers the tick and the leader's death drop (`ServerLivingEntityEvents.AFTER_DEATH`).
 
-## Stables (owner, 2026-11-25; to build)
+## Stables (owner, 2026-11-25; built 2026-11-25)
 
-- **Bigger camps get a stable:** every large camp and about half of medium camps (from the plan seed). A small roofed pen like the lean-to, fenced, with a hay bale or two, claimed in the footprint plan like the other pieces (never overlapping).
-- **In it:** tethered mounts like the Nether outposts' hoglin pen (leashed to a post, re-made with the roster only while the pen has none and its post stands): sometimes the camp kind's undead mount (zombie horse, skeleton horse, camel husk; bogged camps: skeleton horse), sometimes a **captive living horse** (or donkey) the player can lead home after clearing the camp. Not on the roster; don't count for clearing.
-- `CampSite.hasStable()` (saved) tells patrols the camp can send riders.
+- **Bigger camps get a stable:** every large camp and about half of medium camps (`CampTuning.MEDIUM_STABLE_CHANCE` 0.5, from the plan seed); none in small camps or Nether outposts.
+  - Planned after the lean-tos and before the towers, from its own random stream (`seed ^ 0x57AB1E`), so the rest of the layout stream is unchanged; footprint `stable` 7 x 5 (`CampPiece.STABLE_HALF`, `STABLE_DEPTH`), 80 tries, its front `r - 4` to `r` from the centre, facing the fire. Every large plan in 160 sampled has one.
+  - Built (`CampPiece.stable`) in the kind's wood: log corner posts, a plank back wall, a fence rail round the sides and front with a fence gate (`CampKind.fenceGate()`) in the middle facing the fire, a slab roof 4 up over the whole footprint, a levelled trodden floor, a hay bale (sometimes two) in the back corners and the tether post (a fence against the back wall) between them. The rails and post carry their sides preset, so the fence tidy keeps them across a chunk edge.
+- **In it:** 1 to `STABLE_MOUNTS_MAX` (2) mounts, stocked with the roster (`CampRoster.mounts`) only when the stable has none and its tether post stands, like the hoglin pen. Each is the kind's undead mount half the time (`STABLE_UNDEAD`; `CampKind.undeadMount()`: zombie horse; skeleton horse for skeleton, stray and bogged; camel husk for husk), else a captive donkey (`STABLE_DONKEY` 0.3) or horse.
+  - All are leashed to the post's knot (a player takes every lead at once by clicking the knot, vanilla), persistent, tagged livestock (`CampRoster.LIVESTOCK_TAG`), not on the roster and not counted for clearing.
+  - Undead mounts don't burn: the roof keeps the sky light under it below 15 (vanilla's burn rule). Led out into the sun, a zombie horse burns as vanilla's.
+- `CampSite.hasStable()` (saved as `stable`) tells patrols the camp can send riders; the stable's post is the last of `CampPiece.tetherPosts()` (saved as `pens`).
 
-## Chest tiers (owner, 2026-11-25; to build)
+## Chest tiers (owner, 2026-11-25; built 2026-11-25)
 
-Four chests, rising: **fire < lower room < tower < skull**. Don't overdo the top end (owner).
-- **Fire chest** (`chests/monster_camp`): tuned lightly down from today's (fewer rolls or a lower chance at the good roll).
-- **Lower room** (`chests/camp_room`): unchanged unless needed to sit between fire and tower.
-- **Tower chest** (new, `chests/camp_tower`): hidden inside the **winding tower's** enclosed core (winding towers only). Archer's stash: arrows, tipped arrows, a bow or crossbow (sometimes enchanted), spyglass, some iron or gold, an emerald or two.
-- **Skull chest** (new, `chests/camp_skull`): at the back inside the skull rock (full and half-buried). A bit nicer than the tower: an enchanted iron weapon or armour piece, an enchanted book, some gold and emeralds, a golden apple; rarely a diamond. No gems (gem census, 2026-11-25), or one rare roll at most.
+Four chests, rising: **fire < lower room < tower < skull**. Don't overdo the top end (owner). Expected values per chest are in `docs/reports/camps-stables-docs-2026-11-25.md` until merged.
+- **Fire chest** (`chests/monster_camp`): 2-4 stacks (was 3-6) of bones, arrows, rotten flesh, string, leather, bread, iron and gold ingots, an emerald, gunpowder; plus one roll (nothing 60 of 107, about 56 %) of an enchanted iron sword, axe or bow, a chain helmet or chestplate, a saddle, a name tag, an enchanted book or a golden apple. No diamonds now.
+- **Lower room** (`chests/camp_room`): moved up a little to sit above the fire: its bonus roll is nothing 30 of 78 (was 50 of 86), emeralds 1-2, plus an enchanted iron sword or bow and a rare golden apple.
+- **Tower chest** (`chests/camp_tower`, `CampPiece.windingChest()`): on the **winding tower's** sealed ground floor (a corner by the tower's seed, facing in), seen through the window slits; break in. Arrows, tipped arrows (slowness, poison, weakness), string, feathers, flint, iron, gold, emeralds, bread; a bow or crossbow 85 % (sometimes enchanted); a spyglass, golden carrots, an enchanted book or a name tag 58 %.
+- **Skull chest** (`chests/camp_skull`, `CampPiece.skullChest()`): at the back inside the skull rock (full and half-buried), on the furthest-back hollow floor cell beside the middle path, facing the mouth; not a shade spot. Bones, arrows, gold, iron, emeralds, golden carrots; always one iron weapon, armour piece or bow enchanted at levels 5-15; and 73 % an enchanted book (levels 5-15), a golden apple, or (1 in 15) one or two diamonds. No gems.
 
-## Room stairs fix (owner playtest, 2026-11-25; to build)
+## Room stairs fix (owner playtest, 2026-11-25; built 2026-11-25)
 
-Mobs had trouble climbing the stair tunnel out of the lower room; likely a block sits in front of the top step instead of the surface being flush with it. Find it and fix it so the top step meets open ground. Add a milestone test: a zombie in the room walks up the tunnel out to the clearing (today's test only checks walking down).
+Mobs had trouble climbing the stair tunnel out of the lower room. Reproduced with real walks and path checks: a leader-sized zombie found no path out in about half of all camps, and normal zombies stalled when they hopped up the steps. Causes and fixes (`CampPiece.room`):
+- **Headroom:** the tunnel cleared 3 blocks above each step, and its first steps were under the room wall's top and the untouched ground. A mob hops up stairs with its back half still under the lower ceiling of the step behind, so it bonked; a 1.25x leader could not step up at all. Now 4 above every step and above the doorway cell (`TUNNEL_HEADROOM`), so the tunnel opens to the sky from its first step. A room one wide toward the stairs is no longer shifted away from them, and the reserved `stairs` footprint starts at the first step, so the opening stays clear of the fire's seats.
+- **Falling ground:** sand or gravel left over a tunnel cell (trodden ground over the doorway) becomes the kind's rock, so nothing falls into the doorway.
+- **Bones by the door:** no bone blocks in the room's row next to the stairs.
+- **The way out on uneven land:** past the top step the ground is cut or filled flush with it for 3 cells (`MOUTH_LEVEL`), then may rise at most a block a cell over the next 6 (`MOUTH_SLOPE`) back up to the land. Only earth is cut, and never under something built; the camp's own weeds there are cleared.
+- Small camps whose banner found no spot in 16 tries now try 48 more a block further out (a camp must always have a banner).
 
 ## Pillager outposts become camps too (owner)
 <a id="pillager-outposts-become-camps-too-owner"></a>
@@ -243,7 +252,7 @@ Mobs had trouble climbing the stair tunnel out of the lower room; likely a block
   - Shared `worldgen/ClippedBuild` (chunk-clipped placing, also used by `CryptYardPiece` and trader posts).
 - **Mixins:** `CampMemberMixin` (`Mob.customServerAiStep` HEAD: gives camp zombies vanilla's `RestrictSunGoal` and `FleeSunGoal` once), `OutpostSpawnMixin` (`ChunkGenerator.getMobsAt` HEAD: inside a disarmed outpost, return the biome's spawns). `BoggedLurk` skips camp mobs.
 - **Roster deaths:** Fabric `ServerEntityEvents.ENTITY_UNLOAD` with a destroying removal reason (killed or discarded, so conversions count too) removes the mob from its camp. Entity tags: `bubbas_reworked_mobs.camp` and `bubbas_reworked_mobs.camp:<id>`; the leader also `bubbas_reworked_mobs.camp.leader`.
-- **Data:** `worldgen/structure/monster_camp.json` (step `top_layer_modification`), `worldgen/structure_set/monster_camps.json`, `tags/worldgen/biome/has_structure/monster_camp.json`, `loot_table/chests/monster_camp.json`, `loot_table/chests/camp_room.json`.
+- **Data:** `worldgen/structure/monster_camp.json` (step `top_layer_modification`), `worldgen/structure_set/monster_camps.json`, `tags/worldgen/biome/has_structure/monster_camp.json`, `loot_table/chests/monster_camp.json`, `camp_room.json`, `camp_tower.json`, `camp_skull.json`.
 
 ## Milestone test objectives
 
@@ -256,6 +265,10 @@ Mobs had trouble climbing the stair tunnel out of the lower room; likely a block
 - Skull rocks (full and half-buried), winding towers, ramps, bridges and ribcage arches: every block supported, and a zombie can walk each end to end (`skullRockCanBeWalkedInto`, `buriedSkullCanBeWalkedInto`, `windingTowerCanBeClimbed`, `towerRampCanBeClimbed`, `bridgeJoinsTwoTowers`, `ribcagePathRunsUnderTheRibs`).
 - Camp fences and chains end cleanly: every fence side matches its neighbour, no lone fence posts, every chain end meets a chain on its axis, a fence, a wall or a sturdy face (`campFencesEndCleanly`, all kinds, large camps).
 - Camp patrols (`CampPatrolsGameTest`): at night a player in an armed camp's territory gets a patrol of its kind with one banner-wearing leader (core); no patrol from a disarmed or fire-quieted camp; none for a player outside every territory or standing in a ward (`api/Endermen.keepOut`); the leader drops a filled map centred on the camp at the territory's zoom, marked, and no banner; members stay within 16 blocks of the leader while it walks (own environment `patrol_walk`, so no other test's players draw them off); a mounted patrol's leader rides its kind's mount (zombie horse, skeleton horse, camel husk with a parched). Not covered: patrols avoiding spawn spots near a lit fire (the same `FireWard.repels` check the ward uses).
+- Every camp plan has a banner (on a tower or the ground) and a lean-to (`campPiecesNeverOverlap`).
+- A zombie and a leader-sized zombie in a camp's room can path up the tunnel to the clearing by the fire, every kind and size (3 seeds each, and once on land rising round the camp); the two cells past the top step are ground with open air above (`zombieCanClimbOutOfTheRoom`).
+- Stables: in every large plan, 30-70 % of medium plans, never small or Nether; built, they hold 1-2 mounts of the kind's undead mount or a horse or donkey, leashed to the post, persistent, under the roof, off the roster; restocked only when empty and while the post stands (`stablesHoldTetheredMounts`).
+- The winding tower's chest and the skull rock's (full and half-buried) stand where planned with `chests/camp_tower` / `chests/camp_skull` and can open (`towerAndSkullChestsHoldTheirLoot`).
 - Nether outposts generate only in crimson forests and the Nether wastes (`CampsGameTest.netherOutpostBiomes`).
 - An outpost's roster is piglins with a piglin brute leader; its hoglins stand in their pen, the first leashed to the post, none huntable (`outpostRosterAndPennedHoglins`).
 - A piglin can walk through an outpost's gate, climb its ramps and reach its portal room (`outpostGateCanBeWalkedThrough`, `outpostRampCanBeClimbed`, `outpostPortalRoomCanBeReached`).
@@ -281,6 +294,7 @@ Mobs had trouble climbing the stair tunnel out of the lower room; likely a block
   - three extra seeds per kind (small, medium, large) from above (`camp-<kind>-seed<n>-<size>`);
   - `camp-roster` (skeletons round the fire, a lookout on the tower, the leader), `camp-leanto` (a skeleton in its shade at noon), `camp-roster-night`;
   - `camp-room` / `camp-room-back`: standing in a natural camp's room (`roomSpot()`), night vision;
+  - stables, chests and stairs (also alone as the part `campextras`): `camp-stable-<zombie|husk|skeleton>-close` / `-clearing` (mounts stocked once the light under the new roof has settled), `camp-skull-chest`, `camp-buried-chest`, `camp-tower-chest` (night vision), `camp-stairs-up-<skeleton|husk>` (from the room's doorway, on a stone block since superflat ground is too shallow for the room);
   - the nearest natural camp in seed 20261116 (`camp-natural-0`, a skeleton camp in a forest clearing); also checks that a zombie on the surface outside it can path down into its room (target `roomSpot()`, accuracy 2);
   - the big pieces: `camp-skull-*`, `camp-buried-*`, `camp-ribcage-*`, `camp-winding-*`, `camp-ramp-*`, `camp-bridge-*` (front, 3/4, side, far 34 blocks);
   - prints the frequency survey.

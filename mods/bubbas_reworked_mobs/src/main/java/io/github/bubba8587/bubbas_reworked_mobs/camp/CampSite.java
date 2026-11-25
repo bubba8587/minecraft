@@ -1,4 +1,4 @@
-// dte:C1
+// dte:C1,B15,B17,B21
 package io.github.bubba8587.bubbas_reworked_mobs.camp;
 
 import java.util.ArrayList;
@@ -29,6 +29,7 @@ public final class CampSite {
 			BlockPos.CODEC.listOf().optionalFieldOf("ground", List.of()).forGetter(s -> s.ground),
 			BlockPos.CODEC.listOf().optionalFieldOf("shade", List.of()).forGetter(s -> s.shade),
 			BlockPos.CODEC.listOf().optionalFieldOf("pens", List.of()).forGetter(s -> s.pens),
+			Codec.BOOL.optionalFieldOf("stable", false).forGetter(s -> s.stable),
 			Codec.BOOL.optionalFieldOf("spawned", false).forGetter(s -> s.spawned),
 			Codec.BOOL.optionalFieldOf("armed", true).forGetter(s -> s.armed),
 			Codec.BOOL.optionalFieldOf("rearmed", false).forGetter(s -> s.rearmed),
@@ -46,8 +47,10 @@ public final class CampSite {
 	final List<BlockPos> ground;
 	/** Shade spots (heights approximate except the room's; camp/CampShade resolves them). */
 	final List<BlockPos> shade;
-	/** Hoglin pens' tether posts (Nether outposts). */
+	/** Tether posts: hoglin pens' (Nether outposts) and the stable's. */
 	final List<BlockPos> pens;
+	/** Whether it has a stable of tethered mounts. */
+	final boolean stable;
 	boolean spawned;
 	boolean armed;
 	/** A banner was put back after the camp was cleared of them: the next reset check is sure to reset. */
@@ -57,7 +60,7 @@ public final class CampSite {
 	final List<UUID> members;
 
 	private CampSite(long id, Optional<String> kind, BoundingBox box, BlockPos centre, int size, List<BlockPos> towers, List<BlockPos> ground,
-			List<BlockPos> shade, List<BlockPos> pens, boolean spawned, boolean armed, boolean rearmed, boolean quiet, List<UUID> members) {
+			List<BlockPos> shade, List<BlockPos> pens, boolean stable, boolean spawned, boolean armed, boolean rearmed, boolean quiet, List<UUID> members) {
 		this.id = id;
 		this.kind = kind.map(k -> CampKind.valueOf(k.toUpperCase(java.util.Locale.ROOT))).orElse(null);
 		this.box = box;
@@ -67,6 +70,7 @@ public final class CampSite {
 		this.ground = List.copyOf(ground);
 		this.shade = List.copyOf(shade);
 		this.pens = List.copyOf(pens);
+		this.stable = stable;
 		this.spawned = spawned;
 		this.armed = armed;
 		this.rearmed = rearmed;
@@ -77,13 +81,13 @@ public final class CampSite {
 	/** A camp, from its piece. */
 	static CampSite camp(long id, CampPiece piece, List<BlockPos> towers, List<BlockPos> ground) {
 		return new CampSite(id, Optional.of(piece.kind().id()), piece.getBoundingBox(), piece.centre(), piece.size().ordinal(), towers, ground,
-				piece.shadeSpots(), piece.tetherPosts(), false, true,
+				piece.shadeSpots(), piece.tetherPosts(), piece.hasStable(), false, true,
 				false, false, List.of());
 	}
 
 	/** A pillager outpost. */
 	static CampSite outpost(long id, BoundingBox box) {
-		return new CampSite(id, Optional.empty(), box, box.getCenter(), 0, List.of(), List.of(), List.of(), List.of(), false, true, false, false, List.of());
+		return new CampSite(id, Optional.empty(), box, box.getCenter(), 0, List.of(), List.of(), List.of(), List.of(), false, false, true, false, false, List.of());
 	}
 
 	public long id() {
@@ -126,7 +130,12 @@ public final class CampSite {
 		return spawned;
 	}
 
-	/** Its shade spots (approximate heights; camp/CampShade resolves them). */
+	/** Whether it has a stable (mounted patrols can ride out of it). */
+	public boolean hasStable() {
+		return stable;
+	}
+
+	/** Its tether posts: hoglin pens' and the stable's. */
 	public List<BlockPos> pens() {
 		return pens;
 	}
