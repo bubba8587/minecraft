@@ -129,6 +129,27 @@ public class SoulfireGameTest {
 		});
 	}
 
+	/** Fire Resistance blocks the fire part of Soulfire burning; the soul bonus still hurts. */
+	@GameTest(maxTicks = 80)
+	public void fireResistanceLeavesTheSoulPart(GameTestHelper helper) {
+		TestFloors.stone(helper);
+		Pig soul = helper.spawnWithNoFreeWill(EntityTypes.PIG, new Vec3(1.5, 1.0, 1.5));
+		Pig plain = helper.spawnWithNoFreeWill(EntityTypes.PIG, new Vec3(5.5, 1.0, 5.5));
+		for (Pig pig : new Pig[] { soul, plain }) {
+			pig.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.FIRE_RESISTANCE, 400));
+		}
+		SoulBurning.igniteForSeconds(soul, 10.0F);
+		plain.igniteForSeconds(10.0F);
+		helper.runAfterDelay(70, () -> {
+			float soulHurt = soul.getMaxHealth() - soul.getHealth();
+			float plainHurt = plain.getMaxHealth() - plain.getHealth();
+			helper.assertTrue(plainHurt == 0.0F, "normal burning under Fire Resistance hurt " + plainHurt);
+			float perSecond = SoulfireTuning.BURN_DAMAGE * (SoulfireTuning.SOUL_BONUS - 1.0F);
+			helper.assertTrue(soulHurt >= perSecond * 2 - 0.01F && soulHurt <= perSecond * 4 + 0.01F, "soul part under Fire Resistance " + soulHurt);
+			helper.succeed();
+		});
+	}
+
 	// --- totems -------------------------------------------------------------------------------------
 
 	/**

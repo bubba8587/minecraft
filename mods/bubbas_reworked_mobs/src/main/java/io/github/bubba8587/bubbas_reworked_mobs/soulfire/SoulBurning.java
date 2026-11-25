@@ -109,16 +109,28 @@ public final class SoulBurning {
 		if (hasSoulguard(entity) || !(entity.level() instanceof ServerLevel level)) {
 			return;
 		}
-		float amount = !isUndead(entity) ? vanillaAmount
-				: campfire ? SoulfireTuning.UNDEAD_CAMPFIRE_CONTACT_DAMAGE : SoulfireTuning.UNDEAD_FIRE_CONTACT_DAMAGE;
-		DamageSource source = entity.damageSources().source(campfire ? Soulfire.SOUL_CAMPFIRE : Soulfire.SOUL_FIRE);
-		entity.hurtServer(level, source, amount);
+		float fire = campfire ? SoulfireTuning.UNDEAD_CAMPFIRE_CONTACT_DAMAGE : SoulfireTuning.UNDEAD_FIRE_CONTACT_DAMAGE;
+		if (isUndead(entity)) {
+			entity.hurtServer(level, entity.damageSources().source(campfire ? Soulfire.SOUL_CAMPFIRE : Soulfire.SOUL_FIRE), fire);
+		} else if (fireResistant(entity)) {
+			entity.hurtServer(level, entity.damageSources().source(Soulfire.SOUL_SEAR), vanillaAmount - fire);
+		} else {
+			entity.hurtServer(level, entity.damageSources().source(campfire ? Soulfire.SOUL_CAMPFIRE : Soulfire.SOUL_FIRE), vanillaAmount);
+		}
 	}
 
 	/** The once-a-second burn while soul-burning: normal burn damage, plus the soul bonus against the living. */
 	public static boolean hurtByBurn(ServerLevel level, Entity entity) {
+		if (!isUndead(entity) && fireResistant(entity)) {
+			return entity.hurtServer(level, entity.damageSources().source(Soulfire.SOUL_SEAR), SoulfireTuning.BURN_DAMAGE * (SoulfireTuning.SOUL_BONUS - 1.0F));
+		}
 		float amount = SoulfireTuning.BURN_DAMAGE * (isUndead(entity) ? 1.0F : SoulfireTuning.SOUL_BONUS);
 		return entity.hurtServer(level, entity.damageSources().source(Soulfire.SOUL_BURN), amount);
+	}
+
+	/** Fire Resistance blocks the fire part of Soulfire; the soul part gets through. */
+	private static boolean fireResistant(Entity entity) {
+		return entity instanceof net.minecraft.world.entity.LivingEntity living && living.hasEffect(net.minecraft.world.effect.MobEffects.FIRE_RESISTANCE);
 	}
 
 	/** Each server tick, after the fire timer: ends the state when the fire is out, puts it out under Soulguard, sounds. */

@@ -39,6 +39,8 @@ public final class Soulfire {
 	public static final ResourceKey<DamageType> SOUL_FIRE = damageType("soul_fire");
 	public static final ResourceKey<DamageType> SOUL_CAMPFIRE = damageType("soul_campfire");
 	public static final ResourceKey<DamageType> SOUL_BURN = damageType("soul_burn");
+	/** The soul part alone (not fire, so Fire Resistance doesn't stop it). */
+	public static final ResourceKey<DamageType> SOUL_SEAR = damageType("soul_sear");
 	/** Damage that a Totem of Undying or Keeping doesn't save from, unless the victim has Soulguard. */
 	public static final TagKey<DamageType> BYPASSES_TOTEMS = TagKey.create(Registries.DAMAGE_TYPE, BubbasReworkedMobs.id("bypasses_totems"));
 
