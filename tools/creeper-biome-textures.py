@@ -18,7 +18,7 @@ resourcepacks/bubbas_32x/CREDITS.md); a texture CF32J doesn't have (sulfur) fall
 Plains and meadow take dirt (owner: pillar creepers there stack dirt-and-grass blocks as they are).
 
 A new base creeper regenerates every skin: --base16 (64x32) and --base32 (128x64). The face is only left out of the
-range statistics; it is found in the head-front square (UV 8..16, 8..16) as its pixels darker than OKLab L 0.42.
+range statistics; it is found in the head-front square (UV 8..16, 8..16) as its pixels darker than OKLab L 0.5.
 
 Usage: python3 tools/creeper-biome-textures.py [--mcsrc DIR] [--cf32j ZIP_OR_DIR] [--base16 PNG] [--base32 PNG] [--sheet OUT.png]
 """
@@ -60,8 +60,8 @@ SKINS = {
 }
 
 FACE = (8, 8, 16, 16)  # head front in the 64x32 UV layout
-DARK16 = 0.405  # vanilla's dark eye and mouth pixels: L 0.00-0.40 (the rest of the face is 0.42 and up)
-DARK32 = 0.395  # CF32J's: L 0.00-0.39 (its eye and mouth rims are 0.40 and up)
+DARK16 = 0.5  # vanilla face: black 0.00, darker 0.31-0.42 (eye top corners and mouth top-left 0.42); the rest 0.58 and up
+DARK32 = 0.5  # CF32J face: black 0.00, darker 0.32-0.45 (eye and mouth rims); the rest 0.58 and up
 FACE_BLEND = 0.5  # those pixels: their matched colour, this far toward black
 BLACK = 0.05  # face pixels darker than this are black and stay black
 
@@ -156,7 +156,7 @@ def palette(src, rel, tint, colormap):
 
 def is_face(x, y, L):
 	x0, y0, x1, y1 = FACE
-	return x0 <= x < x1 and y0 <= y < y1 and L < 0.42
+	return x0 <= x < x1 and y0 <= y < y1 and L < 0.5
 
 
 def dark_face_pixels(base, threshold):
