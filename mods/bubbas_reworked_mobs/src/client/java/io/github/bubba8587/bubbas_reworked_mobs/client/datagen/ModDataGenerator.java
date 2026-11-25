@@ -216,6 +216,14 @@ public class ModDataGenerator implements DataGeneratorEntrypoint {
 			builder.add("structure.bubbas_reworked_mobs.trader_post", "Trader Post");
 			builder.add("tag.item.bubbas_reworked_mobs.sleeper_harvest_tools", "Sleeper Harvest Tools");
 			builder.add("tag.item.bubbas_reworked_mobs.preferred_on_wake", "Weapons Woken Undead Prefer");
+			// Wither Captain (specs/wither-captain.md)
+			builder.add(io.github.bubba8587.bubbas_reworked_mobs.captain.Captains.WITHER_CAPTAIN, "Wither Captain");
+			builder.add(io.github.bubba8587.bubbas_reworked_mobs.captain.Captains.SOULFIRE_BLAZE, "Soulfire Blaze");
+			builder.add(io.github.bubba8587.bubbas_reworked_mobs.captain.Captains.SOULFIRE_CHARGE, "Soulfire Charge");
+			builder.add(ModItems.CAPTAINS_HELM, "Captain's Helm");
+			builder.add(ModItems.NETHER_STAR_SHARD, "Nether Star Shard");
+			builder.add(ModItems.WITHER_CAPTAIN_SPAWN_EGG, "Wither Captain Spawn Egg");
+			builder.add(ModItems.SOULFIRE_BLAZE_SPAWN_EGG, "Soulfire Blaze Spawn Egg");
 		}
 	}
 
@@ -282,6 +290,13 @@ public class ModDataGenerator implements DataGeneratorEntrypoint {
 			// The gravestone item shows the stone itself (models/item/gravestone, hand-made).
 			gen.itemModelOutput.accept(ModItems.GRAVESTONE,
 					net.minecraft.client.data.models.model.ItemModelUtils.plainModel(io.github.bubba8587.bubbas_reworked_mobs.BubbasReworkedMobs.id("item/gravestone")));
+			// Wither Captain: flat icons; the spawn eggs reuse vanilla's wither skeleton and blaze eggs
+			gen.generateFlatItem(ModItems.CAPTAINS_HELM, ModelTemplates.FLAT_ITEM);
+			gen.generateFlatItem(ModItems.NETHER_STAR_SHARD, ModelTemplates.FLAT_ITEM);
+			gen.itemModelOutput.accept(ModItems.WITHER_CAPTAIN_SPAWN_EGG,
+					net.minecraft.client.data.models.model.ItemModelUtils.plainModel(net.minecraft.resources.Identifier.withDefaultNamespace("item/wither_skeleton_spawn_egg")));
+			gen.itemModelOutput.accept(ModItems.SOULFIRE_BLAZE_SPAWN_EGG,
+					net.minecraft.client.data.models.model.ItemModelUtils.plainModel(net.minecraft.resources.Identifier.withDefaultNamespace("item/blaze_spawn_egg")));
 		}
 	}
 }

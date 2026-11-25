@@ -1,7 +1,7 @@
 <!-- dte:C1,B15,B16,B17 -->
 # Reworked Mobs: the Wither Captain and Soulfire Blazes (spec)
 
-**Status: to build** (owner design, 2026-11-25). A Nether boss-tier mob: a rare wither skeleton captain that summons Soulfire Blazes, and a second, slower route to nether stars (star shards) for Infused Gems' perfect gems.
+**Status: built, art pending merge** (owner design, 2026-11-25; code 2026-11-25, numbers in `captain/CaptainTuning`, build notes in `docs/reports/captain-docs-2026-11-25.md` until merged here). A Nether boss-tier mob: a rare wither skeleton captain that summons Soulfire Blazes, and a second, slower route to nether stars (star shards) for Infused Gems' perfect gems.
 
 ## The Wither Captain (owner)
 

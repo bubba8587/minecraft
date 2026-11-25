@@ -1,4 +1,4 @@
-// dte:C1
+// dte:C1,B15,B16,B17
 package io.github.bubba8587.bubbas_reworked_mobs.registry;
 
 import java.util.EnumMap;
@@ -42,6 +42,31 @@ public final class ModItems {
 							.component(net.minecraft.core.component.DataComponents.TOOLTIP_DISPLAY, net.minecraft.world.item.component.TooltipDisplay.DEFAULT
 									.withHidden(net.minecraft.core.component.DataComponents.BLOCK_STATE, true))
 							.setId(key)));
+	}
+
+	// --- Wither Captain (specs/wither-captain.md) ---
+
+	/** Captain's Helm equipment asset: assets/bubbas_reworked_mobs/equipment/captains_helm.json. */
+	public static final ResourceKey<net.minecraft.world.item.equipment.EquipmentAsset> CAPTAINS_HELM_ASSET = ResourceKey.create(
+			net.minecraft.world.item.equipment.EquipmentAssets.ROOT_ID, BubbasReworkedMobs.id("captains_helm"));
+	/** Netherite's numbers with the helm's own look. */
+	public static final net.minecraft.world.item.equipment.ArmorMaterial CAPTAINS_HELM_MATERIAL = new net.minecraft.world.item.equipment.ArmorMaterial(
+			net.minecraft.world.item.equipment.ArmorMaterials.NETHERITE.durability(), net.minecraft.world.item.equipment.ArmorMaterials.NETHERITE.defense(),
+			net.minecraft.world.item.equipment.ArmorMaterials.NETHERITE.enchantmentValue(), net.minecraft.world.item.equipment.ArmorMaterials.NETHERITE.equipSound(),
+			net.minecraft.world.item.equipment.ArmorMaterials.NETHERITE.toughness(), net.minecraft.world.item.equipment.ArmorMaterials.NETHERITE.knockbackResistance(),
+			net.minecraft.world.item.equipment.ArmorMaterials.NETHERITE.repairIngredient(), CAPTAINS_HELM_ASSET);
+	public static final Item CAPTAINS_HELM = register("captains_helm", Item::new,
+			new Item.Properties().humanoidArmor(CAPTAINS_HELM_MATERIAL, net.minecraft.world.item.equipment.ArmorType.HELMET).fireResistant());
+	public static final Item NETHER_STAR_SHARD = register("nether_star_shard", Item::new,
+			new Item.Properties().rarity(net.minecraft.world.item.Rarity.UNCOMMON).fireResistant());
+	public static final Item WITHER_CAPTAIN_SPAWN_EGG = register("wither_captain_spawn_egg", net.minecraft.world.item.SpawnEggItem::new,
+			new Item.Properties().spawnEgg(io.github.bubba8587.bubbas_reworked_mobs.captain.Captains.WITHER_CAPTAIN));
+	public static final Item SOULFIRE_BLAZE_SPAWN_EGG = register("soulfire_blaze_spawn_egg", net.minecraft.world.item.SpawnEggItem::new,
+			new Item.Properties().spawnEgg(io.github.bubba8587.bubbas_reworked_mobs.captain.Captains.SOULFIRE_BLAZE));
+
+	private static Item register(String name, java.util.function.Function<Item.Properties, Item> factory, Item.Properties properties) {
+		ResourceKey<Item> key = ResourceKey.create(Registries.ITEM, BubbasReworkedMobs.id(name));
+		return Registry.register(BuiltInRegistries.ITEM, key, factory.apply(properties.setId(key)));
 	}
 
 	private ModItems() {
