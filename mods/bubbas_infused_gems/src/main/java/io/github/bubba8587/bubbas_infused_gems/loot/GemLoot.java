@@ -107,7 +107,7 @@ public final class GemLoot {
 						.withParameter(LootContextParams.ORIGIN, mob.position())
 						.withParameter(LootContextParams.THIS_ENTITY, mob)
 						.create(LootContextParamSets.EQUIPMENT);
-				context = new LootContext.Builder(params).create(Optional.empty());
+				context = new LootContext.Builder(params).withOptionalRandomSource(mob.getRandom()).create(Optional.empty());
 			}
 			ItemStack out = modifier.get().value().apply(stack.copy(), context);
 			if (!ItemStack.matches(out, stack)) {
