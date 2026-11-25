@@ -170,10 +170,10 @@ public final class CreeperWatchGoal extends Goal {
 		// No spot.
 		switch (plan) {
 			case FLEE -> {
-				if (distance >= fleeFrom + CreeperTuning.FLEE_MIN_GAIN) {
+				if (distance >= Math.max(fleeFrom + CreeperTuning.FLEE_MIN_GAIN, CreeperTuning.FLEE_ESCAPE_DISTANCE)
+						|| creeper.getNavigation().isDone() && !walkAway(target, 10, CreeperTuning.FLEE_SPEED)) {
 					plan = Plan.WATCH;
-				} else if (creeper.getNavigation().isDone() && !walkAway(target, 10, CreeperTuning.FLEE_SPEED)) {
-					plan = Plan.WATCH;
+					nextApproach = ticks + CreeperTuning.APPROACH_AFTER_FLEE;
 				}
 			}
 			case HIDE -> {
@@ -293,7 +293,8 @@ public final class CreeperWatchGoal extends Goal {
 				}
 				yield null;
 			}
-			default -> find(eye, CreeperTuning.APPROACH_MIN_DISTANCE, CreeperTuning.PEEK_MAX_DISTANCE,
+			default -> find(eye, ticks < nextApproach ? Math.clamp(distance - 1.0, CreeperTuning.APPROACH_MIN_DISTANCE, CreeperTuning.PEEK_MAX_DISTANCE - 1.0) : CreeperTuning.APPROACH_MIN_DISTANCE,
+					CreeperTuning.PEEK_MAX_DISTANCE,
 					Math.clamp(distance, CreeperTuning.APPROACH_MIN_DISTANCE + 1.0, CreeperTuning.PEEK_PREFERRED_DISTANCE));
 		};
 	}

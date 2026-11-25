@@ -147,6 +147,8 @@ public final class CreeperTuning {
 	public static final double FLEE_SPEED = 1.4;
 	/** The spot it runs to is at least this much farther than it is now, at most this much, best near the preferred gain. */
 	public static final double FLEE_MIN_GAIN = 3.0;
+	/** With no farther cover found, a running creeper keeps backing away until at least this far from the player. */
+	public static final double FLEE_ESCAPE_DISTANCE = 16.0;
 	public static final double FLEE_MAX_GAIN = 14.0;
 	public static final double FLEE_PREFERRED_GAIN = 7.0;
 
