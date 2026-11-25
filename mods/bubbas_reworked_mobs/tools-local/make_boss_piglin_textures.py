@@ -25,8 +25,8 @@ OUT32 = RES / f"resourcepacks/{MOD}_32x/assets/{MOD}/textures"
 
 TEX_W, TEX_H = 128, 128
 HIP = 17
-ARM_X = 13
-# part: (pivot, rest rotation, [(name, x, y, z, w, h, d)...]) relative to the pivot; UVs are packed below
+ARM_X = 12
+# part: (pivot, rest rotation, [(name, x, y, z, w, h, d)...]) relative to the pivot; UVs fixed or packed below
 LAYOUT = {
 	"head": ((0, 3, -1.5), (0, 0, 0), [
 		("head", -5, -8, -4, 10, 8, 8),
@@ -38,44 +38,26 @@ LAYOUT = {
 	"left_ear": ((4.5, -6, 0), (0, 0, -0.35), [("ear", 0, 0, -2, 1, 5, 4)]),
 	"right_ear": ((-4.5, -6, 0), (0, 0, 0.35), [("ear", -1, 0, -2, 1, 5, 4)]),
 	"body": ((0, HIP, 0), (0, 0, 0), [
-		("torso", -10, -16, -7, 20, 10, 14),
-		("gut_top", -11, -11, -8, 22, 3, 16),
-		("gut_mid", -12, -8, -8.5, 24, 6, 17),
-		("gut_low", -11, -2, -8, 22, 2, 16),
-		("belly1", -9.5, -9, -11, 19, 7, 3),
-		("belly2", -7.5, -8, -13, 15, 5, 2),
-		("belly3", -5.5, -7, -14, 11, 3, 1),
+		("torso", -10, -15, -7, 20, 15, 14),
+		("girth", -11, -11, -8, 22, 9, 16),
+		("belly", -9, -12, -10, 18, 11, 3),
+		("belly_front", -7, -10.5, -12, 14, 8, 2),
 		("rear", -8, -6, 8, 16, 6, 2),
 		("back", -8, -14, 7, 16, 9, 2),
-		("trap_r", -10, -17, -4.5, 7, 1, 9),
-		("trap_l", 3, -17, -4.5, 7, 1, 9),
-		("nape_r", -9, -18, -3, 4, 1, 6),
-		("nape_l", 5, -18, -3, 4, 1, 6),
+		("shoulder_r", -10, -16, -4.5, 6, 3, 9),
+		("shoulder_l", 4, -16, -4.5, 6, 3, 9),
 	]),
-	"right_arm": ((-ARM_X, 4, 0), (0, 0, 0), [
-		("deltoid", -4.5, -3, -3, 6, 4, 6),
-		("upper", -4, 1, -2.5, 5, 4, 5),
-		("forearm", -4.5, 5, -3, 6, 5, 6),
-		("fist", -4, 10, -3, 5, 3, 5),
-	]),
-	"left_arm": ((ARM_X, 4, 0), (0, 0, 0), [
-		("deltoid", -1.5, -3, -3, 6, 4, 6),
-		("upper", -1, 1, -2.5, 5, 4, 5),
-		("forearm", -1.5, 5, -3, 6, 5, 6),
-		("fist", -1, 10, -3, 5, 3, 5),
-	]),
-	"right_leg": ((-5, HIP, 0), (0, 0, 0), [
-		("thigh", -4, 0, -4, 8, 3, 8),
-		("shin", -3.5, 3, -3.5, 7, 3, 7),
-		("hoof", -3.5, 6, -5, 7, 1, 8),
-	]),
-	"left_leg": ((5, HIP, 0), (0, 0, 0), [
-		("thigh", -4, 0, -4, 8, 3, 8),
-		("shin", -3.5, 3, -3.5, 7, 3, 7),
-		("hoof", -3.5, 6, -5, 7, 1, 8),
-	]),
+	"right_arm": ((-ARM_X, 4, 0), (0, 0, 0), [("arm", -4, -2, -3, 6, 12, 6)]),
+	"left_arm": ((ARM_X, 4, 0), (0, 0, 0), [("arm", -2, -2, -3, 6, 12, 6)]),
+	"right_leg": ((-5, HIP, 0), (0, 0, 0), [("leg", -3.5, 0, -3.5, 7, 7, 7)]),
+	"left_leg": ((5, HIP, 0), (0, 0, 0), [("leg", -3.5, 0, -3.5, 7, 7, 7)]),
 }
-FIXED_UV = {("head", "head"): (0, 0)}
+FIXED_UV = {
+	("head", "head"): (0, 0), ("left_ear", "ear"): (51, 6), ("right_ear", "ear"): (39, 6),
+	("body", "torso"): (0, 16), ("body", "girth"): (0, 45), ("body", "belly"): (68, 16), ("body", "belly_front"): (68, 30),
+	("body", "rear"): (0, 70), ("body", "back"): (36, 70), ("body", "shoulder_r"): (64, 0), ("body", "shoulder_l"): (94, 0),
+	("right_arm", "arm"): (0, 81), ("left_arm", "arm"): (24, 81), ("right_leg", "leg"): (48, 81), ("left_leg", "leg"): (76, 81),
+}
 
 
 def pack():
@@ -251,7 +233,7 @@ def grain(iu, iv, r, seed):
 LIGHT = (-0.3, -0.75, -0.6)  # from above, front, a little left (model space, y down)
 _ln = math.sqrt(sum(c * c for c in LIGHT))
 LIGHT = tuple(c / _ln for c in LIGHT)
-GUT = ((0.0, 11.0, -1.5), (12.5, 6.0, 13.0))  # centre and radii of the belly's ellipsoid (world model units)
+GUT = ((0.0, 11.0, -1.0), (12.0, 6.5, 13.0))  # centre and radii of the belly's ellipsoid (world model units)
 
 
 def lit(n):
@@ -286,139 +268,108 @@ def skin_colour(part, name, face, p, iu, iv, r):
 	"""Colour of one texel; p is the point in model space (standing rest pose)."""
 	x, y, z = p
 	nx, ny, nz = NORMALS[face]
-	mn = MODEL_N[face]
-	g = grain(iu, iv, r, 7 + len(name))
-	px = 1.0 / r
-	lf = lit(mn)
+	g = grain(iu, iv, r, 7 + BODY_SEED.get(name, 0))
+	px = 1.0 / r  # one texel in model units
 
 	if part in ("right_leg", "left_leg"):
-		cx = -5 if part == "right_leg" else 5
-		inner = nx != 0 and nx * (x - cx) < 0
-		if name == "hoof":
-			if face == "up":
-				return ramp(HOOF, 1)
-			cleft = face == "north" and abs(x - cx) < px * 0.6 + (0.5 if r == 1 else 0) and abs(x - cx) < 0.5
-			toe = face == "north" or (z < -3.5 and face != "down")
-			return ramp(HOOF, (3 if cleft else (0.6 if toe and face == "north" else 1.6)) + (0.6 if inner else 0) + max(0, g) * 0.4, r)
-		if name == "thigh":  # short pants
-			if face == "up":
-				return ramp(LEATHER, 2 + g * 0.5, r)
-			hem = y > HIP + 3 - px
-			seam = face == "north" and abs(x - cx) < px * 0.6 and r == 2
-			return ramp(LEATHER, (3.2 if hem else 1.5) - lf * 0.8 + (0.6 if inner else 0) + g * 0.5 + (0.6 if seam else 0), r)
-		# shin
-		shade = 2.4 - lf * 1.2 + (y - (HIP + 3)) * 0.35 + (0.7 if inner else 0)
-		return ramp(SKIN, shade + g * 0.6, r)
+		if face == "up":
+			return ramp(LEATHER, 2 + g * 0.6)
+		if face == "down" or y >= 23:
+			cleft = face == "north" and abs(x - (5 if x > 0 else -5)) < 0.5
+			return ramp(HOOF, 3 if cleft or (face != "down" and g < 0) else 1)
+		if y < 19.5:  # short pants
+			edge = y > 19.5 - px
+			return ramp(LEATHER, (3 if edge else 1.6) + g * 0.6 + (0.6 if nz > 0 else 0))
+		cx = 5 if x > 0 else -5
+		inner = nx != 0 and nx * (x - cx) < 0 and nx * x < 0
+		shade = 2 + (y - 19.5) * 0.3 + (0.8 if inner else 0)
+		return ramp(SKIN, shade + g * 0.7)
 
 	if part in ("right_arm", "left_arm"):
 		ax = -ARM_X if part == "right_arm" else ARM_X
-		inner = nx != 0 and nx * (x - ax) < 0 and nx * x < 0
-		if name == "deltoid":  # leather shoulder pad over a bare shoulder
-			if face == "down":
-				return ramp(SKIN, 4.2 + g * 0.4, r)
-			edge = y >= 5 - px and face != "up"
-			stud = face in ("east", "west") and not inner and abs(z) < px * 0.6 + (0.5 if r == 1 else 0) and abs(z) < 0.5 and 2.5 <= y < 3.5
-			if stud:
-				return GOLD[1]
-			return ramp(LEATHER, (3 if edge else 1.2) - lf * 0.9 + (0.6 if inner else 0) + g * 0.5, r)
-		if name == "fist":
-			if face == "up":
-				return ramp(SKIN, 3.2, r)
-			if face == "north":  # knuckles: four bumps, light tops, dark gaps
-				kx = (x - (ax - 1.5)) + 2.5  # 0..5 across the fist
-				ky = y - 14
-				if ky < 1:
-					gap = int(kx) % 2 == 1 if r == 1 else int(kx * 2) % 3 == 2
-					return ramp(SKIN, (3.0 if gap else 1.2 + (0.6 if ky >= 0.5 and r == 2 else 0)), r)
-				if ky < 2:
-					return ramp(SKIN, 2.6 + g * 0.4, r)
-				return ramp(SKIN, 3.6 + (0.6 if r == 2 and int(kx * 2) % 3 == 0 else 0), r)
-			if face == "down":  # curled fingers
-				lines = (r == 1 and int((x - ax + 10) * 1) % 2 == 0 and z < -1) or (r == 2 and int((x - ax + 10) * 2) % 3 == 0 and z < 0)
-				return ramp(SKIN, (5 if lines else 4) + g * 0.3, r)
-			thumb = face in ("east", "west") and inner and z < -1 and y < 15
-			return ramp(SKIN, (1.8 if thumb else 2.8) - lf * 0.9 + (0.8 if inner and not thumb else 0) + (y - 14) * 0.3 + g * 0.4, r)
-		if face == "down":
-			return ramp(SKIN, 4.4 + g * 0.4, r)
-		if face == "up":
-			return ramp(SKIN, 2.2 + g * 0.4, r)
-		if name == "upper" and part == "right_arm" and 6.5 <= y < 7.5:  # gold arm ring
-			hi = y < 6.5 + px
-			return ramp(GOLD, (1 if hi else 2) + (1 if inner else 0) - lf * 0.5, r)
-		if name == "forearm" and part == "left_arm" and 12.5 <= y < 13.5:  # gold bracelet
-			hi = y < 12.5 + px
-			return ramp(GOLD, (1 if hi else 2) + (1 if inner else 0) - lf * 0.5, r)
-		vein = name == "forearm" and r == 2 and face == "north" and abs(x - ax + (0.5 if part == "right_arm" else -0.5) - 0.2 * (y - 9)) < 0.26 and 9.5 < y < 12.5
-		shade = 2.0 - lf * 1.3 + (1.0 if inner else 0) + (y - 4) * 0.08 + (0.4 if vein else 0)
-		return ramp(SKIN, shade + g * 0.6, r)
+		inner = nx != 0 and nx * x < 0
+		if face == "down":  # curled fingers
+			lines = int((x - ax + 10) * r) % (2 if r == 1 else 3) == 0 and z < 0.5
+			return ramp(SKIN, (5 if lines else 4) + g * 0.4)
+		if face == "up" or y < 5:  # leather shoulder pad
+			edge = 5 - px <= y < 5
+			return ramp(LEATHER, (3 if edge else 1.3) + g * 0.6 + (0.5 if inner else 0))
+		band = (7.0, 8.0) if part == "right_arm" else (12.0, 13.0)
+		if band[0] <= y < band[1]:  # gold arm ring / bracelet
+			hi = y < band[0] + px
+			return ramp(GOLD, (1 if hi else 2) + (1 if inner else 0) + (0.6 if nz > 0 else 0))
+		if face == "north" and y >= 12:  # knuckles: light bumps, dark gaps
+			kx = x - (ax - 3)
+			gap = int(kx) % 2 == 1 if r == 1 else int(kx * 2) % 3 == 2
+			if y < 13:
+				return ramp(SKIN, 3.2 if gap else (1.0 if r == 1 or y < 12.5 else 1.6))
+			return ramp(SKIN, 3.0 + (0.6 if gap else 0))
+		shade = 1.8 + (y - 5) * 0.18 + (1.2 if inner else 0) + (0.5 if nz > 0 else 0)
+		return ramp(SKIN, shade + g * 0.7)
 
-	# body
-	if name in ("trap_r", "trap_l", "nape_r", "nape_l"):  # vest over the shoulders
-		return ramp(LEATHER, 1.4 - lf * 1.0 + g * 0.5, r)
+	if name in ("belly", "belly_front"):  # bare, round, belly button
+		if face == "down":
+			return ramp(SKIN, 4.6 + g * 0.5)
+		if name == "belly_front" and nz < 0 and abs(x) < 0.5 * (2 - r) + 0.5 * (r - 1) * 1.0 and 11 <= y < 12:
+			if r == 1 and x == 0 or r == 2:
+				return SKIN[6] if (r == 1 or y < 11.5) else SKIN[5]
+		if nz < 0:
+			bristle = h01(iu, iv, 99) < (0.010 if r == 1 else 0.005) and abs(x) > 3
+			if bristle:
+				return LEATHER[0]
+		return body_skin(p, face, g, 1, 2.0)
+
 	if name == "rear":  # loincloth over the seat
 		if face == "down":
-			return ramp(LEATHER, 3.5, r)
+			return ramp(LEATHER, 3.5)
 		seam = nz > 0 and abs(x) < px * 0.6
-		return ramp(LEATHER, (3 if seam else 1.6) + (y - 13) * 0.2 - lf * 0.6 + g * 0.5, r)
-	if name == "back":  # vest back with lacing
-		lace = nz > 0 and abs(x) < px * 0.6 + (0.5 if r == 1 else 0) and abs(x) < 0.5 and y < 10
-		cross = r == 2 and nz > 0 and abs(abs(x) - ((y * 2) % 2) * 0.5) < 0.26 and abs(x) < 1 and y < 10
-		if lace or cross:
-			return ramp(LEATHER, 3.6, r)
-		return ramp(LEATHER, 1.6 - lf * 1.0 + g * 0.5, r)
+		return ramp(LEATHER, (3 if seam else 1.6) + (y - 13) * 0.2 + g * 0.6)
 
-	belly = name.startswith("belly")
+	if name.startswith("shoulder"):  # vest over the shoulders
+		return ramp(LEATHER, (1.2 if face == "up" else 1.8) + (0.6 if nx * x < 0 else 0) + g * 0.6)
+
 	if face == "down":
-		if belly or name in ("gut_mid", "gut_low"):
-			return ramp(SKIN, 5.2 + g * 0.3, r)
-		return ramp(LEATHER, 3.5 + g * 0.4, r)
-	# belt (under the girdle) on the low gut
-	if name == "gut_low":
-		if nz < 0 and abs(x) < 9 and False:
-			pass
-		stud = nx != 0 and abs(abs(z) - 3) < px * 0.6 + (0.5 if r == 1 else 0) and abs(abs(z) - 3) < 0.5 and y < 15 + px * 2
+		return ramp(LEATHER, 3.5 + g * 0.4)
+	# belt and loincloth
+	if y >= 15.5:
+		return ramp(LEATHER, 1.6 + (y - 15.5) * 0.3 + g * 0.6 + (0.5 if nz > 0 else 0))
+	if 14 <= y < 15.5:
+		stud = nx != 0 and abs(abs(z) - 3) < px and y < 14 + px * 2
 		if stud:
 			return GOLD[1]
-		return ramp(LEATHER, (3 if y < 15 + px else 2.4) - lf * 0.5 + g * 0.3, r)
-	# vest: back and sides of the torso and upper gut, open at the front
-	front_open = nz < 0 and abs(x) < 6.5 if name == "torso" else (nz < 0 or (nx != 0 and z < -2))
-	vest_zone = (name == "torso" and not front_open) or (name == "gut_top" and not front_open and nz >= 0 and y < 9.5)
-	if face == "up" and name == "torso":
-		vest_zone = abs(x) > 4.5
-	if face == "up" and name in ("gut_top", "gut_mid") and not (nz < 0):
-		vest_zone = name == "gut_top" and z > 0
-	if vest_zone:
-		edge_x = name == "torso" and nz < 0 and 6.5 <= abs(x) < 6.5 + px
-		edge_y = name == "gut_top" and y >= 9.5 - px
-		button = name == "torso" and nz < 0 and 6.5 + px <= abs(x) < 6.5 + 2 * px and abs(((y - 3) % 2.5) - 0.5) < px * 0.6
+		return ramp(LEATHER, 3 if y < 14 + px else 2.6 + g * 0.3)
+	# vest: top, back and sides; open at the front over chest and belly
+	front_open = nz < 0 and abs(x) < 6.5
+	vest = (y < 10.5 or nz > 0) and not front_open
+	if face == "up":
+		vest = abs(x) > 4.5 or name in ("girth", "back")
+	if vest:
+		edge_x = nz < 0 and 6.5 <= abs(x) < 6.5 + px
+		edge_y = 10.5 - px <= y < 10.5 and nz <= 0
+		button = nz < 0 and 6.5 + px <= abs(x) < 6.5 + 2 * px and abs(((y - 3) % 2.5) - 0.5) < px * 0.6 and y < 10
 		if button:
 			return GOLD[1] if r == 1 or y % 1 < 0.5 else GOLD[2]
-		i = 1.4 - lf * 1.0 + (0.4 if nz > 0 else 0)
-		if edge_x or edge_y:
+		lace = nz > 0 and abs(x) < px and y < 10
+		i = 1.4 + (0.6 if nz > 0 else 0) + (0.4 if nx != 0 else 0)
+		if edge_x or edge_y or lace:
 			i = 3
-		return ramp(LEATHER, i + g * 0.5, r)
-	# bare skin: chest, gut, flanks
-	if name == "torso" and nz < 0:  # chest: pecs, cleft, old scar
+		return ramp(LEATHER, i + g * 0.6)
+	# bare skin: chest, girth front, flanks under the vest
+	if nz < 0 and name == "torso" and y < 8 + px:  # chest with a cleft between the pecs and an old scar
 		if r == 1 and (x, y) in ((-4.5, 4.5), (-3.5, 5.5), (-2.5, 6.5)) or r == 2 and abs((x + 4.5) - (y - 4.5)) < 0.3 and -5 < x < -2:
 			return SCAR
-		if abs(x) < px * 0.6 and 3 < y < 8:
-			return ramp(SKIN, 3.4, r)
-		if 8 <= y < 8 + px and 1 < abs(x) < 5.5:
-			return ramp(SKIN, 3.2, r)
-		return ramp(SKIN, 1.3 + abs(x) / 6.5 * 0.9 + (y - 2) * 0.08 + g * 0.5, r)
-	if belly or name in ("gut_top", "gut_mid"):
-		if name == "belly3" and nz < 0 and abs(x) < 0.5 and 11.5 <= y < 12.5:  # navel
-			if r == 1:
-				return SKIN[6]
-			return SKIN[6] if y >= 12 else SKIN[5]
-		fold = name == "belly1" and nz < 0 and 14 <= y < 14 + px and abs(x) < 8
-		if fold:
-			return ramp(SKIN, 4.2, r)
-		bristle = nz < 0 and name in ("gut_top", "belly1") and abs(x) > 3 and h01(iu, iv, 99) < (0.012 if r == 1 else 0.006)
-		if bristle:
-			return LEATHER[0]
-		return body_skin(p, face, g, r, 1.9)
-	return body_skin(p, face, g, r, 2.2)
+		if abs(x) < px * 0.6 and 3 < y < 7.5:
+			return ramp(SKIN, 3.4)
+		if 7.5 <= y < 8 + px * 0.5 and 1 < abs(x) < 5.5:
+			return ramp(SKIN, 3.0)  # pec underline
+		return ramp(SKIN, 1.2 + (abs(x) / 6.5) * 0.8 + g * 0.6)
+	bristle = nz < 0 and h01(iu, iv, 31) < (0.04 if r == 1 else 0.02) and abs(x) > 4
+	if bristle:
+		return LEATHER[0]
+	return body_skin(p, face, g, 1, 2.2)
+
+
+BODY_SEED = {"torso": 0, "girth": 1, "belly": 2, "belly_front": 3, "rear": 4, "back": 5, "shoulder_r": 6, "shoulder_l": 7}
 
 
 def head_colour(name, face, p, iu, iv, r):
