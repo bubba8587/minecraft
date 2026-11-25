@@ -49,5 +49,6 @@ public class BubbasReworkedMobsClient implements ClientModInitializer {
 				io.github.bubba8587.bubbas_reworked_mobs.client.spider.SilkCocoonRenderer::new);
 		EntityRenderers.register(io.github.bubba8587.bubbas_reworked_mobs.spider.Spiders.SPIDER_NEST, net.minecraft.client.renderer.entity.NoopRenderer::new);
 		io.github.bubba8587.bubbas_reworked_mobs.captain.client.CaptainClient.initialize();
+		io.github.bubba8587.bubbas_reworked_mobs.bosspiglin.client.BossPiglinClient.initialize();
 	}
 }

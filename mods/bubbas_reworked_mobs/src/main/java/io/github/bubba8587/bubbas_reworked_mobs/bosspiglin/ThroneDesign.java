@@ -38,6 +38,6 @@ public final class ThroneDesign {
 	/** Where the seated boss's feet go, from the front-left floor cell's corner. */
 	public static Vec3 seat(Direction facing) {
 		Direction right = facing.getClockWise();
-		return new Vec3(0.5 + right.getStepX() * 0.5, 0.5, 0.5 + right.getStepZ() * 0.5);
+		return new Vec3(0.5 + (right.getStepX() - facing.getStepX()) * 0.5, 0.5, 0.5 + (right.getStepZ() - facing.getStepZ()) * 0.5);
 	}
 }

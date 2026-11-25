@@ -37,6 +37,7 @@ public final class ModCreativeTabs {
 						output.accept(ModItems.NETHER_STAR_SHARD);
 						output.accept(ModItems.WITHER_CAPTAIN_SPAWN_EGG);
 						output.accept(ModItems.SOULFIRE_BLAZE_SPAWN_EGG);
+						output.accept(ModItems.BOSS_PIGLIN_SPAWN_EGG);
 					})
 					.build());
 

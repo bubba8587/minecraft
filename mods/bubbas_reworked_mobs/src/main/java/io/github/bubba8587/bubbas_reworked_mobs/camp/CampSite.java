@@ -8,8 +8,11 @@ import java.util.UUID;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.github.bubba8587.bubbas_reworked_mobs.bosspiglin.ThroneDesign;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.UUIDUtil;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import org.jspecify.annotations.Nullable;
 
@@ -34,7 +37,21 @@ public final class CampSite {
 			Codec.BOOL.optionalFieldOf("armed", true).forGetter(s -> s.armed),
 			Codec.BOOL.optionalFieldOf("rearmed", false).forGetter(s -> s.rearmed),
 			Codec.BOOL.optionalFieldOf("quiet", false).forGetter(s -> s.quiet),
-			UUIDUtil.CODEC.listOf().optionalFieldOf("members", List.of()).forGetter(s -> s.members)).apply(i, CampSite::new));
+			UUIDUtil.CODEC.listOf().optionalFieldOf("members", List.of()).forGetter(s -> s.members),
+			Throne.CODEC.optionalFieldOf("throne").forGetter(s -> Optional.ofNullable(s.throne))).apply(i, CampSite::new));
+
+	/** A Nether outpost's throne: its front-left floor cell, which way it faces, and the portal cell its boss escapes by. */
+	public record Throne(BlockPos anchor, Direction facing, Optional<BlockPos> portal) {
+		public static final Codec<Throne> CODEC = RecordCodecBuilder.create(i -> i.group(
+				BlockPos.CODEC.fieldOf("anchor").forGetter(Throne::anchor),
+				Direction.CODEC.fieldOf("facing").forGetter(Throne::facing),
+				BlockPos.CODEC.optionalFieldOf("portal").forGetter(Throne::portal)).apply(i, Throne::new));
+
+		/** Where the seated boss's feet go. */
+		public Vec3 seat() {
+			return Vec3.atLowerCornerOf(anchor).add(ThroneDesign.seat(facing));
+		}
+	}
 
 	final long id;
 	final @Nullable CampKind kind;
@@ -58,9 +75,12 @@ public final class CampSite {
 	/** A lit campfire burns in the camp (as last seen while a player was near): no roster, no reset. */
 	boolean quiet;
 	final List<UUID> members;
+	/** A Nether outpost's throne, or null. */
+	final @Nullable Throne throne;
 
 	private CampSite(long id, Optional<String> kind, BoundingBox box, BlockPos centre, int size, List<BlockPos> towers, List<BlockPos> ground,
-			List<BlockPos> shade, List<BlockPos> pens, boolean stable, boolean spawned, boolean armed, boolean rearmed, boolean quiet, List<UUID> members) {
+			List<BlockPos> shade, List<BlockPos> pens, boolean stable, boolean spawned, boolean armed, boolean rearmed, boolean quiet, List<UUID> members,
+			Optional<Throne> throne) {
 		this.id = id;
 		this.kind = kind.map(k -> CampKind.valueOf(k.toUpperCase(java.util.Locale.ROOT))).orElse(null);
 		this.box = box;
@@ -76,18 +96,19 @@ public final class CampSite {
 		this.rearmed = rearmed;
 		this.quiet = quiet;
 		this.members = new ArrayList<>(members);
+		this.throne = throne.orElse(null);
 	}
 
 	/** A camp, from its piece. */
 	static CampSite camp(long id, CampPiece piece, List<BlockPos> towers, List<BlockPos> ground) {
 		return new CampSite(id, Optional.of(piece.kind().id()), piece.getBoundingBox(), piece.centre(), piece.size().ordinal(), towers, ground,
 				piece.shadeSpots(), piece.tetherPosts(), piece.hasStable(), false, true,
-				false, false, List.of());
+				false, false, List.of(), Optional.ofNullable(piece.throne()));
 	}
 
 	/** A pillager outpost. */
 	static CampSite outpost(long id, BoundingBox box) {
-		return new CampSite(id, Optional.empty(), box, box.getCenter(), 0, List.of(), List.of(), List.of(), List.of(), false, false, true, false, false, List.of());
+		return new CampSite(id, Optional.empty(), box, box.getCenter(), 0, List.of(), List.of(), List.of(), List.of(), false, false, true, false, false, List.of(), Optional.empty());
 	}
 
 	public long id() {
@@ -143,6 +164,11 @@ public final class CampSite {
 	/** Its shade spots. */
 	public List<BlockPos> shade() {
 		return shade;
+	}
+
+	/** Its throne (medium and large Nether outposts), or null. */
+	public @Nullable Throne throne() {
+		return throne;
 	}
 
 	/** Its roster still alive (UUIDs). */
