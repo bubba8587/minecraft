@@ -46,6 +46,12 @@ public final class GraveTuning {
 	/** Chunks round each player searched for yards. */
 	public static final int WISP_DISCOVER_CHUNKS = 6;
 
+	// --- noble crypt sleepers -------------------------------------------------------------------------------
+	/** Chance a noble crypt's side-hall sleeper wears a full set of armour (the sarcophagus's always does). */
+	public static final float NOBLE_HALL_ARMOUR = 0.45F;
+	/** Chance a side-hall noble's gear carries gems, with Infused Gems (the sarcophagus's always does). */
+	public static final float NOBLE_GEM_CHANCE = 0.35F;
+
 	// --- warding statues in crypts (with Bubba's Totems & Artifacts) -------------------------------------
 	/** Chance per wing of a Totem of Warding statue, noble crypt (chamber and each side hall). */
 	public static final float CRYPT_STATUE_NOBLE = 0.85F;

@@ -50,7 +50,7 @@ Many yards have stairs at the far end leading down to a crypt. Bigger yards have
 
 - **Pauper's ossuary** (small and medium yards): a cramped tunnel of cobblestone, packed mud and dirt with bones in the walls, lined with niches. Almost every niche holds a sleeper with little or nothing on, some stacked two high. A candle or two and a chest of poor things: bones, rotten flesh, string, coal, iron nuggets, rarely an emerald.
 - **Family vault:** a candlelit stone brick room, skeletons and zombies in niches along both walls, and a small altar with a chest of the family's things: gold nuggets, some iron, sometimes an emerald, a name tag or an enchanted book. With [[Bubba's Totems & Artifacts]], sometimes a [[Grave Talisman]].
-- **Noble crypt** (medium and large yards): polished andesite and chiseled stone, an entry hall, a pillared chamber with a sarcophagus holding an armoured sleeper under a stone lid, and two side halls lined with niches of sleepers in full iron, chainmail or gold armour, some armed. With [[Bubba's Infused Gems]], their gear is gemmed ([[Noble Finery]]).
+- **Noble crypt** (medium and large yards): polished andesite and chiseled stone, an entry hall, a pillared chamber with a sarcophagus holding an armoured sleeper under a stone lid, and two side halls lined with niches of sleepers, a little under half of them in full iron, chainmail or gold armour, some armed. With [[Bubba's Infused Gems]], some of them wear gemmed gear ([[Noble Finery]]).
 
 ### Noble crypt loot
 

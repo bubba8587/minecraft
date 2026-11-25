@@ -14,7 +14,7 @@ import net.minecraft.world.level.levelgen.structure.BoundingBox;
 
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 
-/** Noble dead in gemmed armor: gems with Infused Gems installed (-PwithGems), plain gear without. Milestone. */
+/** Noble dead in gemmed armor: some of them, with Infused Gems installed (-PwithGems), plain gear without. Milestone. */
 public class NobleFineryGameTest {
 	@GameTest(structure = CampsGameTest.FIELD, maxTicks = 20)
 	public void nobleDeadWearGemsOnlyWithInfusedGems(GameTestHelper helper) {
@@ -22,10 +22,15 @@ public class NobleFineryGameTest {
 		CryptYardPiece piece = GraveyardCommand.build(level, helper.absolutePos(new BlockPos(16, 7, 1)), 71L, 15, 13, true, YardKinds.State.OVERGROWN,
 				YardKinds.Wealth.NOBLE);
 		BoundingBox box = piece.getBoundingBox();
+		int sleepers = 0;
 		int armoured = 0;
 		int gemmed = 0;
 		for (BlockPos pos : BlockPos.betweenClosed(box.minX(), box.minY(), box.minZ(), box.maxX(), box.maxY(), box.maxZ())) {
-			if (level.getBlockEntity(pos) instanceof SleeperBlockEntity sleeper && !sleeper.getGear(EquipmentSlot.LEGS).isEmpty()) {
+			if (!(level.getBlockEntity(pos) instanceof SleeperBlockEntity sleeper)) {
+				continue;
+			}
+			sleepers++;
+			if (!sleeper.getGear(EquipmentSlot.LEGS).isEmpty()) {
 				armoured++;
 				for (EquipmentSlot slot : SleeperBlockEntity.SLOTS) {
 					ItemStack stack = sleeper.getGear(slot);
@@ -37,8 +42,9 @@ public class NobleFineryGameTest {
 			}
 		}
 		helper.assertTrue(armoured > 0, "the noble crypt should hold sleepers in full armor");
+		helper.assertTrue(armoured * 10 < sleepers * 7, "most crypt sleepers shouldn't wear a noble's full set: " + armoured + " of " + sleepers);
 		if (FabricLoader.getInstance().isModLoaded("bubbas_infused_gems")) {
-			helper.assertTrue(gemmed * 2 > armoured, "with Infused Gems most noble sleepers' gear carries gems: " + gemmed + " of " + armoured);
+			helper.assertTrue(gemmed > 0 && gemmed * 2 <= armoured, "with Infused Gems only some noble sleepers' gear carries gems: " + gemmed + " of " + armoured);
 		} else {
 			helper.assertTrue(gemmed == 0, "without Infused Gems the gear stays plain: " + gemmed);
 		}

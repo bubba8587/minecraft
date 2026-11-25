@@ -823,7 +823,7 @@ public class CryptYardPiece extends StructurePiece {
 		b.put(gate, floor, mid - 1, Blocks.CHISELED_STONE_BRICKS.defaultBlockState());
 		b.put(gate, floor, mid + 1, Blocks.POLISHED_ANDESITE.defaultBlockState());
 		b.sleeper(gate, floor, mid, climate.crypt(random.nextFloat(), 0.6F), SleeperPose.LYING, Direction.NORTH,
-				random, true, 1.0F);
+				random, true, 1.0F, true, 1.0F);
 		b.put(gate, floor + 2, mid - 1, Blocks.CANDLE.defaultBlockState().setValue(CandleBlock.CANDLES, 3).setValue(CandleBlock.LIT, true));
 		// The family's chests at the far wall.
 		for (int side = -1; side <= 1; side += 2) {
@@ -845,7 +845,7 @@ public class CryptYardPiece extends StructurePiece {
 					b.put(x, floor + 1, back, Blocks.POLISHED_ANDESITE_SLAB.defaultBlockState());
 					if (roll < 0.85F) {
 						b.sleeper(x, floor, wz, climate.crypt(random.nextFloat(), 0.5F), SleeperPose.LYING,
-								wz < mid ? Direction.SOUTH : Direction.NORTH, random, true, 0.85F);
+								wz < mid ? Direction.SOUTH : Direction.NORTH, random, true, GraveTuning.NOBLE_HALL_ARMOUR, true, GraveTuning.NOBLE_GEM_CHANCE);
 					}
 				}
 			}
@@ -900,11 +900,16 @@ public class CryptYardPiece extends StructurePiece {
 			sleeper(x, y, z, variant, pose, facing, random, crypt, crypt ? 0.3F : 0.0F);
 		}
 
-		/**
-		 * A sleeper with gear: a bow or a tool as before, and with chance {@code armour} armour (a helmet; at 0.8 and up a
-		 * noble's full set of iron, chain or now and then gold, ).
-		 */
 		void sleeper(int x, int y, int z, UndeadVariant variant, SleeperPose pose, Direction facing, RandomSource random, boolean crypt, float armour) {
+			sleeper(x, y, z, variant, pose, facing, random, crypt, armour, false, 0.0F);
+		}
+
+		/**
+		 * A sleeper with gear: a bow or a tool, and with chance {@code armour} armour (a helmet; for a noble a full set of
+		 * iron, chain or now and then gold, gemmed with chance {@code gems}).
+		 */
+		void sleeper(int x, int y, int z, UndeadVariant variant, SleeperPose pose, Direction facing, RandomSource random, boolean crypt, float armour,
+				boolean noble, float gems) {
 			float weaponRoll = random.nextFloat();
 			float weaponKind = random.nextFloat();
 			float armourRoll = random.nextFloat();
@@ -920,7 +925,6 @@ public class CryptYardPiece extends StructurePiece {
 			SleeperBlock block = ModBlocks.sleeper(variant);
 			put(x, y, z, block.defaultBlockState().setValue(SleeperBlock.POSE, pose).setValue(SleeperBlock.FACING, facing));
 			if (level.getBlockEntity(new BlockPos(x, y, z)) instanceof SleeperBlockEntity sleeper) {
-				boolean noble = armour >= 0.8F;
 				if (variant.isSkeleton() && weaponRoll < 0.5F) {
 					sleeper.setGear(EquipmentSlot.MAINHAND, new ItemStack(Items.BOW));
 				} else if (!variant.isSkeleton() && weaponRoll < (noble ? 0.6F : 0.25F)) {
@@ -939,7 +943,7 @@ public class CryptYardPiece extends StructurePiece {
 						sleeper.setGear(EquipmentSlot.HEAD, new ItemStack(metal < 0.5F ? Items.CHAINMAIL_HELMET : Items.IRON_HELMET));
 					}
 				}
-				if (noble) {
+				if (noble && RandomSource.create(seedOf(x, y, z) ^ 0x6E35L).nextFloat() < gems) {
 					NobleFinery.apply(level.getLevel(), sleeper, new BlockPos(x, y, z), seedOf(x, y, z));
 				}
 			}

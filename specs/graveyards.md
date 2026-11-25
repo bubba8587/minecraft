@@ -113,7 +113,7 @@ The three kinds:
   - Niches every other block on both long walls, with a slab over each; 80 % hold a lying sleeper. Vault sleepers wear a chain or iron helmet 30 % of the time.
   - Altar at the far end (chiseled stone bricks, 3 lit candles) and the chest (`chests/crypt_family`, 3-6 rolls). More candles along the walls, about a quarter of them lit; cobwebs.
 - **Noble crypt** (medium and large yards): polished and chiseled stone, an entry hall, a pillared chamber with a sarcophagus holding an armoured sleeper under a stone lid, and two side halls lined with niches. Chests: `chests/crypt_noble` (4-8 rolls, plus a burial-goods pool; see Noble crypt loot).
-  - **Noble armour** (builder's choice): 85 % of hall sleepers and the sarcophagus's (100 %) wear a full set: 15 % gold, 40 % chain, 45 % iron. Zombies carry iron swords or axes 60 % of the time. No enchanted gear on them (that's in the chests).
+  - **Noble armour**: 45 % of hall sleepers (`GraveTuning.NOBLE_HALL_ARMOUR`; 85 % until the owner found crypts too rich, 2026-11-24) and the sarcophagus's (100 %) wear a full set: 15 % gold, 40 % chain, 45 % iron. Zombies carry iron swords or axes 60 % of the time. No enchanted gear on them (that's in the chests).
 
 Loot tables are in 26.3's format (`modifier` objects: `set_count`, `enchant_randomly` with `#minecraft:on_random_loot`; the older `functions` key is silently ignored). Totems & Artifacts adds to them by table id, so there's no dependency (Totems' loot test skips tables that aren't installed):
 - Grave Talisman (`TotemsTuning.TALISMAN_LOOT`): family 15 %, noble 25 %.
@@ -161,9 +161,9 @@ Agent's call (owner: "do whatever you like with the noble crypt loot"). The nobl
 
 Owner's design: with Bubba's Infused Gems installed, the armor and weapons of noble crypt sleepers carry gems (their burial finery). Woken, they fight with those effects; robbed, their gemmed gear is the prize. No hard dependency.
 
-- **What players get:** the noble crypts' armoured sleepers (full iron, chain or gold) wear gemmed gear: 1-2 gems in their armor, 1 in their weapon, infusion 2-4, tier 2-3 (a little richer than ordinary gemmed mob gear). Infused Gems leaves some pieces without (its own rules on what takes a gem): in a test noble crypt 11 of 13 armoured sleepers carried gems. Without Infused Gems, nothing changes.
-- **Data, not code, decides the gems:** item modifier `data/bubbas_reworked_mobs/item_modifier/noble_finery.json` uses Infused Gems' own `bubbas_infused_gems:socket_random_gems` (armor 1-2, weapon 1; infusion [2,3,3,4], tier [2,2,3], any variant). It loads only with that mod (`fabric:load_conditions` `fabric:all_mods_loaded`).
-- `grave/NobleFinery.apply` runs it over a noble sleeper's gear when the crypt is built (`CryptYardPiece.Build.sleeper`; noble = armour chance 0.8 or more). If the modifier isn't loaded it does nothing. Loot context: chest param set with the sleeper's position; seeded per position.
+- **What players get:** the sarcophagus's sleeper and 35 % of the hall sleepers (`GraveTuning.NOBLE_GEM_CHANCE`, rolled from the sleeper's position so the build's other rolls don't shift) wear gemmed gear: 1 gem per armor piece, 1 in the weapon, infusion 2-4, tier 2-3 (a little richer than ordinary gemmed mob gear). Infused Gems leaves some pieces without (its own rules on what takes a gem). Until 2026-11-24 every noble sleeper was gemmed with 1-2 per armor piece; the owner robbed a warded noble crypt and came away with barrels of gems and armor, so both were cut two steps. Without Infused Gems, nothing changes.
+- **Data, not code, decides the gems:** item modifier `data/bubbas_reworked_mobs/item_modifier/noble_finery.json` uses Infused Gems' own `bubbas_infused_gems:socket_random_gems` (armor 1, weapon 1; infusion [2,3,3,4], tier [2,2,3], any variant). It loads only with that mod (`fabric:load_conditions` `fabric:all_mods_loaded`).
+- `grave/NobleFinery.apply` runs it over a noble sleeper's gear when the crypt is built (`CryptYardPiece.Build.sleeper`, its `noble` flag). If the modifier isn't loaded it does nothing. Loot context: chest param set with the sleeper's position; seeded per position.
 - Build option `-PwithGems` (Reworked Mobs) puts Infused Gems on the test game's classpath, like `-PwithBeacons`.
 
 ## Will-o'-wisps
@@ -253,7 +253,7 @@ Per state of breakdown (`YardKinds.State`):
   - `everyYardBlockIsSupported`: in a built overgrown yard with each kind of crypt, no candle, lantern, sign or plant is left without support.
   - `cryptWardStatueOdds`: statues per wing at the stated odds over 4000 seeds per kind (within 3 points); without Totems & Artifacts the spot stays air.
 - **Milestone** `WispsGameTest.walkingIntoAYardFindsIt`: a built yard is registered; a player outside hasn't found it; inside, it's found.
-- **Milestone** `NobleFineryGameTest.nobleDeadWearGemsOnlyWithInfusedGems`: a built noble crypt; without Infused Gems no gear carries gem components; with `-PwithGems` most noble sleepers' gear does (11 of 13). No screenshot: gemmed gear looks the same on a sleeper.
+- **Milestone** `NobleFineryGameTest.nobleDeadWearGemsOnlyWithInfusedGems`: a built noble crypt; without Infused Gems no gear carries gem components; with `-PwithGems` some do, at most half the armoured ones; under 70 % of the crypt's sleepers wear a full set. No screenshot: gemmed gear looks the same on a sleeper.
 - **Totems:** `totemsAreFoundInLoot` passes standalone (crypt table skipped) and with `-PwithMobs`.
 - **Client part `graves`** (shots in `build/run/clientGameTest/screenshots/`): `graves-front/angle/close/close-glow/night` at 16x and 32x (four stones: epitaph, glyphs, blank, glow ink); `graves-edit` and `graves-edit-stone` (plus -32x); `yard-natural-above/gate` (the nearest natural yard, seed 20261116, at 624, 304).
 - **Client part `yards`** (`YardKindsClientGameTest`): every state, a lone plot, and pauper/family/noble yards on sky platforms: `yard-<kind>-above`, `yard-<kind>-gate`, `crypt-<wealth>` (night vision), `crypt-<wealth>-dark`, `crypt-noble-hall`.
