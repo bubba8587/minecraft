@@ -368,8 +368,8 @@ public final class CampPatrols {
 		}
 		if (leader) {
 			mob.addTag(CampTuning.PATROL_LEADER_TAG);
-			mob.setItemSlot(EquipmentSlot.HEAD, CampBanners.item(kind, level.registryAccess()));
-			mob.setDropChance(EquipmentSlot.HEAD, 0.0F);
+			mob.setItemSlot(EquipmentSlot.OFFHAND, CampBanners.item(kind, level.registryAccess()));
+			mob.setDropChance(EquipmentSlot.OFFHAND, 0.0F);
 			mob.setCanPickUpLoot(false);
 		}
 		EntityType<? extends Mob> mountType = rides ? kind.mount() : null;

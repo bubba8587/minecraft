@@ -10,9 +10,10 @@ import java.util.WeakHashMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.ai.util.LandRandomPos;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
-import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 
@@ -92,11 +93,15 @@ public final class CampPatrolGoal extends Goal {
 		Vec3 longTarget = Vec3.atBottomCenterOf(target);
 		Vec3 self = mob.position();
 		longTarget = self.subtract(longTarget).yRot(90.0F).scale(0.4).add(longTarget);
-		Vec3 step = longTarget.subtract(self).normalize().scale(CampTuning.PATROL_STEP).add(self);
-		BlockPos pathTarget = mob.level().getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, BlockPos.containing(step));
-		if (Math.abs(pathTarget.getY() - mob.getBlockY()) > CampTuning.PATROL_OVERHANG) {
-			pathTarget = pathTarget.atY(mob.getBlockY()); // an overhang: stay on this level
+		Vec3 step = mob instanceof PathfinderMob walker
+				? LandRandomPos.getPosTowards(walker, (int) CampTuning.PATROL_STEP, CampTuning.PATROL_OVERHANG, longTarget)
+				: null;
+		if (step == null) {
+			moveRandomly();
+			cooldownUntil = mob.level().getGameTime() + CampTuning.PATROL_STUCK_COOLDOWN;
+			return;
 		}
+		BlockPos pathTarget = BlockPos.containing(step);
 		double speed = leader ? CampTuning.PATROL_LEADER_SPEED : CampTuning.PATROL_SPEED;
 		if (!navigation.moveTo(pathTarget.getX(), pathTarget.getY(), pathTarget.getZ(), speed)
 				&& !navigation.moveTo(target.getX(), mob.getBlockY(), target.getZ(), speed)) {
@@ -134,12 +139,9 @@ public final class CampPatrolGoal extends Goal {
 	}
 
 	private void moveRandomly() {
-		RandomSource random = mob.getRandom();
-		BlockPos to = mob.level().getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
-				mob.blockPosition().offset(-8 + random.nextInt(16), 0, -8 + random.nextInt(16)));
-		if (Math.abs(to.getY() - mob.getBlockY()) > CampTuning.PATROL_OVERHANG) {
-			to = to.atY(mob.getBlockY());
+		Vec3 to = mob instanceof PathfinderMob walker ? LandRandomPos.getPos(walker, 8, CampTuning.PATROL_OVERHANG) : null;
+		if (to != null) {
+			mob.getNavigation().moveTo(to.x, to.y, to.z, CampTuning.PATROL_SPEED);
 		}
-		mob.getNavigation().moveTo(to.getX(), to.getY(), to.getZ(), CampTuning.PATROL_SPEED);
 	}
 }

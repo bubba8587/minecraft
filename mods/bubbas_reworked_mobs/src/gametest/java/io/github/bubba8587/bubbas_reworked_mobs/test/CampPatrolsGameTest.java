@@ -102,7 +102,7 @@ public class CampPatrolsGameTest {
 			helper.assertTrue(!mob.entityTags().contains(CampTuning.CAMP_TAG), "not on the camp's roster");
 			if (mob.entityTags().contains(CampTuning.PATROL_LEADER_TAG)) {
 				leaders++;
-				ItemStack head = mob.getItemBySlot(EquipmentSlot.HEAD);
+				ItemStack head = mob.getItemBySlot(EquipmentSlot.OFFHAND);
 				helper.assertTrue(head.is(CampBanners.standing(CampKind.SKELETON).asItem())
 						&& head.get(DataComponents.BANNER_PATTERNS).equals(CampBanners.item(CampKind.SKELETON, helper.getLevel().registryAccess())
 								.get(DataComponents.BANNER_PATTERNS)), "the leader wears the camp's banner: " + head);
