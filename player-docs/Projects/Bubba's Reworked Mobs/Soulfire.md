@@ -6,7 +6,7 @@
 > | | |
 > |---|---|
 > | **Type** | Burning (status) |
-> | **Caused by** | Soul fire, lit soul campfires, Soulfire charges |
+> | **Caused by** | Soul fire, lit soul campfires, Soulfire charges, Phasing |
 > | **Burn damage** | 1.5 a second to the living (ordinary burning: 1); 1 a second to undead |
 > | **With Fire Resistance** | 0.5 a second to the living; nothing to undead |
 > | **Totems** | A Soulfire death can't be stopped by a Totem of Undying or a [[Totem of Keeping]] |
@@ -18,6 +18,7 @@
 
 - Standing in **soul fire**.
 - Touching a **lit soul campfire**. With this mod, soul campfires set mobs and players on fire, as fire does.
+- **Phasing** from an [[Eye of the Soul]]: the player soul-burns for as long as it lasts.
 - Being hit by a **Soulfire charge**: shot by a [[Soulfire Blaze]], or thrown or fired from a dispenser as a [[Soul Blaze Items#Soul Fire Charge|Soul Fire Charge]]. A hit sets the target soul-burning for 5 seconds.
 
 Any ordinary way of catching fire turns Soulfire back into normal burning: touching ordinary fire, lava or a lit ordinary campfire, or being set alight by a fire charge, Fire Aspect, a flaming arrow or lightning. Soulfire ends when the fire goes out, as normal burning does.
@@ -50,4 +51,5 @@ Dying to Soulfire (the burning, soul fire or a soul campfire) **cannot be stoppe
 - [[Soulguard]]
 - [[Soul Blaze Items]]
 - [[Soulfire Blaze]]
+- [[Eye of the Soul]]
 - [[Wither Captain]]

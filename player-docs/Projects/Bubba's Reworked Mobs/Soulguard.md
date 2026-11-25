@@ -25,6 +25,8 @@ A player or mob with Soulguard:
 
 Ordinary fire and lava still hurt as normal.
 
+A player with Soulguard does not burn while Phasing from an [[Eye of the Soul]].
+
 ## Enchantment
 
 The **Soulguard** enchantment has one level and fits any armor piece. One enchanted piece worn anywhere is enough.
@@ -64,4 +66,5 @@ Soulguard gems are never another gem's bonus effect or drawback. Without Bubba's
 
 - [[Soulfire]]
 - [[Soul Blaze Items]]
+- [[Eye of the Soul]]
 - [[Gem Effects]]

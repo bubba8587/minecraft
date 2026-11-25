@@ -150,9 +150,9 @@ Medium and large Nether outposts have a throne where a huge, fat Boss Piglin in 
 
 ## Soulfire and Soulguard
 
-*Main articles: [[Soulfire]], [[Soulguard]], [[Soul Blaze Items]]*
+*Main articles: [[Soulfire]], [[Soulguard]], [[Soul Blaze Items]], [[Eye of the Soul]]*
 
-Soul fire, lit soul campfires and Soulfire charges set mobs and players burning with blue Soulfire, which hurts the living more than ordinary fire (undead take the normal amount), gets partly through Fire Resistance, and can't be stopped by a Totem of Undying. Soulguard (a potion, a treasure enchantment found in Nether chests, and a gem with Bubba's Infused Gems) protects fully. Soulfire Blazes drop Soul Blaze Rods, which make Soul Blaze Powder, Soul Fire Charges and the Potion of Soulguard.
+Soul fire, lit soul campfires and Soulfire charges set mobs and players burning with blue Soulfire, which hurts the living more than ordinary fire (undead take the normal amount), gets partly through Fire Resistance, and can't be stopped by a Totem of Undying. Soulguard (a potion, a treasure enchantment found in Nether chests, and a gem with Bubba's Infused Gems) protects fully. Soulfire Blazes drop Soul Blaze Rods, which make Soul Blaze Powder, Soul Fire Charges and the Potion of Soulguard. An Eye of the Soul, crafted from Soul Blaze Powder and an ender pearl, lets the player pass through blocks for 5 seconds, blinded and soul-burning unless they have Soulguard.
 
 ## Monster spawning
 
@@ -186,7 +186,7 @@ Optional: [[Bubba's Totems & Artifacts]], whose [[Grave Talisman]] and [[Totem o
 
 | Version | Changes |
 |---|---|
-| 0.1.0 (not released yet) | Added the undead (sleeping and woken skeletons, zombies, husks and strays, loot on display, loud bells, light that calms sleepers), crypt yards and gravestones, the monster spawn cut, watcher creepers, caretaker endermen and cairns, lurking drowned and bogged, spiders and their nests, monster camps and their patrols, trader posts, Ancient Fabricators, the Wither Captain with its Captain's Helm and Nether Star Shards, Soulfire Blazes, Soulfire and Soulguard with the soul blaze items, and the Boss Piglin. (The Grave Talisman and Totem of Warding, first added here, moved to Bubba's Totems & Artifacts.) |
+| 0.1.0 (not released yet) | Added the undead (sleeping and woken skeletons, zombies, husks and strays, loot on display, loud bells, light that calms sleepers), crypt yards and gravestones, the monster spawn cut, watcher creepers, caretaker endermen and cairns, lurking drowned and bogged, spiders and their nests, monster camps and their patrols, trader posts, Ancient Fabricators, the Wither Captain with its Captain's Helm and Nether Star Shards, Soulfire Blazes, Soulfire and Soulguard with the soul blaze items, the Eye of the Soul, and the Boss Piglin. (The Grave Talisman and Totem of Warding, first added here, moved to Bubba's Totems & Artifacts.) |
 
 ## See also
 

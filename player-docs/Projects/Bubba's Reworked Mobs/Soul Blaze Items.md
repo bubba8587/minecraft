@@ -33,7 +33,7 @@ Uses:
 > | **Brewing fuel** | 40 brews (blaze powder: 20) |
 > | **Stackable** | Yes (64) |
 
-**Soul Blaze Powder** fuels a brewing stand for 40 brews, twice as many as blaze powder, and is used to craft Soul Fire Charges.
+**Soul Blaze Powder** fuels a brewing stand for 40 brews, twice as many as blaze powder, and is used to craft Soul Fire Charges and the [[Eye of the Soul]].
 
 | Name | Ingredients | Result |
 |---|---|---|
@@ -71,3 +71,4 @@ All three have vanilla-style 16x textures, recoloured from the vanilla items to 
 - [[Soulfire Blaze]]
 - [[Soulfire]]
 - [[Soulguard]]
+- [[Eye of the Soul]]
