@@ -21,7 +21,7 @@
 - **Phasing** from an [[Eye of the Soul]]: the player soul-burns for as long as it lasts.
 - Being hit by a **Soulfire charge**: shot by a [[Soulfire Blaze]], or thrown or fired from a dispenser as a [[Soul Blaze Items#Soul Fire Charge|Soul Fire Charge]]. A hit sets the target soul-burning for 5 seconds.
 
-Any ordinary way of catching fire turns Soulfire back into normal burning: touching ordinary fire, lava or a lit ordinary campfire, or being set alight by a fire charge, Fire Aspect, a flaming arrow or lightning. Soulfire ends when the fire goes out, as normal burning does.
+Ordinary fire doesn't put Soulfire out or turn it back into normal burning: touching ordinary fire, lava or a lit ordinary campfire while soul-burning only keeps you burning longer, still with Soulfire. Soulfire ends when the fire goes out, as normal burning does.
 
 ## Damage
 

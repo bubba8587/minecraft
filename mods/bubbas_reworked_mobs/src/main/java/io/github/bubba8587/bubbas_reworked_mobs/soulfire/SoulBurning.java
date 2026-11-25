@@ -13,9 +13,6 @@ import net.minecraft.world.level.block.BaseFireBlock;
 
 /** Soulfire burning and Soulguard (specs/soulfire.md): the per-entity state and its rules. */
 public final class SoulBurning {
-	/** Set while a soul source lights an entity, so the ignition doesn't count as normal fire. */
-	private static final ThreadLocal<Boolean> SOUL_IGNITING = ThreadLocal.withInitial(() -> false);
-
 	private SoulBurning() {
 	}
 
@@ -92,21 +89,9 @@ public final class SoulBurning {
 	}
 
 	private static void soulIgnite(Entity entity, Runnable ignite) {
-		SOUL_IGNITING.set(true);
-		try {
-			ignite.run();
-		} finally {
-			SOUL_IGNITING.set(false);
-		}
+		ignite.run();
 		if (!entity.level().isClientSide() && entity.getRemainingFireTicks() > 0) {
 			mark(entity);
-		}
-	}
-
-	/** Any other ignition (fire, lava, fire charges, Fire Aspect, flaming arrows, lightning) is normal burning. */
-	public static void onIgnite(Entity entity) {
-		if (!SOUL_IGNITING.get() && !entity.level().isClientSide()) {
-			clear(entity);
 		}
 	}
 

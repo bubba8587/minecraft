@@ -13,7 +13,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
-/** Lit campfires (soulfire/SoulBurning): a soul campfire sets Soulfire burning; an ordinary one turns it to normal burning. */
+/** Lit campfires (soulfire/SoulBurning): a soul campfire sets Soulfire burning. */
 @Mixin(CampfireBlock.class)
 abstract class CampfireSoulfireMixin {
 	@WrapOperation(method = "entityInside", at = @At(value = "INVOKE",
@@ -25,7 +25,6 @@ abstract class CampfireSoulfireMixin {
 			SoulBurning.contactIgnite(entity);
 			SoulBurning.hurtByContact(entity, true, amount);
 		} else {
-			SoulBurning.clear(entity);
 			original.call(entity, source, amount);
 		}
 	}

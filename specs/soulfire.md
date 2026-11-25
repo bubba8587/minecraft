@@ -15,7 +15,7 @@
 A second kind of burning, from soul fire: "fire with a soul component" (owner, 2026-11-25).
 - **State:** a per-entity attachment `bubbas_reworked_mobs:soul_burning` (saved; synced to everyone tracking the entity). It means "this burning is Soulfire" and only counts while the entity is on fire; it is cleared when the fire runs out, the entity is fire-immune, or it has Soulguard.
 - **Sources:** standing in soul fire, touching a **lit soul campfire** (new: soul campfires now set you burning, with vanilla fire contact's ignite rules), and Soulfire Blaze charges / Soul Fire Charges (5 s, as before).
-- **Back to normal:** every other ignition is normal burning (any call to vanilla's `Entity.igniteForTicks` outside a soul source: fire, lava, fire charges, Fire Aspect, flaming arrows, lightning), and touching a lit ordinary campfire turns it to normal burning too. In soul fire the soul ignite runs just before vanilla's shared fire ignite, so ordinary fire or lava touched in the same tick wins.
+- **Ordinary fire doesn't override it (owner, 2026-11-25):** any other ignition (fire, lava, fire charges, Fire Aspect, flaming arrows, lightning, a lit ordinary campfire) on a soul-burning entity only tops up the fire time as vanilla's does; the burning stays Soulfire until it goes out (the soul state is cleared when the fire runs out, the entity is fire-immune, or it has Soulguard). Common case: a mob in soul fire also touching the ordinary fire beside the soul sand. An entity that isn't soul-burning catches ordinary fire as normal burning.
 - **Damage:**
   - Burn (once a second, where vanilla's `on_fire` would hit): damage type `bubbas_reworked_mobs:soul_burn`, **normal burn damage plus a soul bonus against the living (x1.5, `SOUL_BONUS`; 1.5 a second)**; **undead ignore the soul component and take exactly normal fire damage (1 a second)** (owner, 2026-11-25). Fire-immune entities stay immune.
   - Contact: `bubbas_reworked_mobs:soul_fire` (soul fire block) and `bubbas_reworked_mobs:soul_campfire` (lit soul campfire) replace vanilla's `in_fire` / `campfire` there; the living take vanilla's soul block damage (2), undead the ordinary fire / campfire's (1) *(builder: the same "undead ignore the soul part" rule)*.
@@ -86,7 +86,7 @@ One effect, no levels: **full immunity to Soulfire burning and soul fire / soul 
 
 - Soul blaze rods drop from Soulfire Blazes (natural and summoned); powder fuels 40 brews; a rod smelts 24 items.
 - Soul Fire Charges: crafted; thrown and dispensed they place soul fire on soul sand, fire on netherrack.
-- Standing on a lit soul campfire sets an entity Soulfire-burning; normal fire turns it to normal burning.
+- Standing on a lit soul campfire sets an entity Soulfire-burning; ordinary fire keeps it Soulfire (`SoulfireGameTest.normalFireKeepsSoulBurning`).
 - Undead take normal fire damage from Soulfire; the living take more (the soul bonus); with Fire Resistance the living take only the soul bonus.
 - A player killed by Soulfire burning holding a Totem of Undying dies; with Soulguard it doesn't burn at all; with a Totem of Keeping and Soulfire death the inventory drops. (The Totem of Undying test uses zombies: test players are invulnerable until their client loads.)
 - The Soulguard enchantment, potion and gem each make a player immune to soul fire; the Captain's Helm carries the enchantment. (Tested on pigs, for the same reason.)

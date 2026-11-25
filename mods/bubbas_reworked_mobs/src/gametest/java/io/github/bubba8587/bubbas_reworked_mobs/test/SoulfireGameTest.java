@@ -91,9 +91,9 @@ public class SoulfireGameTest {
 		helper.succeedWhen(() -> helper.assertTrue(pig.isOnFire() && SoulBurning.isSoulBurning(pig), "not soul-burning yet"));
 	}
 
-	/** Soul fire sets Soulfire burning; walking into ordinary fire turns it to normal burning. */
+	/** Soul fire sets Soulfire burning; walking into ordinary fire keeps it Soulfire. */
 	@GameTest(maxTicks = 100)
-	public void normalFireTurnsSoulBurningNormal(GameTestHelper helper) {
+	public void normalFireKeepsSoulBurning(GameTestHelper helper) {
 		TestFloors.stone(helper);
 		Pig pig = penned(helper, 2, 2, Blocks.SOUL_SAND, Blocks.SOUL_FIRE.defaultBlockState());
 		penned(helper, 6, 6, Blocks.NETHERRACK, Blocks.FIRE.defaultBlockState()).discard();
@@ -103,7 +103,8 @@ public class SoulfireGameTest {
 					Vec3 at = helper.absoluteVec(new Vec3(6.5, 1.0, 6.5));
 					pig.teleportTo(at.x, at.y, at.z);
 				})
-				.thenWaitUntil(() -> helper.assertTrue(pig.isOnFire() && !SoulBurning.isSoulBurning(pig), "still soul-burning in fire"))
+				.thenIdle(30)
+				.thenExecute(() -> helper.assertTrue(pig.isOnFire() && SoulBurning.isSoulBurning(pig), "ordinary fire turned Soulfire back to normal burning"))
 				.thenSucceed();
 	}
 

@@ -12,14 +12,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-/** Soulfire burning (soulfire/SoulBurning): normal ignitions, the burn damage and the per-tick rules. */
+/** Soulfire burning (soulfire/SoulBurning): the burn damage and the per-tick rules. */
 @Mixin(Entity.class)
 abstract class EntitySoulfireMixin {
-	@Inject(method = "igniteForTicks", at = @At("HEAD"))
-	private void brm$normalIgnite(int ticks, CallbackInfo ci) {
-		SoulBurning.onIgnite((Entity) (Object) this);
-	}
-
 	@WrapOperation(method = "baseTick", at = @At(value = "INVOKE",
 			target = "Lnet/minecraft/world/entity/Entity;hurtServer(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/damagesource/DamageSource;F)Z"))
 	private boolean brm$soulBurn(Entity entity, ServerLevel level, DamageSource source, float amount, Operation<Boolean> original) {
