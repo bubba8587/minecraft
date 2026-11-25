@@ -181,3 +181,45 @@ tasks.matching { it.name == 'runClientGameTest' }.configureEach { t ->
 		t.jvmArgs("-Dbubba.clientTests=${clientTestsFilter.get()}")
 	}
 }
+
+// Modrinth upload (specs/releasing.md): `./gradlew :<mod>:modrinth`, from CI on a release tag. Only for a mod whose
+// gradle.properties names its `modrinth_project` (set once the owner clears it for Modrinth, B14 modrinthAiCompliant).
+if (publishedMod) {
+	apply plugin: 'com.modrinth.minotaur'
+	def mrProject = (project.findProperty('modrinth_project') ?: '').toString().trim()
+	def listOf = { String key -> (project.findProperty(key) ?: '').toString().split(',')*.trim().findAll { it } }
+	def body = project.file('MODRINTH.md')
+	def changes = project.file('CHANGELOG.md')
+	def ver = project.mod_version.toString()
+	def dryRun = project.hasProperty('modrinthDryRun')
+	modrinth {
+		token = providers.environmentVariable('MODRINTH_TOKEN').orElse('')
+		projectId = mrProject ?: 'unset'
+		versionNumber = project.version.toString()
+		versionName = "${project.mod_version} for ${project.minecraft_version}"
+		versionType = (project.findProperty('modrinth_version_type') ?: 'release').toString()
+		uploadFile = tasks.named('jar')
+		gameVersions = [project.minecraft_version.toString()]
+		loaders = ['fabric']
+		environment = 'client_and_server'
+		changelog = changes.exists() ? changelogSection(changes.text, ver) : 'See the project page.'
+		if (body.exists()) syncBodyFrom = body.text
+		dependencies {
+			required.project 'fabric-api'
+			listOf('modrinth_required').each { required.project it }
+			listOf('modrinth_optional').each { optional.project it }
+		}
+		debugMode = dryRun
+	}
+	tasks.named('modrinth') {
+		onlyIf('modrinth_project is set (B14 cleared)') { !mrProject.isEmpty() }
+		if (body.exists()) dependsOn tasks.named('modrinthSyncBody')
+	}
+	tasks.named('modrinthSyncBody') { onlyIf('set, and not a dry run') { !mrProject.isEmpty() && !dryRun } }
+}
+
+/** The CHANGELOG.md section under the heading for this version (`## 0.1.0`), or the whole file. */
+static String changelogSection(String text, String version) {
+	def m = (text =~ /(?ms)^## \Q${version}\E[^\n]*\n(.*?)(?=^## |\z)/)
+	return m.find() ? m.group(1).trim() : text.trim()
+}
