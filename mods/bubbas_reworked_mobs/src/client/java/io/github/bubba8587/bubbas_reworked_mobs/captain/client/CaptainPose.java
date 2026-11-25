@@ -10,16 +10,15 @@ public final class CaptainPose {
 	// head leaned back
 	private static final float HEAD_BACK = -0.55F;
 	private static final float HEAD_BOB = 0.04F;
-	// sword arm (right) raised overhead
-	private static final float SWORD_X = -2.3F;
-	private static final float SWORD_Z = 0.3F;
-	private static final float SWORD_SWAY_X = 0.08F;
-	private static final float SWORD_SWAY_Z = 0.06F;
-	// free arm (left) out to the side
-	private static final float ARM_OUT_Z = 1.35F;
-	private static final float ARM_WAVE = 0.18F;
-	private static final float ARM_X = -0.15F;
-	private static final float ARM_DRIFT_X = 0.05F;
+	// both arms spread out to the sides, waving slowly up and down
+	private static final float ARM_OUT_Z = 1.25F;
+	private static final float ARM_WAVE = 0.15F;
+	private static final float ARM_WAVE_SPEED = 0.12F;
+	private static final float ARM_X = 0.05F;
+	private static final float ARM_DRIFT_X = 0.04F;
+	// sword arm twisted about its length so the blade points up
+	private static final float SWORD_TWIST_Y = 1.55F;
+	private static final float SWORD_PHASE = 0.8F;
 
 	private CaptainPose() {
 	}
@@ -34,17 +33,17 @@ public final class CaptainPose {
 		// head
 		blend(model.head, HEAD_BACK + HEAD_BOB * Mth.sin(t * 0.05F), 0.0F, 0.0F, s);
 
-		// sword arm
+		// sword arm (right): out to the side, blade up
 		blend(model.rightArm,
-			SWORD_X + SWORD_SWAY_X * Mth.sin(t * 0.09F),
-			0.0F,
-			SWORD_Z + SWORD_SWAY_Z * Mth.sin(t * 0.11F + 1.0F), s);
+			ARM_X + ARM_DRIFT_X * Mth.sin(t * 0.07F + SWORD_PHASE),
+			SWORD_TWIST_Y,
+			ARM_OUT_Z + ARM_WAVE * Mth.sin(t * ARM_WAVE_SPEED + SWORD_PHASE), s);
 
-		// free arm
+		// free arm (left): out to the side
 		blend(model.leftArm,
 			ARM_X + ARM_DRIFT_X * Mth.sin(t * 0.07F),
 			0.0F,
-			-(ARM_OUT_Z + ARM_WAVE * Mth.sin(t * 0.12F)), s);
+			-(ARM_OUT_Z + ARM_WAVE * Mth.sin(t * ARM_WAVE_SPEED)), s);
 
 		// legs planted
 		blend(model.rightLeg, 0.0F, 0.0F, 0.0F, s);
