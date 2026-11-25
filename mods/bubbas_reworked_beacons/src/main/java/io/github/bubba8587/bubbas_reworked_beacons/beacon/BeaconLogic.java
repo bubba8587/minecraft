@@ -6,7 +6,12 @@ import io.github.bubba8587.bubbas_reworked_beacons.api.BeaconAreas;
 import io.github.bubba8587.bubbas_reworked_beacons.api.BeaconContext;
 import io.github.bubba8587.bubbas_reworked_beacons.api.BeaconMode;
 import io.github.bubba8587.bubbas_reworked_beacons.api.BeaconPayload;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.DustParticleOptions;
+import net.minecraft.util.Mth;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.BlockTags;
@@ -23,6 +28,12 @@ import org.jspecify.annotations.Nullable;
 public final class BeaconLogic {
 	/** Pair check interval. */
 	public static final int PAIR_CHECK_TICKS = 20;
+	/** Corner particles after an effect change: shown this long, a burst every EDGE_BURST_TICKS. */
+	public static final int EDGE_FLASH_TICKS = 60;
+	public static final int EDGE_BURST_TICKS = 10;
+	/** Corner particle column: this many particles, half a block apart, this big. */
+	public static final int EDGE_COLUMN = 7;
+	public static final float EDGE_SCALE = 3.0F;
 
 	private BeaconLogic() {
 	}
@@ -35,6 +46,50 @@ public final class BeaconLogic {
 		}
 		if (time % BeaconContext.PULSE_TICKS == 0L && level instanceof ServerLevel server) {
 			pulse(server, pos, rb);
+		}
+		if (rb.bubba$edgeFlash() > 0 && level instanceof ServerLevel server) {
+			if (rb.bubba$edgeFlash() % EDGE_BURST_TICKS == 0) {
+				showCorners(server, pos, rb);
+			}
+			rb.bubba$setEdgeFlash(rb.bubba$edgeFlash() - 1);
+		}
+	}
+
+	/** Notes the shown effect (item, power, area); a change after the first pulse starts the corner particles. */
+	static void noteEdge(BlockPos pos, ReworkedBeacon rb, int signature) {
+		if (rb.bubba$edgeSeeded() && signature != rb.bubba$edgeSignature() && signature != 0) {
+			rb.bubba$setEdgeFlash(EDGE_FLASH_TICKS);
+		}
+		rb.bubba$setEdge(signature, true);
+	}
+
+	/** A short column of the payload's colour at each corner of the beacon's area. */
+	static void showCorners(ServerLevel level, BlockPos pos, ReworkedBeacon rb) {
+		BeaconContext ctx = activeContext(level, pos, rb);
+		BeaconPayload payload = Payloads.find(rb.bubba$item());
+		if (ctx == null || payload == null) {
+			rb.bubba$setEdgeFlash(0);
+			return;
+		}
+		DustParticleOptions dust = new DustParticleOptions(payload.color(rb.bubba$item()), EDGE_SCALE);
+		AABB area = ctx.area();
+		for (double x : new double[] { area.minX, area.maxX }) {
+			for (double z : new double[] { area.minZ, area.maxZ }) {
+				int bx = Mth.floor(x - (x == area.maxX ? 0.5 : 0.0));
+				int bz = Mth.floor(z - (z == area.maxZ ? 0.5 : 0.0));
+				List<Integer> heights = new ArrayList<>();
+				if (ctx.mode() == BeaconMode.PAIRED) {
+					heights.add(pos.getY());
+					heights.add(pos.getY() + rb.bubba$pairGap());
+				} else if (level.hasChunkAt(new BlockPos(bx, pos.getY(), bz))) {
+					heights.add(Math.max((int) area.minY, level.getHeight(Heightmap.Types.MOTION_BLOCKING, bx, bz)));
+				}
+				for (int y : heights) {
+					for (int i = 0; i < EDGE_COLUMN; i++) {
+						level.sendParticles(dust, true, true, x, y + i * 0.5, z, 1, 0.0, 0.0, 0.0, 0.0);
+					}
+				}
+			}
 		}
 	}
 
@@ -138,9 +193,11 @@ public final class BeaconLogic {
 		BeaconContext ctx = activeContext(level, pos, rb);
 		if (ctx == null) {
 			BeaconAreas.remove(level, pos);
+			noteEdge(pos, rb, 0);
 			return;
 		}
 		ItemStack item = rb.bubba$item();
+		noteEdge(pos, rb, Objects.hash(ItemStack.hashItemAndComponents(item), ctx.effectivePower(), ctx.area()) | 1);
 		BeaconPayload payload = Payloads.find(item);
 		try {
 			payload.apply(level, item, ctx);

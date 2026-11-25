@@ -17,6 +17,12 @@ import net.minecraft.world.item.ItemStack;
  * the totem at all. Loaded only through that mod's entrypoint.
  */
 public final class BeginningBeaconPayload implements BeaconPayload {
+	/** Corner particle colour. */
+	@Override
+	public int color(ItemStack stack) {
+		return 0x2FA88E;
+	}
+
 	@Override
 	public boolean accepts(ItemStack stack) {
 		return stack.is(ModItems.TOTEM_OF_THE_BEGINNING) && SleeperHook.get() != SleeperHook.NONE;

@@ -26,6 +26,12 @@ public final class WardingBeaconPayload implements BeaconPayload {
 	/** Pyramid layers at which the ward also keeps sleepers asleep. */
 	public static final int SLEEP_LEVELS = 4;
 
+	/** Corner particle colour. */
+	@Override
+	public int color(ItemStack stack) {
+		return 0x9B6BE8;
+	}
+
 	@Override
 	public boolean accepts(ItemStack stack) {
 		return stack.is(ModItems.TOTEM_OF_WARDING);

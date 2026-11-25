@@ -17,6 +17,12 @@ import net.minecraft.world.item.ItemStack;
  * The Totem of Gathering in a Bubba's Reworked Beacons beacon: the ring (gathering/GatheringRing). Loaded only through that mod's entrypoint.
  */
 public final class GatheringBeaconPayload implements BeaconPayload {
+	/** Corner particle colour. */
+	@Override
+	public int color(ItemStack stack) {
+		return 0xF0A030;
+	}
+
 	@Override
 	public boolean accepts(ItemStack stack) {
 		return stack.is(ModItems.TOTEM_OF_GATHERING);

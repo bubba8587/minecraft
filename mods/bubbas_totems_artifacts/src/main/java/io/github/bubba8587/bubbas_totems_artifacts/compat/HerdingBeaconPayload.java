@@ -15,6 +15,12 @@ import net.minecraft.world.item.ItemStack;
 
 /** The Totem of Herding in a Bubba's Reworked Beacons beacon. */
 public final class HerdingBeaconPayload implements BeaconPayload {
+	/** Corner particle colour. */
+	@Override
+	public int color(ItemStack stack) {
+		return 0xC8A070;
+	}
+
 	@Override
 	public boolean accepts(ItemStack stack) {
 		return stack.is(ModItems.TOTEM_OF_HERDING);

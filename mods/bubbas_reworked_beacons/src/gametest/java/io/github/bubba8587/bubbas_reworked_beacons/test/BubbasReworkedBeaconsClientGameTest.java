@@ -53,6 +53,32 @@ public class BubbasReworkedBeaconsClientGameTest implements FabricClientGameTest
 			context.takeScreenshot("bubbas_reworked_beacons-paired-beam");
 
 			openScreen(context, sp, pairFloor, "bubbas_reworked_beacons-screen-paired-capped");
+
+			// Corner particles: a ground sky beacon changes item; shots of one corner and the whole square
+			BlockPos column = sky.west(40);
+			stand(sp, column.atY(Y - 60));
+			context.waitTicks(40);
+			BlockPos ground = sp.getServer().computeOnServer(server ->
+					server.overworld().getHeightmapPos(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING, column));
+			cmd(sp, "fill %d %d %d %d %d %d minecraft:iron_block", ground.getX() - 1, ground.getY(), ground.getZ() - 1, ground.getX() + 1, ground.getY(), ground.getZ() + 1);
+			cmd(sp, "setblock %d %d %d minecraft:beacon", ground.getX(), ground.getY() + 1, ground.getZ());
+			BlockPos beacon = ground.above();
+			sp.getServer().runOnServer(server -> setItem(server, beacon, new ItemStack(Items.AMETHYST_SHARD)));
+			stand(sp, beacon.offset(-27, 3, -27));
+			context.waitTicks(200);
+			sp.getServer().runOnServer(server -> setItem(server, beacon, new ItemStack(Items.QUARTZ)));
+			sp.getServer().waitFor(server -> server.overworld().getBlockEntity(beacon) instanceof BeaconBlockEntity be
+					&& ((ReworkedBeacon) be).bubba$edgeFlash() > 0, 200);
+			context.getInput().lookAt(-45.0F, 20.0F);
+			context.waitTicks(12);
+			context.takeScreenshot("bubbas_reworked_beacons-edge-corner");
+			sp.getServer().runOnServer(server -> setItem(server, beacon, new ItemStack(Items.AMETHYST_SHARD)));
+			stand(sp, beacon.offset(0, 40, -45));
+			sp.getServer().waitFor(server -> server.overworld().getBlockEntity(beacon) instanceof BeaconBlockEntity be
+					&& ((ReworkedBeacon) be).bubba$edgeFlash() > 0, 200);
+			context.getInput().lookAt(0.0F, 40.0F);
+			context.waitTicks(12);
+			context.takeScreenshot("bubbas_reworked_beacons-edge-square");
 		}
 	}
 

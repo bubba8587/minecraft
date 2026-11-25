@@ -28,6 +28,19 @@ public interface ReworkedBeacon {
 
 	void bubba$setWasPaired(boolean paired);
 
+	/** What the corner particles last showed (item, power, area), 0 for nothing; not saved. */
+	int bubba$edgeSignature();
+
+	/** False until the first pulse after loading, which records the signature without showing it. */
+	boolean bubba$edgeSeeded();
+
+	void bubba$setEdge(int signature, boolean seeded);
+
+	/** Ticks of corner particles left to show. */
+	int bubba$edgeFlash();
+
+	void bubba$setEdgeFlash(int ticks);
+
 	default boolean bubba$isPaired() {
 		return this.bubba$pairGap() > 0 && this.bubba$floorLevels() > 0 && this.bubba$ceilingLevels() > 0;
 	}

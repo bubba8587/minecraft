@@ -19,6 +19,12 @@ import net.minecraft.world.item.ItemStack;
  * after the beacon stops. Any pyramid. Loaded only through that mod's entrypoint.
  */
 public final class FortificationBeaconPayload implements BeaconPayload {
+	/** Corner particle colour. */
+	@Override
+	public int color(ItemStack stack) {
+		return 0x9AA0A8;
+	}
+
 	@Override
 	public boolean accepts(ItemStack stack) {
 		return stack.is(ModItems.TOTEM_OF_FORTIFICATION);

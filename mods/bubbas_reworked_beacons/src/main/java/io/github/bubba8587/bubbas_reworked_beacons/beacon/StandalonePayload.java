@@ -47,6 +47,13 @@ public class StandalonePayload implements BeaconPayload {
 		return -1000;
 	}
 
+	/** Corner particles in the power's own colour. */
+	@Override
+	public int color(ItemStack stack) {
+		Power p = POWERS.get(stack.getItem());
+		return p == null ? 0xFFFFFF : p.effect().value().getColor();
+	}
+
 	@Override
 	public int requiredLevels(ItemStack stack) {
 		Power p = POWERS.get(stack.getItem());

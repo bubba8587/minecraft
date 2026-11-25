@@ -23,6 +23,12 @@ public final class GrowthBeaconPayload implements BeaconPayload {
 		return Math.max(1, levels) * TotemsTuning.GROWTH_BEACON_EXTRA_PER_LAYER;
 	}
 
+	/** Corner particle colour. */
+	@Override
+	public int color(ItemStack stack) {
+		return 0x5FC24A;
+	}
+
 	@Override
 	public boolean accepts(ItemStack stack) {
 		return stack.is(ModItems.TOTEM_OF_GROWTH);

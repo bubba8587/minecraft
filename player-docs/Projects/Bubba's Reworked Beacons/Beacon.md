@@ -65,6 +65,10 @@ Emeralds, iron, gold and netherite ingots are no longer accepted. With [[Bubba's
 
 A beacon with a pyramid below and the usual clear beam to the sky works over vanilla's area: 20, 30, 40 or 50 blocks out to each side for 1 to 4 layers, from that far below the beacon up to the top of the world.
 
+### Seeing the edges
+
+Whenever a beacon's effect changes (an item goes in or is swapped, the pyramid grows or shrinks, a pair forms), short columns of coloured particles rise at the four corners of its area for about three seconds, in the colour of the item's effect. Sky beacons show them on the ground at each corner; paired beacons at the height of each of the two beacons. To check a beacon's edges again, take its item out and put it back.
+
 ### Upside-down beacon
 
 Placing a beacon against the underside of a block hangs it upside down, like a hanging lantern; it stays when that block is removed. On its own an upside-down beacon does nothing: no beam, no effect and no item. Its pyramid is built upside down above it.

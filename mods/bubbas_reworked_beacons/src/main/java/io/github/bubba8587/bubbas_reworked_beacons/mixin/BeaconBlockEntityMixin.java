@@ -135,6 +135,39 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements Rewo
 		}
 	}
 
+	@Unique
+	private int bubba$edgeSignature;
+	@Unique
+	private boolean bubba$edgeSeeded;
+	@Unique
+	private int bubba$edgeFlash;
+
+	@Override
+	public int bubba$edgeSignature() {
+		return this.bubba$edgeSignature;
+	}
+
+	@Override
+	public boolean bubba$edgeSeeded() {
+		return this.bubba$edgeSeeded;
+	}
+
+	@Override
+	public void bubba$setEdge(int signature, boolean seeded) {
+		this.bubba$edgeSignature = signature;
+		this.bubba$edgeSeeded = seeded;
+	}
+
+	@Override
+	public int bubba$edgeFlash() {
+		return this.bubba$edgeFlash;
+	}
+
+	@Override
+	public void bubba$setEdgeFlash(int ticks) {
+		this.bubba$edgeFlash = ticks;
+	}
+
 	@Override
 	public boolean bubba$wasPaired() {
 		return this.bubba$wasPaired;

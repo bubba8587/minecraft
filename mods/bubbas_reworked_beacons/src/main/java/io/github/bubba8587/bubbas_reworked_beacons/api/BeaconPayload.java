@@ -36,6 +36,11 @@ public interface BeaconPayload {
 	/** One pulse of an active beacon. */
 	void apply(ServerLevel level, ItemStack stack, BeaconContext context);
 
+	/** The colour of the corner particles shown when the beacon's effect changes (0xRRGGBB). */
+	default int color(ItemStack stack) {
+		return 0xFFFFFF;
+	}
+
 	/** True turns off Reworked Beacons' standalone payments while this payload is installed. */
 	default boolean replacesStandalonePayments() {
 		return false;

@@ -15,6 +15,12 @@ import net.minecraft.world.item.ItemStack;
 
 /** The Totem of the North Wind in a Bubba's Reworked Beacons beacon. */
 public final class NorthWindBeaconPayload implements BeaconPayload {
+	/** Corner particle colour. */
+	@Override
+	public int color(ItemStack stack) {
+		return 0xCFEFFF;
+	}
+
 	@Override
 	public boolean accepts(ItemStack stack) {
 		return stack.is(ModItems.TOTEM_OF_NORTH_WIND);

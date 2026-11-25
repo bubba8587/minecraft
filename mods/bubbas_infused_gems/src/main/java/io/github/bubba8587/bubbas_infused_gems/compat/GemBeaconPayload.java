@@ -21,6 +21,13 @@ public final class GemBeaconPayload implements BeaconPayload {
 		return stack.has(ModComponents.GEM);
 	}
 
+	/** Corner particles in the gem's main effect colour. */
+	@Override
+	public int color(ItemStack stack) {
+		Gem gem = stack.get(ModComponents.GEM);
+		return gem == null ? 0xFFFFFF : gem.effect().value().getColor();
+	}
+
 	@Override
 	public int power(ItemStack stack) {
 		Gem gem = stack.get(ModComponents.GEM);

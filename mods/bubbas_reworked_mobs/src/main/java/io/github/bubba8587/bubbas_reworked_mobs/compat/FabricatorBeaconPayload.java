@@ -23,6 +23,12 @@ import net.minecraft.world.item.ItemStack;
  * class that touches the beacons API, loaded only through its entrypoint (so only with that mod installed).
  */
 public final class FabricatorBeaconPayload implements BeaconPayload {
+	/** Corner particle colour. */
+	@Override
+	public int color(ItemStack stack) {
+		return 0x1F8A8A;
+	}
+
 	@Override
 	public boolean accepts(ItemStack stack) {
 		return FabricatorLink.isHeart(stack);

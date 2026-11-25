@@ -20,6 +20,12 @@ import net.minecraft.world.item.ItemStack;
  * Loaded only through that mod's entrypoint.
  */
 public final class SeekingBeaconPayload implements BeaconPayload {
+	/** Corner particle colour. */
+	@Override
+	public int color(ItemStack stack) {
+		return 0xE8C840;
+	}
+
 	@Override
 	public boolean accepts(ItemStack stack) {
 		return stack.is(ModItems.TOTEM_OF_SEEKING);
