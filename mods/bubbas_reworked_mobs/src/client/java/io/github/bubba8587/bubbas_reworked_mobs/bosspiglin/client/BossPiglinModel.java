@@ -43,10 +43,10 @@ public class BossPiglinModel extends AbstractPiglinModel<BossPiglinRenderState> 
 	private static final float INNER = 0.45F;
 	private static final float BOOTS = 0.8F;
 
-	// seated: model drop so the thighs rest on the entity position, lean back, thighs forward, hands on the armrests
-	static final float SEAT_DROP = 3.5F;
+	// seated: model drop so the thighs rest on the entity position, lean back, thighs forward on the cushions, arms hanging over the armrests
+	static final float SEAT_DROP = 3.0F;
 	private static final float SEAT_LEAN = -0.08F;
-	private static final float SEAT_THIGH_X = -1.45F;
+	private static final float SEAT_THIGH_X = -1.5F;
 	private static final float SEAT_THIGH_SPREAD = 0.28F;
 	private static final float SEAT_THIGH_Z = 0.05F;
 	private static final float SEAT_ARM_X = -0.45F;
