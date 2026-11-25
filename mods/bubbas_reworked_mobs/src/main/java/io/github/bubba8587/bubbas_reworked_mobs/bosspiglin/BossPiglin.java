@@ -68,6 +68,8 @@ import org.jspecify.annotations.Nullable;
 public class BossPiglin extends AbstractPiglin {
 	private static final EntityDataAccessor<Boolean> DATA_SEATED = SynchedEntityData.defineId(BossPiglin.class, EntityDataSerializers.BOOLEAN);
 	private static final EntityDataAccessor<Boolean> DATA_FLEEING = SynchedEntityData.defineId(BossPiglin.class, EntityDataSerializers.BOOLEAN);
+	/** Running away right now (from a player, or for the portal), as opposed to just being in fleeing mode. */
+	private static final EntityDataAccessor<Boolean> DATA_RUNNING = SynchedEntityData.defineId(BossPiglin.class, EntityDataSerializers.BOOLEAN);
 	private static final String SITE_KEY = "bubbas_reworked_mobs:outpost";
 	private static final String SEAT_KEY = "bubbas_reworked_mobs:seat";
 	private static final String SEAT_YAW_KEY = "bubbas_reworked_mobs:seat_yaw";
@@ -93,6 +95,8 @@ public class BossPiglin extends AbstractPiglin {
 	private @Nullable BlockPos portal;
 	private int cornerTicks;
 	private int slapCooldown;
+	private @Nullable Goal avoidGoal;
+	private @Nullable Goal escapeGoal;
 	private float seatedBlend;
 	private float seatedBlendO;
 	private float fleeingBlend;
@@ -126,6 +130,7 @@ public class BossPiglin extends AbstractPiglin {
 		super.defineSynchedData(entityData);
 		entityData.define(DATA_SEATED, false);
 		entityData.define(DATA_FLEEING, false);
+		entityData.define(DATA_RUNNING, false);
 	}
 
 	public boolean isSeated() {
@@ -377,14 +382,16 @@ public class BossPiglin extends AbstractPiglin {
 		this.goalSelector.addGoal(0, new FloatGoal(this));
 		this.goalSelector.addGoal(1, new SitGoal());
 		this.goalSelector.addGoal(2, new SlapGoal());
-		this.goalSelector.addGoal(3, new EscapeGoal());
-		this.goalSelector.addGoal(4, new AvoidEntityGoal<>(this, Player.class, BossPiglinTuning.FLEE_DISTANCE, BossPiglinTuning.FLEE_WALK,
+		this.escapeGoal = new EscapeGoal();
+		this.goalSelector.addGoal(3, this.escapeGoal);
+		this.avoidGoal = new AvoidEntityGoal<>(this, Player.class, BossPiglinTuning.FLEE_DISTANCE, BossPiglinTuning.FLEE_WALK,
 				BossPiglinTuning.FLEE_SPRINT) {
 			@Override
 			public boolean canUse() {
 				return BossPiglin.this.isFleeing() && super.canUse();
 			}
-		});
+		};
+		this.goalSelector.addGoal(4, this.avoidGoal);
 		this.goalSelector.addGoal(5, new WaterAvoidingRandomStrollGoal(this, BossPiglinTuning.HIDE_SPEED) {
 			@Override
 			public boolean canUse() {
@@ -407,6 +414,8 @@ public class BossPiglin extends AbstractPiglin {
 		if (!this.isFleeing() && this.siteId == null) {
 			this.entityData.set(DATA_FLEEING, true); // made by egg or command: no throne to keep
 		}
+		this.entityData.set(DATA_RUNNING, this.goalSelector.getAvailableGoals().stream()
+				.anyMatch(g -> g.isRunning() && (g.getGoal() == this.avoidGoal || g.getGoal() == this.escapeGoal)));
 		Player near = this.cornering(level);
 		this.cornerTicks = near == null ? 0 : this.cornerTicks + 1;
 		if (this.slapCooldown > 0) {
@@ -460,7 +469,7 @@ public class BossPiglin extends AbstractPiglin {
 			this.seatedBlendO = this.seatedBlend;
 			this.fleeingBlendO = this.fleeingBlend;
 			this.seatedBlend = Mth.approach(this.seatedBlend, this.isSeated() ? 1.0F : 0.0F, BossPiglinTuning.BLEND_STEP);
-			this.fleeingBlend = Mth.approach(this.fleeingBlend, this.isFleeing() ? 1.0F : 0.0F, BossPiglinTuning.BLEND_STEP);
+			this.fleeingBlend = Mth.approach(this.fleeingBlend, this.isFleeing() && this.entityData.get(DATA_RUNNING) ? 1.0F : 0.0F, BossPiglinTuning.BLEND_STEP);
 		}
 	}
 
