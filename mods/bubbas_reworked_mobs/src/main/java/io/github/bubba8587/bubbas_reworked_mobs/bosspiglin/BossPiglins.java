@@ -85,4 +85,22 @@ public final class BossPiglins {
 		}
 		return there * 2 >= blocks.size();
 	}
+
+	/** The throne's red cushions (vanilla cushion entities) on its seat; {@code inside} limits them to cells being built. */
+	public static void placeCushions(net.minecraft.world.level.ServerLevelAccessor level, BlockPos anchor, net.minecraft.core.Direction facing,
+			java.util.function.Predicate<BlockPos> inside) {
+		for (net.minecraft.world.phys.Vec3 at : ThroneDesign.cushions(facing)) {
+			net.minecraft.world.phys.Vec3 pos = net.minecraft.world.phys.Vec3.atLowerCornerOf(anchor).add(at);
+			if (!inside.test(BlockPos.containing(pos))) {
+				continue;
+			}
+			net.minecraft.world.entity.decoration.Cushion cushion = net.minecraft.world.entity.EntityTypes.CUSHION.create(level.getLevel(),
+					net.minecraft.world.entity.EntitySpawnReason.STRUCTURE);
+			if (cushion != null) {
+				cushion.setColor(net.minecraft.world.item.DyeColor.RED);
+				cushion.setPos(pos.x, pos.y, pos.z);
+				level.addFreshEntity(cushion);
+			}
+		}
+	}
 }

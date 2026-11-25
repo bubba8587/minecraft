@@ -117,6 +117,7 @@ public class BossPiglinClientGameTest implements FabricClientGameTest {
 		for (ThroneDesign.Placed placed : ThroneDesign.blocks(Direction.NORTH)) {
 			level.setBlock(anchor.offset(placed.offset()), placed.state(), 2);
 		}
+		BossPiglins.placeCushions(level, anchor, Direction.NORTH, p -> true);
 	}
 
 	private static BossPiglin boss(ServerLevel level, Vec3 at, float yaw) {
