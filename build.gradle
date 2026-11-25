@@ -1,4 +1,5 @@
 // Root project: declares plugin versions once so every mod uses the same Loom.
 plugins {
 	id 'net.fabricmc.fabric-loom' version "${loom_version}" apply false
+	id 'com.modrinth.minotaur' version '2.10.0' apply false
 }

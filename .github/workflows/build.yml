@@ -121,3 +121,50 @@ jobs:
           done
           python3 tools/pack.py build "$name"
           gh release create "$TAG" "${zips[@]}" --title "$name $ver" --notes "See the project's README and CREDITS.md."
+
+  # Release tag of a mod (<mod>/v<version>, <mod> a folder in mods/): the jar goes to a GitHub Release, and to Modrinth
+  # when the mod's gradle.properties names its modrinth_project (set only once the owner clears it, B14) and the
+  # MODRINTH_TOKEN secret exists. The tag's version must match the mod's mod_version.
+  mod-release:
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: [mods, client-gametests, datapacks]
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    env:
+      MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '25'
+      - uses: gradle/actions/setup-gradle@v6
+        with:
+          cache-provider: basic
+      - name: Check the tag
+        id: tag
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          name="${TAG%%/v*}"; ver="${TAG#*/v}"
+          if [ ! -f "mods/$name/build.gradle" ]; then echo "$TAG is not a mod; nothing to publish here."; echo "skip=1" >> "$GITHUB_OUTPUT"; exit 0; fi
+          have="$(sed -n 's/^mod_version=//p' "mods/$name/gradle.properties")"
+          [ "$have" = "$ver" ] || { echo "mods/$name mod_version is $have, tag says $ver"; exit 1; }
+          echo "name=$name" >> "$GITHUB_OUTPUT"
+          echo "modrinth=$(sed -n 's/^modrinth_project=//p' "mods/$name/gradle.properties")" >> "$GITHUB_OUTPUT"
+      - name: Build the jar
+        if: ${{ !steps.tag.outputs.skip }}
+        run: ./gradlew :${{ steps.tag.outputs.name }}:jar --stacktrace
+      - name: GitHub Release
+        if: ${{ !steps.tag.outputs.skip }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          name="${{ steps.tag.outputs.name }}"
+          notes="mods/$name/CHANGELOG.md"; [ -f "$notes" ] || notes=/dev/null
+          gh release create "$TAG" $(ls mods/$name/build/libs/$name-*.jar | grep -v -- -sources) --title "$name ${TAG#*/v}" --notes-file "$notes"
+      - name: Modrinth
+        if: ${{ !steps.tag.outputs.skip && steps.tag.outputs.modrinth != '' && env.MODRINTH_TOKEN != '' }}
+        run: ./gradlew :${{ steps.tag.outputs.name }}:modrinth --no-configuration-cache --stacktrace
