@@ -353,6 +353,21 @@ public class CampPiece extends StructurePiece {
 					}
 				}
 			}
+			// the throne (medium and large outposts): after the gate and pen, before the lean-tos; its own random stream
+			if (kind.nether() && size != CampTuning.Size.SMALL) {
+				RandomSource throneRandom = RandomSource.create(net.minecraft.world.level.levelgen.RandomSupport.mixStafford13(seed ^ 0x7420E5L));
+				int span = Math.max(1, r - THRONE_MIN_DISTANCE);
+				for (int t = 0; t < TRIES * 16 && throne == null; t++) {
+					double a = throneRandom.nextDouble() * Math.PI * 2.0;
+					int d = THRONE_MIN_DISTANCE + t % span;
+					int x = cx + (int) Math.round(Math.cos(a) * d);
+					int z = cz + (int) Math.round(Math.sin(a) * d);
+					Direction facing = Direction.getApproximateNearest(cx - x, 0.0, cz - z);
+					if (claim(throneFootprint(x, z, facing))) {
+						throne = new ThroneSpot(x, z, facing);
+					}
+				}
+			}
 			int leanToCount = 1 + random.nextInt(size == CampTuning.Size.SMALL ? 1 : 2);
 			double la = random.nextDouble() * Math.PI * 2.0;
 			for (int i = 0; i < leanToCount; i++) {
@@ -381,21 +396,6 @@ public class CampPiece extends StructurePiece {
 					if (claim(stableFootprint(spot, centre))) {
 						stable = spot;
 						break;
-					}
-				}
-			}
-			// the throne (medium and large outposts): after the lean-tos and stable, before towers and dressing; its own random stream
-			if (kind.nether() && size != CampTuning.Size.SMALL) {
-				RandomSource throneRandom = RandomSource.create(net.minecraft.world.level.levelgen.RandomSupport.mixStafford13(seed ^ 0x7420E5L));
-				int span = Math.max(1, r - THRONE_MIN_DISTANCE);
-				for (int t = 0; t < TRIES * 16 && throne == null; t++) {
-					double a = throneRandom.nextDouble() * Math.PI * 2.0;
-					int d = THRONE_MIN_DISTANCE + t % span;
-					int x = cx + (int) Math.round(Math.cos(a) * d);
-					int z = cz + (int) Math.round(Math.sin(a) * d);
-					Direction facing = Direction.getApproximateNearest(cx - x, 0.0, cz - z);
-					if (claim(throneFootprint(x, z, facing))) {
-						throne = new ThroneSpot(x, z, facing);
 					}
 				}
 			}
@@ -736,8 +736,19 @@ public class CampPiece extends StructurePiece {
 		for (ThroneDesign.Placed placed : ThroneDesign.blocks(t.facing)) {
 			BlockPos at = new BlockPos(t.x, y0 + 1, t.z).offset(placed.offset());
 			b.put(at.getX(), at.getY(), at.getZ(), placed.state());
+			// the king's snacks on the armrest shelves
+			if (b.inside(at.getX(), at.getY(), at.getZ())
+					&& b.level().getBlockEntity(at) instanceof net.minecraft.world.level.block.entity.ShelfBlockEntity shelf) {
+				int roll = Math.floorMod((int) net.minecraft.world.level.levelgen.RandomSupport.mixStafford13(seed ^ at.asLong()), THRONE_SNACKS.length);
+				shelf.getItems().set(1, new net.minecraft.world.item.ItemStack(THRONE_SNACKS[roll]));
+				shelf.setChanged(null);
+			}
 		}
 	}
+
+	/** What the boss keeps on its armrests, one on each shelf. */
+	private static final net.minecraft.world.item.Item[] THRONE_SNACKS = { net.minecraft.world.item.Items.GOLD_INGOT,
+			net.minecraft.world.item.Items.GOLDEN_CARROT, net.minecraft.world.item.Items.GOLD_NUGGET, net.minecraft.world.item.Items.COOKED_PORKCHOP };
 
 	/** The throne, or null (small outposts, other kinds). */
 	public CampSite.Throne throne() {
