@@ -58,6 +58,7 @@ What changed: each creeper pixel takes the closest colour (OKLch lightness match
 | Our texture (`assets/bubbas_reworked_mobs/textures/`) | Derived from (CF32J, `assets/minecraft/textures/`) |
 |---|---|
 | `item/wither_captain_spawn_egg.png` | `item/wither_skeleton_spawn_egg.png` (egg unchanged, moved down 2 px; our horns on top) |
+| `item/soulfire_blaze_spawn_egg.png` | `item/blaze_spawn_egg.png` (recoloured onto the Soulfire Blaze's soul ramp) |
 
 Website: https://faithfulpack.net
 Used under the Faithful License: https://faithfulpack.net/license

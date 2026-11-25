@@ -321,10 +321,9 @@ public class ModDataGenerator implements DataGeneratorEntrypoint {
 			gen.generateFlatItem(io.github.bubba8587.bubbas_reworked_mobs.soulfire.Soulfire.SOUL_BLAZE_POWDER, ModelTemplates.FLAT_ITEM);
 			gen.generateFlatItem(io.github.bubba8587.bubbas_reworked_mobs.soulfire.Soulfire.SOUL_FIRE_CHARGE, ModelTemplates.FLAT_ITEM);
 			gen.generateFlatItem(io.github.bubba8587.bubbas_reworked_mobs.soulfire.phasing.Phasing.EYE_OF_THE_SOUL, ModelTemplates.FLAT_ITEM);
-			// Spawn eggs: the Wither Captain's own icon; the others reuse vanilla eggs
+			// Spawn eggs: the Wither Captain's and Soulfire Blaze's own icons; the others reuse vanilla eggs
 			gen.generateFlatItem(ModItems.WITHER_CAPTAIN_SPAWN_EGG, ModelTemplates.FLAT_ITEM);
-			gen.itemModelOutput.accept(ModItems.SOULFIRE_BLAZE_SPAWN_EGG,
-					net.minecraft.client.data.models.model.ItemModelUtils.plainModel(net.minecraft.resources.Identifier.withDefaultNamespace("item/blaze_spawn_egg")));
+			gen.generateFlatItem(ModItems.SOULFIRE_BLAZE_SPAWN_EGG, ModelTemplates.FLAT_ITEM);
 			gen.itemModelOutput.accept(ModItems.BOSS_PIGLIN_SPAWN_EGG,
 					net.minecraft.client.data.models.model.ItemModelUtils.plainModel(net.minecraft.resources.Identifier.withDefaultNamespace("item/piglin_spawn_egg")));
 		}

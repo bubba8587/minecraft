@@ -31,5 +31,8 @@ The head of `resourcepacks/bubbas_reworked_mobs_32x/assets/bubbas_reworked_mobs/
 
 `resourcepacks/bubbas_reworked_mobs_32x/assets/bubbas_reworked_mobs/textures/item/wither_captain_spawn_egg.png` is derived from **Classic Faithful 32x Jappa**'s `assets/minecraft/textures/item/wither_skeleton_spawn_egg.png` (`java-latest` branch, November 2026): CF32J's egg unchanged, moved down 2 pixels, with our own horns drawn on top. (The 16x is vanilla's wither skeleton spawn egg treated the same way.) Made by `tools-local/make_captain_egg_texture.py`.
 
+### Soulfire Blaze spawn egg (32x)
+`resourcepacks/bubbas_reworked_mobs_32x/assets/bubbas_reworked_mobs/textures/item/soulfire_blaze_spawn_egg.png` is derived from **Classic Faithful 32x Jappa**'s `assets/minecraft/textures/item/blaze_spawn_egg.png` (`java-latest` branch, November 2026): CF32J's egg recoloured pixel for pixel onto the Soulfire Blaze's soul ramp. (The 16x is vanilla's blaze spawn egg treated the same way.) Made by `tools-local/make_captain_egg_texture.py`.
+
 Website: https://faithfulpack.net
 Used under the Faithful License: https://faithfulpack.net/license

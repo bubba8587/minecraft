@@ -1,6 +1,6 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "minecraft:item/blaze_spawn_egg"
+    "model": "bubbas_reworked_mobs:item/soulfire_blaze_spawn_egg"
   }
 }
