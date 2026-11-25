@@ -79,8 +79,8 @@ public final class BeaconLogic {
 				int bz = Mth.floor(z - (z == area.maxZ ? 0.5 : 0.0));
 				List<Integer> heights = new ArrayList<>();
 				if (ctx.mode() == BeaconMode.PAIRED) {
-					heights.add(pos.getY());
-					heights.add(pos.getY() + rb.bubba$pairGap());
+					heights.add((int) area.minY);
+					heights.add((int) Math.ceil(area.maxY - EDGE_COLUMN * 0.5));
 				} else if (level.hasChunkAt(new BlockPos(bx, pos.getY(), bz))) {
 					heights.add(Math.max((int) area.minY, level.getHeight(Heightmap.Types.MOTION_BLOCKING, bx, bz)));
 				}

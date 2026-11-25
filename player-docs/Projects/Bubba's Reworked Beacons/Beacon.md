@@ -67,7 +67,7 @@ A beacon with a pyramid below and the usual clear beam to the sky works over van
 
 ### Seeing the edges
 
-Whenever a beacon's effect changes (an item goes in or is swapped, the pyramid grows or shrinks, a pair forms), short columns of coloured particles rise at the four corners of its area for about three seconds, in the colour of the item's effect. Sky beacons show them on the ground at each corner; paired beacons at the height of each of the two beacons. To check a beacon's edges again, take its item out and put it back.
+Whenever a beacon's effect changes (an item goes in or is swapped, the pyramid grows or shrinks, a pair forms), short columns of coloured particles rise at the four corners of its area for about three seconds, in the colour of the item's effect. Sky beacons show them on the ground at each corner; paired beacons at all eight corners of their box, top and bottom. Underground those corners are often inside solid rock, so they show only where the corner is open. To check a beacon's edges again, take its item out and put it back.
 
 ### Upside-down beacon
 

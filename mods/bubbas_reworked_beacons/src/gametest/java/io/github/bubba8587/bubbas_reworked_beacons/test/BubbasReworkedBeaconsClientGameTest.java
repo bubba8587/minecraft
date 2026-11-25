@@ -54,6 +54,15 @@ public class BubbasReworkedBeaconsClientGameTest implements FabricClientGameTest
 
 			openScreen(context, sp, pairFloor, "bubbas_reworked_beacons-screen-paired-capped");
 
+			// Paired corners: the box's bottom and top corners, seen from outside one corner
+			sp.getServer().runOnServer(server -> setItem(server, pairFloor, new ItemStack(Items.AMETHYST_SHARD)));
+			stand(sp, pairFloor.offset(-90, 4, -90));
+			sp.getServer().waitFor(server -> server.overworld().getBlockEntity(pairFloor) instanceof BeaconBlockEntity be
+					&& ((ReworkedBeacon) be).bubba$edgeFlash() > 0, 200);
+			context.getInput().lookAt(-45.0F, 0.0F);
+			context.waitTicks(12);
+			context.takeScreenshot("bubbas_reworked_beacons-edge-paired");
+
 			// Corner particles: a ground sky beacon changes item; shots of one corner and the whole square
 			BlockPos column = sky.west(40);
 			stand(sp, column.atY(Y - 60));
