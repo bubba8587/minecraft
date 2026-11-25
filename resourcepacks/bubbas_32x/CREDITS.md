@@ -41,5 +41,11 @@ What changed: each creeper pixel takes the closest colour (OKLch lightness match
 |---|---|
 | `mob_effect/soulguard.png` | `mob_effect/fire_resistance.png` (flame only, soul colours, doubled; our padlock) |
 
+### Bubba's Reworked Mobs: Boss Piglin head
+
+| Our texture (`assets/bubbas_reworked_mobs/textures/`) | Derived from (CF32J, `assets/minecraft/textures/`) |
+|---|---|
+| `entity/boss_piglin.png` (head, ears, snout, brow and tusk regions only) | `entity/piglin/piglin.png` (head and ears as they are; snout widened and deepened, tusks stretched, brow from its forehead; our palette, our gold tusk caps and earring) |
+
 Website: https://faithfulpack.net
 Used under the Faithful License: https://faithfulpack.net/license

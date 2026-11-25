@@ -1,14 +1,21 @@
 # dte:C1,B16,B17
 """Boss Piglin art (specs/boss-piglin.md): the fat piglin skin and its cape, 16x and 32x.
 
-The box layout here mirrors BossPiglinModel / BossPiglinCapeLayer (src/client); change both together.
+The box layout here mirrors BossPiglinModel / BossPiglinCapeLayer (src/client); `--java` prints the cube code
+for BossPiglinModel.createBodyLayer so the two stay in step. UVs are packed here, deterministically.
 The skin is painted in 3D: every texel is mapped back to its point on the model, so vest, belt, belly and
-shading line up across faces. The head is vanilla piglin.png's (plus gold tusk caps, an earring and a scar).
+shading line up across faces. The 16x head is painted the same way (piglin palette). The 32x head is Classic
+Faithful 32x Jappa's piglin head (CREDITS.md) fitted to our head boxes, with our gold tusk caps and earring.
 
-Usage: python3 make_boss_piglin_textures.py [vanilla_textures_dir]
-(default: build/mcsrc/<version>/vanilla/assets/minecraft/textures of the main checkout). Needs Pillow.
+Usage: python3 make_boss_piglin_textures.py [--java]
+CF32J is read from its zip (default: the owner's Modrinth profile) or CF32J=<zip or unpacked folder>; without it
+the committed 32x skin is kept. Needs Pillow.
 """
+import io
+import math
+import os
 import sys
+import zipfile
 from pathlib import Path
 
 from PIL import Image
@@ -22,37 +29,101 @@ OUT32 = RES / f"resourcepacks/{MOD}_32x/assets/{MOD}/textures"
 # --- model layout (model units; y down; standing feet at y=24) --------------------------------------------------------
 
 TEX_W, TEX_H = 128, 128
-# landmarks (standing): hips at y 17, feet at 24, top of the shoulders at 1
 HIP = 17
-# part: (pivot, rest rotation, [cube...]); cube: (u, v, x, y, z, w, h, d) relative to the pivot
-PARTS = {
+ARM_X = 12
+# part: (pivot, rest rotation, [(name, x, y, z, w, h, d)...]) relative to the pivot; UVs fixed or packed below
+LAYOUT = {
 	"head": ((0, 3, -1.5), (0, 0, 0), [
-		(0, 0, -5, -8, -4, 10, 8, 8),
-		(31, 1, -2, -4, -5, 4, 4, 1),
-		(2, 4, 2, -2, -5, 1, 2, 1),
-		(2, 0, -3, -2, -5, 1, 2, 1),
+		("head", -5, -8, -4, 10, 8, 8),
+		("snout", -3.5, -4, -6, 7, 4, 2),
+		("brow", -4, -6, -5, 8, 1, 1),
+		("tusk_r", -4.5, -3, -6, 1, 3, 1),
+		("tusk_l", 3.5, -3, -6, 1, 3, 1),
 	]),
-	"left_ear": ((4.5, -6, 0), (0, 0, -0.5235988), [(51, 6, 0, 0, -2, 1, 5, 4)]),
-	"right_ear": ((-4.5, -6, 0), (0, 0, 0.5235988), [(39, 6, -1, 0, -2, 1, 5, 4)]),
+	"left_ear": ((4.5, -6, 0), (0, 0, -0.35), [("ear", 0, 0, -2, 1, 5, 4)]),
+	"right_ear": ((-4.5, -6, 0), (0, 0, 0.35), [("ear", -1, 0, -2, 1, 5, 4)]),
 	"body": ((0, HIP, 0), (0, 0, 0), [
-		(0, 16, -10, -15, -7, 20, 15, 14),  # torso
-		(0, 45, -11, -11, -8, 22, 9, 16),  # girth
-		(68, 16, -9, -12, -10, 18, 11, 3),  # belly
-		(68, 30, -7, -10.5, -12, 14, 8, 2),  # belly front
-		(0, 70, -8, -6, 8, 16, 6, 2),  # rear
-		(36, 70, -8, -14, 7, 16, 9, 2),  # back
-		(64, 0, -10, -16, -4.5, 6, 3, 9),  # right shoulder
-		(94, 0, 4, -16, -4.5, 6, 3, 9),  # left shoulder
+		("torso", -10, -15, -7, 20, 15, 14),
+		("girth", -11, -11, -8, 22, 9, 16),
+		("belly", -9, -12, -10, 18, 11, 3),
+		("belly_front", -7, -10.5, -12, 14, 8, 2),
+		("rear", -8, -6, 8, 16, 6, 2),
+		("back", -8, -14, 7, 16, 9, 2),
+		("shoulder_r", -10, -16, -4.5, 6, 3, 9),
+		("shoulder_l", 4, -16, -4.5, 6, 3, 9),
 	]),
-	"right_arm": ((-12, 4, 0), (0, 0, 0), [(0, 81, -4, -2, -3, 6, 12, 6)]),
-	"left_arm": ((12, 4, 0), (0, 0, 0), [(24, 81, -2, -2, -3, 6, 12, 6)]),
-	"right_leg": ((-5, HIP, 0), (0, 0, 0), [(48, 81, -3.5, 0, -3.5, 7, 7, 7)]),
-	"left_leg": ((5, HIP, 0), (0, 0, 0), [(76, 81, -3.5, 0, -3.5, 7, 7, 7)]),
+	"right_arm": ((-ARM_X, 4, 0), (0, 0, 0), [("arm", -4, -2, -3, 6, 12, 6)]),
+	"left_arm": ((ARM_X, 4, 0), (0, 0, 0), [("arm", -2, -2, -3, 6, 12, 6)]),
+	"right_leg": ((-5, HIP, 0), (0, 0, 0), [("leg", -3.5, 0, -3.5, 7, 7, 7)]),
+	"left_leg": ((5, HIP, 0), (0, 0, 0), [("leg", -3.5, 0, -3.5, 7, 7, 7)]),
 }
-BODY_CUBES = ["torso", "girth", "belly", "belly_front", "rear", "back", "shoulder", "shoulder"]
+FIXED_UV = {
+	("head", "head"): (0, 0), ("left_ear", "ear"): (51, 6), ("right_ear", "ear"): (39, 6),
+	("body", "torso"): (0, 16), ("body", "girth"): (0, 45), ("body", "belly"): (68, 16), ("body", "belly_front"): (68, 30),
+	("body", "rear"): (0, 70), ("body", "back"): (36, 70), ("body", "shoulder_r"): (64, 0), ("body", "shoulder_l"): (94, 0),
+	("right_arm", "arm"): (0, 81), ("left_arm", "arm"): (24, 81), ("right_leg", "leg"): (48, 81), ("left_leg", "leg"): (76, 81),
+}
+
+
+def pack():
+	"""Shelf-pack every cube's UV net into the texture; returns {(part, name): (u, v)}."""
+	used = [[False] * TEX_W for _ in range(TEX_H)]
+
+	def free(u, v, w, h):
+		if u + w > TEX_W or v + h > TEX_H:
+			return False
+		return all(not used[y][x] for y in range(v, v + h) for x in range(u, u + w))
+
+	def take(u, v, w, h):
+		for y in range(v, v + h):
+			for x in range(u, u + w):
+				used[y][x] = True
+
+	out = {}
+	jobs = []
+	for part, (_p, _r, cubes) in LAYOUT.items():
+		for (name, _x, _y, _z, w, h, d) in cubes:
+			nw, nh = 2 * (w + d), d + h
+			if (part, name) in FIXED_UV:
+				u, v = FIXED_UV[(part, name)]
+				take(u, v, nw, nh)
+				out[(part, name)] = (u, v)
+			else:
+				jobs.append((nh, nw, part, name))
+	jobs.sort(key=lambda j: (-j[0], -j[1], j[2], j[3]))
+	for nh, nw, part, name in jobs:
+		for v in range(TEX_H):
+			hit = next((u for u in range(TEX_W) if free(u, v, nw, nh)), None)
+			if hit is not None:
+				take(hit, v, nw, nh)
+				out[(part, name)] = (hit, v)
+				break
+		else:
+			raise SystemExit(f"texture full: {part}/{name}")
+	return out
+
+
+UV = pack()
+PARTS = {part: (pivot, rot, [UV[(part, c[0])] + tuple(c[1:]) for c in cubes]) for part, (pivot, rot, cubes) in LAYOUT.items()}
+NAMES = {part: [c[0] for c in cubes] for part, (_p, _r, cubes) in LAYOUT.items()}
 
 CAPE_W, CAPE_H = 64, 32
 CAPE_CUBE = (0, 0, -10, 0, -1, 20, 20, 1)
+
+
+def java():
+	"""The createBodyLayer cube code for BossPiglinModel."""
+	def num(f):
+		return f"{float(f)}F"
+
+	lines = []
+	for part, (_p, _r, cubes) in PARTS.items():
+		key = "left_ear" if part == "left_ear" else part
+		lines.append(f'\t\t\tcase "{key}" -> CubeListBuilder.create()')
+		for i, (u, v, x, y, z, w, h, d) in enumerate(cubes):
+			end = ";" if i == len(cubes) - 1 else ""
+			lines.append(f"\t\t\t\t.texOffs({u}, {v}).addBox({num(x)}, {num(y)}, {num(z)}, {num(w)}, {num(h)}, {num(d)}){end}  // {NAMES[part][i]}")
+	return "\n".join(lines)
 
 
 def faces(cube, grow=(0, 0, 0), mirror=False):
@@ -86,6 +157,9 @@ def faces(cube, grow=(0, 0, 0), mirror=False):
 
 NORMALS = {"down": (0, -1, 0), "up": (0, 1, 0), "west": (-1, 0, 0), "east": (1, 0, 0), "north": (0, 0, -1),
 		"south": (0, 0, 1)}
+# model space is y-down: the "up" face points to -y
+MODEL_N = {"down": (0, 1, 0), "up": (0, -1, 0), "west": (-1, 0, 0), "east": (1, 0, 0), "north": (0, 0, -1),
+		"south": (0, 0, 1)}
 
 
 def texels(quad, r):
@@ -116,13 +190,33 @@ def hx(s):
 SKIN = [hx(c) for c in ("f2ba86", "e8a074", "d5957a", "c98265", "ba6645", "ad5532", "974322")]
 LEATHER = [hx(c) for c in ("a2593a", "844b33", "6b3924", "532b1a", "3a1a0c")]
 GOLD = [hx(c) for c in ("fffbb0", "f5da2a", "de8a1c", "a5590c")]
-HOOF = [hx(c) for c in ("3c392e", "211e1c")]
+HOOF = [hx(c) for c in ("4a463a", "3c392e", "2b2824", "211e1c")]
+IVORY = [hx(c) for c in ("fff4d6", "e8dcb8", "c9bb94")]
 SCAR = hx("f6cfa4")
 RED = [hx(c) for c in ("d1453b", "b02e25", "8e1f1a", "6e1511", "4c0c0a")]
+EYE = hx("fff4d6")
+NOSTRIL = [hx(c) for c in ("7a2621", "a13e38", "5a1714")]
 
 
-def ramp(r, i):
-	return r[max(0, min(len(r) - 1, int(round(i))))]
+def mid(a, b):
+	return tuple((a[k] + b[k]) // 2 for k in range(3))
+
+
+def fine(r):
+	"""A ramp with half steps (the 32x set's softer, Classic-Faithful-style gradients)."""
+	out = []
+	for i, c in enumerate(r):
+		out.append(c)
+		if i + 1 < len(r):
+			out.append(mid(c, r[i + 1]))
+	return out
+
+
+def ramp(rp, i, res=1):
+	if res == 2:
+		f = fine(rp)
+		return f[max(0, min(len(f) - 1, int(round(i * 2))))]
+	return rp[max(0, min(len(rp) - 1, int(round(i))))]
 
 
 def h01(x, y, seed=0):
@@ -139,21 +233,55 @@ def grain(iu, iv, r, seed):
 	return -1 if n < 0.18 else (1 if n > 0.80 else 0)
 
 
+# --- lighting: shading for volume -------------------------------------------------------------------------------------
+
+LIGHT = (-0.3, -0.75, -0.6)  # from above, front, a little left (model space, y down)
+_ln = math.sqrt(sum(c * c for c in LIGHT))
+LIGHT = tuple(c / _ln for c in LIGHT)
+GUT = ((0.0, 11.0, -1.0), (12.0, 6.5, 13.0))  # centre and radii of the belly's ellipsoid (world model units)
+
+
+def lit(n):
+	return sum(n[k] * LIGHT[k] for k in range(3))
+
+
+def gut_normal(p, face):
+	"""Normal of the belly's ellipsoid under this point (so the stepped boxes shade as one round mass)."""
+	c, rr = GUT
+	dx, dy = (p[0] - c[0]) / rr[0], (p[1] - c[1]) / rr[1]
+	q = 1 - dx * dx - dy * dy
+	fn = MODEL_N[face]
+	if q <= 0.02 or fn[1] != 0:
+		g = [dx, dy, -math.sqrt(max(q, 0.02))] if fn[2] <= 0 else [dx, dy, math.sqrt(max(q, 0.02))]
+	else:
+		g = [dx, dy, -math.sqrt(q) if p[2] < c[2] else math.sqrt(q)]
+	ln = math.sqrt(sum(x * x for x in g)) or 1
+	g = [x / ln for x in g]
+	return tuple(0.8 * g[k] + 0.2 * fn[k] for k in range(3))
+
+
 # --- the skin ---------------------------------------------------------------------------------------------------------
 
 
-def skin_colour(part, ci, face, p, s, t, iu, iv, r):
+def body_skin(p, face, g, res, base=2.0):
+	"""Bare skin on the torso and gut, shaded as one round mass."""
+	n = gut_normal(p, face)
+	return ramp(SKIN, base - 3.0 * lit(n) + max(0.0, p[1] - 12.5) * 0.3 + g * 0.5, res)
+
+
+def skin_colour(part, name, face, p, iu, iv, r):
 	"""Colour of one texel; p is the point in model space (standing rest pose)."""
 	x, y, z = p
 	nx, ny, nz = NORMALS[face]
-	g = grain(iu, iv, r, 7 + ci)
+	g = grain(iu, iv, r, 7 + BODY_SEED.get(name, 0))
 	px = 1.0 / r  # one texel in model units
 
 	if part in ("right_leg", "left_leg"):
 		if face == "up":
 			return ramp(LEATHER, 2 + g * 0.6)
 		if face == "down" or y >= 23:
-			return ramp(HOOF, 0 if (face != "down" and g >= 0) else 1)
+			cleft = face == "north" and abs(x - (5 if x > 0 else -5)) < 0.5
+			return ramp(HOOF, 3 if cleft or (face != "down" and g < 0) else 1)
 		if y < 19.5:  # short pants
 			edge = y > 19.5 - px
 			return ramp(LEATHER, (3 if edge else 1.6) + g * 0.6 + (0.6 if nz > 0 else 0))
@@ -163,9 +291,11 @@ def skin_colour(part, ci, face, p, s, t, iu, iv, r):
 		return ramp(SKIN, shade + g * 0.7)
 
 	if part in ("right_arm", "left_arm"):
+		ax = -ARM_X if part == "right_arm" else ARM_X
 		inner = nx != 0 and nx * x < 0
-		if face == "down":
-			return ramp(SKIN, 4 + g * 0.6)
+		if face == "down":  # curled fingers
+			lines = int((x - ax + 10) * r) % (2 if r == 1 else 3) == 0 and z < 0.5
+			return ramp(SKIN, (5 if lines else 4) + g * 0.4)
 		if face == "up" or y < 5:  # leather shoulder pad
 			edge = 5 - px <= y < 5
 			return ramp(LEATHER, (3 if edge else 1.3) + g * 0.6 + (0.5 if inner else 0))
@@ -173,26 +303,26 @@ def skin_colour(part, ci, face, p, s, t, iu, iv, r):
 		if band[0] <= y < band[1]:  # gold arm ring / bracelet
 			hi = y < band[0] + px
 			return ramp(GOLD, (1 if hi else 2) + (1 if inner else 0) + (0.6 if nz > 0 else 0))
+		if face == "north" and y >= 12:  # knuckles: light bumps, dark gaps
+			kx = x - (ax - 3)
+			gap = int(kx) % 2 == 1 if r == 1 else int(kx * 2) % 3 == 2
+			if y < 13:
+				return ramp(SKIN, 3.2 if gap else (1.0 if r == 1 or y < 12.5 else 1.6))
+			return ramp(SKIN, 3.0 + (0.6 if gap else 0))
 		shade = 1.8 + (y - 5) * 0.18 + (1.2 if inner else 0) + (0.5 if nz > 0 else 0)
 		return ramp(SKIN, shade + g * 0.7)
 
-	name = BODY_CUBES[ci]
 	if name in ("belly", "belly_front"):  # bare, round, belly button
 		if face == "down":
 			return ramp(SKIN, 4.6 + g * 0.5)
-		if face == "up":
-			return ramp(SKIN, (1.2 if name == "belly_front" else 1.6) + g * 0.6)
+		if name == "belly_front" and nz < 0 and abs(x) < 0.5 * (2 - r) + 0.5 * (r - 1) * 1.0 and 11 <= y < 12:
+			if r == 1 and x == 0 or r == 2:
+				return SKIN[6] if (r == 1 or y < 11.5) else SKIN[5]
 		if nz < 0:
-			cx, cy = x / 9.0, (y - 10.5) / 5.5
-			rr = cx * cx + cy * cy
-			if name == "belly_front" and abs(x) < 0.5 * (2 - r) + 0.5 * (r - 1) * 1.0 and 11 <= y < 12:
-				if r == 1 and x == 0 or r == 2:
-					return SKIN[6] if (r == 1 or y < 11.5) else SKIN[5]
-			bristle = h01(iu, iv, 99) < (0.010 if r == 1 else 0.005) and rr < 0.8
+			bristle = h01(iu, iv, 99) < (0.010 if r == 1 else 0.005) and abs(x) > 3
 			if bristle:
 				return LEATHER[0]
-			return ramp(SKIN, (0.8 if name == "belly_front" else 1.6) + rr * 1.8 + max(0, y - 11) * 0.3 + g * 0.6)
-		return ramp(SKIN, 3.0 + (y - 10.5) * 0.25 + g * 0.6)  # belly sides
+		return body_skin(p, face, g, 1, 2.0)
 
 	if name == "rear":  # loincloth over the seat
 		if face == "down":
@@ -200,8 +330,7 @@ def skin_colour(part, ci, face, p, s, t, iu, iv, r):
 		seam = nz > 0 and abs(x) < px * 0.6
 		return ramp(LEATHER, (3 if seam else 1.6) + (y - 13) * 0.2 + g * 0.6)
 
-	if name == "shoulder":  # vest over the shoulders
-		edge = face != "up" and y > 4 - px - 0.001 and False
+	if name.startswith("shoulder"):  # vest over the shoulders
 		return ramp(LEATHER, (1.2 if face == "up" else 1.8) + (0.6 if nx * x < 0 else 0) + g * 0.6)
 
 	if face == "down":
@@ -231,92 +360,147 @@ def skin_colour(part, ci, face, p, s, t, iu, iv, r):
 			i = 3
 		return ramp(LEATHER, i + g * 0.6)
 	# bare skin: chest, girth front, flanks under the vest
-	shade = 1.6 + (y - 8) * 0.15
-	if nz < 0 and name == "torso":  # chest with a cleft between the pecs and an old scar
+	if nz < 0 and name == "torso" and y < 8 + px:  # chest with a cleft between the pecs and an old scar
 		if r == 1 and (x, y) in ((-4.5, 4.5), (-3.5, 5.5), (-2.5, 6.5)) or r == 2 and abs((x + 4.5) - (y - 4.5)) < 0.3 and -5 < x < -2:
 			return SCAR
 		if abs(x) < px * 0.6 and 3 < y < 7.5:
 			return ramp(SKIN, 3.4)
 		if 7.5 <= y < 8 + px * 0.5 and 1 < abs(x) < 5.5:
 			return ramp(SKIN, 3.0)  # pec underline
-		shade = 1.2 + (abs(x) / 6.5) * 0.8
-	if name == "girth" and nz < 0:
-		shade = 2.0 + (abs(x) / 11) * 1.6
-	if nx != 0:
-		shade += 0.8
-	bristle = nz < 0 and h01(iu, iv, 31) < (0.04 if r == 1 else 0.02)
+		return ramp(SKIN, 1.2 + (abs(x) / 6.5) * 0.8 + g * 0.6)
+	bristle = nz < 0 and h01(iu, iv, 31) < (0.04 if r == 1 else 0.02) and abs(x) > 4
 	if bristle:
 		return LEATHER[0]
-	return ramp(SKIN, shade + g * 0.6)
+	return body_skin(p, face, g, 1, 2.2)
 
 
-def paint_skin(r, vanilla):
+BODY_SEED = {"torso": 0, "girth": 1, "belly": 2, "belly_front": 3, "rear": 4, "back": 5, "shoulder_r": 6, "shoulder_l": 7}
+
+
+def head_colour(name, face, p, iu, iv, r):
+	"""Head, snout, brow and tusks; p in head space (pivot removed)."""
+	x, y, z = p
+	px = 1.0 / r
+	g = grain(iu, iv, r, 5)
+	mn = MODEL_N[face]
+	lf = lit(mn)
+	if name in ("tusk_r", "tusk_l"):
+		if y < -2:  # gold cap
+			if face == "up":
+				return GOLD[0]
+			return ramp(GOLD, (1 if y < -2.5 or r == 1 else 2) - lf * 0.6 + (0.6 if face in ("east", "west") else 0))
+		return ramp(IVORY, (0 if face == "north" else 1) + (y + 2) * 0.6 + (0.5 if face == "down" else 0), r)
+	if name == "snout":
+		if face == "north":
+			for cx in (-2, 2):  # nostrils
+				dx, dy = x - cx, y + 2
+				if abs(dx) < 0.5 and -1 <= dy < 1:
+					if r == 1:
+						return NOSTRIL[0] if dy < 0 else NOSTRIL[1]
+					return NOSTRIL[0] if dy < -0.5 else (NOSTRIL[2] if dy < 0.5 else NOSTRIL[1])
+				if r == 2 and abs(dx) < 0.5 and -1.5 <= dy < -1:
+					return ramp(SKIN, 2.6, r)  # rim above the nostril
+			if y >= -px:
+				return ramp(SKIN, 3.4, r)
+			if y < -4 + px:
+				return ramp(SKIN, 1.0, r)
+			return ramp(SKIN, 1.2 + (y + 4) * 0.15 + g * 0.4, r)
+		if face == "up":
+			return ramp(SKIN, 0.6 + g * 0.5, r)
+		if face == "down":
+			return ramp(SKIN, 4.6, r)
+		return ramp(SKIN, 2.6 + (y + 4) * 0.2 + g * 0.4, r)
+	if name == "brow":
+		if face == "down":
+			return ramp(SKIN, 5, r)
+		if face == "up":
+			return ramp(SKIN, 1.2 + g * 0.4, r)
+		if face == "north":
+			furrow = abs(x) < 1  # knotted between the eyes
+			slant = r == 2 and y >= -5.5 and abs(x) > 1  # lower edge darker toward the middle
+			return ramp(SKIN, (3.2 if furrow else 1.8) + (0.8 if slant and abs(x) < 3 else (0.4 if slant else 0)) + g * 0.4, r)
+		return ramp(SKIN, 3.2, r)
+	# the head box
+	if face == "north":
+		# eyes under the brow
+		for cx in (-3, 3):
+			dx = x - cx
+			if -5 <= y < -4 and abs(dx) < 1:
+				if r == 1:
+					inner = dx * cx < 0  # toward the nose
+					return EYE if inner else RED[2]
+				ey = y + 5
+				inner = dx * cx < 0
+				if ey < 0.5:
+					return ramp(SKIN, 4.6, r)  # brow shadow
+				if inner and abs(dx) < 0.5:
+					return EYE
+				if abs(dx) < 0.5:
+					return RED[1]
+				return RED[3] if inner else ramp(SKIN, 4, r)
+			if -4 <= y < -4 + px and abs(dx) < 1.5:
+				return ramp(SKIN, 3.4, r)  # lower lid
+		if -5 <= y < -4 + (0 if r == 1 else 0) and abs(x) < 1.5:
+			return ramp(SKIN, 2.6, r)
+		# brow shadow band and forehead
+		if -5 <= y < -5 + px and abs(x) < 4:
+			return ramp(SKIN, 3.8, r)
+		# mouth line between the tusks and cheeks
+		if -1 <= y < -1 + px and abs(x) < 4.5:
+			return ramp(SKIN, 5.6, r)
+		if y >= -1 + px:
+			return ramp(SKIN, 4.6, r)
+		cheek = y >= -4
+		shade = 0.6 + (y + 8) * 0.15 + (abs(x) / 5) * 0.8 + (0.5 if cheek else 0)
+		return ramp(SKIN, shade + g * 0.5, r)
+	if face == "up":
+		stripe = abs(x) < 1.5
+		return ramp(SKIN, (0.3 if stripe else 0.9) + (z + 4) * 0.1 + g * 0.6, r)
+	if face == "down":
+		return ramp(SKIN, 4.4 + g * 0.3, r)
+	if face == "south":
+		return ramp(SKIN, 2.6 + (y + 8) * 0.15 + g * 0.6, r)
+	# sides: jowls darker low and toward the back
+	jowl = y > -3 and z < 1
+	return ramp(SKIN, 1.4 + (y + 8) * 0.15 + (z + 4) * 0.08 + (0.4 if jowl else 0) + g * 0.6, r)
+
+
+def ear_colour(side, face, p, iu, iv, r):
+	x, y, z = p
+	g = grain(iu, iv, r, 11)
+	outward = (face == "east") if side > 0 else (face == "west")
+	inward = (face == "west") if side > 0 else (face == "east")
+	if outward:
+		if side > 0 and 3.5 <= y < 4.5 and -1.5 <= z < -0.5:  # gold earring
+			return GOLD[1] if (r == 1 or y < 4) else GOLD[2]
+		return ramp(SKIN, 1.6 + y * 0.25 + g * 0.5, r)
+	if inward:
+		inner = 0.5 < y < 4.5 and abs(z) < 1.5
+		return ramp(SKIN, (4.2 if inner else 3) + (0.6 if inner and r == 2 and abs(z) < 0.5 else 0) + g * 0.3, r)
+	return ramp(SKIN, 2.6 + y * 0.2 + g * 0.4, r)
+
+
+def paint_skin(r):
 	img = Image.new("RGBA", (TEX_W * r, TEX_H * r), (0, 0, 0, 0))
 	px = img.load()
-	head = vanilla.crop((0, 0, 64, 16))
-	head = head.resize((64 * r, 16 * r), Image.NEAREST)
-	img.paste(head, (0, 0))
-	if r == 2:
-		regrain_head(img)
-	decorate_head(img, r)
 	used = {}
 	for part, (pivot, _rot, cubes) in PARTS.items():
-		if part in ("left_ear", "right_ear"):
-			continue
 		for ci, cube in enumerate(cubes):
-			if part == "head":
-				continue
+			name = NAMES[part][ci]
 			for face, quad in faces(cube):
 				for iu, iv, p, s, t in texels(quad, r):
 					key = (iu, iv)
 					assert key not in used, f"UV overlap {part}#{ci} with {used[key]} at {key}"
 					used[key] = (part, ci)
-					pt = (p[0] + pivot[0], p[1] + pivot[1], p[2] + pivot[2])
-					px[iu, iv] = skin_colour(part, ci, face, pt, s, t, iu, iv, r) + (255,)
+					if part == "head":
+						c = head_colour(name, face, p, iu, iv, r)
+					elif part.endswith("ear"):
+						c = ear_colour(1 if part == "left_ear" else -1, face, p, iu, iv, r)
+					else:
+						pt = (p[0] + pivot[0], p[1] + pivot[1], p[2] + pivot[2])
+						c = skin_colour(part, name, face, pt, iu, iv, r)
+					px[iu, iv] = c + (255,)
 	return img
-
-
-def regrain_head(img):
-	"""32x head: vanilla's head doubled, with Classic-Faithful-style two-pixel grain on the skin."""
-	px = img.load()
-	for y in range(0, 32):
-		for x in range(0, 128):
-			c = px[x, y]
-			if c[3] == 0 or c[:3] not in SKIN:
-				continue
-			i = SKIN.index(c[:3])
-			n = h01((x + (y // 2) % 2) // 2, y, 5)
-			# only inside flat areas so features keep their crisp 2x edges
-			same = all(px[min(127, max(0, x + dx)), min(31, max(0, y + dy))][:3] == c[:3] for dx in (-1, 1) for dy in (-1, 1))
-			if same and n < 0.10:
-				px[x, y] = ramp(SKIN, i - 1) + (255,)
-			elif same and n > 0.90:
-				px[x, y] = ramp(SKIN, i + 1) + (255,)
-
-
-def decorate_head(img, r):
-	px = img.load()
-
-	def put(x, y, c):
-		for dy in range(r):
-			for dx in range(r):
-				px[x * r + dx, y * r + dy] = c + (255,)
-
-	# gold caps on the tusks (top halves of both tusk boxes: top face and upper side row)
-	for (u, v) in ((2, 0), (2, 4)):
-		for (x, y) in ((u + 1, v), (u + 1, v + 1), (u, v + 1), (u + 2, v + 1), (u + 3, v + 1)):
-			put(x, y, GOLD[1] if (x + y) % 2 else GOLD[2])
-		for (x, y) in ((u, v + 2), (u + 1, v + 2), (u + 2, v + 2), (u + 3, v + 2)):
-			pass
-	# gold ring through the left ear (outer face lower corner) and its edge
-	for (x, y) in ((52, 13), (52, 14), (51, 14)):
-		put(x, y, GOLD[1] if y == 13 else GOLD[2])
-	# old scar over the brow, face front is u 8..18, v 8..16 (left of the left eye as seen)
-	for (x, y) in ((14, 8), (15, 9), (16, 10)):
-		put(x, y, SCAR)
-	if r == 2:
-		px[14 * 2 + 1, 8 * 2 + 1] = SKIN[5] + (255,)
-		px[15 * 2 + 1, 9 * 2 + 1] = SKIN[5] + (255,)
 
 
 # --- the cape ---------------------------------------------------------------------------------------------------------
@@ -336,7 +520,6 @@ def cape_outer(cx, cy, r, iu, iv):
 	"""Outside of the cape: 20 x 20 cells, cx/cy in cells (floats at 32x)."""
 	W, H = 20, 20
 	g = grain(iu, iv, r, 41)
-	sub = 1.0 / r
 	# gold edging down both sides, along the hem and the collar
 	if cx < 1 or cx >= W - 1:
 		return ramp(GOLD, (1 if cx < 1 else 2) + (1 if cy > H - 3 else 0))
@@ -360,8 +543,6 @@ def cape_outer(cx, cy, r, iu, iv):
 			return RED[4]
 		if ch == "w":
 			return hx("fff4d6") if (r == 1 or ey % 1 < 0.5) else hx("d8cfae")
-		if int(ey) in (2, 6) or (int(ey) == 5 and ch == "."):
-			pass
 	# folds: soft vertical creases, wider toward the hem
 	fold = [0, 0.6, 1.2, 0.6, 0, -0.5, 0, 0.7, 1.3, 0.7, 0, -0.5, 0, 0.6, 1.2, 0.6, 0, -0.5, 0, 0.6]
 	i = 1.3 + fold[min(W - 1, int(cx))] * (0.5 + cy / H) + cy * 0.04
@@ -378,7 +559,7 @@ def paint_cape(r):
 			if face == "north":  # the outside once the cape is turned round (as vanilla's)
 				cx = (iu / r) - (u + d)
 				cy = (iv / r) - (v + d)
-				c = cape_outer(cx + 0.5 / r - 0.5 / r, cy, r, iu, iv)
+				c = cape_outer(cx, cy, r, iu, iv)
 			elif face == "south":  # lining
 				c = ramp(RED, 3.3 + g * 0.5 + ((iv / r) - 1) * 0.03)
 			else:  # edges and top/bottom: gold trim
@@ -387,23 +568,143 @@ def paint_cape(r):
 	return img
 
 
-def vanilla_dir():
-	if len(sys.argv) > 1:
-		return Path(sys.argv[1])
-	for base in (ROOT, Path("/home/user/minecraft")):
-		hits = sorted((base / "build/mcsrc").glob("*/vanilla/assets/minecraft/textures"))
-		if hits:
-			return hits[-1]
-	sys.exit("vanilla textures not found; pass the path")
+# --- the 32x head from Classic Faithful 32x Jappa -----------------------------------------------------------------------
+
+CF32J_ZIP = Path(os.environ.get("APPDATA", "")) / "ModrinthApp/profiles/porp/resourcepacks/CF32J-2026r21.zip"
+CF_PIGLIN = "assets/minecraft/textures/entity/piglin/piglin.png"
+
+
+def cf32j_open(member):
+	"""A CF32J texture as an image, from the zip or an unpacked folder; None when the pack isn't here."""
+	src = Path(os.environ.get("CF32J", CF32J_ZIP))
+	if src.is_dir() and (src / member).exists():
+		return Image.open(src / member).convert("RGBA")
+	if src.is_file():
+		with zipfile.ZipFile(src) as zf:
+			if member in zf.namelist():
+				return Image.open(io.BytesIO(zf.read(member))).convert("RGBA")
+	return None
+
+
+def recolour(img):
+	"""Every opaque pixel to the closest colour of our palette."""
+	pal = SKIN + NOSTRIL + IVORY + [EYE]
+	out = img.copy()
+	px = out.load()
+	for y in range(out.height):
+		for x in range(out.width):
+			c = px[x, y]
+			if c[3]:
+				best = min(pal, key=lambda q: sum((q[k] - c[k]) ** 2 for k in range(3)))
+				px[x, y] = best + (255,)
+	return out
+
+
+def widen(img, w):
+	"""Widen a CF32J snout face (8 px: nostril, cheek, middle, cheek, nostril) to w px: a cheek column outside
+	each nostril and the middle stretched."""
+	cols = [img.crop((x, 0, x + 1, img.height)) for x in range(img.width)]
+	mid = w - 8
+	order = [cols[2]] + cols[0:3] + [cols[3]] * (mid // 2) + [cols[3], cols[4]] + [cols[4]] * (mid - mid // 2 - 2) + cols[5:8] + [cols[5]]
+	out = Image.new("RGBA", (w, img.height))
+	for i, c in enumerate(order[:w]):
+		out.paste(c, (i, 0))
+	return out
+
+
+def stretch_rows(img, rows):
+	"""Rebuild an image from a list of its own row indices."""
+	out = Image.new("RGBA", (img.width, len(rows)))
+	for i, y in enumerate(rows):
+		out.paste(img.crop((0, y, img.width, y + 1)), (0, i))
+	return out
+
+
+def net(u, v, w, h, d, faces_):
+	"""Six face images (top, bottom, west, front, east, back) placed as a cube's UV net, in 32x pixels."""
+	pos = {"top": (u + d, v), "bottom": (u + d + w, v), "west": (u, v + d), "front": (u + d, v + d),
+			"east": (u + d + w, v + d), "back": (u + 2 * d + w, v + d)}
+	size = {"top": (w, d), "bottom": (w, d), "west": (d, h), "front": (w, h), "east": (d, h), "back": (w, h)}
+	return [(faces_[k] if faces_[k].size == size[k] else faces_[k].resize(size[k], Image.NEAREST), pos[k]) for k in pos]
+
+
+def head_texel(x, y):
+	"""Whether a 32x texel belongs to the head, its ears, snout, brow or tusks."""
+	for part in ("head", "left_ear", "right_ear"):
+		for cube in PARTS[part][2]:
+			u, v, _x, _y, _z, w, h, d = cube
+			if u * 2 <= x < (u + 2 * (w + d)) * 2 and v * 2 <= y < (v + d + h) * 2:
+				return True
+	return False
+
+
+def cf_head(cf, painted):
+	"""Our 32x head regions from CF32J's piglin head (recoloured to our palette); our gold tusk caps and earring kept."""
+	cf = recolour(cf)
+	out = painted.copy()
+
+	def crop(x, y, w, h):
+		return cf.crop((x, y, x + w, y + h))
+
+	# head box and ears: the same boxes as vanilla's
+	out.paste(crop(0, 0, 72, 32), (0, 0))
+	for (eu, ev) in ((39, 6), (51, 6)):
+		out.paste(crop(eu * 2, ev * 2, 20, 18), (eu * 2, ev * 2))
+	# snout 7x4x2 from CF's 4x4x1 snout (at 62,2): faces widened, depth doubled; the tusk tips on its front become skin
+	front = crop(64, 4, 8, 8)
+	fp = front.load()
+	for y in (6, 7):
+		for x in range(8):
+			if fp[x, y][:3] in IVORY:
+				fp[x, y] = fp[2, y]
+	sn = {"top": widen(crop(64, 2, 8, 2), 14), "bottom": widen(crop(72, 2, 8, 2), 14), "west": crop(62, 4, 2, 8),
+		"front": widen(front, 14), "east": crop(72, 4, 2, 8), "back": widen(crop(74, 4, 8, 8), 14)}
+	u, v = UV[("head", "snout")]
+	for img, at in net(u * 2, v * 2, 14, 8, 4, sn):
+		out.paste(img, at)
+	# brow 8x1x1: CF's forehead just above the eyes (hidden behind the brow), a darker underside
+	hf = crop(16, 16, 20, 16)
+	brow = hf.crop((2, 4, 18, 6))
+	br = {"top": hf.crop((2, 2, 18, 4)), "bottom": Image.new("RGBA", (16, 2), SKIN[3] + (255,)), "west": hf.crop((0, 4, 2, 6)),
+		"front": brow, "east": hf.crop((18, 4, 20, 6)), "back": brow}
+	u, v = UV[("head", "brow")]
+	for img, at in net(u * 2, v * 2, 16, 2, 2, br):
+		out.paste(img, at)
+	# tusks 1x3x1 from CF's 1x2x1 tusks (at 4,0), ivory stretched to 3 tall
+	tall = [0, 0, 1, 1, 2, 3]
+	tk = {"top": crop(6, 0, 2, 2), "bottom": crop(8, 0, 2, 2), "west": stretch_rows(crop(4, 2, 2, 4), tall),
+		"front": stretch_rows(crop(6, 2, 2, 4), tall), "east": stretch_rows(crop(8, 2, 2, 4), tall),
+		"back": stretch_rows(crop(10, 2, 2, 4), tall)}
+	for name in ("tusk_r", "tusk_l"):
+		u, v = UV[("head", name)]
+		for img, at in net(u * 2, v * 2, 2, 6, 2, tk):
+			out.paste(img, at)
+	# our gold on top: tusk caps and the earring
+	po, pp = out.load(), painted.load()
+	golds = set(GOLD) | set(fine(GOLD))
+	for y in range(out.height):
+		for x in range(out.width):
+			if pp[x, y][3] and pp[x, y][:3] in golds and head_texel(x, y):
+				po[x, y] = pp[x, y]
+	return out
 
 
 def main():
-	vanilla = Image.open(vanilla_dir() / "entity/piglin/piglin.png").convert("RGBA")
+	if "--java" in sys.argv:
+		print(java())
+		return
+	cf = cf32j_open(CF_PIGLIN)
 	for r, out in ((1, OUT16), (2, OUT32)):
 		(out / "entity").mkdir(parents=True, exist_ok=True)
-		paint_skin(r, vanilla).save(out / "entity/boss_piglin.png")
+		skin = paint_skin(r)
+		if r == 2:
+			skin = cf_head(cf, skin) if cf is not None else None
+			if skin is None:
+				print("CF32J not found (set CF32J=<zip or folder>): kept the committed 32x boss_piglin.png")
+		if skin is not None:
+			skin.save(out / "entity/boss_piglin.png")
 		paint_cape(r).save(out / "entity/boss_piglin_cape.png")
-	print("wrote boss_piglin.png and boss_piglin_cape.png (16x and 32x)")
+	print("wrote the Boss Piglin skin and cape (16x and 32x)")
 
 
 if __name__ == "__main__":

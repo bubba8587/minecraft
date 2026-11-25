@@ -34,22 +34,23 @@ public class BossPiglinModel extends AbstractPiglinModel<BossPiglinRenderState> 
 	private static final PartPose LEFT_ARM = PartPose.offset(12.0F, 4.0F, 0.0F);
 	private static final PartPose RIGHT_LEG = PartPose.offset(-5.0F, HIP_Y, 0.0F);
 	private static final PartPose LEFT_LEG = PartPose.offset(5.0F, HIP_Y, 0.0F);
-	private static final PartPose LEFT_EAR = PartPose.offsetAndRotation(4.5F, -6.0F, 0.0F, 0.0F, 0.0F, (float) (-Math.PI / 6));
-	private static final PartPose RIGHT_EAR = PartPose.offsetAndRotation(-4.5F, -6.0F, 0.0F, 0.0F, 0.0F, (float) (Math.PI / 6));
+	private static final float EAR_ANGLE = 20.0F * Mth.DEG_TO_RAD;
+	private static final PartPose LEFT_EAR = PartPose.offsetAndRotation(4.5F, -6.0F, 0.0F, 0.0F, 0.0F, -EAR_ANGLE);
+	private static final PartPose RIGHT_EAR = PartPose.offsetAndRotation(-4.5F, -6.0F, 0.0F, 0.0F, 0.0F, EAR_ANGLE);
 
 	// armour clearances over the skin
 	private static final float OUTER = 0.75F;
 	private static final float INNER = 0.45F;
 	private static final float BOOTS = 0.8F;
 
-	// seated: model drop so the thighs rest on the entity position, lean back, thighs forward, hands by the belly
-	static final float SEAT_DROP = 3.5F;
-	private static final float SEAT_LEAN = -0.1F;
-	private static final float SEAT_THIGH_X = -1.45F;
+	// seated: model drop so the thighs rest on the entity position, lean back, thighs forward on the cushions, arms hanging over the armrests
+	static final float SEAT_DROP = 3.0F;
+	private static final float SEAT_LEAN = -0.08F;
+	private static final float SEAT_THIGH_X = -1.5F;
 	private static final float SEAT_THIGH_SPREAD = 0.28F;
 	private static final float SEAT_THIGH_Z = 0.05F;
-	private static final float SEAT_ARM_X = -0.8F;
-	private static final float SEAT_ARM_Z = 0.1F;
+	private static final float SEAT_ARM_X = -0.45F;
+	private static final float SEAT_ARM_Z = 0.15F;
 	private static final float SEAT_HEAD_X = -0.08F;
 	// waddle: short steps, splayed stance, body roll and yaw, a bob
 	private static final float STEP_SCALE = 0.5F;
@@ -80,9 +81,10 @@ public class BossPiglinModel extends AbstractPiglinModel<BossPiglinRenderState> 
 		return LayerDefinition.create(mesh(part -> switch (part) {
 			case "head" -> CubeListBuilder.create()
 				.texOffs(0, 0).addBox(-5.0F, -8.0F, -4.0F, 10.0F, 8.0F, 8.0F)
-				.texOffs(31, 1).addBox(-2.0F, -4.0F, -5.0F, 4.0F, 4.0F, 1.0F)
-				.texOffs(2, 4).addBox(2.0F, -2.0F, -5.0F, 1.0F, 2.0F, 1.0F)
-				.texOffs(2, 0).addBox(-3.0F, -2.0F, -5.0F, 1.0F, 2.0F, 1.0F);
+				.texOffs(36, 0).addBox(-3.5F, -4.0F, -6.0F, 7.0F, 4.0F, 2.0F)
+				.texOffs(61, 12).addBox(-4.0F, -6.0F, -5.0F, 8.0F, 1.0F, 1.0F)
+				.texOffs(58, 0).addBox(-4.5F, -3.0F, -6.0F, 1.0F, 3.0F, 1.0F)
+				.texOffs(54, 0).addBox(3.5F, -3.0F, -6.0F, 1.0F, 3.0F, 1.0F);
 			case "left_ear" -> CubeListBuilder.create().texOffs(51, 6).addBox(0.0F, 0.0F, -2.0F, 1.0F, 5.0F, 4.0F);
 			case "right_ear" -> CubeListBuilder.create().texOffs(39, 6).addBox(-1.0F, 0.0F, -2.0F, 1.0F, 5.0F, 4.0F);
 			case "body" -> CubeListBuilder.create()
@@ -103,8 +105,8 @@ public class BossPiglinModel extends AbstractPiglinModel<BossPiglinRenderState> 
 	}
 
 	/**
-	 * Gold (vanilla humanoid) armour fitted to the big body: helmet; chest as a plate over chest and shoulders plus a
-	 * belly plate, and the arms; leggings as a hip band plus the legs; boots. 64x32 armour textures.
+	 * Gold (vanilla humanoid) armour fitted to the big body: helmet; chest as a plate round the chest (its top under the
+	 * chin, so snout and tusks show) plus a belly plate, and the arms; leggings as a hip band plus the legs; boots. 64x32 armour textures.
 	 */
 	public static ArmorModelSet<LayerDefinition> createArmorLayers() {
 		return new ArmorModelSet<>(
@@ -115,7 +117,7 @@ public class BossPiglinModel extends AbstractPiglinModel<BossPiglinRenderState> 
 			}),
 			armour(part -> switch (part) {
 				case "body" -> CubeListBuilder.create()
-					.texOffs(16, 16).addBox(-4.0F, -18.5F, -2.0F, 8.0F, 12.0F, 4.0F, new CubeDeformation(6.0F + OUTER, -2.5F + OUTER, 5.0F + OUTER))
+					.texOffs(16, 16).addBox(-4.0F, -17.25F, -2.0F, 8.0F, 12.0F, 4.0F, new CubeDeformation(6.0F + OUTER, -3.0F, 5.0F + OUTER))
 					.texOffs(16, 16).addBox(-4.0F, -12.5F, -13.0F, 8.0F, 12.0F, 4.0F, new CubeDeformation(3.0F + OUTER, -2.0F + OUTER, -1.0F + OUTER));
 				case "right_arm" -> CubeListBuilder.create()
 					.texOffs(40, 16).addBox(-3.0F, -2.0F, -2.0F, 4.0F, 12.0F, 4.0F, new CubeDeformation(1.0F + OUTER, OUTER, 1.0F + OUTER));
@@ -170,7 +172,7 @@ public class BossPiglinModel extends AbstractPiglinModel<BossPiglinRenderState> 
 
 	@Override
 	protected float getDefaultEarAngleInDegrees() {
-		return 30.0F;
+		return 20.0F;
 	}
 
 	@Override
