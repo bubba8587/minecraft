@@ -230,9 +230,22 @@ def recolor(base, pal, dark=(), black=()):
 				if c[:3] not in cache:
 					cache[c[:3]] = pick(c[:3])
 				op[x, y] = cache[c[:3]] + (c[3],)
+	# Partly dark face pixels: ranked among themselves by lightness, spread over the source's colours in that order,
+	# then blended toward black, so they keep vanilla's dark-to-less-dark variety instead of one flat colour.
+	face_sorted = sorted(oklch(px[x, y][:3])[0] for x, y in dark)
 	for x, y in dark:
-		c = op[x, y]
-		op[x, y] = tuple(round(v * (1 - FACE_BLEND)) for v in c[:3]) + (c[3],)
+		L = oklch(px[x, y][:3])[0]
+		below = sum(1 for v in face_sorted if v < L)
+		same = sum(1 for v in face_sorted if v == L)
+		q = (below + same / 2) / len(face_sorted)
+		acc = 0
+		sc = src_sorted[-1][2]
+		for _, n, cand_c in src_sorted:
+			acc += n
+			if acc / src_total >= q:
+				sc = cand_c
+				break
+		op[x, y] = tuple(round(v * (1 - FACE_BLEND)) for v in sc) + (px[x, y][3],)
 	for x, y in black:
 		op[x, y] = px[x, y]
 	return out, (cl0, cl1, pl0, pl1)
