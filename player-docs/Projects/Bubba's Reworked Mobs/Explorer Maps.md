@@ -12,6 +12,8 @@
 
 Fabricator Explorer Maps are only sold by cartographers; they are not found in chests.
 
+The leader of a [[Camp Patrols|camp patrol]] always drops a Monster Camp Explorer Map centred on its own camp, marked with the same white X.
+
 ## History
 
 | Version | Changes |
@@ -22,4 +24,5 @@ Fabricator Explorer Maps are only sold by cartographers; they are not found in c
 
 - [[Crypt Yards]]
 - [[Monster Camps]]
+- [[Camp Patrols]]
 - [[Ancient Fabricators]]

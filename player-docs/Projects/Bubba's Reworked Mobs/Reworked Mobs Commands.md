@@ -67,6 +67,7 @@ Kinds: `skeleton`, `zombie`, `husk`, `stray`, `bogged` and `piglin` (Nether outp
 - `camp locate <kind>` names the nearest camp of that kind within 6144 blocks and how far away it is. Run `camp locate piglin` in the Nether.
 - `camp list` lists the camps and outposts the game knows about, whether each still has a banner, and how many of its monsters are alive.
 - `camp reset` runs the daily refill check now, even with players near.
+- `camp patrol [<kind>] [mounted|foot]` sends a patrol at the player now, 12-20 blocks away, from the nearest camp of that kind (or the camp whose land the player is in), whatever the time of day. `mounted` or `foot` picks riders or walkers (see [[Camp Patrols]]).
 
 ### trader_post
 

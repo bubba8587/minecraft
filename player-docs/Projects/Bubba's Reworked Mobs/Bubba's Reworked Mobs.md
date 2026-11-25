@@ -114,9 +114,9 @@ Spiders climb walls and ceilings. Cobweb nests cling to the ceilings of tall cav
 
 ## Monster camps
 
-*Main article: [[Monster Camps]]*
+*Main articles: [[Monster Camps]], [[Camp Patrols]]*
 
-Dark camps of skeletons, zombies, husks, strays or bogged, each with a leader. Breaking every banner clears a camp for good, leaving one lets it refill, and a lit fire quiets it. Pillager outposts stop spawning when their banners are gone. In the Nether, piglin outposts with hoglin pens and a portal room stand in crimson forests and the Nether wastes.
+Dark camps of skeletons, zombies, husks, strays or bogged, each with a leader. Breaking every banner clears a camp for good, leaving one lets it refill, and a lit fire quiets it. Armed camps send patrols over the land around them at night (see [[Camp Patrols]]); bigger camps keep a stable of mounts, and chests by the fire, in the underground room, in winding towers and in skull rocks hold better loot in that order. Pillager outposts stop spawning when their banners are gone. In the Nether, piglin outposts with hoglin pens and a portal room stand in crimson forests and the Nether wastes.
 
 ## Trader posts
 
@@ -168,7 +168,7 @@ Optional: [[Bubba's Totems & Artifacts]], whose [[Grave Talisman]] and [[Totem o
 
 | Version | Changes |
 |---|---|
-| 0.1.0 (not released yet) | Added the undead (sleeping and woken skeletons, zombies, husks and strays, loot on display, loud bells, light that calms sleepers), crypt yards and gravestones, the monster spawn cut, watcher creepers, caretaker endermen and cairns, lurking drowned and bogged, spiders and their nests, monster camps, trader posts and Ancient Fabricators. (The Grave Talisman and Totem of Warding, first added here, moved to Bubba's Totems & Artifacts.) |
+| 0.1.0 (not released yet) | Added the undead (sleeping and woken skeletons, zombies, husks and strays, loot on display, loud bells, light that calms sleepers), crypt yards and gravestones, the monster spawn cut, watcher creepers, caretaker endermen and cairns, lurking drowned and bogged, spiders and their nests, monster camps and their patrols, trader posts and Ancient Fabricators. (The Grave Talisman and Totem of Warding, first added here, moved to Bubba's Totems & Artifacts.) |
 
 ## See also
 

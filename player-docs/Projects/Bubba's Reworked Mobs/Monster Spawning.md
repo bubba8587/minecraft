@@ -5,7 +5,7 @@
 **Monster spawning** is cut by [[Bubba's Reworked Mobs]] to 15 % of normal for natural spawns, everywhere: on the surface, in caves, in the Nether and in the End. Most monsters a player meets come from places instead:
 
 - [[Sleeping Undead]] in [[Crypt Yards]] and shipwrecks, which wake from noise;
-- [[Monster Camps]], which hold skeletons, zombies and their biome kinds (and piglins in the Nether);
+- [[Monster Camps]], which hold skeletons, zombies and their biome kinds (and piglins in the Nether), and send [[Camp Patrols|patrols]] over the land around them at night;
 - [[Ancient Fabricators]], which send monsters up to the surface above them;
 - spider nests in caves (see [[Spiders]]).
 
