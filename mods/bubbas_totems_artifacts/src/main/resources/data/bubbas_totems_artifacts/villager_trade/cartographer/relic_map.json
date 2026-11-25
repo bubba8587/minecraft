@@ -1,0 +1,40 @@
+{
+  "additional_wants": {
+    "id": "minecraft:compass"
+  },
+  "merchant_predicate": {
+    "type": "minecraft:random_chance",
+    "chance": 0.2
+  },
+  "given_item_modifier": [
+    {
+      "type": "bubbas_totems_artifacts:random_relic_map",
+      "size": 4
+    },
+    {
+      "type": "minecraft:filtered",
+      "item_filter": {
+        "predicates": {
+          "minecraft:map_id": {}
+        }
+      },
+      "on_fail": {
+        "type": "minecraft:discard"
+      }
+    }
+  ],
+  "gives": {
+    "id": "minecraft:filled_map"
+  },
+  "max_uses": 1,
+  "reputation_discount": 0.2,
+  "wants": {
+    "count": {
+      "type": "minecraft:uniform",
+      "min": 20,
+      "max": 24
+    },
+    "id": "minecraft:emerald"
+  },
+  "xp": 30
+}

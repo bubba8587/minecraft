@@ -8,7 +8,7 @@
 > | **Type** | Item |
 > | **Rarity** | Uncommon |
 > | **Stackable** | Yes (16), with shreds of the same name, size and pieces |
-> | **Obtained** | Chest loot in most structures; caretaker endermen's cairn trades |
+> | **Obtained** | Chest loot in most structures; apprentice cartographers; caretaker endermen's cairn trades |
 > | **Sizes** | 4 pieces or 9 pieces |
 > | **Leads to** | That relic's [[Relic Vaults|relic vault]] |
 
@@ -31,6 +31,19 @@ Relic map shreds turn up in many chests: dungeons, mineshafts, shipwrecks, burie
 | With Bubba's Reworked Mobs: monster camp, Fabricator office, cairn trade | 30 %, 25 %, 10 % |
 
 A found shred is usually a single piece, sometimes two or three, never a whole map. About a third of shreds belong to nine-piece maps.
+
+### Cartographers
+
+Cartographer villagers sell relic maps too, among their usual trades:
+
+| Level | Trade | Price | How often |
+|---|---|---|---|
+| Apprentice | One relic map shred (four- or nine-piece, sometimes two or three pieces) | 4-6 emeralds | About 1 apprentice cartographer in 5 |
+| Master | A finished four-piece relic map | 20-24 emeralds and a compass | About 1 master cartographer in 8 |
+
+A shred bought from a cartographer shows no relic name in the trade window ("Relic Map Shred (1/4)"). It picks its relic when it reaches the player's inventory, and every piece bought picks its own, so buying many shreds from one cartographer does not finish a map by itself.
+
+A finished map from a master cartographer leads to one relic's vault like any other map of that name. The same cartographer sells the same map again after restocking.
 
 ## Names
 
@@ -65,7 +78,7 @@ A four-piece shred is a big torn corner of parchment; a nine-piece shred is a sm
 
 | Version | Changes |
 |---|---|
-| 0.1.0 | Added. |
+| 0.1.0 | Added. Cartographers sell shreds (apprentice) and finished four-piece maps (master). |
 
 ## See also
 

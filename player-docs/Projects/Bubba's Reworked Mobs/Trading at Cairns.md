@@ -27,6 +27,7 @@ No trades happen while the cairn is warded.
 What the player gives doesn't matter: the answer is random.
 
 - **Good (about 4 in 10):** ender pearls, chorus fruit, emeralds, bottles o' enchanting, end rods, popped chorus fruit, and now and then an enchanted book, a diamond, a golden apple, a name tag, a disc fragment, a nautilus shell, a shulker shell or an echo shard.
+- **Rare:** a sniffer egg, or one of the rarest music discs: Pigstep, Otherside, Relic, Creator, Creator (Music Box) or Precipice. About 1 trade in 18 gives one of them.
 - **Weird (the rest):** a poppy, dirt, end stone, a poisonous potato, a carved pumpkin, string, rotten flesh and other oddments, now and then TNT or a cake.
 
 It is a way to get rid of junk, and maybe get something better back. Or not.
@@ -35,7 +36,7 @@ It is a way to get rid of junk, and maybe get something better back. Or not.
 
 | Version | Changes |
 |---|---|
-| 0.1.0 | Added. |
+| 0.1.0 | Added. Sniffer eggs and rare music discs among the answers. |
 
 ## See also
 

@@ -486,8 +486,9 @@ Owner's design (C6 detail, spec not leaf): torn **relic map shreds** turn up in 
 - **Combining:** recipe type `bubbas_totems_artifacts:relic_shreds` (special recipe, `data/.../recipe/relic_shreds.json`), shapeless: 2+ shreds of the same name and size whose counts add up to at most the whole, in any grid (2x2, crafting table, crafter). The result is a combined shred.
 - **Becoming a map:** a whole shred becomes the filled map when it ticks in a player's inventory (recipes have no level to make a map in). A whole shred out of a crafter becomes a map once picked up.
 - **The finished map:** vanilla filled map, scale 2 (like explorer maps), biome preview (water outlines), red X decoration on the vault's door, item name "<Name> Relic Map". It keeps the `relic_shred` component.
-- **Creative tab (owner: generic):** one unnamed shred per size (`RelicShred` with an empty name, shown as "Relic Map Shred (1/4)"). In a player's inventory it picks a random relic name on its first tick (`RelicMapShredItem.inventoryTick`); an unnamed shred never combines. Checked in `completeMapPointsAtVault`.
-- **Loot function** `bubbas_totems_artifacts:random_relic_shred`: a random name of the 64; /9 35 %, else /4; 1 piece 80 %, 2 pieces 15 %, 3 pieces 5 % (never a whole map).
+- **Creative tab (owner: generic):** one unnamed shred per size (`RelicShred` with an empty name, shown as "Relic Map Shred (1/4)"). In a player's inventory it picks a random relic name on its first tick (`RelicMapShredItem.inventoryTick`); an unnamed shred never combines. A stack of unnamed shreds splits: each item picks its own name (extras go into the inventory, or drop at the player's feet if it's full). Checked in `completeMapPointsAtVault` and `cartographerSellsRelicMaps`.
+- **Loot function** `bubbas_totems_artifacts:random_relic_shred`: a random name of the 64; /9 35 %, else /4; 1 piece 80 %, 2 pieces 15 %, 3 pieces 5 % (never a whole map). Optional `"unnamed": true` keeps the size and piece roll but leaves the name empty, for the carrier's inventory to pick.
+- **Loot function** `bubbas_totems_artifacts:random_relic_map` (optional `size`, 4 or 9, default 4): the finished map (`RelicMaps.map`) of a random one of the 64 names, made on the spot like a vanilla explorer map (needs the loot context's level; the Overworld is used whatever level runs it).
 
 Shred odds per chest (one roll each; Reworked Mobs tables keyed by id through `LootTableEvents.MODIFY`, so no dependency):
 
@@ -509,6 +510,14 @@ Shred odds per chest (one roll each; Reworked Mobs tables keyed by id through `L
 | Reworked Mobs monster_camp, camp_room | 30 % |
 | Reworked Mobs fabricator_office (+ `_with_gems`) | 25 % |
 | Reworked Mobs gameplay/enderman_trade (cairn trades) | 10 % |
+
+### Cartographers sell relic maps (owner, 2026-11-25)
+
+Two villager trades (`data/bubbas_totems_artifacts/villager_trade/cartographer/`), added to vanilla's trade tags with `replace: false` like Reworked Mobs' map trades. Vanilla's `trade_set/cartographer/level_N` picks 2 different trades from the level's tag at equal odds; an offer that comes back empty (failed predicate, no map) is dropped and another picked.
+- **Apprentice (`#minecraft:cartographer/level_2`), `relic_map_shred`:** one relic map shred for 4-6 emeralds (uniform, rolled per offer), 8 uses, 5 xp, reputation discount 0.05. The item modifier is `random_relic_shred` with `unnamed: true`: the offer's shred has a size (/9 35 %) and piece count (1, sometimes 2-3) but no relic yet, and **every piece bought picks its own random relic** once in the buyer's inventory. Without that, an offer would sell the same relic every time and 4 purchases would finish a /4 map, undercutting the master trade and every other shred source. Level 2 now has 11 trades with Reworked Mobs (8 vanilla, its graveyard and camp maps, this; 9 without it), so about 18 % of apprentice cartographers offer it (22 % without Reworked Mobs).
+- **Master (`#minecraft:cartographer/level_5`), `relic_map`:** a finished /4 relic map for 20-24 emeralds and a compass, 1 use, 30 xp, reputation discount 0.2. `merchant_predicate` random chance 0.2 makes it rarer: level 5 holds 3 trades (vanilla's globe banner pattern and woodland mansion map, this), so about 13 % of master cartographers offer it (1/3 x 0.2 + 2/3 x 1/2 x 0.2); a master who doesn't still gets vanilla's two. Item modifier `random_relic_map` (size 4) then vanilla's `filtered` map_id check (discard on failure, as the explorer maps do).
+- The map is made when the villager reaches master and stays that one relic's map: it leads to that /4 name's fixed vault like any combined map (one vault per name per world, so it may already be emptied). Restocks sell the same map again.
+- Milestone test `RelicMapsGameTest.cartographerSellsRelicMaps`: both tags hold their trade (and vanilla's apprentice trades are still there), the shred offer costs 4-6 emeralds and sells an unnamed shred that names each of 3 bought pieces separately, and the map offer sells a whole /4 map with its X on that relic's site for 20-24 emeralds and a compass.
 
 ### Where the named vaults are (seeded at world start)
 
@@ -569,7 +578,7 @@ Vault chest loot, per chest (tables written by `mods/bubbas_totems_artifacts/too
 
 ### Code
 
-Package `relic/`: `RelicNames`, `RelicShred` (component), `RelicMapShredItem`, `RelicMaps`, `RelicShredRecipe`, `RelicShredFunction`, `RelicSites`, `RelicVaultPlacement`, `RelicVaultStructure`, `RelicVaultPiece`, `RelicLoot`, `RelicTuning`, `RelicCommand`, `Relics` (wiring). All numbers in `RelicTuning` (and the loot script).
+Package `relic/`: `RelicNames`, `RelicShred` (component), `RelicMapShredItem`, `RelicMaps`, `RelicShredRecipe`, `RelicShredFunction`, `RelicMapFunction`, `RelicSites`, `RelicVaultPlacement`, `RelicVaultStructure`, `RelicVaultPiece`, `RelicLoot`, `RelicTuning`, `RelicCommand`, `Relics` (wiring). All numbers in `RelicTuning` (and the loot script).
 
 ## Moved from Reworked Mobs
 
@@ -679,6 +688,7 @@ Most bodies live in the milestone classes below and are called from the core cla
   - Sites: same seed same sites, two seeds differ, 128 sites in unique chunks, in their distance bands, 20+ chunks apart; the structure set uses `relic_sites`; lookup by chunk.
   - A whole shred carried turns into a filled map whose X is on its name's site; /4 and /9 of one name lead to different places.
   - Loot: dungeon shred rate about 30 %; grand vault chests have a totem about 45 % and 2+ shreds each.
+  - `cartographerSellsRelicMaps`: the apprentice and master cartographer tags hold the shred and map trades; prices; bought unnamed shreds each pick their own relic; the sold map points at its relic's site.
   - `pedestalHoldsStatueOrWeapon`: about half of 400 seeds give a statue per kind; Beginning/End statues only in grand vaults; a built statue vault has the statue facing north and breaking it drops the totem; a built weapon vault shows an enchanted netherite (grand) or diamond weapon (display with `-PwithMobs`, glow frame without); weapon vaults are also built split into two chunks meeting at the pedestal (catches a dropped glow frame).
   - (with Reworked Mobs) A noble crypt's vault: stair top just behind the far wall, the wall intact, the vault under the crypt and sealed; about 35 % of noble crypts have one.
 

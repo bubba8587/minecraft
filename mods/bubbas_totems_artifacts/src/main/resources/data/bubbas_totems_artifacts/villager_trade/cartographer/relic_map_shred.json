@@ -1,0 +1,20 @@
+{
+  "given_item_modifier": {
+    "type": "bubbas_totems_artifacts:random_relic_shred",
+    "unnamed": true
+  },
+  "gives": {
+    "id": "bubbas_totems_artifacts:relic_map_shred"
+  },
+  "max_uses": 8,
+  "reputation_discount": 0.05,
+  "wants": {
+    "count": {
+      "type": "minecraft:uniform",
+      "min": 4,
+      "max": 6
+    },
+    "id": "minecraft:emerald"
+  },
+  "xp": 5
+}

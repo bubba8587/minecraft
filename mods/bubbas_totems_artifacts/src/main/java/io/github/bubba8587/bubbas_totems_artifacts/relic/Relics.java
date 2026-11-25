@@ -43,6 +43,7 @@ public final class Relics {
 		Registry.register(BuiltInRegistries.STRUCTURE_PLACEMENT, BubbasTotemsArtifacts.id("relic_sites"), RelicVaultPlacement.CODEC);
 		Registry.register(BuiltInRegistries.RECIPE_SERIALIZER, BubbasTotemsArtifacts.id("relic_shreds"), RelicShredRecipe.SERIALIZER);
 		Registry.register(BuiltInRegistries.LOOT_FUNCTION_TYPE, BubbasTotemsArtifacts.id("random_relic_shred"), RelicShredFunction.MAP_CODEC);
+		Registry.register(BuiltInRegistries.LOOT_FUNCTION_TYPE, BubbasTotemsArtifacts.id("random_relic_map"), RelicMapFunction.MAP_CODEC);
 		RelicLoot.initialize();
 		RelicCommand.initialize();
 		CreativeModeTabEvents.modifyOutputEvent(ModCreativeTabs.MAIN_KEY).register(output -> {

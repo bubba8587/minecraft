@@ -21,7 +21,8 @@
   - **pose** (`CaptainPose`, blended over the vanilla pose by the summoning amount): head leaned back with a slow bob; both arms spread out to the sides, waving slowly up and down; the sword arm twisted so the blade points up from the outstretched hand, clear of the head;
   - **aura** (`CaptainAuraLayer`): the vanilla Wither's energy swirl over an inflated copy of the skeleton, posed like it. Soul-tinted by default (`CaptainAuraLayer.TINT = SOUL_TINT`; `VANILLA_TINT` is the Wither's own grey, a one-line switch);
   - **particles** (`CaptainParticles`): soul fire flames spiralling up round it, the odd soul.
-- **Drops** (`loot_table/entities/wither_captain.json`): the vanilla wither skeleton table (bones, coal, the skull's usual chance) + 1-2 Nether Star Shards + the helm at 25 %. No killed-by-player condition, no looting bonus.
+- **Drops** (`loot_table/entities/wither_captain.json`): the vanilla wither skeleton table (bones, coal, the skull's usual chance) + 1-2 Nether Star Shards + the helm at 25 % (shards and helm: no killed-by-player condition, no looting bonus).
+- **Wither skeleton skull: about 1 in 3** (owner, 2026-11-25: a better way to skulls than vanilla's 2.5 %). An extra skull roll like vanilla's (killed by a player, `random_chance_with_enchanted_bonus` on Looting): 32 % without Looting, 36 / 40 / 44 % with Looting I / II / III. With the included vanilla roll (2.5 %, Looting 3.5 / 4.5 / 5.5 %), a player kill gives at least one skull 33.7 % of the time (Looting III about 47 %); both rolls landing (two skulls) is under 1 %.
 - **Natural spawning:** a natural wither skeleton spawn standing in a fortress becomes a captain 1 in 50, if no captain is within 48 blocks (mixin on `NaturalSpawner.spawnCategoryForPosition`'s `getMobForSpawn`, using vanilla's `NaturalSpawner.isInNetherFortressBounds`). Spawners and commands as normal; no fixed spot, no respawn rules.
 
 ## Soulfire Blazes
@@ -59,7 +60,7 @@
 ## Tests
 
 - **Core:** `captainSummonsWhenItFightsAPlayer` (body in `CaptainGameTest`).
-- **Milestone `CaptainGameTest`:** the phase cuts damage to a quarter, summons 1-3, ends, and comes back after 4 hits; melee within 1.5x a wither skeleton's; 400 loot rolls (1-2 shards each, helm 15-35 %, bones); four shards craft a star; a Soulfire Blaze shoots charges, never vanilla fireballs; a charge hits harder than a fireball; charges place soul fire on soul sand and fire on netherrack; a helm-wearing mob takes nothing in soul fire and is hurt in fire; summoned blazes burn out on the captain's death; no captain outside a fortress.
+- **Milestone `CaptainGameTest`:** the phase cuts damage to a quarter, summons 1-3, ends, and comes back after 4 hits; melee within 1.5x a wither skeleton's; 400 loot rolls (1-2 shards each, helm 15-35 %, bones; 400 player kills: a skull 24-44 %; no skull without a player kill); four shards craft a star; a Soulfire Blaze shoots charges, never vanilla fireballs; a charge hits harder than a fireball; charges place soul fire on soul sand and fire on netherrack; a helm-wearing mob takes nothing in soul fire and is hurt in fire; summoned blazes burn out on the captain's death; no captain outside a fortress.
 - **Client part `captain`** (`CaptainClientGameTest`): captain-summon-front/side, soulfire-blaze, helm-front/side/close (armour stand), captain-normal, helm-icon (hotbar).
 
 ## Milestone test objectives (no test yet)

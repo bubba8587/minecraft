@@ -343,8 +343,9 @@ Seven forms picked by seed: chorus, grove, spire, arch, canopy, henge, leaning (
   - **4-10 s later** an enderman teleports in beside the pad, holding its answer, and lays it on the plinth.
   - The answer stays until picked up; it is never taken back as a new trade.
   - No trading while the cairn is warded.
-- **The answer table (builder)**, `data/bubbas_reworked_mobs/loot_table/gameplay/enderman_trade.json` (a vanilla barter table, datapack-editable), weights out of 133:
-  - **Good (about 40 %):** ender pearls 1-3 (10), chorus fruit 2-6 (8), emeralds 1-3 (6), bottles o' enchanting 1-4 (6), end rods 1-2 (4), popped chorus fruit 1-4 (4), an enchanted book (3), a diamond (2), a golden apple (2), a name tag (2), a disc fragment (2), a nautilus shell (2), a shulker shell (1), an echo shard (1).
+- **The answer table (builder)**, `data/bubbas_reworked_mobs/loot_table/gameplay/enderman_trade.json` (a vanilla barter table, datapack-editable), weights out of 141:
+  - **Good (about 43 %):** ender pearls 1-3 (10), chorus fruit 2-6 (8), emeralds 1-3 (6), bottles o' enchanting 1-4 (6), end rods 1-2 (4), popped chorus fruit 1-4 (4), an enchanted book (3), a diamond (2), a golden apple (2), a name tag (2), a disc fragment (2), a nautilus shell (2), a shulker shell (1), an echo shard (1).
+  - **Rare (owner, 2026-11-25: other ways to rare items):** a sniffer egg (2), and the rare music discs at 1 each: Pigstep, Otherside, Relic, Creator, Creator (Music Box) and Precipice (each about 0.7 %, any rare disc about 4 %).
   - **Weird:** a poppy (8), dirt 1-4 (6), end stone 1-4 (5), a poisonous potato (5), a carved pumpkin (4), a dead bush (4), a bone (4), string 1-3 (4), and 3 each of a fermented spider eye, ink sacs, a glass bottle, a sea pickle, snowballs, a lily pad, a cactus, a brown mushroom, clay balls, feathers, rotten flesh and flint. Also a pufferfish (2), TNT (1) and a cake (1).
 - **Sneak + middle click** with an item in hand, aiming at a block, lays one of it on the ground as a display, anywhere: on top of the block aimed at, or in front of a side face, wherever there's a floor.
   - Plain middle click is still vanilla's pick block.
@@ -451,7 +452,7 @@ Cairn forms have their own list (above).
 
 **Milestone, `CairnTradeGameTest`:**
 - `tradePadsSitInDifferentPlaces`: ten cairns, including the test world's seeds 11, 22, 33 and 44, all have pads at different offsets, and all seven cairn forms get a pad.
-- `tradeTableAlwaysAnswers`: 400 rolls, never empty, more than 15 kinds.
+- `tradeTableAlwaysAnswers`: 2000 rolls, never empty, more than 15 kinds; rare discs 40-140 (about 85) and sniffer eggs 8-60 (about 28).
 - `heldItemLaysOnTheGround`: one at a time, not on top of a display, not in mid-air.
 
 **Client parts:**
