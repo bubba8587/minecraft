@@ -53,6 +53,8 @@ public final class EndermanTuning {
 	public static final int SITE_WORK_RADIUS = 48;
 	/** Reach for placing or taking a block, from the eyes to the block centre. */
 	public static final double REACH = 4.0;
+	/** How far round a job (sideways, and above it) a teleporting enderman looks for somewhere to stand. */
+	public static final int STAND_SEARCH = 3;
 	/** Farther than this from the job, or stuck, it teleports next to it. */
 	public static final double TELEPORT_DISTANCE = 20.0;
 	/** Ticks without getting closer before it teleports. */

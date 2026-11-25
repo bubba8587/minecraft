@@ -287,7 +287,10 @@ public final class EndermanJobGoal extends Goal {
 			stuckTicks++;
 		}
 		if (distance > EndermanTuning.TELEPORT_DISTANCE || stuckTicks > EndermanTuning.STUCK_TICKS) {
-			teleportNear(level, job);
+			if (!teleportWithinReach(level, enderman, job)) {
+				mind.clear(); // nowhere to stand within reach
+				return;
+			}
 			bestDistance = Double.MAX_VALUE;
 			stuckTicks = 0;
 			nextPath = 0;
@@ -310,19 +313,22 @@ public final class EndermanJobGoal extends Goal {
 		return best;
 	}
 
-	/** Teleports to a free standing spot within reach of {@code job} (on the cairn itself for high blocks). */
-	private void teleportNear(ServerLevel level, BlockPos job) {
-		teleportNear(level, enderman, job);
+	/** Steps aside from {@code job}: a standing spot within reach, else anywhere close by. */
+	private static void teleportNear(ServerLevel level, Enderman enderman, BlockPos job) {
+		if (!teleportWithinReach(level, enderman, job)) {
+			enderman.teleport(job.getX() + 0.5 + enderman.getRandom().nextInt(5) - 2, job.getY(), job.getZ() + 0.5 + enderman.getRandom().nextInt(5) - 2);
+		}
 	}
 
-	private static void teleportNear(ServerLevel level, Enderman enderman, BlockPos job) {
+	/** Teleports to a free standing spot within reach of {@code job} (on the cairn or a tree's canopy for high blocks); false if there is none. */
+	private static boolean teleportWithinReach(ServerLevel level, Enderman enderman, BlockPos job) {
 		List<BlockPos> spots = new ArrayList<>();
 		BlockPos.MutableBlockPos at = new BlockPos.MutableBlockPos();
 		Vec3 centre = Vec3.atCenterOf(job);
 		double eye = enderman.getEyeHeight();
-		for (int dx = -2; dx <= 2; dx++) {
-			for (int dz = -2; dz <= 2; dz++) {
-				for (int dy = 1; dy >= -6; dy--) {
+		for (int dx = -EndermanTuning.STAND_SEARCH; dx <= EndermanTuning.STAND_SEARCH; dx++) {
+			for (int dz = -EndermanTuning.STAND_SEARCH; dz <= EndermanTuning.STAND_SEARCH; dz++) {
+				for (int dy = EndermanTuning.STAND_SEARCH; dy >= -6; dy--) {
 					at.set(job.getX() + dx, job.getY() + dy, job.getZ() + dz);
 					if (at.equals(job) || (dx == 0 && dz == 0 && dy <= 0 && dy >= -3)) {
 						continue;
@@ -337,13 +343,13 @@ public final class EndermanJobGoal extends Goal {
 				}
 			}
 		}
-		if (!spots.isEmpty()) {
-			BlockPos spot = spots.get(enderman.getRandom().nextInt(spots.size()));
+		while (!spots.isEmpty()) {
+			BlockPos spot = spots.remove(enderman.getRandom().nextInt(spots.size()));
 			if (enderman.teleport(spot.getX() + 0.5, spot.getY(), spot.getZ() + 0.5)) {
-				return;
+				return true;
 			}
 		}
-		enderman.teleport(job.getX() + 0.5 + enderman.getRandom().nextInt(5) - 2, job.getY(), job.getZ() + 0.5 + enderman.getRandom().nextInt(5) - 2);
+		return false;
 	}
 
 	/** A sturdy floor, room for an enderman's 2.9-block height, and no water. */
