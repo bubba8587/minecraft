@@ -182,7 +182,7 @@ The owner wanted a verb-like name; still open. The Harvest idea was folded into 
 
 ### Planting dropped seeds
 
-- Held, in a beacon or as a statue: every 2 s (`PLANT_CHECK_TICKS` 40), with a 35 % chance (`PLANT_CHANCE`), one random dropped plantable item in range is planted within 3 blocks (`PLANT_REACH`) of where it lies. Plantable = any item whose block is in `growth_totem_boosts` (seeds, carrots, potatoes, saplings, berries, nether wart...). Items circling a Gathering ring count.
+- Held, in a beacon or as a statue: every 2 s (`PLANT_CHECK_TICKS` 40), with a 35 % chance (`PLANT_CHANCE`), one random dropped plantable item in range is planted within 3 blocks (`PLANT_REACH`) of where it lies, **but never outside the area it was picked up from** (owner, 2026-11-24: a statue planted up to 8 out, a held totem 11). So a statue plants within 5, held within 8, a beacon within its area. Test: `growthPlantsOnlyInsideItsArea` (milestone). Plantable = any item whose block is in `growth_totem_boosts` (seeds, carrots, potatoes, saplings, berries, nether wart...). Items circling a Gathering ring count.
 - `Growth.plant`: 32 tries of `BlockPos.randomBetweenClosed`, y -3..+1, air plus `canSurvive`.
 - **It needs room (owner):** a seed is planted only where vanilla's survival rules pass against the real neighbours (`canSurvive`), the spot above is open, and no wall face, log or (for non-crops) other plant is beside it, so what Growth plants can grow. Crops may sit in rows.
 - **Never on top of another plant** (owner: it stacked sugar cane on sugar cane, and would do the same to bamboo and cactus): the block below must not be a plant (`Growth.isPlant`: the `growth_totem_boosts` tag, `#minecraft:flowers`, or any vanilla `VegetationBlock`).

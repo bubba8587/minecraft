@@ -110,6 +110,23 @@ public class NewTotemsGameTest {
 		helper.succeed();
 	}
 
+	/** Growth plants only inside its area: a seed at the area's edge with farmland only outside it stays unplanted. */
+	@GameTest(structure = TestSupport.FIELD, maxTicks = 20)
+	public void growthPlantsOnlyInsideItsArea(GameTestHelper helper) {
+		for (int x = 6; x <= 8; x++) {
+			for (int z = 7; z <= 9; z++) {
+				helper.setBlock(new BlockPos(x, 0, z), Blocks.FARMLAND);
+			}
+		}
+		ItemEntity seeds = drop(helper, new Vec3(5.5, 1.0, 8.5), new ItemStack(Items.WHEAT_SEEDS, 3));
+		AABB box = new AABB(helper.absolutePos(new BlockPos(4, 1, 8))).inflate(1.0);
+		for (int i = 0; i < 200; i++) {
+			Growth.plant(helper.getLevel(), box);
+		}
+		helper.assertTrue(seeds.getItem().getCount() == 3, "planted outside the area: seeds left " + seeds.getItem().getCount());
+		helper.succeed();
+	}
+
 	/** Growth needs room around a spot: a sapling isn't planted in a walled hole, a cactus isn't planted beside a block. */
 	@GameTest(structure = TestSupport.FIELD, maxTicks = 20)
 	public void growthNeedsRoomAround(GameTestHelper helper) {

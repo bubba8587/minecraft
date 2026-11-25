@@ -33,7 +33,7 @@ The beacon screen shows how much faster plants grow.
 
 ### Planting
 
-Held, in a beacon or as a statue, the totem also plants things. Every couple of seconds it may pick one dropped seed, crop, sapling or similar item in its range and plant it close to where it lies, wherever that plant can grow.
+Held, in a beacon or as a statue, the totem also plants things. Every couple of seconds it may pick one dropped seed, crop, sapling or similar item in its range and plant it close to where it lies, wherever that plant can grow, always inside the totem's range.
 
 - It only plants where the plant has room to grow: not against walls, tree trunks or other plants. Crops can still go in rows.
 - It never plants on top of another plant, so sugar cane, bamboo and cactus do not get stacked into towers.

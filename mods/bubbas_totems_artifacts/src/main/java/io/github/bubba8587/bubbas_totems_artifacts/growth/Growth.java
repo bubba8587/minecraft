@@ -76,8 +76,17 @@ public final class Growth {
 		BlockState plant = ((net.minecraft.world.item.BlockItem) seed.getItem().getItem()).getBlock().defaultBlockState();
 		BlockPos from = seed.blockPosition();
 		int reach = TotemsTuning.PLANT_REACH;
-		for (BlockPos pos : BlockPos.randomBetweenClosed(random, 32, from.getX() - reach, from.getY() - 3, from.getZ() - reach,
-				from.getX() + reach, from.getY() + 1, from.getZ() + reach)) {
+		// Planting spot: within reach of the seed, never outside the area.
+		int minX = Math.max(from.getX() - reach, Mth.floor(box.minX));
+		int minY = Math.max(from.getY() - 3, Mth.floor(box.minY));
+		int minZ = Math.max(from.getZ() - reach, Mth.floor(box.minZ));
+		int maxX = Math.min(from.getX() + reach, Mth.ceil(box.maxX) - 1);
+		int maxY = Math.min(from.getY() + 1, Mth.ceil(box.maxY) - 1);
+		int maxZ = Math.min(from.getZ() + reach, Mth.ceil(box.maxZ) - 1);
+		if (minX > maxX || minY > maxY || minZ > maxZ) {
+			return false;
+		}
+		for (BlockPos pos : BlockPos.randomBetweenClosed(random, 32, minX, minY, minZ, maxX, maxY, maxZ)) {
 			if (level.getBlockState(pos).isAir() && !isPlant(level.getBlockState(pos.below())) && plant.canSurvive(level, pos) && hasRoom(level, pos, plant)) {
 				level.setBlock(pos, plant, Block.UPDATE_ALL);
 				seed.getItem().shrink(1);
