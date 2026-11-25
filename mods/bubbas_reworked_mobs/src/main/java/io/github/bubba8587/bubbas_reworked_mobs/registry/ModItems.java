@@ -56,7 +56,12 @@ public final class ModItems {
 			net.minecraft.world.item.equipment.ArmorMaterials.NETHERITE.toughness(), net.minecraft.world.item.equipment.ArmorMaterials.NETHERITE.knockbackResistance(),
 			net.minecraft.world.item.equipment.ArmorMaterials.NETHERITE.repairIngredient(), CAPTAINS_HELM_ASSET);
 	public static final Item CAPTAINS_HELM = register("captains_helm", Item::new,
-			new Item.Properties().humanoidArmor(CAPTAINS_HELM_MATERIAL, net.minecraft.world.item.equipment.ArmorType.HELMET).fireResistant());
+			new Item.Properties().humanoidArmor(CAPTAINS_HELM_MATERIAL, net.minecraft.world.item.equipment.ArmorType.HELMET).fireResistant()
+					.delayedComponent(net.minecraft.core.component.DataComponents.ENCHANTMENTS, context -> {
+						var enchantments = new net.minecraft.world.item.enchantment.ItemEnchantments.Mutable(net.minecraft.world.item.enchantment.ItemEnchantments.EMPTY);
+						enchantments.set(context.getOrThrow(io.github.bubba8587.bubbas_reworked_mobs.soulfire.Soulfire.SOULGUARD_ENCHANTMENT), 1);
+						return enchantments.toImmutable();
+					}));
 	public static final Item NETHER_STAR_SHARD = register("nether_star_shard", Item::new,
 			new Item.Properties().rarity(net.minecraft.world.item.Rarity.UNCOMMON).fireResistant());
 	public static final Item WITHER_CAPTAIN_SPAWN_EGG = register("wither_captain_spawn_egg", net.minecraft.world.item.SpawnEggItem::new,

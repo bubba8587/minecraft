@@ -122,6 +122,42 @@ public class TotemsGameTest {
 	}
 
 	/** Dies at once (a fake player counts as still loading the world, which makes it immune to damage). */
+	/**
+	 * Milestone. A Soulfire death (Reworked Mobs' {@code #bubbas_reworked_mobs:bypasses_totems}) isn't kept by a Totem of
+	 * Keeping; with Soulguard it is. Passes trivially without Reworked Mobs (-PwithMobs runs it for real).
+	 */
+	@GameTest(structure = FIELD, maxTicks = 20)
+	public void keepingSkippedOnSoulfireDeath(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		var soulBurn = ResourceKey.create(net.minecraft.core.registries.Registries.DAMAGE_TYPE, Identifier.parse("bubbas_reworked_mobs:soul_burn"));
+		var damageTypes = level.registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.DAMAGE_TYPE);
+		if (damageTypes.get(soulBurn).isEmpty()) {
+			helper.succeed();
+			return;
+		}
+		level.getGameRules().set(GameRules.KEEP_INVENTORY, false, level.getServer());
+		for (boolean guarded : new boolean[] {false, true}) {
+			ServerPlayer player = TestSupport.survivalPlayer(helper);
+			Vec3 at = helper.absoluteVec(new Vec3(12.5, 1.0, 8.5));
+			player.snapTo(at.x, at.y, at.z, 0.0F, 0.0F);
+			player.getInventory().setItem(20, new ItemStack(ModItems.TOTEM_OF_KEEPING));
+			player.getInventory().setItem(3, new ItemStack(Items.DIRT, 10));
+			if (guarded) {
+				player.addEffect(new net.minecraft.world.effect.MobEffectInstance(
+						BuiltInRegistries.MOB_EFFECT.get(Identifier.parse("bubbas_reworked_mobs:soulguard")).orElseThrow(), 600));
+			}
+			player.setHealth(0.0F);
+			player.die(level.damageSources().source(soulBurn));
+			boolean kept = Keeping.isKept(player);
+			ServerPlayer reborn = level.getServer().getPlayerList().respawn(player, false, Entity.RemovalReason.KILLED);
+			int dirt = count(reborn.getInventory(), Items.DIRT);
+			level.getServer().getPlayerList().remove(reborn);
+			helper.assertTrue(kept == guarded && (dirt == 10) == guarded,
+					(guarded ? "with Soulguard" : "without Soulguard") + ": kept " + kept + ", dirt " + dirt);
+		}
+		helper.succeed();
+	}
+
 	private static void die(ServerPlayer player) {
 		player.setHealth(0.0F);
 		player.die(player.damageSources().genericKill());

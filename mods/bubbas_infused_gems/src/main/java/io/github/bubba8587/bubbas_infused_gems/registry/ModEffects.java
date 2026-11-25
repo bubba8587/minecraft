@@ -31,7 +31,7 @@ public final class ModEffects {
 	public static void initialize() {
 		Balance b = Balance.get();
 		for (Balance.EffectData e : b.effects.values()) {
-			if (!e.id().startsWith("minecraft:")) {
+			if (own(e)) {
 				int color = !e.parts().isEmpty() ? PotionContents.getColorOptional(Potions.TURTLE_MASTER.value().getEffects()).orElse(e.color()) : e.color();
 				GEM_EFFECTS.put(e.key(), Registry.registerForHolder(BuiltInRegistries.MOB_EFFECT, Identifier.parse(e.id()),
 						new GemMobEffect(e.key(), MobEffectCategory.BENEFICIAL, color)));
@@ -48,10 +48,15 @@ public final class ModEffects {
 		}
 	}
 
-	/** The vanilla effect of this key, or null. */
+	/** Registered here: the mod's own status effects (Turtle Master, Silence...), not vanilla's or another mod's. */
+	private static boolean own(Balance.EffectData e) {
+		return e.id().startsWith(BubbasInfusedGems.MOD_ID + ":");
+	}
+
+	/** The real status effect of this key (vanilla's, or another mod's such as Soulguard), or null. */
 	public static Holder<MobEffect> vanilla(String key) {
 		Balance.EffectData e = Balance.get().effect(key);
-		if (e == null || !e.id().startsWith("minecraft:")) {
+		if (e == null || own(e)) {
 			return null;
 		}
 		return BuiltInRegistries.MOB_EFFECT.get(Identifier.parse(e.id())).map(h -> (Holder<MobEffect>) h).orElse(null);

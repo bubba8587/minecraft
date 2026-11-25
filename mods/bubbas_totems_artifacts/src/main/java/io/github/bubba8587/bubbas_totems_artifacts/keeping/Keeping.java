@@ -30,11 +30,14 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
  * player is tagged {@link #TAG} (an entity tag, so it survives logging out on the death screen); the tag stops the
  * inventory drop and the XP orbs; on respawn the inventory, XP and score are copied over as vanilla's rule does
  * ({@link ServerPlayerEvents#COPY_FROM}), then the tag is cleared and the player sees the totem animation with the
- * Totem of Keeping in it ({@link KeptPayload}). With keep_inventory on, the totem isn't used.
+ * Totem of Keeping in it ({@link KeptPayload}). With keep_inventory on, the totem isn't used; nor after a Soulfire
+ * death ({@link SoulfireDeaths}).
  */
 public final class Keeping {
 	/** Entity tag on a dead player whose things a Totem of Keeping is holding. */
 	public static final String TAG = BubbasTotemsArtifacts.MOD_ID + ".kept";
+	/** The killing damage while a death's drops are dropped (PlayerKeepingMixin). */
+	public static final ThreadLocal<net.minecraft.world.damagesource.DamageSource> DYING_FROM = new ThreadLocal<>();
 
 	private Keeping() {
 	}
@@ -73,7 +76,8 @@ public final class Keeping {
 		if (isKept(player)) {
 			return true;
 		}
-		if (level.getGameRules().get(GameRules.KEEP_INVENTORY) || player.isSpectator()) {
+		if (level.getGameRules().get(GameRules.KEEP_INVENTORY) || player.isSpectator()
+				|| SoulfireDeaths.bypassesKeeping(player, DYING_FROM.get())) {
 			return false;
 		}
 		Inventory inventory = player.getInventory();

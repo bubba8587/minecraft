@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:brewing",
+  "input": {
+    "item": "minecraft:potion",
+    "potion_contents": {
+      "potions": "bubbas_reworked_mobs:long_soulguard"
+    }
+  },
+  "output": {
+    "components": {
+      "minecraft:potion_contents": {
+        "potion": "bubbas_reworked_mobs:long_soulguard"
+      }
+    },
+    "id": "minecraft:splash_potion"
+  },
+  "reagent": {
+    "item": "minecraft:gunpowder"
+  }
+}

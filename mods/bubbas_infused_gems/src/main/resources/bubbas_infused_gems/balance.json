@@ -11,7 +11,7 @@
 		"leggings",
 		"boots"
 	],
-	"armor_norm": 5.718388285758851,
+	"armor_norm": 5.718388285758852,
 	"weapon_norm": 1.85,
 	"heal": {
 		"best": 0.25,
@@ -1134,6 +1134,112 @@
 			"worn_amplifier": 0,
 			"worn_cap": 1.0,
 			"id": "minecraft:fire_resistance",
+			"opposites": [],
+			"never_drawback": false
+		},
+		"soulguard": {
+			"name": "Soulguard",
+			"good": true,
+			"role": "main",
+			"hit_kind": "onoff",
+			"level_one": 1.0,
+			"variants": {
+				"normal": {
+					"factor": 0.9,
+					"potion": "bubbas_reworked_mobs:soulguard"
+				},
+				"long": {
+					"factor": 1.0,
+					"potion": "bubbas_reworked_mobs:long_soulguard"
+				}
+			},
+			"source": "potion",
+			"hit": {
+				"ticks": 160,
+				"amplifier": 0,
+				"floor_ticks": 40,
+				"floor_heal_hp": 0.0,
+				"floor_exhaustion": 0.0
+			},
+			"other_pool": [
+				"speed",
+				"strength",
+				"jump_boost",
+				"regeneration",
+				"resistance",
+				"turtle_master",
+				"fire_resistance",
+				"water_breathing",
+				"night_vision",
+				"invisibility",
+				"slow_falling",
+				"luck",
+				"wind_charged",
+				"weaving",
+				"oozing",
+				"silence",
+				"ender",
+				"breeze",
+				"haste",
+				"absorption",
+				"health_boost",
+				"dolphins_grace",
+				"saturation",
+				"conduit_power"
+			],
+			"drawback_pool": [
+				"slowness",
+				"weakness",
+				"mining_fatigue",
+				"hunger",
+				"unluck",
+				"poison",
+				"wither"
+			],
+			"drawback_weights": [
+				4,
+				4,
+				1,
+				4,
+				4,
+				2,
+				2
+			],
+			"other_weights": [
+				4,
+				4,
+				4,
+				2,
+				1,
+				2,
+				4,
+				4,
+				4,
+				4,
+				2,
+				1,
+				2,
+				2,
+				2,
+				2,
+				2,
+				2,
+				1,
+				4,
+				1,
+				2,
+				4,
+				2
+			],
+			"rarity": "common",
+			"worn": {
+				"always_on": true
+			},
+			"worn_amplifier": 0,
+			"worn_cap": 0.9,
+			"id": "bubbas_reworked_mobs:soulguard",
+			"requires_mod": "bubbas_reworked_mobs",
+			"color": 108460,
 			"opposites": [],
 			"never_drawback": false
 		},
@@ -4657,6 +4763,7 @@
 		"silence",
 		"slow_falling",
 		"slowness",
+		"soulguard",
 		"speed",
 		"strength",
 		"turtle_master",

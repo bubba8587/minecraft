@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "bubbas_reworked_mobs:soul_blaze_rod"
+  ],
+  "result": {
+    "count": 2,
+    "id": "bubbas_reworked_mobs:soul_blaze_powder"
+  }
+}

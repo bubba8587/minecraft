@@ -268,6 +268,9 @@ effect("turtle_master", name="Turtle Master", potion="turtle_master", role="main
 	src="Potions.STRONG_TURTLE_MASTER (Slowness 400 ticks amplifier 5, Resistance amplifier 3)")
 COMPOUND = {"turtle_master": {"resistance": 0.8, "slowness": -0.9}}  # a mod status effect, not one of vanilla's
 MOD_EFFECTS = {"turtle_master": 0x7C4FA0, "silence": 0x0B6E73, "ender": 0x8E5FB4, "breeze": 0x9DB3E8}  # mod status effects and their colors
+# Status effects of our other mods: their gems load only with that mod, and they are never another gem's bonus or drawback.
+OTHER_MOD_EFFECTS = {"soulguard": ("bubbas_reworked_mobs", 0x01A7AC)}
+NO_LEVELS = {"soulguard"}  # owner: any gem of it, worn, gives the whole effect; strength does nothing for it
 SLOWNESS_AMP = {"normal": 3, "long": 3, "strong": 5}  # Turtle Master's Slowness amplifiers (Potions.java)
 effect("fire_resistance", name="Fire Resistance", potion="fire_resistance", role="main",
 	variants={"normal": (3600, 0), "long": (9600, 0)},
@@ -275,6 +278,14 @@ effect("fire_resistance", name="Fire Resistance", potion="fire_resistance", role
 	value=lambda s: s, show=lambda s: f"fire damage {pct(-s)} (lava {4 * (1 - s):.2f}/hit), burn time {pct(-s)}",
 	impl="On/off made partial: fire-tagged damage (is_fire) x (1 - s) through the damage hook, and burning_time attribute -s (add_multiplied_total) so fire also goes out sooner.",
 	src="LivingEntity (is_fire + FIRE_RESISTANCE), Entity lava 4.0, Attributes.BURNING_TIME")
+# Soulguard (specs/soulfire.md): a status effect of Bubba's Reworked Mobs. No levels (owner): any Soulguard gem worn gives
+# the whole effect. Its gem loads only with Reworked Mobs (OTHER_MOD_EFFECTS).
+effect("soulguard", name="Soulguard", potion="soulguard", role="main", kind="onoff", mod="bubbas_reworked_mobs",
+	variants={"normal": (3600, 0), "long": (9600, 0)},
+	anchor="Soulguard (Reworked Mobs): immune to Soulfire burning and soul fire damage; totems work against Soulfire deaths (on/off, no levels)",
+	value=lambda s: 1.0 if s > 0 else 0.0, show=lambda s: "immune to Soulfire" if s > 0 else "no effect",
+	impl="No levels (owner): any Soulguard gem worn keeps the real Soulguard effect on the wearer (hidden, kept on like Glowing's always-on); a weapon hit gives the target Soulguard. Strength does nothing for it. Loads only with Reworked Mobs: its brewing recipes carry a fabric:load_conditions mod check and the mod drops the effect when Reworked Mobs is missing.",
+	src="bubbas_reworked_mobs:soulguard (specs/soulfire.md)")
 effect("water_breathing", name="Water Breathing", potion="water_breathing", role="main",
 	variants={"normal": (3600, 0), "long": (9600, 0)},
 	anchor="Water Breathing: air never runs out (on/off); vanilla air is 300 ticks (15 s)",
@@ -678,7 +689,7 @@ def hit_anchor_text(key):
 
 # Harmful gems worn (pointless, but allowed: a poison gem in your armor poisons you, owner).
 DEATH_TRIGGER = {}
-ALWAYS_ON = {"glowing"}  # worn: on all the time (owner, Q14); can't be partial
+ALWAYS_ON = {"glowing", "soulguard"}  # worn: on all the time (owner, Q14; Soulguard: no levels, owner); can't be partial
 # Worn screen effects made partial and steady on the wearer's own screen (owner after playtest, 2026-11-15: one gem gave
 # total darkness that blinked): s of the way to vanilla's strongest look. Darkness: lightmap dim and fog; Blindness: fog;
 # Nausea: wobble. No vanilla effect instance on the wearer, so nothing pulses or restarts.
@@ -879,7 +890,7 @@ for a, b, _ in INVERSE_PAIRS:
 HARMFUL_DRAWBACKS = ["slowness", "weakness", "mining_fatigue", "hunger", "unluck", "poison", "wither"]  # poison, wither: owner Q8
 # Owner (Q9): a harmful gem's drawback is any beneficial effect that works as a short effect on a target, so real, random
 # combinations happen. Only Healing is left out: it is instant and has no mild timed form to land for a few seconds.
-BENEFICIAL_DRAWBACKS = [k for k in GOOD_GEMS if E[k].get("kind") not in ("instant", "action")]
+BENEFICIAL_DRAWBACKS = [k for k in GOOD_GEMS if E[k].get("kind") not in ("instant", "action") and k not in OTHER_MOD_EFFECTS]
 # Drawback roll weights (default 1): poison and wither roll, but half as often as the others (owner, Q8).
 # Roll weights by how hard an effect is to get (owner, 2026-11-15): both the bonus ("other") and the drawback pool. Easy
 # to brew: common; harder (a rare ingredient, the End, the deep ocean, trial chambers): uncommon; found only: rare. Poison
@@ -924,7 +935,7 @@ OTHER_EXCLUDED = {"instant_health": "its own per-hit curve: main effect only", "
 	"hero_of_the_village": "a permanent villager discount stays a rare found gem: main effect only"}
 
 def other_pool(k):
-	return [o for o in GEM_EFFECTS if E[o]["good"] == E[k]["good"] and o != k and o not in OTHER_EXCLUDED]
+	return [o for o in GEM_EFFECTS if E[o]["good"] == E[k]["good"] and o != k and o not in OTHER_EXCLUDED and o not in OTHER_MOD_EFFECTS]
 
 def drawback_pool(k):
 	"""Opposite kind, never its direct opposite, never a part the gem already has (Turtle Master's Slowness)."""
@@ -1003,7 +1014,7 @@ def verify_source(errors):
 	potions = re.sub(r"\s+", " ", potions)
 	n = 0
 	for key, e in E.items():
-		if not e["potion"]:
+		if not e["potion"] or key in OTHER_MOD_EFFECTS:
 			continue
 		for var, (ticks, amp) in e["variants"].items():
 			amp_s = f", {amp}" if amp else ""
@@ -1162,12 +1173,12 @@ def run_checks():
 	if SRC.exists():
 		mob = re.sub(r"\s+", " ", (SRC / "world/effect/MobEffects.java").read_text(encoding="utf-8"))
 		ids = set(re.findall(r'Holder<MobEffect> [A-Z_]+ = register\( ?"([a-z_]+)"', mob))
-		known = (set(GEM_EFFECTS) - set(MOD_EFFECTS)) | set(NOT_GEMS) | set(DRAWBACK_ONLY)
+		known = (set(GEM_EFFECTS) - set(MOD_EFFECTS) - set(OTHER_MOD_EFFECTS)) | set(NOT_GEMS) | set(DRAWBACK_ONLY)
 		if ids != known:
 			errors.append(f"status effects not classified: {sorted(ids - known)}; classified but not in 26.3: {sorted(known - ids)}")
 		n_ids = len(ids)
 	else:
-		n_ids = len((set(GEM_EFFECTS) - set(MOD_EFFECTS)) | set(NOT_GEMS) | set(DRAWBACK_ONLY))
+		n_ids = len((set(GEM_EFFECTS) - set(MOD_EFFECTS) - set(OTHER_MOD_EFFECTS)) | set(NOT_GEMS) | set(DRAWBACK_ONLY))
 	for k in GEM_EFFECTS:
 		src = E[k]["source"]
 		if src[0] == "found" and not set(src[1]) <= set(LOOT):
@@ -1283,6 +1294,8 @@ def run_checks():
 
 	# 7. Worn (armor) mappings move one way and never reach the vanilla anchor, for every gem.
 	for k in GEM_EFFECTS:
+		if k in NO_LEVELS:
+			continue  # on/off by the owner's design: any gem of it gives the whole effect
 		f = lambda s, k=k: worn_value(k, s)
 		check_monotonic(k, f, errors)
 		at_one = f(0.99999) if k == "water_breathing" else f(1.0)
@@ -1874,6 +1887,8 @@ HIT_UNIT = {"poison": 25 / 12 * 0.8, "wither": 1.0, "regeneration": 0.8, "resist
 	"instant_damage": HIT_STRIKE_HARM, "instant_health": HIT_STRIKE_HEAL}
 def effect_id(k):
 	"""The status effect id a gem names: vanilla's, or the mod's own for a combined gem."""
+	if k in OTHER_MOD_EFFECTS:
+		return f"{OTHER_MOD_EFFECTS[k][0]}:{k}"
 	return f"{MOD_ID}:{k}" if k in MOD_EFFECTS else f"minecraft:{k}"
 
 def worn_amplifier(k):
@@ -1883,7 +1898,7 @@ def worn_amplifier(k):
 	return WORN_AMPLIFIER.get(k, 0)
 
 def potion_id(e, variant):
-	return "minecraft:" + ("" if variant == "normal" else variant + "_") + e["potion"]
+	return e.get("mod", "minecraft") + ":" + ("" if variant == "normal" else variant + "_") + e["potion"]
 
 def export_data():
 	effects = {}
@@ -1931,6 +1946,8 @@ def export_data():
 			d["parts"] = COMPOUND[k]
 		if k in MOD_EFFECTS:
 			d["color"] = MOD_EFFECTS[k]
+		if k in OTHER_MOD_EFFECTS:
+			d["requires_mod"], d["color"] = OTHER_MOD_EFFECTS[k]
 		d["opposites"] = sorted(OPPOSITE.get(k, ()))
 		d["never_drawback"] = k in NEVER_DRAWBACK
 		effects[k] = d
@@ -1996,9 +2013,12 @@ def brewing_recipes():
 					out.append((f"{name}_{b}", {"item": ingredient}, k, v, "item", lvl, b))
 	recipes = []
 	for name, inp, k, v, form, lvl, b in out:
-		recipes.append((name + ".json", {"type": "minecraft:brewing", "input": inp, "reagent": {"item": BASE_ITEMS[b]},
+		recipe = {"type": "minecraft:brewing", "input": inp, "reagent": {"item": BASE_ITEMS[b]},
 			"output": {"id": f"{MOD_ID}:infused_gem", "components": {f"{MOD_ID}:infused_gem":
-				{"effect": effect_id(k), "variant": v, "form": form, "infusion": lvl}}}}))
+				{"effect": effect_id(k), "variant": v, "form": form, "infusion": lvl}}}}
+		if k in OTHER_MOD_EFFECTS:
+			recipe["fabric:load_conditions"] = [{"condition": "fabric:all_mods_loaded", "values": [OTHER_MOD_EFFECTS[k][0]]}]
+		recipes.append((name + ".json", recipe))
 	return recipes
 
 # ---------------------------------------------------------------- loot files (data: a datapack can override any of them)

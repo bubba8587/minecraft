@@ -6,6 +6,7 @@
 		"CompassItemMixin",
 		"EndermanKinMixin",
 		"ItemEntityAccessor",
+		"KeepingDeathSourceMixin",
 		"LevelPrecipitationMixin",
 		"MobAccessor",
 		"MobTickMixin",

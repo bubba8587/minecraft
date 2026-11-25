@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:brewing",
+  "input": {
+    "item": "minecraft:splash_potion",
+    "potion_contents": {
+      "potions": "minecraft:awkward"
+    }
+  },
+  "output": {
+    "components": {
+      "minecraft:potion_contents": {
+        "potion": "bubbas_reworked_mobs:soulguard"
+      }
+    },
+    "id": "minecraft:splash_potion"
+  },
+  "reagent": {
+    "item": "bubbas_reworked_mobs:soul_blaze_rod"
+  }
+}

@@ -55,6 +55,7 @@ public final class GemDescribe {
 			case "poison" -> f("%.2f HP/s (not below 1 HP)", e.wornNumber("damage_per_second", 1.667) * s);
 			case "wither" -> f("%.2f HP/s", e.wornNumber("damage_per_second", 0.5) * s);
 			case "glowing" -> "always on";
+			case "soulguard" -> "immune to Soulfire";
 			case "darkness" -> f("%.0f%% dimming", 100 * s);
 			case "blindness" -> f("%.0f%% fog", 100 * s);
 			case "nausea" -> f("%.0f%% wobble", 100 * s);
