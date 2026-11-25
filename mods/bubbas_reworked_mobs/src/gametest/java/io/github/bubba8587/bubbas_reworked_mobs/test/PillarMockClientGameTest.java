@@ -40,7 +40,7 @@ public class PillarMockClientGameTest implements FabricClientGameTest {
 			new Station("badlands", "badlands", "red_sand", "orange_terracotta", "red_sand"),
 			new Station("snowy", "snowy_plains", "snow_block", "dirt", "snow"),
 			new Station("stony", "stony_shore", "stone", "stone", "stone"),
-			new Station("mushroom", "mushroom_fields", "mycelium", "dirt", "mycelium"));
+			new Station("mushroom", "mushroom_fields", "mycelium", "dirt", "mushroom_stem"));
 
 	@Override
 	public void runTest(ClientGameTestContext context) {

@@ -88,7 +88,7 @@ Every creeper wears a skin from the biome it first appeared in. In biomes with t
 | Red sand | All badlands |
 | Snow | Snowy plains, ice spikes, snowy slopes, snowy beach, frozen peaks, jagged peaks, frozen river |
 | Stone | Stony peaks, stony shore, windswept hills, windswept gravelly hills |
-| Mycelium | Mushroom fields |
+| Mushroom stem | Mushroom fields |
 | Dripstone | Dripstone caves |
 | Sulfur | Sulfur caves |
 

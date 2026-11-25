@@ -189,7 +189,7 @@ Look only: every creeper wears a skin from the biome it first appeared in, recol
 | red_sand | red sand | all badlands |
 | snow | snow | snowy plains, ice spikes, snowy slopes, snowy beach, frozen peaks, jagged peaks, frozen river |
 | stone | stone | stony peaks, stony shore, windswept hills, windswept gravelly hills |
-| mycelium | `mycelium_top` | mushroom fields |
+| mushroom_stem | `mushroom_stem` | mushroom fields (owner: mooshroom island creepers are mushroom stems) |
 | dripstone | `dripstone_block` | dripstone caves |
 | sulfur | sulfur | sulfur caves |
 
@@ -206,7 +206,7 @@ Everywhere else (rivers, oceans, lush caves, deep dark, the Nether, the End, mod
 ### Art method (`tools/creeper-biome-textures.py`)
 
 - Skins are vanilla's creeper recoloured pixel for pixel, no redraw (owner). Rerun the script with `--base16`/`--base32` for a new base creeper. Inputs: `--base16`, `--base32` (base creepers), `--mcsrc` (vanilla assets), `--cf32j` (CF32J zip or folder), `--sheet` (contact sheet).
-- Palettes: the log side texture for tree biomes; the ground block for treeless ones (sand, red_sand, snow, stone, mycelium_top, dripstone_block, sulfur); dirt for plains and meadow.
+- Palettes: the log side texture for tree biomes; the ground block for treeless ones (sand, red_sand, snow, stone, dripstone_block, sulfur); dirt for plains and meadow; mushroom stem for mushroom fields.
 - Distribution match by OKLch lightness (owner asked for a better match, 2026-11-25): each creeper colour's rank among the body's pixels (dark to light, pixel-weighted, mid-rank) picks the source colour at the same rank among the source texture's pixels. So each source colour turns up on the creeper about as often as in the source (dirt mostly brown with few grey pebbles; birch mostly white with few dark marks). The earlier nearest-lightness match with a chroma tie-break over-used rare colours (dirt came out grey).
 - Exact colours only (owner): every output pixel is a colour that exists in the source texture (after the grass tint for plains and meadow), except on the face (owner, 2026-11-24): the base's **black** face pixels stay black, and its **noticeably darker** face pixels take their own matched colour blended 50 % toward black (`FACE_BLEND`). The rest of the face maps like any other pixel. The face is left out of the range statistics.
 - Face pixels, found by value on the head front (UV 8..16, 8..16): black below OKLab L 0.05 (`BLACK`); noticeably darker from 0.05 to 0.405 at 16x (`DARK16`), 0.395 at 32x (`DARK32`).

@@ -54,7 +54,7 @@ SKINS = {
 	"red_sand": ("block/red_sand.png", None),
 	"snow": ("block/snow.png", None),
 	"stone": ("block/stone.png", None),
-	"mycelium": ("block/mycelium_top.png", None),
+	"mushroom_stem": ("block/mushroom_stem.png", None),
 	"dripstone": ("block/dripstone_block.png", None),
 	"sulfur": ("block/sulfur.png", None),
 }

@@ -30,8 +30,8 @@ From the `java-latest` branch (commit 00321eab, November 2026).
 |---|---|
 | `entity/creeper/biome/*.png` (all 19) | `entity/creeper/creeper.png` |
 | `entity/creeper/biome/{oak,birch,spruce,jungle,acacia,dark_oak,mangrove,cherry,pale_oak,poplar}.png` | colours of `block/<name>_log.png` |
-| `entity/creeper/biome/plains.png`, `meadow.png` | colours of `block/grass_block_top.png` (biome grass tint applied) |
-| `entity/creeper/biome/{sand,red_sand,snow,stone}.png`, `dripstone.png`, `mycelium.png` | colours of `block/{sand,red_sand,snow,stone}.png`, `block/dripstone_block.png`, `block/mycelium_top.png` |
+| `entity/creeper/biome/dirt.png` | colours of `block/dirt.png` |
+| `entity/creeper/biome/{sand,red_sand,snow,stone}.png`, `dripstone.png`, `mushroom_stem.png` | colours of `block/{sand,red_sand,snow,stone}.png`, `block/dripstone_block.png`, `block/mushroom_stem.png` |
 
 What changed: each creeper pixel takes the closest colour (OKLch lightness match) from the block texture; the pixels and shading are CF32J's creeper's. `sulfur.png` uses vanilla's sulfur colours (CF32J has none).
 

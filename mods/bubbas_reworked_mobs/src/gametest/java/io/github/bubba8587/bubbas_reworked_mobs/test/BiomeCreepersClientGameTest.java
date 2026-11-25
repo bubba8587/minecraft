@@ -28,7 +28,7 @@ public class BiomeCreepersClientGameTest implements FabricClientGameTest {
 	private static final String TAG = "biome_creeper_shot";
 	private static final String PACK_32X = "bubbas_reworked_mobs:bubbas_reworked_mobs_32x";
 	static final List<String> SKINS = List.of("vanilla", "oak", "birch", "spruce", "jungle", "acacia", "dark_oak", "mangrove", "cherry", "pale_oak",
-			"poplar", "dirt", "sand", "red_sand", "snow", "stone", "mycelium", "dripstone", "sulfur");
+			"poplar", "dirt", "sand", "red_sand", "snow", "stone", "mushroom_stem", "dripstone", "sulfur");
 	private static final double STEP = 1.25;
 
 	@Override

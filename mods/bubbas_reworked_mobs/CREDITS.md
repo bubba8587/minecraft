@@ -8,9 +8,9 @@ The 32x biome creeper skins in the 32x resource pack (`src/main/resources/resour
 |---|---|
 | all 19 skins | `entity/creeper/creeper.png` |
 | `oak.png`, `birch.png`, `spruce.png`, `jungle.png`, `acacia.png`, `dark_oak.png`, `mangrove.png`, `cherry.png`, `pale_oak.png`, `poplar.png` | colours of `block/<same name>_log.png` |
-| `plains.png`, `meadow.png` | colours of `block/grass_block_top.png`, tinted with vanilla's grass colour for plains / meadow |
+| `dirt.png` | colours of `block/dirt.png` |
 | `sand.png`, `red_sand.png`, `snow.png`, `stone.png`, `dripstone.png` | colours of `block/sand.png`, `red_sand.png`, `snow.png`, `stone.png`, `dripstone_block.png` |
-| `mycelium.png` | colours of `block/mycelium_top.png` |
+| `mushroom_stem.png` | colours of `block/mushroom_stem.png` |
 | `sulfur.png` | CF32J's creeper with the colours of vanilla's `block/sulfur.png` (CF32J has no sulfur texture) |
 
 Made by `tools/creeper-biome-textures.py`.
