@@ -91,6 +91,21 @@ Charged creepers keep vanilla's suicide-bomber behavior.
   - Looked at (the cone above) within 16 blocks: it edges away.
   - Closer than 10: it backs away (speed x1.2), so dashing at it makes it back up. With cover, coming at it makes it run to farther cover instead.
   - Out of sight for 1 s (and no spot): it walks toward the target to see it again.
+  - With `mobGriefing` on, it first tries to make its own cover (Pillars, below); the open-ground stance is the fallback when it can't.
+- *Pillars: making its own cover (owner's design, decided 2026-11-25):* on open ground it digs up two surface blocks near it, one at a time, carries each on its head and stacks them into a 2-high pillar, then peeks from behind it like any other cover. Blocks move exactly as they are, never as drops (a grass block stays grass; the lower block of a grass pillar may later turn to dirt by vanilla's rule, since a block sits on it). Never a hole deeper than 1. If a lone natural block already sticks up out of level ground at a good spot, it builds on that and adds only one. Code: `creeper/CreeperPillar.java` (the job), run by `CreeperWatchGoal`; numbers in `CreeperTuning` (`PILLAR_*`).
+  - *Trigger:* in WATCH, after 3 empty cover searches in a row (`OPEN_GROUND_AFTER_FAILED_SEARCHES`), `CreeperPillar.tryStart`: needs `mobGriefing` (as endermen; off: the open-ground stance, nothing else changes), not leaving (day), no block carried, and game time past `CreeperMind.nextPillarTime`. A plan sets that to now + 6000 ticks (5 min); no site found: now + 600 (30 s) and the open-ground stance as before. Not saved (watchers aren't persistent).
+  - *Site search* (block lookups only, once per try): every column within 6 blocks of the creeper (13 x 13), 6-18 blocks from the target, scored |distance - clamp(current distance, 8, 12)| + 0.3 x walk; -3 for a lone block it can build on; +6 when the watched player's look cone (45 degrees, `Gaze`) covers the site. A site needs:
+    - fresh: an empty standable cell with a sturdy top under it (fills that cell and the one above); or a lone block: a `creeper_pillar` full cube with at least 3 of 4 sides open and a sturdy block under it (fills the cell on top);
+    - a stand cell 1.4 blocks behind the pillar (away from the target), with the cells either side of it standable (its peek cells);
+    - the view from the target's eyes to that stand point open now (else there was cover already);
+    - enough dig blocks (2 or 1, plus 2 spares).
+  - *Dig blocks:* columns within 4 blocks of the pillar, nearest first, not the pillar's or stand cells' columns, never next to another chosen one. The top block of the column (within 1 up / 2 down of the floor), in block tag `#bubbas_reworked_mobs:creeper_pillar` (data: grass, dirt kinds, mycelium, podzol, mud, packed mud, moss, sand, red sand, gravel, clay, snow block, `#minecraft:base_stone_overworld`, cobblestone, mossy cobblestone, cobbled deepslate, sandstone, red sandstone, calcite, dripstone block, `#minecraft:terracotta`), a full collision cube, no block entity, breakable, not wither-immune, open above, sturdy below, and no neighbour column higher than it (so every dent is 1 deep).
+  - *The job:* walk to the dig block (within 1.6, or 2.6 once the walk ends), a 12-tick pause looking at it, take it (`removeBlock`, vanilla break particles and sound via level event 2001, `BLOCK_DESTROY` game event), walk to the stand cell, an 8-tick pause looking at the target cell, place the same state (`setBlock` with full updates, the block's place sound, `BLOCK_PLACE` game event). It steps aside if it stands in the cell and waits while something else does. Gives up after 600 ticks (frozen time not counted) or 4 failed walks to one block (then the next spare). About 3-4 s for a 2-block pillar on flat ground.
+  - *Caught building:* looked at (peekaboo cone) while the target can see its eyes, navigation stops and it stands and stares; it resumes when looked away. Walking at it makes it run off as usual.
+  - *Abort* (plan leaves WATCH, a spot is taken, target changes, goal stops: fuse, blindness, charged): the carried block goes back into its dent if still open, else to a free cell beside it, else drops as an item. On death the same (`ServerLivingEntityEvents.AFTER_DEATH`).
+  - *Carried block:* attachment `bubbas_reworked_mobs:creeper_carried` (BlockState, persistent, synced to all clients). A creeper loaded with one but no job sets it down beside itself.
+  - *Look:* `client/creeper/CreeperCarriedBlockLayer` (Fabric `LivingEntityRenderLayerRegistrationCallback`) draws the carried block at 0.55 scale on top of its head, turning and tilting with the head; the render state field is added by `CreeperRenderStateSkinMixin` and filled in `CreeperRendererSkinMixin`'s extract hook with the renderer context's `BlockModelResolver` (the enderman's display context).
+  - *Afterwards:* `CreeperMind.pillar()` holds its base, and the ordinary cover search finds the peek spot behind it; later it uses the pillar like any other cover.
 
 **Blindness:** a creeper with the vanilla Blindness effect senses nothing: the meter only drains, it watches nothing, it ignores hits, and a hiss in progress defuses. Infused Gems' Blindness gems reach it only when they apply the vanilla effect (no gem-specific code; nothing to do when that mod is absent).
 
@@ -119,6 +134,7 @@ Charged creepers keep vanilla's suicide-bomber behavior.
 - Cover search: at most once a second while it has no spot; the sweep's 32 rays + 2 per edge, a few block lookups per cell, and the raycast tests (mostly 2 rays per reject).
 - Creeping closer: a try every 5-8 s, up to 4 path searches and 7 rays each. Flee and leave searches run once when those start.
 - Leaving: up to 3 rays per nearby player once a second, only while leaving.
+- Pillars: one 13 x 13 column scan (a few block lookups each) per try, at most every 30 s (5 min after a build); during a job, one path per walk.
 - Spawner: every 10 s per player without a watcher, at most 16 column probes and a few raycasts.
 
 ## Numbers (all in `CreeperTuning`; builder's starting values, owner to playtest)
@@ -134,6 +150,9 @@ Charged creepers keep vanilla's suicide-bomber behavior.
 | Field of view / notice speed / watch range | 120 degrees / 0.03 blocks/tick / 24 blocks (paths up to 32) |
 | Non-player watched for | 15 s |
 | Open ground | only after 3 empty searches in a row; holds / backs off under / edges back to when looked at: 12 / 10 / 16 blocks |
+| Pillar site | 6-18 blocks from target, best near clamp(distance, 8, 12); every column within 6 of the creeper; lone-block bonus 3, looked-at penalty 6 |
+| Pillar dig blocks | within 4 of the pillar, 2 spares; reach 1.6 (2.6 once the walk ends); pauses: take 12 ticks, place 8 ticks |
+| Pillar job | gives up after 600 ticks unfrozen or 4 walks per block; next pillar 6000 ticks (5 min) after a build starts, 600 (30 s) after no site found |
 | First peek spot | 3-22 blocks from target (best near min(distance, 15)); dropped outside 2-24; every cell within 5 of the creeper plus 72 random ones up to 22 blocks' walk |
 | Cover sweep | 32 rays, ±75 degrees, 2 bisections; 24 edge + 16 other evaluations |
 | Half-hide inset | 0.12 blocks |
@@ -165,6 +184,11 @@ Charged creepers keep vanilla's suicide-bomber behavior.
 14. "Seen by a player" for vanishing is a clear line from any player's eyes, whatever they face; "looked at" for the leave timing is the peekaboo cone.
 15. Leaving creepers that lose their player (beyond 24 blocks) still vanish once unseen.
 16. The half-hide inset is 0.12 (was 0.05) so it is visible at a window.
+17. *Pillars:* the carried block sits on top of its head at 0.55 scale, turning and tilting with the head (in screenshots it can make the creeper look bent mid-carry).
+18. *Pillars:* looked at mid-build, it freezes and stares until looked away (only while the player can see it).
+19. *Pillars:* one pillar per creeper per 5 minutes; with no site, it tries again after 30 s.
+20. *Pillars:* its own block tag `creeper_pillar` (natural terrain full cubes) instead of `caretaker_liftable`, which holds TNT, pumpkins and melons.
+21. *Pillars:* dig spots are the nearest suitable ones (often right beside the pillar, often on the player's side), each in its own column, never side by side.
 
 ## Biome skins
 
@@ -246,6 +270,11 @@ The creeper grove (`specs/testworld.md`, Layout).
   - client part `pillarmock` (`PillarMockClientGameTest`, named-only, never in the full suite): staged mock-ups of the planned pillar creeper, six biomes; no feature code;
   - `neverOpenGroundWithCoverAround` (one 3-tall log 9 blocks out; never open ground for 240 ticks, and it reaches a spot);
   - `watcherLeavesOutOfSightByDay` (day, watcher with `leaveIn(0)`; seen while leaving for 20+ ticks without vanishing, then vanishes where no player can see it).
+- **`CreeperPillarGameTest`** (milestone; environments `creeper_pillar`, `creeper_pillar_off`, `creeper_pillar_bump`, with game rules `mob_griefing` and `random_tick_speed` 0 so grass doesn't decay mid-test):
+  - `buildsPillarOfGroundBlocksAndPeeks` (grass field, mobGriefing on, no cover: a 2-high pillar of exactly the ground's grass block state, exactly two 1-deep dents and no 2-deep hole, then it holds a peek spot beside the pillar);
+  - `noPillarWithoutMobGriefing` (no block changes, never carries, open-ground stance);
+  - `addsOneBlockOnALoneBlock` (a lone grass block 10.5 blocks from the player: it builds on it, adds exactly one, one dent).
+- **`PillarClientGameTest`** (client part `pillar`, in the full suite): plains and desert, a creeper watching an armor stand with real AI (held still with NoAI only for each shot): `pillar-<biome>-carry`, `-second`, `-peek`, `-peek-near`, `-side`.
 - **`CreeperClientGameTest`** (client part `creepers`): screenshots `creeper-peek` (from the watched armor stand: half behind a one-log tree), `creeper-peek-side`, `creeper-hidden` (player looking at it), `creeper-caught` (looked away, then straight back), `creeper-startle-bar` (the `show_meters` bar after two hits), `creeper-window` (from inside a small plank house, it peeks round the pane's frame) and `creeper-window-outside`. `creeper-caught` and `creeper-window` wait 10 ticks after it settles, since the client shows mob movement a few ticks late.
 - **`BiomeCreepersClientGameTest`** (client part `biomecreepers`): every skin in a row, four per shot left to right, plus charged vanilla and charged birch, a birch creeper half behind a birch trunk and a sand creeper against sand, at 16x and 32x.
 - **Not yet tested (objectives):**
@@ -261,10 +290,14 @@ The creeper grove (`specs/testworld.md`, Layout).
   - the game rule off brings vanilla spawns back;
   - it goes back to its old spot when caught walking up in the open;
   - the leave countdown runs 2x when not looked at;
-  - a hissing leaving creeper doesn't vanish.
+  - a hissing leaving creeper doesn't vanish;
+  - pillars: looked at mid-build it freezes and resumes when looked away;
+  - pillars: a startle or approach mid-carry puts the block back in its dent;
+  - pillars: the 5-minute cooldown;
+  - pillars: death while carrying puts the block down.
 
 ## Open
 
 - Owner to playtest the numbers (all in `CreeperTuning`) and C5's open-ground distances.
-- Owner to review the 16 builder's choices above
+- Owner to review the 21 builder's choices above (17-21: pillars; questions in `BACKLOG.md`)
 - Owner to review the 4 biome skin choices (Biome skins).
