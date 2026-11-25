@@ -28,8 +28,15 @@ public class BossPiglinModel extends AbstractPiglinModel<BossPiglinRenderState> 
 		return LayerDefinition.create(mesh, 64, 64);
 	}
 
+	/** The renderer draws the model this much larger (ThroneDesign.seat assumes it). */
+	public static final float RENDER_SCALE = 1.4F;
+
 	public static ArmorModelSet<LayerDefinition> createArmorLayers() {
 		return createArmorMeshSet(new CubeDeformation(0.5F), new CubeDeformation(1.02F)).map(mesh -> LayerDefinition.create(mesh, 64, 32));
+	}
+
+	public static ArmorModelSet<BossPiglinModel> bakeArmorModels() {
+		return createArmorLayers().map(layer -> new BossPiglinModel(layer.bakeRoot()));
 	}
 
 	@Override
