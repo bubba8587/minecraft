@@ -10,6 +10,7 @@
 		],
 		"bubba-milestone-gametest": [
 			"io.github.bubba8587.bubbas_infused_gems.test.BalanceGameTest",
+			"io.github.bubba8587.bubbas_infused_gems.test.GemNameGameTest",
 			"io.github.bubba8587.bubbas_infused_gems.test.BrewingGameTest",
 			"io.github.bubba8587.bubbas_infused_gems.test.EnchantingGameTest",
 			"io.github.bubba8587.bubbas_infused_gems.test.SocketingGameTest",

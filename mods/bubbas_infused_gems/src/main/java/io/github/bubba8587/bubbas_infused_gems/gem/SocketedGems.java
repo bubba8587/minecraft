@@ -44,7 +44,7 @@ public record SocketedGems(List<Gem> gems) implements TooltipProvider {
 		}
 		out.accept(Component.translatable(GemText.KEY + "tooltip.socketed", this.gems.size()).withStyle(ChatFormatting.GRAY));
 		for (Gem gem : this.gems) {
-			out.accept(Component.literal(" ").append(gem.summary()));
+			gem.socketedLines(out);
 		}
 	}
 }

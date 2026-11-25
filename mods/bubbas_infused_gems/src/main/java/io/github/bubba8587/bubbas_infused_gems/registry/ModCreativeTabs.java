@@ -56,7 +56,7 @@ public final class ModCreativeTabs {
 
 	/** A perfect gem: strongest potion, Infusion VI, tier 3, the strongest result alone. */
 	public static ItemStack perfect(String key) {
-		return GemEnchanting.finished(new Gem(GemText.holder(key), 6, 3, 1.0F, Optional.empty(), Optional.empty()));
+		return GemEnchanting.finished(new Gem(GemText.holder(key), 6, 3, 1.0F, Optional.empty(), Optional.empty(), 3, 3));
 	}
 
 	public static void initialize() {

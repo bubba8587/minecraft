@@ -53,14 +53,15 @@ public final class GemInversion {
 		if (!gem.hasMain()) {
 			int infusion = gem.infusion() - 1;
 			float main = (float) (b.infusion(infusion).factor() * b.grades.get("weak"));
-			return new Gem(gem.drawback().get().effect(), infusion, gem.tier(), main, gem.other(), Optional.empty());
+			return new Gem(gem.drawback().get().effect(), infusion, gem.tier(), main, gem.other(), Optional.empty(), 3, 1);
 		}
 		String grade = mainGrade(gem);
 		String lower = ORDER.get(ORDER.indexOf(grade) - 1);
 		int infusion = gem.infusion() - 1;
 		float main = (float) (gem.main() * b.grades.get(lower) / b.grades.get(grade) * b.infusion(infusion).factor() / b.infusion(gem.infusion()).factor());
 		Gem.Roll old = gem.drawback().get();
-		return new Gem(old.effect(), infusion, gem.tier(), main, gem.other(), Optional.of(new Gem.Roll(gem.effect(), old.strength())));
+		return new Gem(old.effect(), infusion, gem.tier(), main, gem.other(), Optional.of(new Gem.Roll(gem.effect(), old.strength())),
+				gem.infusionLevel(), Gem.gradeLevel(lower));
 	}
 
 	public static ItemStack invert(ItemStack stack) {

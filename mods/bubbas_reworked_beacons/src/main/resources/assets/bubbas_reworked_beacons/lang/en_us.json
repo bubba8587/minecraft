@@ -5,5 +5,5 @@
 	"screen.bubbas_reworked_beacons.idle_blocked": "Idle: needs a clear sky above, or an upside-down beacon to pair with",
 	"screen.bubbas_reworked_beacons.empty": "No item",
 	"screen.bubbas_reworked_beacons.needs_levels": "Needs a %s-layer pyramid",
-	"screen.bubbas_reworked_beacons.capped": "Only outputting Gem Power %s"
+	"screen.bubbas_reworked_beacons.capped": "Only outputting Base Power %s"
 }

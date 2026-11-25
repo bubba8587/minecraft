@@ -81,7 +81,7 @@ public final class ModCommands {
 			throw UNKNOWN.create();
 		}
 		Balance.Infusion level = Balance.get().infusion(infusion);
-		Gem perfect = new Gem(GemText.holder(effect), infusion, 3, (float) level.factor(), Optional.empty(), Optional.empty());
+		Gem perfect = new Gem(GemText.holder(effect), infusion, 3, (float) level.factor(), Optional.empty(), Optional.empty(), 3, 3);
 		String prefix = material.equals("gold") ? "golden" : material;
 		for (int i = 0; i < 4; i++) {
 			EquipmentSlot slot = io.github.bubba8587.bubbas_infused_gems.effect.GemTotals.ARMOR[i];

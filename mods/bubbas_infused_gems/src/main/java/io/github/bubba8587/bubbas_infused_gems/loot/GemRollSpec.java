@@ -106,6 +106,6 @@ public record GemRollSpec(Optional<List<Holder<MobEffect>>> effects, List<Intege
 			String effect = GemEnchanting.weighted(random, e.drawbackPool(), e.drawbackWeights());
 			drawback = Optional.of(new Gem.Roll(GemText.holder(effect), (float) b.drawbackSize(size)));
 		}
-		return new Gem(GemText.holder(key), infusionLevel, 3, main, Optional.empty(), drawback);
+		return new Gem(GemText.holder(key), infusionLevel, 3, main, Optional.empty(), drawback, Gem.potionLevel(top), Gem.gradeLevel(grade));
 	}
 }

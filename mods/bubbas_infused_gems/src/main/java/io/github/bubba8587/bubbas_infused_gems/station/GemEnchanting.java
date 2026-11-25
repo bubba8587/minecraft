@@ -57,7 +57,8 @@ public final class GemEnchanting {
 			String key = weighted(random, e.drawbackPool(), e.drawbackWeights());
 			drawback = Optional.of(new Gem.Roll(GemText.holder(key), (float) b.drawbackSize(outcome.drawback())));
 		}
-		return new Gem(infused.effect(), infused.infusion(), tier, main, other, drawback);
+		return new Gem(infused.effect(), infused.infusion(), tier, main, other, drawback,
+				infused.form() == io.github.bubba8587.bubbas_infused_gems.gem.GemForm.ITEM ? 3 : Gem.potionLevel(infused.variant()), Gem.gradeLevel(outcome.main()));
 	}
 
 	private static RandomSource random(int seed, int tier, InfusedGem infused) {

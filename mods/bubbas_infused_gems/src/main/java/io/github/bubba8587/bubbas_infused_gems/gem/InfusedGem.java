@@ -60,8 +60,8 @@ public record InfusedGem(Holder<MobEffect> effect, String variant, GemForm form,
 
 	@Override
 	public void addToTooltip(Item.TooltipContext context, Consumer<Component> out, TooltipFlag flag, DataComponentGetter components) {
-		out.accept((this.form == GemForm.ITEM ? Component.translatable(GemText.KEY + "tooltip.item", this.maxTier())
+		out.accept((this.form == GemForm.ITEM ? Component.translatable(GemText.KEY + "tooltip.item", GemText.roman(this.maxTier()))
 				: Component.translatable(GemText.KEY + "tooltip.potion", Component.translatable(GemText.KEY + "variant." + this.variant),
-						this.maxTier())).withStyle(ChatFormatting.GRAY));
+						GemText.roman(this.maxTier()))).withStyle(ChatFormatting.GRAY));
 	}
 }

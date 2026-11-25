@@ -45,6 +45,16 @@ public final class GemText {
 		return Balance.get().infusion(infusion).numeral();
 	}
 
+	/** I, II or III. */
+	public static String roman(int n) {
+		return switch (n) {
+			case 1 -> "I";
+			case 2 -> "II";
+			case 3 -> "III";
+			default -> Integer.toString(n);
+		};
+	}
+
 	public static String percent(double x) {
 		return Math.round(x * 100) + "%";
 	}
