@@ -24,6 +24,8 @@ public final class Camps {
 	public static final ResourceKey<Structure> CAMP_KEY = ResourceKey.create(Registries.STRUCTURE, BubbasReworkedMobs.id("monster_camp"));
 	public static final ResourceKey<LootTable> CAMP_LOOT = ResourceKey.create(Registries.LOOT_TABLE, BubbasReworkedMobs.id("chests/monster_camp"));
 	public static final ResourceKey<LootTable> CAMP_ROOM_LOOT = ResourceKey.create(Registries.LOOT_TABLE, BubbasReworkedMobs.id("chests/camp_room"));
+	public static final ResourceKey<LootTable> CAMP_TOWER_LOOT = ResourceKey.create(Registries.LOOT_TABLE, BubbasReworkedMobs.id("chests/camp_tower"));
+	public static final ResourceKey<LootTable> CAMP_SKULL_LOOT = ResourceKey.create(Registries.LOOT_TABLE, BubbasReworkedMobs.id("chests/camp_skull"));
 	public static final StructureType<NetherOutpostStructure> NETHER_OUTPOST = Registry.register(BuiltInRegistries.STRUCTURE_TYPE,
 			BubbasReworkedMobs.id("nether_outpost"), () -> NetherOutpostStructure.CODEC);
 	public static final ResourceKey<Structure> OUTPOST_KEY = ResourceKey.create(Registries.STRUCTURE, BubbasReworkedMobs.id("nether_outpost"));

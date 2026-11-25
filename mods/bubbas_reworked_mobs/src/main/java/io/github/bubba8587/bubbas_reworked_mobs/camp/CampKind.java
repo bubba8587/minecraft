@@ -135,6 +135,26 @@ public enum CampKind {
 		};
 	}
 
+	/** The stable's gate. */
+	public BlockState fenceGate() {
+		return switch (this) {
+			case SKELETON, STRAY -> Blocks.SPRUCE_FENCE_GATE.defaultBlockState();
+			case ZOMBIE -> Blocks.DARK_OAK_FENCE_GATE.defaultBlockState();
+			case HUSK -> Blocks.ACACIA_FENCE_GATE.defaultBlockState();
+			case BOGGED -> Blocks.MANGROVE_FENCE_GATE.defaultBlockState();
+			case PIGLIN -> Blocks.CRIMSON_FENCE_GATE.defaultBlockState();
+		};
+	}
+
+	/** The undead mount kept in a camp's stable: zombie horses, camel husks, else skeleton horses (none for piglins). */
+	public EntityType<? extends Mob> undeadMount() {
+		return switch (this) {
+			case ZOMBIE -> EntityTypes.ZOMBIE_HORSE;
+			case HUSK -> EntityTypes.CAMEL_HUSK;
+			case SKELETON, STRAY, BOGGED, PIGLIN -> EntityTypes.SKELETON_HORSE;
+		};
+	}
+
 	/** Wooden stairs of ramps and the winding tower. */
 	public BlockState woodStairs() {
 		return switch (this) {

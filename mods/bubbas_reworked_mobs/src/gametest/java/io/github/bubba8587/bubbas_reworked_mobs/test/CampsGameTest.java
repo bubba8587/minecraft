@@ -324,6 +324,112 @@ public class CampsGameTest {
 		helper.succeed();
 	}
 
+	/**
+	 * Stables: every large camp and about half the medium ones have one (none small, none in Nether outposts); its
+	 * mounts appear with the roster, 1 or 2, the kind's undead mount or a captive horse or donkey, all leashed to the
+	 * tether post, persistent, under the roof and off the roster. They are re-made only when the stable has none and
+	 * its post stands.
+	 */
+	@GameTest(structure = FIELD, maxTicks = 20)
+	public void stablesHoldTetheredMounts(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		BlockPos at = helper.absolutePos(new BlockPos(16, 8, 24));
+		int medium = 0;
+		int mediumWith = 0;
+		List<String> largeWithout = new ArrayList<>();
+		for (CampKind kind : CampKind.values()) {
+			for (long seed = 0; seed < 32; seed++) {
+				for (CampTuning.Size size : CampTuning.Size.values()) {
+					boolean has = new CampPiece(seed * 7919L + kind.ordinal(), at, kind, size).hasStable();
+					if (kind.nether() || size == CampTuning.Size.SMALL) {
+						helper.assertTrue(!has, "no stable in a " + size.id() + " " + kind.id() + " camp");
+					} else if (size == CampTuning.Size.LARGE) {
+						if (!has) {
+							largeWithout.add(kind.id() + " seed " + (seed * 7919L + kind.ordinal()));
+						}
+					} else {
+						medium++;
+						mediumWith += has ? 1 : 0;
+					}
+				}
+			}
+		}
+		helper.assertTrue(largeWithout.isEmpty(), "every large camp has a stable; " + largeWithout.size() + " of 160 without: "
+				+ largeWithout.subList(0, Math.min(6, largeWithout.size())));
+		helper.assertTrue(mediumWith > medium * 0.3 && mediumWith < medium * 0.7, "about half of medium camps have a stable: " + mediumWith + " of " + medium);
+		for (CampKind kind : CampKind.values()) {
+			if (kind.nether()) {
+				continue;
+			}
+			resetField(helper);
+			CampPiece piece = CampCommand.build(level, at, kind, CampTuning.Size.LARGE, 17L + kind.ordinal());
+			CampSite site = site(helper, piece);
+			helper.assertTrue(site.hasStable() && piece.hasStable(), "a large camp's site knows its stable");
+			BlockPos post = piece.tetherPosts().getFirst();
+			helper.assertTrue(level.getBlockState(post).getBlock() instanceof net.minecraft.world.level.block.FenceBlock, "the stable's tether post stands at " + post.toShortString());
+			List<Mob> roster = CampRoster.spawn(level, site);
+			List<Mob> mounts = mounts(level, post);
+			helper.assertTrue(!mounts.isEmpty() && mounts.size() <= CampTuning.STABLE_MOUNTS_MAX, kind.id() + ": 1-2 mounts, found " + mounts.size());
+			for (Mob mount : mounts) {
+				var type = mount.getType();
+				helper.assertTrue(type == kind.undeadMount() || type == net.minecraft.world.entity.EntityTypes.HORSE || type == net.minecraft.world.entity.EntityTypes.DONKEY,
+						kind.id() + " stable holds " + type);
+				helper.assertTrue(mount instanceof net.minecraft.world.entity.Leashable l && l.getLeashHolder() instanceof net.minecraft.world.entity.decoration.LeashFenceKnotEntity knot
+						&& knot.getPos().equals(post), "a stable mount is leashed to the post");
+				helper.assertTrue(mount.isPersistenceRequired(), "a stable mount is persistent");
+				helper.assertTrue(!site.members().contains(mount.getUUID()), "a stable mount isn't on the roster");
+				helper.assertTrue(io.github.bubba8587.bubbas_reworked_mobs.camp.CampShade.covered(level, BlockPos.containing(mount.getX(), mount.getEyeY(), mount.getZ())), "a stable mount stands under the roof: " + type + " at " + mount.blockPosition().subtract(post).toShortString() + " from the post, facing "
+						+ piece.stableFacing() + ", centre " + piece.centre().subtract(post).toShortString());
+			}
+			roster.forEach(Entity::discard);
+			CampRoster.spawn(level, site).forEach(Entity::discard);
+			helper.assertTrue(mounts(level, post).size() == mounts.size(), "mounts aren't re-made while the stable has some");
+			mounts.forEach(Entity::discard);
+			CampRoster.spawn(level, site).forEach(Entity::discard);
+			List<Mob> again = mounts(level, post);
+			helper.assertTrue(!again.isEmpty(), "an empty stable is restocked with the roster");
+			again.forEach(Entity::discard);
+			level.setBlock(post, Blocks.AIR.defaultBlockState(), 3);
+			CampRoster.spawn(level, site).forEach(Entity::discard);
+			helper.assertTrue(mounts(level, post).isEmpty(), "no mounts once the tether post is gone");
+		}
+		resetField(helper);
+		helper.succeed();
+	}
+
+	private static List<Mob> mounts(ServerLevel level, BlockPos post) {
+		return level.getEntitiesOfClass(Mob.class, new net.minecraft.world.phys.AABB(post).inflate(5.0, 3.0, 5.0), m -> m.entityTags().contains(CampRoster.LIVESTOCK_TAG));
+	}
+
+	/** Chest tiers: the winding tower's chest in its core and the skull rock's (full and half-buried) at its back, each with its loot table. */
+	@GameTest(structure = FIELD, maxTicks = 20)
+	public void towerAndSkullChestsHoldTheirLoot(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		BlockPos at = helper.absolutePos(new BlockPos(16, 8, 24));
+		record Case(String what, java.util.function.Function<CampPiece, BlockPos> chest, java.util.function.Predicate<CampPiece> wants, net.minecraft.resources.ResourceKey<net.minecraft.world.level.storage.loot.LootTable> loot) {
+		}
+		List<Case> cases = List.of(new Case("winding tower", CampPiece::windingChest, p -> p.windingChest() != null, io.github.bubba8587.bubbas_reworked_mobs.camp.Camps.CAMP_TOWER_LOOT),
+				new Case("skull rock", CampPiece::skullChest, p -> p.skullChest() != null && !p.skullBuried(), io.github.bubba8587.bubbas_reworked_mobs.camp.Camps.CAMP_SKULL_LOOT),
+				new Case("buried skull", CampPiece::skullChest, p -> p.skullChest() != null && p.skullBuried(), io.github.bubba8587.bubbas_reworked_mobs.camp.Camps.CAMP_SKULL_LOOT));
+		for (Case c : cases) {
+			for (CampKind kind : new CampKind[] { CampKind.SKELETON, CampKind.HUSK }) {
+				long seed = 0;
+				while (!c.wants().test(new CampPiece(seed, at, kind, CampTuning.Size.LARGE))) {
+					helper.assertTrue(++seed < 2000, "no large camp with a " + c.what());
+				}
+				resetField(helper);
+				CampPiece piece = CampCommand.build(level, at, kind, CampTuning.Size.LARGE, seed);
+				BlockPos chest = c.chest().apply(piece);
+				helper.assertTrue(level.getBlockEntity(chest) instanceof net.minecraft.world.level.block.entity.ChestBlockEntity box && c.loot().equals(box.getLootTable()),
+						c.what() + " (" + kind.id() + " seed " + seed + "): a chest with " + c.loot().identifier() + " at " + chest.toShortString() + ", found "
+								+ level.getBlockState(chest).getBlock().getDescriptionId());
+				helper.assertTrue(level.getBlockState(chest.above()).getCollisionShape(level, chest.above()).isEmpty(), c.what() + ": the chest can open");
+			}
+		}
+		resetField(helper);
+		helper.succeed();
+	}
+
 	/** What stands at the tunnel's top: the top step and the two cells past it, ground block and the two above (diagnostics). */
 	private static String mouth(ServerLevel level, CampPiece piece) {
 		StringBuilder out = new StringBuilder();

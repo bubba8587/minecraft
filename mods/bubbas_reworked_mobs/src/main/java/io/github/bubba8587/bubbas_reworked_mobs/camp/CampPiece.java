@@ -197,6 +197,8 @@ public class CampPiece extends StructurePiece {
 		/** The Nether outpost's gate (size: the direction it faces out, 2D data value) and hoglin pens. */
 		Spot gate;
 		final List<Spot> pens = new ArrayList<>();
+		/** The stable (front middle, facing the fire), or null. */
+		Spot stable;
 		final Direction stairs;
 		final boolean stairsClockwise;
 		final Direction chestSide;
@@ -333,6 +335,20 @@ public class CampPiece extends StructurePiece {
 					Spot spot = new Spot(x, z, 0, pieceSeed);
 					if (claim(leanToFootprint(spot, centre))) {
 						leanTos.add(spot);
+						break;
+					}
+				}
+			}
+			// the stable after the lean-tos, from its own stream (towers and the rest fit round it)
+			RandomSource stableRandom = RandomSource.create(net.minecraft.world.level.levelgen.RandomSupport.mixStafford13(seed ^ 0x57AB1EL));
+			if (!kind.nether() && (size == CampTuning.Size.LARGE || size == CampTuning.Size.MEDIUM && stableRandom.nextFloat() < CampTuning.MEDIUM_STABLE_CHANCE)) {
+				long pieceSeed = stableRandom.nextLong();
+				for (int t = 0; t < TRIES * 5; t++) {
+					double a = stableRandom.nextDouble() * Math.PI * 2.0;
+					int d = r - 4 + t % 5;
+					Spot spot = new Spot(cx + (int) Math.round(Math.cos(a) * d), cz + (int) Math.round(Math.sin(a) * d), 0, pieceSeed);
+					if (claim(stableFootprint(spot, centre))) {
+						stable = spot;
 						break;
 					}
 				}
@@ -532,6 +548,20 @@ public class CampPiece extends StructurePiece {
 		return new Footprint("lean-to", minX, minZ, maxX, maxZ);
 	}
 
+	/** A stable's cells: STABLE_HALF either side of its front middle, STABLE_DEPTH rows back from the fire. */
+	private static Footprint stableFootprint(Spot spot, BlockPos centre) {
+		Direction facing = leanToFacing(spot, centre);
+		Direction along = facing.getClockWise();
+		int[] a = { spot.x - along.getStepX() * STABLE_HALF, spot.z - along.getStepZ() * STABLE_HALF };
+		int[] b = { spot.x + along.getStepX() * STABLE_HALF - facing.getStepX() * (STABLE_DEPTH - 1),
+				spot.z + along.getStepZ() * STABLE_HALF - facing.getStepZ() * (STABLE_DEPTH - 1) };
+		return new Footprint("stable", Math.min(a[0], b[0]), Math.min(a[1], b[1]), Math.max(a[0], b[0]), Math.max(a[1], b[1]));
+	}
+
+	/** Stable size: 7 wide (3 either side of the gate), 5 deep, ring included. */
+	static final int STABLE_HALF = 3;
+	static final int STABLE_DEPTH = 5;
+
 	private static Direction leanToFacing(Spot spot, BlockPos centre) {
 		return Direction.getApproximateNearest(centre.getX() - spot.x, 0.0, centre.getZ() - spot.z);
 	}
@@ -611,6 +641,9 @@ public class CampPiece extends StructurePiece {
 		}
 		for (Spot leanTo : plan.leanTos) {
 			leanTo(b, leanTo);
+		}
+		if (plan.stable != null) {
+			stable(b, plan.stable);
 		}
 		if (plan.gate != null) {
 			gate(b, plan.gate);
@@ -976,6 +1009,30 @@ public class CampPiece extends StructurePiece {
 		int x = s.x - f.getStepX() * 2;
 		int z = s.z - f.getStepZ() * 2;
 		b.put(x, y0 + 1, z, kind.skull().setValue(SkullBlock.ROTATION, random.nextInt(16)));
+		// the skull chest, at the back inside
+		BlockPos chest = skullChest();
+		if (chest != null && b.inside(chest.getX(), chest.getY(), chest.getZ())) {
+			b.put(chest.getX(), chest.getY(), chest.getZ(), Blocks.CHEST.defaultBlockState().setValue(ChestBlock.FACING, f));
+			RandomizableContainer.setBlockEntityLootTable(b.level(), RandomSource.create(s.seed ^ 0x5C011L), chest, Camps.CAMP_SKULL_LOOT);
+		}
+	}
+
+	/** The skull chest's cell: the hollow floor cell furthest back, beside the middle path (null without a skull). */
+	public BlockPos skullChest() {
+		Skull s = plan.skull;
+		if (s == null) {
+			return null;
+		}
+		int sink = s.buried ? SKULL_BURIED_SINK : 0;
+		for (int w = -6; w <= 5; w++) {
+			for (int u : new int[] { 1, -1, 2, -2 }) {
+				if (skullCell(u, w, sink + 1, s.buried) == 2 && skullCell(u, w, sink + 2, s.buried) == 2 && skullHollow(u, w, sink + 1)) {
+					Direction across = s.facing.getClockWise();
+					return new BlockPos(s.x + across.getStepX() * u + s.facing.getStepX() * w, centre.getY() + 1, s.z + across.getStepZ() * u + s.facing.getStepZ() * w);
+				}
+			}
+		}
+		return null;
 	}
 
 	/** Ribcage arch: one rib's cells across the path (|u|, dy above the ground), from the spine down to the ground. */
@@ -1157,6 +1214,27 @@ public class CampPiece extends StructurePiece {
 				b.put(x, top + 4, z, kind.slab());
 			}
 		}
+		// the archer's stash, shut in the core's ground floor (seen through the slits)
+		BlockPos chest = windingChest();
+		if (b.inside(chest.getX(), chest.getY(), chest.getZ())) {
+			b.put(chest.getX(), chest.getY(), chest.getZ(), Blocks.CHEST.defaultBlockState().setValue(ChestBlock.FACING, windingChestFacing()));
+			RandomizableContainer.setBlockEntityLootTable(b.level(), RandomSource.create(wt.seed ^ 0x70C4L), chest, Camps.CAMP_TOWER_LOOT);
+		}
+	}
+
+	/** The winding tower's chest: a corner of its core's ground floor, from the tower's seed (null without one). */
+	public BlockPos windingChest() {
+		Winding wt = plan.winding;
+		if (wt == null) {
+			return null;
+		}
+		int corner = (int) Math.floorMod(wt.seed >>> 7, 4L);
+		return new BlockPos(wt.x + (corner == 1 || corner == 2 ? 1 : -1), centre.getY() + 1, wt.z + (corner >= 2 ? 1 : -1));
+	}
+
+	private Direction windingChestFacing() {
+		BlockPos chest = windingChest();
+		return chest.getX() > plan.winding.x ? Direction.WEST : Direction.EAST;
 	}
 
 	/** The winding tower's top, one above the platform's middle (archer spot, tests). */
@@ -1455,7 +1533,87 @@ public class CampPiece extends StructurePiece {
 		for (Spot pen : plan.pens) {
 			posts.add(new BlockPos(pen.x, centre.getY() + 1, pen.z));
 		}
+		if (plan.stable != null) {
+			posts.add(stableCell(0, STABLE_DEPTH - 2).above());
+		}
 		return posts;
+	}
+
+	/** Whether the camp has a stable (tethered mounts; patrols may ride out). */
+	public boolean hasStable() {
+		return plan.stable != null;
+	}
+
+	/** A stable cell at floor level: u across (0 the gate), row back from the fire (0 the front fence). */
+	private BlockPos stableCell(int u, int row) {
+		Spot spot = plan.stable;
+		Direction facing = leanToFacing(spot);
+		Direction along = facing.getClockWise();
+		return new BlockPos(spot.x + along.getStepX() * u - facing.getStepX() * row, centre.getY(), spot.z + along.getStepZ() * u - facing.getStepZ() * row);
+	}
+
+	/** The stable's middle inside, one above its floor (screenshots, tests); null without one. */
+	public BlockPos stableInside() {
+		return plan.stable == null ? null : stableCell(0, 2).above();
+	}
+
+	/** Which way the stable opens: toward the fire; null without one. */
+	public Direction stableFacing() {
+		return plan.stable == null ? null : leanToFacing(plan.stable);
+	}
+
+	/**
+	 * A stable: a roofed pen of the kind's wood, opening toward the fire. Log corner posts, a plank back wall, a fence
+	 * rail round the sides and front with a gate in the middle, a slab roof four up, a levelled trodden floor with hay at
+	 * the back and a tether post between the bales.
+	 */
+	private void stable(ClippedBuild b, Spot spot) {
+		RandomSource random = RandomSource.create(spot.seed);
+		boolean secondBale = random.nextBoolean();
+		int baleSide = random.nextBoolean() ? 1 : -1;
+		Direction facing = leanToFacing(spot);
+		int y0 = centre.getY();
+		int roofY = y0 + 4;
+		for (int u = -STABLE_HALF; u <= STABLE_HALF; u++) {
+			for (int row = 0; row < STABLE_DEPTH; row++) {
+				BlockPos cell = stableCell(u, row);
+				int x = cell.getX();
+				int z = cell.getZ();
+				b.clearCover(x, z, 20);
+				int g = b.ground(x, z);
+				if (g == Integer.MIN_VALUE) {
+					continue;
+				}
+				float roll = RandomSource.create(spot.seed ^ (x * 73428767L) ^ (z * 912931L)).nextFloat();
+				for (int y = g + 1; y < y0; y++) {
+					b.put(x, y, z, kind.rock(roll)); // levelled
+				}
+				for (int y = y0 + 1; y < roofY; y++) {
+					b.put(x, y, z, Blocks.AIR.defaultBlockState());
+				}
+				b.put(x, y0, z, fullBlock(kind.trodden(roll)));
+				boolean side = Math.abs(u) == STABLE_HALF;
+				boolean back = row == STABLE_DEPTH - 1;
+				if (side && (row == 0 || back)) {
+					for (int y = y0 + 1; y < roofY; y++) {
+						b.put(x, y, z, kind.log()); // corner posts
+					}
+				} else if (back) {
+					for (int y = y0 + 1; y < roofY; y++) {
+						b.put(x, y, z, kind.planks());
+					}
+				} else if (row == 0 && u == 0) {
+					b.put(x, y0 + 1, z, kind.fenceGate().setValue(net.minecraft.world.level.block.FenceGateBlock.FACING, facing));
+				} else if (side || row == 0) {
+					b.put(x, y0 + 1, z, kind.fence());
+				} else if (row == STABLE_DEPTH - 2 && u == 0) {
+					b.put(x, y0 + 1, z, kind.fence()); // the tether post
+				} else if (row == STABLE_DEPTH - 2 && (u == 2 * baleSide || secondBale && u == -2 * baleSide)) {
+					b.put(x, y0 + 1, z, Blocks.HAY_BLOCK.defaultBlockState());
+				}
+				b.put(x, roofY, z, kind.slab());
+			}
+		}
 	}
 
 	/** The gate's opening on the ground, and a cell inside the camp in front of it (tests); null without one. */
@@ -1886,11 +2044,15 @@ public class CampPiece extends StructurePiece {
 			Direction f = plan.skull.facing;
 			Direction across = f.getClockWise();
 			int sink = plan.skull.buried ? SKULL_BURIED_SINK : 0;
+			BlockPos chest = skullChest();
 			for (int u = -2; u <= 2; u++) {
 				for (int w = -3; w <= 1; w++) {
 					if (skullHollow(u, w, sink + 1) && skullHollow(u, w, sink + 3)) {
-						spots.add(new BlockPos(plan.skull.x + across.getStepX() * u + f.getStepX() * w, centre.getY() + 1,
-								plan.skull.z + across.getStepZ() * u + f.getStepZ() * w));
+						BlockPos spot = new BlockPos(plan.skull.x + across.getStepX() * u + f.getStepX() * w, centre.getY() + 1,
+								plan.skull.z + across.getStepZ() * u + f.getStepZ() * w);
+						if (!spot.equals(chest)) {
+							spots.add(spot);
+						}
 					}
 				}
 			}
