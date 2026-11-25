@@ -15,7 +15,7 @@ treeless biomes, its natural ground block, by OKLch lightness matching:
 The 16x set recolours vanilla's creeper with vanilla's log/ground textures. The 32x set runs the same recolour on
 Classic Faithful 32x Jappa's own creeper with CF32J's own log/ground textures (credited in the mod's CREDITS.md and
 resourcepacks/bubbas_32x/CREDITS.md); a texture CF32J doesn't have (sulfur) falls back to vanilla's palette. Grass
-Plains and meadow take dirt (owner: pillar creepers there stack dirt-and-grass blocks as they are).
+Grass (plains, meadow) is the grass block top times the biome's grass colour from vanilla's colormap, at both sizes.
 
 A new base creeper regenerates every skin: --base16 (64x32) and --base32 (128x64). The face is only left out of the
 range statistics; it is found in the head-front square (UV 8..16, 8..16) as its pixels darker than OKLab L 0.5.
@@ -49,7 +49,8 @@ SKINS = {
 	"cherry": ("block/cherry_log.png", None),
 	"pale_oak": ("block/pale_oak_log.png", None),
 	"poplar": ("block/poplar_log.png", None),
-	"dirt": ("block/dirt.png", None),
+	"plains": ("block/grass_block_top.png", (0.8, 0.4)),
+	"meadow": ("block/grass_block_top.png", (0.5, 0.8)),
 	"sand": ("block/sand.png", None),
 	"red_sand": ("block/red_sand.png", None),
 	"snow": ("block/snow.png", None),

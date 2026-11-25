@@ -184,7 +184,8 @@ Look only: every creeper wears a skin from the biome it first appeared in, recol
 | cherry | cherry log | cherry grove |
 | pale_oak | pale oak log | pale garden |
 | poplar | poplar log | dappled forest |
-| dirt | `dirt` | plains, sunflower plains, meadow (owner: pillar creepers there stack grass blocks as they are, so the dirt side is what they hide against) |
+| plains | `grass_block_top`, colormap 0.8/0.4 | plains, sunflower plains |
+| meadow | `grass_block_top`, colormap 0.5/0.8 | meadow |
 | sand | sand | desert, beach |
 | red_sand | red sand | all badlands |
 | snow | snow | snowy plains, ice spikes, snowy slopes, snowy beach, frozen peaks, jagged peaks, frozen river |
@@ -206,8 +207,8 @@ Everywhere else (rivers, oceans, lush caves, deep dark, the Nether, the End, mod
 ### Art method (`tools/creeper-biome-textures.py`)
 
 - Skins are vanilla's creeper recoloured pixel for pixel, no redraw (owner). Rerun the script with `--base16`/`--base32` for a new base creeper. Inputs: `--base16`, `--base32` (base creepers), `--mcsrc` (vanilla assets), `--cf32j` (CF32J zip or folder), `--sheet` (contact sheet).
-- Palettes: the log side texture for tree biomes; the ground block for treeless ones (sand, red_sand, snow, stone, dripstone_block, sulfur); dirt for plains and meadow; mushroom stem for mushroom fields.
-- Distribution match by OKLch lightness (owner asked for a better match, 2026-11-25): each creeper colour's rank among the body's pixels (dark to light, pixel-weighted, mid-rank) picks the source colour at the same rank among the source texture's pixels. So each source colour turns up on the creeper about as often as in the source (dirt mostly brown with few grey pebbles; birch mostly white with few dark marks). The earlier nearest-lightness match with a chroma tie-break over-used rare colours (dirt came out grey).
+- Palettes: the log side texture for tree biomes; the ground block for treeless ones (sand, red_sand, snow, stone, dripstone_block, sulfur); `grass_block_top` tinted by the grass colormap for plains (0.8/0.4) and meadow (0.5/0.8) (owner, 2026-11-25: back from dirt, since creepers there will usually find real cover); mushroom stem for mushroom fields.
+- Distribution match by OKLch lightness (owner asked for a better match, 2026-11-25): each creeper colour's rank among the body's pixels (dark to light, pixel-weighted, mid-rank) picks the source colour at the same rank among the source texture's pixels. So each source colour turns up on the creeper about as often as in the source (birch mostly white with few dark marks). The earlier nearest-lightness match with a chroma tie-break over-used rare colours (a dirt test skin came out grey).
 - Exact colours only (owner): every output pixel is a colour that exists in the source texture (after the grass tint for plains and meadow), except on the face (owner, 2026-11-24): the base's **black** face pixels stay black, and its **noticeably darker** face pixels are ranked among themselves by lightness, take the source colour at that rank of the source's distribution, and are blended 50 % toward black (`FACE_BLEND`), so they keep vanilla's dark-to-less-dark variety instead of one flat colour (owner, 2026-11-25). The rest of the face maps like any other pixel. The face is left out of the range statistics.
 - Face pixels, found by value on the head front (UV 8..16, 8..16): black below OKLab L 0.05 (`BLACK`); noticeably darker from 0.05 to 0.5 (`DARK16`, `DARK32`; owner, 2026-11-25: the eyes' top corners and the mouth's top-left, vanilla L 0.42, count too; the next lightest face pixel is 0.58).
   - 16x vanilla: black (10,11) (13,11) (11,13) (12,13) (10..13,14), the inner bottom of each eye and the middle of the mouth; darker (9,10) (10,10) (13,10) (14,10) (9,11) (14,11) (11,12) (12,12) (10,13) (13,13) (10,15) (13,15).

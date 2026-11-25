@@ -83,7 +83,8 @@ Every creeper wears a skin from the biome it first appeared in. In biomes with t
 | Cherry | Cherry grove |
 | Pale oak | Pale garden |
 | Poplar | Dappled forest |
-| Dirt | Plains, sunflower plains, meadow |
+| Plains grass | Plains, sunflower plains |
+| Meadow grass | Meadow |
 | Sand | Desert, beach |
 | Red sand | All badlands |
 | Snow | Snowy plains, ice spikes, snowy slopes, snowy beach, frozen peaks, jagged peaks, frozen river |

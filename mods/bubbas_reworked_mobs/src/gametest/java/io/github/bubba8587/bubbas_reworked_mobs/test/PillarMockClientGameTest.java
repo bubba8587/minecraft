@@ -35,7 +35,7 @@ public class PillarMockClientGameTest implements FabricClientGameTest {
 	}
 
 	private static final List<Station> STATIONS = List.of(
-			new Station("plains", "plains", "grass_block", "dirt", "dirt"),
+			new Station("plains", "plains", "grass_block", "dirt", "plains"),
 			new Station("desert", "desert", "sand", "sandstone", "sand"),
 			new Station("badlands", "badlands", "red_sand", "orange_terracotta", "red_sand"),
 			new Station("snowy", "snowy_plains", "snow_block", "dirt", "snow"),
