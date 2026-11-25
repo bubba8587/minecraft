@@ -60,7 +60,15 @@ public class RelicMapShredItem extends Item {
 			return;
 		}
 		if (shred.unnamed()) {
+			int extra = stack.getCount() - 1;
+			stack.setCount(1);
 			RelicMaps.set(stack, new RelicShred(RelicNames.ALL.get(level.getRandom().nextInt(RelicNames.ALL.size())), shred.size(), shred.count()));
+			for (int i = 0; i < extra; i++) {
+				ItemStack own = RelicMaps.shred(RelicNames.ALL.get(level.getRandom().nextInt(RelicNames.ALL.size())), shred.size(), shred.count());
+				if (!player.getInventory().add(own)) {
+					player.spawnAtLocation(level, own);
+				}
+			}
 			return;
 		}
 		if (!shred.complete()) {

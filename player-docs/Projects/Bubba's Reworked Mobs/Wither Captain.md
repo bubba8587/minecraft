@@ -10,7 +10,7 @@
 > | **Attack** | A little more than a wither skeleton, inflicts Wither |
 > | **Spawns** | Rarely, in Nether fortresses |
 > | **Summons** | 1-3 [[Soulfire Blaze\|Soulfire Blazes]] at a time |
-> | **Drops** | Nether Star Shards, sometimes the Captain's Helm |
+> | **Drops** | Nether Star Shards, sometimes the Captain's Helm, often a wither skeleton skull |
 
 A **Wither Captain** is a rare, larger wither skeleton that leads the garrison of a Nether fortress. It wears a horned blackstone helm, shows a blue boss bar, and calls up [[Soulfire Blaze|Soulfire Blazes]] to fight beside it.
 
@@ -44,7 +44,8 @@ It summons no more blazes while four of its blazes are still alive. Its summoned
 |---|---|---|
 | [[#Nether Star Shard\|Nether Star Shard]] | 1-2 | Always |
 | [[#Captain's Helm\|Captain's Helm]] | 1 | 1 in 4 |
-| Wither skeleton drops (bones, coal, sometimes a wither skeleton skull) | As a wither skeleton | As a wither skeleton |
+| Wither skeleton skull | 1 | About 1 in 3 when killed by a player; up to about 1 in 2 with Looting III |
+| Wither skeleton drops (bones, coal) | As a wither skeleton | As a wither skeleton |
 
 It also drops 50 experience.
 

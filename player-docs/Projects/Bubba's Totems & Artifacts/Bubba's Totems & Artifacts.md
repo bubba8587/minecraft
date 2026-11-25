@@ -58,7 +58,7 @@ Sneaking and using a totem on a block sets it down as a statue, which gives a sm
 
 *Main articles: [[Relic Maps]], [[Relic Vaults]]*
 
-Torn relic map shreds turn up in chests across the world. Shreds of the same relic combine into a real map that leads to that relic's buried vault: a sealed room with a totem statue or a fine weapon on its pedestal and chests of treasure. Every world has one vault per relic.
+Torn relic map shreds turn up in chests across the world, and cartographers sell shreds and, at master level, whole maps. Shreds of the same relic combine into a real map that leads to that relic's buried vault: a sealed room with a totem statue or a fine weapon on its pedestal and chests of treasure. Every world has one vault per relic.
 
 ## Installation
 

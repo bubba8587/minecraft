@@ -78,7 +78,7 @@ A camp has up to four chests. From least to most valuable:
 | Fire chest | By the campfire, in every camp | Bones, arrows, rotten flesh, string, leather, bread, a little iron and gold, an emerald, gunpowder; sometimes an enchanted iron sword, axe or bow, chain armor, a saddle, a name tag, an enchanted book or a golden apple |
 | Room chest | In the underground room, in every camp | Bones, arrows, coal, nuggets, string, candles; often an ingot, emeralds, golden carrots, and sometimes an enchanted book, an enchanted iron sword or bow, or a golden apple |
 | Tower chest | On the sealed ground floor of a winding tower (some large camps) | Many arrows, tipped arrows (slowness, poison, weakness), string, feathers, flint, iron, gold, an emerald or two; usually a bow or crossbow (sometimes enchanted); sometimes a spyglass, golden carrots, an enchanted book or a name tag |
-| Skull chest | At the back inside a skull rock (some large camps) | Bones, arrows, gold, iron, emeralds, golden carrots; always one enchanted iron weapon, armor piece or bow; often an enchanted book or a golden apple, and rarely one or two diamonds |
+| Skull chest | At the back inside a skull rock (some large camps) | Bones, arrows, gold, iron, emeralds, golden carrots; always one enchanted iron weapon, armor piece or bow; often an enchanted book or a golden apple, rarely one or two diamonds, and sometimes (about 1 in 12) a music disc: 13, cat, blocks, chirp, far, mall, mellohi, stal, strad, ward, 11, wait or Lava Chicken |
 
 ## The roster
 
@@ -116,7 +116,7 @@ A **Nether outpost** is the piglin kind of monster camp, found only in crimson f
 - **The roster:** piglins, about one in four of them a piglin brute. Lookouts on the towers carry crossbows; the rest carry crossbows or golden swords, and brutes golden axes. As in vanilla, piglins leave a player wearing gold alone.
 - **The leader** is a big piglin brute in enchanted gold armor with an enchanted golden axe.
 - **The portal room:** the stair tunnel leads deeper than in overworld camps, to a room with an obsidian Nether portal frame at the back, like a ruined portal. Some portals are lit and work as normal, some are whole but unlit with crying obsidian in the frame, and some are broken.
-- **Loot:** a chest by the fire holds gold, crimson fungus, porkchops, quartz, a worn crossbow and sometimes the outpost's banner. The room's chest holds better gold gear, obsidian, crying obsidian, flint and steel, the piglin banner pattern, a snout armor trim and, rarely, netherite scrap.
+- **Loot:** a chest by the fire holds gold, crimson fungus, porkchops, quartz, a worn crossbow and sometimes the outpost's banner. The room's chest holds better gold gear, obsidian, crying obsidian, flint and steel, the piglin banner pattern, a snout armor trim and, rarely, netherite scrap. About 1 room chest in 7 also holds a netherite upgrade smithing template.
 
 Banners, refilling and lit fires work the same as in every other camp. The outpost's banner is black with a yellow piglin snout.
 

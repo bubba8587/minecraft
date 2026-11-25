@@ -29,6 +29,10 @@ import net.minecraft.world.level.block.BannerBlock;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BannerBlockEntity;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
+import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
 
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
@@ -427,6 +431,29 @@ public class CampsGameTest {
 			}
 		}
 		resetField(helper);
+		helper.succeed();
+	}
+
+	/** Rare pathways in camp chests: skull chests hold a music disc about 8 %, Nether outpost rooms a netherite upgrade template about 15 %. */
+	@GameTest(maxTicks = 5)
+	public void campChestsHoldRareItemsAtStatedOdds(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		LootParams params = new LootParams.Builder(level).withParameter(LootContextParams.ORIGIN, Vec3.ZERO).create(LootContextParamSets.CHEST);
+		LootTable skull = level.getServer().reloadableRegistries().getLootTable(io.github.bubba8587.bubbas_reworked_mobs.camp.Camps.CAMP_SKULL_LOOT);
+		LootTable room = level.getServer().reloadableRegistries().getLootTable(io.github.bubba8587.bubbas_reworked_mobs.camp.Camps.OUTPOST_ROOM_LOOT);
+		int rolls = 1000;
+		int discs = 0;
+		int templates = 0;
+		for (int i = 0; i < rolls; i++) {
+			if (skull.getRandomItems(params).stream().anyMatch(s -> s.has(net.minecraft.core.component.DataComponents.JUKEBOX_PLAYABLE))) {
+				discs++;
+			}
+			if (room.getRandomItems(params).stream().anyMatch(s -> s.is(Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE))) {
+				templates++;
+			}
+		}
+		helper.assertTrue(discs >= 40 && discs <= 130, discs + " skull chests of " + rolls + " with a disc (expected about 80)");
+		helper.assertTrue(templates >= 100 && templates <= 210, templates + " outpost rooms of " + rolls + " with a template (expected about 150)");
 		helper.succeed();
 	}
 

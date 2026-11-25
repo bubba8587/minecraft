@@ -103,18 +103,27 @@ public class CairnTradeGameTest {
 		helper.succeed();
 	}
 
-	/** Every answer is one real item. */
+	/** Every answer is one real item; the rare discs (6 of 141) and sniffer eggs (2 of 141) turn up at about their weights. */
 	@GameTest(maxTicks = 5)
 	public void tradeTableAlwaysAnswers(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
 		Enderman by = EntityTypes.ENDERMAN.create(level, net.minecraft.world.entity.EntitySpawnReason.LOAD);
 		java.util.Set<net.minecraft.world.item.Item> seen = new java.util.HashSet<>();
-		for (int i = 0; i < 400; i++) {
+		java.util.Set<net.minecraft.world.item.Item> rareDiscs = java.util.Set.of(Items.MUSIC_DISC_PIGSTEP, Items.MUSIC_DISC_OTHERSIDE, Items.MUSIC_DISC_RELIC,
+				Items.MUSIC_DISC_CREATOR, Items.MUSIC_DISC_CREATOR_MUSIC_BOX, Items.MUSIC_DISC_PRECIPICE);
+		int rolls = 2000;
+		int discs = 0;
+		int eggs = 0;
+		for (int i = 0; i < rolls; i++) {
 			ItemStack answer = CairnTrades.roll(level, by);
 			helper.assertFalse(answer.isEmpty(), "an empty answer");
 			seen.add(answer.getItem());
+			discs += rareDiscs.contains(answer.getItem()) ? 1 : 0;
+			eggs += answer.is(Items.SNIFFER_EGG) ? 1 : 0;
 		}
-		helper.assertTrue(seen.size() > 15, "only " + seen.size() + " kinds of answer in 400 rolls");
+		helper.assertTrue(seen.size() > 15, "only " + seen.size() + " kinds of answer in " + rolls + " rolls");
+		helper.assertTrue(discs >= 40 && discs <= 140, discs + " rare discs in " + rolls + " (expected about 85)");
+		helper.assertTrue(eggs >= 8 && eggs <= 60, eggs + " sniffer eggs in " + rolls + " (expected about 28)");
 		helper.succeed();
 	}
 

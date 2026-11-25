@@ -140,7 +140,7 @@ Beside every ancient city, an Ancient Fabricator drips monsters onto a teleporte
 
 *Main articles: [[Wither Captain]], [[Soulfire Blaze]]*
 
-Rarely, a wither skeleton in a Nether fortress is a Wither Captain: a tougher mini-boss with a boss bar that stops to summon blue Soulfire Blazes, taking little damage while it does. It drops Nether Star Shards, four of which craft a nether star, and sometimes its horned Captain's Helm, which makes the wearer immune to soul fire. Soulfire Blazes also turn up rarely in soul sand valleys.
+Rarely, a wither skeleton in a Nether fortress is a Wither Captain: a tougher mini-boss with a boss bar that stops to summon blue Soulfire Blazes, taking little damage while it does. It drops Nether Star Shards, four of which craft a nether star, a wither skeleton skull about one time in three, and sometimes its horned Captain's Helm, which makes the wearer immune to soul fire. Soulfire Blazes also turn up rarely in soul sand valleys.
 
 ## Monster spawning
 

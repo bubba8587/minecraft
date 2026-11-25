@@ -142,9 +142,22 @@ public class CaptainGameTest {
 			helper.assertTrue(shards >= 1 && shards <= 2, "roll " + i + " gave " + shards + " shards");
 			helms += drops.stream().filter(s -> s.is(ModItems.CAPTAINS_HELM)).mapToInt(ItemStack::getCount).sum();
 			bones += drops.stream().filter(s -> s.is(Items.BONE)).mapToInt(ItemStack::getCount).sum();
+			helper.assertTrue(drops.stream().noneMatch(s -> s.is(Items.WITHER_SKELETON_SKULL)), "a skull without a player kill");
 		}
 		helper.assertTrue(helms >= rolls * 0.15 && helms <= rolls * 0.35, helms + " helms in " + rolls);
 		helper.assertTrue(bones > 0, "no bones");
+		// Player kills: a skull about 1 in 3.
+		ServerPlayer killer = helper.makeMockServerPlayerInLevel();
+		captain.setLastHurtByPlayer(killer, 100);
+		int withSkull = 0;
+		for (int i = 0; i < rolls; i++) {
+			List<ItemStack> drops = new ArrayList<>();
+			captain.dropFromLootTable(level, level.damageSources().playerAttack(killer), true, table, drops::add);
+			if (drops.stream().anyMatch(s -> s.is(Items.WITHER_SKELETON_SKULL))) {
+				withSkull++;
+			}
+		}
+		helper.assertTrue(withSkull >= rolls * 0.24 && withSkull <= rolls * 0.44, withSkull + " skulls in " + rolls + " player kills");
 		helper.succeed();
 	}
 

@@ -5,8 +5,10 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
+import io.github.bubba8587.bubbas_totems_artifacts.BubbasTotemsArtifacts;
 import io.github.bubba8587.bubbas_totems_artifacts.relic.RelicMaps;
 import io.github.bubba8587.bubbas_totems_artifacts.relic.RelicNames;
 import io.github.bubba8587.bubbas_totems_artifacts.relic.RelicShred;
@@ -24,8 +26,13 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.tags.TagKey;
+import net.minecraft.util.Unit;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.decoration.Cushion;
 import net.minecraft.world.entity.decoration.GlowItemFrame;
@@ -33,6 +40,7 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.CraftingInput;
+import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
@@ -40,6 +48,7 @@ import net.minecraft.world.level.block.entity.CrafterBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.StructureSet;
+import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
@@ -179,6 +188,63 @@ public class RelicMapsGameTest {
 		RelicShred rolled = blank.get(Relics.SHRED);
 		helper.assertTrue(rolled != null && RelicNames.ALL.contains(rolled.name()) && rolled.size() == 4 && rolled.count() == 1,
 				"the blank shred didn't pick a relic: " + rolled);
+		helper.succeed();
+	}
+
+	/**
+	 * Cartographers: the apprentice tag holds the shred trade (an unnamed shred for 4-6 emeralds that picks a relic per
+	 * piece in the buyer's inventory), the master tag the finished /4 map (20-24 emeralds and a compass, X on its vault).
+	 */
+	public void cartographerSellsRelicMaps(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		var trades = level.registryAccess().lookupOrThrow(Registries.VILLAGER_TRADE);
+		var shredKey = ResourceKey.create(Registries.VILLAGER_TRADE, BubbasTotemsArtifacts.id("cartographer/relic_map_shred"));
+		var mapKey = ResourceKey.create(Registries.VILLAGER_TRADE, BubbasTotemsArtifacts.id("cartographer/relic_map"));
+		var apprentice = trades.getOrThrow(TagKey.create(Registries.VILLAGER_TRADE, Identifier.withDefaultNamespace("cartographer/level_2")));
+		var master = trades.getOrThrow(TagKey.create(Registries.VILLAGER_TRADE, Identifier.withDefaultNamespace("cartographer/level_5")));
+		helper.assertTrue(apprentice.stream().anyMatch(h -> h.is(shredKey)), "the shred trade isn't in cartographer/level_2");
+		helper.assertTrue(master.stream().anyMatch(h -> h.is(mapKey)), "the map trade isn't in cartographer/level_5");
+		helper.assertTrue(apprentice.stream().anyMatch(h -> h.is(ResourceKey.create(Registries.VILLAGER_TRADE,
+				Identifier.withDefaultNamespace("cartographer/2/emerald_and_compass_village_plains_map")))), "vanilla's apprentice trades are gone");
+		var villager = EntityTypes.VILLAGER.create(level, EntitySpawnReason.COMMAND);
+		villager.snapTo(helper.absoluteVec(new Vec3(1.5, 1.0, 1.5)));
+		LootContext loot = new LootContext.Builder(new LootParams.Builder(level).withParameter(LootContextParams.ORIGIN, villager.position())
+				.withParameter(LootContextParams.THIS_ENTITY, villager).withParameter(LootContextParams.ADDITIONAL_COST_COMPONENT_ALLOWED, Unit.INSTANCE)
+				.create(LootContextParamSets.VILLAGER_TRADE)).create(Optional.empty());
+		MerchantOffer shredOffer = trades.getOrThrow(shredKey).value().getOffer(loot);
+		helper.assertTrue(shredOffer != null, "no shred offer");
+		ItemStack sold = shredOffer.getResult();
+		RelicShred soldShred = sold.get(Relics.SHRED);
+		int price = shredOffer.getCostA().getCount();
+		helper.assertTrue(soldShred != null && soldShred.unnamed() && soldShred.count() < soldShred.size(), "the trade sells " + sold + " " + soldShred);
+		helper.assertTrue(shredOffer.getCostA().is(Items.EMERALD) && price >= 4 && price <= 6, "shred price " + shredOffer.getCostA());
+		var player = helper.makeMockPlayer(net.minecraft.world.level.GameType.SURVIVAL);
+		ItemStack bought = sold.copyWithCount(3);
+		player.getInventory().setItem(0, bought);
+		bought.getItem().inventoryTick(bought, level, player, null);
+		int named = 0;
+		for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
+			RelicShred r = player.getInventory().getItem(i).get(Relics.SHRED);
+			if (r != null) {
+				helper.assertTrue(!r.unnamed() && RelicNames.ALL.contains(r.name()), "slot " + i + " still unnamed: " + r);
+				named += player.getInventory().getItem(i).getCount();
+			}
+		}
+		helper.assertTrue(named == 3, "three bought shreds became " + named + " named ones");
+		MerchantOffer mapOffer = null;
+		for (int i = 0; i < 200 && mapOffer == null; i++) {
+			mapOffer = trades.getOrThrow(mapKey).value().getOffer(loot);
+		}
+		helper.assertTrue(mapOffer != null, "no map offer in 200 tries");
+		ItemStack map = mapOffer.getResult();
+		RelicShred mapShred = map.get(Relics.SHRED);
+		helper.assertTrue(map.is(Items.FILLED_MAP) && mapShred != null && mapShred.size() == 4 && mapShred.complete(), "the master sells " + map + " " + mapShred);
+		RelicSites.Site site = RelicSites.site(level.getSeed(), RelicSites.Land.of(level), mapShred.name(), 4);
+		var decorations = map.get(DataComponents.MAP_DECORATIONS);
+		helper.assertTrue(decorations != null && decorations.decorations().values().stream()
+				.anyMatch(d -> (int) d.x() == site.centre().getX() && (int) d.z() == site.centre().getZ()), "the sold map's X isn't on " + site);
+		int mapPrice = mapOffer.getCostA().getCount();
+		helper.assertTrue(mapPrice >= 20 && mapPrice <= 24 && mapOffer.getCostB().is(Items.COMPASS), "map price " + mapOffer.getCostA() + " + " + mapOffer.getCostB());
 		helper.succeed();
 	}
 
@@ -392,6 +458,11 @@ public class RelicMapsGameTest {
 	@GameTest
 	public void completeMapPointsAtVaultTest(GameTestHelper helper) {
 		completeMapPointsAtVault(helper);
+	}
+
+	@GameTest(maxTicks = 20)
+	public void cartographerSellsRelicMapsTest(GameTestHelper helper) {
+		cartographerSellsRelicMaps(helper);
 	}
 
 	@GameTest(maxTicks = 100)
