@@ -12,7 +12,7 @@ OUT = Path(__file__).resolve().parent.parent / "src/main/resources/data/bubbas_t
 NS = "bubbas_totems_artifacts"
 
 TOTEMS = {"totem_of_keeping": 3, "totem_of_gathering": 3, "totem_of_fortification": 3, "totem_of_growth": 3,
-	"totem_of_seeking": 3, "totem_of_herding": 3, "totem_of_clear_skies": 3, "totem_of_warding": 2, "grave_talisman": 2,
+	"totem_of_seeking": 3, "totem_of_herding": 3, "totem_of_clear_skies": 3, "totem_of_north_wind": 2, "totem_of_warding": 2, "grave_talisman": 2,
 	"totem_of_the_beginning": 1, "totem_of_the_end": 1}
 
 # kind: treasure rolls, totem chance per chest, shred rolls, rare chance per chest
