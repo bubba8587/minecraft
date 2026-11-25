@@ -54,6 +54,7 @@
 			"io.github.bubba8587.bubbas_reworked_mobs.test.VariantsClientGameTest",
 			"io.github.bubba8587.bubbas_reworked_mobs.test.ProneSleepersClientGameTest",
 			"io.github.bubba8587.bubbas_reworked_mobs.test.CampsClientGameTest",
+			"io.github.bubba8587.bubbas_reworked_mobs.test.PatrolsClientGameTest",
 			"io.github.bubba8587.bubbas_reworked_mobs.test.OutpostsClientGameTest",
 			"io.github.bubba8587.bubbas_reworked_mobs.test.ShipwreckClientGameTest",
 			"io.github.bubba8587.bubbas_reworked_mobs.test.WispsClientGameTest",

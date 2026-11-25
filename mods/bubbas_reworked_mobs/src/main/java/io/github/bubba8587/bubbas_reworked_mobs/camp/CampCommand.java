@@ -1,4 +1,4 @@
-// dte:C1
+// dte:C1,B15,B17,B21
 package io.github.bubba8587.bubbas_reworked_mobs.camp;
 
 import io.github.bubba8587.bubbas_reworked_mobs.worldgen.ClippedBuild;

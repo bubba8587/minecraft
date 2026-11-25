@@ -187,8 +187,8 @@ public class CampPatrolsGameTest {
 		});
 	}
 
-	/** On the move, the members keep within reach of the leader. */
-	@GameTest(environment = "bubbas_reworked_mobs-test:camp_night", structure = CampsGameTest.FIELD, maxTicks = 220)
+	/** On the move, the members keep within reach of the leader (its own batch: no other test's players to chase). */
+	@GameTest(environment = "bubbas_reworked_mobs-test:patrol_walk", structure = CampsGameTest.FIELD, maxTicks = 600)
 	public void membersStayNearTheLeader(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
 		CampSite site = camp(helper, CampKind.ZOMBIE, 29L);
@@ -197,19 +197,21 @@ public class CampPatrolsGameTest {
 		List<Mob> patrol = CampPatrols.spawn(level, site, from, to, false, RandomSource.create(9));
 		TestCleanup.whenDone(helper, () -> discard(helper, patrol));
 		helper.assertTrue(patrol.size() >= 2, "a patrol of " + patrol.size());
+		patrol.forEach(Mob::setPersistenceRequired); // players in other tests would despawn them
 		Mob leader = patrol.stream().filter(m -> m.entityTags().contains(CampTuning.PATROL_LEADER_TAG)).findFirst().orElseThrow();
 		Vec3 start = leader.position();
 		List<Double> spread = new ArrayList<>();
 		helper.onEachTick(() -> {
 			for (Mob mob : patrol) {
+				mob.setTarget(null); // players in neighbouring tests are no part of this one
 				spread.add((double) mob.distanceTo(leader));
 			}
 		});
-		helper.runAfterDelay(200, () -> {
-			helper.assertTrue(leader.position().distanceTo(start) > 4.0, "the leader walks: moved " + leader.position().distanceTo(start));
+		helper.succeedWhen(() -> {
 			double worst = spread.stream().mapToDouble(Double::doubleValue).max().orElse(0.0);
 			helper.assertTrue(worst <= CampTuning.PATROL_COMPANION_RANGE, "members stay within reach, worst " + worst);
-			helper.succeed();
+			helper.assertTrue(leader.isAlive(), "the leader is still there: " + leader.getRemovalReason());
+			helper.assertTrue(leader.position().distanceTo(start) > 8.0, "the leader walks: moved " + leader.position().distanceTo(start));
 		});
 	}
 

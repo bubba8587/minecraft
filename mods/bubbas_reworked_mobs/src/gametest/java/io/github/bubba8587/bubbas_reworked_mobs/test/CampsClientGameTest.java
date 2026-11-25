@@ -1,4 +1,4 @@
-// dte:C1,B15
+// dte:C1,B15,B17,B21
 package io.github.bubba8587.bubbas_reworked_mobs.test;
 
 import java.util.ArrayList;
@@ -39,6 +39,9 @@ import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContex
 public class CampsClientGameTest implements FabricClientGameTest {
 	@Override
 	public void runTest(ClientGameTestContext context) {
+		if (ClientTests.named("campsurvey")) {
+			surveyOnly(context);
+		}
 		if (!ClientTests.run("camps")) {
 			return;
 		}
@@ -163,6 +166,23 @@ public class CampsClientGameTest implements FabricClientGameTest {
 		}
 	}
 
+	/** Only the frequency survey (part {@code campsurvey}, never in the full suite: {@code camps} prints it too). */
+	private static void surveyOnly(ClientGameTestContext context) {
+		try (TestSingleplayerContext sp = context.worldBuilder()
+				.adjustSettings(s -> {
+					s.setWorldType(new WorldCreationUiState.WorldTypeEntry(
+							s.getSettings().worldgenLoadContext().lookupOrThrow(Registries.WORLD_PRESET).getOrThrow(WorldPresets.NORMAL)));
+					s.setSeed("20261116");
+					s.setGenerateStructures(true);
+					s.setGameMode(WorldCreationUiState.SelectedGameMode.CREATIVE);
+				})
+				.create()) {
+			TestServerContext server = sp.getServer();
+			setup(server);
+			server.computeOnServer(s -> survey(s.overworld()));
+		}
+	}
+
 	private static void natural(ClientGameTestContext context) {
 		try (TestSingleplayerContext sp = context.worldBuilder()
 				.adjustSettings(s -> {
@@ -267,6 +287,9 @@ public class CampsClientGameTest implements FabricClientGameTest {
 					median == Double.MAX_VALUE ? "none" : Math.round(median) + " blocks"));
 		}
 		System.out.println(report);
+		for (int radius : new int[] { CampTuning.PATROL_TERRITORY, 256, 384, 448 }) {
+			territoryCoverage(level, spawn, byKind.values().stream().flatMap(List::stream).toList(), radius);
+		}
 		// The nearest camp of each kind, nearest first.
 		List<CampPiece> picks = new ArrayList<>();
 		for (CampKind kind : CampKind.values()) {
@@ -275,6 +298,49 @@ public class CampsClientGameTest implements FabricClientGameTest {
 		picks.sort((a, b) -> Double.compare(a.centre().distSqr(spawn), b.centre().distSqr(spawn)));
 		System.out.println("[camps] nearest of each kind: " + picks.stream().map(CampPiece::centre).toList());
 		return picks;
+	}
+
+	/**
+	 * Patrol territory coverage (specs/monster-camps.md "Camp patrols"): the share of land points (every 64 blocks within
+	 * 1536 of spawn, so camps lie round every point) within {@code radius} of a camp, for camp-biome land and
+	 * all dry land (not ocean, river or beach). Every camp counts as armed, as generated.
+	 */
+	private static void territoryCoverage(ServerLevel level, BlockPos spawn, List<CampPiece> camps, int radius) {
+		var generator = level.getChunkSource().getGenerator();
+		var random = level.getChunkSource().randomState();
+		var campBiomes = net.minecraft.tags.TagKey.create(Registries.BIOME, io.github.bubba8587.bubbas_reworked_mobs.BubbasReworkedMobs.id("has_structure/monster_camp"));
+		double r2 = (double) radius * radius;
+		int campLand = 0;
+		int campLandIn = 0;
+		int land = 0;
+		int landIn = 0;
+		for (int px = -1536; px <= 1536; px += 64) {
+			for (int pz = -1536; pz <= 1536; pz += 64) {
+				int x = spawn.getX() + px;
+				int z = spawn.getZ() + pz;
+				int y = generator.getFirstOccupiedHeight(x, z, net.minecraft.world.level.levelgen.Heightmap.Types.WORLD_SURFACE_WG, level, random);
+				var biome = level.getUncachedNoiseBiome(x >> 2, y >> 2, z >> 2);
+				boolean in = false;
+				for (CampPiece camp : camps) {
+					double dx = camp.centre().getX() - x;
+					double dz = camp.centre().getZ() - z;
+					if (dx * dx + dz * dz <= r2) {
+						in = true;
+						break;
+					}
+				}
+				if (biome.is(campBiomes)) {
+					campLand++;
+					campLandIn += in ? 1 : 0;
+				}
+				if (!biome.is(net.minecraft.tags.BiomeTags.IS_OCEAN) && !biome.is(net.minecraft.tags.BiomeTags.IS_RIVER) && !biome.is(net.minecraft.tags.BiomeTags.IS_BEACH)) {
+					land++;
+					landIn += in ? 1 : 0;
+				}
+			}
+		}
+		System.out.println("[camps] patrol territory %d%s: covers %.1f%% of camp-biome land (%d points), %.1f%% of all dry land (%d points)".formatted(
+				radius, radius == CampTuning.PATROL_TERRITORY ? " (current)" : "", 100.0 * campLandIn / Math.max(1, campLand), campLand, 100.0 * landIn / Math.max(1, land), land));
 	}
 
 	/** Where a camp's newer piece stands (0 skull rock, 1 winding tower, 2 ramp, 3 bridge), or null without one. */
