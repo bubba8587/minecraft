@@ -83,6 +83,14 @@ public final class SoulBurning {
 		soulIgnite(entity, () -> entity.igniteForSeconds(seconds));
 	}
 
+	/** Sets an entity alight with Soulfire for at least this many ticks (Phasing). */
+	public static void igniteForTicks(Entity entity, int ticks) {
+		if (hasSoulguard(entity)) {
+			return;
+		}
+		soulIgnite(entity, () -> entity.igniteForTicks(ticks));
+	}
+
 	private static void soulIgnite(Entity entity, Runnable ignite) {
 		SOUL_IGNITING.set(true);
 		try {
