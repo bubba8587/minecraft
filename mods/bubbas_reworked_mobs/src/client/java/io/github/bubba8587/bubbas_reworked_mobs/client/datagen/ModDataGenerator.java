@@ -224,6 +224,23 @@ public class ModDataGenerator implements DataGeneratorEntrypoint {
 			builder.add(ModItems.NETHER_STAR_SHARD, "Nether Star Shard");
 			builder.add(ModItems.WITHER_CAPTAIN_SPAWN_EGG, "Wither Captain Spawn Egg");
 			builder.add(ModItems.SOULFIRE_BLAZE_SPAWN_EGG, "Soulfire Blaze Spawn Egg");
+			// Soulfire and Soulguard (specs/soulfire.md)
+			builder.add(io.github.bubba8587.bubbas_reworked_mobs.soulfire.Soulfire.SOUL_BLAZE_ROD, "Soul Blaze Rod");
+			builder.add(io.github.bubba8587.bubbas_reworked_mobs.soulfire.Soulfire.SOUL_BLAZE_POWDER, "Soul Blaze Powder");
+			builder.add(io.github.bubba8587.bubbas_reworked_mobs.soulfire.Soulfire.SOUL_FIRE_CHARGE, "Soul Fire Charge");
+			builder.add(io.github.bubba8587.bubbas_reworked_mobs.soulfire.Soulfire.SOULGUARD.value().getDescriptionId(), "Soulguard");
+			builder.add("enchantment.bubbas_reworked_mobs.soulguard", "Soulguard");
+			builder.add("item.minecraft.potion.effect.bubbas_reworked_mobs.soulguard", "Potion of Soulguard");
+			builder.add("item.minecraft.splash_potion.effect.bubbas_reworked_mobs.soulguard", "Splash Potion of Soulguard");
+			builder.add("item.minecraft.lingering_potion.effect.bubbas_reworked_mobs.soulguard", "Lingering Potion of Soulguard");
+			builder.add("item.minecraft.tipped_arrow.effect.bubbas_reworked_mobs.soulguard", "Arrow of Soulguard");
+			builder.add("death.attack.bubbas_reworked_mobs.soul_fire", "%1$s was consumed by soul fire");
+			builder.add("death.attack.bubbas_reworked_mobs.soul_fire.player", "%1$s walked into soul fire while fighting %2$s");
+			builder.add("death.attack.bubbas_reworked_mobs.soul_campfire", "%1$s was consumed by a soul campfire");
+			builder.add("death.attack.bubbas_reworked_mobs.soul_campfire.player", "%1$s stepped onto a soul campfire while fighting %2$s");
+			builder.add("death.attack.bubbas_reworked_mobs.soul_burn", "%1$s burned away with Soulfire");
+			builder.add("death.attack.bubbas_reworked_mobs.soul_burn.player", "%1$s burned away with Soulfire while fighting %2$s");
+			builder.add("tag.damage_type.bubbas_reworked_mobs.bypasses_totems", "Bypasses Totems");
 		}
 	}
 
@@ -293,6 +310,10 @@ public class ModDataGenerator implements DataGeneratorEntrypoint {
 			// Wither Captain: flat icons; the spawn eggs reuse vanilla's wither skeleton and blaze eggs
 			gen.generateFlatItem(ModItems.CAPTAINS_HELM, ModelTemplates.FLAT_ITEM);
 			gen.generateFlatItem(ModItems.NETHER_STAR_SHARD, ModelTemplates.FLAT_ITEM);
+			// Soul blaze items: flat icons
+			gen.generateFlatItem(io.github.bubba8587.bubbas_reworked_mobs.soulfire.Soulfire.SOUL_BLAZE_ROD, ModelTemplates.FLAT_HANDHELD_ITEM);
+			gen.generateFlatItem(io.github.bubba8587.bubbas_reworked_mobs.soulfire.Soulfire.SOUL_BLAZE_POWDER, ModelTemplates.FLAT_ITEM);
+			gen.generateFlatItem(io.github.bubba8587.bubbas_reworked_mobs.soulfire.Soulfire.SOUL_FIRE_CHARGE, ModelTemplates.FLAT_ITEM);
 			gen.itemModelOutput.accept(ModItems.WITHER_CAPTAIN_SPAWN_EGG,
 					net.minecraft.client.data.models.model.ItemModelUtils.plainModel(net.minecraft.resources.Identifier.withDefaultNamespace("item/wither_skeleton_spawn_egg")));
 			gen.itemModelOutput.accept(ModItems.SOULFIRE_BLAZE_SPAWN_EGG,

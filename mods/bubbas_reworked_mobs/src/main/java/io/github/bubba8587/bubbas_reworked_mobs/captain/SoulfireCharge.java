@@ -1,6 +1,7 @@
 // dte:C1,B15,B16,B17
 package io.github.bubba8587.bubbas_reworked_mobs.captain;
 
+import io.github.bubba8587.bubbas_reworked_mobs.soulfire.SoulBurning;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
@@ -9,18 +10,21 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.hurtingprojectile.SmallFireball;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 
 /**
- * A Soulfire Blaze's charge: a blaze small fireball that hits harder. Where it lands it places fire as a blaze's does
- * (vanilla {@code BaseFireBlock.getState}: soul fire on soul sand and soul soil, fire elsewhere).
+ * A Soulfire Blaze's charge, also a thrown or dispensed Soul Fire Charge: a blaze small fireball that hits harder and
+ * sets Soulfire burning. Where it lands it places fire as a blaze's does (vanilla {@code BaseFireBlock.getState}: soul
+ * fire on soul sand and soul soil, fire elsewhere).
  */
 public class SoulfireCharge extends SmallFireball {
 	public SoulfireCharge(EntityType<? extends SoulfireCharge> type, Level level) {
 		super(type, level);
+		this.setItem(new ItemStack(io.github.bubba8587.bubbas_reworked_mobs.soulfire.Soulfire.SOUL_FIRE_CHARGE));
 	}
 
 	/** A charge shot by {@code owner} along {@code direction} (as SmallFireball's owner constructor). */
@@ -40,10 +44,7 @@ public class SoulfireCharge extends SmallFireball {
 		if (this.level() instanceof ServerLevel level) {
 			Entity target = hitResult.getEntity();
 			int fireBefore = target.getRemainingFireTicks();
-			boolean soulProof = target instanceof LivingEntity living && CaptainsHelm.isWornBy(living);
-			if (!soulProof) {
-				target.igniteForSeconds(CaptainTuning.CHARGE_BURN_SECONDS);
-			}
+			SoulBurning.igniteForSeconds(target, CaptainTuning.CHARGE_BURN_SECONDS);
 			DamageSource source = this.damageSources().fireball(this, this.getOwner());
 			if (!target.hurtServer(level, source, CaptainTuning.CHARGE_DAMAGE)) {
 				target.setRemainingFireTicks(fireBefore);

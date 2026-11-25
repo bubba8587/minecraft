@@ -47,6 +47,5 @@ public final class Captains {
 		SpawnPlacements.register(SOULFIRE_BLAZE, SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkAnyLightMonsterSpawnRules);
 		BiomeModifications.addSpawn(BiomeSelectors.includeByKey(Biomes.SOUL_SAND_VALLEY), MobCategory.MONSTER, SOULFIRE_BLAZE,
 				CaptainTuning.SOULFIRE_BLAZE_VALLEY_WEIGHT, 1, 1);
-		CaptainsHelm.initialize();
 	}
 }

@@ -12,7 +12,7 @@ import net.fabricmc.fabric.api.gametest.v1.GameTest;
  * suite runs it once); the annotation (environment, structure, ticks) is the one it had there. Everything else in this
  * source set is the milestone suite, registered only with -PmilestoneTests. Objectives: the "Milestone test objectives"
  * of specs/undead.md, creepers.md, endermen.md, drowned.md, mob-factory.md, graveyards.md, spiders.md and
- * monster-camps.md, wither-captain.md.
+ * monster-camps.md, wither-captain.md, soulfire.md.
  */
 public class ReworkedMobsCoreGameTest {
 	// --- sleepers and waking (specs/undead.md) ---
@@ -120,6 +120,13 @@ public class ReworkedMobsCoreGameTest {
 	@GameTest(structure = CampsGameTest.FIELD, maxTicks = 60)
 	public void traderArrivesAtAPostWithLlamasPenned(GameTestHelper helper) {
 		new TraderPostGameTest().traderArrivesWithLlamasPenned(helper);
+	}
+
+	// --- Soulfire (specs/soulfire.md) ---
+
+	@GameTest(maxTicks = 60)
+	public void soulCampfireSetsSoulBurning(GameTestHelper helper) {
+		new SoulfireGameTest().soulCampfireSetsSoulBurning(helper);
 	}
 
 	// --- the Wither Captain (specs/wither-captain.md) ---

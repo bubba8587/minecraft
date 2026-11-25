@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/handheld",
+  "textures": {
+    "layer0": "bubbas_reworked_mobs:item/soul_blaze_rod"
+  }
+}

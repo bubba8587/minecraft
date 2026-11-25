@@ -37,6 +37,9 @@ public final class ModCreativeTabs {
 						output.accept(ModItems.NETHER_STAR_SHARD);
 						output.accept(ModItems.WITHER_CAPTAIN_SPAWN_EGG);
 						output.accept(ModItems.SOULFIRE_BLAZE_SPAWN_EGG);
+						output.accept(io.github.bubba8587.bubbas_reworked_mobs.soulfire.Soulfire.SOUL_BLAZE_ROD);
+						output.accept(io.github.bubba8587.bubbas_reworked_mobs.soulfire.Soulfire.SOUL_BLAZE_POWDER);
+						output.accept(io.github.bubba8587.bubbas_reworked_mobs.soulfire.Soulfire.SOUL_FIRE_CHARGE);
 					})
 					.build());
 

@@ -57,6 +57,7 @@ public class BubbasReworkedMobs implements ModInitializer {
 		Drowneds.initialize();
 		io.github.bubba8587.bubbas_reworked_mobs.spider.Spiders.initialize();
 		io.github.bubba8587.bubbas_reworked_mobs.captain.Captains.initialize();
+		io.github.bubba8587.bubbas_reworked_mobs.soulfire.Soulfire.initialize();
 		io.github.bubba8587.bubbas_reworked_mobs.meter.Meters.initialize();
 	}
 }
