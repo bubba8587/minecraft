@@ -47,6 +47,7 @@ import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.status.ChunkStatus;
 import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureStart;
 import net.minecraft.world.level.levelgen.structure.placement.RandomSpreadStructurePlacement;
 import net.minecraft.world.level.saveddata.maps.MapDecorationTypes;
@@ -230,12 +231,22 @@ public final class CampPatrols {
 				if (CampSites.get(level, chunk.pack()) != null) {
 					continue;
 				}
-				ChunkAccess access = level.getChunk(chunk.x(), chunk.z(), ChunkStatus.STRUCTURE_STARTS, true);
-				StructureStart start = access == null ? null : access.getStartForStructure(structure);
-				if (start != null && start.isValid() && start.getPieces().getFirst() instanceof CampPiece piece && CampSites.get(level, chunk.pack()) == null) {
-					CampSites.register(level, piece);
+				ChunkAccess loaded = level.getChunkSource().getChunk(chunk.x(), chunk.z(), ChunkStatus.STRUCTURE_STARTS, false);
+				if (loaded != null) {
+					registerStart(level, structure, loaded, chunk);
+					continue;
 				}
+				// not there yet: generated off the main thread, registered back on it
+				level.getChunkSource().getChunkFuture(chunk.x(), chunk.z(), ChunkStatus.STRUCTURE_STARTS, true)
+						.thenAcceptAsync(result -> result.ifSuccess(access -> registerStart(level, structure, access, chunk)), level.getServer());
 			}
+		}
+	}
+
+	private static void registerStart(ServerLevel level, Structure structure, ChunkAccess access, ChunkPos chunk) {
+		StructureStart start = access.getStartForStructure(structure);
+		if (start != null && start.isValid() && start.getPieces().getFirst() instanceof CampPiece piece && CampSites.get(level, chunk.pack()) == null) {
+			CampSites.register(level, piece);
 		}
 	}
 

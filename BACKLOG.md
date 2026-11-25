@@ -32,7 +32,6 @@ Parked ideas and open items, newest first within each project. Agents add to it 
 - **Giant spiders (owner to decide, `specs/spiders.md`):** a prowling giant leaves its low cocoon unguarded (a player can cut the catch free while it's away): intended, or should it stay closer or guard? Giant tasks aren't saved: a giant reloaded mid-prowl roams again.
 - **Monster camps** (`specs/monster-camps.md`): Owner to playtest spacing (10 chunks, ~6 camps per km²) and leader numbers. Natural forest camps sit among uncleared trees (leaves crowd the towers); worth a look. Builder's calls to review: resting dead follow the yard climate (husks/strays), bogged hide fully underwater.
 - **Bogged camp weeds (no fix needed):** brown mushroom weeds in bogged camps can fail to survive in daylight on 26.3; 26.4 stops light from breaking mushrooms (owner, 2026-11-25), so this goes away with the port.
-- **Camp patrols, playtest for hitches:** the patrol spawner reads camp structure starts within 320 blocks of each player (forcing those chunks to the structure-starts stage, as vanilla locate does); watch for hitches when flying fast into new land.
 - **Camp patrols aren't saved:** patrol state (the live patrol, the cooldown) is memory-only, so after a restart every camp can patrol at once.
 
 ## Bubba's Totems & Artifacts (C6)
