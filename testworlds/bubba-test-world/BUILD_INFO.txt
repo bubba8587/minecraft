@@ -1,4 +1,4 @@
-built: 2026-11-23T21:38:41+00:00
+built: 2026-11-25T16:17:44-06:00
 minecraft: 26.3
 mods: bubbas_reworked_mobs-0.1.0+26.3.jar, bubbas_extra_recipes-0.1.0+26.3.jar, bubbas_infused_gems-0.1.0+26.3.jar, bubbas_reworked_beacons-0.1.0+26.3.jar, bubbas_totems_artifacts-0.1.0+26.3.jar, bubbas_reworked_mining-0.1.0+26.3.jar, bubbas_world_tweaks-0.1.0+26.3.jar, stormies-spiders-jTOAPFV5.jar
 builder: testworlds/builder (python tools/build-testworld.py); spec: specs/testworld.md
