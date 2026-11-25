@@ -81,9 +81,13 @@ public final class EndermanJobGoal extends Goal {
 			}
 			// set it down near its cairn for a later enderman to bring in
 			CairnSite waitingFor = siteWanting(level, here, carried);
-			if (waitingFor == null) {
+			if (waitingFor == null && TerrainKinds.family(carried) == null) {
 				// a block no cairn wants any more (its cairn was finished without it): set it down by the nearest one
 				waitingFor = CairnSites.nearest(level, here, EndermanTuning.SITE_WORK_RADIUS);
+			}
+			if (waitingFor == null) {
+				// unwanted ground (dirt, sand): kept until a hole turns up
+				return false;
 			}
 			if (waitingFor != null) {
 				BlockPos ground = setDownSpot(level, waitingFor, carried);

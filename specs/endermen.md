@@ -170,7 +170,7 @@ A pure function of the site seed, the biome at its centre and the stronghold dir
 - **Picking it up again:** a block a nearby cairn wants, lying where the target world is air (above the original ground), is taken only when some unwarded cairn within `SITE_WORK_RADIUS` has a placeable spot for it (`EndermanWork.readyCairnBlock`). So a set-down block that doesn't fit yet is left lying. This also works for blocks endermen can't normally lift (end rods, slabs, glass).
 - Endermen standing where a block has to go teleport a few blocks off so it can go in.
 - `CairnSite.canPlace`: a design block can go in when any face neighbour or any of its 12 edge neighbours is solid (edge neighbours let diagonal arms be placed).
-- **Leftover blocks (owner):** an enderman carrying a block no cairn wants (its cairn was finished another way, e.g. `cairn build` after `cairn builders`) sets it down by the nearest cairn within the work radius, the same way, instead of standing vigil holding it.
+- **Leftover blocks (owner):** an enderman carrying a block no cairn wants (its cairn was finished another way, e.g. `cairn build` after `cairn builders`) sets it down by the nearest cairn within the work radius, the same way, instead of standing vigil holding it. **Except ground blocks** (any terrain family: dirt, sand, stone...): set down on open ground they count as a stray pile and get taken straight back (the owner saw it place and re-take the block in one frame, 2026-11-24). Those are kept: the enderman wanders holding it, no vigil, and drops it into the next hole of its family it finds (`EndermanJobGoal.plan`). Test: `leftoverGroundBlockIsKeptNotJuggled` (milestone, environment `enderman_leftover`).
 
 ### Cairn blocks are left alone
 

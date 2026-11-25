@@ -224,6 +224,36 @@ public class EndermanGameTest {
 		});
 	}
 
+	/** Leftover ground block (dirt, no cairn wants it, no hole for it): kept, never set down and taken back in a loop. */
+	@GameTest(environment = "bubbas_reworked_mobs-test:enderman_leftover", structure = FIELD, maxTicks = 200)
+	public void leftoverGroundBlockIsKeptNotJuggled(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		Runnable restore = stoneField(helper, Map.of());
+		CairnSite site = CairnSites.addSite(level, helper.absolutePos(new BlockPos(16, 1, 8)), 1234L);
+		site.buildAll(level);
+		Enderman enderman = enderman(helper, 6.5, 6.5, true);
+		enderman.setCarriedBlock(Blocks.DIRT.defaultBlockState());
+		int[] setDowns = { 0 };
+		helper.onEachTick(() -> {
+			EndermanMind mind = EndermanMind.of(enderman);
+			if (mind != null && mind.job() == EndermanMind.Job.SET_DOWN) {
+				setDowns[0]++;
+			}
+		});
+		helper.runAfterDelay(150, () -> {
+			try {
+				helper.assertTrue(setDowns[0] == 0, "it set the dirt down " + setDowns[0] + " ticks (it would only pick it back up)");
+				BlockState carried = enderman.getCarriedBlock();
+				helper.assertTrue(carried != null && carried.is(Blocks.DIRT), "it should still hold the dirt, holds " + carried);
+			} finally {
+				removeBuilt(level, site);
+				restore.run();
+				enderman.discard();
+			}
+			helper.succeed();
+		});
+	}
+
 	/** A builder carrying a missing cairn block walks over and puts it in place; the cairn is complete again. */
 	public void builderEndermanDeliversCairnBlock(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
