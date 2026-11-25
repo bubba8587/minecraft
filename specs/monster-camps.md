@@ -385,7 +385,7 @@ All from noise columns, before any block exists:
 
 ### Roster, leader, light, loot
 
-- **Roster:** piglins; ground members are a piglin brute 25 % of the time (`CampTuning.OUTPOST_BRUTE`). Tower lookouts hold crossbows; other piglins a crossbow or golden sword; brutes a golden axe. Piglins keep vanilla behaviour (neutral to players wearing gold). Built outside the Nether (command, tests), piglins and hoglins are made immune to zombification.
+- **Roster:** piglin brutes only (owner, 2026-11-25: they attack no matter what and don't trade), each with a golden axe, lookouts included. Vanilla brute behaviour (hostile even to players wearing gold). Built outside the Nether (command, tests), piglins and hoglins are made immune to zombification.
 - **Leader:** a piglin brute, scaled and toughened like overworld leaders, in golden helmet, chestplate and leggings with Protection II and a golden axe with Sharpness III; drop chances as overworld leaders.
 - **Light:** outposts are lit (lanterns, a lit portal). Overworld camps stay dark; the "camps are dark" check in `everyCampBlockIsSupported` skips the piglin kind.
 - **Loot:**

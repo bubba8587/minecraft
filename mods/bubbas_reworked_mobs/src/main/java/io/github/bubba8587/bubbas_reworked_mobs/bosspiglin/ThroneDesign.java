@@ -12,11 +12,11 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
 /**
- * The Boss Piglin's throne, vanilla blocks: a 2 x 2 seat of polished blackstone brick slabs with red cushions on them with a backrest row behind
+ * The Boss Piglin's throne, vanilla blocks: a 2 x 2 seat of polished blackstone brick slabs with purple cushions on them with a backrest row behind
  * it, and crimson shelf armrests either side of the seat (4 wide x 3 deep in all). Offsets are from the front seat cell
  * on the seated boss's left; the other cell of a row is {@code facing.getClockWise()} of it and the rows go back along
  * {@code facing.getOpposite()}; the left armrest is at across -1. Backrest, bottom to top: stripped crimson hyphae,
- * gilded blackstone, chiseled polished blackstone, gold blocks, framed by stripped crimson stem posts with fence tops.
+ * gilded blackstone, chiseled polished blackstone, gold blocks, framed by stripped crimson stem posts topped with lanterns.
  */
 public final class ThroneDesign {
 	public static final int WIDTH = 2;
@@ -57,8 +57,8 @@ public final class ThroneDesign {
 			out.add(new Placed(at(side, back, -1, y, 2), post));
 			out.add(new Placed(at(side, back, WIDTH, y, 2), post));
 		}
-		out.add(new Placed(at(side, back, -1, HEIGHT - 1, 2), Blocks.CRIMSON_FENCE.defaultBlockState()));
-		out.add(new Placed(at(side, back, WIDTH, HEIGHT - 1, 2), Blocks.CRIMSON_FENCE.defaultBlockState()));
+		out.add(new Placed(at(side, back, -1, HEIGHT - 1, 2), Blocks.LANTERN.defaultBlockState()));
+		out.add(new Placed(at(side, back, WIDTH, HEIGHT - 1, 2), Blocks.LANTERN.defaultBlockState()));
 		Block[] column = {Blocks.STRIPPED_CRIMSON_HYPHAE, Blocks.GILDED_BLACKSTONE, Blocks.CHISELED_POLISHED_BLACKSTONE, Blocks.GOLD_BLOCK};
 		for (int y = 0; y < column.length; y++) {
 			for (int across = 0; across < WIDTH; across++) {
@@ -68,7 +68,7 @@ public final class ThroneDesign {
 		return out;
 	}
 
-	/** Where the four red cushions go (vanilla cushion entities: their bottom centre), relative to the origin cell's minimum corner. */
+	/** Where the four purple cushions go (vanilla cushion entities: their bottom centre), relative to the origin cell's minimum corner. */
 	public static List<Vec3> cushions(Direction facing) {
 		Direction side = facing.getClockWise();
 		Direction back = facing.getOpposite();

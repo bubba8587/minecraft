@@ -70,8 +70,7 @@ public final class CampTuning {
 	public static final float LEADER_ARMOR_DROP = 0.2F;
 	/** Chance a roster member holds a stone weapon (melee kinds). */
 	public static final float MEMBER_WEAPON = 0.4F;
-	/** Nether outposts: chance a ground member is a piglin brute, and hoglins per pen by size (small, medium, large). */
-	public static final float OUTPOST_BRUTE = 0.25F;
+	/** Nether outposts: hoglins per pen by size (small, medium, large). */
 	static final int[] OUTPOST_HOGLINS = { 1, 2, 3 };
 	/** Stables: every large camp has one, a medium camp this often (from its plan seed). */
 	public static final float MEDIUM_STABLE_CHANCE = 0.5F;

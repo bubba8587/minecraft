@@ -63,7 +63,7 @@ public final class CampRoster {
 		for (int i = 0; i < count; i++) {
 			boolean lookout = kind.archers() && tower < site.towers.size();
 			BlockPos at = lookout ? site.towers.get(tower++) : groundSpot(level, site, ground++);
-			EntityType<? extends Mob> type = kind.nether() && !lookout && random.nextFloat() < CampTuning.OUTPOST_BRUTE ? EntityTypes.PIGLIN_BRUTE : kind.mob();
+			EntityType<? extends Mob> type = kind.nether() ? EntityTypes.PIGLIN_BRUTE : kind.mob();
 			Mob mob = one(level, site, kind, type, at, random, false, lookout);
 			if (mob != null) {
 				mobs.add(mob);
@@ -233,7 +233,7 @@ public final class CampRoster {
 	}
 
 	/**
-	 * A Nether outpost's piglins: lookouts hold crossbows, the rest a crossbow or golden sword (brutes their golden axe).
+	 * A Nether outpost's piglin brutes, each with a golden axe.
 	 * The leader is a brute in enchanted gold armour with a Sharpness III golden axe, scaled and toughened like any leader.
 	 */
 	private static void arm(ServerLevel level, Mob mob, RandomSource random, boolean leader, boolean lookout) {
