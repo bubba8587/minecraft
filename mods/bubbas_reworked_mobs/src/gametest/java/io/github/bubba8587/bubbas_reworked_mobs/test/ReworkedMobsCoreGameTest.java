@@ -128,4 +128,11 @@ public class ReworkedMobsCoreGameTest {
 	public void captainSummonsWhenItFightsAPlayer(GameTestHelper helper) {
 		new CaptainGameTest().summonsWhenItFightsAPlayer(helper);
 	}
+
+	// --- the Boss Piglin (specs/boss-piglin.md) ---
+
+	@GameTest(structure = CampsGameTest.FIELD, maxTicks = 60)
+	public void outpostThroneHasASeatedBoss(GameTestHelper helper) {
+		new BossPiglinGameTest().mediumOutpostHasASeatedBoss(helper);
+	}
 }

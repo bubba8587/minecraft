@@ -78,6 +78,7 @@ public final class CampRoster {
 			site.members.add(mob.getUUID());
 		}
 		livestock(level, site, random);
+		io.github.bubba8587.bubbas_reworked_mobs.bosspiglin.BossPiglins.seat(level, site); // the outpost's boss, off the roster
 		return mobs;
 	}
 

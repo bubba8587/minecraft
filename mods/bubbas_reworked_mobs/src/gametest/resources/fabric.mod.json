@@ -37,7 +37,8 @@
 			"io.github.bubba8587.bubbas_reworked_mobs.test.SpiderTerritoryGameTest",
 			"io.github.bubba8587.bubbas_reworked_mobs.test.SleeperFormsGameTest",
 			"io.github.bubba8587.bubbas_reworked_mobs.test.TraderPostGameTest",
-			"io.github.bubba8587.bubbas_reworked_mobs.test.CaptainGameTest"
+			"io.github.bubba8587.bubbas_reworked_mobs.test.CaptainGameTest",
+			"io.github.bubba8587.bubbas_reworked_mobs.test.BossPiglinGameTest"
 		],
 		"fabric-client-gametest": [
 			"io.github.bubba8587.bubbas_reworked_mobs.test.BubbasReworkedMobsClientGameTest",
@@ -67,7 +68,8 @@
 			"io.github.bubba8587.bubbas_reworked_mobs.test.WebsClientGameTest",
 			"io.github.bubba8587.bubbas_reworked_mobs.test.TerritoriesClientGameTest",
 			"io.github.bubba8587.bubbas_reworked_mobs.test.TraderPostsClientGameTest",
-			"io.github.bubba8587.bubbas_reworked_mobs.test.CaptainClientGameTest"
+			"io.github.bubba8587.bubbas_reworked_mobs.test.CaptainClientGameTest",
+			"io.github.bubba8587.bubbas_reworked_mobs.test.BossPiglinClientGameTest"
 		]
 	},
 	"mixins": [

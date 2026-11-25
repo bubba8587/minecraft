@@ -224,6 +224,9 @@ public class ModDataGenerator implements DataGeneratorEntrypoint {
 			builder.add(ModItems.NETHER_STAR_SHARD, "Nether Star Shard");
 			builder.add(ModItems.WITHER_CAPTAIN_SPAWN_EGG, "Wither Captain Spawn Egg");
 			builder.add(ModItems.SOULFIRE_BLAZE_SPAWN_EGG, "Soulfire Blaze Spawn Egg");
+			// Boss Piglin (specs/boss-piglin.md)
+			builder.add(io.github.bubba8587.bubbas_reworked_mobs.bosspiglin.BossPiglins.BOSS_PIGLIN, "Boss Piglin");
+			builder.add(ModItems.BOSS_PIGLIN_SPAWN_EGG, "Boss Piglin Spawn Egg");
 		}
 	}
 
@@ -297,6 +300,8 @@ public class ModDataGenerator implements DataGeneratorEntrypoint {
 					net.minecraft.client.data.models.model.ItemModelUtils.plainModel(net.minecraft.resources.Identifier.withDefaultNamespace("item/wither_skeleton_spawn_egg")));
 			gen.itemModelOutput.accept(ModItems.SOULFIRE_BLAZE_SPAWN_EGG,
 					net.minecraft.client.data.models.model.ItemModelUtils.plainModel(net.minecraft.resources.Identifier.withDefaultNamespace("item/blaze_spawn_egg")));
+			gen.itemModelOutput.accept(ModItems.BOSS_PIGLIN_SPAWN_EGG,
+					net.minecraft.client.data.models.model.ItemModelUtils.plainModel(net.minecraft.resources.Identifier.withDefaultNamespace("item/piglin_spawn_egg")));
 		}
 	}
 }

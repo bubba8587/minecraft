@@ -4,6 +4,7 @@ package io.github.bubba8587.bubbas_reworked_mobs.camp;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.github.bubba8587.bubbas_reworked_mobs.bosspiglin.ThroneDesign;
 import io.github.bubba8587.bubbas_reworked_mobs.worldgen.ClippedBuild;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -165,6 +166,34 @@ public class CampPiece extends StructurePiece {
 	private record Spot(int x, int z, int size, long seed) {
 	}
 
+	/** A throne: its front-left floor cell and the way it faces. */
+	private record ThroneSpot(int x, int z, Direction facing) {
+	}
+
+	/** A throne's cells: every column of its design, plus the two rows in front it gets up into. */
+	private static Footprint throneFootprint(int x, int z, Direction facing) {
+		int minX = x;
+		int minZ = z;
+		int maxX = x;
+		int maxZ = z;
+		for (ThroneDesign.Placed placed : ThroneDesign.blocks(facing)) {
+			minX = Math.min(minX, x + placed.offset().getX());
+			minZ = Math.min(minZ, z + placed.offset().getZ());
+			maxX = Math.max(maxX, x + placed.offset().getX());
+			maxZ = Math.max(maxZ, z + placed.offset().getZ());
+		}
+		Direction right = facing.getClockWise();
+		for (int u = 0; u <= 1; u++) {
+			int fx = x + facing.getStepX() * 2 + right.getStepX() * u;
+			int fz = z + facing.getStepZ() * 2 + right.getStepZ() * u;
+			minX = Math.min(minX, fx);
+			minZ = Math.min(minZ, fz);
+			maxX = Math.max(maxX, fx);
+			maxZ = Math.max(maxZ, fz);
+		}
+		return new Footprint("throne", minX, minZ, maxX, maxZ);
+	}
+
 	/** One piece's ground cells (inclusive, columns), for the footprint plan and tests. */
 	public record Footprint(String what, int minX, int minZ, int maxX, int maxZ) {
 		public boolean clearOf(Footprint other, int margin) {
@@ -199,6 +228,8 @@ public class CampPiece extends StructurePiece {
 		final List<Spot> pens = new ArrayList<>();
 		/** The stable (front middle, facing the fire), or null. */
 		Spot stable;
+		/** The Nether outpost's throne (its front-left floor cell, facing the fire), or null. */
+		ThroneSpot throne;
 		final Direction stairs;
 		final boolean stairsClockwise;
 		final Direction chestSide;
@@ -319,6 +350,21 @@ public class CampPiece extends StructurePiece {
 					if (claim(Footprint.around("pen", x, z, PEN_HALF))) {
 						pens.add(new Spot(x, z, PEN_HALF, pieceSeed));
 						break;
+					}
+				}
+			}
+			// the throne (medium and large outposts): after the gate and pen, before the lean-tos; its own random stream
+			if (kind.nether() && size != CampTuning.Size.SMALL) {
+				RandomSource throneRandom = RandomSource.create(net.minecraft.world.level.levelgen.RandomSupport.mixStafford13(seed ^ 0x7420E5L));
+				int span = Math.max(1, r - THRONE_MIN_DISTANCE);
+				for (int t = 0; t < TRIES * 16 && throne == null; t++) {
+					double a = throneRandom.nextDouble() * Math.PI * 2.0;
+					int d = THRONE_MIN_DISTANCE + t % span;
+					int x = cx + (int) Math.round(Math.cos(a) * d);
+					int z = cz + (int) Math.round(Math.sin(a) * d);
+					Direction facing = Direction.getApproximateNearest(cx - x, 0.0, cz - z);
+					if (claim(throneFootprint(x, z, facing))) {
+						throne = new ThroneSpot(x, z, facing);
 					}
 				}
 			}
@@ -461,6 +507,8 @@ public class CampPiece extends StructurePiece {
 		static final int NETHER_ROOM_HALF = 3;
 		static final int GATE_REACH = 5;
 		static final int PEN_HALF = 2;
+		/** The throne's front-left cell is at least this far from the fire. */
+		static final int THRONE_MIN_DISTANCE = 3;
 		static final float RAMP_CHANCE = 0.35F;
 		static final float BRIDGE_CHANCE = 0.4F;
 
@@ -655,6 +703,70 @@ public class CampPiece extends StructurePiece {
 			room(b); // (a superflat world is too shallow for it)
 		}
 		b.tidyFences(getBoundingBox());
+		if (plan.throne != null) {
+			throne(b, plan.throne); // after the fence tidy: the design's own blocks stay as drawn
+		}
+	}
+
+	/** The boss's throne (bosspiglin/ThroneDesign) on levelled ground, room cleared round and over it. */
+	private void throne(ClippedBuild b, ThroneSpot t) {
+		int y0 = centre.getY();
+		Footprint area = throneFootprint(t.x, t.z, t.facing);
+		for (int x = area.minX(); x <= area.maxX(); x++) {
+			for (int z = area.minZ(); z <= area.maxZ(); z++) {
+				b.clearCover(x, z, 6);
+				if (b instanceof NetherBuild nether) {
+					nether.carve(x, z, y0 + 5);
+				}
+				int g = b.ground(x, z);
+				if (g == Integer.MIN_VALUE) {
+					continue;
+				}
+				for (int y = g + 1; y < y0; y++) {
+					b.put(x, y, z, Blocks.NETHERRACK.defaultBlockState()); // levelled
+				}
+				for (int y = y0 + 1; y <= y0 + 4; y++) {
+					b.put(x, y, z, Blocks.AIR.defaultBlockState());
+				}
+				if (b.inside(x, y0, z) && !b.level().getBlockState(new BlockPos(x, y0, z)).isFaceSturdy(b.level(), new BlockPos(x, y0, z), Direction.UP)) {
+					b.put(x, y0, z, Blocks.POLISHED_BLACKSTONE.defaultBlockState());
+				}
+			}
+		}
+		for (ThroneDesign.Placed placed : ThroneDesign.blocks(t.facing)) {
+			BlockPos at = new BlockPos(t.x, y0 + 1, t.z).offset(placed.offset());
+			b.put(at.getX(), at.getY(), at.getZ(), placed.state());
+			// the king's snacks on the armrest shelves
+			if (b.inside(at.getX(), at.getY(), at.getZ())
+					&& b.level().getBlockEntity(at) instanceof net.minecraft.world.level.block.entity.ShelfBlockEntity shelf) {
+				int roll = Math.floorMod((int) net.minecraft.world.level.levelgen.RandomSupport.mixStafford13(seed ^ at.asLong()), THRONE_SNACKS.length);
+				shelf.getItems().set(1, new net.minecraft.world.item.ItemStack(THRONE_SNACKS[roll]));
+				shelf.setChanged(null);
+			}
+		}
+	}
+
+	/** What the boss keeps on its armrests, one on each shelf. */
+	private static final net.minecraft.world.item.Item[] THRONE_SNACKS = { net.minecraft.world.item.Items.GOLD_INGOT,
+			net.minecraft.world.item.Items.GOLDEN_CARROT, net.minecraft.world.item.Items.GOLD_NUGGET, net.minecraft.world.item.Items.COOKED_PORKCHOP };
+
+	/** The throne, or null (small outposts, other kinds). */
+	public CampSite.Throne throne() {
+		if (plan.throne == null) {
+			return null;
+		}
+		return new CampSite.Throne(new BlockPos(plan.throne.x, centre.getY() + 1, plan.throne.z), plan.throne.facing, java.util.Optional.of(portalInside()));
+	}
+
+	/** Where the seated boss's feet go on its throne (tests); null without one. */
+	public net.minecraft.world.phys.Vec3 throneSeat() {
+		CampSite.Throne throne = throne();
+		return throne == null ? null : throne.seat();
+	}
+
+	/** A cell inside the portal's frame, at its foot (Nether outposts). */
+	public BlockPos portalInside() {
+		return portalBase().relative(portalAlong(), 1).above();
 	}
 
 	/** A floor block mobs can't sink into: mud becomes packed mud. */
