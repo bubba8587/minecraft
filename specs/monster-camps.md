@@ -1,4 +1,4 @@
-<!-- dte:C1,B15,B17 -->
+<!-- dte:C1,B15,B17,B21 -->
 # Reworked Mobs: monster camps (spec)
 
 **Status: built.** Camps, banner keys, leaders, daily resets, a lit fire quiets a camp, shade and the underground room, layout variety and big pieces, pillager outposts, maps from cartographers, Nether outposts (the piglin kind, below) and trader posts (a wandering trader's market square: not a monster camp, but it shares the camps' structure machinery, below).
@@ -137,6 +137,38 @@ The owner asked for guaranteed shade spots and one small-to-medium underground r
 - It only quiets camps whose mobs fear fire (all of ours do).
 - Camps generate with their own campfire **unlit**, so they never quiet themselves.
 - Checked from the area's block entities, like the banners; saved as `quiet` on the camp.
+
+## Camp patrols (owner, 2026-11-25; B21 earnedSafety; to build)
+
+**Why they exist (B21):** the map stays about as dangerous as vanilla, and clearing camps or warding is how a player makes an area safer. Patrols carry a camp's danger out across the land around it, so clearing a camp quiets its whole territory. **Rate target:** a player out at night in an unsafe area (inside an armed camp's territory, not warded) should usually meet about one patrol a night. Tune toward that.
+
+- **Territory:** each armed camp (a banner of its kind standing, no lit fire quieting it) owns the land within `CampTuning.PATROL_TERRITORY` blocks of its centre. Start at **320**. The owner's aim is that territories overlap a little and cover nearly all camp-biome land; measure the real coverage with the client `camps` frequency survey (share of sampled land points inside some armed camp's territory) and report it with the chosen value. Disarmed and quieted camps own no territory. Nether outposts and pillager outposts send no patrols (vanilla pillager patrols are unchanged).
+- **Spawning (like vanilla's `PatrolSpawner`, our own code because vanilla's only drives `PatrollingMonster`s):** per player, on a timer with a chance per check (builder picks numbers to meet the rate target). Pick the player's nearest armed camp whose territory holds the player. Not for spectators. Burning kinds (skeleton, zombie, stray, bogged) only at night; husk patrols day or night. The patrol appears out of the player's sight, roughly 24-48 blocks off (as vanilla's), on valid spawn ground, never inside a warded area (wards already stop spawns; check our path honours them, or ask the ward API).
+- **Caps:** one live patrol per camp at a time; a per-camp cooldown before its next patrol (a visible-rhythm-free number: B19 noHiddenCooldowns means this is tuning, not something the player has to track). The patrol is size-scaled: small camp 2-3, medium 3-4, large 4-5 (leader included).
+- **Members:** the camp's own mob type, not added to the camp roster (killing a patrol doesn't clear or count against the camp). Vanilla spawn gear rolls, like camp members.
+- **The banner carrier (leader):** wears the camp kind's banner on its head (`CampBanners`), drop chance 0 (the banner never drops). On death it **always drops a plain vanilla filled map** of its camp's area: centred on the camp, zoomed so the territory fits (320 radius: zoom 3), with the camp marked the way explorer maps mark a structure. No new item.
+- **Moving together:** the leader picks a patrol target and walks; the others follow and keep together, as vanilla's `PatrollingMonster` patrol goal does (copy its logic: leader picks a point some tens of blocks off, members stay near the leader). They attack players they see. No walking home. They despawn like normal monsters.
+- **Riders:** camps with a stable (below) send some mounted patrols (builder: about half of their patrols, part or all of the patrol mounted). Mounts by kind: zombie on zombie horse; skeleton and stray on skeleton horse; husk on camel husk (husk driver, parched passenger, as vanilla 26.3 does); bogged on foot. Riders sometimes carry **spears** (vanilla spear items and spear AI), extra dangerous mounted.
+- **Commands:** `/bubbas_reworked_mobs camp patrol [kind]` spawns a patrol from the nearest camp at the player now (ops, tests and previews).
+- **Code (expected):** `camp/CampPatrols` (spawner tick), a patrol goal, entity tags `bubbas_reworked_mobs.patrol` / `.patrol:<camp id>` / `.patrol.leader`; numbers in `CampTuning`.
+
+## Stables (owner, 2026-11-25; to build)
+
+- **Bigger camps get a stable:** every large camp and about half of medium camps (from the plan seed). A small roofed pen like the lean-to, fenced, with a hay bale or two, claimed in the footprint plan like the other pieces (never overlapping).
+- **In it:** tethered mounts like the Nether outposts' hoglin pen (leashed to a post, re-made with the roster only while the pen has none and its post stands): sometimes the camp kind's undead mount (zombie horse, skeleton horse, camel husk; bogged camps: skeleton horse), sometimes a **captive living horse** (or donkey) the player can lead home after clearing the camp. Not on the roster; don't count for clearing.
+- `CampSite.hasStable()` (saved) tells patrols the camp can send riders.
+
+## Chest tiers (owner, 2026-11-25; to build)
+
+Four chests, rising: **fire < lower room < tower < skull**. Don't overdo the top end (owner).
+- **Fire chest** (`chests/monster_camp`): tuned lightly down from today's (fewer rolls or a lower chance at the good roll).
+- **Lower room** (`chests/camp_room`): unchanged unless needed to sit between fire and tower.
+- **Tower chest** (new, `chests/camp_tower`): hidden inside the **winding tower's** enclosed core (winding towers only). Archer's stash: arrows, tipped arrows, a bow or crossbow (sometimes enchanted), spyglass, some iron or gold, an emerald or two.
+- **Skull chest** (new, `chests/camp_skull`): at the back inside the skull rock (full and half-buried). A bit nicer than the tower: an enchanted iron weapon or armour piece, an enchanted book, some gold and emeralds, a golden apple; rarely a diamond. No gems (gem census, 2026-11-25), or one rare roll at most.
+
+## Room stairs fix (owner playtest, 2026-11-25; to build)
+
+Mobs had trouble climbing the stair tunnel out of the lower room; likely a block sits in front of the top step instead of the surface being flush with it. Find it and fix it so the top step meets open ground. Add a milestone test: a zombie in the room walks up the tunnel out to the clearing (today's test only checks walking down).
 
 ## Pillager outposts become camps too (owner)
 <a id="pillager-outposts-become-camps-too-owner"></a>
