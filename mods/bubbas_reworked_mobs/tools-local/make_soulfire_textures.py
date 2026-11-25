@@ -176,6 +176,72 @@ def soulguard_flame_lock_32(cf):
 	return icon
 
 
+def scale2x(img):
+	"""Scale2x (EPX): double the size, rounding diagonal edges with the image's own colours (no blur, no new colours),
+	so the 32x has half-size pixels along every edge instead of a plain doubled copy."""
+	w, h = img.size
+	src = img.load()
+	out = Image.new("RGBA", (w * 2, h * 2))
+	dst = out.load()
+
+	def px(x, y):
+		return src[min(max(x, 0), w - 1), min(max(y, 0), h - 1)]
+
+	for y in range(h):
+		for x in range(w):
+			p = src[x, y]
+			a, b, c, d = px(x, y - 1), px(x + 1, y), px(x - 1, y), px(x, y + 1)
+			e0 = e1 = e2 = e3 = p
+			if a != d and c != b:
+				e0 = a if c == a else p
+				e1 = b if a == b else p
+				e2 = c if d == c else p
+				e3 = b if b == d else p
+			dst[2 * x, 2 * y], dst[2 * x + 1, 2 * y], dst[2 * x, 2 * y + 1], dst[2 * x + 1, 2 * y + 1] = e0, e1, e2, e3
+	return out
+
+
+LOCK_32 = [  # the padlock at 32x detail: s shackle, o outline, h highlight, b body, d shade, k keyhole
+	"....oooooo....",
+	"...osssssso...",
+	"..oss....sso..",
+	"..os......so..",
+	"..os......so..",
+	"..os......so..",
+	"oooooooooooooo",
+	"ohhhhhhhhhhhho",
+	"ohbbbbbbbbbbdo",
+	"obbbbkkkkbbbdo",
+	"obbbbkkkkbbbdo",
+	"obbbbbkkbbbbdo",
+	"obbbbbkkbbbbdo",
+	"obbbbbbbbbbbdo",
+	"oddddddddddddo",
+	"oooooooooooooo",
+]
+LOCK_32_COLOURS = dict(LOCK_COLOURS, d=(100, 100, 108))
+
+
+def soulguard_icon_cf_32(cf):
+	"""32x Soulguard: the 16x flame through Scale2x (half-size pixels along its edges), and the padlock drawn at 32x."""
+	flame = scale2x(flame_only_icon(cf))
+	icon = Image.new("RGBA", (36, 36), (0, 0, 0, 0))
+	icon.alpha_composite(flame)
+	for y, row in enumerate(LOCK_32):
+		for x, ch in enumerate(row):
+			if ch != ".":
+				icon.putpixel((22 + x, 20 + y), LOCK_32_COLOURS[ch] + (255,))
+	return icon
+
+
+def flame_only_icon(cf):
+	"""The 16x icon's flame alone, placed as in the icon."""
+	flame = flame_only(cf)
+	icon = Image.new("RGBA", (18, 18), (0, 0, 0, 0))
+	icon.alpha_composite(flame, ((18 - flame.width) // 2, (18 - flame.height) // 2))
+	return icon
+
+
 def soulguard_icon_cf(cf):
 	"""Soulguard icon (16x; the 32x is it doubled): CF32J's Fire Resistance flame alone, at its own pixel size so the
 	flame fills the icon with pixels the size of the padlock's, on the soul ramp, with the padlock in front."""
@@ -327,7 +393,7 @@ def main():
 	else:
 		icon = soulguard_icon_cf(cf)
 		mc.save(icon, "mob_effect/soulguard.png")
-		mc.save32(icon.resize((36, 36), Image.NEAREST), "mob_effect/soulguard.png")
+		mc.save32(soulguard_icon_cf_32(cf), "mob_effect/soulguard.png")
 
 
 if __name__ == "__main__":

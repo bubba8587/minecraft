@@ -39,7 +39,7 @@ What changed: each creeper pixel takes the closest colour (OKLch lightness match
 
 | Our texture (`assets/bubbas_reworked_mobs/textures/`) | Derived from (CF32J, `assets/minecraft/textures/`) |
 |---|---|
-| `mob_effect/soulguard.png` (also the mod's 16x) | `mob_effect/fire_resistance.png` (flame only at its own pixel size, soul colours; our padlock) |
+| `mob_effect/soulguard.png` (also the mod's 16x) | `mob_effect/fire_resistance.png` (flame only at its own pixel size, soul colours; Scale2x for the 32x; our padlock) |
 
 ### Bubba's Reworked Mobs: Boss Piglin head
 
