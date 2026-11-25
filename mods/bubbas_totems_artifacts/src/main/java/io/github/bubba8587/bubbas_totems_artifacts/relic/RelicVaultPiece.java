@@ -151,6 +151,11 @@ public class RelicVaultPiece extends StructurePiece {
 		return door.getZ() - 2 - RelicTuning.STAIR_STEPS;
 	}
 
+	/** The vault's whole box for a door at {@code door} (its y ignored for the x/z footprint). */
+	public static BoundingBox footprint(Kind kind, BlockPos door) {
+		return box(kind, door);
+	}
+
 	private static BoundingBox box(Kind kind, BlockPos door) {
 		int hw = kind.halfWidth + 1;
 		int minZ = topZ(door) - (kind == Kind.CRYPT ? 0 : 1);
