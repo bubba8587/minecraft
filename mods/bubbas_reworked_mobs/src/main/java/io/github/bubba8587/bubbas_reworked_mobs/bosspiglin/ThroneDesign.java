@@ -12,7 +12,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
 /**
- * The Boss Piglin's throne, vanilla blocks: a 2 x 2 seat of polished blackstone brick slabs with a backrest row behind
+ * The Boss Piglin's throne, vanilla blocks: a 2 x 2 seat of polished blackstone brick slabs with red cushions on them with a backrest row behind
  * it, and crimson shelf armrests either side of the seat (4 wide x 3 deep in all). Offsets are from the front seat cell
  * on the seated boss's left; the other cell of a row is {@code facing.getClockWise()} of it and the rows go back along
  * {@code facing.getOpposite()}; the left armrest is at across -1. Backrest, bottom to top: stripped crimson hyphae,
@@ -27,8 +27,8 @@ public final class ThroneDesign {
 	public static final int MIN_ACROSS = -1;
 	/** Seat centre distance behind the throne's front face, in blocks (fits BossPiglinModel at its render scale). */
 	public static final double SEAT_DEPTH = 0.98;
-	/** Seat surface height above the throne's floor. */
-	public static final double SEAT_HEIGHT = 0.5;
+	/** Seat surface height above the throne's floor: the slab (0.5) plus a cushion (0.25). */
+	public static final double SEAT_HEIGHT = 0.75;
 
 	public record Placed(BlockPos offset, BlockState state) {
 	}
@@ -63,6 +63,20 @@ public final class ThroneDesign {
 		for (int y = 0; y < column.length; y++) {
 			for (int across = 0; across < WIDTH; across++) {
 				out.add(new Placed(at(side, back, across, y, 2), column[y].defaultBlockState()));
+			}
+		}
+		return out;
+	}
+
+	/** Where the four red cushions go (vanilla cushion entities: their bottom centre), relative to the origin cell's minimum corner. */
+	public static List<Vec3> cushions(Direction facing) {
+		Direction side = facing.getClockWise();
+		Direction back = facing.getOpposite();
+		List<Vec3> out = new ArrayList<>();
+		for (int depth = 0; depth < 2; depth++) {
+			for (int across = 0; across < WIDTH; across++) {
+				BlockPos cell = at(side, back, across, 0, depth);
+				out.add(new Vec3(cell.getX() + 0.5, cell.getY() + 0.5, cell.getZ() + 0.5));
 			}
 		}
 		return out;

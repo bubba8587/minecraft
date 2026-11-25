@@ -74,4 +74,7 @@ public final class BossPiglinTuning {
 
 	/** The seated and fleeing looks blend in or out by this much a tick (10 ticks). */
 	public static final float BLEND_STEP = 0.1F;
+
+	/** Fleeing, the drop he'll plan a path over (vanilla mobs: about 3): high enough that cliffs don't stop him. */
+	public static final int FLEE_MAX_FALL = 64;
 }

@@ -132,6 +132,12 @@ public class BossPiglin extends AbstractPiglin {
 		return this.entityData.get(DATA_SEATED);
 	}
 
+	/** Fleeing, he plans paths over any drop: he can waddle off a cliff. */
+	@Override
+	public int getMaxFallDistance() {
+		return this.isFleeing() ? BossPiglinTuning.FLEE_MAX_FALL : super.getMaxFallDistance();
+	}
+
 	public boolean isFleeing() {
 		return this.entityData.get(DATA_FLEEING);
 	}

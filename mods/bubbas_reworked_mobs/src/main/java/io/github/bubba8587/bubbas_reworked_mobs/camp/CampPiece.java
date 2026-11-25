@@ -744,6 +744,8 @@ public class CampPiece extends StructurePiece {
 				shelf.setChanged(null);
 			}
 		}
+		io.github.bubba8587.bubbas_reworked_mobs.bosspiglin.BossPiglins.placeCushions(b.level(), new BlockPos(t.x, y0 + 1, t.z), t.facing,
+				p -> b.inside(p.getX(), p.getY(), p.getZ()));
 	}
 
 	/** What the boss keeps on its armrests, one on each shelf. */
