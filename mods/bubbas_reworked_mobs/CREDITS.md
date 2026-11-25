@@ -15,5 +15,9 @@ The 32x biome creeper skins in the 32x resource pack (`src/main/resources/resour
 
 Made by `tools/creeper-biome-textures.py`.
 
+### Soulguard effect icon (32x)
+
+`resourcepacks/bubbas_reworked_mobs_32x/assets/bubbas_reworked_mobs/textures/mob_effect/soulguard.png` is derived from **Classic Faithful 32x Jappa**'s `assets/minecraft/textures/mob_effect/fire_resistance.png` (`java-latest` branch, November 2026): the flame alone (the shield removed), recoloured to soul fire colours and doubled, with our own padlock. Made by `tools-local/make_soulfire_textures.py`.
+
 Website: https://faithfulpack.net
 Used under the Faithful License: https://faithfulpack.net/license

@@ -35,5 +35,11 @@ From the `java-latest` branch (commit 00321eab, November 2026).
 
 What changed: each creeper pixel takes the closest colour (OKLch lightness match) from the block texture; the pixels and shading are CF32J's creeper's. `sulfur.png` uses vanilla's sulfur colours (CF32J has none).
 
+### Bubba's Reworked Mobs: Soulguard effect icon
+
+| Our texture (`assets/bubbas_reworked_mobs/textures/`) | Derived from (CF32J, `assets/minecraft/textures/`) |
+|---|---|
+| `mob_effect/soulguard.png` | `mob_effect/fire_resistance.png` (flame only, soul colours, doubled; our padlock) |
+
 Website: https://faithfulpack.net
 Used under the Faithful License: https://faithfulpack.net/license

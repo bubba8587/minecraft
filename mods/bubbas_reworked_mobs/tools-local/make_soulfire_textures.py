@@ -10,6 +10,9 @@ import math
 import sys
 from pathlib import Path
 
+import os
+import io
+import zipfile
 from PIL import Image
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -126,6 +129,50 @@ def soulguard_flame_lock(v):
 		for x, ch in enumerate(row):
 			if ch != ".":
 				icon.putpixel((11 + x, 10 + y), LOCK_COLOURS[ch] + (255,))
+	return icon
+
+
+# Classic Faithful 32x Jappa: the zip (default the owner's Modrinth profile, or CF32J=<zip or unpacked folder>)
+CF32J_ZIP = Path(os.environ.get("APPDATA", "")) / "ModrinthApp/profiles/porp/resourcepacks/CF32J-2026r21.zip"
+
+
+def cf32j_open(member):
+	"""A CF32J texture as an image, from the zip or an unpacked folder; None when the pack isn't here."""
+	src = Path(os.environ.get("CF32J", CF32J_ZIP))
+	if src.is_dir() and (src / member).exists():
+		return Image.open(src / member).convert("RGBA")
+	if src.is_file():
+		with zipfile.ZipFile(src) as zf:
+			if member in zf.namelist():
+				return Image.open(io.BytesIO(zf.read(member))).convert("RGBA")
+	return None
+
+
+def flame_only(src):
+	"""Just the flame of a Fire Resistance icon, on the soul ramp, cropped."""
+	flame = Image.new("RGBA", src.size, (0, 0, 0, 0))
+	for y in range(src.height):
+		for x in range(src.width):
+			p = src.getpixel((x, y))
+			if p[3]:
+				L, C, h = lch(p[:3])
+				if C > 0.03 and 15 < h < 120:
+					flame.putpixel((x, y), soul(p[:3]) + (p[3],))
+	return flame.crop(flame.getbbox())
+
+
+def soulguard_flame_lock_32(cf):
+	"""32x Soulguard: CF32J's Fire Resistance flame alone on the soul ramp, doubled like the 16x, with the padlock doubled."""
+	flame = flame_only(cf)
+	flame = flame.resize((flame.width * 2, flame.height * 2), Image.NEAREST)
+	icon = Image.new("RGBA", (36, 36), (0, 0, 0, 0))
+	icon.alpha_composite(flame, ((36 - flame.width) // 2, (36 - flame.height) // 2))
+	for y, row in enumerate(LOCK):
+		for x, ch in enumerate(row):
+			if ch != ".":
+				for dy in range(2):
+					for dx in range(2):
+						icon.putpixel((22 + 2 * x + dx, 20 + 2 * y + dy), LOCK_COLOURS[ch] + (255,))
 	return icon
 
 
@@ -263,7 +310,11 @@ def main():
 
 	icon = soulguard_flame_lock(v)
 	mc.save(icon, "mob_effect/soulguard.png")
-	mc.save32(icon.resize((icon.width * 2, icon.height * 2), Image.NEAREST), "mob_effect/soulguard.png")  # the flame is already doubled
+	cf = cf32j_open("assets/minecraft/textures/mob_effect/fire_resistance.png")
+	if cf is None:
+		print("Classic Faithful 32x Jappa not found: kept the committed 32x Soulguard icon")
+	else:
+		mc.save32(soulguard_flame_lock_32(cf), "mob_effect/soulguard.png")
 
 
 if __name__ == "__main__":
