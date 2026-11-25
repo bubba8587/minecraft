@@ -176,6 +176,19 @@ def soulguard_flame_lock_32(cf):
 	return icon
 
 
+def soulguard_icon_cf(cf):
+	"""Soulguard icon (16x; the 32x is it doubled): CF32J's Fire Resistance flame alone, at its own pixel size so the
+	flame fills the icon with pixels the size of the padlock's, on the soul ramp, with the padlock in front."""
+	flame = flame_only(cf)
+	icon = Image.new("RGBA", (18, 18), (0, 0, 0, 0))
+	icon.alpha_composite(flame, ((18 - flame.width) // 2, (18 - flame.height) // 2))
+	for y, row in enumerate(LOCK):
+		for x, ch in enumerate(row):
+			if ch != ".":
+				icon.putpixel((11 + x, 10 + y), LOCK_COLOURS[ch] + (255,))
+	return icon
+
+
 def charge_colour(c):
 	"""Fire charge: orange cracks (and the warm glow around them) to soul, the rock body to dark blackstone."""
 	L, C, h = lch(c)
@@ -308,13 +321,13 @@ def main():
 	save_pair(charge, "item/soul_fire_charge.png", outline_lum=0,
 		material=lambda pal: {k: ("crack" if lch(c)[1] > 0.05 else "rock") for k, c in pal.items()})
 
-	icon = soulguard_flame_lock(v)
-	mc.save(icon, "mob_effect/soulguard.png")
 	cf = cf32j_open("assets/minecraft/textures/mob_effect/fire_resistance.png")
 	if cf is None:
-		print("Classic Faithful 32x Jappa not found: kept the committed 32x Soulguard icon")
+		print("Classic Faithful 32x Jappa not found: kept the committed Soulguard icons")
 	else:
-		mc.save32(soulguard_flame_lock_32(cf), "mob_effect/soulguard.png")
+		icon = soulguard_icon_cf(cf)
+		mc.save(icon, "mob_effect/soulguard.png")
+		mc.save32(icon.resize((36, 36), Image.NEAREST), "mob_effect/soulguard.png")
 
 
 if __name__ == "__main__":
