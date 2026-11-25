@@ -39,6 +39,9 @@ public final class ModItems {
 					.setDamageOnHurt(false)
 					.build()));
 
+	/** Quartz Shard: blasted from andesite, diorite or granite; 4 make one nether quartz. */
+	public static final Item QUARTZ_SHARD = register("quartz_shard", new Item.Properties());
+
 	private ModItems() {
 	}
 
@@ -50,5 +53,7 @@ public final class ModItems {
 	public static void initialize() {
 		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.TOOLS_AND_UTILITIES)
 				.register(output -> output.insertAfter(Items.ELYTRA, GLIDER));
+		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.INGREDIENTS)
+				.register(output -> output.insertAfter(Items.QUARTZ, QUARTZ_SHARD));
 	}
 }

@@ -1,0 +1,14 @@
+{
+	"type": "minecraft:blasting",
+	"category": "misc",
+	"ingredient": [
+		"minecraft:andesite",
+		"minecraft:diorite",
+		"minecraft:granite"
+	],
+	"result": {
+		"id": "bubbas_extra_recipes:quartz_shard"
+	},
+	"experience": 0.05,
+	"cookingtime": 200
+}

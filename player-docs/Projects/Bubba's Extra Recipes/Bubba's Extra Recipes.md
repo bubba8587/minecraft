@@ -16,7 +16,7 @@ modrinth:
 > | **Side** | Server only (datapack); client and server (mod) |
 > | **Status** | Active |
 
-**Bubba's Extra Recipes** is a datapack that adds a handful of recipes for awkward or grindy items: renewable sand, red sand, clay, calcite, tuff, smooth basalt, quartz and glowstone dust, a way to make tridents, and uses for rotten flesh and spare charcoal. It also comes as an optional Fabric mod that adds the Glider and Synthetic Diamond Ore.
+**Bubba's Extra Recipes** is a datapack that adds a handful of recipes for awkward or grindy items: renewable sand, red sand, clay, calcite, tuff, smooth basalt and glowstone dust, a way to make tridents, and uses for rotten flesh and spare charcoal. It also comes as an optional Fabric mod that adds the Glider, Quartz Shards (quartz from stone) and Synthetic Diamond Ore.
 
 ## Recipes
 

@@ -71,8 +71,6 @@ public class PackcheckGameTest {
 			Items.COAL_BLOCK).withBlockState(Map.of("synthetic", "true")),
 		cooking(RecipeType.BLASTING, "blast2sand", Items.SAND, null, List.of(), 200, 0.0F,
 			Items.GRAVEL, Items.GLASS),
-		cooking(RecipeType.BLASTING, "blast_quartz", Items.QUARTZ, null, List.of(), 200, 0.1F,
-			Items.ANDESITE, Items.DIORITE, Items.GRANITE),
 		cooking(RecipeType.BLASTING, "cobble2gravel", Items.GRAVEL, null, List.of(), 200, 0.0F,
 			Items.COBBLESTONE),
 		cooking(RecipeType.BLASTING, "bone2calcite", Items.CALCITE, null, List.of(), 200, 0.1F,
@@ -105,7 +103,6 @@ public class PackcheckGameTest {
 	@GameTest public void trident(GameTestHelper helper) { check(helper, "trident"); }
 	@GameTest public void syntheticDiamondOre(GameTestHelper helper) { check(helper, "blast2diamond"); }
 	@GameTest public void blastToSand(GameTestHelper helper) { check(helper, "blast2sand"); }
-	@GameTest public void blastQuartz(GameTestHelper helper) { check(helper, "blast_quartz"); }
 	@GameTest public void cobbleToGravel(GameTestHelper helper) { check(helper, "cobble2gravel"); }
 	@GameTest public void mudToClay(GameTestHelper helper) { check(helper, "mud2clay"); }
 	@GameTest public void sandToRedSand(GameTestHelper helper) { check(helper, "sand2redsand"); }

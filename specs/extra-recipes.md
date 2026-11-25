@@ -15,7 +15,7 @@
 
 ## Recipes
 
-Block blasting recipes use 200 ticks and 0.1 XP unless the table says otherwise (the `blast_quartz` standard).
+Block blasting recipes use 200 ticks and 0.1 XP unless the table says otherwise.
 
 | File | Type | Ingredients | Result | Time, XP | Notes |
 |---|---|---|---|---|---|
@@ -27,7 +27,6 @@ Block blasting recipes use 200 ticks and 0.1 XP unless the table says otherwise 
 | `trident` | shaped | 3 prismarine shards on top; prismarine crystal, stick, crystal on each of the two rows below | 1 trident | | owner: kept, tridents are too rare otherwise |
 | `blast2sand` | blasting | gravel or glass | sand | 200, 0 | |
 | `cobble2gravel` | blasting | cobblestone | gravel | 200, 0 | |
-| `blast_quartz` | blasting | andesite, diorite or granite | nether quartz | 200, 0.1 | owner: the andesite quartz loop (+1 quartz per cycle) stays |
 | `ironnugget` | blasting | stone | iron nugget | 500, 0.1 | |
 | `bone2calcite` | blasting | bone block | calcite | 200, 0.1 | |
 | `deepslate2tuff` | blasting | cobbled deepslate | tuff | 200, 0.1 | vanilla's cobbled deepslate → deepslate is smelting, so the two never compete |
@@ -35,6 +34,8 @@ Block blasting recipes use 200 ticks and 0.1 XP unless the table says otherwise 
 | `blast2diamond` | blasting | coal block | deepslate diamond ore named "Synthetic Diamond Ore" | 4000, 5 | see Synthetic Diamond Ore below |
 | `orgglo` | smoking | glow berries, glow lichen or glow ink sac | glowstone dust named "Organic Glowstone Dust" | 200, 0.1 | |
 | `rotleather` | smoking | rotten flesh | leather, lore "Cured zombie flesh. Gross..." | 300, 0.1 | owner: 0.1 XP, lore kept |
+
+**Quartz from stone moved to the companion mod (owner, 2026-11-24):** the datapack's `blast_quartz` (andesite, diorite or granite → 1 nether quartz) is gone; there is so much of that stone that it made quartz nearly free. The mod blasts it into a Quartz Shard instead, 4 to a quartz (`specs/extra-recipes-mod.md`). Datapack-only players have no stone-to-quartz recipe.
 
 Owner: Organic Glowstone Dust, black dye, sand, gravel and iron nugget stay as originally written.
 

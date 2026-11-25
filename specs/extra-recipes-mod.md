@@ -55,6 +55,15 @@ Constants in `glider/GliderHandling`. They apply only while the chest slot holds
   - the wings are phantom-membrane sails on a bamboo spar and battens, with diamond spar caps and feathered tips.
 - Listed in `docs/art-todo.md`. A person replaces both before any Modrinth release; nothing ships to Modrinth with the agent-made art.
 
+## Quartz Shard
+
+Owner, 2026-11-24: quartz from andesite, diorite and granite cost a quarter as much as before (there is far too much of that stone), replacing the datapack's direct blasting recipe.
+
+- Item `registry/ModItems.QUARTZ_SHARD` (plain item, stacks to 64), in the Ingredients tab after nether quartz. Lang "Quartz Shard".
+- Recipes (mod data): `blast_quartz_shard` (blasting; andesite, diorite or granite → 1 shard, 200 ticks, 0.05 XP, builder's number) and `quartz_from_shards` (shaped 2x2 of shards → 1 nether quartz, like amethyst shards into a block).
+- Art: agent-made 16x and 32x (`tools-local/make_quartz_shard.py`, one broken-off crystal in vanilla quartz's palette); in `docs/art-todo.md`.
+- Test: `QuartzShardGameTest` (milestone): each stone blasts into one shard, four craft one quartz, the old `blast_quartz` recipe is gone. Client part `glider` shows shards in the inventory shot.
+
 ## Synthetic Diamond Ore
 
 The datapack's blasting recipe (coal block → "Synthetic Diamond Ore") sets `minecraft:block_state {synthetic:"true"}` on the result, next to its `item_name`. Without the mod that component is ignored and placed ore behaves like natural ore.

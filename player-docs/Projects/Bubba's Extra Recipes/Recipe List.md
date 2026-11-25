@@ -43,13 +43,13 @@ All of these are made in a blast furnace.
 |---|---|---|---|---|
 | Sand | Gravel or glass | Sand | 10 s | 0 |
 | Gravel | Cobblestone | Gravel | 10 s | 0 |
-| Quartz | Andesite, diorite or granite | Nether quartz | 10 s | 0.1 |
 | Iron Nugget | Stone | Iron nugget | 25 s | 0.1 |
 | Calcite | Bone block | Calcite | 10 s | 0.1 |
 | Tuff | Cobbled deepslate | Tuff | 10 s | 0.1 |
 | Smooth Basalt | Basalt | Smooth basalt | 10 s | 0.1 |
 | [[Synthetic Diamond Ore]] | Block of coal | Deepslate diamond ore, named "Synthetic Diamond Ore" | 200 s | 5 |
 
+- Quartz from andesite, diorite or granite is only in the [[Extra Recipes Companion Mod]], as Quartz Shards (four make one nether quartz).
 - Cobbled deepslate still smelts into deepslate in a normal furnace; only the blast furnace makes tuff.
 - Basalt still smelts into smooth basalt in a normal furnace too, as in vanilla.
 - With the datapack alone, Synthetic Diamond Ore mines like normal diamond ore. With the [[Extra Recipes Companion Mod]] it rarely drops a diamond; see [[Synthetic Diamond Ore]].

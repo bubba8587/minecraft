@@ -11,6 +11,7 @@
 		"bubba-milestone-gametest": [
 			"io.github.bubba8587.bubbas_extra_recipes.test.BundledPacksGameTest",
 			"io.github.bubba8587.bubbas_extra_recipes.test.GliderGameTest",
+			"io.github.bubba8587.bubbas_extra_recipes.test.QuartzShardGameTest",
 			"io.github.bubba8587.bubbas_extra_recipes.test.SyntheticOreGameTest"
 		],
 		"fabric-client-gametest": [

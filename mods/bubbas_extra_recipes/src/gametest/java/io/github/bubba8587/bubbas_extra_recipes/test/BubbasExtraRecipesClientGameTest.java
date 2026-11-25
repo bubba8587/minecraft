@@ -61,6 +61,7 @@ public class BubbasExtraRecipesClientGameTest implements FabricClientGameTest {
 			player.setGameMode(GameType.SURVIVAL);
 			player.getInventory().clearContent();
 			player.getInventory().setItem(0, new ItemStack(ModItems.GLIDER));
+			player.getInventory().setItem(1, new ItemStack(ModItems.QUARTZ_SHARD, 4));
 		});
 		context.waitFor(mc -> mc.player.getInventory().getItem(0).is(ModItems.GLIDER));
 		context.runOnClient(mc -> mc.gui.setScreen(new InventoryScreen(mc.player)));

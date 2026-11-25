@@ -1,15 +1,11 @@
 {
 	"parent": "minecraft:recipes/root",
 	"criteria": {
-		"has_andesite": {
+		"has_quartz_shard": {
 			"conditions": {
 				"items": [
 					{
-						"items": [
-							"minecraft:andesite",
-							"minecraft:diorite",
-							"minecraft:granite"
-						]
+						"items": "bubbas_extra_recipes:quartz_shard"
 					}
 				]
 			},
@@ -17,20 +13,20 @@
 		},
 		"has_the_recipe": {
 			"conditions": {
-				"recipes": "bubbas_extra_recipes:blast_quartz"
+				"recipes": "bubbas_extra_recipes:quartz_from_shards"
 			},
 			"trigger": "minecraft:recipe_unlocked"
 		}
 	},
 	"requirements": [
 		[
-			"has_andesite",
+			"has_quartz_shard",
 			"has_the_recipe"
 		]
 	],
 	"rewards": {
 		"recipes": [
-			"bubbas_extra_recipes:blast_quartz"
+			"bubbas_extra_recipes:quartz_from_shards"
 		]
 	}
 }
