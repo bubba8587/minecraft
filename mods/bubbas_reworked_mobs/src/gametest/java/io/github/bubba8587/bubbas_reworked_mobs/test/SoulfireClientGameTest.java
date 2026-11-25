@@ -24,8 +24,8 @@ import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContex
 /**
  * Soulfire by eye (specs/soulfire.md; client part {@code soulfire}). On a blackstone platform in the sky. Shots:
  * soulfire-zombie (a soul-burning zombie beside a normally burning one), soulfire-player (the player soul-burning, third
- * person), soulfire-icons (hotbar: rod, powder, charge, the three Soulguard potions, a tipped arrow, the Captain's
- * Helm), soulfire-effect (the inventory's effect list with Soulguard); the icons and effect shots again with the 32x
+ * person), soulfire-player-first-person (the soul burning overlay), soulfire-icons (hotbar: rod, powder, charge, the three Soulguard potions, a tipped arrow, the Captain's
+ * Helm), soulfire-effect (the survival inventory's effect list with Soulguard); the icons and effect shots again with the 32x
  * pack (-32x).
  */
 @SuppressWarnings("UnstableApiUsage")
@@ -110,7 +110,8 @@ public class SoulfireClientGameTest implements FabricClientGameTest {
 			server.runCommand("item replace entity @p hotbar.8 with minecraft:enchanted_book[stored_enchantments={\"bubbas_reworked_mobs:soulguard\":1}]");
 			server.runOnServer(s -> s.getPlayerList().getPlayers().getFirst().addEffect(new MobEffectInstance(Soulfire.SOULGUARD, 20 * 180)));
 			context.runOnClient(mc -> mc.player.getInventory().setSelectedSlot(3));
-			tp(context, server, x + 0.5, y + 0.4, z - 6.5, 180.0F, 0.0F);
+			server.runCommand("gamemode survival @p");
+			tp(context, server, x + 0.5, y, z - 6.5, 180.0F, 0.0F);
 			icons(context, "");
 			setPack(context, true);
 			icons(context, "-32x");

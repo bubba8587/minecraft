@@ -1,4 +1,4 @@
-// dte:C1,B17
+// dte:C1,B17,B15
 package io.github.bubba8587.bubbas_reworked_mobs.mixin;
 
 import io.github.bubba8587.bubbas_reworked_mobs.soulfire.SoulBurning;
