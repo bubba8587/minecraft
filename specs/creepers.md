@@ -83,7 +83,7 @@ Charged creepers keep vanilla's suicide-bomber behavior.
   - *First spot:* 3-22 blocks from the target, best near min(current distance, 15). A held spot is dropped when the target is outside 2-24 blocks; it is re-checked every 10 ticks (the target moves).
   - Runs at most once a second while it has no spot.
   - Its navigation plans paths up to 32 blocks (`setRequiredPathLength`; vanilla uses its 16-block follow range; targeting range unchanged).
-- *Peekaboo (owner):* while it sits at its spot and the watched player looks within 45 degrees of any of five points on its body or its half-hidden place, it slides into the hidden place; when they look away it eases back out to half. `sense/Gaze` uses a cone round several points, not one line to its eyes, and no sight check, so once tucked away it stays hidden while the player looks its way. Slides are 0.08 blocks a tick, sideways, still staring.
+- *Peekaboo (owner):* while it sits at its spot and the watched player looks within 25 degrees (owner, 2026-11-25: was 45, which caught a creeper at the edge of the screen) of any of five points on its body or its half-hidden place, it slides into the hidden place; when they look away it eases back out to half. `sense/Gaze` uses a cone round several points, not one line to its eyes, and no sight check, so once tucked away it stays hidden while the player looks its way. Slides are 0.08 blocks a tick, sideways, still staring.
 - *Creeping closer (APPROACH):* at a reached spot, once it hasn't been looked at (peekaboo cone) for 3 s, it tries every 100-160 ticks: `CoverFinder.findAll` for up to 4 spots between 2 blocks and (distance - 2), best near (distance - 6). Each gets a path (`PathNavigation.createPath`), scored by the share of 6 points along the route the player can see, plus 1 if its hidden place is in view; the lowest wins. So it prefers spots whose hiding place and route are out of view, and can come right up to a house wall and peek in round a window frame or doorway (closest 2 blocks, owner). Caught walking up in the open (looked at while it can be seen), it goes back to the spot it came from.
 - *Running off (FLEE):* every 10 ticks it compares the player's own position now and 20 ticks ago against its current position (its own movement doesn't count). A player within 20 blocks, not sneaking, who closed by 2+ blocks in 20 ticks (0.1 a tick; walk 0.216, sneak 0.065) makes it run: flee spot (distance + 3) to max(22, distance + 14), capped at 23, best near distance + 7, at speed x1.4 (0.35 blocks/tick, faster than a sprint). No spot: it backs away (`DefaultRandomPos.getPosAway`, 10 blocks) at that speed until 3 blocks farther. No new approach for 10 s after. Only when it can see the player at that moment (owner): `CreeperWatchGoal.noticeApproach`, every 10 ticks, `hasLineOfSight` with `ClipContext.Block.VISUAL` from its eyes to the player's eyes or middle, so glass, panes and bars don't block it but solid blocks and leaves do; tucked fully behind its cover it doesn't notice. A player walking straight at it while looking makes it duck (peekaboo), and once ducked it can't see them, so it may not run (playtest). Its own running startles nothing, since creepers never count on the startle meter (builder's choice 5).
 - *Sneaking up (HIDE):* a sneaking player within 18 blocks who closed by 0.3+ blocks in 20 ticks makes it look for cover farther away (1.5-8 blocks beyond its current distance) and sit hidden there, staring, at a walk. Same sight rule as running off. With no cover it backs away.
@@ -161,7 +161,7 @@ Charged creepers keep vanilla's suicide-bomber behavior.
 | Approach noticed | 2 blocks closer in 1 s (not sneaking), within 20; sneaking 0.3 in 1 s within 18 |
 | Running off | x1.4 speed (0.35 b/t); farther by 3-14 (best 7), max 23; no new approach for 10 s after |
 | Leaving | day only; starts 10 s-2.5 min after daylight (2x faster if not looked at for 30 s); gone with 20 % + 5 % per second since last looked at, per second, when no player within 128 sees it |
-| Peekaboo look cone | 45 degrees round any of 5 body points |
+| Peekaboo look cone | 25 degrees round any of 5 body points |
 | Slide speed | 0.08 blocks a tick |
 | Sneak notice | 18 blocks |
 | Watcher spawning | 1 per player, every 10 s at night, 15-21 blocks, outside 70 degrees of view, released beyond 48 blocks |
@@ -281,7 +281,7 @@ The creeper grove (`specs/testworld.md`, Layout).
   - with cover 18 blocks off and none nearer, it walks there (far cover);
   - in the open it holds 12 and edges back while looked at;
   - it backs off when dashed at in the open;
-  - peekaboo triggers when the player looks within 45 degrees of its edge, not only its eyes;
+  - peekaboo triggers when the player looks within 25 degrees of its edge, not only its eyes;
   - riders and mounts are counted once;
   - knockback toward it startles;
   - gliding with elytra startles;

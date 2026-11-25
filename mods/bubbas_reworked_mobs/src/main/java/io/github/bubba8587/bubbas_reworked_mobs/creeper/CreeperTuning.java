@@ -174,7 +174,7 @@ public final class CreeperTuning {
 	/** Sideways slide speed into and out of cover (blocks a tick). */
 	public static final double SLIDE_SPEED = 0.08;
 	/** Peekaboo: a player looking within this many degrees of the creeper is looking at it (a screen's half-width at FOV 70 is ~51). */
-	public static final double PLAYER_LOOK_HALF_ANGLE = 45.0;
+	public static final double PLAYER_LOOK_HALF_ANGLE = 25.0;
 	/** A sneaking player closer than this and getting closer makes it back behind cover. */
 	public static final double SNEAK_NOTICE_RANGE = 18.0;
 

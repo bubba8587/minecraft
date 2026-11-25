@@ -77,7 +77,7 @@
   - Body faces the shore; head turns to the nearest player.
 - **Stared at, it sinks (D2):**
   - Every 4 ticks, one 16-block box query.
-  - Staring means: anyone it could grab, plus creative players, looking within 40 degrees of any of six points, with a clear line of sight to that point (`sense/Gaze`; owner: a cone, not a direct line). The six points are where its head shows at the spot centre just above the surface, 0.4 higher, and 0.3 to each side.
+  - Staring means: anyone it could grab, plus creative players, looking within 25 degrees (owner, 2026-11-25: was 40, which caught a drowned at the edge of the screen) of any of six points, with a clear line of sight to that point (`sense/Gaze`; owner: a cone, not a direct line). The six points are where its head shows at the spot centre just above the surface, 0.4 higher, and 0.3 to each side.
   - Using the spot's points rather than its eyes means it doesn't bob in and out of a watcher's sight at the bank's edge.
   - Stared at, it sinks until its head is 0.1 below the surface or it stands on the floor, and crouches (vanilla's synced crouch pose; the model lowers its head about a quarter block). In 2-deep water its head ends just under the surface.
   - Looked away from, it rises again.
@@ -245,7 +245,7 @@ Owner: like the XP bar.
 | Lurk spot | water exactly 2 deep, land within 3, 3-14 blocks from the player (best ~6) |
 | Lurking: eyes above the surface | 0.12 |
 | Sunk: head below the surface | 0.1, or on the floor and crouched |
-| Stare cone / sense range | 40 degrees round 6 points / 16 blocks, every 4 ticks |
+| Stare cone / sense range | 25 degrees round 6 points / 16 blocks, every 4 ticks |
 | Restless: moves when unseen (70 degrees) / following | 1 in 800 a tick (~40 s) / 1 in 80 (~4 s) past 10 blocks; new spot within 16 |
 | Sway / dip | 0.15 blocks / 1 in 600 a tick for 1-3 s |
 | Surge reach | 4.5 blocks; victim between 1 below and 2.5 above the surface |

@@ -66,7 +66,7 @@ public final class DrownedTuning {
 	/** Things that could look at it or be grabbed are noticed this far (one box query). */
 	public static final double SENSE_RANGE = 16.0;
 	/** Stared at: something within SENSE_RANGE looking within this many degrees of any point of its head or the water round it, with a clear line of sight to that point. */
-	public static final double STARE_HALF_ANGLE = 40.0;
+	public static final double STARE_HALF_ANGLE = 25.0;
 	/** It only moves (changes spot) while nobody looks within this many degrees of it: about the edge of the screen. */
 	public static final double UNSEEN_HALF_ANGLE = 70.0;
 
