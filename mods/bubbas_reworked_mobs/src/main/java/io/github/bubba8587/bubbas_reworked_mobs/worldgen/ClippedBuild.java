@@ -83,10 +83,20 @@ public class ClippedBuild {
 	}
 
 	/**
-	 * Fence pass after a piece is built: orphans (no side joined, nothing on top, no fence below) are taken out, then every
+	 * Fence pass after a piece is built: orphans (no side joined and no block touching them at all) are taken out, then every
 	 * fence's sides are set from its neighbours, and fences just over the chunk edge (built by an earlier chunk) get their
 	 * side toward this chunk set too.
 	 */
+	/** No block on any of its six sides. */
+	public boolean touchesNothing(BlockPos pos) {
+		for (net.minecraft.core.Direction d : net.minecraft.core.Direction.values()) {
+			if (!level.getBlockState(pos.relative(d)).isAir()) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	public void tidyFences(BoundingBox piece) {
 		boolean removed = true;
 		while (removed) {
@@ -103,9 +113,7 @@ public class ClippedBuild {
 					BlockPos n = pos.relative(d);
 					joined |= joins(fence, n, d) || !inside(n.getX(), n.getY(), n.getZ()) && state.getValue(propertyOf(d));
 				}
-				BlockState above = level.getBlockState(pos.above());
-				BlockState below = level.getBlockState(pos.below());
-				if (!joined && above.isAir() && !(below.getBlock() instanceof net.minecraft.world.level.block.FenceBlock)) {
+				if (!joined && touchesNothing(pos)) {
 					level.setBlock(pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS);
 					it.remove();
 					removed = true;
@@ -164,7 +172,8 @@ public class ClippedBuild {
 		}
 	}
 
-	private BlockState joined(BlockPos pos, BlockState state) {
+	/** A fence state with its sides set from its real neighbours. */
+	public BlockState joined(BlockPos pos, BlockState state) {
 		net.minecraft.world.level.block.FenceBlock fence = (net.minecraft.world.level.block.FenceBlock) state.getBlock();
 		for (net.minecraft.core.Direction d : net.minecraft.core.Direction.Plane.HORIZONTAL) {
 			state = state.setValue(propertyOf(d), joins(fence, pos.relative(d), d));

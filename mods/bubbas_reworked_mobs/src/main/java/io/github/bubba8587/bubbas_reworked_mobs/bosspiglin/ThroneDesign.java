@@ -16,7 +16,7 @@ import net.minecraft.world.phys.Vec3;
  * it, and crimson shelf armrests either side of the seat (4 wide x 3 deep in all). Offsets are from the front seat cell
  * on the seated boss's left; the other cell of a row is {@code facing.getClockWise()} of it and the rows go back along
  * {@code facing.getOpposite()}; the left armrest is at across -1. Backrest, bottom to top: stripped crimson hyphae,
- * gilded blackstone, chiseled polished blackstone, gold blocks, framed by stripped crimson stem posts topped with lanterns.
+ * gilded blackstone, chiseled polished blackstone, gold blocks, framed by stripped crimson stem posts with crimson fence tops.
  */
 public final class ThroneDesign {
 	public static final int WIDTH = 2;
@@ -57,8 +57,8 @@ public final class ThroneDesign {
 			out.add(new Placed(at(side, back, -1, y, 2), post));
 			out.add(new Placed(at(side, back, WIDTH, y, 2), post));
 		}
-		out.add(new Placed(at(side, back, -1, HEIGHT - 1, 2), Blocks.LANTERN.defaultBlockState()));
-		out.add(new Placed(at(side, back, WIDTH, HEIGHT - 1, 2), Blocks.LANTERN.defaultBlockState()));
+		out.add(new Placed(at(side, back, -1, HEIGHT - 1, 2), Blocks.CRIMSON_FENCE.defaultBlockState()));
+		out.add(new Placed(at(side, back, WIDTH, HEIGHT - 1, 2), Blocks.CRIMSON_FENCE.defaultBlockState()));
 		Block[] column = {Blocks.STRIPPED_CRIMSON_HYPHAE, Blocks.GILDED_BLACKSTONE, Blocks.CHISELED_POLISHED_BLACKSTONE, Blocks.GOLD_BLOCK};
 		for (int y = 0; y < column.length; y++) {
 			for (int across = 0; across < WIDTH; across++) {

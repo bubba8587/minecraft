@@ -733,15 +733,25 @@ public class CampPiece extends StructurePiece {
 				}
 			}
 		}
+		java.util.List<BlockPos> throneFences = new java.util.ArrayList<>();
 		for (ThroneDesign.Placed placed : ThroneDesign.blocks(t.facing)) {
 			BlockPos at = new BlockPos(t.x, y0 + 1, t.z).offset(placed.offset());
 			b.put(at.getX(), at.getY(), at.getZ(), placed.state());
+			if (placed.state().getBlock() instanceof net.minecraft.world.level.block.FenceBlock) {
+				throneFences.add(at);
+			}
 			// the king's snacks on the armrest shelves
 			if (b.inside(at.getX(), at.getY(), at.getZ())
 					&& b.level().getBlockEntity(at) instanceof net.minecraft.world.level.block.entity.ShelfBlockEntity shelf) {
 				int roll = Math.floorMod((int) net.minecraft.world.level.levelgen.RandomSupport.mixStafford13(seed ^ at.asLong()), THRONE_SNACKS.length);
 				shelf.getItems().set(1, new net.minecraft.world.item.ItemStack(THRONE_SNACKS[roll]));
 				shelf.setChanged(null);
+			}
+		}
+		// fence sides from their real neighbours (the throne is built after the fence tidy)
+		for (BlockPos at : throneFences) {
+			if (b.inside(at.getX(), at.getY(), at.getZ())) {
+				b.put(at.getX(), at.getY(), at.getZ(), b.joined(at, b.level().getBlockState(at)));
 			}
 		}
 		io.github.bubba8587.bubbas_reworked_mobs.bosspiglin.BossPiglins.placeCushions(b.level(), new BlockPos(t.x, y0 + 1, t.z), t.facing,

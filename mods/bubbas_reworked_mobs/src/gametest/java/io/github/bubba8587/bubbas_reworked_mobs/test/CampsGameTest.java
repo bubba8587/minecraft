@@ -650,7 +650,7 @@ public class CampsGameTest {
 		helper.succeed();
 	}
 
-	/** Fences whose sides don't match their neighbours, or that join nothing with nothing on top and no fence below. */
+	/** Fences whose sides don't match their neighbours, or that join nothing and touch no block at all. */
 	static List<String> fenceFaults(ServerLevel level, BoundingBox box) {
 		List<String> faults = new ArrayList<>();
 		for (BlockPos pos : BlockPos.betweenClosed(box.minX(), box.minY(), box.minZ(), box.maxX(), box.maxY(), box.maxZ())) {
@@ -687,7 +687,11 @@ public class CampsGameTest {
 					faults.add("side " + d.getName() + " @" + pos.toShortString());
 				}
 			}
-			if (!any && level.getBlockState(pos.above()).isAir() && !(level.getBlockState(pos.below()).getBlock() instanceof net.minecraft.world.level.block.FenceBlock)) {
+			boolean touches = false;
+			for (net.minecraft.core.Direction d : net.minecraft.core.Direction.values()) {
+				touches |= !level.getBlockState(pos.relative(d)).isAir();
+			}
+			if (!any && !touches) {
 				faults.add("lone @" + pos.toShortString());
 			}
 		}
