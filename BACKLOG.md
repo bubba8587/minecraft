@@ -50,6 +50,7 @@ Parked ideas and open items, newest first within each project. Agents add to it 
 - **Glider durability:** playtest 324 (elytra 432). No broken icon (owner, 2026-11-24: skip).
 
 ## Bubba's Infused Gems
+- **Soulguard gem: keep or drop? (owner, 2026-11-25, parked: "leave it for now"):** it has no levels (one gem = full Soulfire immunity), so a perfect set adds nothing, and one Soulguard enchantment already does the same. Options talked through: drop the gem (the potion and treasure enchantment cover it; the only loss is Soulguard in beacons), or scale it like Fire Resistance (full immunity only at a perfect set). Healing in Soulfire ruled out: too easy to farm at a soul campfire. `specs/effect-gems.md` "Soulguard gem".
 - **An inventory screen for gems** (owner, 2026-11-25; /gems covers it for now). Owner's design:
   - next to the 4 armour slots, 12 rows (3 per armour piece, one row per gem socket), each showing that armour's socketed gems, with blank gem outlines for empty sockets;
   - a recessed panel next to the main inventory that prints an overview / summary of all your gems' combined effects (more than the tooltips show, like /gems).
