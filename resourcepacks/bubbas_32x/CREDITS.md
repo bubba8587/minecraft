@@ -41,6 +41,12 @@ What changed: each creeper pixel takes the closest colour (OKLch lightness match
 |---|---|
 | `mob_effect/soulguard.png` (also the mod's 16x) | `mob_effect/fire_resistance.png` (flame only at its own pixel size, soul colours; Scale2x for the 32x; our padlock) |
 
+### Bubba's Reworked Mobs: Eye of the Soul
+
+| Our texture (`assets/bubbas_reworked_mobs/textures/`) | Derived from (CF32J, `assets/minecraft/textures/`) |
+|---|---|
+| `item/eye_of_the_soul.png` | `item/ender_eye.png` (each colour mapped to a soul colour; our white soulfire flame over the pupil) |
+
 ### Bubba's Reworked Mobs: Boss Piglin head
 
 | Our texture (`assets/bubbas_reworked_mobs/textures/`) | Derived from (CF32J, `assets/minecraft/textures/`) |
