@@ -8,6 +8,8 @@
 		"CampMemberMixin",
 		"FireWardMixin",
 		"HoglinHuntInvoker",
+		"MapCentreInvoker",
+		"PatrolMountDespawnMixin",
 		"ShipwreckCrewMixin",
 		"OutpostSpawnMixin",
 		"CreeperMixin",

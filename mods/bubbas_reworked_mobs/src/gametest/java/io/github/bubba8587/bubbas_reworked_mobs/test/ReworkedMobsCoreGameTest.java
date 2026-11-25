@@ -112,6 +112,11 @@ public class ReworkedMobsCoreGameTest {
 		new CampsGameTest().rosterAppearsWithALeader(helper);
 	}
 
+	@GameTest(environment = "bubbas_reworked_mobs-test:camp_night", structure = CampsGameTest.FIELD, maxTicks = 5)
+	public void campPatrolSpawnsWithABannerLeader(GameTestHelper helper) {
+		new CampPatrolsGameTest().patrolSpawnsFromAnArmedCamp(helper);
+	}
+
 	@GameTest(structure = CampsGameTest.FIELD, maxTicks = 60)
 	public void traderArrivesAtAPostWithLlamasPenned(GameTestHelper helper) {
 		new TraderPostGameTest().traderArrivesWithLlamasPenned(helper);

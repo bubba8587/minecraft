@@ -35,6 +35,8 @@ public final class Camps {
 
 	public static void initialize() {
 		ServerTickEvents.END_LEVEL_TICK.register(CampSites::tick);
+		ServerTickEvents.END_LEVEL_TICK.register(CampPatrols::tick);
+		ServerLivingEntityEvents.AFTER_DEATH.register((entity, source) -> CampPatrols.died(entity));
 		ServerEntityEvents.ENTITY_UNLOAD.register((entity, level) -> {
 			var reason = entity.getRemovalReason();
 			if (reason != null && reason.shouldDestroy() && entity.entityTags().contains(CampTuning.CAMP_TAG)) {
