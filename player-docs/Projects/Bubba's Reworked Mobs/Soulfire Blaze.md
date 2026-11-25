@@ -1,0 +1,33 @@
+# Soulfire Blaze
+
+*Part of [[Bubba's Reworked Mobs]].*
+
+> [!infobox] Soulfire Blaze
+> | | |
+> |---|---|
+> | **Type** | Hostile mob |
+> | **Health** | As a blaze |
+> | **Attack** | Soulfire charges, 7.5 damage (a blaze's: 5) |
+> | **Spawns** | Summoned by the [[Wither Captain]]; rarely in soul sand valleys |
+> | **Drops** | As a blaze (blaze rods) |
+
+A **Soulfire Blaze** is a blue blaze that burns with soul fire. It is summoned by the [[Wither Captain]] and is also found, rarely, in soul sand valleys.
+
+## Spawning
+
+- A [[Wither Captain]] summons one to three at a time while it is summoning. These burn out in a puff of soul fire, with no drops, when their captain dies.
+- Rarely, Soulfire Blazes spawn on their own in soul sand valleys, one at a time.
+
+## Behavior
+
+A Soulfire Blaze moves and fights like a blaze. Its fireballs, **soulfire charges**, hit half again as hard as a blaze's (7.5 instead of 5) and set their target alight. Where a charge lands, it leaves soul fire on soul sand and soul soil, and ordinary fire everywhere else. Water and other fire rules work as for a blaze.
+
+A player wearing the [[Wither Captain#Captain's Helm|Captain's Helm]] is not set alight by soulfire charges, though the hit still hurts.
+
+## Drops
+
+The same as a blaze: blaze rods. Blazes summoned by a captain drop nothing.
+
+## See also
+
+- [[Wither Captain]]

@@ -69,7 +69,7 @@ A finished Gem is named just *Gem*. Its tooltip lists three levels in grey, then
 | *+ Minor Haste* | A bonus effect. *Minor* means a weak roll; a medium roll has no word. |
 | *- Minor Poison* (red) | A drawback. *Minor* means a weak one. |
 
-The exact strength of each effect, as a percentage of a perfect gem, shows only with advanced tooltips on (F3+H). A perfect gem (100%) requires the strongest potion in lingering form (or the strongest source item), a nether star and Enchant III.
+The exact strength of each effect, as a percentage of a perfect gem, shows only with advanced tooltips on (F3+H). A perfect gem (100%) requires the strongest potion in lingering form (or the strongest source item), a nether star and Enchant III. (With [[Bubba's Reworked Mobs]], nether stars can also be crafted from the [[Wither Captain]]'s Nether Star Shards.)
 
 ## Inverting gems
 

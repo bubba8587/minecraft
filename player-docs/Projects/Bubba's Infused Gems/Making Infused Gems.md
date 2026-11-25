@@ -49,6 +49,8 @@ The base gem sets the gem's **Base Power level**, which affects strength only, a
 | V | Prismarine shard | 88% |
 | VI | Nether star | 100% |
 
+With [[Bubba's Reworked Mobs]] installed, nether stars have a second source: four Nether Star Shards, dropped by the rare [[Wither Captain]], craft one nether star.
+
 ## Properties
 
 - **Effect**: from the potion or item used.

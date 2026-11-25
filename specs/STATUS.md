@@ -95,6 +95,12 @@ Nothing is released yet: every mod is 0.1.0 in `develop`.
 - designed (ready to assign): Fabricators as real structures with their own placement grid, near ancient cities when possible; then `/locate` and Seeking point straight at them ([§](mob-factory.md#fabricators-as-real-structures-designed-not-built))
 - parked: why challenge a Fabricator, office jukebox loop, totem of spawning ([§](mob-factory.md#parked))
 
+**Wither Captain** ([spec](wither-captain.md))
+- built: Wither Captain: boss bar, summoning phase with pose, aura and particles, rare in fortresses ([§](wither-captain.md#the-wither-captain))
+- built: Soulfire Blazes and charges, summoned and rare in soul sand valleys ([§](wither-captain.md#soulfire-blazes))
+- built: Captain's Helm with worn horns and soul fire immunity ([§](wither-captain.md#captains-helm))
+- built: Nether Star Shards, four craft a nether star ([§](wither-captain.md#nether-star-shard))
+
 ## Bubba's Totems & Artifacts ([spec](totems-artifacts.md))
 - built: Grave Talisman, glows near undead, in crypt chests ([§](totems-artifacts.md#grave-talisman))
 - built: Totem of Warding, held and in a beacon ([§](totems-artifacts.md#totem-of-warding))

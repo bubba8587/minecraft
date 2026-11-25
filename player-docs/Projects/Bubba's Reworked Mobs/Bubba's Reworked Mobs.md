@@ -18,7 +18,7 @@ side: client and server
 > | **Side** | Client and server |
 > | **Status** | Active |
 
-**Bubba's Reworked Mobs** is a Fabric mod that reworks Minecraft's mobs one family at a time. Far fewer monsters spawn on their own; instead they come from places: undead lie dormant in graveyards and crypts until noise wakes them, spiders nest in caves, monster camps hold skeletons and zombies (and piglins in the Nether), and Ancient Fabricators beside ancient cities send monsters to the surface. Creepers are nervous watchers that explode only when startled, endermen mend the land and build cairns, and drowned and bogged lurk at the water's edge.
+**Bubba's Reworked Mobs** is a Fabric mod that reworks Minecraft's mobs one family at a time. Far fewer monsters spawn on their own; instead they come from places: undead lie dormant in graveyards and crypts until noise wakes them, spiders nest in caves, monster camps hold skeletons and zombies (and piglins in the Nether), and Ancient Fabricators beside ancient cities send monsters to the surface. In the Nether, rare Wither Captains lead fortress garrisons and summon Soulfire Blazes. Creepers are nervous watchers that explode only when startled, endermen mend the land and build cairns, and drowned and bogged lurk at the water's edge.
 
 In this early test version, sleeping bodies use the normal mob look, and sleeper item icons are the matching mob heads.
 
@@ -136,6 +136,12 @@ Bogged hide in swamp water and mud and ambush players who turn their back.
 
 Beside every ancient city, an Ancient Fabricator drips monsters onto a teleporter that sends them to the surface. Players can farm the monsters on the teleporter, stop it with redstone, or get past its Warden and break its hidden spawner.
 
+## Wither Captain and Soulfire Blazes
+
+*Main articles: [[Wither Captain]], [[Soulfire Blaze]]*
+
+Rarely, a wither skeleton in a Nether fortress is a Wither Captain: a tougher mini-boss with a boss bar that stops to summon blue Soulfire Blazes, taking little damage while it does. It drops Nether Star Shards, four of which craft a nether star, and sometimes its horned Captain's Helm, which makes the wearer immune to soul fire. Soulfire Blazes also turn up rarely in soul sand valleys.
+
 ## Monster spawning
 
 *Main article: [[Monster Spawning]]*
@@ -168,7 +174,7 @@ Optional: [[Bubba's Totems & Artifacts]], whose [[Grave Talisman]] and [[Totem o
 
 | Version | Changes |
 |---|---|
-| 0.1.0 (not released yet) | Added the undead (sleeping and woken skeletons, zombies, husks and strays, loot on display, loud bells, light that calms sleepers), crypt yards and gravestones, the monster spawn cut, watcher creepers, caretaker endermen and cairns, lurking drowned and bogged, spiders and their nests, monster camps and their patrols, trader posts and Ancient Fabricators. (The Grave Talisman and Totem of Warding, first added here, moved to Bubba's Totems & Artifacts.) |
+| 0.1.0 (not released yet) | Added the undead (sleeping and woken skeletons, zombies, husks and strays, loot on display, loud bells, light that calms sleepers), crypt yards and gravestones, the monster spawn cut, watcher creepers, caretaker endermen and cairns, lurking drowned and bogged, spiders and their nests, monster camps and their patrols, trader posts, Ancient Fabricators, the Wither Captain with its Captain's Helm and Nether Star Shards, and Soulfire Blazes. (The Grave Talisman and Totem of Warding, first added here, moved to Bubba's Totems & Artifacts.) |
 
 ## See also
 
