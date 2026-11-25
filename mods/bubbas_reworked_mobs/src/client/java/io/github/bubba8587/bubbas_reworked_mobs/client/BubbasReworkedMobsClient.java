@@ -21,6 +21,7 @@ public class BubbasReworkedMobsClient implements ClientModInitializer {
 	@SuppressWarnings("unchecked")
 	public void onInitializeClient() {
 		io.github.bubba8587.bubbas_reworked_mobs.client.meter.MeterBars.initialize();
+		io.github.bubba8587.bubbas_reworked_mobs.client.creeper.CreeperCarriedBlockLayer.initialize();
 
 		// Undead: sleepers draw through one block entity renderer; woken mobs use vanilla renderers with our walk animations (UndeadGaits).
 		BlockEntityRenderers.register(ModBlockEntities.SLEEPER, SleeperRenderer::new);

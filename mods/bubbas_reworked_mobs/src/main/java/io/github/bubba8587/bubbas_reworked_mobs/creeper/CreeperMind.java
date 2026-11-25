@@ -42,6 +42,9 @@ public final class CreeperMind {
 	CoverFinder.@Nullable PeekSpot spot;
 	boolean spotReached;
 	private boolean openGround;
+	/** Pillar creeper: game time it may plan its next pillar, and the base of the last one it built. */
+	long nextPillarTime = Long.MIN_VALUE;
+	net.minecraft.core.@Nullable BlockPos pillar;
 	private long lastNoticedApproach = -1L;
 	/** Game time its watched player last looked toward it (never: Long.MIN_VALUE). */
 	private long lastLookedAt = Long.MIN_VALUE;
@@ -106,6 +109,11 @@ public final class CreeperMind {
 
 	void setOpenGround(boolean openGround) {
 		this.openGround = openGround;
+	}
+
+	/** The bottom block of the last pillar it built (null: none). */
+	public net.minecraft.core.@Nullable BlockPos pillar() {
+		return pillar;
 	}
 
 	/** Game time it last noticed a player coming at it (ran off or backed behind cover); -1 if never. */

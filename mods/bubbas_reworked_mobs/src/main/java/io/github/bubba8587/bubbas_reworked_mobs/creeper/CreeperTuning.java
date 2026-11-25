@@ -87,6 +87,34 @@ public final class CreeperTuning {
 	/** This many searches in a row finding nothing before it takes the open-ground stance (C5: only with no cover at all). */
 	public static final int OPEN_GROUND_AFTER_FAILED_SEARCHES = 3;
 
+	// --- making its own cover: the pillar (mobGriefing on) ------------------------------------------
+	/** A pillar site this far from the target, best near min(distance, preferred) ... */
+	public static final double PILLAR_MIN_DISTANCE = 6.0;
+	public static final double PILLAR_PREFERRED_DISTANCE = 12.0;
+	public static final double PILLAR_MAX_DISTANCE = 18.0;
+	/** ... within this many blocks of the creeper (every column checked, block lookups only) ... */
+	public static final int PILLAR_SITE_RADIUS = 6;
+	/** ... score bonus for a lone block it can build on (one block to move), penalty for a site the target looks at. */
+	public static final double PILLAR_BUMP_BONUS = 3.0;
+	public static final double PILLAR_SEEN_PENALTY = 6.0;
+	/** Surface blocks are dug this far from the pillar, plus this many spare ones in case one goes. */
+	public static final int PILLAR_DIG_RADIUS = 4;
+	public static final int PILLAR_SPARE_SOURCES = 2;
+	/** Reach to take or place a block (horizontal, from its middle). */
+	public static final double PILLAR_REACH = 1.6;
+	/** ... or this, once its walk there has ended. */
+	public static final double PILLAR_FAR_REACH = 2.6;
+	/** Walks it starts toward one block before giving that block up. */
+	public static final int PILLAR_MAX_WALKS = 4;
+	/** Pauses: taking a block, placing one. */
+	public static final int PILLAR_TAKE_TICKS = 12;
+	public static final int PILLAR_PLACE_TICKS = 8;
+	/** A job gives up after this many ticks (time frozen while looked at doesn't count). */
+	public static final int PILLAR_MAX_TICKS = 600;
+	/** After starting a pillar it waits this long before planning another (5 min); no site found: retries after this. */
+	public static final int PILLAR_COOLDOWN_TICKS = 6000;
+	public static final int PILLAR_RETRY_TICKS = 600;
+
 	// --- creeping closer, cover to cover ----------------------------------------------------------
 	/** The closest peek spot it creeps to (e.g. outside your wall, peeking in at a window). */
 	public static final double APPROACH_MIN_DISTANCE = 2.0;
