@@ -149,14 +149,14 @@ The owner asked for guaranteed shade spots and one small-to-medium underground r
 
 **Owner's aim:** not crazy frequent, but frequent enough to replace natural spawns for grinding mobs. Natural surface spawning is cut to 15 %, so re-armable camps are where players farm skeletons and zombies. A player should usually find a camp of each type within a reasonable walk.
 
-**Structure set `monster_camps`:** random spread, **spacing 14 chunks, separation 5** (owner: "two bumps down", about half as many as at first), kept **4 chunks clear of villages** (vanilla outposts do the same; a camp once cut through a village house). A camp needs fairly flat ground (a rise of at most 6 across it, `MAX_SLOPE`), a dry centre, and its biome at the centre and four corners, so only about 15 % of tries make a camp.
+**Structure set `monster_camps`:** random spread, **spacing 12 chunks, separation 4** (owner, 2026-11-24: between the first 10/3 and the "two bumps down" 14/5; about 4.5 camps per km²), kept **4 chunks clear of villages** (vanilla outposts do the same; a camp once cut through a village house). A camp needs fairly flat ground (a rise of at most 6 across it, `MAX_SLOPE`), a dry centre, and its biome at the centre and four corners, so only about 15 % of tries make a camp.
 
 **Biomes** (`has_structure/monster_camp`, 33 land biomes): plains, forests, taigas, snowy biomes, savannas, desert, badlands, swamp, mangrove, windswept hills and forest, sparse jungle, cherry grove, and highlands (windswept gravelly hills and savanna, snowy slopes, stony, jagged and frozen peaks, stony shore). No oceans, rivers, beaches, mushroom fields, deep dark or pale garden. Rough highland ground is still skipped by the slope rule; levelling it is open.
 
-**Measured** by the client part `camps` (seed 20261116, every placement cell within 2048 blocks of spawn, 16.8 km²) **at the earlier spacing of 10**; not yet re-measured at 14:
+**Measured** by the client part `camps` (seed 20261116, every placement cell within 2048 blocks of spawn, 16.8 km²) **at the earlier spacing of 10**:
 - 5.9 camps per km²: skeleton 2.6, zombie 2.7; husk, stray and bogged 0.2 each (they depend on how much desert, snow and swamp there is; this seed has little near spawn).
 - Typical distance to the nearest camp of a kind (median over a grid of points): skeleton ~360 blocks, zombie ~340. Husk, stray and bogged ~1700-2200 ("find a desert, snowfield or swamp, then there are a few").
-- Other spacings tried: 12 gave 4.5/km² (nearest ~350-400), 16 gave 2.3/km² (nearest ~500-580). So spacing 14 should give about 3 camps per km². Spacing is one number in the data file to tune after playtests.
+- Other spacings tried: 12 gave 4.5/km² (nearest ~350-400), 16 gave 2.3/km² (nearest ~500-580). Spacing 14 (2026-11-23 to 24) should have given about 3 per km². Spacing is one number in the data file to tune after playtests.
 
 ## Maps (owner)
 <a id="maps-owner-2026-11-22-built"></a>
@@ -243,7 +243,7 @@ The owner asked for guaranteed shade spots and one small-to-medium underground r
 
 ## Open
 
-- **Playtest numbers:** spacing (14 chunks), trigger range, roster sizes, the leader, camp loot: starting values above. Re-measure the frequency at spacing 14.
+- **Playtest numbers:** spacing (12 chunks), trigger range, roster sizes, the leader, camp loot: starting values above. Spacing 12 was measured at 4.5/km² (with separation 3).
 - **Natural forest camps** sit among uncleared trees (leaves crowd the towers); worth a look.
 - **Towers** sometimes bunch on one side of the camp.
 - **Camera framing to fix:** the ribcage bogged front camera ends up inside that camp's skull; the ramp `-side` camera sits close among towers.
