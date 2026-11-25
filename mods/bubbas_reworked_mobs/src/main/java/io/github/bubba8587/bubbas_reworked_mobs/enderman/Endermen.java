@@ -43,7 +43,6 @@ public final class Endermen {
 		ServerTickEvents.END_LEVEL_TICK.register(CairnGifts::tick);
 		Object registerTrades = CairnTrades.TRADES;
 		ServerTickEvents.END_LEVEL_TICK.register(CairnTrades::tick);
-		ServerTickEvents.END_LEVEL_TICK.register(EndermanNexus::tick);
 		ServerTickEvents.END_LEVEL_TICK.register(Ripples::tick);
 		PlayerBlockBreakEvents.AFTER.register((level, player, pos, state, blockEntity) -> {
 			if (level instanceof ServerLevel server) {

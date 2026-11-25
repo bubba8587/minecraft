@@ -21,7 +21,9 @@ public final class EndermanMind {
 		/** Stand in the ring around a complete cairn, staring at it (owner; not work: eye contact still angers it). */
 		VIGIL,
 		/** A builder whose block can't go in yet: sets it down on the ground at {@link #target()}, near its cairn. */
-		SET_DOWN
+		SET_DOWN,
+		/** Carrying a picked-up block nothing needs: it has teleported away and vanishes with it after a while. */
+		LEAVE
 	}
 
 	private @Nullable Job job;

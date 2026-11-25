@@ -70,6 +70,11 @@ public final class EndermanTuning {
 	public static final double VIGIL_GAZE_SPREAD = 3.0;
 	/** By day a caretaker under open sky leaves with a 1-in-this chance each tick. */
 	public static final int DAY_LEAVE_ONE_IN = 400;
+	/** A picked-up block nothing needs: the enderman teleports this far off with it, then vanishes after MIN + up to SPREAD ticks. */
+	public static final int LEAVE_DISTANCE_MIN = 16;
+	public static final int LEAVE_DISTANCE_MAX = 32;
+	public static final int LEAVE_MIN_TICKS = 60;
+	public static final int LEAVE_SPREAD_TICKS = 100;
 	/** A builder whose block can't go in yet sets it down this many blocks outside its cairn's footprint (a random one of these). */
 	public static final int SET_DOWN_GAP_MIN = 2;
 	public static final int SET_DOWN_GAP_MAX = 4;
@@ -166,17 +171,6 @@ public final class EndermanTuning {
 	public static final int OFFERING_WITNESS_RANGE = 16;
 	/** The offering lies this many blocks outside the cairn's footprint. */
 	public static final int OFFERING_GAP = 2;
-
-	// --- a nexus area (a Totem of the Beginning in a beacon) -----------------------------------------------
-	/** Each spawn check (SPAWN_INTERVAL), an area draws an enderman with this chance (a complete cairn's). */
-	public static final float NEXUS_SPAWN_CHANCE = 0.35F;
-	/** At most this many caretakers in an area (plus NEXUS_MARGIN round it) before it draws more. */
-	public static final int NEXUS_CAP = 6;
-	public static final int NEXUS_MARGIN = 8;
-	/** An area's newcomers never appear within this many blocks of a player (a cairn's ring keeps 24). */
-	public static final int NEXUS_PLAYER_DISTANCE = 16;
-	/** Spawn spot tries per check. */
-	public static final int NEXUS_TRIES = 8;
 
 	// --- the ripple (a used Totem of the Beginning) -------------------------------------------------------
 	/** Columns whose generated terrain isn't worked out yet are retried for this long, then skipped. */

@@ -7,7 +7,6 @@ import java.util.function.Supplier;
 import io.github.bubba8587.bubbas_reworked_mobs.enderman.CairnGifts;
 import io.github.bubba8587.bubbas_reworked_mobs.enderman.CairnSite;
 import io.github.bubba8587.bubbas_reworked_mobs.enderman.CairnSites;
-import io.github.bubba8587.bubbas_reworked_mobs.enderman.EndermanNexus;
 import io.github.bubba8587.bubbas_reworked_mobs.enderman.EndermanWards;
 import io.github.bubba8587.bubbas_reworked_mobs.enderman.Ripples;
 import net.minecraft.core.BlockPos;
@@ -81,17 +80,14 @@ public final class Endermen {
 		Ripples.revertEffect(level, pos);
 	}
 
-	/**
-	 * {@code area} draws caretaker endermen like a cairn nexus for {@code lifetimeTicks} (they spawn there and tidy the
-	 * ground). Like {@link #keepOut}: calling again refreshes {@code source}'s area, which lapses unless refreshed.
-	 */
+	/** Kept for older callers; does nothing (the nexus spawner was removed). */
+	@Deprecated
 	public static void drawIn(ServerLevel level, Object source, AABB area, int lifetimeTicks) {
-		EndermanNexus.put(level, source, area, lifetimeTicks);
 	}
 
-	/** Ends {@code source}'s drawing area now. */
+	/** Kept for older callers; does nothing. */
+	@Deprecated
 	public static void stopDrawing(ServerLevel level, Object source) {
-		EndermanNexus.remove(level, source);
 	}
 
 	/**

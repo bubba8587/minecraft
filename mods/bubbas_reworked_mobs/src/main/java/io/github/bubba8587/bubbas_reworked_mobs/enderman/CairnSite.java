@@ -225,6 +225,16 @@ public final class CairnSite {
 	}
 
 	/** Whether some missing block of this design is {@code block} (an offering a stray flower could fill, say). */
+	/** Whether this cairn's design has {@code block} anywhere in it, standing or not. */
+	public boolean uses(Block block) {
+		for (BlockPos pos : order) {
+			if (blocks.get(pos.asLong()).getBlock() == block) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public boolean wants(ServerLevel level, Block block) {
 		for (BlockPos pos : order) {
 			BlockState want = blocks.get(pos.asLong());

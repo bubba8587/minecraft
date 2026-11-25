@@ -1,7 +1,7 @@
 <!-- dte:C1,B17,B18,B19,D2 -->
 # Reworked Mobs: endermen (spec)
 
-**Status: built.** Caretakers, cairns (seven forms), cairn spawning, the vigil, trading at cairns, sneak + middle-click placing, and the ripple, pulse and nexus for Totems & Artifacts. Open items at the end.
+**Status: built.** Caretakers, cairns (seven forms), cairn spawning, the vigil, trading at cairns, sneak + middle-click placing, and the ripple and pulse for Totems & Artifacts. Open items at the end.
 
 Endermen are the world's **caretakers and builders** (owner's design).
 
@@ -92,7 +92,7 @@ Off while angry, riding, or when `mobGriefing` is off (vanilla's rule for enderm
   - a missing block of a cairn within 48 (lowest placeable first);
   - else a remembered hole within 32 that its block fills ("Fillers" below);
   - else a hole within 5 (all columns) or 16 (16 random columns): air above a sturdy floor, at most 12 below the original surface, whose original block is in the carried block's family. It puts the original block back (cobblestone fills a stone hole with stone; dirt fills a grass hole with grass);
-  - nothing needs it: it sets it down by a cairn ("Builders set blocks down", "Leftover blocks"), else keeps it and wanders.
+  - nothing needs it: a cairn block is set down by its cairn ("Builders set blocks down", "Leftover blocks"); any other block it leaves with ("Leaving with a block").
 - **Getting there:** it walks. Farther than 20 blocks, or no closer for 3 s, it teleports to a free standing spot within reach (4 blocks from its eyes), onto the cairn itself for high blocks. A job not done in 30 s is dropped (the block is kept).
 - **Leaving by day (owner):** in daylight a caretaker under open sky vanishes in portal particles, on average after about 20 s (1 in 400 per tick, `DAY_LEAVE_ONE_IN`), carried block and all. Name-tagged, angry, ridden or leashed ones stay. Persistence alone does not keep one (`cairn builders` builders are persistent and still leave). Off on the game test server.
 - **Despawning:** a caretaker carrying a block still despawns (vanilla keeps every block-carrying enderman forever), so a block it couldn't place vanishes with it.
@@ -170,7 +170,8 @@ A pure function of the site seed, the biome at its centre and the stronghold dir
 - **Picking it up again:** a block a nearby cairn wants, lying where the target world is air (above the original ground), is taken only when some unwarded cairn within `SITE_WORK_RADIUS` has a placeable spot for it (`EndermanWork.readyCairnBlock`). So a set-down block that doesn't fit yet is left lying. This also works for blocks endermen can't normally lift (end rods, slabs, glass).
 - Endermen standing where a block has to go teleport a few blocks off so it can go in.
 - `CairnSite.canPlace`: a design block can go in when any face neighbour or any of its 12 edge neighbours is solid (edge neighbours let diagonal arms be placed).
-- **Leftover blocks (owner):** an enderman carrying a block no cairn wants (its cairn was finished another way, e.g. `cairn build` after `cairn builders`) sets it down by the nearest cairn within the work radius, the same way, instead of standing vigil holding it. **Except ground blocks** (any terrain family: dirt, sand, stone...): set down on open ground they count as a stray pile and get taken straight back (the owner saw it place and re-take the block in one frame, 2026-11-24). Those are kept: the enderman wanders holding it, no vigil, and drops it into the next hole of its family it finds (`EndermanJobGoal.plan`). Test: `leftoverGroundBlockIsKeptNotJuggled` (milestone, environment `enderman_leftover`). Holders count toward the site cap until they despawn, so a new cairn whose footing needed clearing builds slower its first night: accepted (owner, 2026-11-24), as long as no block is juggled.
+- **Leftover blocks (owner):** an enderman carrying one of a cairn's own blocks that no cairn wants any more (its cairn was finished another way, e.g. `cairn build` after `cairn builders`) sets it down by the nearest cairn within the work radius whose design uses that block, the same way.
+- **Leaving with a block (owner, 2026-11-25):** any other block an enderman picked up and has nowhere to put (dirt from a cairn's footing with no hole for it, logs and leaves of a tree in a cairn's way, a player's planks): it teleports 16-32 blocks away with it (`LEAVE_DISTANCE_MIN/MAX`) and vanishes in portal particles 3-8 s later (`LEAVE_MIN_TICKS` + up to `LEAVE_SPREAD_TICKS`), block and all (job `LEAVE`, busy). Name-tagged, leashed and ridden ones keep holding it instead. So no stray piles by the cairn and no holders taking cap slots all night. Spot it jumps to may be outside ticking range; it then vanishes when its chunk ticks again (and no longer counts toward its cairn, 64 blocks). Test: `leftoverBlockLeavesWithIt` (milestone, environment `enderman_leftover`).
 
 ### Cairn blocks are left alone
 
@@ -236,13 +237,13 @@ Finished cairns are the overworld's pearl source: the vigil ring is there to be 
 - **Per enderman:** a job search every 20-30 ticks while idle: ~137 columns (all 121 within 5, 16 random), about 2 block reads each for untouched ground, plus a pass over nearby sites' designs (~40-110 reads each). Walking is vanilla pathfinding.
 - **Per site:** every 5 s while a player is within 96: one entity box query (64 blocks), one pass over its design (~40-110 reads), and when it spawns up to 8 column probes of up to 13 reads.
 
-## Cairn gifts, the ripple and the nexus (built 2026-11-22, for Totems & Artifacts)
+## Cairn gifts and the ripple (built 2026-11-22, for Totems & Artifacts)
 
 Reworked Mobs' half of the Totems of the Beginning and the End (`specs/totems-artifacts.md`). Totems & Artifacts reaches it only through `api/Endermen`; without that mod nothing here is used (no supplier: nothing given, nothing marked).
 
 **API (`api/Endermen`; add, don't change):**
 - `boolean restoreAround(ServerLevel, BlockPos centre, int radius, int ticksPerBlock)` → `enderman/Ripples`. False outside the overworld or with a generator the target world can't reproduce. The radius and speed are the caller's.
-- `void drawIn(ServerLevel, Object source, AABB, int lifetimeTicks)` / `stopDrawing(ServerLevel, Object source)` → `enderman/EndermanNexus` (lapses unless refreshed, like `EndermanWards`).
+- `drawIn` / `stopDrawing`: kept for older callers, do nothing (the nexus spawner was removed 2026-11-25; nothing called it).
 - `void setKin(Predicate<Player>)` → `enderman/Endermen.anger` skips kin (creative and spectator are skipped anyway).
 - `void setCairnGifts(Supplier<ItemStack> offering)` → `enderman/CairnGifts`.
 - `pulseAround(...)` and `revertEffect(...)`: see "The pulse" below.
@@ -256,7 +257,6 @@ Reworked Mobs' half of the Totems of the Beginning and the End (`specs/totems-ar
 - Effects: reverse-portal particles on changed blocks (at most 48 a tick) and the block's place sound now and then. Updates with `Block.UPDATE_ALL`.
 - `Ripples.dryRun` counts what a ripple would change without changing it (for a debug run).
 
-**The nexus (`enderman/EndermanNexus`).** Per area, every `SPAWN_INTERVAL` (5 s) in the overworld, when cairn spawning is allowed (game rule, `spawn_monsters`, not Peaceful): below the cap, 35 % to spawn a caretaker (marked as a cairn spawn, no home) at a random column inside the area, on a spawn cell (vanilla spawn placement and darkness rules, not warded, not within 16 of a player). It arrives carrying the original block of a hole it finds in the area (16 random columns, 12 deep, like a cairn filler), else empty-handed. Totems no longer calls `drawIn` (cairns keep their own spawning); it stays in the API.
 
 **Cairn offerings (`enderman/CairnGifts`).**
 - Saved level attachment `bubbas_reworked_mobs:cairn_gifts` (`offered`: a list of site origins; a `granted` list in old saves, from the removed completion gift, is ignored).
@@ -267,7 +267,6 @@ Reworked Mobs' half of the Totems of the Beginning and the End (`specs/totems-ar
 
 **Numbers (in `EndermanTuning`):**
 - offering share 0.15 of sites (`OFFERING_SHARE`, owner), checked every 100 ticks (`OFFERING_CHECK_TICKS`), 1 in 12 per check (`OFFERING_ONE_IN`), witness within 16 (`OFFERING_WITNESS_RANGE`), spot 2 outside the footprint (`OFFERING_GAP`);
-- nexus 35 % per spawn check (`NEXUS_SPAWN_CHANCE`), cap 6 (`NEXUS_CAP`) counted within the area + 8 (`NEXUS_MARGIN`), not within 16 of a player (`NEXUS_PLAYER_DISTANCE`), 8 tries (`NEXUS_TRIES`);
 - ripple columns wait up to 600 ticks for their terrain (`RIPPLE_PENDING_TICKS`), protection radius 2 (`RIPPLE_PROTECT_RADIUS`), at most 48 particles a tick (`RIPPLE_PARTICLES_PER_TICK`).
 
 ### The pulse (Totem of the Beginning)
@@ -282,7 +281,7 @@ The Totem of the Beginning is a reusable area pulse (`specs/totems-artifacts.md`
   - Pile removal goes top down and stops at the first failed roll in a column, so piles shrink from the top; fills roll per block independently.
   - No memory of recent reverts (a hidden cooldown would break B19), so a block can revert again on the next pulse.
 - **Revert effect:** `REVERSE_PORTAL` x6 + `SCULK_SOUL` x1 per changed block; `SCULK_CATALYST_BLOOM` at volume 0.35, pitch 0.5-0.6, at most once per `EndermanTuning.REVERT_SOUND_GAP_TICKS` (7) per level.
-- **Beginning beacons and statues** don't work through endermen: Totems' `beginning/BeginningAreas` calls `pulseAround` directly every 15 s, with no player (no protection check). `EndermanJobGoal` still plays the revert effect for a block taken or set down inside a `drawIn` nexus area, which nothing creates now.
+- **Beginning beacons and statues** don't work through endermen: Totems' `beginning/BeginningAreas` calls `pulseAround` directly every 15 s, with no player (no protection check).
 
 ## Cairn forms (built 2026-11-22, agent 2; owner: "sure add as much variety as you like")
 

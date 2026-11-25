@@ -29,7 +29,7 @@ Endermen in the Nether and the End are unchanged.
 
 ### Mending the land
 
-An enderman takes blocks that don't belong in the natural landscape (a pile of dirt, a pillar, the wrong block on the ground's surface) and carries them to where they are missing.
+An enderman takes blocks that don't belong in the natural landscape (a pile of dirt, a pillar, the wrong block on the ground's surface) and carries them to where they are missing. If nowhere needs a block it picked up (a tree cleared out of a cairn's way, say), it teleports off with it and vanishes a few seconds later.
 
 - Holes dug near the surface slowly fill back in with the right kind of block.
 - Farmland where dirt used to be gets jumped on until it turns back to dirt.

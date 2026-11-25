@@ -11,6 +11,7 @@ import io.github.bubba8587.bubbas_reworked_mobs.enderman.CairnDesign;
 import io.github.bubba8587.bubbas_reworked_mobs.enderman.CairnSite;
 import io.github.bubba8587.bubbas_reworked_mobs.enderman.CairnSites;
 import io.github.bubba8587.bubbas_reworked_mobs.enderman.EndermanMind;
+import io.github.bubba8587.bubbas_reworked_mobs.enderman.EndermanTuning;
 import io.github.bubba8587.bubbas_reworked_mobs.enderman.EndermanSpawning;
 import io.github.bubba8587.bubbas_reworked_mobs.enderman.EndermanWards;
 import io.github.bubba8587.bubbas_reworked_mobs.enderman.TargetWorld;
@@ -224,33 +225,37 @@ public class EndermanGameTest {
 		});
 	}
 
-	/** Leftover ground block (dirt, no cairn wants it, no hole for it): kept, never set down and taken back in a loop. */
-	@GameTest(environment = "bubbas_reworked_mobs-test:enderman_leftover", structure = FIELD, maxTicks = 200)
-	public void leftoverGroundBlockIsKeptNotJuggled(GameTestHelper helper) {
+	/**
+	 * A picked-up block nothing needs (dirt, no cairn wants it, no hole for it): never set down; it teleports well away
+	 * with it and vanishes. Brought back into the test area once it has left, since the spot it jumps to doesn't tick here.
+	 */
+	@GameTest(environment = "bubbas_reworked_mobs-test:enderman_leftover", structure = FIELD, maxTicks = 300)
+	public void leftoverBlockLeavesWithIt(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
 		Runnable restore = stoneField(helper, Map.of());
 		CairnSite site = CairnSites.addSite(level, helper.absolutePos(new BlockPos(16, 1, 8)), 1234L);
 		site.buildAll(level);
 		Enderman enderman = enderman(helper, 6.5, 6.5, true);
 		enderman.setCarriedBlock(Blocks.DIRT.defaultBlockState());
+		Vec3 start = enderman.position();
 		int[] setDowns = { 0 };
+		double[] jumped = { -1 };
 		helper.onEachTick(() -> {
 			EndermanMind mind = EndermanMind.of(enderman);
 			if (mind != null && mind.job() == EndermanMind.Job.SET_DOWN) {
 				setDowns[0]++;
 			}
-		});
-		helper.runAfterDelay(150, () -> {
-			try {
-				helper.assertTrue(setDowns[0] == 0, "it set the dirt down " + setDowns[0] + " ticks (it would only pick it back up)");
-				BlockState carried = enderman.getCarriedBlock();
-				helper.assertTrue(carried != null && carried.is(Blocks.DIRT), "it should still hold the dirt, holds " + carried);
-			} finally {
-				removeBuilt(level, site);
-				restore.run();
-				enderman.discard();
+			if (mind != null && mind.job() == EndermanMind.Job.LEAVE && jumped[0] < 0) {
+				jumped[0] = enderman.position().distanceTo(start);
+				enderman.teleportTo(start.x, start.y, start.z);
 			}
-			helper.succeed();
+		});
+		helper.succeedWhen(() -> {
+			helper.assertTrue(setDowns[0] == 0, "it set the dirt down " + setDowns[0] + " ticks (it would only pick it back up)");
+			helper.assertTrue(jumped[0] >= EndermanTuning.LEAVE_DISTANCE_MIN - 2, "it should teleport well away first, went " + jumped[0]);
+			helper.assertTrue(enderman.isRemoved(), "it should have left with the dirt, still holds " + enderman.getCarriedBlock());
+			removeBuilt(level, site);
+			restore.run();
 		});
 	}
 

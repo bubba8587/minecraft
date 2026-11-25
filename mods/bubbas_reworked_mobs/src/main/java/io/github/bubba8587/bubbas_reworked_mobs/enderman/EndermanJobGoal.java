@@ -25,8 +25,8 @@ import org.jspecify.annotations.Nullable;
  * The caretaker's work loop (specs/endermen.md, "Two jobs"), replacing vanilla's random take-block and leave-block
  * goals: carrying a block, it takes it to a spot that needs it (a cairn's missing block, or a hole whose original
  * terrain is its family); empty-handed, it takes a block that doesn't belong, or jumps on farmland that should be dirt.
- * It walks, and teleports when far or stuck. If no spot needs what it carries it keeps it (and the block vanishes
- * when it despawns); a builder whose block can't go in yet sets it down near its cairn. With nothing to do at a complete cairn
+ * It walks, and teleports when far or stuck. A cairn block that can't go in yet is set down near its cairn; any other
+ * block nothing needs, it teleports away with and vanishes. With nothing to do at a complete cairn
  * it stands vigil in a ring around it, staring at it. Off while angry, and off when mob griefing is off (vanilla's rule for enderman blocks).
  */
 public final class EndermanJobGoal extends Goal {
@@ -41,6 +41,8 @@ public final class EndermanJobGoal extends Goal {
 	/** Where a vigil's gaze rests now (drifts over the cairn). */
 	private Vec3 vigilGaze = Vec3.ZERO;
 	private int nextGaze;
+	/** Ticks a leaving enderman waits before it vanishes. */
+	private int leaveTicks;
 
 	public EndermanJobGoal(Enderman enderman, EndermanMind mind) {
 		this.enderman = enderman;
@@ -79,22 +81,21 @@ public final class EndermanJobGoal extends Goal {
 				mind.set(EndermanMind.Job.DELIVER, spot, now);
 				return true;
 			}
-			// set it down near its cairn for a later enderman to bring in
+			// a cairn block that can't go in yet: set down near its cairn for a later enderman to bring in
 			CairnSite waitingFor = siteWanting(level, here, carried);
-			if (waitingFor == null && TerrainKinds.family(carried) == null) {
-				// a block no cairn wants any more (its cairn was finished without it): set it down by the nearest one
-				waitingFor = CairnSites.nearest(level, here, EndermanTuning.SITE_WORK_RADIUS);
+			if (waitingFor == null && !TerrainKinds.isNatural(carried)) {
+				// one of a cairn's own blocks no cairn wants any more: set down by the nearest cairn built of it
+				CairnSite nearest = CairnSites.nearest(level, here, EndermanTuning.SITE_WORK_RADIUS);
+				waitingFor = nearest != null && nearest.uses(carried.getBlock()) ? nearest : null;
 			}
 			if (waitingFor == null) {
-				// unwanted ground (dirt, sand): kept until a hole turns up
-				return false;
+				// a picked-up block nothing needs: off with it
+				return leave(level, now);
 			}
-			if (waitingFor != null) {
-				BlockPos ground = setDownSpot(level, waitingFor, carried);
-				if (ground != null) {
-					mind.set(EndermanMind.Job.SET_DOWN, ground, now);
-					return true;
-				}
+			BlockPos ground = setDownSpot(level, waitingFor, carried);
+			if (ground != null) {
+				mind.set(EndermanMind.Job.SET_DOWN, ground, now);
+				return true;
 			}
 		} else {
 			EndermanWork.Found found = EndermanWork.findWork(level, here, enderman.getRandom(), EndermanWork.wanted(level, here));
@@ -121,6 +122,36 @@ public final class EndermanJobGoal extends Goal {
 			}
 		}
 		return false;
+	}
+
+	/** Teleports well away with its block and starts the wait before it vanishes; false for one that stays (named, leashed, ridden). */
+	private boolean leave(ServerLevel level, long now) {
+		if (enderman.hasCustomName() || enderman.isLeashed() || enderman.isPassenger()) {
+			return false;
+		}
+		var random = enderman.getRandom();
+		for (int i = 0; i < 8; i++) {
+			double angle = random.nextDouble() * Math.PI * 2.0;
+			double distance = Mth.lerp(random.nextDouble(), EndermanTuning.LEAVE_DISTANCE_MIN, EndermanTuning.LEAVE_DISTANCE_MAX);
+			int x = Mth.floor(enderman.getX() + Math.cos(angle) * distance);
+			int z = Mth.floor(enderman.getZ() + Math.sin(angle) * distance);
+			if (level.hasChunk(x >> 4, z >> 4)
+					&& enderman.teleport(x + 0.5, level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z), z + 0.5)) {
+				break;
+			}
+		}
+		leaveTicks = EndermanTuning.LEAVE_MIN_TICKS + random.nextInt(EndermanTuning.LEAVE_SPREAD_TICKS + 1);
+		mind.set(EndermanMind.Job.LEAVE, enderman.blockPosition(), now);
+		return true;
+	}
+
+	/** Gone in a puff of portal particles, its block with it. */
+	private void vanish(ServerLevel level) {
+		level.sendParticles(net.minecraft.core.particles.ParticleTypes.PORTAL, enderman.getX(), enderman.getY() + enderman.getBbHeight() * 0.5, enderman.getZ(), 48,
+				enderman.getBbWidth() * 0.5, enderman.getBbHeight() * 0.25, enderman.getBbWidth() * 0.5, 0.6);
+		level.playSound(null, enderman.getX(), enderman.getY(), enderman.getZ(), net.minecraft.sounds.SoundEvents.ENDERMAN_TELEPORT,
+				enderman.getSoundSource(), 1.0F, 1.0F);
+		enderman.discard();
 	}
 
 	/** Its home site, if it has one and it is loaded. */
@@ -152,6 +183,7 @@ public final class EndermanJobGoal extends Goal {
 		return mind.job() != null && enderman.level() instanceof ServerLevel level && allowed(level)
 				&& level.getGameTime() - mind.started() < switch (mind.job()) {
 					case VIGIL -> EndermanTuning.VIGIL_TICKS;
+					case LEAVE -> EndermanTuning.LEAVE_MIN_TICKS + EndermanTuning.LEAVE_SPREAD_TICKS + 20;
 					default -> EndermanTuning.JOB_TIMEOUT;
 				};
 	}
@@ -212,6 +244,12 @@ public final class EndermanJobGoal extends Goal {
 					}
 				} else {
 					approach(level, target.above(), on);
+				}
+			}
+			case LEAVE -> {
+				enderman.getNavigation().stop();
+				if (level.getGameTime() - mind.started() >= leaveTicks) {
+					vanish(level);
 				}
 			}
 			case VIGIL -> {
@@ -344,9 +382,6 @@ public final class EndermanJobGoal extends Goal {
 		placed = Block.updateFromNeighbourShapes(placed, level, pos);
 		level.setBlockAndUpdate(pos, placed);
 		level.gameEvent(GameEvent.BLOCK_PLACE, pos, GameEvent.Context.of(enderman, placed));
-		if (EndermanNexus.isInside(level, pos)) {
-			Ripples.revertEffect(level, pos);
-		}
 		enderman.setCarriedBlock(null);
 		mind.clear();
 	}
@@ -361,9 +396,6 @@ public final class EndermanJobGoal extends Goal {
 		}
 		level.removeBlock(pos, false);
 		level.gameEvent(GameEvent.BLOCK_DESTROY, pos, GameEvent.Context.of(enderman, real));
-		if (EndermanNexus.isInside(level, pos)) {
-			Ripples.revertEffect(level, pos);
-		}
 		enderman.setCarriedBlock(real);
 		mind.clear();
 		// Find where it goes straight away.
