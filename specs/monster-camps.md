@@ -175,7 +175,7 @@ The owner asked for guaranteed shade spots and one small-to-medium underground r
 
 Four chests, rising: **fire < lower room < tower < skull**. Don't overdo the top end (owner).
 - **Expected values per chest** (rolls x weight share x mean count): fire: arrows 3.75, bones 2.5, iron ingot 0.38, gold ingot 0.19, emerald 0.09, enchanted bow 0.09, enchanted iron sword 0.075, golden apple 0.009, no diamonds (was 0.05). Room: iron nuggets 1.6, gold nuggets 1.3, iron ingot 0.31, emerald 0.15, enchanted book 0.077, enchanted sword or bow 0.051 each, golden apple 0.013. Tower: arrows 12, tipped arrows 2.0, iron ingot 0.8, gold ingot 0.6, emerald 0.45, bow 0.3, enchanted bow 0.2, crossbow 0.2, enchanted crossbow 0.15, spyglass 0.25. Skull: gold nuggets 3.8, gold ingot 1.6, iron ingot 1.3, emerald 1.1, one enchanted piece (sure), enchanted book 0.40, golden apple 0.27, diamond 0.10. Winding towers are in 1 large camp in 4 (about 5 % of camps), skull rocks in 1 in 3 (about 7 %), so diamonds per average camp drop from about 0.05 to about 0.007.
-- Relic map shreds (Totems & Artifacts `RelicTuning`) go in the fire and room chests only, not tower or skull (owner to decide, `BACKLOG.md`).
+- Relic map shreds (Totems & Artifacts `RelicTuning`) go in the fire and room chests only, not tower or skull (owner: either is fine, left as is).
 - **Fire chest** (`chests/monster_camp`): 2-4 stacks (was 3-6) of bones, arrows, rotten flesh, string, leather, bread, iron and gold ingots, an emerald, gunpowder; plus one roll (nothing 60 of 107, about 56 %) of an enchanted iron sword, axe or bow, a chain helmet or chestplate, a saddle, a name tag, an enchanted book or a golden apple. No diamonds now.
 - **Lower room** (`chests/camp_room`): moved up a little to sit above the fire: its bonus roll is nothing 30 of 78 (was 50 of 86), emeralds 1-2, plus an enchanted iron sword or bow and a rare golden apple.
 - **Tower chest** (`chests/camp_tower`, `CampPiece.windingChest()`): on the **winding tower's** sealed ground floor (a corner by the tower's seed, facing in), seen through the window slits; break in. Arrows, tipped arrows (slowness, poison, weakness), string, feathers, flint, iron, gold, emeralds, bread; a bow or crossbow 85 % (sometimes enchanted); a spyglass, golden carrots, an enchanted book or a name tag 58 %.
@@ -315,7 +315,6 @@ Mobs had trouble climbing the stair tunnel out of the lower room. Reproduced wit
 - **Builder's calls to review:** the Builder's choices list above (camp bogged don't lurk, re-arming waits for the next daily check, rosters show for creative players).
 - **Patrols, playtest:** the spawner reads camp structure starts within 320 blocks (forcing chunks to structure starts, as vanilla locate does); watch for hitches flying fast into new land. Patrol state isn't saved (see Builder's choices).
 - **Bogged camp weeds:** brown mushrooms can fail to survive in daylight on 26.3; no fix: 26.4 stops light from breaking mushrooms (owner).
-- **Relic map shreds** in the tower and skull chests: owner to decide (`BACKLOG.md`).
 - **Nether outposts (owner to decide):** rarity (spacing 22), whether piglins may hunt the penned hoglins (now they can't), whether netherite scrap stays in the room chest. In `BACKLOG.md`.
 
 ## Nether outposts
