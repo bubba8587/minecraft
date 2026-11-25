@@ -176,6 +176,31 @@ def soulguard_flame_lock_32(cf):
 	return icon
 
 
+def scale2x(img):
+	"""Scale2x (EPX): double the size, rounding diagonal edges with the image's own colours (no blur, no new colours),
+	so the 32x has half-size pixels along every edge instead of a plain doubled copy."""
+	w, h = img.size
+	src = img.load()
+	out = Image.new("RGBA", (w * 2, h * 2))
+	dst = out.load()
+
+	def px(x, y):
+		return src[min(max(x, 0), w - 1), min(max(y, 0), h - 1)]
+
+	for y in range(h):
+		for x in range(w):
+			p = src[x, y]
+			a, b, c, d = px(x, y - 1), px(x + 1, y), px(x - 1, y), px(x, y + 1)
+			e0 = e1 = e2 = e3 = p
+			if a != d and c != b:
+				e0 = a if c == a else p
+				e1 = b if a == b else p
+				e2 = c if d == c else p
+				e3 = b if b == d else p
+			dst[2 * x, 2 * y], dst[2 * x + 1, 2 * y], dst[2 * x, 2 * y + 1], dst[2 * x + 1, 2 * y + 1] = e0, e1, e2, e3
+	return out
+
+
 LOCK_32 = [  # the padlock at 32x detail: s shackle, o outline, h highlight, b body, d shade, k keyhole
 	"....oooooo....",
 	"...osssssso...",
@@ -197,56 +222,15 @@ LOCK_32 = [  # the padlock at 32x detail: s shackle, o outline, h highlight, b b
 LOCK_32_COLOURS = dict(LOCK_COLOURS, d=(100, 100, 108))
 
 
-SOULGUARD_FLAME_32 = [  # the 32x flame, hand-drawn after CF32J's Fire Resistance flame: a darkest .. f white core
-	"..............de....................",
-	".............dee....................",
-	"............deeee...................",
-	"............deeee...................",
-	"...........deeeeee..................",
-	"...........deeeeee..................",
-	"...........deeeeeee.................",
-	"...........deeeeeee.................",
-	"...........deeeeeeee................",
-	".dd.........deeeeeee................",
-	".ded........deeeeeeee...............",
-	".deed........deeeeeee...............",
-	"..deed.......deeeeeeec..........cb..",
-	"...deed.......deeeeeec.........cdb..",
-	"...deeed......deeeeeggc........cddb.",
-	"....deed......deeeegffc.......cddb..",
-	"....deed......deeeegfffc......cddb..",
-	"....deed......deeegffffc.....cdddb..",
-	"...dgged.....deeeegffffgc....cddb...",
-	"...dffged....deeeegfffffc...cdddb...",
-	"..dffgeed...deeeeegfffffgc.cdddb....",
-	"..dfffgeed.deeeeegffffffgeecdddb....",
-	"..dfffgeddddeeeeegffffffgeeeecb.....",
-	"..dffffgeddeeeeegffffffgeeeeecb.....",
-	"..dgffffgeeeeeegfffffffgeeeecb......",
-	"...dgffffgeeeegfffffffgeeeeecb......",
-	"...degffffggegffffffffgeeeecb.......",
-	"....cegfffffgffffffffgeeeecb........",
-	".....cegggggegffffffgeeeecb.........",
-	"......ceeeeeeegffffgeeeecb..........",
-	".......bceeeeeeggggeeedcb...........",
-	"........bceeeeeeeeeeedcb............",
-	".........abcddddddddcba.............",
-	"...........abccccccbaa..............",
-	".............aaaaaaa................",
-	"....................................",
-]
-SOULGUARD_FLAME_32_COLOURS = {"a": (6, 96, 122), "b": (8, 139, 168), "c": (0, 189, 200), "d": (2, 201, 210), "e": (9, 246, 252),
-	"g": (140, 251, 255), "f": (224, 254, 255)}
-
-
-def soulguard_icon_cf_32():
-	"""32x Soulguard: the hand-drawn flame and the padlock drawn at 32x."""
+def soulguard_icon_cf_32(cf):
+	"""32x Soulguard: the 16x flame through Scale2x (half-size pixels along its edges), and the padlock drawn at 32x."""
+	flame = scale2x(flame_only_icon(cf))
 	icon = Image.new("RGBA", (36, 36), (0, 0, 0, 0))
-	for art, colours, ox, oy in ((SOULGUARD_FLAME_32, SOULGUARD_FLAME_32_COLOURS, 0, 0), (LOCK_32, LOCK_32_COLOURS, 22, 20)):
-		for y, row in enumerate(art):
-			for x, ch in enumerate(row):
-				if ch != ".":
-					icon.putpixel((ox + x, oy + y), colours[ch] + (255,))
+	icon.alpha_composite(flame)
+	for y, row in enumerate(LOCK_32):
+		for x, ch in enumerate(row):
+			if ch != ".":
+				icon.putpixel((22 + x, 20 + y), LOCK_32_COLOURS[ch] + (255,))
 	return icon
 
 
@@ -409,7 +393,7 @@ def main():
 	else:
 		icon = soulguard_icon_cf(cf)
 		mc.save(icon, "mob_effect/soulguard.png")
-		mc.save32(soulguard_icon_cf_32(), "mob_effect/soulguard.png")
+		mc.save32(soulguard_icon_cf_32(cf), "mob_effect/soulguard.png")
 
 
 if __name__ == "__main__":
