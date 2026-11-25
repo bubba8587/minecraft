@@ -33,11 +33,16 @@ public final class SoulfireTuning {
 
 	// --- Eye of the Soul: Phasing ----------------------------------------------------------------------
 
-	/** Phasing from one Eye of the Soul (ticks): 5 s. */
-	public static final int PHASING_TICKS = 100;
+	/** Phasing from one Eye of the Soul (ticks): 10 s. */
+	public static final int PHASING_TICKS = 200;
+	/** Phasing blindness fades in over this many ticks, and out over the last this many (vanilla's effect blend, as Darkness). */
+	public static final int PHASING_FADE_IN_TICKS = 10;
+	public static final int PHASING_FADE_OUT_TICKS = 40;
+	/** Blocks walked between soul sounds while passing through blocks. */
+	public static final float PHASING_SOUND_STRIDE = 1.5F;
 	/** Eyes of the Soul per stack, and seconds before a player can use another. */
 	public static final int EYE_STACK_SIZE = 16;
-	public static final float EYE_COOLDOWN_SECONDS = 1.0F;
+	public static final float EYE_COOLDOWN_SECONDS = 15.0F;
 	/** Phasing effect colour: a deep soul teal. */
 	public static final int PHASING_COLOR = 0x0B5F63;
 

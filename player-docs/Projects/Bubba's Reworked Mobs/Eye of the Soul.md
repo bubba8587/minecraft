@@ -7,13 +7,13 @@
 > |---|---|
 > | **Type** | Usable item |
 > | **Obtained** | Crafted |
-> | **Effect** | 5 seconds of Phasing |
+> | **Effect** | 10 seconds of Phasing |
 > | **Cost** | [[Soulfire]] burning while Phasing, unless the player has [[Soulguard]] |
-> | **Cooldown** | 1 second |
+> | **Cooldown** | 15 seconds |
 > | **Renewable** | Yes |
 > | **Stackable** | Yes (16) |
 
-The **Eye of the Soul** is an item that lets the player walk through blocks for 5 seconds. Using it gives the player **Phasing**, a status effect during which almost every block can be passed through like scaffolding. The player is blinded and burns with [[Soulfire]] the whole time.
+The **Eye of the Soul** is an item that lets the player walk through blocks for 10 seconds. Using it gives the player **Phasing**, a status effect during which almost every block can be passed through like scaffolding. The player is blinded and burns with [[Soulfire]] the whole time.
 
 ## Obtaining
 
@@ -23,7 +23,7 @@ The **Eye of the Soul** is an item that lets the player walk through blocks for 
 
 ## Usage
 
-Using the Eye of the Soul (right-click) uses one up and gives the player **Phasing** for 5 seconds, with soul particles and a soul sound. There is a 1 second cooldown between uses. Using another while already Phasing sets the time back to 5 seconds.
+Using the Eye of the Soul (right-click) uses one up and gives the player **Phasing** for 10 seconds, with soul particles and a soul sound. There is a 15 second cooldown between uses, so one Phasing always ends before the next can start. A soft soul sound plays as you pass through blocks, and another as Phasing ends; the darkness fades out over its last two seconds.
 
 ## Phasing
 

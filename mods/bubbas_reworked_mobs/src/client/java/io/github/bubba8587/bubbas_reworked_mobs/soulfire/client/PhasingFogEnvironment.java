@@ -42,10 +42,21 @@ public class PhasingFogEnvironment extends FogEnvironment {
 		if (phasing == null) {
 			return;
 		}
-		float distance = phasing.isInfiniteDuration() ? DISTANCE : Mth.lerp(Math.min(1.0F, phasing.getDuration() / 20.0F), renderDistance, DISTANCE);
+		float distance = Mth.lerp(phasing.getBlendFactor(living, deltaTracker.getGameTimeDeltaPartialTick(false)), renderDistance, DISTANCE);
 		fog.environmentalStart = distance * 0.25F;
 		fog.environmentalEnd = distance;
 		fog.skyEnd = distance * 0.8F;
 		fog.cloudEnd = distance * 0.8F;
+	}
+
+	@Override
+	public boolean modifiesDarkness() {
+		return true;
+	}
+
+	@Override
+	public float getModifiedDarkness(LivingEntity entity, float darkness, float partialTickTime) {
+		MobEffectInstance phasing = entity.getEffect(Phasing.PHASING);
+		return phasing != null ? Math.max(phasing.getBlendFactor(entity, partialTickTime), darkness) : darkness;
 	}
 }

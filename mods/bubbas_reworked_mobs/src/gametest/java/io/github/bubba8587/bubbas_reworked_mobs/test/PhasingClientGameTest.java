@@ -95,6 +95,17 @@ public class PhasingClientGameTest implements FabricClientGameTest {
 			setPack(context, true);
 			icons(context, "-32x");
 			setPack(context, false);
+
+			// --- fade-out: 3 s of Phasing in the room, shot partway through its last 2 s ---------------------
+			context.setScreen(() -> null);
+			server.runCommand("effect clear @p bubbas_reworked_mobs:phasing");
+			server.runCommand("effect give @p bubbas_reworked_mobs:phasing 3 0 true");
+			context.waitFor(mc -> mc.player.hasEffect(io.github.bubba8587.bubbas_reworked_mobs.soulfire.phasing.Phasing.PHASING));
+			tp(context, server, x + 0.5, y + 1, z + 3.5, 0.0F, 10.0F);
+			context.waitTicks(30);
+			context.takeScreenshot("phasing-fading");
+			context.waitTicks(20);
+			context.takeScreenshot("phasing-fading-late");
 		}
 	}
 

@@ -81,7 +81,7 @@ public class PhasingGameTest {
 		}
 	}
 
-	/** Crafted from soul blaze powder and an ender pearl; using it starts 5 s of Phasing and uses it up. */
+	/** Crafted from soul blaze powder and an ender pearl; using it starts Phasing and uses it up. */
 	@GameTest(maxTicks = 5)
 	public void eyeIsCraftedAndStartsPhasing(GameTestHelper helper) {
 		CraftingInput input = CraftingInput.of(2, 1, List.of(new ItemStack(Soulfire.SOUL_BLAZE_POWDER), new ItemStack(Items.ENDER_PEARL)));
@@ -98,6 +98,25 @@ public class PhasingGameTest {
 		helper.assertTrue(phasing != null && phasing.getDuration() == SoulfireTuning.PHASING_TICKS, "Phasing after use: " + phasing);
 		helper.assertTrue(player.getMainHandItem().getCount() == 1, "not used up: " + player.getMainHandItem());
 		helper.succeed();
+	}
+
+	/** Water doesn't put out Phasing's Soulfire (it used to go out and be relit every tick, hissing each time). */
+	@GameTest(maxTicks = 60)
+	public void waterDoesNotPutOutPhasingFire(GameTestHelper helper) {
+		TestFloors.stone(helper);
+		fill(helper, Blocks.WATER, 1, 1, 1, 3, 2, 3);
+		ServerPlayer player = player(helper, 2.5, 1.0, 2.5);
+		Phasing.start(player);
+		ticked(helper, player);
+		helper.startSequence()
+				.thenIdle(20)
+				.thenExecute(() -> {
+					helper.assertTrue(player.isInWater(), "not in the water");
+					helper.assertTrue(player.isOnFire() && SoulBurning.isSoulBurning(player), "the water put Phasing's Soulfire out");
+					player.clearFire();
+					helper.assertTrue(player.isOnFire(), "a clear put Phasing's Soulfire out");
+				})
+				.thenSucceed();
 	}
 
 	/** Phasing walks through a stone wall while standing on the stone floor; a barrier wall stops it; without Phasing the stone does. */

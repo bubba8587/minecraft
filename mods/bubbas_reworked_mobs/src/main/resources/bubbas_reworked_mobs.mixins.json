@@ -9,6 +9,7 @@
 		"CampfireSoulfireMixin",
 		"EntitySoulfireMixin",
 		"PhasingCollisionMixin",
+		"PhasingFireMixin",
 		"PhasingClimbMixin",
 		"PhasingMoveCheckMixin",
 		"SoulFireBlockMixin",

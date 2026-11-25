@@ -64,6 +64,12 @@ public final class Phasing {
 		return entity instanceof Player player && player.hasEffect(PHASING);
 	}
 
+	/** Phasing's own Soulfire, which water, rain and other clears don't put out. */
+	public static boolean keepsFire(Entity entity) {
+		return isPhasing(entity) && !entity.fireImmune() && !io.github.bubba8587.bubbas_reworked_mobs.soulfire.SoulBurning.hasSoulguard(entity)
+				&& io.github.bubba8587.bubbas_reworked_mobs.soulfire.SoulBurning.isSoulBurning(entity);
+	}
+
 	/** Blocks Phasing passes through: every breakable block (bedrock, barriers, portal frames and the like stay solid). */
 	public static boolean passable(BlockState state, BlockGetter level, BlockPos pos) {
 		return state.getDestroySpeed(level, pos) != -1.0F;
