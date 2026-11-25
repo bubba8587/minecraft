@@ -413,22 +413,31 @@ public class TotemsGameTest {
 						totem.getKey() + " in " + table.getKey().identifier() + ": " + found + " of " + rolls + " (expected about " + expected + ")");
 			}
 		}
-		// Evokers: Warding at about 5 %, rolled as entity loot with the evoker as the victim.
+		// Evokers: Keeping at about EVOKER_KEEPING beside their Undying, never Warding; rolled as entity loot with the evoker as the victim.
 		var evoker = helper.spawnWithNoFreeWill(EntityTypes.EVOKER, new BlockPos(1, 1, 1));
 		LootTable evokerLoot = level.getServer().reloadableRegistries().getLootTable(EntityTypes.EVOKER.getDefaultLootTable().orElseThrow());
 		int fromEvokers = 0;
+		int wardingFromEvokers = 0;
+		int undying = 0;
 		for (int i = 0; i < 1000; i++) {
 			LootParams params = new LootParams.Builder(level).withParameter(LootContextParams.THIS_ENTITY, evoker)
 					.withParameter(LootContextParams.ORIGIN, evoker.position())
 					.withParameter(LootContextParams.DAMAGE_SOURCE, level.damageSources().generic()).create(LootContextParamSets.ENTITY);
 			for (ItemStack stack : evokerLoot.getRandomItems(params)) {
-				if (stack.is(ModItems.TOTEM_OF_WARDING)) {
+				if (stack.is(ModItems.TOTEM_OF_KEEPING)) {
 					fromEvokers++;
+				} else if (stack.is(ModItems.TOTEM_OF_WARDING)) {
+					wardingFromEvokers++;
+				} else if (stack.is(net.minecraft.world.item.Items.TOTEM_OF_UNDYING)) {
+					undying++;
 				}
 			}
 		}
 		evoker.discard();
-		helper.assertTrue(fromEvokers > 25 && fromEvokers < 80, "evokers dropping a Totem of Warding: " + fromEvokers + " of 1000");
+		double keeping = 1000 * io.github.bubba8587.bubbas_totems_artifacts.totems.TotemsTuning.EVOKER_KEEPING;
+		helper.assertTrue(fromEvokers > keeping * 0.7 && fromEvokers < keeping * 1.3, "evokers dropping a Totem of Keeping: " + fromEvokers + " of 1000");
+		helper.assertTrue(wardingFromEvokers == 0, "evokers no longer drop Warding: " + wardingFromEvokers);
+		helper.assertTrue(undying == 1000, "evokers still drop their Totem of Undying every time: " + undying);
 		helper.succeed();
 	}
 

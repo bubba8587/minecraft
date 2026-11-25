@@ -162,7 +162,7 @@ public final class EndermanTuning {
 
 	// --- cairn offerings (Totems & Artifacts' Totem of the Beginning, through api/Endermen) -----------------
 	/** The share of cairns (picked from each site's seed) whose endermen leave an offering once it is complete. */
-	public static final float OFFERING_SHARE = 0.15F;
+	public static final float OFFERING_SHARE = 0.30F;
 	/** How often (ticks) complete cairns near players are checked for their offering. */
 	public static final int OFFERING_CHECK_TICKS = 100;
 	/** Each check, a chosen complete cairn with one of its endermen at it leaves its offering with 1 in this chance (~1 min). */

@@ -79,47 +79,69 @@ public final class TotemsTuning {
 	public static final int AREA_LIFETIME_TICKS = 100;
 	/** A compass pointed by a Seeking beacon keeps pointing this long after the last pulse that reached it. */
 	public static final int SEEK_COMPASS_LIFETIME_TICKS = 100;
+	/** Trial chamber vaults: each of the seven everyday totems (not Warding or North Wind, which have their own odds; not Beginning or End). */
+	public static final float TRIAL_CHANCE = 0.02F;
+	public static final float TRIAL_CHANCE_OMINOUS = 0.04F;
+	/** Evokers: a Totem of Keeping beside their Totem of Undying. */
+	public static final float EVOKER_KEEPING = 0.25F;
+	public static final ResourceKey<LootTable> EVOKER = ResourceKey.create(net.minecraft.core.registries.Registries.LOOT_TABLE,
+			net.minecraft.resources.Identifier.withDefaultNamespace("entities/evoker"));
 	/** Totem of Herding loot. */
 	public static final Map<ResourceKey<LootTable>, Float> HERDING_LOOT = Map.of(
 			BuiltInLootTables.VILLAGE_SHEPHERD, 0.12F,
 			BuiltInLootTables.VILLAGE_BUTCHER, 0.08F,
-			BuiltInLootTables.VILLAGE_TANNERY, 0.08F);
+			BuiltInLootTables.VILLAGE_TANNERY, 0.08F,
+			BuiltInLootTables.TRIAL_CHAMBERS_REWARD, TRIAL_CHANCE,
+			BuiltInLootTables.TRIAL_CHAMBERS_REWARD_OMINOUS, TRIAL_CHANCE_OMINOUS);
 	/** Totem of Clear Skies loot. */
 	public static final Map<ResourceKey<LootTable>, Float> CLEAR_SKIES_LOOT = Map.of(
 			BuiltInLootTables.IGLOO_CHEST, 0.12F,
 			BuiltInLootTables.VILLAGE_DESERT_HOUSE, 0.06F,
-			BuiltInLootTables.SHIPWRECK_SUPPLY, 0.05F);
+			BuiltInLootTables.SHIPWRECK_SUPPLY, 0.05F,
+			BuiltInLootTables.TRIAL_CHAMBERS_REWARD, TRIAL_CHANCE,
+			BuiltInLootTables.TRIAL_CHAMBERS_REWARD_OMINOUS, TRIAL_CHANCE_OMINOUS);
 	/** Totem of the North Wind loot: trial chamber vaults (normal and ominous). */
 	public static final Map<ResourceKey<LootTable>, Float> NORTH_WIND_LOOT = Map.of(
 			BuiltInLootTables.TRIAL_CHAMBERS_REWARD, 0.03F,
 			BuiltInLootTables.TRIAL_CHAMBERS_REWARD_OMINOUS, 0.06F);
-	/** Totem of Keeping: rare and deep. */
+	/** Totem of Keeping: rare and deep, and evokers (renewable through raids, as Undying is). */
 	public static final Map<ResourceKey<LootTable>, Float> KEEPING_LOOT = Map.of(
 			BuiltInLootTables.ANCIENT_CITY, 0.06F,
 			BuiltInLootTables.END_CITY_TREASURE, 0.08F,
 			BuiltInLootTables.STRONGHOLD_LIBRARY, 0.10F,
-			BuiltInLootTables.WOODLAND_MANSION, 0.08F);
+			BuiltInLootTables.WOODLAND_MANSION, 0.08F,
+			EVOKER, EVOKER_KEEPING,
+			BuiltInLootTables.TRIAL_CHAMBERS_REWARD, TRIAL_CHANCE,
+			BuiltInLootTables.TRIAL_CHAMBERS_REWARD_OMINOUS, TRIAL_CHANCE_OMINOUS);
 	/** Totem of Gathering: the collectors' haunts. */
 	public static final Map<ResourceKey<LootTable>, Float> GATHERING_LOOT = Map.of(
-			BuiltInLootTables.ABANDONED_MINESHAFT, 0.06F,
+			BuiltInLootTables.ABANDONED_MINESHAFT, 0.04F,
 			BuiltInLootTables.SIMPLE_DUNGEON, 0.08F,
-			BuiltInLootTables.PILLAGER_OUTPOST, 0.12F);
+			BuiltInLootTables.PILLAGER_OUTPOST, 0.12F,
+			BuiltInLootTables.TRIAL_CHAMBERS_REWARD, TRIAL_CHANCE,
+			BuiltInLootTables.TRIAL_CHAMBERS_REWARD_OMINOUS, TRIAL_CHANCE_OMINOUS);
 	/** Totem of Fortification: places built against blasts. */
 	public static final Map<ResourceKey<LootTable>, Float> FORTIFICATION_LOOT = Map.of(
 			BuiltInLootTables.DESERT_PYRAMID, 0.15F,
 			BuiltInLootTables.BASTION_OTHER, 0.08F,
-			BuiltInLootTables.STRONGHOLD_CROSSING, 0.08F);
+			BuiltInLootTables.STRONGHOLD_CROSSING, 0.08F,
+			BuiltInLootTables.TRIAL_CHAMBERS_REWARD, TRIAL_CHANCE,
+			BuiltInLootTables.TRIAL_CHAMBERS_REWARD_OMINOUS, TRIAL_CHANCE_OMINOUS);
 	/** Totem of Growth: overgrown places and ships' stores of seed. */
 	public static final Map<ResourceKey<LootTable>, Float> GROWTH_LOOT = Map.of(
 			BuiltInLootTables.JUNGLE_TEMPLE, 0.20F,
 			BuiltInLootTables.SHIPWRECK_SUPPLY, 0.06F,
-			BuiltInLootTables.IGLOO_CHEST, 0.15F);
+			BuiltInLootTables.IGLOO_CHEST, 0.15F,
+			BuiltInLootTables.TRIAL_CHAMBERS_REWARD, TRIAL_CHANCE,
+			BuiltInLootTables.TRIAL_CHAMBERS_REWARD_OMINOUS, TRIAL_CHANCE_OMINOUS);
 	/** Totem of Seeking: the map-makers' chests. */
 	public static final Map<ResourceKey<LootTable>, Float> SEEKING_LOOT = Map.of(
 			BuiltInLootTables.SHIPWRECK_MAP, 0.12F,
 			BuiltInLootTables.BURIED_TREASURE, 0.10F,
 			BuiltInLootTables.UNDERWATER_RUIN_BIG, 0.08F,
-			BuiltInLootTables.VILLAGE_CARTOGRAPHER, 0.10F);
+			BuiltInLootTables.VILLAGE_CARTOGRAPHER, 0.10F,
+			BuiltInLootTables.TRIAL_CHAMBERS_REWARD, TRIAL_CHANCE,
+			BuiltInLootTables.TRIAL_CHAMBERS_REWARD_OMINOUS, TRIAL_CHANCE_OMINOUS);
 	/** Totem of the End loot. */
 	public static final Map<ResourceKey<LootTable>, Float> END_LOOT = Map.of(
 			BuiltInLootTables.END_CITY_TREASURE, 0.05F);

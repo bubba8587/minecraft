@@ -208,6 +208,11 @@
         },
         {
           "type": "minecraft:item",
+          "name": "bubbas_totems_artifacts:totem_of_north_wind",
+          "weight": 2
+        },
+        {
+          "type": "minecraft:item",
           "name": "bubbas_totems_artifacts:totem_of_warding",
           "weight": 2
         },
