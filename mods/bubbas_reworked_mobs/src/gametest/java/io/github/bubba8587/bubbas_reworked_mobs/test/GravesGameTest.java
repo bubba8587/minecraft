@@ -199,6 +199,32 @@ public class GravesGameTest {
 		helper.succeed();
 	}
 
+	/** A crypt built with nothing round it is closed in: from the inside, open space never leaks out past the crypt's walls, floor or roof. */
+	@GameTest(structure = CampsGameTest.FIELD, maxTicks = 20)
+	public void cryptsAreClosedInWithoutGround(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		for (YardKinds.Wealth wealth : YardKinds.Wealth.values()) {
+			CryptYardPiece piece = GraveyardCommand.build(level, helper.absolutePos(new BlockPos(16, 7, 1)), 1900L + wealth.ordinal(), 15, 13, true,
+					YardKinds.State.OVERGROWN, wealth);
+			net.minecraft.world.level.levelgen.structure.BoundingBox box = piece.getBoundingBox();
+			int top = piece.gate().getY() - 2;
+			java.util.ArrayDeque<BlockPos> open = new java.util.ArrayDeque<>(List.of(piece.vaultCentre()));
+			java.util.Set<BlockPos> seen = new java.util.HashSet<>(open);
+			while (!open.isEmpty()) {
+				BlockPos pos = open.poll();
+				helper.assertTrue(pos.getX() > box.minX() && pos.getX() < box.maxX() && pos.getZ() > box.minZ() && pos.getZ() < box.maxZ()
+						&& pos.getY() > box.minY(), wealth + " crypt is open to the outside at " + pos);
+				for (Direction d : Direction.values()) {
+					BlockPos next = pos.relative(d);
+					if (next.getY() <= top && seen.add(next) && !level.getBlockState(next).isCollisionShapeFullBlock(level, next)) {
+						open.add(next);
+					}
+				}
+			}
+		}
+		helper.succeed();
+	}
+
 	/**
 	 * Warding statues per crypt wing (specs/graveyards.md): over 4000 seeds each wing rolls its chance (noble 85 %, family
 	 * 65 %, pauper 35 %, within 3 points); without Bubba's Totems & Artifacts none is placed and the crypt builds as before.

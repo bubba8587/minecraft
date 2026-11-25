@@ -115,6 +115,8 @@ The three kinds:
 - **Noble crypt** (medium and large yards): polished and chiseled stone, an entry hall, a pillared chamber with a sarcophagus holding an armoured sleeper under a stone lid, and two side halls lined with niches. Chests: `chests/crypt_noble` (3-6 rolls, plus one burial-goods roll; see Noble crypt loot).
   - **Noble armour**: 45 % of hall sleepers (`GraveTuning.NOBLE_HALL_ARMOUR`; 85 % until the owner found crypts too rich, 2026-11-24) and the sarcophagus's (100 %) wear a full set: 15 % gold, 40 % chain, 45 % iron. Zombies carry iron swords or axes 60 % of the time. No enchanted gear on them (that's in the chests).
 
+**Casing** (`CryptYardPiece.casing`, its own seed so layouts don't change): before a crypt is carved, the space round it out to one block past the niche backs (family ±6 from the gate, pauper ±4, noble side halls ±4 from the hall's middle; floor to roof) is filled with that crypt's wall and floor blocks wherever the ground is missing (air, water, plants, trees). Buried crypts look the same; a crypt cut by a hillside shows wall, not niches open to the air. The piece's box reaches that far (`cryptHalfWidth`), so a chunk edge can't clip it.
+
 Loot tables are in 26.3's format (`modifier` objects: `set_count`, `enchant_randomly` with `#minecraft:on_random_loot`; the older `functions` key is silently ignored). Totems & Artifacts adds to them by table id, so there's no dependency (Totems' loot test skips tables that aren't installed):
 - Grave Talisman (`TotemsTuning.TALISMAN_LOOT`): family 15 %, noble 25 %.
 - Totem of Warding (`WardingTuning.LOOT`): noble 12 %.
@@ -252,6 +254,7 @@ Per state of breakdown (`YardKinds.State`):
   - `restingDeadNeverWake`: an explosion three blocks off wakes an ordinary sleeper (control) but not a resting one; neither does a bell rung beside it, nor robbing by a player (at sensitivity 10, where an ordinary robbery wake is certain). Mined with Silk Touch, the item keeps `resting`; placed again it is still resting and sleeps through another explosion and 40 more ticks.
   - `everyYardBlockIsSupported`: in a built overgrown yard with each kind of crypt, no candle, lantern, sign or plant is left without support.
   - `cryptWardStatueOdds`: statues per wing at the stated odds over 4000 seeds per kind (within 3 points); without Totems & Artifacts the spot stays air.
+- **Milestone** `GravesGameTest.cryptsAreClosedInWithoutGround`: each crypt kind built over the test field's empty underground; open space flooded from the crypt's middle never reaches the edge of its box (failed before the casing: pauper niches open to the air).
 - **Milestone** `WispsGameTest.walkingIntoAYardFindsIt`: a built yard is registered; a player outside hasn't found it; inside, it's found.
 - **Milestone** `NobleFineryGameTest.nobleDeadWearGemsOnlyWithInfusedGems`: a built noble crypt; without Infused Gems no gear carries gem components; with `-PwithGems` some do, at most half the armoured ones; under 70 % of the crypt's sleepers wear a full set. No screenshot: gemmed gear looks the same on a sleeper.
 - **Totems:** `totemsAreFoundInLoot` passes standalone (crypt table skipped) and with `-PwithMobs`.

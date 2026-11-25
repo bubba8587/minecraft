@@ -140,8 +140,8 @@ public class CryptYardPiece extends StructurePiece {
 	/** How far the crypt reaches either side of the gate's line (outer walls included), by wealth. */
 	private static int cryptHalfWidth(YardKinds.Wealth wealth) {
 		return switch (wealth) {
-			case PAUPER -> 3;
-			case FAMILY -> VAULT_HALF_WIDTH + 2;
+			case PAUPER -> 4;
+			case FAMILY -> VAULT_HALF_WIDTH + 3;
 			case NOBLE -> NOBLE_HALL_END + 1;
 		};
 	}
@@ -177,6 +177,7 @@ public class CryptYardPiece extends StructurePiece {
 		path(b, RandomSource.create(net.minecraft.world.level.levelgen.RandomSupport.mixStafford13(seed) ^ 0x9A7AL));
 		graves(b, RandomSource.create(net.minecraft.world.level.levelgen.RandomSupport.mixStafford13(seed) ^ 0x6A4E5L));
 		if (crypt) {
+			casing(b, RandomSource.create(net.minecraft.world.level.levelgen.RandomSupport.mixStafford13(seed) ^ 0xCA5E1L));
 			vault(b, RandomSource.create(net.minecraft.world.level.levelgen.RandomSupport.mixStafford13(seed) ^ 0xC4F97L));
 			wardStatues(b);
 		}
@@ -642,6 +643,47 @@ public class CryptYardPiece extends StructurePiece {
 			case PAUPER -> pauper(b, random, gate, floor, start);
 			case NOBLE -> noble(b, random, gate, floor, start);
 			case FAMILY -> family(b, random, gate, floor, start);
+		}
+	}
+
+	// --- the crypt's casing ---------------------------------------------------------------------------
+
+	/** Casing round the crypt, one block past the niche backs: fills only where the ground is missing (air, water, plants, trees). */
+	private void casing(Build b, RandomSource random) {
+		int gate = gateX(origin, width);
+		int floor = origin.getY() - GraveTuning.CRYPT_DEPTH + 1;
+		int start = stairsZ(origin, depth) + (origin.getY() - floor) + 2;
+		switch (wealth) {
+			case FAMILY -> fillMissing(b, random, gate - VAULT_HALF_WIDTH - 3, gate + VAULT_HALF_WIDTH + 3, floor, floor + VAULT_HEIGHT,
+					start - 1, start + VAULT_LENGTH);
+			case PAUPER -> fillMissing(b, random, gate - 4, gate + 4, floor, floor + 3, start - 1, start + PAUPER_LENGTH);
+			case NOBLE -> {
+				int chamber = start + NOBLE_ENTRY;
+				int end = chamber + NOBLE_CHAMBER - 1;
+				int mid = chamber + NOBLE_CHAMBER / 2;
+				fillMissing(b, random, gate - NOBLE_HALF - 1, gate + NOBLE_HALF + 1, floor, floor + VAULT_HEIGHT, start - 1, end + 1);
+				fillMissing(b, random, gate - NOBLE_HALL_END - 1, gate + NOBLE_HALL_END + 1, floor, floor + VAULT_HEIGHT, mid - 4, mid + 4);
+			}
+		}
+	}
+
+	private void fillMissing(Build b, RandomSource random, int x0, int x1, int floor, int top, int z0, int z1) {
+		for (int x = x0; x <= x1; x++) {
+			for (int z = z0; z <= z1; z++) {
+				for (int y = floor - 1; y <= top; y++) {
+					BlockState wall = switch (wealth) {
+						case FAMILY -> y == floor - 1 ? floorBlock(random) : bricks(random);
+						case PAUPER -> ossuaryWall(random);
+						case NOBLE -> y == floor - 1 ? nobleFloor(random) : nobleWall(random);
+					};
+					if (b.inside(x, y, z)) {
+						BlockState here = b.level().getBlockState(new BlockPos(x, y, z));
+						if (io.github.bubba8587.bubbas_reworked_mobs.worldgen.ClippedBuild.cover(here) || !here.getFluidState().isEmpty()) {
+							b.put(x, y, z, wall);
+						}
+					}
+				}
+			}
 		}
 	}
 
