@@ -54,8 +54,8 @@ Many yards have stairs at the far end leading down to a crypt. Bigger yards have
 
 ### Noble crypt loot
 
-- **Chests:** gold, emeralds, iron, a golden apple, sometimes diamonds, enchanted books and enchanted gear.
-- **Burial goods** (one or two per chest): a high-level enchanted book, a worn but strongly enchanted diamond sword or chestplate, or enchanted gold armour; rarely an enchanted golden apple, a Totem of Undying or music disc 13.
+- **Chests:** gold, emeralds, iron, sometimes a golden apple or diamonds, enchanted books and enchanted gear.
+- **Burial goods** (one per chest): a high-level enchanted book, a worn but strongly enchanted diamond sword or chestplate, or enchanted gold armour; rarely an enchanted golden apple, a Totem of Undying or music disc 13.
 - **With [[Bubba's Totems & Artifacts]]:** a [[Grave Talisman]] (one chest in four) and a [[Totem of Warding]] (about one in eight).
 - **With [[Bubba's Reworked Mining]]:** a True Unbreaking book (one chest in five).
 

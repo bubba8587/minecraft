@@ -112,7 +112,7 @@ The three kinds:
 - **Family vault:** 7 wide, 9 long, 4 high inside. Stone brick shell (cracked and mossy mixed in), polished andesite and cobblestone floor.
   - Niches every other block on both long walls, with a slab over each; 80 % hold a lying sleeper. Vault sleepers wear a chain or iron helmet 30 % of the time.
   - Altar at the far end (chiseled stone bricks, 3 lit candles) and the chest (`chests/crypt_family`, 3-6 rolls). More candles along the walls, about a quarter of them lit; cobwebs.
-- **Noble crypt** (medium and large yards): polished and chiseled stone, an entry hall, a pillared chamber with a sarcophagus holding an armoured sleeper under a stone lid, and two side halls lined with niches. Chests: `chests/crypt_noble` (4-8 rolls, plus a burial-goods pool; see Noble crypt loot).
+- **Noble crypt** (medium and large yards): polished and chiseled stone, an entry hall, a pillared chamber with a sarcophagus holding an armoured sleeper under a stone lid, and two side halls lined with niches. Chests: `chests/crypt_noble` (3-6 rolls, plus one burial-goods roll; see Noble crypt loot).
   - **Noble armour**: 45 % of hall sleepers (`GraveTuning.NOBLE_HALL_ARMOUR`; 85 % until the owner found crypts too rich, 2026-11-24) and the sarcophagus's (100 %) wear a full set: 15 % gold, 40 % chain, 45 % iron. Zombies carry iron swords or axes 60 % of the time. No enchanted gear on them (that's in the chests).
 
 Loot tables are in 26.3's format (`modifier` objects: `set_count`, `enchant_randomly` with `#minecraft:on_random_loot`; the older `functions` key is silently ignored). Totems & Artifacts adds to them by table id, so there's no dependency (Totems' loot test skips tables that aren't installed):
@@ -152,8 +152,8 @@ With Totems & Artifacts loaded, 35 % of noble crypts (rolled from the crypt's se
 ## Noble crypt loot
 
 Agent's call (owner: "do whatever you like with the noble crypt loot"). The noble crypts are the endgame dungeon find.
-- **Base table:** gold, emeralds, iron, a golden apple, diamonds, enchanted books and gear.
-- **Burial goods** (a second pool, 1-2 rolls): a level 25-35 enchanted book, a worn but strongly enchanted diamond sword or chestplate, an enchanted golden helmet or chestplate; rarely an enchanted golden apple, a totem of undying or disc 13.
+- **Base table** (3-6 rolls; 4-8 until 2026-11-25, when golden apples went from weight 5 to 3 and diamonds 3 to 2): gold, emeralds, iron, a golden apple, diamonds, enchanted books and gear.
+- **Burial goods** (a second pool, 1 roll; 1-2 until the owner cut it, 2026-11-25): a level 25-35 enchanted book, a worn but strongly enchanted diamond sword or chestplate, an enchanted golden helmet or chestplate; rarely an enchanted golden apple, a totem of undying or disc 13.
 - **True Unbreaking books** with Bubba's Reworked Mining: 20 % per noble chest (its main source; ancient cities 4 %, End cities 3 %, bastions and ominous vaults 5 %).
 - With Totems & Artifacts: Grave Talisman 25 % and Totem of Warding 12 % per noble chest.
 
