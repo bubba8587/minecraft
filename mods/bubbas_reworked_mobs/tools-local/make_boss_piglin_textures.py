@@ -4,13 +4,18 @@
 The box layout here mirrors BossPiglinModel / BossPiglinCapeLayer (src/client); `--java` prints the cube code
 for BossPiglinModel.createBodyLayer so the two stay in step. UVs are packed here, deterministically.
 The skin is painted in 3D: every texel is mapped back to its point on the model, so vest, belt, belly and
-shading line up across faces. The head is painted the same way (piglin palette), at 16x and properly at 32x.
+shading line up across faces. The 16x head is painted the same way (piglin palette). The 32x head is Classic
+Faithful 32x Jappa's piglin head (CREDITS.md) fitted to our head boxes, with our gold tusk caps and earring.
 
-Usage: python3 make_boss_piglin_textures.py [--java] [vanilla_textures_dir]
-(default: build/mcsrc/<version>/vanilla/assets/minecraft/textures of the main checkout). Needs Pillow.
+Usage: python3 make_boss_piglin_textures.py [--java]
+CF32J is read from its zip (default: the owner's Modrinth profile) or CF32J=<zip or unpacked folder>; without it
+the committed 32x skin is kept. Needs Pillow.
 """
+import io
 import math
+import os
 import sys
+import zipfile
 from pathlib import Path
 
 from PIL import Image
@@ -563,15 +568,143 @@ def paint_cape(r):
 	return img
 
 
+# --- the 32x head from Classic Faithful 32x Jappa -----------------------------------------------------------------------
+
+CF32J_ZIP = Path(os.environ.get("APPDATA", "")) / "ModrinthApp/profiles/porp/resourcepacks/CF32J-2026r21.zip"
+CF_PIGLIN = "assets/minecraft/textures/entity/piglin/piglin.png"
+
+
+def cf32j_open(member):
+	"""A CF32J texture as an image, from the zip or an unpacked folder; None when the pack isn't here."""
+	src = Path(os.environ.get("CF32J", CF32J_ZIP))
+	if src.is_dir() and (src / member).exists():
+		return Image.open(src / member).convert("RGBA")
+	if src.is_file():
+		with zipfile.ZipFile(src) as zf:
+			if member in zf.namelist():
+				return Image.open(io.BytesIO(zf.read(member))).convert("RGBA")
+	return None
+
+
+def recolour(img):
+	"""Every opaque pixel to the closest colour of our palette."""
+	pal = SKIN + NOSTRIL + IVORY + [EYE]
+	out = img.copy()
+	px = out.load()
+	for y in range(out.height):
+		for x in range(out.width):
+			c = px[x, y]
+			if c[3]:
+				best = min(pal, key=lambda q: sum((q[k] - c[k]) ** 2 for k in range(3)))
+				px[x, y] = best + (255,)
+	return out
+
+
+def widen(img, w):
+	"""Widen a CF32J snout face (8 px: nostril, cheek, middle, cheek, nostril) to w px: a cheek column outside
+	each nostril and the middle stretched."""
+	cols = [img.crop((x, 0, x + 1, img.height)) for x in range(img.width)]
+	mid = w - 8
+	order = [cols[2]] + cols[0:3] + [cols[3]] * (mid // 2) + [cols[3], cols[4]] + [cols[4]] * (mid - mid // 2 - 2) + cols[5:8] + [cols[5]]
+	out = Image.new("RGBA", (w, img.height))
+	for i, c in enumerate(order[:w]):
+		out.paste(c, (i, 0))
+	return out
+
+
+def stretch_rows(img, rows):
+	"""Rebuild an image from a list of its own row indices."""
+	out = Image.new("RGBA", (img.width, len(rows)))
+	for i, y in enumerate(rows):
+		out.paste(img.crop((0, y, img.width, y + 1)), (0, i))
+	return out
+
+
+def net(u, v, w, h, d, faces_):
+	"""Six face images (top, bottom, west, front, east, back) placed as a cube's UV net, in 32x pixels."""
+	pos = {"top": (u + d, v), "bottom": (u + d + w, v), "west": (u, v + d), "front": (u + d, v + d),
+			"east": (u + d + w, v + d), "back": (u + 2 * d + w, v + d)}
+	size = {"top": (w, d), "bottom": (w, d), "west": (d, h), "front": (w, h), "east": (d, h), "back": (w, h)}
+	return [(faces_[k] if faces_[k].size == size[k] else faces_[k].resize(size[k], Image.NEAREST), pos[k]) for k in pos]
+
+
+def head_texel(x, y):
+	"""Whether a 32x texel belongs to the head, its ears, snout, brow or tusks."""
+	for part in ("head", "left_ear", "right_ear"):
+		for cube in PARTS[part][2]:
+			u, v, _x, _y, _z, w, h, d = cube
+			if u * 2 <= x < (u + 2 * (w + d)) * 2 and v * 2 <= y < (v + d + h) * 2:
+				return True
+	return False
+
+
+def cf_head(cf, painted):
+	"""Our 32x head regions from CF32J's piglin head (recoloured to our palette); our gold tusk caps and earring kept."""
+	cf = recolour(cf)
+	out = painted.copy()
+
+	def crop(x, y, w, h):
+		return cf.crop((x, y, x + w, y + h))
+
+	# head box and ears: the same boxes as vanilla's
+	out.paste(crop(0, 0, 72, 32), (0, 0))
+	for (eu, ev) in ((39, 6), (51, 6)):
+		out.paste(crop(eu * 2, ev * 2, 20, 18), (eu * 2, ev * 2))
+	# snout 7x4x2 from CF's 4x4x1 snout (at 62,2): faces widened, depth doubled; the tusk tips on its front become skin
+	front = crop(64, 4, 8, 8)
+	fp = front.load()
+	for y in (6, 7):
+		for x in range(8):
+			if fp[x, y][:3] in IVORY:
+				fp[x, y] = fp[2, y]
+	sn = {"top": widen(crop(64, 2, 8, 2), 14), "bottom": widen(crop(72, 2, 8, 2), 14), "west": crop(62, 4, 2, 8),
+		"front": widen(front, 14), "east": crop(72, 4, 2, 8), "back": widen(crop(74, 4, 8, 8), 14)}
+	u, v = UV[("head", "snout")]
+	for img, at in net(u * 2, v * 2, 14, 8, 4, sn):
+		out.paste(img, at)
+	# brow 8x1x1: CF's forehead just above the eyes (hidden behind the brow), a darker underside
+	hf = crop(16, 16, 20, 16)
+	brow = hf.crop((2, 4, 18, 6))
+	br = {"top": hf.crop((2, 2, 18, 4)), "bottom": Image.new("RGBA", (16, 2), SKIN[3] + (255,)), "west": hf.crop((0, 4, 2, 6)),
+		"front": brow, "east": hf.crop((18, 4, 20, 6)), "back": brow}
+	u, v = UV[("head", "brow")]
+	for img, at in net(u * 2, v * 2, 16, 2, 2, br):
+		out.paste(img, at)
+	# tusks 1x3x1 from CF's 1x2x1 tusks (at 4,0), ivory stretched to 3 tall
+	tall = [0, 0, 1, 1, 2, 3]
+	tk = {"top": crop(6, 0, 2, 2), "bottom": crop(8, 0, 2, 2), "west": stretch_rows(crop(4, 2, 2, 4), tall),
+		"front": stretch_rows(crop(6, 2, 2, 4), tall), "east": stretch_rows(crop(8, 2, 2, 4), tall),
+		"back": stretch_rows(crop(10, 2, 2, 4), tall)}
+	for name in ("tusk_r", "tusk_l"):
+		u, v = UV[("head", name)]
+		for img, at in net(u * 2, v * 2, 2, 6, 2, tk):
+			out.paste(img, at)
+	# our gold on top: tusk caps and the earring
+	po, pp = out.load(), painted.load()
+	golds = set(GOLD) | set(fine(GOLD))
+	for y in range(out.height):
+		for x in range(out.width):
+			if pp[x, y][3] and pp[x, y][:3] in golds and head_texel(x, y):
+				po[x, y] = pp[x, y]
+	return out
+
+
 def main():
 	if "--java" in sys.argv:
 		print(java())
 		return
+	cf = cf32j_open(CF_PIGLIN)
 	for r, out in ((1, OUT16), (2, OUT32)):
 		(out / "entity").mkdir(parents=True, exist_ok=True)
-		paint_skin(r).save(out / "entity/boss_piglin.png")
+		skin = paint_skin(r)
+		if r == 2:
+			skin = cf_head(cf, skin) if cf is not None else None
+			if skin is None:
+				print("CF32J not found (set CF32J=<zip or folder>): kept the committed 32x boss_piglin.png")
+		if skin is not None:
+			skin.save(out / "entity/boss_piglin.png")
 		paint_cape(r).save(out / "entity/boss_piglin_cape.png")
-	print("wrote boss_piglin.png and boss_piglin_cape.png (16x and 32x)")
+	print("wrote the Boss Piglin skin and cape (16x and 32x)")
 
 
 if __name__ == "__main__":
