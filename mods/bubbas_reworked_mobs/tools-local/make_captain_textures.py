@@ -40,11 +40,12 @@ def lum(c):
 
 # --- palette swaps -------------------------------------------------------------------------------------------------
 
-# Vanilla blaze ramp (dark to light) -> soul fire ramp (vanilla soul fire / soul lantern colours).
+# Vanilla blaze ramp (dark to light) -> soul ramp: same OKLCh lightness per step, hue sweeping from the soul
+# lantern's deep blue-violet (h 267) to soul fire cyan (h 198), chroma near vanilla's (see specs/wither-captain.md).
 BLAZE_TO_SOUL = {
-	"310e0b": "0a1c26", "5f0201": "0c2a3a", "6c3100": "0b3f4c", "8b3401": "075a65", "ab7501": "01797e",
-	"d17800": "01979c", "fc9600": "01b3b8", "fcb217": "0dcbd1", "ffd528": "33e5eb", "fff847": "7cf5fa",
-	"ffff84": "c4fdff", "ffffff": "ffffff",
+	"310e0b": "0f1934", "5f0201": "00305b", "6c3100": "004970", "8b3401": "015b7f", "ab7501": "0190ab",
+	"d17800": "06a3b9", "fc9600": "11cad4", "fcb217": "0adce2", "ffd528": "14f6fc", "fff847": "5dfaff",
+	"ffff84": "c8feff", "ffffff": "ffffff",
 }
 
 # Netherite ramp -> polished blackstone ramp (cooler, darker, blue-violet; blackstone's warm dark accent kept).
