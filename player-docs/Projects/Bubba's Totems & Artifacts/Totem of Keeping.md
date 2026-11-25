@@ -7,7 +7,8 @@
 > |---|---|
 > | **Type** | Artifact (item) |
 > | **Stackable** | No |
-> | **Obtained** | Found in chests |
+> | **Obtained** | Found in chests, trial chamber vaults and relic vaults; dropped by evokers |
+> | **Renewable** | Yes (evokers) |
 > | **Works from** | Anywhere in the inventory |
 > | **Works in a beacon** | No |
 
@@ -15,7 +16,11 @@ The **Totem of Keeping** is an artifact that saves its holder's belongings once,
 
 ## Obtaining
 
-The Totem of Keeping cannot be crafted. It is found in ancient city, end city, stronghold library and woodland mansion chests, and in [[Relic Vaults|relic vault]] chests.
+The Totem of Keeping cannot be crafted. It is found in ancient city, end city, stronghold library and woodland mansion chests, and in [[Relic Vaults|relic vault]] chests. It is also found in trial chamber vaults: a 2 % chance each time a player opens a normal vault, and 4 % for an ominous vault.
+
+Evokers drop one about a quarter of the time, as well as their usual Totem of Undying, so like the Totem of Undying it is renewable through raids.
+
+A [[Relic Vaults|relic vault's]] pedestal may also hold a Totem of Keeping [[Totem Statue|statue]]; breaking the statue gives the totem.
 
 ## Usage
 

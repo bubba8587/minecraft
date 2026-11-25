@@ -8,8 +8,8 @@
 > | **Type** | Item |
 > | **Rarity** | Uncommon |
 > | **Stackable** | No |
-> | **Renewable** | Yes (evokers) |
-> | **Obtained** | Found only: chests, trial chamber vaults, relic vaults, evokers |
+> | **Renewable** | No |
+> | **Obtained** | Found only: crypt statues, chests, trial chamber vaults, relic vaults |
 > | **Held** | Monsters within 8 blocks flee every 10 seconds |
 > | **In a beacon** | Wards the beacon's area (needs [[Bubba's Reworked Beacons]]) |
 > | **Placeable** | As a decorative [[Totem Statue]] (sneak and use) |
@@ -18,7 +18,17 @@ The **Totem of Warding** is a found item that keeps monsters away. Held, it puls
 
 ## Obtaining
 
-The Totem of Warding cannot be crafted. Each source adds a totem on top of its normal loot:
+The Totem of Warding cannot be crafted, and evokers do not drop it.
+
+With [[Bubba's Reworked Mobs]] installed, most totems of warding come from [[Crypt Yards|crypts]], which often have a Totem of Warding [[Totem Statue|statue]] standing guard. Breaking the statue gives the totem; left standing, it keeps the sleeping undead near it from waking.
+
+| Crypt | Warding statues |
+|---|---|
+| Noble crypt | Up to 3: one each in the chamber and the two side halls, 85% each |
+| Family vault | 65% |
+| Pauper's ossuary | 35% |
+
+Chests and vaults add a totem on top of their normal loot:
 
 | Source | Chance |
 |---|---|
@@ -26,10 +36,9 @@ The Totem of Warding cannot be crafted. Each source adds a totem on top of its n
 | Ancient city chest | 12% per chest |
 | Trial chambers vault | 8% per opening |
 | Ominous trial chambers vault | 15% per opening |
-| Evoker | 5%, a rare bonus drop |
 | Noble crypt chest (with [[Bubba's Reworked Mobs]]) | 12% per chest |
 
-[[Relic Vaults|Relic vault]] chests sometimes hold one too.
+[[Relic Vaults|Relic vault]] chests sometimes hold one too, and a relic vault's pedestal may hold a Totem of Warding statue.
 
 ## Usage
 

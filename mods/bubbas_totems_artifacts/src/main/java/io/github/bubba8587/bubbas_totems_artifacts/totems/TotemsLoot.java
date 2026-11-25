@@ -15,7 +15,7 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemRandomChanceCon
 import net.fabricmc.fabric.api.loot.v3.LootTableEvents;
 import net.fabricmc.fabric.api.loot.v3.LootTableSource;
 
-/** Where the five new totems are found. */
+/** Totem and Grave Talisman loot pools. */
 public final class TotemsLoot {
 	private TotemsLoot() {
 	}

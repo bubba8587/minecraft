@@ -7,7 +7,7 @@
 > |---|---|
 > | **Type** | Artifact (item) |
 > | **Stackable** | No |
-> | **Obtained** | Found in chests |
+> | **Obtained** | Found in chests, trial chamber vaults and relic vaults |
 > | **Held range** | 8 blocks |
 > | **Works in a beacon** | Yes, with [[Bubba's Reworked Beacons]] |
 
@@ -15,7 +15,9 @@ The **Totem of Fortification** is an artifact that stops explosions from breakin
 
 ## Obtaining
 
-The Totem of Fortification cannot be crafted. It is found in desert pyramid, bastion and stronghold crossing chests, and in [[Relic Vaults|relic vault]] chests.
+The Totem of Fortification cannot be crafted. It is found in desert pyramid, bastion and stronghold crossing chests, and in [[Relic Vaults|relic vault]] chests. It is also found in trial chamber vaults: a 2 % chance each time a player opens a normal vault, and 4 % for an ominous vault.
+
+A [[Relic Vaults|relic vault's]] pedestal may also hold a Totem of Fortification [[Totem Statue|statue]]; breaking the statue gives the totem.
 
 ## Usage
 

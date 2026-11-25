@@ -18,7 +18,7 @@ The **Totem of the Beginning** is a reusable artifact that slowly returns the gr
 
 The Totem of the Beginning cannot be crafted. It is found:
 
-- At [[Endermen|enderman cairns]]. About one finished cairn in seven has its endermen leave one lying at the cairn's foot as an offering, which a player takes with an empty hand. Each such cairn leaves one only once, ever: rebuilding or finishing the cairn again does not bring another.
+- At [[Endermen|enderman cairns]]. About three finished cairns in ten have their endermen leave one lying at the cairn's foot as an offering, which a player takes with an empty hand. Each such cairn leaves one only once, ever: rebuilding or finishing the cairn again does not bring another.
 - Rarely, in the chests of any [[Relic Vaults|relic vault]].
 - As a statue on the pedestal of some grand relic vaults; breaking the statue gives the totem.
 

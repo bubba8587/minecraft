@@ -46,24 +46,26 @@ Previews (client test screenshots, still current): `docs/previews/totems/`
 
 ### How totems are found (`totems/TotemsLoot`)
 
-One extra pool per table and totem, added on top of the normal loot, through `LootTableEvents.MODIFY`. Tables a datapack replaced through Fabric are skipped. Chests only (plus Warding's evoker drop): archaeology tables give a single item, so a second pool would break brushing. Every totem's tables, Warding's included, are in `TotemsLoot.all()`. Reworked Mobs tables are keyed by id, so there is no dependency.
+One extra pool per table and totem, added on top of the normal loot, through `LootTableEvents.MODIFY`. Tables a datapack replaced through Fabric are skipped. Chests only (plus Keeping's evoker drop): archaeology tables give a single item, so a second pool would break brushing. Every totem's tables, Warding's included, are in `TotemsLoot.all()`. Reworked Mobs tables are keyed by id, so there is no dependency.
 
 | Totem | Chance per chest |
 |---|---|
-| Warding | woodland mansion 20 %, ancient city 12 %, trial chambers vault 8 %, ominous vault 15 %, Reworked Mobs noble crypt 12 %, evoker 5 % (a rare bonus, owner) *(chest rates: agent's choice)* |
-| Keeping | ancient city 6 %, end city treasure 8 %, stronghold library 10 %, woodland mansion 8 % |
-| Gathering | abandoned mineshaft 6 %, simple dungeon 8 %, pillager outpost 12 % |
-| Fortification | desert pyramid 15 % (the TNT trap), bastion "other" 8 %, stronghold crossing 8 % |
-| Growth | jungle temple 20 %, shipwreck supply 6 %, igloo 15 % |
-| Seeking | shipwreck map 12 %, buried treasure 10 %, big underwater ruin 8 %, village cartographer 10 % |
-| Herding | village shepherd 12 %, butcher 8 %, tannery 8 % |
-| Clear Skies | igloo 12 %, desert village house 6 %, shipwreck supply 5 % |
-| North Wind | trial chamber vaults only: 3 % normal, 6 % ominous *(builder's choice)* |
+| Warding | woodland mansion 20 %, ancient city 12 %, trial chambers vault 8 %, ominous vault 15 %, Reworked Mobs noble crypt 12 % *(chest rates: agent's choice)*. Not from evokers (owner). With Reworked Mobs, crypt warding statues (noble 85 % per wing, family 65 %, pauper 35 %; `GraveTuning.CRYPT_STATUE_*`) are its biggest source (see Totem statue) |
+| Keeping | ancient city 6 %, end city treasure 8 %, stronghold library 10 %, woodland mansion 8 %, trial vaults; evoker 25 % (`EVOKER_KEEPING`, owner) beside vanilla's guaranteed Totem of Undying, so it is renewable through raids |
+| Gathering | abandoned mineshaft 4 % (owner), simple dungeon 8 %, pillager outpost 12 %, trial vaults |
+| Fortification | desert pyramid 15 % (the TNT trap), bastion "other" 8 %, stronghold crossing 8 %, trial vaults |
+| Growth | jungle temple 20 %, shipwreck supply 6 %, igloo 15 %, trial vaults |
+| Seeking | shipwreck map 12 %, buried treasure 10 %, big underwater ruin 8 %, village cartographer 10 %, trial vaults |
+| Herding | village shepherd 12 %, butcher 8 %, tannery 8 %, trial vaults |
+| Clear Skies | igloo 12 %, desert village house 6 %, shipwreck supply 5 %, trial vaults |
+| North Wind | trial chamber vaults 3 % normal, 6 % ominous *(builder's choice)*; also relic vault chests and pedestals |
 | The End | end city treasure 5 % |
 | The Beginning | no chest table: a once-ever cairn offering (see Totem of the Beginning) |
 | Grave Talisman | Reworked Mobs family vault 15 %, noble crypt 25 % (`TALISMAN_LOOT`) |
 
-Relic vault chests also hold totems (see Relic maps and relic vaults). Loot placement and chances are the agent's proposal, for the owner to review.
+"Trial vaults" is `TotemsTuning.TRIAL_CHANCE` 2 % per normal trial chamber vault opening and `TRIAL_CHANCE_OMINOUS` 4 % per ominous one (owner), for each of those seven totems; vaults roll per player, like all trial vault loot. Warding and North Wind keep their own vault odds; the Beginning and the End are not in trial chambers.
+
+Relic vault chests and pedestals also hold totems (see Relic maps and relic vaults). Loot placement and chances are the agent's proposal, for the owner to review.
 
 ## Grave Talisman
 
@@ -275,7 +277,7 @@ Owner's design; *(builder's choice)* marks what the owner didn't pick.
 - **As a statue:** the same, within the statue radius (5). *(Builder's choice, not yet confirmed by the owner: it follows the rule that a statue gives its totem's area effect in a small radius, making a statue a launch pad or boost ring. The owner may prefer a decorative-only statue.)*
 - **Cooldown (B19 noHiddenCooldowns):** hand use, beacon and statue share one timer: the item cooldown group of the totem's id (`ItemCooldowns`). So a North Wind totem anywhere in the inventory shows the sweep, and there are no double gusts. Without a totem on the player, the gusts themselves are the rhythm (one fires the moment the cooldown ends), like the other beacon totems. Only players glide, so there is no mob path.
 - **Area tick:** beacon pulses (`TotemAreas.put`, `AREA_LIFETIME_TICKS`) and statue pulses (`StatueEffects`) set a `TotemAreas.Kind.NORTH_WIND` area. `ServerTickEvents.END_LEVEL_TICK` walks `level.players()` only while the level has a live North Wind area: fall-flying, not spectator, off cooldown, inside a box → gust and `NORTH_WIND_AREA_COOLDOWN_TICKS`.
-- **Found** *(builder's choice of numbers)*: trial chamber vaults only, 3 % per normal vault opening, 6 % per ominous one (`chests/trial_chambers/reward`, `reward_ominous`, through `TotemsLoot`). Vaults roll once per player per vault, so a full trial chamber gives roughly a 15 to 25 % chance. Not in the chambers' ordinary chests or in relic vault chests; a relic vault pedestal can hold its statue.
+- **Found** *(builder's choice of numbers)*: trial chamber vaults, 3 % per normal vault opening, 6 % per ominous one (`chests/trial_chambers/reward`, `reward_ominous`, through `TotemsLoot`). Vaults roll once per player per vault, so a full trial chamber gives roughly a 15 to 25 % chance. Not in the chambers' ordinary chests. Also in relic vault chests (weight 2) and as a relic vault pedestal statue.
 - **Numbers** (`TotemsTuning`): `NORTH_WIND_COOLDOWN_TICKS` 100, `NORTH_WIND_AREA_COOLDOWN_TICKS` 100 (5 s, owner: "nerf CD by like 2s"), `NORTH_WIND_FLIGHT` 1, `NORTH_WIND_LOOT` 0.03 / 0.06.
 - **Tests:**
   - Core `BubbasTotemsArtifactsCoreGameTest.northWindGustsGlidersOnly` (body `NorthWindGameTest.usedWhileGlidingBoosts`): not gliding → PASS, no cooldown, no rocket; gliding → success, cooldown on, the totem still in hand, one rocket owned by the player, the player pushed along their look (> 0.5 blocks/tick).
@@ -335,7 +337,7 @@ Found only as a once-ever offering at some complete cairns (Reworked Mobs; `spec
 | Beacon/statue rhythm | every 300 ticks (15 s), 2 ticks per block | `BEGINNING_AREA_PULSE_TICKS`, `BEGINNING_AREA_TICKS_PER_BLOCK` |
 | Build protection | a column is skipped if it or any column within 2 holds a built/placed block | `EndermanTuning.RIPPLE_PROTECT_RADIUS` |
 | Waiting for generated terrain | a column not worked out yet is retried for up to 30 s | `EndermanTuning.RIPPLE_PENDING_TICKS` |
-| Cairns that leave an offering | 0.15, picked from each site's seed (owner) | `EndermanTuning.OFFERING_SHARE` |
+| Cairns that leave an offering | 0.30, picked from each site's seed (owner) | `EndermanTuning.OFFERING_SHARE` |
 | Offering timing | checked every 5 s while a player is within 96; 1 in 12 per check (about a minute) once complete with one of its endermen within 16 of the centre | `OFFERING_CHECK_TICKS`, `OFFERING_ONE_IN`, `OFFERING_WITNESS_RANGE` |
 | Offering spot | 2 blocks outside the cairn's footprint, side picked by the seed; appears with an enderman's teleport sound and portal particles (no enderman walks over to set it down) | `OFFERING_GAP` |
 
@@ -549,7 +551,7 @@ Vault chest loot, per chest (tables written by `mods/bubbas_totems_artifacts/too
 | Small | 3-5 (diamonds 1-2, enchants 15-30) | 1-3 | 30 % | 15 % | 0-2 |
 | Crypt | 2-4 | 1-2 | 20 % | none | 0-1 |
 
-- **Totem weights** (the same in every vault kind): Keeping, Gathering, Fortification, Growth, Seeking, Herding, Clear Skies 3 each; Warding and Grave Talisman 2; the Beginning and the End 1. The North Wind isn't in vault chests.
+- **Totem weights** (the same in every vault kind): Keeping, Gathering, Fortification, Growth, Seeking, Herding, Clear Skies 3 each; North Wind, Warding and Grave Talisman 2; the Beginning and the End 1 (out of 29).
 - **Rare:** enchanted golden apple, netherite scrap, totem of undying, Pigstep, heart of the sea.
 - **Infused Gems:** its `gems/rare` table rolled into the drops at open time (`LootTableEvents.MODIFY_DROPS`), only with that mod loaded.
 
@@ -660,7 +662,7 @@ Most bodies live in the milestone classes below and are called from the core cla
 
 ### Milestone
 
-- **`TotemsGameTest`:** keep_inventory on doesn't use the Keeping totem (`keepingNotUsedWithKeepInventory`); own fresh throws and never-pickup items aren't pulled, others' throws are (`gatheringSkipsOwnThrowsAndDisplays`); the same blast without a holder breaks blocks (`explosionWithoutTotemBreaksBlocks`); only blocks within 8 of the holder are spared (`fortificationOnlyNearTheHolder`); a real held Growth totem (armor stand, random_tick_speed 100, 400 ticks) beats vanilla (`heldGrowthOutpacesVanilla`); the stepped search matches vanilla /locate for every type that exists (`seekingMatchesVanillaLocate`; none in the server test world, so the client test checks it in a world with villages); the ring walk covers every cell once (`seekingRingCoversEveryCell`); every totem's loot (`totemsAreFoundInLoot`: chest tables rolled as chests, the evoker as entity loot, about 5 %; each at about its chance over 300 rolls); `totemsAreArtifacts` (every statue totem one per stack and not common; the talisman one per stack); old Reworked Mobs ids load as these items (`oldReworkedMobsIdsLoadAsTheseItems`).
+- **`TotemsGameTest`:** keep_inventory on doesn't use the Keeping totem (`keepingNotUsedWithKeepInventory`); own fresh throws and never-pickup items aren't pulled, others' throws are (`gatheringSkipsOwnThrowsAndDisplays`); the same blast without a holder breaks blocks (`explosionWithoutTotemBreaksBlocks`); only blocks within 8 of the holder are spared (`fortificationOnlyNearTheHolder`); a real held Growth totem (armor stand, random_tick_speed 100, 400 ticks) beats vanilla (`heldGrowthOutpacesVanilla`); the stepped search matches vanilla /locate for every type that exists (`seekingMatchesVanillaLocate`; none in the server test world, so the client test checks it in a world with villages); the ring walk covers every cell once (`seekingRingCoversEveryCell`); every totem's loot (`totemsAreFoundInLoot`: chest tables rolled as chests, each at about its chance over 300 rolls; the evoker as entity loot: Keeping at about `EVOKER_KEEPING` (25 %), never Warding, its Totem of Undying every time); `totemsAreArtifacts` (every statue totem one per stack and not common; the talisman one per stack); old Reworked Mobs ids load as these items (`oldReworkedMobsIdsLoadAsTheseItems`).
 - **`NewTotemsGameTest`:** `gatheringStatueRingsItemsForASideHopper` (an item in range is ringed and collected by a side hopper into a chest; a touching chest stays empty; an item beyond the radius is untouched); `growthPlantsDroppedSeeds` (a wheat seed is planted on farmland, exactly one); `growthNeedsRoomAround`; `growthNeverStacksPlants` (200 tries each: sugar cane, bamboo and cactus items never planted on top of their own kind; crops, saplings and flowers count as plants; an oak sapling is still planted on dirt); plus the bodies of the core ring, pasture, Clear Skies and statue-area tests.
 - **`TotemsBeaconGameTest`** (real only with `-PwithBeacons`): `gatheringBeaconStartsTheRing`; `fortificationBeaconProtectsItsArea` (the area survives a blast); `growthBeaconSetsItsArea` (a 4-layer area has strength 4 and reaches 45 blocks); `seekingBeaconPointsCompasses` (a held compass points at the search result, keeps the name "Compass", and turns plain after its time); `payloadsAcceptTheirTotems` (each payload accepts only its own totem).
 - **`BeginningEndGameTest`:** `endTeleportsWhereAimedWithCooldown` (real use: unsafe aim → FAIL, no cooldown, no move; aim at a block 10 away → there, cooldown on, not used up); `endHeldMakesEyeContactHarmless` (vanilla `isBeingStaredBy`: true without, false with the totem in the off hand); `beginningPulsesOnlyWithReworkedMobs` (with `-PwithMobs`: SUCCESS, count stays 1, cooldown full; without: PASS and no cooldown). Not tested: outside the overworld (`Ripples.supported` covers it with the same check).

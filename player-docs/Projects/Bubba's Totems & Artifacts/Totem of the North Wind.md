@@ -6,7 +6,7 @@
 > | | |
 > |---|---|
 > | **Type** | Artifact (item) |
-> | **Obtained** | Found in trial chamber vaults |
+> | **Obtained** | Found in trial chamber vaults and [[Relic Vaults|relic vaults]] |
 > | **Stackable** | No |
 > | **Cooldown** | 5 seconds |
 > | **Works in a beacon** | Yes, with [[Bubba's Reworked Beacons]] |
@@ -15,12 +15,14 @@ The **Totem of the North Wind** is an artifact that gives a gliding player a gus
 
 ## Obtaining
 
-The totem is found only in trial chamber vaults:
+The totem cannot be crafted. It is found in trial chamber vaults:
 
 - 3 % chance each time a player opens a normal vault.
 - 6 % chance each time a player opens an ominous vault.
 
 Each player can open each vault once, so a whole trial chamber gives about a 15 to 25 % chance of one. It is not found in the chambers' ordinary chests.
+
+It is also found in [[Relic Vaults|relic vault]] chests, and a relic vault's pedestal may hold a Totem of the North Wind [[Totem Statue|statue]]; breaking the statue gives the totem.
 
 ## Usage
 

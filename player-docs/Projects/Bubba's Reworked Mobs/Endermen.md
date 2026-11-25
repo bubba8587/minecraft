@@ -68,7 +68,7 @@ How a cairn goes up:
 
 - A finished cairn shimmers with purple portal particles, and sparkles drift up from its top, visible from far away at night.
 - Endermen at a finished cairn with nothing to do stand in a ring around it, staring at it. The ring grows as more arrive.
-- With [[Bubba's Totems & Artifacts]] installed, the endermen of some finished cairns (about one in seven) leave a [[Totem of the Beginning]] lying at the cairn's foot as an offering. This happens about a minute after the cairn is finished, while one of its endermen is there, and only once per cairn, ever. A player takes it with an empty hand.
+- With [[Bubba's Totems & Artifacts]] installed, the endermen of some finished cairns (about three in ten) leave a [[Totem of the Beginning]] lying at the cairn's foot as an offering. This happens about a minute after the cairn is finished, while one of its endermen is there, and only once per cairn, ever. A player takes it with an empty hand.
 - A player who finishes a cairn themselves earns nothing for it.
 
 ### Hostility

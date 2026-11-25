@@ -47,7 +47,7 @@ Endermen are the world's **caretakers and builders** (owner's design).
 - **E4 hostility:** vanilla rules (eye contact angers them), plus they turn hostile if a player breaks their cairn or attacks one of them nearby. **An enderman busy on a job (repairing or building) ignores eye contact.**
 - **Explosions** breaking a cairn don't anger endermen (owner: no). Only a player breaking it or attacking nearby does.
 - **Nether and End endermen** stay vanilla for now.
-- **No reward for completing a cairn** (owner): the Totem of the End's cairn completion gift was removed because it was farmable (break one block of a finished cairn and put it back). The End is found only in the End. Totem of the Beginning offerings were cut to 0.15 of cairns.
+- **No reward for completing a cairn** (owner): the Totem of the End's cairn completion gift was removed because it was farmable (break one block of a finished cairn and put it back). The End is found only in the End and in relic vaults. Totem of the Beginning offerings come from 0.30 of cairns.
 
 ## How it's built
 
@@ -266,7 +266,7 @@ Reworked Mobs' half of the Totems of the Beginning and the End (`specs/totems-ar
 - Spot: 16 angles round the cairn starting at a seed-picked one, `radius() + 2` out, y from origin+3 down to origin-3, air on a floor that holds a display up, not on or above a design block.
 
 **Numbers (in `EndermanTuning`):**
-- offering share 0.15 of sites (`OFFERING_SHARE`, owner), checked every 100 ticks (`OFFERING_CHECK_TICKS`), 1 in 12 per check (`OFFERING_ONE_IN`), witness within 16 (`OFFERING_WITNESS_RANGE`), spot 2 outside the footprint (`OFFERING_GAP`);
+- offering share 0.30 of sites (`OFFERING_SHARE`, owner), checked every 100 ticks (`OFFERING_CHECK_TICKS`), 1 in 12 per check (`OFFERING_ONE_IN`), witness within 16 (`OFFERING_WITNESS_RANGE`), spot 2 outside the footprint (`OFFERING_GAP`);
 - ripple columns wait up to 600 ticks for their terrain (`RIPPLE_PENDING_TICKS`), protection radius 2 (`RIPPLE_PROTECT_RADIUS`), at most 48 particles a tick (`RIPPLE_PARTICLES_PER_TICK`).
 
 ### The pulse (Totem of the Beginning)
