@@ -1,4 +1,4 @@
-// dte:C1,B15
+// dte:C1,B15,B17,B21
 package io.github.bubba8587.bubbas_reworked_mobs.test;
 
 import java.util.ArrayList;
@@ -281,7 +281,7 @@ public class CampsGameTest {
 						if (kind.nether()) {
 							continue;
 						}
-						bowl(helper); // the land rising round the camp, so the tunnel surfaces into a slope
+						bowl(helper); // land rising round the camp
 					}
 					long s = seed * 104729L + kind.ordinal() * 31L + size.ordinal();
 					CampPiece piece = CampCommand.build(level, at, kind, size, s);
@@ -576,6 +576,13 @@ public class CampsGameTest {
 								clashes.add(kind.id() + "/" + size.id() + "/" + seed + ": " + all.get(i) + " x " + all.get(j));
 							}
 						}
+					}
+					// the key and the shade every camp needs: a banner (on a tower or the ground) and a lean-to
+					if (all.stream().noneMatch(f -> f.what().equals("banner") || f.what().equals("tower"))) {
+						clashes.add(kind.id() + "/" + size.id() + "/" + seed + ": no banner");
+					}
+					if (all.stream().noneMatch(f -> f.what().equals("lean-to"))) {
+						clashes.add(kind.id() + "/" + size.id() + "/" + seed + ": no lean-to");
 					}
 				}
 			}

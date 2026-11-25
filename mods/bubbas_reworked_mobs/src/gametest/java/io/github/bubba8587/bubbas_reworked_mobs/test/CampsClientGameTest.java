@@ -1,4 +1,4 @@
-// dte:C1,B15
+// dte:C1,B15,B17,B21
 package io.github.bubba8587.bubbas_reworked_mobs.test;
 
 import java.util.ArrayList;
@@ -31,6 +31,9 @@ import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContex
  * <ul>
  * <li>Built on a flat world, one of each kind and size: camp-&lt;kind&gt;-above and camp-&lt;kind&gt;-close, then a
  * skeleton camp with its roster out at noon, in the shade (camp-roster), inside its room (camp-room) and at night (camp-roster-night).</li>
+ * <li>Stables, chests and the room stairs (also alone as the part {@code campextras}): camp-stable-&lt;kind&gt;-close /
+ * -clearing (a stable with its mounts), camp-skull-chest, camp-buried-chest, camp-tower-chest (inside, night vision),
+ * camp-stairs-up-&lt;kind&gt; (the tunnel's top from the room's doorway).</li>
  * <li>In a real world (seed 20261116): how often camps generate (printed: camps per 1000 x 1000 blocks by kind,
  * typical distance to the nearest of each kind), and the nearest natural camp (camp-natural-0-above / -close).</li>
  * </ul>
@@ -39,11 +42,15 @@ import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContex
 public class CampsClientGameTest implements FabricClientGameTest {
 	@Override
 	public void runTest(ClientGameTestContext context) {
-		if (!ClientTests.run("camps")) {
+		boolean all = ClientTests.run("camps");
+		if (!all && !ClientTests.named("campextras")) {
 			return;
 		}
-		built(context);
-		natural(context);
+		extras(context);
+		if (all) {
+			built(context);
+			natural(context);
+		}
 	}
 
 	private static void built(ClientGameTestContext context) {
@@ -161,6 +168,97 @@ public class CampsClientGameTest implements FabricClientGameTest {
 			context.waitTicks(100);
 			context.takeScreenshot("camp-roster-night");
 		}
+	}
+
+	/** Stables with their mounts, the tower and skull chests, and the room stairs seen from below. */
+	private static void extras(ClientGameTestContext context) {
+		try (TestSingleplayerContext sp = context.worldBuilder().adjustSettings(s -> s.setGameMode(WorldCreationUiState.SelectedGameMode.CREATIVE)).create()) {
+			sp.getConnection().waitForChunksRender();
+			TestServerContext server = sp.getServer();
+			setup(server);
+			BlockPos base = context.computeOnClient(mc -> mc.player.blockPosition());
+			// stables: a large camp of three kinds, the roster cleared away so only the mounts stand
+			CampKind[] stableKinds = { CampKind.ZOMBIE, CampKind.HUSK, CampKind.SKELETON };
+			for (int i = 0; i < stableKinds.length; i++) {
+				CampKind kind = stableKinds[i];
+				BlockPos at = base.offset(i * 50, 0, 0);
+				tp(context, server, at.getX() + 0.5, at.getY() + 30, at.getZ() - 20.5, 0, 50);
+				sp.getConnection().waitForChunksRender();
+				CampPiece piece = server.computeOnServer(sv -> CampCommand.build(sv.overworld(), at, kind, CampTuning.Size.LARGE, 40L + kind.ordinal()));
+				context.waitTicks(40); // light settled under the roof
+				server.runOnServer(sv -> {
+					for (var site : io.github.bubba8587.bubbas_reworked_mobs.camp.CampSites.all(sv.overworld())) {
+						if (site.centre().equals(piece.centre())) {
+							io.github.bubba8587.bubbas_reworked_mobs.camp.CampRoster.spawn(sv.overworld(), site).forEach(net.minecraft.world.entity.Entity::discard);
+						}
+					}
+				});
+				BlockPos in = piece.stableInside();
+				net.minecraft.core.Direction out = piece.stableFacing();
+				String mounts = server.computeOnServer(sv -> sv.overworld().getEntitiesOfClass(net.minecraft.world.entity.Mob.class,
+						new net.minecraft.world.phys.AABB(in).inflate(5.0), m -> m.entityTags().contains(io.github.bubba8587.bubbas_reworked_mobs.camp.CampRoster.LIVESTOCK_TAG))
+						.stream().map(m -> m.getType().getDescriptionId().replaceFirst("^.*[.]", "") + (m.isLeashed() ? " leashed" : "")).toList().toString());
+				System.out.println("[camps] " + kind.id() + " stable mounts: " + mounts);
+				Vec3 close = Vec3.atBottomCenterOf(in).add(out.getStepX() * 5.5, 1.6, out.getStepZ() * 5.5);
+				tp(context, server, close.x, close.y, close.z, out.getOpposite().toYRot(), 10);
+				context.waitTicks(10);
+				context.takeScreenshot("camp-stable-" + kind.id() + "-close");
+				Vec3 clearing = Vec3.atBottomCenterOf(piece.centre()).add(0.0, 3.5, 0.0).add(Vec3.atLowerCornerOf(piece.centre().subtract(in)).normalize().scale(3.0));
+				float yaw = (float) (Math.toDegrees(Math.atan2(in.getZ() + 0.5 - clearing.z, in.getX() + 0.5 - clearing.x)) - 90.0);
+				tp(context, server, clearing.x, clearing.y, clearing.z, yaw, 12);
+				context.takeScreenshot("camp-stable-" + kind.id() + "-clearing");
+			}
+			server.runCommand("effect give @p minecraft:night_vision infinite 0 true");
+			// the skull chests (full and half-buried) and the winding tower's, seen from inside
+			String[] chests = { "skull", "buried", "tower" };
+			for (int i = 0; i < chests.length; i++) {
+				int f = i;
+				long seed = 0;
+				while (!chestPiece(new CampPiece(seed, base.offset(i * 50, 0, 60), CampKind.SKELETON, CampTuning.Size.LARGE), f)) {
+					seed++;
+				}
+				BlockPos at = base.offset(i * 50, 0, 60);
+				long sd = seed;
+				tp(context, server, at.getX() + 0.5, at.getY() + 30, at.getZ() - 20.5, 0, 50);
+				sp.getConnection().waitForChunksRender();
+				CampPiece piece = server.computeOnServer(sv -> CampCommand.build(sv.overworld(), at, CampKind.SKELETON, CampTuning.Size.LARGE, sd));
+				BlockPos chest = f == 2 ? piece.windingChest() : piece.skullChest();
+				// in the skull, from its middle; in the tower's core, from the opposite corner
+				BlockPos eye = f == 2 ? new BlockPos(2 * piece.windingTop().getX() - chest.getX(), chest.getY(), 2 * piece.windingTop().getZ() - chest.getZ())
+						: piece.skullInside().above();
+				double ex = eye.getX() + 0.5;
+				double ey = f == 2 ? chest.getY() + 0.3 : eye.getY() - 0.2;
+				double ez = eye.getZ() + 0.5;
+				float yaw = (float) (Math.toDegrees(Math.atan2(chest.getZ() + 0.5 - ez, chest.getX() + 0.5 - ex)) - 90.0);
+				tp(context, server, ex, ey, ez, yaw, 30);
+				context.takeScreenshot("camp-" + chests[i] + "-chest");
+			}
+			// the room stairs from the room's doorway, looking up and out
+			CampKind[] stairKinds = { CampKind.SKELETON, CampKind.HUSK };
+			for (int i = 0; i < stairKinds.length; i++) {
+				CampKind kind = stairKinds[i];
+				BlockPos at = base.offset(i * 50, 12, 120); // on a stone block (room depth)
+				tp(context, server, at.getX() + 0.5, at.getY() + 30, at.getZ() - 20.5, 0, 50);
+				sp.getConnection().waitForChunksRender();
+				server.runCommand("fill %d %d %d %d %d %d stone".formatted(at.getX() - 16, at.getY() - 13, at.getZ() - 16, at.getX() + 16, at.getY() - 2, at.getZ() + 16));
+				server.runCommand("fill %d %d %d %d %d %d grass_block".formatted(at.getX() - 16, at.getY() - 1, at.getZ() - 16, at.getX() + 16, at.getY() - 1, at.getZ() + 16));
+				CampPiece piece = server.computeOnServer(sv -> CampCommand.build(sv.overworld(), at, kind, CampTuning.Size.MEDIUM, 9L + kind.ordinal()));
+				BlockPos door = piece.tunnelStep(0).below();
+				net.minecraft.core.Direction out = piece.stairsOut();
+				tp(context, server, door.getX() + 0.5 - out.getStepX() * 1.5, door.getY() + 0.2, door.getZ() + 0.5 - out.getStepZ() * 1.5, out.toYRot(), -32);
+				context.takeScreenshot("camp-stairs-up-" + kind.id());
+			}
+			server.runCommand("effect clear @p");
+		}
+	}
+
+	/** Whether a camp plan has the chest piece: 0 a full skull rock, 1 a half-buried one, 2 a winding tower. */
+	private static boolean chestPiece(CampPiece piece, int f) {
+		return switch (f) {
+			case 0 -> piece.skullChest() != null && !piece.skullBuried();
+			case 1 -> piece.skullChest() != null && piece.skullBuried();
+			default -> piece.windingChest() != null;
+		};
 	}
 
 	private static void natural(ClientGameTestContext context) {

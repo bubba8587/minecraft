@@ -1,4 +1,4 @@
-// dte:C1,B15
+// dte:C1,B15,B17,B21
 package io.github.bubba8587.bubbas_reworked_mobs.camp;
 
 import java.util.ArrayList;
@@ -223,7 +223,7 @@ public class CampPiece extends StructurePiece {
 			int hz = 1 + random.nextInt(alongX ? max : reach);
 			int dx = random.nextInt(3) - 1;
 			int dz = random.nextInt(3) - 1;
-			// never toward the stairs; a room one wide toward them stays centred (its tunnel opens from the first step)
+			// never toward the stairs; centred when one wide toward them
 			if (alongX && (dx * stairs.getStepX() > 0 || hx == 1)) {
 				dx = 0;
 			}
@@ -339,7 +339,7 @@ public class CampPiece extends StructurePiece {
 					}
 				}
 			}
-			// the stable after the lean-tos, from its own stream (towers and the rest fit round it)
+			// the stable, from its own random stream
 			RandomSource stableRandom = RandomSource.create(net.minecraft.world.level.levelgen.RandomSupport.mixStafford13(seed ^ 0x57AB1EL));
 			if (!kind.nether() && (size == CampTuning.Size.LARGE || size == CampTuning.Size.MEDIUM && stableRandom.nextFloat() < CampTuning.MEDIUM_STABLE_CHANCE)) {
 				long pieceSeed = stableRandom.nextLong();
@@ -407,9 +407,9 @@ public class CampPiece extends StructurePiece {
 			// banners: the first flies from the first tower when there is one
 			for (int i = towers.isEmpty() ? 0 : 1; i < size.banners; i++) {
 				long pieceSeed = random.nextLong();
-				for (int t = 0; t < TRIES; t++) {
+				for (int t = 0; t < TRIES * 4; t++) {
 					double a = random.nextDouble() * Math.PI * 2.0;
-					int d = 3 + random.nextInt(Math.max(1, r - 4));
+					int d = (t < TRIES ? 3 : 4) + random.nextInt(Math.max(1, r - 4));
 					int x = cx + (int) Math.round(Math.cos(a) * d);
 					int z = cz + (int) Math.round(Math.sin(a) * d);
 					if (claim(Footprint.around("banner", x, z, 0))) {
@@ -781,6 +781,10 @@ public class CampPiece extends StructurePiece {
 				// Connected railing along the edge.
 				boolean alongX = dz == 0 || dz == 3;
 				boolean alongZ = dx == 0 || dx == 3;
+				if (!corner && !railAt(t, alongX ? dx - 1 : dx, alongX ? dz : dz - 1, ladderCorner, railGone)
+						&& !railAt(t, alongX ? dx + 1 : dx, alongX ? dz : dz + 1, ladderCorner, railGone)) {
+					continue; // no lone rail segment
+				}
 				b.put(x, top + 1, z, fence(alongX && dx < 3, alongZ && dz < 3, alongX && dx > 0, alongZ && dz > 0));
 				if (t.roof && corner) {
 					b.put(x, top + 2, z, kind.fence());
@@ -814,6 +818,16 @@ public class CampPiece extends StructurePiece {
 				b.put(lx, y, lz, Blocks.LADDER.defaultBlockState().setValue(LadderBlock.FACING, out));
 			}
 		}
+	}
+
+	/** Whether a tower's platform edge cell (0..3 each way) carries a fence one above the planks (railing, corner or banner post). */
+	private static boolean railAt(Tower t, int dx, int dz, int ladderCorner, boolean[] railGone) {
+		boolean corner = (dx == 0 || dx == 3) && (dz == 0 || dz == 3);
+		if (corner) {
+			return cornerIndex(dx, dz) != ladderCorner;
+		}
+		Direction edgeSide = dx == 3 ? Direction.EAST : dx == 0 ? Direction.WEST : dz == 0 ? Direction.NORTH : Direction.SOUTH;
+		return !railGone[dx * 4 + dz] && !t.opens(edgeSide);
 	}
 
 	/** A ramp of stairs from the ground up to a tower's platform, 2 wide, on log stilts. */
@@ -1320,6 +1334,12 @@ public class CampPiece extends StructurePiece {
 				.setValue(net.minecraft.world.level.block.CrossCollisionBlock.NORTH, north);
 	}
 
+	/** The kind's fence joined toward the given sides. */
+	private BlockState fenceToward(Direction... sides) {
+		java.util.Set<Direction> set = java.util.Set.of(sides);
+		return fence(set.contains(Direction.EAST), set.contains(Direction.SOUTH), set.contains(Direction.WEST), set.contains(Direction.NORTH));
+	}
+
 	/** Corner of a 4x4 (0..3 each way): 0 north-west, 1 north-east, 2 south-east, 3 south-west. */
 	private static int cornerIndex(int dx, int dz) {
 		return dx == 0 ? (dz == 0 ? 0 : 3) : (dz == 0 ? 1 : 2);
@@ -1604,10 +1624,12 @@ public class CampPiece extends StructurePiece {
 					}
 				} else if (row == 0 && u == 0) {
 					b.put(x, y0 + 1, z, kind.fenceGate().setValue(net.minecraft.world.level.block.FenceGateBlock.FACING, facing));
-				} else if (side || row == 0) {
-					b.put(x, y0 + 1, z, kind.fence());
+				} else if (side) {
+					b.put(x, y0 + 1, z, fenceToward(facing, facing.getOpposite())); // side rails, sides preset
+				} else if (row == 0) {
+					b.put(x, y0 + 1, z, fenceToward(facing.getClockWise(), facing.getCounterClockWise()));
 				} else if (row == STABLE_DEPTH - 2 && u == 0) {
-					b.put(x, y0 + 1, z, kind.fence()); // the tether post
+					b.put(x, y0 + 1, z, fenceToward(facing.getOpposite())); // the tether post, against the back wall
 				} else if (row == STABLE_DEPTH - 2 && (u == 2 * baleSide || secondBale && u == -2 * baleSide)) {
 					b.put(x, y0 + 1, z, Blocks.HAY_BLOCK.defaultBlockState());
 				}
@@ -1860,7 +1882,6 @@ public class CampPiece extends StructurePiece {
 				if (corner && roll < 0.7F) {
 					b.put(x, floor + roomDepth() - 2, z, Blocks.COBWEB.defaultBlockState());
 				} else if (!wall && !corner && !kind.nether() && roll < 0.06F && dx * out.getStepX() + dz * out.getStepZ() < h) {
-					// (none in the row by the stairs, so a leader isn't stopped at the doorway)
 					b.put(x, floor + 1, z, Blocks.BONE_BLOCK.defaultBlockState());
 				}
 			}
@@ -1887,12 +1908,12 @@ public class CampPiece extends StructurePiece {
 				} else if (i == 0) {
 					b.put(x, step, z, fullBlock(kind.trodden(0.1F)));
 				}
-				// headroom for a hopping mob, leaders included
+				// headroom
 				int clearTo = i >= 3 ? Math.max(step + TUNNEL_HEADROOM, centre.getY() + 2) : step + TUNNEL_HEADROOM;
 				for (int y = step + 1; y <= clearTo; y++) {
 					b.put(x, y, z, Blocks.AIR.defaultBlockState());
 				}
-				// no sand or gravel left hanging over the tunnel
+				// no falling ground over the tunnel
 				if (b.inside(x, clearTo + 1, z) && b.level().getBlockState(new BlockPos(x, clearTo + 1, z)).getBlock() instanceof net.minecraft.world.level.block.FallingBlock) {
 					b.put(x, clearTo + 1, z, kind.rock(0.1F));
 				}
@@ -1918,7 +1939,7 @@ public class CampPiece extends StructurePiece {
 			}
 		}
 		if (!kind.nether()) {
-			// the mouth flush with the top step, then back up to the land a block a block at most
+			// the way out: flush with the top step, then a block a cell up to the land
 			for (int i = roomDepth() + 1; i <= roomDepth() + MOUTH_LEVEL + MOUTH_SLOPE; i++) {
 				int cap = centre.getY() + Math.max(0, i - roomDepth() - MOUTH_LEVEL);
 				for (int w = 0; w <= 1; w++) {
@@ -1956,6 +1977,9 @@ public class CampPiece extends StructurePiece {
 		int g = b.ground(x, z);
 		if (g == Integer.MIN_VALUE) {
 			return;
+		}
+		if (b.inside(x, g + 1, z) && weed(b.level().getBlockState(new BlockPos(x, g + 1, z)))) {
+			b.put(x, g + 1, z, Blocks.AIR.defaultBlockState()); // nothing underfoot at the way out
 		}
 		if (g > cap) {
 			for (int y = cap + 1; y <= g + 3; y++) {
