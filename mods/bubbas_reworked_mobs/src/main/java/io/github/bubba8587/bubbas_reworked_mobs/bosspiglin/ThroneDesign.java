@@ -7,19 +7,24 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.ShelfBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
 /**
  * The Boss Piglin's throne, vanilla blocks: a 2 x 2 seat of polished blackstone brick slabs with a backrest row behind
- * it (2 wide x 3 deep in all). Offsets are from the front seat cell on the seated boss's left; the other cell of a row
- * is {@code facing.getClockWise()} of it and the rows go back along {@code facing.getOpposite()}. Backrest, bottom to
- * top: polished blackstone bricks, gilded blackstone, chiseled polished blackstone, gold blocks.
+ * it, and crimson shelf armrests either side of the seat (4 wide x 3 deep in all). Offsets are from the front seat cell
+ * on the seated boss's left; the other cell of a row is {@code facing.getClockWise()} of it and the rows go back along
+ * {@code facing.getOpposite()}; the left armrest is at across -1. Backrest, bottom to top: polished blackstone bricks,
+ * gilded blackstone, chiseled polished blackstone, gold blocks.
  */
 public final class ThroneDesign {
 	public static final int WIDTH = 2;
 	public static final int DEPTH = 3;
 	public static final int HEIGHT = 4;
+	/** The whole footprint across, armrests included: from across {@link #MIN_ACROSS} for this many cells. */
+	public static final int OUTER_WIDTH = WIDTH + 2;
+	public static final int MIN_ACROSS = -1;
 	/** Seat centre distance behind the throne's front face, in blocks (fits BossPiglinModel at its render scale). */
 	public static final double SEAT_DEPTH = 0.98;
 	/** Seat surface height above the throne's floor. */
@@ -40,6 +45,11 @@ public final class ThroneDesign {
 			for (int across = 0; across < WIDTH; across++) {
 				out.add(new Placed(at(side, back, across, 0, depth), seat));
 			}
+		}
+		// armrests: crimson shelves beside the seat, their backs outward
+		for (int depth = 0; depth < 2; depth++) {
+			out.add(new Placed(at(side, back, -1, 0, depth), Blocks.CRIMSON_SHELF.defaultBlockState().setValue(ShelfBlock.FACING, side)));
+			out.add(new Placed(at(side, back, WIDTH, 0, depth), Blocks.CRIMSON_SHELF.defaultBlockState().setValue(ShelfBlock.FACING, side.getOpposite())));
 		}
 		Block[] column = {Blocks.POLISHED_BLACKSTONE_BRICKS, Blocks.GILDED_BLACKSTONE, Blocks.CHISELED_POLISHED_BLACKSTONE, Blocks.GOLD_BLOCK};
 		for (int y = 0; y < column.length; y++) {

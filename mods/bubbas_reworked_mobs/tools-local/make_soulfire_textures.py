@@ -93,6 +93,42 @@ def soul_flame(c):
 	return soul(c) if C > 0.03 and 15 < h < 120 else c
 
 
+LOCK = [  # the padlock: s shackle, o outline, b body, h highlight, k keyhole
+	"..ooo..",
+	".os.so.",
+	".o...o.",
+	"ooooooo",
+	"ohhhhho",
+	"obbkbbo",
+	"obbkbbo",
+	"ooooooo",
+]
+LOCK_COLOURS = {"s": (150, 150, 158), "o": (52, 52, 60), "b": (128, 128, 136), "h": (196, 196, 204), "k": (1, 167, 172)}
+
+
+def soulguard_flame_lock(v):
+	"""Soulguard icon: vanilla Fire Resistance's flame alone (no shield) on the soul ramp, doubled to fill the icon, with
+	a small padlock in front of its base."""
+	src = Image.open(v / "mob_effect/fire_resistance.png").convert("RGBA")
+	flame = Image.new("RGBA", src.size, (0, 0, 0, 0))
+	for y in range(src.height):
+		for x in range(src.width):
+			p = src.getpixel((x, y))
+			if p[3]:
+				L, C, h = lch(p[:3])
+				if C > 0.03 and 15 < h < 120:
+					flame.putpixel((x, y), soul(p[:3]) + (255,))
+	flame = flame.crop(flame.getbbox())
+	flame = flame.resize((flame.width * 2, flame.height * 2), Image.NEAREST)
+	icon = Image.new("RGBA", (18, 18), (0, 0, 0, 0))
+	icon.alpha_composite(flame, ((18 - flame.width) // 2, (18 - flame.height) // 2))
+	for y, row in enumerate(LOCK):
+		for x, ch in enumerate(row):
+			if ch != ".":
+				icon.putpixel((11 + x, 10 + y), LOCK_COLOURS[ch] + (255,))
+	return icon
+
+
 def charge_colour(c):
 	"""Fire charge: orange cracks (and the warm glow around them) to soul, the rock body to dark blackstone."""
 	L, C, h = lch(c)
@@ -225,9 +261,9 @@ def main():
 	save_pair(charge, "item/soul_fire_charge.png", outline_lum=0,
 		material=lambda pal: {k: ("crack" if lch(c)[1] > 0.05 else "rock") for k, c in pal.items()})
 
-	icon = recolour(Image.open(v / "mob_effect/fire_resistance.png"), soul_flame)
+	icon = soulguard_flame_lock(v)
 	save_pair(icon, "mob_effect/soulguard.png", outline_lum=0,
-		material=lambda pal: {k: ("flame" if lch(c)[1] > 0.08 else "metal") for k, c in pal.items()})
+		material=lambda pal: {k: ("flame" if lch(c)[1] > 0.06 else "metal") for k, c in pal.items()})
 
 
 if __name__ == "__main__":
