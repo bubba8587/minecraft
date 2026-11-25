@@ -55,7 +55,7 @@ The four smaller mods go first, to prove the pipeline. Reworked Mobs, Totems & A
 | Gallery (posters, `build/posters/`) | `p11_extra_recipes.png` | `p10_world_tweaks.png` | `p09_mining.png` | `p08_beacons.png` |
 | Gallery (plain shots, `mods/postershots/build/run/posters/shots/`) | `blast.png`, `glideK.png` | `gyw_5.png`, `gyw_7.png` | `mineB_3.png`, `qtzC0.png` | `pcD.png`, `pcF.png`, `bcE.png` |
 | Human-made part (owner to confirm) | The recipe set is the owner's own datapack, ported to 26.3; the Glider and Synthetic Diamond Ore are the owner's design. | Owner's design (bubbles, vents, lift for the Glider), tuned in play (bubble rate). | Owner's design: the tool curve, deepslate, rare finds, True Unbreaking, quartz gear. | Owner's design: the item slot, equal effects, paired and upside-down beacons. |
-| Pre-release checks | server + client milestone suites | same | same | same; plus testing against other beacon mods (BACKLOG) |
+| Pre-release checks | server + client milestone suites passed 2026-11-25 | same, passed | same, passed | same, passed; still to do: testing against other beacon mods (BACKLOG) |
 | Mod icon | none yet | none yet | none yet | none yet |
 
 - **Gallery images:** the posters are composed by script from real in-game screenshots, vanilla textures and the game font; no image generator is involved. They do show agent-made textures (B14 disclosure covers the content). Plain screenshots are the safest lead image.
