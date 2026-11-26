@@ -90,11 +90,11 @@ An enchantment like Mending, but it feeds on its wearer instead of XP: now and t
 
 | Level | Health, at most | Durability, at most | Durability per health |
 |---|---|---|---|
-| I | 1 (half a heart) | 30 | 30 |
-| II | 1.5 | 55 | ~37 |
-| III | 2 | 85 | ~42.5 |
+| I | 1 (half a heart) | 20 | 20 |
+| II | 1.5 | 35 | ~23 |
+| III | 2 | 55 | 27.5 |
 
-  I and II are the owner's example numbers; III continues the ladder *(default)*. The caps are data: the enchantment's `bubbas_world_tweaks:parasitic` effect component (`max_health`, `max_repair`, level-based values) in `data/bubbas_world_tweaks/enchantment/parasitic.json`.
+  Nerfed by the owner (2026-11-25: "nerf parasitic"; the durability caps cut by about a third, health caps kept *(default amount)*). Before: 30 / 55 / 85, the owner's example numbers for I and II, III continuing the ladder. The caps are data: the enchantment's `bubbas_world_tweaks:parasitic` effect component (`max_health`, `max_repair`, level-based values) in `data/bubbas_world_tweaks/enchantment/parasitic.json`.
 - **Exclusive with Mending (owner):** `exclusive_set: minecraft:mending` (vanilla checks both ways).
 - **Can kill you (owner):** no health floor. Damage type `bubbas_world_tweaks:parasitic` (in the same tags as vanilla starvation: bypasses armour, effects and wolf armour, no knockback); death message "was eaten alive by their own gear".
 - **When:** checked once a second per survival or adventure player (`Parasitic`, a level tick). After a bite, a cooldown of 30-90 s (`PARASITIC_COOLDOWN_*`), then a 5 % chance each second (`PARASITIC_BITE_CHANCE`, about 20 s more on average) *(defaults; owner: random-ish frequency with a cooldown)*. Only a **damaged** Parasitic item bites, worn or held in any slot (`slots: any`, as Mending); with several, one at random. A bite that would over-mend takes only the health the repair needs. If the health doesn't come off (the player was just hit and is briefly invulnerable), nothing is mended and it tries again next second. Creative and spectator players are never bitten.
@@ -108,4 +108,4 @@ An enchantment like Mending, but it feeds on its wearer instead of XP: now and t
 
 - Magma under lava makes bubbles on the surface nearby; they swell for a few seconds, then pop with the plop sound. The core test covers the bubbling spot; no test yet that bubbles appear only over magma.
 - A lava geyser erupts now and then with black smoke and lifts a player standing or gliding over it, with a speed boost. A sulfur geyser gives the same boost. Core tests cover lift and boost, and `VentRhythmGameTest` the rhythm; no test yet for eruptions near players at about the tuned rate, or a gliding player circling a geyser to climb.
-- Parasitic (`ParasiticGameTest`, core `parasiticBiteTradesHealthForDurability`): a level III bite takes 0.5-2 health and mends about 42.5 a point; it can't sit with Mending; an undamaged item doesn't bite. Objectives, no test yet: the cooldown holds between bites; a bite can kill; creative players are never bitten.
+- Parasitic (`ParasiticGameTest`, core `parasiticBiteTradesHealthForDurability`): a level III bite takes 0.5-2 health and mends about 27.5 a point; it can't sit with Mending; an undamaged item doesn't bite. Objectives, no test yet: the cooldown holds between bites; a bite can kill; creative players are never bitten.

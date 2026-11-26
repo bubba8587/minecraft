@@ -24,9 +24,9 @@ mod: "Bubba's World Tweaks"
 
 | Level | Health per bite, at most | Durability per bite, at most |
 |---|---|---|
-| I | Half a heart | 30 |
-| II | Three quarters of a heart | 55 |
-| III | One heart | 85 |
+| I | Half a heart | 20 |
+| II | Three quarters of a heart | 35 |
+| III | One heart | 55 |
 
 - Armour doesn't soften the bite, and **it can kill you**.
 - It never bites players in Creative mode.

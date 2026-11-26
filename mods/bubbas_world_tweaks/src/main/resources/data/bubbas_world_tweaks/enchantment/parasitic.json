@@ -12,11 +12,11 @@
       },
       "max_repair": {
         "type": "minecraft:lookup",
-        "values": [30.0, 55.0, 85.0],
+        "values": [20.0, 35.0, 55.0],
         "fallback": {
           "type": "minecraft:linear",
-          "base": 30.0,
-          "per_level_above_first": 27.5
+          "base": 20.0,
+          "per_level_above_first": 17.5
         }
       }
     }

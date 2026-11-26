@@ -37,7 +37,7 @@ public class ParasiticGameTest {
 		return player;
 	}
 
-	/** A bite takes up to the level's health cap and mends at the level's ratio (III: up to 2 health, 85 durability). */
+	/** A bite takes up to the level's health cap and mends at the level's ratio (III: up to 2 health, 55 durability). */
 	public static void biteTradesHealthForDurability(GameTestHelper helper) {
 		ItemStack sword = new ItemStack(Items.IRON_SWORD);
 		sword.enchant(parasitic(helper), 3);
@@ -48,7 +48,7 @@ public class ParasiticGameTest {
 		float lost = before - player.getHealth();
 		int mended = 200 - player.getMainHandItem().getDamageValue();
 		helper.assertTrue(lost >= 0.5F - 0.01F && lost <= 2.0F + 0.01F, "health taken %.2f (III: 0.5 to 2)".formatted(lost));
-		helper.assertTrue(Math.abs(mended / lost - 42.5F) < 1.5F, "mended %d for %.2f health (III: 42.5 a point)".formatted(mended, lost));
+		helper.assertTrue(Math.abs(mended / lost - 27.5F) < 1.5F, "mended %d for %.2f health (III: 27.5 a point)".formatted(mended, lost));
 		helper.succeed();
 	}
 
