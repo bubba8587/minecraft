@@ -110,6 +110,12 @@ Flooded fortresses on the floor of deep oceans: a Nether fortress's layout, buil
 - **Spawner (owner):** the blaze spawner becomes a **guardian spawner** ("there's not really a lot of available hostile mobs in the sea").
 - **Spawns (owner):** inside the fortress (its pieces' boxes, like vanilla's fortress spawn override) monsters are mostly **drowned** with the **occasional guardian** *(default weights, e.g. drowned 10 : guardian 1)*.
 - **Where (owner):** deep ocean biomes only (deep ocean, deep lukewarm, deep cold, deep frozen), rare: about as rare as ocean monuments *(default: a structure set spaced like monuments)*. Seated on the sea floor, its base fortified into the floor (the generator's pillar fill reaches down to solid ground), and kept below sea level.
+- **Tectonic (owner, 2026-11-25: "compat with Tectonic, which can offer deeper seas"):** placement reads the real ocean-floor height from the chunk generator (no assumed vanilla depths), so on Tectonic's deeper floors the fortress sits deeper and its pillars reach the floor; it stays below sea level. Tectonic keeps vanilla's biomes, so the deep-ocean biome tag still applies. Verified on a headless server with Tectonic (locate and look at real placements), not only in flat game-test worlds.
+- **Round 2 (owner picked, 2026-11-25; build after the first version merges):**
+  - **Conduit shrine:** in the central courtyard (the fortress's big crossing) a prismarine conduit frame with an empty heart. A player who places a conduit there activates it (vanilla conduit: Conduit Power round it, and it attacks hostile mobs in range, so drowned near it take damage). The Heart of the Sea in the loot is the way to make one. Frame size and spot *(default)*: the smallest frame that activates (16 blocks), centred over the crossing.
+  - **Bubble lifts:** the tall stair shafts become bubble columns: soul sand at the foot of up-shafts, magma at the top of down-shafts *(default which shafts)*, so the levels connect quickly. Vanilla bubble columns.
+  - **Dolphins lead to it:** add the structure to vanilla's `#minecraft:dolphin_located` structure tag, so a dolphin fed fish can guide a player to the nearest one.
+  - **Treasure maps point to it:** shipwreck map chests sometimes hold an explorer map to the nearest deep-sea fortress instead of a buried treasure map *(default odds, e.g. 1 in 4 of the maps)*.
 - `/locate structure bubbas_world_tweaks:deepsea_fortress` works like any structure. Test world: a station or a natural-world spot *(default)*.
 ## Open (owner)
 
