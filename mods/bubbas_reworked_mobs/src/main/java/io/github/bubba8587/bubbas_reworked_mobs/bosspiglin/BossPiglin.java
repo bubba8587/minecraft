@@ -33,7 +33,6 @@ import net.minecraft.world.entity.SpawnGroupData;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.goal.AvoidEntityGoal;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
@@ -384,13 +383,7 @@ public class BossPiglin extends AbstractPiglin {
 		this.goalSelector.addGoal(2, new SlapGoal());
 		this.escapeGoal = new EscapeGoal();
 		this.goalSelector.addGoal(3, this.escapeGoal);
-		this.avoidGoal = new AvoidEntityGoal<>(this, Player.class, BossPiglinTuning.FLEE_DISTANCE, BossPiglinTuning.FLEE_WALK,
-				BossPiglinTuning.FLEE_SPRINT) {
-			@Override
-			public boolean canUse() {
-				return BossPiglin.this.isFleeing() && super.canUse();
-			}
-		};
+		this.avoidGoal = new FleeGoal();
 		this.goalSelector.addGoal(4, this.avoidGoal);
 		this.goalSelector.addGoal(5, new WaterAvoidingRandomStrollGoal(this, BossPiglinTuning.HIDE_SPEED) {
 			@Override
@@ -624,6 +617,154 @@ public class BossPiglin extends AbstractPiglin {
 		}
 	}
 
+	/**
+	 * Running from players (the nearest within FLEE_DISTANCE, seen or not, and for FLEE_LINGER_TICKS after one drops out).
+	 * Each plan scores FLEE_DIRECTIONS spots FLEE_STEP blocks round him, each dropped to what lies below (ground, the foot
+	 * of a cliff, a lava lake's surface), by how much farther from the player they are, and takes the best one vanilla's
+	 * pathfinder reaches. While running, lava and fire lose their path penalties (panic), so a route can lead over an edge
+	 * into lava; he re-plans before a route runs out or when the player closes in, so he doesn't stop between legs.
+	 */
+	private class FleeGoal extends Goal {
+		private static final net.minecraft.world.level.pathfinder.PathType[] PANIC_TYPES = {
+				net.minecraft.world.level.pathfinder.PathType.LAVA, net.minecraft.world.level.pathfinder.PathType.FIRE,
+				net.minecraft.world.level.pathfinder.PathType.FIRE_IN_NEIGHBOR, net.minecraft.world.level.pathfinder.PathType.DAMAGING,
+				net.minecraft.world.level.pathfinder.PathType.DAMAGING_IN_NEIGHBOR };
+		private final float[] calmMalus = new float[PANIC_TYPES.length];
+		private int repath;
+		private int linger;
+		private double planFrom;
+		private @Nullable Player from;
+
+		FleeGoal() {
+			this.setFlags(EnumSet.of(Goal.Flag.MOVE));
+		}
+
+		private @Nullable Player nearest() {
+			BossPiglin boss = BossPiglin.this;
+			return boss.level().getNearestPlayer(boss.getX(), boss.getY(), boss.getZ(), BossPiglinTuning.FLEE_DISTANCE,
+					EntitySelector.NO_CREATIVE_OR_SPECTATOR.and(e -> e.isAlive()));
+		}
+
+		@Override
+		public boolean canUse() {
+			if (!BossPiglin.this.isFleeing()) {
+				return false;
+			}
+			this.from = this.nearest();
+			return this.from != null;
+		}
+
+		@Override
+		public boolean canContinueToUse() {
+			return BossPiglin.this.isFleeing() && this.linger > 0;
+		}
+
+		@Override
+		public void start() {
+			BossPiglin boss = BossPiglin.this;
+			this.repath = 0;
+			this.linger = BossPiglinTuning.FLEE_LINGER_TICKS;
+			for (int i = 0; i < PANIC_TYPES.length; i++) {
+				this.calmMalus[i] = boss.getPathfindingMalus(PANIC_TYPES[i]);
+				boss.setPathfindingMalus(PANIC_TYPES[i], 0.0F);
+			}
+		}
+
+		@Override
+		public void stop() {
+			BossPiglin boss = BossPiglin.this;
+			boss.getNavigation().stop();
+			for (int i = 0; i < PANIC_TYPES.length; i++) {
+				boss.setPathfindingMalus(PANIC_TYPES[i], this.calmMalus[i]);
+			}
+			this.from = null;
+		}
+
+		@Override
+		public boolean requiresUpdateEveryTick() {
+			return true;
+		}
+
+		@Override
+		public void tick() {
+			BossPiglin boss = BossPiglin.this;
+			Player near = this.nearest();
+			if (near != null) {
+				this.from = near;
+				this.linger = BossPiglinTuning.FLEE_LINGER_TICKS;
+			} else {
+				this.linger--;
+			}
+			if (this.from == null) {
+				return;
+			}
+			double distance = horizontal(boss.position(), this.from.position());
+			var path = boss.getNavigation().getPath();
+			boolean runningOut = path == null || path.isDone() || path.getNodeCount() - path.getNextNodeIndex() <= BossPiglinTuning.FLEE_REPLAN_NODES_LEFT;
+			boolean closing = distance < this.planFrom - BossPiglinTuning.FLEE_CLOSING;
+			if (--this.repath > 0 && !runningOut && !closing) {
+				return;
+			}
+			this.repath = BossPiglinTuning.FLEE_REPATH_TICKS;
+			this.planFrom = distance;
+			double speed = distance < BossPiglinTuning.FLEE_SPRINT_DISTANCE ? BossPiglinTuning.FLEE_SPRINT : BossPiglinTuning.FLEE_WALK;
+			this.plan(boss, this.from.position(), distance, speed);
+		}
+
+		/** The reachable spot round him that gains the most distance from {@code threat}. */
+		private void plan(BossPiglin boss, Vec3 threat, double distance, double speed) {
+			List<BlockPos> spots = new java.util.ArrayList<>();
+			for (int i = 0; i < BossPiglinTuning.FLEE_DIRECTIONS; i++) {
+				double angle = Math.PI * 2.0 * i / BossPiglinTuning.FLEE_DIRECTIONS;
+				BlockPos ground = boss.groundBelow(BlockPos.containing(boss.getX() + Math.cos(angle) * BossPiglinTuning.FLEE_STEP, 0.0,
+						boss.getZ() + Math.sin(angle) * BossPiglinTuning.FLEE_STEP));
+				if (ground != null && horizontal(Vec3.atBottomCenterOf(ground), threat) > distance + BossPiglinTuning.FLEE_MIN_GAIN) {
+					spots.add(ground);
+				}
+			}
+			spots.sort(java.util.Comparator.comparingDouble(p -> -horizontal(Vec3.atBottomCenterOf(p), threat)));
+			int tries = 0;
+			for (BlockPos spot : spots) {
+				if (tries++ >= BossPiglinTuning.FLEE_PATH_TRIES) {
+					break;
+				}
+				var path = boss.getNavigation().createPath(spot, 0);
+				if (path != null && path.canReach()) {
+					boss.getNavigation().moveTo(path, speed);
+					return;
+				}
+			}
+			Vec3 fallback = net.minecraft.world.entity.ai.util.LandRandomPos.getPosAway(boss, (int) BossPiglinTuning.FLEE_STEP, 7, threat);
+			if (fallback != null) {
+				boss.getNavigation().moveTo(fallback.x, fallback.y, fallback.z, speed);
+			}
+		}
+
+		private static double horizontal(Vec3 a, Vec3 b) {
+			double dx = a.x - b.x;
+			double dz = a.z - b.z;
+			return Math.sqrt(dx * dx + dz * dz);
+		}
+	}
+
+	/** The standing spot at the bottom of a column (or a lava or water surface there), scanning down from a few blocks above him to FLEE_MAX_FALL below; null if none. */
+	private @Nullable BlockPos groundBelow(BlockPos column) {
+		BlockPos.MutableBlockPos at = new BlockPos.MutableBlockPos(column.getX(), this.getBlockY() + BossPiglinTuning.FLEE_SCAN_UP, column.getZ());
+		int bottom = Math.max(this.level().getMinY(), this.getBlockY() - BossPiglinTuning.FLEE_MAX_FALL);
+		boolean air = false;
+		for (; at.getY() > bottom; at.move(Direction.DOWN)) {
+			BlockState state = this.level().getBlockState(at);
+			if (!state.getFluidState().isEmpty()) {
+				return air ? at.immutable() : null;
+			}
+			boolean open = state.getCollisionShape(this.level(), at).isEmpty();
+			if (!open && air) {
+				return at.above().immutable();
+			}
+			air = open;
+		}
+		return null;
+	}
 	/** Every living boss tied to this outpost (loaded ones). */
 	public static List<BossPiglin> of(ServerLevel level, CampSite site) {
 		return level.getEntitiesOfClass(BossPiglin.class, net.minecraft.world.phys.AABB.of(site.box()).inflate(32.0),

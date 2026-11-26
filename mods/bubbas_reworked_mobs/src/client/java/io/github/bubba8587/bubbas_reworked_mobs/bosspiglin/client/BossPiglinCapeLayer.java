@@ -73,7 +73,7 @@ public class BossPiglinCapeLayer<S extends BossPiglinRenderState, M extends Boss
 			float flee = Mth.clamp(state.fleeing, 0.0F, 1.0F);
 			float walk = state.walkAnimationSpeed * (1.0F - seat);
 			float t = state.ageInTicks;
-			float tilt = TILT + TILT_WALK * walk + flee * (TILT_FLEE + FLAP_FLEE * Mth.sin(t * 0.7F));
+			float tilt = TILT + TILT_WALK * walk + flee * (TILT_FLEE + FLAP_FLEE * Mth.sin(state.walkAnimationPos * 0.6662F * 2.0F));
 			tilt = Mth.lerp(seat, tilt, TILT_SEATED);
 			this.cape.xRot = -tilt;
 			this.cape.zRot = SWAY * Mth.sin(t * 0.1F) - this.body.zRot * ROLL_FOLLOW;

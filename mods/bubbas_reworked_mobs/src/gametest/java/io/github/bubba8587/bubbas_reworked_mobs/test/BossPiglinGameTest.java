@@ -92,6 +92,36 @@ public class BossPiglinGameTest {
 		return bosses.getFirst();
 	}
 
+	/** Chased toward the edge of a high ledge with a lava lake below, a fleeing boss runs off it into the lava. */
+	@GameTest(structure = CampsGameTest.FIELD, maxTicks = 300)
+	public void chasedOffACliffIntoLava(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		// the field's grass (y 7) is the ledge; beside it a pit 6 deep with a lava lake at its bottom (the field's ceiling is barriers at y 14)
+		for (int x = 15; x <= 28; x++) {
+			for (int z = 4; z <= 28; z++) {
+				helper.setBlock(new BlockPos(x, 1, z), Blocks.LAVA);
+				for (int y = 2; y <= 7; y++) {
+					helper.setBlock(new BlockPos(x, y, z), Blocks.AIR);
+				}
+			}
+		}
+		TestCleanup.whenDone(helper, () -> CampsGameTest.resetField(helper));
+		BossPiglin boss = BossPiglins.BOSS_PIGLIN.create(level, EntitySpawnReason.COMMAND);
+		Vec3 at = helper.absoluteVec(new Vec3(11.5, 8.0, 16.5));
+		boss.snapTo(at.x, at.y, at.z, 90.0F, 0.0F);
+		level.addFreshEntity(boss);
+		ServerPlayer player = TestPlayers.survival(helper);
+		TestCleanup.whenDone(helper, () -> TestPlayers.remove(helper, player));
+		player.addEffect(new MobEffectInstance(MobEffects.RESISTANCE, 20 * 30, 4, false, false));
+		Vec3 p = helper.absoluteVec(new Vec3(4.5, 8.0, 16.5));
+		player.snapTo(p.x, p.y, p.z, -90.0F, 0.0F);
+		helper.startSequence()
+				.thenIdle(200)
+				.thenExecute(() -> helper.assertTrue(boss.isRemoved() || boss.isInLava() || boss.getY() < at.y - 4.0,
+						"didn't run off the ledge: at " + helper.relativeVec(boss.position()) + " fleeing " + boss.isFleeing() + " onGround " + boss.onGround() + " noGravity " + boss.isNoGravity() + " below " + level.getBlockState(boss.blockPosition().below()) + " v " + boss.getDeltaMovement() + " player " + helper.relativeVec(player.position())))
+				.thenSucceed();
+	}
+
 	/** Core: a built medium outpost has a throne, and its roster comes with a boss seated on it, not counted as a member. */
 	public void mediumOutpostHasASeatedBoss(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();

@@ -37,8 +37,23 @@ public final class BossPiglinTuning {
 
 	// --- fleeing -------------------------------------------------------------------------------------
 
-	/** It keeps this far (blocks) from players while it flees. */
-	public static final float FLEE_DISTANCE = 10.0F;
+	/** While fleeing, a player (not creative or spectator) this near, seen or not, sets it running. */
+	public static final float FLEE_DISTANCE = 16.0F;
+	/** Fleeing: spots this far (blocks) round him in this many directions are scored; only spots at least FLEE_MIN_GAIN farther from the player count, best first, FLEE_PATH_TRIES paths at most. */
+	public static final double FLEE_STEP = 12.0;
+	public static final int FLEE_DIRECTIONS = 16;
+	public static final double FLEE_MIN_GAIN = 2.0;
+	public static final int FLEE_PATH_TRIES = 4;
+	/** Re-planned when the route has this few nodes left, or the player has closed in by this much (blocks) since the last plan. */
+	public static final int FLEE_REPLAN_NODES_LEFT = 3;
+	public static final double FLEE_CLOSING = 2.0;
+	/** Re-planned this often (ticks) while running, and kept up this long after the last player drops out of range. */
+	public static final int FLEE_REPATH_TICKS = 10;
+	public static final int FLEE_LINGER_TICKS = 60;
+	/** Closer than this he sprints (FLEE_SPRINT), else walks fast (FLEE_WALK). */
+	public static final double FLEE_SPRINT_DISTANCE = 8.0;
+	/** A run target's ground is looked for from this many blocks above him downward. */
+	public static final int FLEE_SCAN_UP = 4;
 	/** Speed against its own movement speed: walking away, and with a player within 7 blocks. */
 	public static final double FLEE_WALK = 1.0;
 	public static final double FLEE_SPRINT = 1.2;

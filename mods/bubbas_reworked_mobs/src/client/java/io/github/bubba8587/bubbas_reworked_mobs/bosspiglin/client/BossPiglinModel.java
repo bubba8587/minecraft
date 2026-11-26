@@ -28,6 +28,8 @@ public class BossPiglinModel extends AbstractPiglinModel<BossPiglinRenderState> 
 
 	// part pivots
 	static final float HIP_Y = 17.0F;
+	/** A hair of growth so boxes whose faces share a plane don't flicker. */
+	private static final CubeDeformation NO_Z_FIGHT = new CubeDeformation(0.02F);
 	private static final PartPose HEAD = PartPose.offset(0.0F, 3.0F, -1.5F);
 	private static final PartPose BODY = PartPose.offset(0.0F, HIP_Y, 0.0F);
 	private static final PartPose RIGHT_ARM = PartPose.offset(-12.0F, 4.0F, 0.0F);
@@ -67,7 +69,6 @@ public class BossPiglinModel extends AbstractPiglinModel<BossPiglinRenderState> 
 	private static final float FLAIL_X_AMP = 0.45F;
 	private static final float FLAIL_Z = 0.55F;
 	private static final float FLAIL_Z_AMP = 0.2F;
-	private static final float FLAIL_SPEED = 0.8F;
 	private static final float FLEE_HEAD_WOBBLE = 0.1F;
 
 	private final Quaternionf bodyRotation = new Quaternionf();
@@ -93,9 +94,9 @@ public class BossPiglinModel extends AbstractPiglinModel<BossPiglinRenderState> 
 				.texOffs(68, 16).addBox(-9.0F, -12.0F, -10.0F, 18.0F, 11.0F, 3.0F)
 				.texOffs(68, 30).addBox(-7.0F, -10.5F, -12.0F, 14.0F, 8.0F, 2.0F)
 				.texOffs(0, 70).addBox(-8.0F, -6.0F, 8.0F, 16.0F, 6.0F, 2.0F)
-				.texOffs(36, 70).addBox(-8.0F, -14.0F, 7.0F, 16.0F, 9.0F, 2.0F)
-				.texOffs(64, 0).addBox(-10.0F, -16.0F, -4.5F, 6.0F, 3.0F, 9.0F)
-				.texOffs(94, 0).addBox(4.0F, -16.0F, -4.5F, 6.0F, 3.0F, 9.0F);
+				.texOffs(36, 70).addBox(-8.0F, -14.0F, 7.0F, 16.0F, 9.0F, 2.0F, NO_Z_FIGHT)
+				.texOffs(64, 0).addBox(-10.0F, -16.0F, -4.5F, 6.0F, 3.0F, 9.0F, NO_Z_FIGHT)
+				.texOffs(94, 0).addBox(4.0F, -16.0F, -4.5F, 6.0F, 3.0F, 9.0F, NO_Z_FIGHT);
 			case "right_arm" -> CubeListBuilder.create().texOffs(0, 81).addBox(-4.0F, -2.0F, -3.0F, 6.0F, 12.0F, 6.0F);
 			case "left_arm" -> CubeListBuilder.create().texOffs(24, 81).addBox(-2.0F, -2.0F, -3.0F, 6.0F, 12.0F, 6.0F);
 			case "right_leg" -> CubeListBuilder.create().texOffs(48, 81).addBox(-3.5F, 0.0F, -3.5F, 7.0F, 7.0F, 7.0F);
@@ -200,9 +201,9 @@ public class BossPiglinModel extends AbstractPiglinModel<BossPiglinRenderState> 
 
 		// fleeing
 		if (flee > 0.0F) {
-			flail(this.rightArm, 1.0F, 0.0F, flee, t);
-			flail(this.leftArm, -1.0F, Mth.PI, flee, t);
-			this.head.zRot += FLEE_HEAD_WOBBLE * Mth.sin(t * FLAIL_SPEED) * flee;
+			flail(this.rightArm, 1.0F, 0.0F, flee, phase);
+			flail(this.leftArm, -1.0F, Mth.PI, flee, phase);
+			this.head.zRot += FLEE_HEAD_WOBBLE * Mth.sin(phase) * flee;
 		}
 
 		// seated
@@ -244,10 +245,11 @@ public class BossPiglinModel extends AbstractPiglinModel<BossPiglinRenderState> 
 		part.zRot += bodyZ;
 	}
 
-	private static void flail(ModelPart arm, float side, float offset, float flee, float t) {
-		arm.xRot = Mth.lerp(flee, arm.xRot, FLAIL_X + FLAIL_X_AMP * Mth.sin(t * FLAIL_SPEED + offset));
+	/** Arms flail in step with the legs (phase is the walk cycle, as vanilla swings limbs). */
+	private static void flail(ModelPart arm, float side, float offset, float flee, float phase) {
+		arm.xRot = Mth.lerp(flee, arm.xRot, FLAIL_X + FLAIL_X_AMP * Mth.sin(phase + offset));
 		arm.yRot = Mth.lerp(flee, arm.yRot, 0.0F);
-		arm.zRot = Mth.lerp(flee, arm.zRot, side * (FLAIL_Z + FLAIL_Z_AMP * Mth.cos(t * FLAIL_SPEED + offset)));
+		arm.zRot = Mth.lerp(flee, arm.zRot, side * (FLAIL_Z + FLAIL_Z_AMP * Mth.cos(phase + offset)));
 	}
 
 	private static void sit(ModelPart part, float x, float y, float z, float seat) {
