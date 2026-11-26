@@ -50,6 +50,11 @@ public final class NorthWind {
 		FireworkRocketEntity entity = new FireworkRocketEntity(level, rocket, player);
 		entity.setSilent(true);
 		Projectile.spawnProjectile(entity, level, rocket);
+		// gliding in water: water movement smothers a rocket's push, so the gust throws the player out along their look
+		if (player.isInWater()) {
+			player.setDeltaMovement(player.getLookAngle().scale(TotemsTuning.NORTH_WIND_WATER_LAUNCH).add(0.0, TotemsTuning.NORTH_WIND_WATER_LIFT, 0.0));
+			player.needsSync = true;
+		}
 		level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.WIND_CHARGE_BURST.value(),SoundSource.PLAYERS, 0.6F, 1.3F);
 		level.sendParticles(ParticleTypes.SNOWFLAKE, player.getX(), player.getY() + 0.5, player.getZ(), 16, 0.4, 0.3, 0.4, 0.05);
 		level.sendParticles(ParticleTypes.SMALL_GUST, player.getX(), player.getY() + 0.5, player.getZ(), 2, 0.3, 0.2, 0.3, 0.0);
