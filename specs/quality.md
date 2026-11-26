@@ -80,6 +80,15 @@ The owner never runs builds or tests; agents keep this loop fast unprompted (CLA
 - Pushes to a branch don't cancel each other's runs (only pull requests do), so every commit gets a real result.
 - Snapshot commits of unfinished agent work put the skip-CI marker in their message (CLAUDE.md, Style). Never put that marker text in any other commit message, even when describing it: GitHub skips CI for any commit whose message contains it.
 
+## Heavy tests on the owner's PC (owner, 2026-11-26)
+
+A builder's client test once built its test terrain by dropping a mass of sand, and lagged the owner's whole PC. Agents test so the owner's machine stays usable:
+- **Correctness in server game tests:** logic and placement checks (no stray air, blocks in place, loot, spawners) are server game tests in small areas built block by block with `setBlock`. No sand, gravel or other falling blocks in test terrain, no mass entity spawning, no large fluid floods triggered by block updates.
+- **Real terrain on a headless server:** checks against real world generation (including other mods such as Tectonic) run on a windowless server (`tools/packtest.py` / `tools/build-naturalworld.py` helpers) and report in text.
+- **Screenshots last and short:** one client run at the end, a few shots, the subject placed into a small prepared area. Not a client run per iteration.
+- **Below-normal priority:** any heavy Java process an agent starts (headless server, client test, test world build) is set to below-normal priority right after it starts (`(Get-Process -Id <pid>).PriorityClass = 'BelowNormal'`), and only one heavy process runs at a time.
+- If a test still makes the PC sluggish, stop it and say so; the owner may stop it too.
+
 ## Test isolation
 
 The vanilla game test server does not isolate tests:
