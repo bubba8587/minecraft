@@ -59,7 +59,7 @@ The Glider takes Mending, Unbreaking, Curse of Binding and Curse of Vanishing fr
 
 ## Appearance
 
-The Glider looks like a home-made hang glider: phantom membrane stretched over a bamboo frame, with diamond caps on the spar ends and feathers on the trim. Worn, it shows as a pair of membrane sails on the player's back. The textures are temporary and will be redrawn; a 32x version comes in the **Bubba's Mods 32x** resource pack.
+The Glider looks like an elytra made from its recipe: phantom membrane wings on a bamboo frame, with diamond tips and feathered ends. The textures are temporary and will be redrawn; a 32x version, based on Classic Faithful 32x Jappa's elytra, comes in the **Bubba's Mods 32x** resource pack.
 
 ## History
 

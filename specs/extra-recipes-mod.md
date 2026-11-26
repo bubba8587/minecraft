@@ -51,9 +51,11 @@ Constants in `glider/GliderHandling`. They apply only while the chest slot holds
 
 - Item model `items/glider.json` → `item/glider` (generated).
 - Wings `equipment/glider.json` (layer `wings`) → `textures/entity/equipment/wings/glider.png` (elytra UV layout, 64x32).
-- Agent-made art at 16x and 32x (B16), drawn in code by `tools-local/make_placeholder_textures.py`:
-  - the icon is a home-made hang glider seen from the front: a swept chevron wing with a bamboo leading edge and membrane sail, a triangle control frame, feather tassels;
-  - the wings are phantom-membrane sails on a bamboo spar and battens, with diamond spar caps and feathered tips.
+- Agent-made art at 16x and 32x (B16), owner 2026-11-25: "switch to using a recolored Elytra using our bamboo/membrane/diamond/feather elements". `tools-local/make_glider_textures.py` recolours vanilla's elytra (16x) and Classic Faithful 32x Jappa's (32x, from the CF32J zip in the Modrinth profile `porp`; without it the committed 32x is kept) region by region: each pixel's OKLab lightness, normalised within its region, is placed on that material's vanilla ramp.
+  - Wings (64x32 elytra sheet): the leading side strip and the outer face's leading column are bamboo (`item/bamboo`, `block/bamboo_stalk`); the spar's last rows and the tip-end face are diamond; the shoulder-end face is bamboo; the last two rows are feathers; the rest is phantom membrane (the item's cream-to-mauve, upper 70 % of its ramp so the shoulders are grey-mauve).
+  - Icon: the outline and yoke are bamboo, the yoke's darkest centre a diamond clasp, the bottom tips feathers, the inside membrane.
+  - Kept to a recolour (no added nodes or battens). The membrane is the phantom membrane item's colours, not the phantom mob's grey-blue (one ramp, `MEMBRANE`, to swap).
+  - 32x credited to CF32J in `mods/bubbas_extra_recipes/CREDITS.md` and `resourcepacks/bubbas_32x/CREDITS.md`.
 - Listed in `docs/art-todo.md`. A person replaces both before any Modrinth release; nothing ships to Modrinth with the agent-made art.
 
 ## Quartz Shard
