@@ -4,7 +4,8 @@
 	"compatibilityLevel": "JAVA_25",
 	"client": [
 		"ClientLevelPrecipitationMixin",
-		"ClientStatuePlaceCooldownMixin"
+		"ClientStatuePlaceCooldownMixin",
+		"NorthWindClickLogMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

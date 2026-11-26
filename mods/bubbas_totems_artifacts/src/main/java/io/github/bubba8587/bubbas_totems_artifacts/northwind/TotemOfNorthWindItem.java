@@ -31,6 +31,9 @@ public class TotemOfNorthWindItem extends StatueTotemItem {
 
 	@Override
 	public InteractionResult use(Level level, Player player, InteractionHand hand) {
+		// diagnostic (temporary, North Wind "stops working" bug)
+		io.github.bubba8587.bubbas_totems_artifacts.BubbasTotemsArtifacts.LOGGER.info("[north-wind-debug] {} use: hand={} fallFlying={} inWater={} swimming={}",
+				level.isClientSide() ? "client" : "server", hand, player.isFallFlying(), player.isInWater(), player.isSwimming());
 		if (!player.isFallFlying()) {
 			return InteractionResult.PASS;
 		}
