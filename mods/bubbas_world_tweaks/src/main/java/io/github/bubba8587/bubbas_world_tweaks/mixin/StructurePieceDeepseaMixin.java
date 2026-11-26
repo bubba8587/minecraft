@@ -19,6 +19,7 @@ import net.minecraft.world.level.storage.loot.LootTable;
 import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -26,6 +27,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 /** Deep-sea fortress block swap, pillar fill and barrels. */
 @Mixin(StructurePiece.class)
 abstract class StructurePieceDeepseaMixin {
+	@Unique
+	private static final int BUBBLE_DELAY = 20;
+
 	@Shadow
 	protected BoundingBox boundingBox;
 
@@ -38,8 +42,8 @@ abstract class StructurePieceDeepseaMixin {
 		}
 		BlockState swapped = FortressBlocks.swap((StructurePiece) (Object) this, state, pos, x, y, z);
 		boolean placed = original.call(level, pos, swapped, flags);
-		if (state.is(Blocks.LAVA)) {
-			level.getChunk(pos).markPosForPostProcessing(pos.above());
+		if (swapped.is(Blocks.MAGMA_BLOCK) || swapped.is(Blocks.SOUL_SAND)) {
+			level.scheduleTick(pos.above(), Blocks.WATER, BUBBLE_DELAY);
 		}
 		return placed;
 	}

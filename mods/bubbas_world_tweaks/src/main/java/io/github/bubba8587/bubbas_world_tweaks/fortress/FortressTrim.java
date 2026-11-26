@@ -14,6 +14,11 @@ final class FortressTrim {
 	private static final BlockState DARK = Blocks.DARK_PRISMARINE.defaultBlockState();
 	/** Lantern spacing along bridge parapets. */
 	private static final int PARAPET_LIGHT_SPACING = 6;
+	/** Stairs room lifts: their columns (local x), row (z) and top cell (y, just above the landing). */
+	static final int LIFT_UP_X = 2;
+	static final int LIFT_DOWN_X = 4;
+	static final int LIFT_Z = 2;
+	static final int LIFT_TOP = 8;
 
 	private FortressTrim() {
 	}
@@ -52,7 +57,30 @@ final class FortressTrim {
 			return room(x, y, z, true);
 		}
 		if (piece instanceof NetherFortressPieces.StairsRoom) {
-			return y == 7 && x == 3 && z == 2 ? LIGHT : room(x, y, z, false);
+			BlockState lift = lift(x, y, z);
+			return lift != null ? lift : y == 7 && x == 3 && z == 2 ? LIGHT : room(x, y, z, false);
+		}
+		return null;
+	}
+
+	/** What a deep-sea fortress puts where the vanilla piece clears to air, other than water. */
+	static @Nullable BlockState inWater(StructurePiece piece, int x, int y, int z) {
+		if (piece instanceof NetherFortressPieces.StairsRoom && y == LIFT_TOP + 1 && z == LIFT_Z && (x == LIFT_UP_X || x == LIFT_DOWN_X)) {
+			return LIGHT;
+		}
+		return null;
+	}
+
+	/** Stairs room bubble lifts from the ground floor through the landing: soul sand up, magma down. */
+	private static @Nullable BlockState lift(int x, int y, int z) {
+		if (z != LIFT_Z || x != LIFT_UP_X && x != LIFT_DOWN_X) {
+			return null;
+		}
+		if (y == 1) {
+			return x == LIFT_UP_X ? Blocks.SOUL_SAND.defaultBlockState() : Blocks.MAGMA_BLOCK.defaultBlockState();
+		}
+		if (y == LIFT_TOP - 1) {
+			return Blocks.WATER.defaultBlockState();
 		}
 		return null;
 	}

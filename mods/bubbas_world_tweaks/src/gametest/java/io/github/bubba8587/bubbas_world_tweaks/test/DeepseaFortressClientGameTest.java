@@ -4,6 +4,7 @@ package io.github.bubba8587.bubbas_world_tweaks.test;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.github.bubba8587.bubbas_world_tweaks.fortress.ConduitShrine;
 import io.github.bubba8587.bubbas_world_tweaks.fortress.DeepseaFortressStructure;
 import net.minecraft.client.gui.screens.worldselection.WorldCreationUiState;
 import net.minecraft.core.BlockPos;
@@ -72,6 +73,17 @@ public class DeepseaFortressClientGameTest implements FabricClientGameTest {
 				}
 			}
 			for (StructurePiece piece : pieces) {
+				if (piece instanceof NetherFortressPieces.StairsRoom) {
+					shot(context, sp, at(piece, 3.5, 4.2, 0.4), piece.getOrientation().toYRot(), 15.0F, "deepsea-lifts");
+					shot(context, sp, at(piece, 3.5, 9.6, 0.4), piece.getOrientation().toYRot(), 35.0F, "deepsea-lifts-landing");
+					break;
+				}
+			}
+			BlockPos heart = ConduitShrine.heart(first.getBoundingBox());
+			server.runOnServer(s -> s.overworld().setBlock(heart, Blocks.CONDUIT.defaultBlockState(), 3));
+			context.waitTicks(100);
+			shot(context, sp, new Vec3(heart.getX() + 0.5, heart.getY() + 2.5, heart.getZ() - 5.0), 0.0F, 25.0F, "deepsea-shrine");
+			for (StructurePiece piece : pieces) {
 				if (piece instanceof NetherFortressPieces.CastleEntrance) {
 					shot(context, sp, at(piece, 6.5, 6.0, 1.5), piece.getOrientation().toYRot(), 20.0F, "deepsea-hall");
 					break;
@@ -88,7 +100,8 @@ public class DeepseaFortressClientGameTest implements FabricClientGameTest {
 			StructurePiecesBuilder trial = new StructurePiecesBuilder();
 			DeepseaFortressStructure.layOut(trial, RandomSource.create(seed), x, z, FLOOR, SEA);
 			if (trial.build().pieces().stream().anyMatch(p -> p instanceof NetherFortressPieces.MonsterThrone)
-					&& trial.build().pieces().stream().anyMatch(p -> p instanceof NetherFortressPieces.CastleSmallCorridorPiece)) {
+					&& trial.build().pieces().stream().anyMatch(p -> p instanceof NetherFortressPieces.CastleSmallCorridorPiece)
+					&& trial.build().pieces().stream().anyMatch(p -> p instanceof NetherFortressPieces.StairsRoom)) {
 				box = trial.getBoundingBox();
 				break;
 			}

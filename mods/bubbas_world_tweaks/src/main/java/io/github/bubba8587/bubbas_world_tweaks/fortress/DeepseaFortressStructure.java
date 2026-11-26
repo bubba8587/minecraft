@@ -9,16 +9,23 @@ import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.StructureManager;
+import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructurePiece;
 import net.minecraft.world.level.levelgen.structure.StructureType;
+import net.minecraft.world.level.levelgen.structure.pieces.PiecesContainer;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePiecesBuilder;
 import net.minecraft.world.level.levelgen.structure.structures.NetherFortressPieces;
 
 /** A flooded fortress on a deep-ocean floor, laid out by vanilla's Nether fortress generator. */
 public class DeepseaFortressStructure extends Structure {
 	public static final MapCodec<DeepseaFortressStructure> CODEC = simpleCodec(DeepseaFortressStructure::new);
+	/** Half the start crossing's width: its centre from its corner. */
+	private static final int START_HALF = 9;
 	/** Offset of the four floor samples around the start. */
 	private static final int SAMPLE_REACH = 40;
 	/** Shallowest floor allowed under the fortress, in blocks below sea level. */
@@ -36,20 +43,20 @@ public class DeepseaFortressStructure extends Structure {
 		int x = chunk.getBlockX(2);
 		int z = chunk.getBlockZ(2);
 		int sea = context.chunkGenerator().getSeaLevel();
-		int floor = floor(context, x, z);
+		int floor = floor(context, x + START_HALF, z + START_HALF);
 		if (floor > sea - MIN_DEPTH) {
 			return Optional.empty();
 		}
 		int[][] around = { { -SAMPLE_REACH, -SAMPLE_REACH }, { SAMPLE_REACH, -SAMPLE_REACH }, { -SAMPLE_REACH, SAMPLE_REACH },
 				{ SAMPLE_REACH, SAMPLE_REACH } };
 		for (int[] d : around) {
-			if (floor(context, x + d[0], z + d[1]) > sea - MIN_DEPTH) {
+			if (floor(context, x + START_HALF + d[0], z + START_HALF + d[1]) > sea - MIN_DEPTH) {
 				return Optional.empty();
 			}
 		}
 		StructurePiecesBuilder builder = new StructurePiecesBuilder();
 		layOut(builder, context.random(), x, z, floor, sea);
-		return Optional.of(new GenerationStub(new BlockPos(x, floor, z), Either.right(builder)));
+		return Optional.of(new GenerationStub(new BlockPos(x + START_HALF, floor, z + START_HALF), Either.right(builder)));
 	}
 
 	private static int floor(GenerationContext context, int x, int z) {
@@ -72,6 +79,12 @@ public class DeepseaFortressStructure extends Structure {
 			dy -= over;
 		}
 		builder.offsetPiecesVertically(dy);
+	}
+
+	@Override
+	public void afterPlace(WorldGenLevel level, StructureManager structureManager, ChunkGenerator generator, RandomSource random,
+			BoundingBox chunkBB, ChunkPos chunkPos, PiecesContainer pieces) {
+		ConduitShrine.place(level, chunkBB, pieces.pieces().getFirst().getBoundingBox());
 	}
 
 	@Override

@@ -23,7 +23,8 @@ import net.minecraft.world.level.levelgen.structure.structures.NetherFortressPie
 /** Vanilla fortress pieces and whole deep-sea fortresses placed for tests. */
 final class DeepseaTestPieces {
 	static final String ROOM = "bubbas_world_tweaks-test:fortress_room";
-	static final Block[] NETHER = { Blocks.NETHER_BRICKS, Blocks.NETHER_BRICK_FENCE, Blocks.NETHER_BRICK_STAIRS, Blocks.LAVA, Blocks.SOUL_SAND,
+	static final String YARD = "bubbas_world_tweaks-test:fortress_yard";
+	static final Block[] NETHER = { Blocks.NETHER_BRICKS, Blocks.NETHER_BRICK_FENCE, Blocks.NETHER_BRICK_STAIRS, Blocks.LAVA,
 			Blocks.NETHER_WART, Blocks.CHEST };
 
 	private DeepseaTestPieces() {
@@ -45,6 +46,20 @@ final class DeepseaTestPieces {
 		}
 		return new NetherFortressPieces.CastleSmallCorridorLeftTurnPiece(1, RandomSource.create(seed), new BoundingBox(at.getX(), at.getY(),
 				at.getZ(), at.getX() + 4, at.getY() + 6, at.getZ() + 4), Direction.SOUTH);
+	}
+
+	/** A south-facing box of this size at relative (1, 1, 1). */
+	static BoundingBox box(GameTestHelper helper, int w, int h, int d) {
+		BlockPos at = helper.absolutePos(new BlockPos(1, 1, 1));
+		return new BoundingBox(at.getX(), at.getY(), at.getZ(), at.getX() + w - 1, at.getY() + h - 1, at.getZ() + d - 1);
+	}
+
+	/** Places a lone start piece as a deep-sea fortress, chunk by chunk like worldgen. */
+	static void placeStart(ServerLevel level, StructurePiece start) {
+		Structure structure = level.registryAccess().lookupOrThrow(Registries.STRUCTURE).getValueOrThrow(DeepseaFortresses.STRUCTURE);
+		StructurePiecesBuilder builder = new StructurePiecesBuilder();
+		builder.addPiece(start);
+		placeAll(level, new StructureStart(structure, ChunkPos.containing(start.getBoundingBox().getCenter()), 0, builder.build()), 7L);
 	}
 
 	/** Places a piece in the test area, with or without the deep-sea swap. */
@@ -74,6 +89,11 @@ final class DeepseaTestPieces {
 		StructurePiecesBuilder builder = new StructurePiecesBuilder();
 		DeepseaFortressStructure.layOut(builder, RandomSource.create(seed), x, z, floorY, seaLevel);
 		StructureStart start = new StructureStart(structure, ChunkPos.containing(new BlockPos(x, floorY, z)), 0, builder.build());
+		placeAll(level, start, seed);
+		return start;
+	}
+
+	private static void placeAll(ServerLevel level, StructureStart start, long seed) {
 		BoundingBox box = start.getBoundingBox();
 		ChunkPos min = new ChunkPos(SectionPos.blockToSectionCoord(box.minX()), SectionPos.blockToSectionCoord(box.minZ()));
 		ChunkPos max = new ChunkPos(SectionPos.blockToSectionCoord(box.maxX()), SectionPos.blockToSectionCoord(box.maxZ()));
@@ -83,6 +103,5 @@ final class DeepseaTestPieces {
 			start.placeInChunk(level, level.structureManager(), level.getChunkSource().getGenerator(), random,
 					new BoundingBox(c.getMinBlockX(), level.getMinY(), c.getMinBlockZ(), c.getMaxBlockX(), level.getMaxY(), c.getMaxBlockZ()), c);
 		});
-		return start;
 	}
 }

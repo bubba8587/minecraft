@@ -30,7 +30,8 @@ public final class FortressBlocks {
 	/** The state a deep-sea fortress places instead of what the vanilla piece asked for at local (x, y, z). */
 	public static BlockState swap(StructurePiece piece, BlockState state, BlockPos pos, int x, int y, int z) {
 		if (state.isAir()) {
-			return Blocks.WATER.defaultBlockState();
+			BlockState trim = FortressTrim.inWater(piece, x, y, z);
+			return trim != null ? trim : Blocks.WATER.defaultBlockState();
 		}
 		Block block = state.getBlock();
 		if (block == Blocks.NETHER_BRICKS) {

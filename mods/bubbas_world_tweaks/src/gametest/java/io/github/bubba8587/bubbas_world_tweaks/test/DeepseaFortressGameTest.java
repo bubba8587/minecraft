@@ -1,8 +1,15 @@
 // dte:C8
 package io.github.bubba8587.bubbas_world_tweaks.test;
 
+import io.github.bubba8587.bubbas_world_tweaks.fortress.ConduitShrine;
 import io.github.bubba8587.bubbas_world_tweaks.fortress.DeepseaFortresses;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.tags.StructureTags;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.block.BubbleColumnBlock;
+import net.minecraft.world.level.block.entity.ConduitBlockEntity;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
@@ -115,6 +122,50 @@ public class DeepseaFortressGameTest {
 			}
 		}
 		helper.assertTrue(found > 0, "no spawner room in six fortresses");
+		helper.succeed();
+	}
+
+	/** The stairs room's lifts form: an up column over soul sand, a down column over magma, both up through the landing. */
+	@GameTest(structure = DeepseaTestPieces.ROOM, maxTicks = 100)
+	public void stairsRoomLiftsForm(GameTestHelper helper) {
+		NetherFortressPieces.StairsRoom room = new NetherFortressPieces.StairsRoom(1, DeepseaTestPieces.box(helper, 7, 11, 7), Direction.SOUTH);
+		DeepseaTestPieces.place(helper, room, true);
+		ServerLevel level = helper.getLevel();
+		helper.succeedWhen(() -> {
+			for (int y = 2; y <= 8; y++) {
+				BlockState up = level.getBlockState(DeepseaTestPieces.local(room, 2, y, 2));
+				BlockState down = level.getBlockState(DeepseaTestPieces.local(room, 4, y, 2));
+				helper.assertTrue(up.is(Blocks.BUBBLE_COLUMN) && !up.getValue(BubbleColumnBlock.DRAG_DOWN), "no up column at y " + y + ": " + up);
+				helper.assertTrue(down.is(Blocks.BUBBLE_COLUMN) && down.getValue(BubbleColumnBlock.DRAG_DOWN), "no down column at y " + y + ": " + down);
+			}
+			helper.assertTrue(level.getBlockState(DeepseaTestPieces.local(room, 2, 9, 2)).is(Blocks.SEA_LANTERN), "no lantern over the lift");
+		});
+	}
+
+	/** A conduit placed in the shrine over the central crossing activates. */
+	@GameTest(structure = DeepseaTestPieces.YARD, maxTicks = 200)
+	public void conduitShrineActivates(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		NetherFortressPieces.StartPiece crossing = new NetherFortressPieces.StartPiece(RandomSource.create(3L), 0, 0);
+		BlockPos at = helper.absolutePos(new BlockPos(2, 1, 2));
+		BoundingBox b = crossing.getBoundingBox();
+		crossing.move(at.getX() - b.minX(), at.getY() - b.minY(), at.getZ() - b.minZ());
+		DeepseaTestPieces.placeStart(level, crossing);
+		BlockPos heart = ConduitShrine.heart(crossing.getBoundingBox());
+		helper.assertTrue(level.getBlockState(heart).is(Blocks.WATER), "shrine heart isn't open water");
+		level.setBlock(heart, Blocks.CONDUIT.defaultBlockState(), 3);
+		helper.succeedWhen(() -> helper.assertTrue(level.getBlockEntity(heart) instanceof ConduitBlockEntity conduit && conduit.isActive(),
+				"conduit in the shrine isn't active"));
+	}
+
+	/** Dolphins lead to deep-sea fortresses; the shipwreck fortress map table loads. */
+	@GameTest(structure = DeepseaTestPieces.ROOM)
+	public void dolphinsAndMaps(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		helper.assertTrue(level.registryAccess().lookupOrThrow(Registries.STRUCTURE).getOrThrow(DeepseaFortresses.STRUCTURE).is(StructureTags.DOLPHIN_LOCATED),
+				"deep-sea fortress isn't dolphin-located");
+		helper.assertTrue(level.getServer().reloadableRegistries().getLootTable(DeepseaFortresses.FORTRESS_MAP) != LootTable.EMPTY,
+				"no fortress map loot table");
 		helper.succeed();
 	}
 
