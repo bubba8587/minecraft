@@ -1,0 +1,39 @@
+{
+  "anvil_cost": 4,
+  "description": {
+    "translate": "enchantment.bubbas_world_tweaks.parasitic"
+  },
+  "effects": {
+    "bubbas_world_tweaks:parasitic": {
+      "max_health": {
+        "type": "minecraft:linear",
+        "base": 1.0,
+        "per_level_above_first": 0.5
+      },
+      "max_repair": {
+        "type": "minecraft:lookup",
+        "values": [30.0, 55.0, 85.0],
+        "fallback": {
+          "type": "minecraft:linear",
+          "base": 30.0,
+          "per_level_above_first": 27.5
+        }
+      }
+    }
+  },
+  "exclusive_set": "minecraft:mending",
+  "max_cost": {
+    "base": 60,
+    "per_level_above_first": 9
+  },
+  "max_level": 3,
+  "min_cost": {
+    "base": 10,
+    "per_level_above_first": 9
+  },
+  "slots": [
+    "any"
+  ],
+  "supported_items": "#minecraft:enchantable/durability",
+  "weight": 2
+}

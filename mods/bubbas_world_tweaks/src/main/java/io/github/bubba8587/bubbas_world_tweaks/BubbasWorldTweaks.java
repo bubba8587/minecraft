@@ -3,6 +3,7 @@ package io.github.bubba8587.bubbas_world_tweaks;
 
 import io.github.bubba8587.bubbas_world_tweaks.lava.LavaGeysers;
 import io.github.bubba8587.bubbas_world_tweaks.lava.ModParticles;
+import io.github.bubba8587.bubbas_world_tweaks.parasitic.Parasitic;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.resources.Identifier;
 import org.slf4j.Logger;
@@ -21,5 +22,6 @@ public class BubbasWorldTweaks implements ModInitializer {
 	public void onInitialize() {
 		ModParticles.initialize();
 		LavaGeysers.initialize();
+		Parasitic.initialize();
 	}
 }

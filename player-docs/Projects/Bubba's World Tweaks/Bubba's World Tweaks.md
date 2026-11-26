@@ -18,7 +18,7 @@ side: client and server
 > | **Side** | Client and server |
 > | **Status** | Active |
 
-**Bubba's World Tweaks** is a Fabric mod that adds small touches to the world itself. Its first feature makes the Nether's lava seas bubble and erupt, and turns their geysers into updrafts.
+**Bubba's World Tweaks** is a Fabric mod that adds small touches to the world itself. It makes the Nether's lava seas bubble and erupt, turns their geysers into updrafts, and adds the Parasitic enchantment.
 
 ## Lava bubbles and geysers
 
@@ -27,6 +27,11 @@ side: client and server
 - Lava bubbles and plops wherever magma lies beneath it.
 - Now and then a bubbling spot erupts as a lava geyser, throwing up black smoke.
 - Lava geysers and sulfur geysers lift players and speed them up, so circling one climbs.
+## Parasitic
+
+*Main article: [[Parasitic]]*
+
+- An enchantment from the enchanting table that mends its item with your health instead of experience, now and then, and can kill you.
 
 ## Installation
 
@@ -44,7 +49,7 @@ The mod requires Fabric API and works on its own. The geyser lift suits the Glid
 
 | Version | Changes |
 |---|---|
-| 0.1.0 | Added, with lava bubbles, lava geysers and the geyser lift. Early test version. |
+| 0.1.0 | Added, with lava bubbles, lava geysers, the geyser lift and Parasitic. Early test version. |
 
 ## See also
 

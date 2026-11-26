@@ -86,4 +86,10 @@ public class BubbasWorldTweaksCoreGameTest {
 		helper.assertTrue(v.y == 0.0, "lifted by us over sulfur (vanilla does that): vy " + v.y);
 		helper.succeed();
 	}
+
+	/** Parasitic: a bite takes health and mends its item in proportion. */
+	@GameTest
+	public void parasiticBiteTradesHealthForDurability(GameTestHelper helper) {
+		ParasiticGameTest.biteTradesHealthForDurability(helper);
+	}
 }

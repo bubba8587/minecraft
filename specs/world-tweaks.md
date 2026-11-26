@@ -81,6 +81,24 @@ The art, after owner feedback that the first bubbles looked far off from lava's 
   - `lava-geyser-vs-sulfur`: our geyser beside vanilla's geyser particle over a water pit. A `potent_sulfur[state=continuous]` block alone didn't erupt in the test, so the shot spawns vanilla's `GEYSER` particle there.
 - The bubbles blend in so well that from a medium distance they're subtle. That's by design, per the owner's feedback; easy to brighten if the owner wants them more visible.
 
+## Parasitic (owner's design, 2026-11-25; built 2026-11-25)
+
+An enchantment like Mending, but it feeds on its wearer instead of XP: now and then it hurts you and uses that health to mend its item. Higher levels take a little more health and give proportionally more durability for it (owner). World Tweaks is the catch-all home (owner).
+
+- **Found (owner):** at the enchanting table, in villager trades and on random loot, like ordinary enchantments (in `#minecraft:non_treasure`): it's weaker than Mending and comes with a drawback, so it isn't treasure. Weight 2 (Mending's) *(default)*; levels cost 10 / 19 / 28 to 60 / 69 / 78 *(default)*; anvil cost 4 (Mending's).
+- **Levels:** I-III *(default; owner's example went to II)*. Each bite takes a random share (25-100 %, `PARASITIC_MIN_SHARE`) of the level's caps, health and durability alike, so the ratio is fixed per level:
+
+| Level | Health, at most | Durability, at most | Durability per health |
+|---|---|---|---|
+| I | 1 (half a heart) | 30 | 30 |
+| II | 1.5 | 55 | ~37 |
+| III | 2 | 85 | ~42.5 |
+
+  I and II are the owner's example numbers; III continues the ladder *(default)*. The caps are data: the enchantment's `bubbas_world_tweaks:parasitic` effect component (`max_health`, `max_repair`, level-based values) in `data/bubbas_world_tweaks/enchantment/parasitic.json`.
+- **Exclusive with Mending (owner):** `exclusive_set: minecraft:mending` (vanilla checks both ways).
+- **Can kill you (owner):** no health floor. Damage type `bubbas_world_tweaks:parasitic` (in the same tags as vanilla starvation: bypasses armour, effects and wolf armour, no knockback); death message "was eaten alive by their own gear".
+- **When:** checked once a second per survival or adventure player (`Parasitic`, a level tick). After a bite, a cooldown of 30-90 s (`PARASITIC_COOLDOWN_*`), then a 5 % chance each second (`PARASITIC_BITE_CHANCE`, about 20 s more on average) *(defaults; owner: random-ish frequency with a cooldown)*. Only a **damaged** Parasitic item bites, worn or held in any slot (`slots: any`, as Mending); with several, one at random. A bite that would over-mend takes only the health the repair needs. If the health doesn't come off (the player was just hit and is briefly invulnerable), nothing is mended and it tries again next second. Creative and spectator players are never bitten.
+- **How:** like vanilla's Mending, the enchantment carries an effect component (a custom one, `Parasitic.EFFECT`) and the code walks the player's equipment with `EnchantmentHelper.runIterationOnEquipment`, so slot rules and levels come from the enchantment data.
 ## Open (owner)
 
 - How often a magma spot bubbles and erupts, and the boost numbers (all builder's starting values above).
@@ -90,3 +108,4 @@ The art, after owner feedback that the first bubbles looked far off from lava's 
 
 - Magma under lava makes bubbles on the surface nearby; they swell for a few seconds, then pop with the plop sound. The core test covers the bubbling spot; no test yet that bubbles appear only over magma.
 - A lava geyser erupts now and then with black smoke and lifts a player standing or gliding over it, with a speed boost. A sulfur geyser gives the same boost. Core tests cover lift and boost, and `VentRhythmGameTest` the rhythm; no test yet for eruptions near players at about the tuned rate, or a gliding player circling a geyser to climb.
+- Parasitic (`ParasiticGameTest`, core `parasiticBiteTradesHealthForDurability`): a level III bite takes 0.5-2 health and mends about 42.5 a point; it can't sit with Mending; an undamaged item doesn't bite. Objectives, no test yet: the cooldown holds between bites; a bite can kill; creative players are never bitten.

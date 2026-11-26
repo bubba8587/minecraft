@@ -40,4 +40,13 @@ public final class WorldTweaksTuning {
 	public static final double BOOST_MAX = 1.4;
 	/** How far down a player looks for an erupting sulfur geyser under them. */
 	public static final int SULFUR_SEARCH_DEPTH = 16;
+
+	// --- Parasitic (the per-level health and repair caps are in the enchantment's data file) ---
+	/** After a bite, the next can't come for this many ticks (plus up to PARASITIC_COOLDOWN_SPREAD more). */
+	public static final int PARASITIC_COOLDOWN_TICKS = 600;
+	public static final int PARASITIC_COOLDOWN_SPREAD = 1200;
+	/** Once the cooldown is over, the chance each second that it bites (about 20 s on average). */
+	public static final float PARASITIC_BITE_CHANCE = 0.05F;
+	/** A bite takes this share of the level's caps at least (up to all of them), health and repair alike. */
+	public static final float PARASITIC_MIN_SHARE = 0.25F;
 }
