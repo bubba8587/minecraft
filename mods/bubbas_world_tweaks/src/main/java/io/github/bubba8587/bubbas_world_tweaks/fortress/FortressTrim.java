@@ -25,7 +25,7 @@ final class FortressTrim {
 
 	static @Nullable BlockState trim(StructurePiece piece, int x, int y, int z) {
 		if (y == -1) {
-			return DARK;
+			return TRIM;
 		}
 		if (piece instanceof NetherFortressPieces.BridgeCrossing || piece instanceof NetherFortressPieces.BridgeStraight
 				|| piece instanceof NetherFortressPieces.BridgeEndFiller) {

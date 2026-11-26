@@ -31,7 +31,9 @@ public class DeepseaFortressStructure extends Structure {
 	/** Shallowest floor allowed under the fortress, in blocks below sea level. */
 	private static final int MIN_DEPTH = 14;
 	/** Gap kept between the fortress top and sea level. */
-	private static final int TOP_GAP = 4;
+	private static final int TOP_GAP = 2;
+	/** Most the start crossing may sink into the floor to keep the top under the sea; deeper and the spot is skipped. */
+	private static final int MAX_SINK = 3;
 
 	public DeepseaFortressStructure(StructureSettings settings) {
 		super(settings);
@@ -55,7 +57,9 @@ public class DeepseaFortressStructure extends Structure {
 			}
 		}
 		StructurePiecesBuilder builder = new StructurePiecesBuilder();
-		layOut(builder, context.random(), x, z, floor, sea);
+		if (layOut(builder, context.random(), x, z, floor, sea) > MAX_SINK) {
+			return Optional.empty();
+		}
 		return Optional.of(new GenerationStub(new BlockPos(x + START_HALF, floor, z + START_HALF), Either.right(builder)));
 	}
 
@@ -64,8 +68,8 @@ public class DeepseaFortressStructure extends Structure {
 				context.randomState());
 	}
 
-	/** Runs vanilla's fortress layout at (x, z), seated on the floor at floorY and kept below sea level. */
-	public static void layOut(StructurePiecesBuilder builder, RandomSource random, int x, int z, int floorY, int seaLevel) {
+	/** Runs vanilla's fortress layout at (x, z), seated on the floor at floorY and kept below sea level; returns how far the start sank below the floor to stay under the sea. */
+	public static int layOut(StructurePiecesBuilder builder, RandomSource random, int x, int z, int floorY, int seaLevel) {
 		NetherFortressPieces.StartPiece start = new NetherFortressPieces.StartPiece(random, x, z);
 		builder.addPiece(start);
 		start.addChildren(start, builder, random);
@@ -74,11 +78,9 @@ public class DeepseaFortressStructure extends Structure {
 			pending.remove(random.nextInt(pending.size())).addChildren(start, builder, random);
 		}
 		int dy = floorY + 1 - start.getBoundingBox().minY();
-		int over = builder.getBoundingBox().maxY() + dy - (seaLevel - TOP_GAP);
-		if (over > 0) {
-			dy -= over;
-		}
-		builder.offsetPiecesVertically(dy);
+		int over = Math.max(0, builder.getBoundingBox().maxY() + dy - (seaLevel - TOP_GAP));
+		builder.offsetPiecesVertically(dy - over);
+		return over;
 	}
 
 	@Override

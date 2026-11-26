@@ -13,6 +13,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructurePiece;
@@ -85,15 +86,39 @@ final class DeepseaTestPieces {
 
 	/** Lays out and places a whole deep-sea fortress around (x, z) on a floor at floorY, the way worldgen does. */
 	static StructureStart fortress(ServerLevel level, long seed, int x, int z, int floorY, int seaLevel) {
+		return fortress(level, seed, x, z, floorY, seaLevel, Integer.MIN_VALUE);
+	}
+
+	/**
+	 * As above, over a sea built block by block when stoneY is set: under every piece (its box grown by 1) a stone floor at
+	 * stoneY and water from there up to the box top. A stoneY below floorY stands for ground lower than where it was measured.
+	 */
+	static StructureStart fortress(ServerLevel level, long seed, int x, int z, int floorY, int seaLevel, int stoneY) {
 		Structure structure = level.registryAccess().lookupOrThrow(Registries.STRUCTURE).getValueOrThrow(DeepseaFortresses.STRUCTURE);
 		StructurePiecesBuilder builder = new StructurePiecesBuilder();
 		DeepseaFortressStructure.layOut(builder, RandomSource.create(seed), x, z, floorY, seaLevel);
+		if (stoneY != Integer.MIN_VALUE) {
+			BlockState stone = Blocks.STONE.defaultBlockState();
+			BlockState water = Blocks.WATER.defaultBlockState();
+			for (StructurePiece piece : builder.build().pieces()) {
+				for (BlockPos p : seaUnder(piece, stoneY)) {
+					level.getChunk(p.getX() >> 4, p.getZ() >> 4);
+					level.setBlock(p, p.getY() == stoneY ? stone : water, Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
+				}
+			}
+		}
 		StructureStart start = new StructureStart(structure, ChunkPos.containing(new BlockPos(x, floorY, z)), 0, builder.build());
 		placeAll(level, start, seed);
 		return start;
 	}
 
-	private static void placeAll(ServerLevel level, StructureStart start, long seed) {
+	/** A piece's box grown by 1, from the stone floor up. */
+	static Iterable<BlockPos> seaUnder(StructurePiece piece, int stoneY) {
+		BoundingBox b = piece.getBoundingBox().inflatedBy(1);
+		return BlockPos.betweenClosed(b.minX(), stoneY, b.minZ(), b.maxX(), b.maxY(), b.maxZ());
+	}
+
+	static void placeAll(ServerLevel level, StructureStart start, long seed) {
 		BoundingBox box = start.getBoundingBox();
 		ChunkPos min = new ChunkPos(SectionPos.blockToSectionCoord(box.minX()), SectionPos.blockToSectionCoord(box.minZ()));
 		ChunkPos max = new ChunkPos(SectionPos.blockToSectionCoord(box.maxX()), SectionPos.blockToSectionCoord(box.maxZ()));

@@ -95,23 +95,37 @@ public class DeepseaFortressGameTest {
 		helper.succeed();
 	}
 
-	/** A whole fortress placed like worldgen: nothing Nether left, a guardian spawner, below sea level, on its floor. */
+	/** A whole fortress over a hand-built sea: nothing Nether left, a guardian spawner, below sea level, no air in, beside or under it, pillars down to the floor. */
 	@GameTest(structure = DeepseaTestPieces.ROOM, maxTicks = 400)
 	public void wholeFortressIsASeaFortress(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
 		int floor = 20;
+		int stone = 10;
 		int sea = 63;
 		int found = 0;
-		for (long seed = 1; seed <= 6 && found == 0; seed++) {
-			StructureStart start = DeepseaTestPieces.fortress(level, seed, 30000 + (int) seed * 512, 30000, floor, sea);
-			helper.assertTrue(start.getBoundingBox().maxY() <= sea - 4, "fortress top above sea level: " + start.getBoundingBox());
-			helper.assertTrue(start.getPieces().getFirst().getBoundingBox().minY() <= floor + 1, "start not on the floor");
+		for (long seed = 1; seed <= 3 && found == 0; seed++) {
+			StructureStart start = DeepseaTestPieces.fortress(level, seed, 30000 + (int) seed * 512, 30000, floor, sea, stone);
+			helper.assertTrue(start.getBoundingBox().maxY() <= sea - 2, "fortress top above sea level: " + start.getBoundingBox());
+			BoundingBox cb = start.getPieces().getFirst().getBoundingBox();
+			helper.assertTrue(cb.minY() == floor + 1, "start crossing not seated on the floor");
+			int[][] armEnds = { { cb.minX() + 9, cb.minZ() + 1 }, { cb.minX() + 9, cb.maxZ() - 1 }, { cb.minX() + 1, cb.minZ() + 9 },
+					{ cb.maxX() - 1, cb.minZ() + 9 } };
+			for (int[] c : armEnds) {
+				for (int y = cb.minY() - 1; y > stone; y--) {
+					BlockState s = level.getBlockState(new BlockPos(c[0], y, c[1]));
+					helper.assertTrue(s.is(BlockTags.STONE_BRICKS) || s.is(Blocks.PRISMARINE_BRICKS),
+							"pillar stops above the floor at " + c[0] + " " + y + " " + c[1] + ": " + s);
+				}
+			}
 			for (StructurePiece piece : start.getPieces()) {
 				noNether(helper, piece);
+				for (BlockPos p : DeepseaTestPieces.seaUnder(piece, stone)) {
+					helper.assertTrue(!level.getBlockState(p).isAir(), "air at " + p + " in, beside or under " + piece.getClass().getSimpleName());
+				}
 				if (piece instanceof NetherFortressPieces.MonsterThrone) {
-					BlockPos spawner = BlockPos.containing(0, 0, 0);
-					for (BlockPos p : BlockPos.betweenClosed(piece.getBoundingBox().minX(), piece.getBoundingBox().minY(), piece.getBoundingBox().minZ(),
-							piece.getBoundingBox().maxX(), piece.getBoundingBox().maxY(), piece.getBoundingBox().maxZ())) {
+					BlockPos spawner = BlockPos.ZERO;
+					BoundingBox b = piece.getBoundingBox();
+					for (BlockPos p : BlockPos.betweenClosed(b.minX(), b.minY(), b.minZ(), b.maxX(), b.maxY(), b.maxZ())) {
 						if (level.getBlockState(p).is(Blocks.SPAWNER)) {
 							spawner = p.immutable();
 						}
@@ -121,7 +135,7 @@ public class DeepseaFortressGameTest {
 				}
 			}
 		}
-		helper.assertTrue(found > 0, "no spawner room in six fortresses");
+		helper.assertTrue(found > 0, "no spawner room in three fortresses");
 		helper.succeed();
 	}
 
