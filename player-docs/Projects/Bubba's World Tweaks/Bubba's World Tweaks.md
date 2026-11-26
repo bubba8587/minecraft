@@ -18,7 +18,7 @@ side: client and server
 > | **Side** | Client and server |
 > | **Status** | Active |
 
-**Bubba's World Tweaks** is a Fabric mod that adds small touches to the world itself. It makes the Nether's lava seas bubble and erupt, turns their geysers into updrafts, and adds the Parasitic enchantment.
+**Bubba's World Tweaks** is a Fabric mod that adds small touches to the world itself. It makes the Nether's lava seas bubble and erupt, turns their geysers into updrafts, adds the Parasitic enchantment, and sinks flooded fortresses into the deep oceans.
 
 ## Lava bubbles and geysers
 
@@ -32,6 +32,12 @@ side: client and server
 *Main article: [[Parasitic]]*
 
 - An enchantment from the enchanting table that mends its item with your health instead of experience, now and then, and can kill you.
+
+## Deep-sea fortresses
+
+*Main article: [[Deep-Sea Fortresses]]*
+
+- Flooded fortresses on deep-ocean floors, with a Nether fortress's layout in stone brick and prismarine, drowned and guardians, ocean loot in barrels, a conduit shrine and bubble lifts.
 
 ## Installation
 
