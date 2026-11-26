@@ -1,0 +1,43 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:ocean_monument_map",
+          "modifier": [
+            {
+              "type": "minecraft:set_name",
+              "name": {
+                "translate": "filled_map.bubbas_world_tweaks.deepsea_fortress"
+              },
+              "target": "item_name"
+            },
+            {
+              "type": "minecraft:exploration_map",
+              "decoration": "minecraft:monument",
+              "destination": "#bubbas_world_tweaks:on_deepsea_fortress_maps",
+              "zoom": 2,
+              "search_radius": 100,
+              "skip_existing_chunks": false
+            },
+            {
+              "type": "minecraft:filtered",
+              "item_filter": {
+                "predicates": {
+                  "minecraft:map_id": {}
+                }
+              },
+              "on_fail": {
+                "type": "minecraft:discard"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "random_sequence": "bubbas_world_tweaks:items/deepsea_fortress_map"
+}

@@ -92,4 +92,10 @@ public class BubbasWorldTweaksCoreGameTest {
 	public void parasiticBiteTradesHealthForDurability(GameTestHelper helper) {
 		ParasiticGameTest.biteTradesHealthForDurability(helper);
 	}
+
+	/** Deep-sea fortress: vanilla fortress pieces placed with the swap are a flooded stone-brick fortress with a barrel and a guardian spawner. */
+	@GameTest(structure = DeepseaTestPieces.ROOM)
+	public void deepseaSwapBuildsASeaRoom(GameTestHelper helper) {
+		DeepseaFortressGameTest.swapBuildsASeaRoom(helper);
+	}
 }

@@ -10,10 +10,12 @@
 		],
 		"bubba-milestone-gametest": [
 			"io.github.bubba8587.bubbas_world_tweaks.test.VentRhythmGameTest",
-			"io.github.bubba8587.bubbas_world_tweaks.test.ParasiticGameTest"
+			"io.github.bubba8587.bubbas_world_tweaks.test.ParasiticGameTest",
+			"io.github.bubba8587.bubbas_world_tweaks.test.DeepseaFortressGameTest"
 		],
 		"fabric-client-gametest": [
-			"io.github.bubba8587.bubbas_world_tweaks.test.BubbasWorldTweaksClientGameTest"
+			"io.github.bubba8587.bubbas_world_tweaks.test.BubbasWorldTweaksClientGameTest",
+			"io.github.bubba8587.bubbas_world_tweaks.test.DeepseaFortressClientGameTest"
 		]
 	}
 }

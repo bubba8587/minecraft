@@ -1,6 +1,7 @@
 // dte:C8
 package io.github.bubba8587.bubbas_world_tweaks;
 
+import io.github.bubba8587.bubbas_world_tweaks.fortress.DeepseaFortresses;
 import io.github.bubba8587.bubbas_world_tweaks.lava.LavaGeysers;
 import io.github.bubba8587.bubbas_world_tweaks.lava.ModParticles;
 import io.github.bubba8587.bubbas_world_tweaks.parasitic.Parasitic;
@@ -23,5 +24,6 @@ public class BubbasWorldTweaks implements ModInitializer {
 		ModParticles.initialize();
 		LavaGeysers.initialize();
 		Parasitic.initialize();
+		DeepseaFortresses.initialize();
 	}
 }
