@@ -72,29 +72,6 @@ public class NorthWindGameTest {
 		});
 	}
 
-	/** Gliding in water (a glide into a lake keeps the gliding state), a gust throws the player out along their look (a rocket's push alone is smothered by water). */
-	@GameTest
-	public void gustThrowsAGliderOutOfWater(GameTestHelper helper) {
-		ServerLevel level = helper.getLevel();
-		for (int x = 3; x <= 5; x++) {
-			for (int z = 3; z <= 5; z++) {
-				for (int y = 1; y <= 3; y++) {
-					helper.setBlock(new net.minecraft.core.BlockPos(x, y, z), net.minecraft.world.level.block.Blocks.WATER);
-				}
-			}
-		}
-		ServerPlayer player = glider(helper, new Vec3(4.5, 1.5, 4.5), true);
-		player.baseTick(); // test players don't tick: refresh the in-water state
-		helper.assertTrue(player.isFallFlying() && player.isInWater(), "the test player isn't gliding in water");
-		ItemStack totem = new ItemStack(ModItems.TOTEM_OF_NORTH_WIND);
-		player.setItemInHand(InteractionHand.MAIN_HAND, totem);
-		totem.use(level, player, InteractionHand.MAIN_HAND);
-		Vec3 speed = player.getDeltaMovement();
-		level.getServer().getPlayerList().remove(player);
-		helper.assertTrue(speed.x > 1.0 && speed.y > 0.0, "the gust didn't throw the player out of the water: " + speed);
-		helper.succeed();
-	}
-
 	/**
 	 * A North Wind statue: a glider inside its area gets a gust and the cooldown; outside, or not gliding, nothing. Its own
 	 * environment, so it runs in a batch of its own: areas gust every glider in the level, other tests' players included.

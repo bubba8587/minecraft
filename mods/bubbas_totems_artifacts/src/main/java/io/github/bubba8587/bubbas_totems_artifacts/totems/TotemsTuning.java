@@ -176,9 +176,6 @@ public final class TotemsTuning {
 	public static final int NORTH_WIND_AREA_COOLDOWN_TICKS = 100;
 	/** A gust's flight duration, as a firework rocket's (1 = a plain crafted rocket with one gunpowder). */
 	public static final int NORTH_WIND_FLIGHT = 1;
-	/** A gust while gliding in water: the speed (blocks a tick) it throws the player along their look, plus this much straight up. */
-	public static final double NORTH_WIND_WATER_LAUNCH = 1.6;
-	public static final double NORTH_WIND_WATER_LIFT = 0.3;
 
 	private TotemsTuning() {
 	}
