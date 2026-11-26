@@ -37,6 +37,7 @@ The Glider is worn in the chest slot. Jumping while falling starts gliding, exac
 | Gliding down and lift | Same as the elytra | Normal |
 | Turning toward where the player looks | Under a third as fast | Normal |
 | Top speed with firework rockets | A little over half the elytra's | Normal |
+| A rocket fired while diving faster than that | Keeps your speed (never slows you) | Normal |
 | Durability | 324; wears out while gliding, repaired with phantom membrane | 432; repaired with phantom membrane |
 
 ### Durability
