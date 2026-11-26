@@ -178,6 +178,15 @@ public class GliderGameTest {
 		helper.succeed();
 	}
 
+	/** A rocket fired mid-dive, already faster than the Glider's rocket speed, doesn't slow it down (it used to drag it to ~1.0). */
+	@GameTest
+	public void rocketNeverSlowsAFastGlider(GameTestHelper helper) {
+		Vec3 start = new Vec3(2.0, 0.0, 0.0);
+		double gliderSpeed = rocketSpeed(helper, flier(helper, ModItems.GLIDER, -90.0F, 0.0F, start), 8);
+		helper.assertTrue(gliderSpeed >= start.x, "a rocket slowed a 2.0 blocks/tick Glider to %.3f".formatted(gliderSpeed));
+		helper.succeed();
+	}
+
 	private static double rocketSpeed(GameTestHelper helper, ServerPlayer player, int ticks) {
 		FireworkRocketEntity rocket = new FireworkRocketEntity(helper.getLevel(), new ItemStack(Items.FIREWORK_ROCKET), player);
 		helper.getLevel().addFreshEntity(rocket);

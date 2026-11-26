@@ -22,11 +22,14 @@ public final class GliderHandling {
 		return entity.getItemBySlot(EquipmentSlot.CHEST).is(ModItems.GLIDER);
 	}
 
-	/** Vanilla's rocket boost, scaled by power. */
+	/**
+	 * Vanilla's rocket boost ({@code look*0.1 + (look*1.5 - v)*0.5}) scaled by power, except that along the look it only
+	 * ever adds: already faster than the rocket's target speed, it keeps its speed and gets the push. Sideways it is vanilla's.
+	 */
 	public static Vec3 rocketBoost(Vec3 look, Vec3 movement, double power) {
-		return new Vec3(
-				look.x * 0.1 * power + (look.x * 1.5 * power - movement.x) * 0.5,
-				look.y * 0.1 * power + (look.y * 1.5 * power - movement.y) * 0.5,
-				look.z * 0.1 * power + (look.z * 1.5 * power - movement.z) * 0.5);
+		double along = movement.dot(look);
+		Vec3 sideways = movement.subtract(look.scale(along));
+		double alongBoost = 0.1 * power + Math.max(0.0, 1.5 * power - along) * 0.5;
+		return look.scale(alongBoost).subtract(sideways.scale(0.5));
 	}
 }

@@ -44,6 +44,7 @@ Constants in `glider/GliderHandling`. They apply only while the chest slot holds
 - **Rockets:** weaker. `GLIDER_ROCKET_POWER` = 0.6 (owner confirmed this starting strength).
   - `FireworkRocketGliderMixin`: `@WrapOperation` on the first `Vec3#add(DDD)` in `FireworkRocketEntity#tick`, the boost to the attached fall-flying entity (`look*0.1 + (look*1.5 - v)*0.5`).
   - The 0.1 push and the 1.5 target speed are both scaled by 0.6, so a rocket accelerates less and tops out at about 60 % of an elytra's rocket speed (about 1.0 instead of 1.7 blocks a tick).
+  - **Never a brake (owner playtest, 2026-11-25):** vanilla's boost pulls velocity toward the target speed from either side, so a Glider diving faster than its ~1.0 rocket speed was slowed by a rocket (and by the Totem of the North Wind, which fires one). `GliderHandling.rocketBoost` splits the velocity along the look from the sideways part: along the look it only adds (the push, plus half the shortfall when below the target); sideways it is vanilla's (halved each tick), so rockets still straighten the Glider out. Milestone `GliderGameTest.rocketNeverSlowsAFastGlider`.
 - Movement runs on the client for the local player and on the server for everything else; both mixins are common code, so both sides agree.
 
 ### Look
