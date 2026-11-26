@@ -60,5 +60,14 @@ What changed: each creeper pixel takes the closest colour (OKLch lightness match
 | `item/wither_captain_spawn_egg.png` | `item/wither_skeleton_spawn_egg.png` (egg unchanged, moved down 2 px; our horns on top) |
 | `item/soulfire_blaze_spawn_egg.png` | `item/blaze_spawn_egg.png` (recoloured onto the Soulfire Blaze's soul ramp) |
 
+### Bubba's Extra Recipes: Glider
+
+| Our texture (`assets/bubbas_extra_recipes/textures/`) | Derived from (CF32J, `assets/minecraft/textures/`) |
+|---|---|
+| `item/glider.png` | `item/elytra.png` |
+| `entity/equipment/wings/glider.png` | `entity/equipment/wings/elytra.png` |
+
+What changed: each region recoloured by lightness onto one of the recipe's materials (bamboo frame, phantom membrane, diamond accents, feather tips); the pixels and shading are CF32J's elytra's.
+
 Website: https://faithfulpack.net
 Used under the Faithful License: https://faithfulpack.net/license
