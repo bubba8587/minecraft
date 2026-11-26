@@ -85,7 +85,7 @@ The art, after owner feedback that the first bubbles looked far off from lava's 
 
 An enchantment like Mending, but it feeds on its wearer instead of XP: now and then it hurts you and uses that health to mend its item. Higher levels take a little more health and give proportionally more durability for it (owner). World Tweaks is the catch-all home (owner).
 
-- **Found (owner):** at the enchanting table, in villager trades and on random loot, like ordinary enchantments (in `#minecraft:non_treasure`): it's weaker than Mending and comes with a drawback, so it isn't treasure. Weight 2 (Mending's) *(default)*; levels cost 10 / 19 / 28 to 60 / 69 / 78 *(default)*; anvil cost 4 (Mending's).
+- **Found (owner):** at the enchanting table, in villager trades and on random loot, like ordinary enchantments (in `#minecraft:non_treasure`): it's weaker than Mending and comes with a drawback, so it isn't treasure. Weight 2, as rare at the table as Fortune and Looting *(default)*; levels cost 10 / 19 / 28 to 60 / 69 / 78 *(default)*; anvil cost 4 (Mending's).
 - **Levels:** I-III *(default; owner's example went to II)*. Each bite takes a random share (25-100 %, `PARASITIC_MIN_SHARE`) of the level's caps, health and durability alike, so the ratio is fixed per level:
 
 | Level | Health, at most | Durability, at most | Durability per health |
