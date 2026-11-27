@@ -15,7 +15,8 @@
 		],
 		"fabric-client-gametest": [
 			"io.github.bubba8587.bubbas_world_tweaks.test.BubbasWorldTweaksClientGameTest",
-			"io.github.bubba8587.bubbas_world_tweaks.test.DeepseaFortressClientGameTest"
+			"io.github.bubba8587.bubbas_world_tweaks.test.DeepseaFortressClientGameTest",
+			"io.github.bubba8587.bubbas_world_tweaks.test.AmethystGolemClientGameTest"
 		]
 	}
 }

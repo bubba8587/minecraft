@@ -3,6 +3,8 @@
 	"package": "io.github.bubba8587.bubbas_world_tweaks.mixin",
 	"compatibilityLevel": "JAVA_25",
 	"mixins": [
+		"CarvedPumpkinAmethystGolemMixin",
+		"CarvedPumpkinBlockInvoker",
 		"LavaFluidBubbleMixin",
 		"MonsterThroneDeepseaMixin",
 		"PlayerGeyserMixin",

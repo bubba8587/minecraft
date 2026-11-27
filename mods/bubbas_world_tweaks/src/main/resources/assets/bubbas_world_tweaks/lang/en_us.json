@@ -2,7 +2,9 @@
 	"death.attack.bubbas_world_tweaks.parasitic": "%1$s was eaten alive by their own gear",
 	"death.attack.bubbas_world_tweaks.parasitic.player": "%1$s was eaten alive by their own gear while fighting %2$s",
 	"enchantment.bubbas_world_tweaks.parasitic": "Parasitic",
+	"entity.bubbas_world_tweaks.amethyst_golem": "Amethyst Golem",
 	"entity.bubbas_world_tweaks.lava_geyser": "Lava Geyser",
 	"filled_map.bubbas_world_tweaks.deepsea_fortress": "Deep-Sea Fortress Map",
+	"item.bubbas_world_tweaks.amethyst_golem_spawn_egg": "Amethyst Golem Spawn Egg",
 	"structure.bubbas_world_tweaks.deepsea_fortress": "Deep-Sea Fortress"
 }

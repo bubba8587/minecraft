@@ -2,6 +2,7 @@
 package io.github.bubba8587.bubbas_world_tweaks.test;
 
 import io.github.bubba8587.bubbas_world_tweaks.WorldTweaksTuning;
+import io.github.bubba8587.bubbas_world_tweaks.golem.AmethystGolems;
 import io.github.bubba8587.bubbas_world_tweaks.lava.GeyserLift;
 import io.github.bubba8587.bubbas_world_tweaks.lava.LavaGeyser;
 import io.github.bubba8587.bubbas_world_tweaks.lava.LavaGeysers;
@@ -97,5 +98,19 @@ public class BubbasWorldTweaksCoreGameTest {
 	@GameTest(structure = DeepseaTestPieces.ROOM)
 	public void deepseaSwapBuildsASeaRoom(GameTestHelper helper) {
 		DeepseaFortressGameTest.swapBuildsASeaRoom(helper);
+	}
+
+	/** A carved pumpkin on one amethyst block builds one amethyst golem and uses up both blocks. */
+	@GameTest
+	public void pumpkinOnAmethystBuildsAGolem(GameTestHelper helper) {
+		BlockPos block = new BlockPos(2, 1, 2);
+		helper.setBlock(block.below(), Blocks.STONE);
+		helper.setBlock(block, Blocks.AMETHYST_BLOCK);
+		helper.setBlock(block.above(), Blocks.CARVED_PUMPKIN);
+		helper.assertEntitiesPresent(AmethystGolems.AMETHYST_GOLEM, 1);
+		helper.assertBlockPresent(Blocks.AIR, block);
+		helper.assertBlockPresent(Blocks.AIR, block.above());
+		helper.assertEntityPresent(AmethystGolems.AMETHYST_GOLEM, block, 0.6);
+		helper.succeed();
 	}
 }

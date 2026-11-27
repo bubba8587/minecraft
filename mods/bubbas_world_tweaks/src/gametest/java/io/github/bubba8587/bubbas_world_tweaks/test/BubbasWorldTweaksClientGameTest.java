@@ -99,7 +99,7 @@ public class BubbasWorldTweaksClientGameTest implements FabricClientGameTest {
 		context.waitTicks(wait);
 	}
 
-	private static void hud(ClientGameTestContext context, boolean shown) {
+	static void hud(ClientGameTestContext context, boolean shown) {
 		context.runOnClient(mc -> {
 			if (mc.gui.hud.isHidden() == shown) {
 				mc.gui.hud.toggle();
@@ -107,7 +107,7 @@ public class BubbasWorldTweaksClientGameTest implements FabricClientGameTest {
 		});
 	}
 
-	private static void setPack(ClientGameTestContext context, boolean on) {
+	static void setPack(ClientGameTestContext context, boolean on) {
 		boolean changed = context.computeOnClient(mc -> {
 			PackRepository repo = mc.getResourcePackRepository();
 			if (!repo.getAvailableIds().contains(PACK_32X)) {
