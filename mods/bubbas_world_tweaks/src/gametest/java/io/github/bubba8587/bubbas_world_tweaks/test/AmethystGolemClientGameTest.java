@@ -64,6 +64,23 @@ public class AmethystGolemClientGameTest implements FabricClientGameTest {
 			}
 			BubbasWorldTweaksClientGameTest.setPack(context, false);
 
+			// Art checks: next to a vanilla copper golem and an amethyst cluster, from afar, from above, face close up
+			server.runCommand("summon minecraft:copper_golem %.1f %d %.1f {NoAI:1b,Rotation:[180f,0f]}".formatted(gx + 1.5, y, gz));
+			server.runCommand("setblock %d %d %d minecraft:amethyst_cluster".formatted(x - 2, y, z));
+			server.runCommand("setblock %d %d %d minecraft:amethyst_block".formatted(x - 2, y, z + 1));
+			context.waitTicks(10);
+			for (boolean x32 : new boolean[] {false, true}) {
+				BubbasWorldTweaksClientGameTest.setPack(context, x32);
+				String sfx = x32 ? "-32x" : "";
+				BubbasWorldTweaksClientGameTest.hud(context, false);
+				shot(context, gx, y, gz, 0.0F, 3.6, 0.9, 10.0F, "golem-compare" + sfx);
+				shot(context, gx, y, gz, -20.0F, 9.0, 2.0, 10.0F, "golem-far" + sfx);
+				shot(context, gx, y, gz, 30.0F, 1.1, 2.4, 60.0F, "golem-top" + sfx);
+				shot(context, gx, y, gz, 0.0F, 0.9, 0.85, 8.0F, "golem-face" + sfx);
+				BubbasWorldTweaksClientGameTest.hud(context, true);
+			}
+			BubbasWorldTweaksClientGameTest.setPack(context, false);
+
 			// Spawn egg in hand and in the hotbar
 			server.runCommand("gamemode creative @p");
 			server.runCommand("item replace entity @p hotbar.0 with bubbas_world_tweaks:amethyst_golem_spawn_egg");
