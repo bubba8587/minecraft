@@ -36,9 +36,12 @@ try {
 } finally { Pop-Location }
 
 New-Item -ItemType Directory -Force $target | Out-Null
+# Only jars for the checkout's Minecraft version: build/libs keeps jars from other versions' builds.
+$mcVersion = ((Get-Content (Join-Path $root "gradle.properties") | Where-Object { $_ -match '^minecraft_version\s*=' }) -split '=', 2)[1].Trim()
 foreach ($m in $Mods) {
 	Get-ChildItem $target -Filter "$m-*.jar" | Remove-Item -Confirm:$false
-	Get-ChildItem (Join-Path $root "mods\$m\build\libs") -Filter "$m-*.jar" | Where-Object Name -notmatch "sources" |
+	Get-ChildItem (Join-Path $root "mods\$m\build\libs") -Filter "$m-*.jar" |
+		Where-Object { $_.Name -notmatch "sources" -and $_.Name -like "*+$mcVersion.jar" } |
 		Copy-Item -Destination $target
 }
 
