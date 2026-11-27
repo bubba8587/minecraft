@@ -2,6 +2,7 @@
 package io.github.bubba8587.bubbas_reworked_mobs.display;
 
 import java.util.function.Predicate;
+import net.minecraft.core.Holder;
 
 import io.github.bubba8587.bubbas_reworked_mobs.BubbasReworkedMobs;
 import io.github.bubba8587.bubbas_reworked_mobs.registry.ModBlocks;
@@ -67,7 +68,7 @@ public final class LootDisplays {
 		player.getItemInHand(hand).hurtAndBreak(1, player, hand);
 		player.getInventory().placeItemBackInInventory(stack, Prediction.SERVER_ONLY);
 		BlockState ground = level.getBlockState(pos.below());
-		level.playSound(null, pos, ground.isAir() ? SoundEvents.GRAVEL_BREAK : ground.getSoundType().getBreakSound(), SoundSource.BLOCKS, 1.0F, 0.8F);
+		level.playSound(null, pos, ground.getSounds(level).breakSound().map(Holder::value).filter(s -> !ground.isAir()).orElse(SoundEvents.GRAVEL.breakSound().orElseThrow().value()), SoundSource.BLOCKS, 1.0F, 0.8F);
 		level.playSound(null, pos, SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 0.3F, 0.9F);
 		level.gameEvent(player, GameEvent.BLOCK_DESTROY, pos);
 		return true;

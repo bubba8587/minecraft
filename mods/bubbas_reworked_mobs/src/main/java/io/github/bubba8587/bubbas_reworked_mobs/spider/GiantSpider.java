@@ -528,8 +528,8 @@ public class GiantSpider extends Spider implements Gripper {
 			return;
 		}
 		Vec3 target = perchPos();
-		double nx = getX() + Mth.clamp(target.x - getX(), -0.08, 0.08);
-		double nz = getZ() + Mth.clamp(target.z - getZ(), -0.08, 0.08);
+		double nx = getX() + Math.clamp(target.x - getX(), -0.08, 0.08);
+		double nz = getZ() + Math.clamp(target.z - getZ(), -0.08, 0.08);
 		setDeltaMovement(Vec3.ZERO);
 		faceTrunk();
 		resetFallDistance();

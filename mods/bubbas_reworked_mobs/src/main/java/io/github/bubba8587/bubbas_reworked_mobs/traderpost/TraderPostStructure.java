@@ -58,7 +58,7 @@ public class TraderPostStructure extends Structure {
 		for (int i = 0; i < at.length; i++) {
 			int surface = generator.getFirstOccupiedHeight(at[i][0], at[i][1], Heightmap.Types.WORLD_SURFACE_WG, context.heightAccessor(), context.randomState());
 			int floor = generator.getFirstOccupiedHeight(at[i][0], at[i][1], Heightmap.Types.OCEAN_FLOOR_WG, context.heightAccessor(), context.randomState());
-			if (floor != surface || !context.validBiome().test(context.biomeResolver().getNoiseBiome(QuartPos.fromBlock(at[i][0]), QuartPos.fromBlock(surface),
+			if (floor != surface || !context.validBiome().test(context.noiseBiomeResolver().getNoiseBiome(QuartPos.fromBlock(at[i][0]), QuartPos.fromBlock(surface),
 					QuartPos.fromBlock(at[i][1])))) {
 				return Optional.empty();
 			}
@@ -71,10 +71,10 @@ public class TraderPostStructure extends Structure {
 			return Optional.empty();
 		}
 		int qy = QuartPos.fromBlock(centreY);
-		if (context.biomeResolver().getNoiseBiome(QuartPos.fromBlock(cx), qy, QuartPos.fromBlock(cz)).is(Biomes.DESERT)) {
+		if (context.noiseBiomeResolver().getNoiseBiome(QuartPos.fromBlock(cx), qy, QuartPos.fromBlock(cz)).is(Biomes.DESERT)) {
 			boolean edge = false;
 			for (int[] d : new int[][] { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } }) {
-				edge |= !context.biomeResolver().getNoiseBiome(QuartPos.fromBlock(cx + d[0] * DESERT_EDGE), qy, QuartPos.fromBlock(cz + d[1] * DESERT_EDGE))
+				edge |= !context.noiseBiomeResolver().getNoiseBiome(QuartPos.fromBlock(cx + d[0] * DESERT_EDGE), qy, QuartPos.fromBlock(cz + d[1] * DESERT_EDGE))
 						.is(Biomes.DESERT);
 			}
 			if (!edge) {
@@ -89,7 +89,7 @@ public class TraderPostStructure extends Structure {
 	private static boolean nearCampOrYard(GenerationContext context, ChunkPos chunk) {
 		var sets = context.registryAccess().lookupOrThrow(Registries.STRUCTURE_SET);
 		for (ResourceKey<StructureSet> key : java.util.List.of(CAMPS, YARDS)) {
-			var set = sets.getValue(key);
+			var set = sets.get(key).map(net.minecraft.core.Holder::value).orElse(null);
 			if (set == null || !(set.placement() instanceof RandomSpreadStructurePlacement placement)) {
 				continue;
 			}

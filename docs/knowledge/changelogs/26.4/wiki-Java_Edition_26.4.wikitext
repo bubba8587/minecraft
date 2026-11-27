@@ -1,0 +1,1594 @@
+{{Infobox version
+| title = Minecraft 26.4
+| edition = Java
+| planned = yes
+| name = [[Deep Freeze]]
+| date = December 2026
+| prevparent = 26.3
+| next = 
+| nextparent = 27.1
+}}
+{{Relevant guide|Tutorial:Version overviews/Deep Freeze}}
+'''26.4''', the release of '''[[Deep Freeze]]''', is an upcoming [[game drop]] for {{JE}} set to release in December 2026, which introduces the [[ice caves]], a new [[cave]] [[biome]] featuring [[icicle]]s, [[ice crystal]]s, and [[brittle ice]], as well as the [[frostbite]]s, [[ice ball]]s, the [[Freezing]] effect, a new block set for [[calcite]], brick variants of [[packed ice bricks|packed ice]] and [[snow bricks|snow block]]s, updated [[jukebox]]es, and fixes bugs.
+
+== Additions ==
+{{Additions table
+|Brittle Ice
+|Icicle
+|Ice Crystal
+|Ice Ball
+|Packed Ice Bricks
+|Packed Ice Brick Stairs
+|Packed Ice Brick Slab
+|Packed Ice Brick Wall
+|Chiseled Packed Ice
+|Snow Bricks
+|Snow Brick Slab
+|Snow Brick Stairs
+|Snow Brick Wall
+|Calcite Pillar
+|Calcite Slab
+|Calcite Stairs
+|Calcite Wall
+|Polished Calcite
+|Polished Calcite Slab
+|Polished Calcite Stairs
+|Polished Calcite Wall
+|Polished Calcite Bricks
+|Polished Calcite Brick Slab
+|Polished Calcite Brick Stairs
+|Polished Calcite Brick Wall
+|Chiseled Soulshale
+|Frostbite Spawn Egg
+|Potion of Freezing
+|Splash Potion of Freezing
+|Lingering Potion of Freezing
+|Arrow of Freezing
+|Music Disc Flurry
+}}
+
+=== Blocks ===
+'''{{Animate|Brittle Ice (age 0) JE1.png;Brittle Ice (age 1) JE1.png;Brittle Ice (age 2) JE1.png;Brittle Ice (age 3) JE1.png|32px}} [[Brittle ice]]'''
+* A fragile [[ice]] block that generates naturally in [[ice caves]] as part of [[crevasse]]s.
+* Begins to crack when stood on by players or mobs, eventually breaking.
+** [[Frostbite]]s and [[stray]]s can stand on brittle ice without breaking it.
+* Does not melt, unlike regular [[ice]] and [[frosted ice]].
+* Is created when [[water]] touches [[blue ice]].
+** Any [[Water|water block]] that borders the [[Blue Ice|blue ice]] block horizontally will turn into brittle ice.
+* Can be obtained when mined using a [[tool]] with [[Silk Touch]].
+
+[[File:Calcite JE4 BE1.png|width=32x32]]''' Calcite block set'''
+* Calcite now has several variants, which can be also crafted using a [[stonecutter]]:
+** [[File:Calcite Pillar (UD) JE1 BE1.png|32px]] [[Calcite pillar]]
+** [[File:Calcite Slab JE1 BE1.png|32px]] [[Calcite slab]]
+** [[File:Calcite Stairs (N) JE1 BE1.png|32px]] [[Calcite stairs]]
+** [[File:Calcite Wall (ewU) JE1.png|32px]] [[Calcite wall]]
+
+'''[[File:Polished Calcite JE1.png|32px]] [[Polished calcite]]'''
+* A block made from [[calcite]].
+** Crafted using a 2x2 square of calcite.
+* Has several variants, which can also be crafted using a [[stonecutter]]:
+** [[File:Polished Calcite Slab JE1 BE1.png|32px]] [[Polished calcite slab]]
+** [[File:Polished Calcite Stairs (N) JE1 BE1.png|32px]] [[Polished calcite stairs]]
+** [[File:Polished Calcite Wall (ewU) JE1.png|32px]] [[Polished calcite wall]]
+
+'''[[File:Polished Calcite Bricks JE1 BE1.png|32px]] [[Polished calcite bricks]]'''
+* A brick block made from [[polished calcite]].
+** Crafted using a 2x2 square of polished calcite.
+* Has several variants, which can also be crafted using a [[stonecutter]].
+** [[File:Polished Calcite Brick Slab JE1 BE1.png|32px]] [[Polished calcite brick slab]]
+** [[File:Polished Calcite Brick Stairs (N) JE1 BE1.png|32px]] [[Polished calcite brick stairs]]
+** [[File:Polished Calcite Brick Wall (ewU) JE1.png|32px]] [[Polished calcite brick wall]]
+
+'''[[File:Chiseled Packed Ice.png|32px]] [[Chiseled packed ice]]'''
+* A chiseled variant of [[packed ice]].
+** Crafted using 2 [[packed ice brick slab]]s.
+** Can also be crafted using packed ice or [[packed ice bricks]] in a [[stonecutter]].
+* Depicts a snowflake pattern.
+
+'''[[File:Chiseled Soulshale JE1 BE1.png|32px]] [[Chiseled soulshale]]'''
+* Depicts the face of a [[singer]].
+* Can only be found in [[ancient city]] loot chests.
+* Can be obtained when mined without using a [[tool]].
+* Currently unobtainable in the [[Creative inventory]], but is available via [[commands]].
+* Is the first Sift-themed block to be added.
+
+'''[[File:Ice Crystal.png|32px]] [[Ice crystal]]'''
+* A crystal block which generates on the ground in [[ice caves]].
+* Emits a [[light level]] of 4.
+* Can be placed on all full sides of a block, and breaks if the support block is removed.
+* Emits ambient sounds when placed above [[packed ice]].
+
+'''{{Animate|Attached Icicle Base (D) JE1.png;Attached Icicle Middle (D) BE1.png;Attached Icicle Frustum (D) BE1.png;Attached Icicle Tip (D) BE1.png;Attached Icicle Tip Merge (D) BE1.png|32px}}{{Animate|Attached Icicle Base (U) JE2.png;Attached Icicle Middle (U) JE2.png;Attached Icicle Frustum (U) JE2.png;Attached Icicle Tip (U) JE2.png;Attached Icicle Tip Merge (U) JE2.png|32px}}<br>{{Animate|Icicle Base (D) JE2 BE1.png;Icicle Middle (D) JE2 BE1.png;Icicle Frustum (D) JE2 BE1.png;Icicle Tip (D) JE2 BE1.png;Icicle Tip Merge (D) JE2 BE1.png|32px}}{{Animate|Icicle Base (U) JE2 BE1.png;Icicle Middle (U) JE2 BE1.png;Icicle Frustum (U) JE2 BE1.png;Icicle Tip (U) JE2 BE1.png;Icicle Tip Merge (U) JE2 BE1.png|32px}} [[Icicle]]'''
+* A speleothem block that generates as stalactites on the ceiling in [[ice caves]].
+** Can also be placed on the ground as stalagmites.
+* Can naturally grow up to 5 blocks long when pointing downward.
+** Only grows under [[packed ice]] in areas with a low enough light level and outside [[the Nether]].
+* Icicle segments melt (depending on the placement) at a [[light level]] of 5 or above or in the Nether, causing them to break.
+* Function similarly to other speleothem blocks:
+** Icicle stalactites fall when their supporting block is broken, and they deal [[damage]] to [[Entity|entities]] they collide with, which scales based on the distance they fall before impact.
+** Landing onto an icicle stalagmite multiplies the fall damage taken, which scales based on the height fallen.
+** Icicles can be broken by a thrown [[trident]].
+* It can be placed in any direction and has a base, middle and tip variant.
+
+'''[[File:Packed Ice Bricks JE1.png|32px]] [[Packed ice bricks]]'''
+* A brick block made from [[packed ice]].
+** Crafted using a 2x2 square of packed ice.
+** Can also be crafted using packed ice in a [[stonecutter]].
+* Unlike regular packed ice, it is not slippery.
+* Packed ice bricks and chiseled packed ice belong to the Fast Sliding [[sulfur cube]] archetype.
+* The correct tool to mine ice bricks is a [[pickaxe]], but unlike other ice blocks, it does not need [[Silk Touch]].
+* Has several variants, which can be crafted using a [[stonecutter]]:
+** [[File:Packed Ice Brick Stairs JE1.png|32px]] [[Packed ice brick stairs]]
+** [[File:Packed Ice Brick Slab JE1.png|32px]] [[Packed ice brick slab]]
+** [[File:Packed Ice Brick Wall JE1.png|32px]] [[Packed ice brick wall]]
+
+'''[[File:Snow Bricks JE1 BE1.png|32px]] [[Snow bricks]]'''
+* A brick block made from [[snow block]]s.
+** Crafted using a 2×2 square of snow blocks.
+** Cannot be crafted using a [[stonecutter]].
+* Snow bricks belong to the Fast Sliding [[sulfur cube]] archetype.
+* The correct tool to mine snow bricks is a [[shovel]].
+** If mined with any other tool, or by hand, it will drop nothing.
+* Has several variants, which cannot be crafted using a [[stonecutter]]:
+* [[File:Snow Brick Slab JE1 BE1.png|32px]] [[Snow brick slab]]
+* [[File:Snow Brick Stairs (N) JE1 BE1.png|32px]] [[Snow brick stairs]]
+* [[File:Snow Brick Wall (ewU) JE1.png|32px]] [[Snow brick wall]]
+
+=== Items ===
+'''[[File:Arrow of Freezing JE1.png|32px]] [[Arrow of Freezing]]'''
+* A [[tipped arrow]] which applies the [[Freezing]] effect.
+
+'''[[File:Frostbite Spawn Egg JE1 BE1.png|32px]] [[Frostbite spawn egg]]'''
+* Used to spawn a [[frostbite]].
+
+'''{{InvSprite|Ice Ball}} [[Ice ball]]'''
+* A throwable [[projectile]] that deals [[damage]] and [[Knockback (mechanic)|knockback]].
+** Damage depends on how fast the projectile is moving which, like with other projectiles, can be influenced by how fast the thrower is moving.
+* Breaks on impact with blocks or entities, creating a particle effect and sound.
+* Can be used to brew [[Potion of Freezing|potions of Freezing]].
+* Obtained from [[frostbite]]s, which have a chance to drop them when killed.
+
+'''{{InvSprite|Music Disc Flurry}} [[Music Disc Flurry|"Flurry" music disc]]'''
+* Added the "Flurry" music disc by [[Hyper Potions]].
+** Has a 30% chance of being found in [[igloo]] basement chests.
+** Has a [[comparator]] output of 7 when played in a [[jukebox]].
+
+'''{{AnimateSprite|Potion of Freezing;Splash Potion of Freezing;Lingering Potion of Freezing}} [[Potion of Freezing]]'''
+* [[Brewed]] using an [[awkward potion]] and an [[ice ball]].
+* Applies the [[Freezing]] effect.
+
+=== Mobs ===
+'''[[File:Frostbite JE1 BE1.png|width=55x55]] [[File:Baby Frostbite JE1 BE1.png|17px]] [[Frostbite]]'''
+* A [[zombie]] variant that can be found in [[snowy biomes]].
+* Zombies [[Mob conversion|convert]] into frostbites when they stay in [[powder snow]] for 30 seconds.
+** They will not convert if they are wearing a piece of [[leather armor]].
+* Does not sink in [[powder snow]] or make [[brittle ice]] crack.
+* Burns in [[sunlight]].
+* It has two modes of attacking: a [[melee attack]] and a [[ranged attack]].
+** Switches between melee and ranged combat based on target distance and whether they have [[ice ball]]s.
+** Most frostbites use a standard melee attack, which gives the [[Freezing]] effect.
+** Some frostbites spawn holding ice balls, which they throw as a ranged attack.
+* Drops [[rotten flesh]] and [[Ice Ball|ice balls]] when killed, regardless if holding one or not.
+* Converts into a [[zombie]] when underwater for 30 seconds.
+
+=== World generation ===
+'''[[File:Crevasse.png|40px]] [[Crevasse]]'''
+* Small cracks in the terrain which generate in ice caves.
+* Covered with [[brittle ice]] and filled with [[water]] below.
+
+'''{{BiomeSprite|Ice Caves|scale=1.5}} [[Ice caves]]'''
+* A cave biome that generates underneath cold biomes.
+* It consists mainly of [[packed ice]] and [[calcite]].
+* Large [[icicle]]s made of packed ice generate on the ground and hanging from the ceiling.
+* [[Ice crystal]]s occasionally generate on the ground.
+* Sometimes patches of [[snow]] can generate here.
+* Does not generate [[glow lichen]], unlike other cave biomes.
+* Ores generate inside blobs of [[stone]] and [[deepslate]].
+* Common cave monsters along with [[stray]]s and [[frostbite]]s can spawn here.
+
+=== Gameplay ===
+'''[[Advancement]]'''
+* Added one new advancement.
+{{Load advancements|What Goes Around Comes Around}}
+
+'''[[Effect]]s'''
+* [[File:Freezing JE1 BE1.png|32px]] '''[[Freezing]]'''
+** An effect version of [[powder snow]] freezing that causes an entity to [[freeze]], dealing [[damage]] over time and slowing their [[movement]].
+** The Freezing effect will cause players to shake and eventually deal damage.
+*** Causes those affected to slowly become frozen as if in powder snow for its duration.
+** Wearing a piece of [[leather armor]] prevents the entity from freezing, just like with [[powder snow]], but will not keep the effect from being applied and will not remove the effect.
+*** Being on fire or standing in [[fire]] or [[lava]] counters the Freezing Effect, similar to wearing leather armor.
+** [[Undead]] mobs, [[Snow golem|snow golems]], [[Polar bear|polar bears]], and [[Ender dragon|ender dragons]] are completely immune to Freezing.
+*** Mobs that are vulnerable to Freezing ([[Blaze|blazes]], [[Magma cube|magma cubes]], and [[Strider|striders]]) have a five times multiplier to the damage taken.
+** Lingering potion, splash potion, and [[potion of Freezing]] can be brewed using ice balls.
+** [[Arrows of Freezing]] can be crafted by placing a lingering potion of Freezing in the middle of the crafting table surrounded by eight arrows.
+
+=== General ===
+'''[[Block sound set definition|Block sound sets]]'''
+* Added {{cd|minecraft:block_sound_set}} registry containing definitions for sounds produced by different categories of blocks.
+** Format: object with fields:
+*** {{cd|volume}} – a float between {{cd|0.00001}} and {{cd|10.0}}, the relative volume at which all sounds will be played.
+**** If not present, defaults to {{cd|1.0}}
+*** {{cd|pitch}} – a float between {{cd|0.00001}} and {{cd|2.0}}, the relative pitch at which all sounds will be played.
+**** If not present, defaults to {{cd|1.0}}
+*** {{cd|break_sound}} – Sound event, the sound that will be played when the block gets broken.
+*** {{cd|step_sound}} – Sound event, the sound that will be played when an entity walks on top of the block.
+*** {{cd|place_sound}} – Sound event, the sound that will be played when the block gets placed.
+*** {{cd|hit_sound}} – Sound event, the sound that will be played while the block is being destroyed.
+*** {{cd|fall_sound}} – Sound event, the sound that will be played when an entity falls onto the block.
+*** All sound fields are optional.
+
+'''[[Data component format]]'''
+* Added {{cd|minecraft:dispense_behavior}}
+** Determines what happens when the item is dispensed from a [[dispenser]].
+** Format: Namespaced ID of a {{cd|dispense_behavior}} registry entry or an inline list of dispense behaviors.
+
+'''[[Dispense behavior]]s'''
+* A new registry folder: {{cd|dispense_behavior}}. Each file is a list of behaviors that describe a sequence of behaviors to attempt when dispensing an item. Unless otherwise noted, behaviors are tried in sequence until one succeeds.
+* Each entry has a {{cd|type}} field specifying a dispense behavior type as described below, possibly with type-specific additional fields.
+** Vanilla entries:
+*** {{cd|minecraft:armor_stand}} - Used for [[armor stand]]s
+*** {{cd|minecraft:boat}} - Used for all types of [[boat]]s, [[chest boat]]s, rafts and chest rafts.
+*** {{cd|minecraft:bone_meal}} - Used for [[bone meal]].
+*** {{cd|minecraft:brush}} - Used for [[brush]]es.
+*** {{cd|minecraft:carved_pumpkin}} - Used for [[carved pumpkin]]s.
+*** {{cd|minecraft:chest}} - Used for [[chest]]s
+**** Only for regular chests, not trapped, copper or other types of chest
+*** {{cd|minecraft:default}} - Used for any items without another specified behavior.
+*** {{cd|minecraft:default_projectile}} - Used for all types of [[arrow]]s, all types of [[egg]]s, [[snowball]]s and [[ice ball]]s
+*** {{cd|minecraft:dropper}} - No item has the default data component {{DCL|dispense_behavior}} with that id. Used for [[dropper]]s, regardless of the item, changing it modifies the dropper behavior for all items.
+*** {{cd|minecraft:empty_bucket}} - Used for empty [[bucket]]s.
+*** {{cd|minecraft:equipment}} - Used for all types of equippables except carved pumpkins and wither skeleton skulls.
+*** {{cd|minecraft:filled_bucket}} - Used for all types of buckets with any contents.
+*** {{cd|minecraft:fire_charge}} - Used for [[fire charge]]s.
+*** {{cd|minecraft:firework_rocket}} - Used for all [[firework rocket]]s.
+*** {{cd|minecraft:flint_and_steel}} - Used for [[flint and steel]].
+*** {{cd|minecraft:glass_bottle}} - Used for empty [[glass bottle]]s.
+*** {{cd|minecraft:glowstone}} - Used for [[glowstone]] blocks.
+*** {{cd|minecraft:honeycomb}} - Used for [[honeycombs]].
+*** {{cd|minecraft:minecart}} - Used for all types of [[minecart]]s.
+*** {{cd|minecraft:potion}} - Used for [[potion]]s (note: only default potions, not splash or lingering).
+*** {{cd|minecraft:shears}} - Used for [[shears]].
+*** {{cd|minecraft:shulker_box}} - Used for all [[shulker box]]es.
+*** {{cd|minecraft:spawn_egg}} - Used for all [[spawn egg]]s.
+*** {{cd|minecraft:thrown_potion}} - Used for splash potions and lingering potions.
+*** {{cd|minecraft:tnt}} - Used for [[TNT]] blocks.
+*** {{cd|minecraft:wind_charge}} - Used for [[wind charge]]s.
+*** {{cd|minecraft:wither_skeleton_skull}} - Used for [[wither skeleton skull]]s.
+
+* '''Dispense behavior types'''
+** {{cd|minecraft:brush_armadillo}}
+*** Brushes an [[armadillo]] in front of the [[dispenser]].
+*** No additional fields.
+** {{cd|minecraft:charge_respawn_anchor}}
+*** Charges a [[respawn anchor]] in front of the dispenser.
+*** If the respawn anchor is already fully charged, no further behaviors are tried.
+*** No additional fields.
+** {{cd|minecraft:convert_to_mud}}
+*** Converts the block in front of the dispenser to [[mud]] in case it has the {{cd|#minecraft:convertible_to_mud}} block tag.
+*** The item needs to contain a Water potion, otherwise it fails.
+*** No additional fields.
+** {{cd|minecraft:drop_item}}
+*** The item is dropped as an item entity.
+*** No additional fields.
+** {{cd|minecraft:empty_bucket}}
+*** Empties the [[bucket]] in front of the dispenser.
+*** The item needs to be a bucket, otherwise it fails.
+*** No additional fields.
+** {{cd|minecraft:equip}}
+*** Equips the item onto a living entity in front of the dispenser.
+*** The item must be equippable onto a slot of the entity.
+*** No additional fields.
+** {{cd|minecraft:equip_chest}}
+*** Equips a [[chest]] onto a tamed mob that can carry a chest in front of the dispenser.
+*** No additional fields.
+** {{cd|minecraft:equip_sulfur_cube}}
+*** Gives the item to a [[sulfur cube]] in front of the dispenser.
+*** The item needs to be in the {{cd|#minecraft:sulfur_cube_swallowable}} item tag, otherwise it fails.
+*** No additional fields.
+** {{cd|minecraft:fill_bottle}}
+*** Fills the [[bottle]] from the block in front.
+*** No additional fields.
+** {{cd|minecraft:fill_bucket}}
+*** Picks up a fluid in front of the dispenser, filling the bucket.
+*** No additional fields.
+** {{cd|minecraft:grow_plant}}
+*** Grows a plant in front of the dispenser.
+*** No additional fields.
+** {{cd|minecraft:ignite}}
+*** Ignites the block in front of the dispenser.
+*** No additional fields.
+** {{cd|minecraft:insert_into_container}}
+*** Inserts the item into a container in front of the dispenser.
+*** No additional fields.
+** {{cd|minecraft:place_armor_stand}}
+*** Places an [[armor stand]] in front of the dispenser.
+*** No additional fields.
+** {{cd|minecraft:place_block}}
+*** Places the item as a block in front of the dispenser.
+*** The item needs to be a block item, otherwise it fails.
+*** No additional fields.
+** {{cd|minecraft:place_boat}}
+*** Places a [[boat]] on water in front of the dispenser
+*** The entity type is determined by the {{cd|minecraft:entity_data}} component of the item, and needs to be a boat, chest boat, raft or chest raft.
+**** For any other entity type, the action fails.
+*** No additional fields.
+** {{cd|minecraft:place_minecart}}
+*** Places a [[minecart]] on rails in front of the dispenser.
+*** The entity type is determined by the {{cd|minecraft:entity_data}} component of the item, and needs to be a minecart.
+**** For any other entity type, the action fails
+*** No additional fields.
+** {{cd|minecraft:shear}}
+*** Shears a mob or harvests a beehive in front of the dispenser.
+*** No additional fields.
+** {{cd|minecraft:shoot_projectile}}
+*** Shoots the item as a projectile.
+*** The item needs to be a projectile item, such as an [[arrow]] or [[snowball]].
+*** Additional fields:
+**** {{cd|offset}} - vector of 3 doubles, the offset of the spawn position of the projectile from the center of the dispenser.
+**** {{cd|scale}} - double, how far from the offset position to spawn the projectile, along the direction of the dispenser.
+**** {{cd|uncertainty}} - non-negative float, the inaccuracy of the shot.
+**** {{cd|power}} - non-negative float, the velocity of the shot.
+**** {{cd|sound}} - optional object, the sound to play when shooting (defaults to {{cd|minecraft:block.dispenser.launch}} with volume {{cd|1.0}} and pitch {{cd|1.2}}).
+***** {{cd|sound}} - Sound Event to play.
+***** {{cd|volume}} - float provider, the volume of the sound.
+***** {{cd|pitch}} - float provider, the pitch of the sound.
+** {{cd|minecraft:spawn_golem_from_carved_pumpkin}}
+*** Completes a [[golem]] in front of the dispenser.
+*** No additional fields.
+** {{cd|minecraft:spawn_mob}}
+*** Spawns the entity defined by the {{cd|minecraft:entity_data}} component in front of the dispenser.
+*** No additional fields.
+** {{cd|minecraft:spawn_tnt}}
+*** Spawns [[primed TNT]] in front of the dispenser.
+*** No additional fields.
+** {{cd|minecraft:transform_block}}
+*** Transforms the block in front of the dispenser using a block transformer.
+*** Additional field:
+**** {{cd|transformer}} - Namespaced ID of the block transformer to use.
+** {{cd|minecraft:spawn_wither_from_wither_skeleton_skull}}
+*** Completes a [[wither]] in front of the dispenser.
+*** No additional fields.
+
+'''[[Environment attribute]]s'''
+* {{cd|minecraft:visual/has_sky_occluder}}
+** Determines whether the sky occluder is enabled for the environment. The sky occluder will occlude the sky box up until a certain angle with fog color with a smooth occlusion border.
+*** Value type: boolean
+*** Default value: {{cd|true}} for the Overworld, {{cd|false}} for the Nether and the End.
+*** Interpolated: no
+
+'''[[Feature]]s'''
+* Added {{cd|crevasse}} feature type
+** Carves a winding, tapered crevasse into exposed terrain. The crevasse follows the terrain surface, extends in opposite directions from its placement position and requires a minimum connected footprint before carving.
+** Format: object with fields:
+*** {{cd|max_width}} – integer (between 2 and 8), maximum cross-section width in blocks.
+*** {{cd|max_length}} – integer (between 4 and 16), maximum end-to-end length in blocks.
+*** {{cd|min_footprint}} – integer (between 1 and 32), minimum connected horizontal footprint required before carving.
+*** {{cd|cursor_surface_search_range}} – positive integer, maximum amount of blocks the cursor will scan downwards to find its next position.
+*** {{cd|column_surface_search_range}} – positive integer, maximum amount of blocks each carving will scan downwards to find a carvable surface.
+*** {{cd|twistiness}} – float (between 0.0 and 16.0), amount of horizontal curvature.
+*** {{cd|tapering}} – float (between 0.0 and 1.0), amount of tapering applied on each step of growing the crevasse.
+*** {{cd|turn_factor}} – float (between 0.0 and 1.0), intensity of rotation applied on each step of growing the crevasse.
+*** {{cd|carve_depth}} – int provider, carve depth below the origin terrain surface.
+*** {{cd|fill_depth}} – int provider, fill depth below the origin terrain surface.
+*** {{cd|surface_block}} – Block state provider, block placed over the crevasse opening.
+*** {{cd|fill_block}} – Block state provider, block placed at or below the selected fill depth.
+*** {{cd|carvable_blocks}} – Block predicate, which blocks the crevasse is allowed to remove.
+*** {{cd|acceptable_barrier}} – Block predicate, which pre-existing blocks to accept as part of a barrier.
+
+'''[[Language]]s'''
+* Added support for {{w|Javanese language|Javanese}} and {{w|Chavacano|Chavacano, Zamboanga}} languages.
+
+'''[[Options]]'''
+* Video Settings
+** Added "Prefer DXGI Present", a new option that attempts to use DirectX to present the game.
+*** The setting is only supported on the Windows platform, and not all hardware is supported.
+*** The setting defaults to off, and it is classed as experimental; it may not work for all players.
+*** With the setting enabled, the player may see improvements in IME support, improved support for Variable Refresh Rate, and experience faster alt-tabbing while the game is set to fullscreen mode.
+
+'''Other Players'''
+* A new menu which has been added to replace Social Interactions.
+* Only available when playing on a world open to multiplayer.
+** This includes:
+*** Playing in singleplayer worlds open to LAN
+*** Playing on dedicated servers
+*** Playing on Realms
+** Can be opened by pressing the "Other Players" icon button in the pause menu
+** Can also be opened from in-game using the "Other Players" key ({{key|P}} by default)
+* Lists the players currently online in the world you are in
+* Lists players who are not online anymore, but may still be of interest:
+** Players who were just online but left
+** Players who recently sent messages in the chat
+* Clicking on a player's icon in the list opens their Player Options.
+
+'''[[Particles]]'''
+* Added {{cd|minecraft:freezing}}.
+** Emitted by entities which are affected by the [[freezing]] mob effect.
+** Has no fields.
+
+'''Player Options'''
+* Player Options is a new screen accessible through both the Friends list and Other Players.
+* It contains per-player social actions previously spread across the Friends list and Social Interactions.
+* These actions are:
+** Sending or canceling a friend request
+** Accepting or declining a friend request
+** Muting a player
+** Reporting a player
+* Muting a player hides their chat messages until the next time you start the game
+* Blocking players is managed through Other Players.
+
+'''[[Predicate]]s'''
+* Added {{cd|below_heightmap}}
+** Checks if the height of the position is below a given heightmap value.
+** Format:
+*** {{cd|heightmap}}: Heightmap type to compare origin against.
+
+'''[[Shader]]s'''
+* Added <samp>sky_occluder.vsh</samp> and <samp>sky_occluder.fsh</samp> shaders which are used to occlude the sky box up until the certain angle with fog color with a smooth occlusion border.
+
+'''[[Sulfur cube archetype definition]]'''
+* Added new {{cd|location_based_effects}} field — an optional list of location-based effects.
+** The format for each entry is exactly the same as a location-based enchantment effect.
+** Level-based values in this definition will always be evaluated with level {{cd|1}}.
+
+'''[[Tag (Java Edition)|Tags]]'''
+* Biome Tags
+** Added {{Tag link|biome|generated_in_below_zero_retrogen}}, which contains biomes to generate below worlds that predate [[Caves & Cliffs]].
+** Added the {{Tag link|biome|is_cave}} collection tag.
+** Added {{Tag link|biome|spawns_cold_variants_underground}} to describe all biomes which allow the spawning of monster cold variants ([[strays]] and [[frostbite]]) without requiring sky access. <!-- Used in the Monster.checkColdVariantSpawnRules method, which is currently used as the spawn predicate for these two mobs.-->
+
+* Block Tags
+** Added {{Tag link|block|face_occluding_ice_blocks}} to describe all ice blocks that should enable face culling when placed next to each other.
+** Added {{Tag link|block|ice_cave_ore_replaceables}} to describe all blocks which are allowed to be replaced by ores within ice caves (in addition to {{Tag link|block|stone_ore_replaceables}}, {{Tag link|block|height_specific_ore_replaceables}} and {{Tag link|block|deepslate_ore_replaceables}})
+** Added {{Tag link|block|ice_crevasse_replaceables}}.
+** Added {{Tag link|block|jukebox_containers}} to describe all blocks usable by a [[jukebox]] as a source for music disc playlists.
+** Added {{Tag link|block|large_icicle_replaceable}} to describe all blocks which are allowed to be replaced by large icicles within the ice caves biome.
+** Added {{Tag link|block|melts_icicle_above}} to describe all blocks causing icicles directly above to melt.
+** Added {{Tag link|block|triggers_ambient_ice_block_sounds}} to describe all blocks that trigger ice to play its ambient sound.
+** Added {{Tag link|block|triggers_ambient_ice_crystal_sounds}} to describe all blocks that trigger ice crystals to play their ambient sound.
+** Added several block tags to affect how mobs pathfind:
+*** {{Tag link|block|pathfinding/avoid_in_air}} - blocks to be avoided while flying, either due to danger or potential to get stuck.
+*** {{Tag link|block|pathfinding/damage_cautious}} - blocks that will damage entities that walk through them, but are not considered dangerous enough to avoid entirely.
+*** {{Tag link|block|pathfinding/damaging}} - blocks that will damage entities that walk through them.
+*** {{Tag link|block|pathfinding/drop_down}} - blocks that can be dropped down through.
+*** {{Tag link|block|pathfinding/leaves}} - blocks that are considered leaves.
+*** {{Tag link|block|pathfinding/open}} - blocks that are considered completely open to walk through.
+*** {{Tag link|block|pathfinding/powder_snow}} - blocks that are considered powder snow.
+*** {{Tag link|block|pathfinding/rails}} - blocks that are considered rails.
+*** {{Tag link|block|pathfinding/sticky}} - blocks that are considered sticky, causing slowed movement and inability to jump.
+
+* Block Sound Set Tags
+** Added {{Tag link|block sound set|sounds_wooden}} - block sound sets which when stepped on cause Horses to produce a galloping sound.
+
+* Damage Type tags
+** Added {{Tag link|damage type|cannot_hurt_perching_ender_dragon}} tag.
+** Added {{Tag link|damage type|no_hurt_sound}}.
+
+* Entity Type tags
+** Added {{Tag link|entity type|does_not_break_brittle_ice}} for mobs that do not break brittle ice blocks when stepping on them.
+** Added {{Tag link|entity type|immune_to_weakness}} for mobs that are immune to the weakness effect.
+** Added {{Tag link|entity type|immune_to_wither}} for mobs that are immune to the wither effect.
+
+* Fluid tags
+** Added {{Tag link|fluid|swimmable}} for fluids that players can swim in.
+
+* Item Tags
+** Added {{Tag link|item|frostbite_preferred_weapons}} for items picked up and used by the frostbite.
+** Added {{Tag link|item|jukebox_containers}} to describe all items usable by a [[jukebox]] as a source for music disc playlists.
+** Added {{Tag link|item|knocks_back_players_even_with_zero_damage}} for items which shall apply knockback even if they do 0 damage.
+** Added {{Tag link|item|sheep_wool_dyes}} - items that can be used to dye a sheep's wool.
+*** The color will be taken from the {{cd|minecraft:dye}} component of the used item stack.
+** Added {{Tag link|item|sulfur_cube_archetype/cold}} for items that can be placed inside the [[sulfur cube]] that turns it into a cold sulfur cube archetype.
+
+== Changes ==
+=== Blocks ===
+'''[[Blue Ice|Blue]] and [[Packed Ice]]''' 
+* Each variant now has unique sounds.
+
+'''[[Brown mushroom]] and [[red mushroom]]'''
+* Can now be placed on any block with a top solid face regardless of lighting conditions.
+** They still cannot spread unless the brightness at the new growth is less than 13, or its support block overrides light requirements, like [[mycelium]].
+
+'''[[Frosted ice]]''' 
+* Now emits a vibration event when changing state.
+* No longer show their inside block faces when placed next to each other.
+* Now has unique sounds.
+
+'''[[Ice]]''' 
+* No longer shows its inside block faces when placed next to each other.
+* Now has unique sounds.
+* Added ambient sounds for regular ice block.
+** When an ice block is surrounded by at least 8 ice blocks in all horizontal directions (east, west, north, and south), with one air block above and one water block below, it has a chance to emit a sound.
+
+'''[[File:Jukebox JE3.png|32px]] [[Jukebox]]'''
+* Textures changed from [[File:Jukebox JE2 BE2.png|32px]] to [[File:Jukebox JE3.png|32px]].
+* Will now cycle through music discs in a single [[chest]], [[trapped chest]], or any [[copper chest]] variant placed directly above it.
+** Discs play in slot order, skipping empty slots and other non-music-disc items and looping back to the start.
+** When a disc finishes, the jukebox swaps it with the next disc in the chest.
+** If the chest has no music discs, the jukebox will loop its inserted disc.
+** Ejecting the current disc skips to the next available disc.
+
+'''[[Pointed dripstone]]'''
+* Now drips lava into cauldrons three times as often.
+
+'''[[Snow]]'''
+* Can now be placed on [[packed ice]].
+
+=== Items ===
+'''General'''
+* Interacting with entities using an item will now correctly apply the item's use cooldown.
+
+'''[[Carrot on a stick]] and [[warped fungus on a stick]]'''
+* Now only boost for 7 to 35 instead of 7 to 49 seconds.
+
+'''[[Snowball]]'''
+* Now applies knockback to players.
+
+'''[[Splash water bottle]] and [[lingering water bottle]]
+* They no longer leave a [[glass bottle]] when used to convert blocks into mud.
+
+=== Mobs === 
+'''General'''
+* Mobs can now break [[decorated pot]]s, [[chorus flower]]s and [[speleothem]] blocks with projectiles in an adventure mode world, unless the {{cd|mob_griefing}} gamerule is set to {{cd|false}}.
+* Mobs falling through lava may take slightly less fall damage in some cases.
+
+'''[[Ender dragon]]'''
+* The ender dragon no longer has slower vertical velocity than intended, fixing several issues with its AI that were introduced in [[19w08b]] and restoring previously broken behavior:
+** The dragon now properly reaches its flying and attacking points, no longer getting stuck flying back and forth between two points.
+** The dragon now properly dives at the player periodically, when it shoots a fireball, and after it has finished perching.
+** The dragon now properly descends to the portal, rather than flying back and forth while slowly descending.
+*** [[Dragon fireball]]s also no longer collide with the ender dragon itself, allowing all dragon fireballs to properly reach their target.
+
+'''[[Parrot]]s'''
+* Can now imitate [[frostbite]]s.
+
+'''[[Stray]]'''
+* Strays can now spawn in the following biomes, matching {{BE}}:
+** {{BiomeLink|Deep Frozen Ocean}}
+** {{BiomeLink|Frozen Ocean}}
+** {{BiomeLink|Frozen Peaks}}
+** {{BiomeLink|Frozen River}}
+** {{BiomeLink|Jagged Peaks}}
+** {{BiomeLink|Snowy Slopes}}
+
+'''[[Sulfur cube]]'''
+* Added the "Cold" archetype, with similar properties to "Fast Sliding".
+** Used when the sulfur cube absorbs a [[blue ice]] block.
+** Floats and replaces water below it with a disk of [[frosted ice]] when it moves, similar to the [[Frost Walker]] enchantment.
+*** Will only place frosted ice if the sulfur cube starts its movement while it is on ground.
+*** Air blocks above the water block are required for frosted ice placement.
+* Small sulfur cubes that spawn from splitting a bucketed sulfur cube now inherit the property of not despawning.
+
+'''[[Undead|Undead mobs]]'''
+* [[Drowned]] and [[husk]]s now [[Mob conversion|convert]] into [[zombie]]s when in [[powder snow]].
+** They will not convert if they are wearing a piece of [[leather armor]].
+* [[Skeleton]]s no longer convert into [[stray]]s when in powder snow if they are wearing a piece of leather armor.
+
+'''[[Wandering trader]]'''
+* Can now sell [[ice crystal]]s and [[icicle]]s.<!-- In what amounts? eg how much emeralds and how much of the items do you get -->
+
+'''[[Zombie]]'''
+* Now converts into a [[frostbite]] when it is in powder snow.
+** Zombies wearing any piece of leather armor will prevent them from converting into frostbites.
+* Is now immune to freezing in powder snow and will not take damage from the Freezing effect.
+
+=== World generation ===
+'''General'''
+* Upgrading worlds from before [[Caves and Cliffs]] will now also generate [[sulfur caves]] below old chunks.
+
+'''[[Configured feature|Features]]'''
+* Changed {{cd|straight_trunk_placer}}
+** Added the {{cd|trunk_width}} field.
+*** Optional int provider, the width of the trunk centered around the origin.
+**** Defaults to {{cd|1.0}}
+
+'''[[Material rule#Surface conditions|Material conditions]]'''
+* Updated {{cd|minecraft:steep}}
+** No longer considers height modifications from eroded badlands "surface extensions" in an order-dependent way.
+
+'''[[Noise settings]]'''
+* The {{cd|default_block}} field has been removed.
+** This is now always {{cd|air}} – any other block should be defined by the [[material rule]].{{More info|Changing the default_block to air in previous versions causes a very different result; some change occurred in material rule.}}
+
+'''[[Placed feature]]s'''
+* The possible domain in the XZ plane of placed features included in biomes is now validated.
+** Feature placement can only occur within a 3×3 chunk region: as such, it is not valid for a Placed Feature to select a position outside of that range.
+** Note: the size of the feature itself is not currently taken into consideration, which may still overflow the chunk.
+
+'''[[Placed feature#Placement modifiers|Placement modifiers]]'''
+* Changed {{cd|cuboid}}
+** {{cd|xz_size}} and {{cd|y_size}} have been adjusted to represent the actual size of the cuboid, instead of implicitly being 1 block larger.
+*** As such, an {{cd|xz_size}} of {{cd|2}} will actually produce a 2×2 cuboid instead of 3×3.
+* Changed {{cd|fixed_placement}}
+** {{cd|positions}} now requires at least one element.
+
+=== Command format ===
+'''General'''
+* Added support for local arguments in 2D coordinates.
+** Arguments in form of {{cd|^<left> ^<forwards>}} are now accepted in commands that take 2D coordinates:
+*** Chunk coordinates in {{cmd|forceload}}
+*** {{cmd|spreadplayers <center>}}
+*** {{cmd|worldborder center <pos>}}
+** Only takes into account player rotation around Y axis (as opposed to interpreting that as {{cd|^<left> ^0 ^<forwards>}} and casting to XZ plane).
+* NBT conversion from floating point types to integer types now always converts to the closest possible valid number after rounding down.
+
+'''{{cmd|effect}}'''
+* The {{cmd|effect}} command now accepts mob effect tags.
+
+'''{{cmd|fillbiome}}'''
+* Will now fill biomes with block accuracy.
+
+'''{{cmd|time}}'''
+* Time arguments now fail if the provided value in ticks is greater than {{cd|2147483647}}.
+
+=== Gameplay ===
+'''[[Advancement]]s'''
+* [[Frostbite]]s now count towards the "[[Monster Hunter]]" advancement and are required for the "[[Monsters Hunted]]" advancement.
+* [[Freezing]] is now required for "[[A Furious Cocktail]]" and "[[How Did We Get Here?]]".
+* The [[ice caves]] are now required to be visited for the "[[Adventuring Time]]" advancement.
+* "Oh Shiny" has been renamed to "Oooh, Shiny!".
+* "Uh Oh" has been renamed to "Uh-Oh".
+
+=== General ===
+'''General'''
+* The command report format has been changed:
+** Argument information is now under the field argument instead of being merged into the parent node.
+** Information about suggestions is now available.
+
+* Added {{cd|pattern}} argument
+** Added command argument type for matching regular expression patterns.
+** This argument was added to improve support for commands added by server-side mods and plugins.
+
+'''[[Accessibility]]'''
+* Gameplay screens, such as the [[crafting table]], now support keyboard navigation and narration.
+
+* '''Gameplay Screen Keyboard Navigation'''
+** The [[recipe book]] can now be used with the keyboard.
+*** {{key|Tab}} moves between the tab buttons, search box, filter button, recipes, and page buttons.
+*** Either {{key|return}} or {{key|numpad enter}}/{{key|Space}} on a recipe places it in the crafting grid, and holding {{key|Shift}} places as many as possible.
+*** {{keys|Control}} + {{key|return}} /{{key|numpad enter}} on a recipe opens the popup of alternative recipes, like right-clicking.
+**** The arrow keys move within the popup, and either {{key|return}} /{{key|numpad enter}} or {{key|Tab}} closes it.
+*** Repeating the last selected recipe has moved from {{key|Space}} and either {{key|return}} or {{key|numpad enter}} to the new Repeat Recipe/Trade key ({{key|R}} by default), and holding {{key|Shift}} still places as many as possible.
+** The Repeat Recipe/Trade key also repeats the last selected trade in the [[villager]] and [[wandering trader]] screens.
+** The [[creative inventory]] can now be used with the keyboard.
+
+* '''Gameplay Screen Narration'''
+** The narrator now reads out the recipe book.
+*** Recipes are narrated with their result and their column and row in the grid.
+*** The tabs, search box, and filter button are narrated with their names.
+*** The page buttons narrate the current page.
+*** Recipes in the alternative recipes popup are narrated with their position, and the narrator mentions that {{key|Escape}} closes it.
+** The narrator now reads out the [[Creative inventory]].
+*** Tabs are narrated with their name and position.
+*** Items are narrated with their column and row in the grid.
+
+'''[[Block predicate]]'''
+* Updated {{cd|matching_fluids}}
+** Added a <code>state</code> field to match state properties.
+** Format:
+*** {{cd|state}}: A map of name-value properties to be matched against the fluid state properties.
+**** Value can be integer, boolean or string or object with optional {{cd|min}} and {{cd|max}} properties.
+
+'''[[Block sound type|Block sound sets]]'''
+* Removed the unused {{cd|minecraft:twisting_vines}} block sound set.
+* Renamed {{cd|minecraft:amethyst}} block sound set to {{cd|minecraft:amethyst_block}} to better match sound event names.
+
+'''[[Block transformer definition]]'''
+* Added block transformer {{cd|minecraft:honeycomb}}
+** Used to wax blocks (currently only from dispensers).
+
+'''[[Chat]]'''
+* When friends-only chat is enabled by Xbox settings, a prompt will now show when chat is open.
+
+'''[[Data component format]]'''
+* {{cd|minecraft:consumable}}
+** The {{cd|sound}} field is now fully optional (defaulted to {{cd|minecraft:entity.generic.eat}} before).
+
+* {{cd|minecraft:entity_data}}
+** [[Boat]] and [[minecart]] items now have this component by default, determining which entity is placed when the item is used or dispensed.
+*** Entity types that do not match the type requirement result in the action failing.
+
+* {{cd|minecraft:equippable}}
+** The {{cd|equip_sound}} field is now fully optional (defaulted to {{cd|minecraft:item.armor.equip_generic}})
+** The {{cd|shearing_sound}} field is now fully optional (defaulted to {{cd|minecraft:item.shears.snip}})
+
+* {{DCL|minecraft:tooltip_display}}
+** Added a new field {{cd|split_lines}} that allows items to opt out of the new tooltip line splitting and word-wrapping behavior (default: {{cd|true}}).
+
+'''[[Data pack]]'''
+* The [[pack format]] version is now {{cd|128.1}}.
+* Entries for different biomes in multi-noise biome sources can no longer overlap across all noise parameters with the same offset.
+
+'''[[Debug screen]]'''
+* The items in the debug overlay ({{keys|F3}} by default) are now sorted into categories and have been made easier to read and understand.
+* A new {{cd|chunk_section_status}} shows the rendering status of chunks around the player. This will impact performance at high view distances.
+* The chunk load overlay has been split off from {{cd|visualize_chunks_on_server}} and into a new {{cd|chunk_load_status}}.
+<gallery>
+Default Debug Menu.png|The original default debug screen design
+F3 Screen 26.4-Snapshot2.jpeg|The new default debug screen design
+</gallery>
+
+'''[[Debug world]]s'''
+* Can now be modified as normal with block placement, breaking, and commands.
+* The blocks will no longer update automatically; a new debug world must be created to see new blocks.
+* Now include one of each entity type.
+** Entity types that can be babies will have a baby version included above the adult version.
+* Will now be tick-frozen on load.
+* Will now be created in "Normal" difficulty.
+* Will now have the following game rules set to {{cd|false}}:
+** {{cd|advance_time}}
+** {{cd|spawn_wandering_traders}}
+** {{cd|tnt_explodes}}
+
+'''[[server.properties|Dedicated server properties]]'''
+* Added {{cd|allowed-connection-ids}}
+** A list of comma-separated ids.
+** If non-empty, the server will match the values against {{cd|_id}} property in {{cd|minecraft:intent}} packet.
+*** If there is no match, the server will reject the connection.
+** This works both for both status and login connections, so any user connecting without the correct {{cd|_id}} in the server address will not see the status and will not be able to join the server.
+
+* Added {{cd|enable-legacy-status}} field
+** This option allows disabling existing legacy (pre-1.7) server status and ping protocol handling.
+** To preserve existing functionality, value defaults to {{cd|true}}.
+** Note: {{cd|enable-status}} needs to be set for any status information (modern or legacy) to be set.
+
+* Added {{cd|key-rotation-period-seconds}} field.
+** Determines the minimum duration after which server keys (used for establishing new connections) will be recreated.
+** If set to {{cd|0}} a unique (i.e. ephemeral) key will be used for every connection.
+** Default value: {{cd|60}}
+
+* Added {{cd|status-contact-details}} field
+** If non-empty, the value of this field will be sent in the {{cd|minecraft:status_response}} packet JSON payload under the contact property.
+** This value is meant to be used to signal a way to contact the server owners about the server, even if there is no website or other information about it.
+** This field is meant to be human-readable, but there are no other restrictions on field format.
+
+'''[[Density function]]s'''
+* Changed {{cd|upscale}} (renamed from {{cd|interpolated}})
+** Samples the input function at a reduced resolution, and upscales on each axis with the specified modes. Modes that require more samples will generally perform worse. Upscaling is performed by axis in order: Z, X, then Y.
+** Format: object with fields:
+*** {{cd|input}} - Density Function, the input function to sample
+*** {{cd|x}}, {{cd|y}}, {{cd|z}} - object with fields, the configuration for this axis
+**** {{cd|mode}} - one of: {{cd|nearest_neighbor}}, {{cd|interpolate_linear}}, {{cd|interpolate_cosine}}, {{cd|interpolate_cubic}}, {{cd|b_spline_cubic}}, the mode to use.
+***** {{cd|nearest_neighbor}}
+****** 1 sample per axis.
+****** Value is discontinuous across cell boundaries, gradient is always {{cd|0}}.
+****** Values at cell vertices always equal the cell value.
+***** {{cd|interpolate_linear}}
+****** 2 samples per axis
+****** Value is continuous, gradient is constant within a cell but discontinuous across cell boundaries.
+****** Values at cell vertices always equal the cell value.
+***** {{cd|interpolate_cosine}}
+****** 2 samples per axis.
+****** Value and gradient are continuous.
+****** Gradient is {{cd|0}} at cell boundaries.
+****** Values at cell vertices always equal the cell value.
+***** {{cd|interpolate_cubic}}
+****** 4 samples per axis.
+****** Value and gradient are continuous.
+****** Values at cell vertices always equal the cell value.
+***** {{cd|b_spline_cubic}}
+****** 4 samples per axis.
+****** Value and gradient are continuous.
+****** Values at cell vertices do not necessarily equal the cell value.
+**** {{cd|cell_size}} - integer between 1 and 64, the size of each upscaling cell.
+** Upscaling changed axis order from Z,X,Y to X,Z,Y.
+
+* Changed {{cd|gradient}}
+** The {{cd|from_coordinate}} and {{cd|to_coordinate}} fields now additionally accept a Vertical Anchor, as long as axis is {{cd|y}}.
+* Added {{cd|domain_warp}}
+** Samples an input function by applying an offset to each sampled coordinate.
+*** Note: if the offsets change rapidly by large amount, performance may degrade significantly. This function should be used sparingly.
+** Format: object with fields:
+*** {{cd|input}} — density function, the input function to sample.
+*** {{cd|offset_x}} — density function, the offset to apply to sampled X coordinates.
+**** The result is implicitly truncated to an integer.
+**** If not specified, defaults to: {{cd|0.0}}.
+*** {{cd|offset_y}} — density function, the offset to apply to sampled Y coordinates.
+**** The result is implicitly truncated to an integer.
+**** If not specified, defaults to: {{cd|0.0}}.
+*** {{cd|offset_z}} — density function, the offset to apply to sampled Z coordinates.
+**** The result is implicitly truncated to an integer.
+**** If not specified, defaults to: {{cd|0.0}}.
+** At least one of {{cd|offset_x}}, {{cd|offset_y}}, or {{cd|offset_z}} must be specified.
+
+'''[[Dialog]]s'''
+* The game will now show red text and a warning tooltip if the user appears to be entering an email address into a dialog input field.
+
+'''[[Enchantment definition]]'''
+* Changed {{cd|minecraft:explode}} enchantment effect
+** Fields {{cd|small_particle}}, {{cd|large_particle}} and {{cd|sound}} are now optional.
+
+'''[[Feature]]'''
+* Changed {{cd|ore}} and {{cd|scattered_ore}}
+** Blocks discarded due to air exposure will no longer fall through to the next replacement rule.
+
+'''[[Fluid state]]s'''
+* Removed {{cd|flowing_water}} and {{cd|flowing_lava}} fluid types.
+* Fluid types now have the following properties
+** {{cd|level}}: Integer; same as before, the level of fluid from 1 to 8.
+** {{cd|source}}: Boolean; {{cd|true}} for source blocks, {{cd|false}} otherwise.
+
+'''[[Fog]]'''
+* Render distance edge fog now reduces the opacity of objects at the edge of loaded chunks, rather than fading them into an opaque, constant color (which previously made them stick out strongly from the sky).
+<gallery>
+Opaque distance fog.png|Fog typical of 26.3 and prior
+Translucent distance fog.png|26.4+ opacity-modifying fading
+</gallery>
+
+'''[[Friends]]'''
+* Improved the reliability and speed of friend availability updates.
+
+'''[[Friends list]]'''
+* Updated the design of the Friends list.
+* Added searching.
+** In the Friends tab, the profile name text box used for sending requests also functions as a search box.
+** In the requests tab, a search box appears at the top if the player has 15 or more requests.
+* Added sorting.
+** Sort modes can be cycled through by pressing the new sort button.
+** The current sort modes are:
+*** Sort by who's online - friends who are listed as online appear at the top of the list.
+*** Sort by alphabetical order - friends are sorted according to the alphabetical order of their names.
+* Clicking on a player's icon in the Friends list now opens their Player Options.
+* Removed "Remove Friend" button.
+** This functionality is now accessible through Player Options instead.
+* Improved the reliability and speed of friend requests.
+
+'''Gameplay screen keyboard navigation'''
+* Gameplay screens can now be focused and used with the keyboard
+* Tab moves between groups of slots, and the arrow keys move between slots within a group..
+** The stonecutter recipes, loom patterns, enchanting table options, and villager and wandering trader trades are also navigated as a group.
+* The following interactions can be used on slots:
+** Enter/Space behaves as a left-click.
+** Holding Control while pressing Enter/Space behaves like a right-click.
+** Holding Shift while pressing Enter/Space behaves like Shift-clicking.
+** Double-pressing Enter/Space collects matching items, like double-clicking.
+** Moving with the arrow keys while holding Enter/Space spreads the carried stack across slots, like holding left-click and dragging with the mouse.
+** The hotbar keys and the Drop item key act on the focused slot.
+* The Creative Inventory and the Recipe Book are not yet supported.
+
+'''Launcher metadata'''
+* Tweaked default JVM options in the launcher metadata for this version.
+** The launcher will thus pass arguments to set the player's JVM heap size based on their system memory, using up to 25% with a maximum of 4 GB.
+
+'''[[Mob variant definitions]]'''
+* Chicken sound variants
+** Fields {{cd|ambient_sound}}, {{cd|hurt_sound}}, {{cd|death_sound}}, {{cd|step_sound}} in {{cd|adult_sounds}} and {{cd|baby_sounds}} structures are now optional.
+* Cow sound variants
+** Fields {{cd|ambient_sound}}, {{cd|hurt_sound}}, {{cd|death_sound}}, {{cd|step_sound}} are now optional.
+* Cat sound variants
+** Fields {{cd|ambient_sound}}, {{cd|stray_ambient_sound}}, {{cd|hiss_sound}}, {{cd|hurt_sound}}, {{cd|death_sound}}, {{cd|eat_sound}}, {{cd|beg_for_food_sound}}, {{cd|purr_sound}}, {{cd|purreow_sound}} in {{cd|adult_sounds}} and {{cd|baby_sounds}} structures are now optional.
+* Pig sound variants
+** Fields {{cd|ambient_sound}}, {{cd|hurt_sound}}, {{cd|death_sound}}, {{cd|step_sound}}, {{cd|eat_sound}} in {{cd|adult_sounds}} and {{cd|baby_sounds}} structures are now optional.
+* Wolf sound variants
+** Fields {{cd|ambient_sound}}, {{cd|hurt_sound}}, {{cd|death_sound}}, {{cd|step_sound}}, {{cd|growl_sound}}, {{cd|pant_sound}}, {{cd|whine_sound}} in {{cd|adult_sounds}} and {{cd|baby_sounds}} structures are now optional.
+
+'''[[Narrator]]'''
+* The narrator now reads out slots in gameplay screens.
+** Slots are narrated with their contents, item tooltip, and name for special slots such as armor, fuel, and potion slots.
+** The slot's position is narrated (e.g. "3 out of 9") in a group or as a column and row in a grid.
+* Stonecutter recipes and loom patterns are narrated with their column and row, and trades and enchanting table options with their position in the list.
+* When a group is focused, the narrator mentions which arrow keys move within it.
+
+'''Network Protocol'''
+* The server now more consistently disconnects clients when a packet they sent causes an error.
+* The entity position synchronization packet now includes full-precision head rotation.
+
+* Added {{cd|minecraft:mod_list}} custom packet payload
+** This packet is intended to inform servers about client mods to simplify debugging.
+** Vanilla client sends an empty packet at the start of configuration phase, as it does not know about any mods – that is still a responsibility of 3rd-party modding platforms.
+
+* Modified {{cd|minecraft:intention}} packet
+** The {{cd|host}} field in the serverbound intention packet can now hold additional parameters (previously it stored only the domain name used for connecting to a server).
+*** The new format is similar to URI query strings – the domain can now optionally be followed by a {{cd|?}} character and then followed by {{cd|key{{=}}value}} pairs separated by a {{cd|&}} character.
+*** Empty values can be omitted (including {{cd|{{=}}}} sign).
+*** Keys and values are escaped according to the standard URI rules ("percent-encoded component").
+*** Keys starting with {{cd|_}} are reserved for vanilla use.
+*** Users can now input properties in any "Server Address" field in the server list.
+**** Additionally, any address in form of {{cd|<id>@<host>}} will be parsed as {{cd|<host>?_id{{=}}<id>}}
+*** If a server uses SRV DNS records, the host field will contain both original and resolved domains.
+**** If the resolved domain is different from the original domain, the resolved one will be used as the "primary" one, while the original one will be added as {{cd|_o}} ("origin") property.
+**** Example host string: {{cd|redirected domain>?_o{{=}}<original domain>:<original port>}}, while the port field in the intention packet will be set to the resolved port value.
+*** The field size has been extended to 1024 characters.
+*** Note: since the {{cd|minecraft:intent}} packet is unencrypted, properties should not be used for any security-sensitive purpose.
+
+* Modified {{cd|minecraft:transfer}} packet
+** Added {{cd|properties}} field – a string to string map of properties that will be added to the host field in the {{cd|minecraft:intent}} packet sent to the target server.
+
+* Modified Login Protocol
+** Encryption and compression must now be explicitly applied by the server by sending one of two packets that carry connection options.
+*** The client must acknowledge the change with a matching packet.
+*** Every packet sent and received by the client after the acknowledgement will use the new settings.
+*** Previously changes were applied immediately on both sides, which might have lead to malformed packets.
+** Packets that can carry options:
+*** {{cd|minecraft:login_finished}} (clientbound) and {{cd|minecraft:login_acknowledged}} (serverbound).
+*** {{cd|minecraft:apply_options}} (clientbound) and {{cd|minecraft:options_applied}} (serverbound).
+** Changed encryption key establishment procedure.
+
+'''[[Options]]'''
+* "Graphics API" Video Setting:
+** "Default": Vulkan is now the default graphics backend, rather than being randomized, and is no longer considered experimental.
+** The game will no longer change the graphics API setting automatically if a startup crash is detected.
+
+* Video Settings
+** Separated the "Improved Fog" video setting from the "Improved Transparency".
+*** Turning it on together with the "Improved Transparency" will behave the same way as the previous Snapshot with "Improved Transparency" enabled: both sky and clouds will be blended into the terrain render distance fog.
+*** Turning it on without "Improved Transparency" will only blend the sky but not the clouds.
+*** "Improved Transparency" can now used without "Improved Fog".
+*** The performance impact of "Improved Fog" is minimal, but it may be noticeable on lower-end hardware.
+*** The setting is enabled by default
+*** It is disabled on the "Fast" graphics preset and enabled on the "Fancy" and "Fabulous" graphics presets.
+
+'''Order-Independent Transparency shaders'''
+* The OIT algorithm was simplified by replacing the wavelet-based mathematics with depth bin-based accumulation.
+** Slightly improved performance at least on some devices.
+** Reduced floating point precision issues on average.
+** {{cd|OIT_WAVELET_RANK}} shader define was removed.
+** {{cd|OIT_COEFF_COUNT}} shader define was replaced by {{cd|OIT_NUMBER_OF_DEPTH_BINS}}
+** {{cd|OIT_COEFF_ATTACHMENT_COUNT}} shader define was renamed to {{cd|OIT_TRANSMITTANCE_TARGET_COUNT}}
+
+'''[[Panorama]]'''
+* Updated the panorama to reflect [[Deep Freeze]], showing the new ice cave biome with frostbites.
+
+'''[[Particles]]'''
+* Removed particle type {{cd|minecraft:item_snowball}}
+
+* Changed {{cd|minecraft:current_down}}
+** Added new field {{cd|radius}} - float, the radius around the position to spawn the particle at.
+
+* Changed {{cd|minecraft:bubble_column_up}}
+** Added optional field {{cd|pop_chance}} - float between {{cd|0.0}} and {{cd|1.0}}, the chance that the particle will spawn a pop particle and play a pop sound once at the end of its lifecycle.
+*** If omitted, defaults to {{cd|0.0}}
+
+'''Player Reporting'''
+* Redesigned the save/discard draft confirmation screen.
+* Player reports saved as drafts no longer prompt you to discard them upon exiting a world if they can be continued later.
+** Chat reports can never be continued.
+** Name reports can be continued if the reported player is in your Friends list.
+** Skin reports can be continued if the reported player is in your Friends list.
+* Pressing "Quit Game" in the main menu will now give a warning if you have an unsent draft report that would be lost.
+
+'''[[Realms]]'''
+* The "Play" buttons in the Realms menus are now purple.
+* Major improvements have been made to the speed and reliability of Realms world upload & download.
+
+'''[[Resource pack]]'''
+* The version is now {{cd|104.0}}.
+* Certain language keys can no longer be replaced by resource packs:
+** All keys beginning with {{cd|menu.custom_options}}
+** All keys beginning with {{cd|menu.custom_screen_info}}
+
+'''[[Server]]s'''
+* Commands issued through server console are now rejected while the server is starting.
+
+'''[[Shader]]s'''
+* <samp>screenquad.vsh</samp> was renamed to <samp>screentriangle.vsh</samp> since it was actually representing a single triangle for a while now.
+* Removed OIT (Order-Independent Transparency, controlled by "Improved Transparency" video setting) support from the <samp>clouds.fsh</samp>, since it is now used to render clouds when OIT is off and to render clouds to an offscreen target when OIT is on.
+* Added <samp>blit_clouds.fsh</samp> shader with OIT support that renders clouds from an offscreen target to OIT targets.
+* <samp>terrain.vsh</samp> is refactored to decode new vertex data packing.
+** Terrain vertex data in <samp>terrain.vsh</samp> is now fetched from a texel buffer instead of traditional vertex buffers.
+** The packing of vertex data for terrain chunk section mesh data has been changed.
+* <samp>core/terrain.fsh</samp> was modified to support the separate "Improved Fog" video setting.
+
+*'''Order-Independent Transparency'''
+** OIT shaders were converted to rely on subpasses.
+*** Changed <samp>core/oit_composite.fsh</samp>, <samp>core/oit_depth_bounds_cull.fsh</samp>, <samp>include/oit_depth_sample.glsl</samp>, <samp>include/oit_sample.glsl</samp>
+*** Added <samp>core/blit_depth_bounds.fsh</samp> shader to blit depth bounds in a subpass context.
+
+* '''Boat water mask shaders'''
+** The way water mask is handled was changed to support subpasses in OIT.
+*** It is now rendered to a separate target that is sampled during terrain rendering instead of being rendered to the terrain depth buffer.
+*** Changed <samp>core/rendertype_water_mask.fsh</samp> and <samp>core/terrain.fsh</samp>
+*** Removed <samp>core/blit_depth.fsh</samp>
+*** This approach is used both when OIT is on and off.
+
+'''[[Sky]]'''
+* When "Improved Transparency" is on, sky background and clouds that are behind the terrain are now blended into the terrain render distance fog making the boundary between the sky and the terrain invisible.
+* In the Overworld, the bottom half of the skybox is now occluding the celestial objects such as the [[sun]], the [[moon]] and the stars.
+
+'''[[Sound events]]'''
+* [[Fire]] and soul fire now use the extinguish sound as their block break sound, including when their supporting block is removed.
+
+* Added new sound events:
+** {{cd|block.blue_ice.break}}
+** {{cd|block.blue_ice.fall}}
+** {{cd|block.blue_ice.hit}}
+** {{cd|block.blue_ice.place}}
+** {{cd|block.blue_ice.step}}
+** {{cd|block.brittle_ice.break}}
+** {{cd|block.brittle_ice.fall}}
+** {{cd|block.brittle_ice.hit}}
+** {{cd|block.brittle_ice.place}}
+** {{cd|block.brittle_ice.step}}
+** {{cd|block.brittle_ice.crack}}
+** {{cd|block.ice.ambient}}
+** {{cd|block.ice.break}}
+** {{cd|block.ice.fall}}
+** {{cd|block.ice.hit}}
+** {{cd|block.ice.place}}
+** {{cd|block.ice.step}}
+** {{cd|block.ice_crystal.ambient}}
+** {{cd|block.ice_crystal.break}}
+** {{cd|block.ice_crystal.fall}}
+** {{cd|block.ice_crystal.hit}}
+** {{cd|block.ice_crystal.place}}
+** {{cd|block.ice_crystal.step}}
+** {{cd|block.icicle.break}}
+** {{cd|block.icicle.fall}}
+** {{cd|block.icicle.hit}}
+** {{cd|block.icicle.place}}
+** {{cd|block.icicle.step}}
+** {{cd|block.icicle.land}}
+** {{cd|block.frosted_ice.break}}
+** {{cd|block.frosted_ice.fall}}
+** {{cd|block.frosted_ice.hit}}
+** {{cd|block.frosted_ice.place}}
+** {{cd|block.frosted_ice.step}}
+** {{cd|block.packed_ice.break}}
+** {{cd|block.packed_ice.fall}}
+** {{cd|block.packed_ice.hit}}
+** {{cd|block.packed_ice.place}}
+** {{cd|block.packed_ice.step}}
+** {{cd|entity.drowned.converted_to_zombie}}
+** {{cd|entity.frostbite.ambient}}
+** {{cd|entity.frostbite.death}}
+** {{cd|entity.frostbite.hurt}}
+** {{cd|entity.frostbite.step}}
+** {{cd|entity.frostbite.throw}}
+** {{cd|entity.ice_ball.break}}
+** {{cd|entity.ice_ball.throw}}
+** {{cd|entity.parrot.imitate.frostbite}}
+
+* Removed sound events:
+** {{cd|minecraft:intentionally_empty}}
+
+'''[[Structure pool element]]s'''
+* Added optional {{cd|corner_constraint}} field
+** Limits the placement of a structure pool element this by sampling a density function at the corners of its bounding box.
+** Format: list of objects with fields:
+*** {{cd|density_function}} — the density function to sample at the bounding box' corner.
+*** {{cd|acceptable_density}} — inclusive range of doubles, a corner's sampled density within this range counts as "inside".
+*** {{cd|padding}} — integer between {{cd|0}}, and {{cd|8}}, the padding of the bounding box before sampling its corners.
+**** If not present, defaults to {{cd|0}}.
+*** {{cd|corners}} — one of {{cd|all}}, {{cd|top}}, or {{cd|bottom}}, which corners to check.
+**** If not present, defaults to {{cd|all}}.
+*** {{cd|required_corners}} — range between {{cd|1}}, and {{cd|8}}, the number of corners that must be inside {{cd|acceptable_density}} for the check to pass.
+
+'''[[Sulfur cube archetype definition]]'''
+* Fields {{cd|hit_sound}} and {{cd|push_sound}} in {{cd|sound_settings}} structure are now optional.
+
+'''[[Tag (Java Edition)|Tags]]'''
+* Biome Tags
+** Added {{cd|ice_caves}} to {{Tag link|biome|d=and|is_overworld|spawns_cold_variant_farm_animals|spawns_cold_variant_frogs|spawns_snow_foxes|spawns_white_rabbits|stronghold_biased_to|has_structure/mineshaft|has_structure/ruined_portal_standard|has_structure/trial_chambers}} tags.
+
+* Block Tags
+** Removed {{cd|packed_ice}} from {{Tag link|block|cannot_support_snow_layer}} tag.
+** Added {{cd|icicle}} to {{Tag link|block|speleothems}} tag.
+** Added {{cd|calcite_slab|polished_calcite_slab|polished_calcite_brick_slab|packed_ice_brick_slab|snow_brick_slab}} to {{Tag link|block|slabs}} tag.
+** Added {{cd|calcite_stairs|polished_calcite_stairs|polished_calcite_brick_stairs|packed_ice_brick_stairs|snow_brick_stairs}} to {{Tag link|block|stairs}} tag.
+** Added {{cd|calcite_wall|polished_calcite_wall|polished_calcite_brick_wall|packed_ice_brick_wall|snow_brick_wall}} to {{Tag link|block|walls}} tag.
+** Added {{cd|d=and|brittle_ice|packed_ice_bricks|chiseled_packed_ice}} to {{Tag link|block|ice}} tag.
+** Added {{cd|d=and|brittle_ice|calcite_pillar|calcite_slab|calcite_stairs|calcite_wall|polished_calcite|polished_calcite_slab|polished_calcite_stairs|polished_calcite_wall|polished_calcite_bricks|polished_calcite_brick_slab|polished_calcite_brick_stairs|polished_calcite_brick_wall|chiseled_soulshale|ice_crystal|packed_ice_bricks|packed_ice_brick_slab|packed_ice_brick_stairs|packed_ice_brick_wall|chiseled_packed_ice|andesite_wall|blackstone_wall|brick_wall|cobbled_deepslate_wall|cobblestone_wall|deepslate_brick_wall|deepslate_tile_wall|diorite_wall|end_stone_brick_wall|granite_wall|mossy_cobblestone_wall|mossy_stone_brick_wall|mud_brick_wall|nether_brick_wall|polished_blackstone_brick_wall|polished_blackstone_wall|polished_deepslate_wall|prismarine_wall|red_nether_brick_wall|red_sandstone_wall|sandstone_wall|stone_brick_wall}} to {{Tag link|block|mineable/pickaxe}} tag, and removed {{Tag link|block|walls}}
+** Added {{cd|d=and|snow_bricks|snow_brick_slab|snow_brick_stairs|snow_brick_wall}} to {{Tag link|block|mineable/shovel}} tag.
+** Added {{cd|d=and|calcite_pillar|polished_calcite|polished_calcite_bricks|snow_bricks}} to {{Tag link|block|blocks_motion_no_leaves}} tag.
+** Added {{cd|d=and|sulfur_spike|icicle}} to {{Tag link|block|dangerous_for_teleportation}} tag.
+** Added {{cd|brittle_ice}} to {{Tag link|block|supports_lily_pad}} tag.
+** Added {{cd|d=and|brown_mushroom|red_mushroom}} to {{Tag link|block|wall_post_override}} tag.
+
+* Damage Type Tags
+** Added {{cd|generic_kill}} to {{Tag link|damage type|bypasses_cooldown}} tag.
+
+* Entity Type Tags
+** Replaced the {{Tag link|entity type|ignores_poison_and_regen}} entity type tag with separate {{Tag link|entity type|immune_to_poison}} and {{Tag link|entity type|immune_to_regeneration}} tags.
+** Renamed the {{Tag link|entity type|freeze_immune_entity_types}} entity type tag to {{Tag link|entity type|immune_to_freezing}}.
+** Added {{cd|frostbite}} to {{Tag link|entity type|d=and|burn_in_daylight|no_anger_from_wind_charge|powder_snow_walkable_mobs|zombie}} tags.
+** Added {{cd|ice_ball}} to {{Tag link|entity type|impact_projectiles}} tag.
+** Added {{Tag link|entity type|undead}} and removed {{cd|d=and|stray|wither}} from {{Tag link|entity type|immune_to_freezing}} tag.
+
+* Fluid Tags
+** Removed {{cd|flowing_water}} from {{Tag link|fluid|water}}, and {{cd|flowing_lava}} from {{Tag link|fluid|lava}} tags.
+** The tags {{Tag link|fluid|d=and|water|lava}} have been marked with {{cd|@Deprecated}} in the code.
+
+* Item Tags
+** Added {{cd|calcite_slab|polished_calcite_slab|polished_calcite_brick_slab|packed_ice_brick_slab|snow_brick_slab}} to {{Tag link|item|slabs}} tag.
+** Added {{cd|calcite_stairs|polished_calcite_stairs|polished_calcite_brick_stairs|packed_ice_brick_stairs|snow_brick_stairs}} to {{Tag link|item|stairs}} tag.
+** Added {{cd|calcite_wall|polished_calcite_wall|polished_calcite_brick_wall|packed_ice_brick_wall|snow_brick_wall}} to {{Tag link|item|walls}} tag.
+** Added {{cd|d=and|packed_ice_bricks|chiseled_packed_ice|snow_bricks}} to {{Tag link|item|sulfur_cube_archetype/fast_sliding}} tag, and removed {{cd|blue_ice}}.
+** Added {{cd|d=and|calcite_pillar|polished_calcite|polished_calcite_bricks|chiseled_soulshale}} to {{Tag link|item|sulfur_cube_archetype/slow_bouncy}} tag.
+** Added {{Tag link|item|sulfur_cube_archetype/cold}} to {{Tag link|item|sulfur_cube_swallowable}} tag.
+
+* Potion Tags
+** Added {{cd|d=and|freezing|long_freezing}} to {{Tag link|potion|tradeable}} tag.
+
+'''[[Textures]]'''
+* Block Models
+** Added new block models:
+*** {{cd|block/icicle}}
+*** {{cd|block/icicle_base}}
+** Removed block models:
+*** {{cd|block/cube_top}}
+
+* Block Textures
+** Added new block textures:
+*** {{cd|block/brittle_ice_0.png}}
+*** {{cd|block/brittle_ice_1.png}}
+*** {{cd|block/brittle_ice_2.png}}
+*** {{cd|block/brittle_ice_3.png}}
+*** {{cd|block/calcite_pillar_side.png}}
+*** {{cd|block/calcite_pillar_top.png}}
+*** {{cd|block/chiseled_packed_ice.png}}
+*** {{cd|block/ice_crystal.png}}
+*** {{cd|block/icicle_base.png}}
+*** {{cd|block/icicle_frustum.png}}
+*** {{cd|block/icicle_middle.png}}
+*** {{cd|block/icicle_side.png}}
+*** {{cd|block/icicle_tip.png}}
+*** {{cd|block/icicle_tip_merge.png}}
+*** {{cd|block/icicle_top.png}}
+*** {{cd|block/jukebox_bottom.png}}
+*** {{cd|block/packed_ice_bricks.png}}
+*** {{cd|block/polished_calcite.png}}
+*** {{cd|block/polished_calcite_bricks.png}}
+*** {{cd|block/polished_calcite_slab_side.png}}
+*** {{cd|block/snow_bricks.png}}
+
+** Updated the following block textures:
+*** {{cd|block/jukebox_side.png}}
+*** {{cd|block/jukebox_top.png}}
+
+* Entity Textures
+**  Added new entity textures:
+*** {{cd|entity/zombie/frostbite.png}}
+*** {{cd|entity/zombie/frostbite_baby.png}}
+*** {{cd|entity/zombie/frostbite_outer_layer.png}}
+
+* Item Models
+** Added new item models:
+*** {{cd|item/icicle}}
+
+* Item Textures
+** Added new item textures:
+*** {{cd|item/frostbite_spawn_egg.png}}
+*** {{cd|item/ice_ball.png}}
+*** {{cd|item/ice_crystal.png}}
+*** {{cd|item/icicle.png}}
+*** {{cd|item/music_disc_flurry.png}}
+
+* Particles
+** Added new particle textures:
+*** {{cd|particle/freezing_0.png}}
+*** {{cd|particle/freezing_1.png}}
+*** {{cd|particle/freezing_2.png}}
+*** {{cd|particle/freezing_3.png}}
+*** {{cd|particle/freezing_4.png}}
+*** {{cd|particle/freezing_5.png}}
+
+* UI Sprites
+** Added new UI textures:
+*** {{cd|mob_effect/freezing.png}}
+*** {{cd|friends/background_light.png}}
+*** {{cd|friends/presence_all.png}}
+*** {{cd|friends/presence_limited.png}}
+*** {{cd|friends/presence_none.png}}
+*** {{cd|friends/profile.png}}
+*** {{cd|friends/profile_highlighted.png}}
+*** {{cd|friends/sort_alphabetical.png}}
+*** {{cd|friends/sort_presence.png}}
+*** {{cd|friends/tab_focused.png}}
+*** {{cd|friends/tab_selected.png}}
+*** {{cd|pause_menu/other_players.png}}
+*** {{cd|recipe_book/slot_highlight_back.png}}
+*** {{cd|recipe_book/slot_highlight_front.png}}
+** The following textures have been renamed:
+*** {{cd|friends/button.png -> friends/tab.png}}
+*** {{cd|friends/button_highlighted.png -> friends/tab_highlighted.png}}
+*** {{cd|friends/loading.png -> widget/loading.png}}
+*** {{cd|pause_menu/social_interactions.png -> pause_menu/feedback.png}}
+** The following textures have been removed:
+*** {{cd|friends/button_disabled.png}}
+*** {{cd|friends/remove.png}}
+*** {{cd|pause_menu/player_reporting.png}}
+*** {{cd|toast/social_interactions.png}}
+
+'''[[UI]]'''
+* Lightmap visualization is now configurable as {{cd|lightmap_texture}} in debug options and appears in the Light group.
+** Its visibility setting is saved with the debug profile.
+** It can now be displayed alongside the FPS and network charts.
+* The Social Interactions screen has been replaced with the new Other Players screen.
+* The "Social Interactions" keybind has been renamed to "Other Players".
+* The Friends button has received a new icon.
+* The "Visibility" option has been moved from Online Options into the Friends list.
+* The icon buttons in the pause menu have been reordered to match the main menu.
+* Hovering entries in lists, such as friends or worlds, now outlines the entry in gray.
+* Navigating to edit boxes now differs between keyboard and arrow key navigation.
+** When using the {{key|Tab}} key, the edit box will be focused and editable.
+** When using arrow keys, the edit box will be highlighted but not editable, similar to slider buttons.
+*** Pressing Enter or Space will make the box editable.
+* The mouse cursor is now hidden while navigating the UI with the keyboard, and reappears when the mouse is moved.
+* Added a tooltip to the recipe book button.
+* Recipe book tabs now show their category as a tooltip.
+* Recipes in the recipe book are now highlighted when hovered or focused.
+
+'''Validation'''
+* Most validation issues in following registries no longer prevent elements from being loaded:
+** {{cd|minecraft:loot_table}}
+** {{cd|minecraft:predicate}}
+** {{cd|minecraft:item_modifier}}
+** {{cd|minecraft:slot_source}}
+** {{cd|minecraft:context_float_provider}}
+** {{cd|minecraft:context_int_provider}}
+** {{cd|minecraft:villager_trade}}
+** {{cd|trigger}} fields in {{cd|minecraft:advancement}}
+** {{cd|requirements}} fields on {{cd|minecraft:enchantment_effect_component_type}} instances.
+* The following issues are now considered errors that can prevent pack loading or cause command compilation failure:
+** The validated element makes recursive calls to itself, either through tags or namespaced IDs.
+** Any context values required by the validated element are missing from the context provided during execution.
+*** For example, the modifier type {{cd|minecraft:apply_bonus}} (which uses the {{cd|tool}} context value) cannot be used in an {{cmd|item ... modify}} command which provides the {{cd|minecraft:command_modifier}} context (which lacks the {{cd|tool}} context value).
+* Elements will only be validated if they do not have conditions or condition has all required context values.
+** That means conditional elements can be used to avoid validation errors in loot elements used in multiple context.
+** Conditional elements:
+*** {{cd|condition}} field for cases in {{cd|minecraft:number_dispatcher}} (both {{cd|minecraft:context_float_provider}} and {{cd|minecraft:context_int_provider}} kinds).
+*** {{cd|merchant_predicate}} condition field in {{cd|minecraft:villager_trade}}
+*** {{cd|condition}} field in loot pools, loot pool entries and loot functions
+* Validation errors will now prevent command compilation, both in functions and from the console
+** For example, {{cmd|compute entity @s float {type: "minecraft:enchantment_level",amount:{type:"minecraft:linear",base:0.15,per_level_above_first:0.15&rcub;&rcub;}} will now fail to compile due to use of {{cd|minecraft:enchantment_level}} in a {{cd|minecraft:command_compute_entity}} context that does not provide required information ({{cd|minecraft:enchantment_level}}).
+* The {{cd|minecraft:command}} context has been split into {{cd|minecraft:command_predicate}} (used for predicates in commands, like {{cmd|execute if predicate}}) and {{cd|minecraft:command_modifier}} (used for item modifiers, for example in {{cmd|item ... modify}} functions).
+* To simplify the discovery of validation rules, a new report has been added {{cd|: loot_context_requirements.json}}
+** Values given as {{cd|allowed}} for some context can be used by validated elements when run in this context.
+** The context used by command arguments can be found in the <samp>commands.json</samp> report in the {{cd|context}} field of the following argument types:
+*** {{cd|minecraft:context_float_provider}}
+*** {{cd|minecraft:context_int_provider}}
+*** {{cd|minecraft:loot_modifier}}
+*** {{cd|minecraft:loot_predicate}}
+*** {{cd|minecraft:loot_table}}
+*** {{cd|minecraft:slot_source}}
+
+'''[[World generation]]'''
+* Features
+** Changed {{cd|minecraft:speleothem_cluster}}
+*** Added {{cd|placement_options}} - a field that contains various settings for the placement of the speleothem cluster:
+**** {{cd|placement_mode}} - represented by an enum that is one of {{cd|floor_and_ceiling}}, {{cd|floor_only}}, {{cd|ceiling_only}}
+**** {{cd|base_block_transformer}} - sets a state on the base block of the speleothem block.
+***** {{cd|none}} - the regular base block state used in sulfur spikes and dripstone spikes.
+***** {{cd|set_attached}} - the state of the base block of the Icicle when it is attached to a surface.
+**** {{cd|allow_water_placement}} - boolean indicating whether the speleothem can be placed in water or not.
+** Changed {{cd|minecraft:large_dripstone}} (renamed from {{cd|minecraft:large_speleothem}})
+*** Added the field {{cd|base_block}} - Block State Provider, the block to build the large dripstone out of
+
+* Feature placements
+** Added the following ore placements:
+*** {{cd|ice_cave_ore_coal_upper}}
+*** {{cd|ice_cave_ore_coal_lower}}
+*** {{cd|ice_cave_ore_copper}}
+*** {{cd|ice_cave_ore_diamond}}
+*** {{cd|ice_cave_ore_diamond_medium}}
+*** {{cd|ice_cave_ore_diamond_large}}
+*** {{cd|ice_cave_ore_diamond_buried}}
+*** {{cd|ice_cave_ore_iron_upper}}
+*** {{cd|ice_cave_ore_iron_middle}}
+*** {{cd|ice_cave_ore_iron_small}}
+*** {{cd|ice_cave_ore_gold}}
+*** {{cd|ice_cave_ore_gold_lower}}
+*** {{cd|ice_cave_ore_lapis}}
+*** {{cd|ice_cave_ore_lapis_buried}}
+*** {{cd|ice_cave_ore_redstone}}
+*** {{cd|ice_cave_ore_redstone_lower}}
+*** {{cd|ice_cave_ore_andesite_upper}}
+*** {{cd|ice_cave_ore_andesite_lower}}
+*** {{cd|ice_cave_ore_diorite_upper}}
+*** {{cd|ice_cave_ore_diorite_lower}}
+*** {{cd|ice_cave_ore_gravel}}
+** These are all identical to their non-ice-cave counterparts, only that they place a patch of stone or deepslate (depending on y-level) before placing the ore itself.
+*** They can replace ice and calcite as well.
+
+* Noise Settings
+** Added new noises:
+*** {{cd|ice_cave_gradient}}
+
+== Fixes ==
+{{fixes|project=MC|fixedin=26.4 Snapshot 1,26.4 Snapshot 2,26.4 Snapshot 3,26.4 Snapshot 4,26.4 Snapshot 5,26.4 Snapshot 6,26.4 Snapshot 7,26.4 Snapshot 8,26.4 Snapshot 9,26.4 Snapshot 10,26.4 Pre-Release 1
+|;old
+|8959|The player automatically jumps when pressing against a block while in water.
+|11739|Moving the scroll bar in the Creative mode inventory with the left mouse button and releasing it over the "Survival Inventory" tab switches to that tab.
+|25976|Blocks broken by flowing fluids do not produce particles or make breaking sounds.
+|44560|When pushed to the edge of water or lava, entities jump by themselves.
+|50749|Jumping into water against a wall causes the player to bounce.
+|80827|Mob statistics are missing space between the mob's name and the description.
+|80859|Starting to drag item stacks over other compatible stacks makes the latter invisible until their stack size increases.
+|93384|Bubbles appear at the feet of drowning mobs.
+|93533|Armor stands face wrong direction for an instant after being placed.
+|123848|Item frames (and items within) drop atop the block they're attached to instead of under it when removed from a ceiling.
+|126913|Misleading error message when using local coordinates where they are not allowed.
+|127491|Drowned, zombie villagers, and zombified piglins have the {{cd|DrownedConversionTime}} and {{cd|InWaterTime}} tags.
+|130265|Fog color does not match with sky color, causing players to be able to see things that should be completely obscured by the fog.
+|132067|Bubble popping sounds and particles aren't produced at the top of bubble columns.
+|133992|Wither skeletons and blazes do not spawn in fortresses generated before 1.13.
+|135211|Entities automatically jump when falling into 1-block-deep water from certain heights.
+|135212|Entities automatically jump when falling into water of any depth from certain heights.
+|146740|Magma bubble column particles are misaligned.
+|146825|Red and brown mushrooms can't be placed on top slabs or inverted stairs.
+|148140|The scroll bar in the stonecutter UI appears 2 pixels too low when at the bottom of its rail.
+|148293|Closed captions aren't shown without a sound device.
+|148455|Dispensing an item with special behavior only plays the item's usage sound for certain cases.
+|149032|Clicking non-button areas of the stonecutter block selection GUI plays a clicking sound.
+|150635|{{cd|EntityCatSplitFix}} does not properly retain the newly set {{cd|Trusting}} tag during datafixing.
+|152331|The barrier icon in the Spectator mode hotbar widgets does not use the updated texture.
+|152504|The sky overlaps fog underwater, notably at sunrise and sunset.
+|163196|Several blocks which can be placed on the sides of slime blocks cannot be placed on the sides of honey blocks.
+|164558|Mobs ridden by players very rarely receive vertical knockback when attacked.
+|165610|The scroll bar in the trading UI reaches the bottom too early.
+|166792|Attempting to navigate beyond the 100 page limit in a book and quill plays the page rustling sound.
+|170550|The {{cd|snowy_shepherds_house_1}} village structure never generates.
+|172634|Argument types contain syntactically incorrect examples.
+|179165|Releasing the left mouse button over tabs in the Creative mode inventory clicks them even if the click started elsewhere.
+|182892|The clocks and compasses within the Creative mode inventory are functional.
+|183680|Recipe book buttons are not keyboard-navigable.
+|184161|The "Oh Shiny" advancement title is missing a comma.
+|185630|The bounding boxes for clicking and hovering over options in the enchanting table UI are inaccurate.
+|191033|The textures of the Spectator mode hotbar widgets used for teleportation do not use the updated texture of eyes of ender.
+|195474|Can't move focus away from the "Done" button after pressing Tab to focus on it in the sign editing screen.
+|195836|Some closed captions aren't in the correct tense or are formatted incorrectly.
+|196142|Basalt delta particles always move northwest, unlike in Bedrock Edition.
+|197201|Ender dragons no longer dive toward the player.
+|206779|The "Sliding down a honey block" closed caption is improperly capitalized.
+|207916|Flint and steel and fire charges do not make a sound when igniting TNT.
+|212616|The dye staining sound does not play when dyes are used on tamed wolves or cats.
+|212623|Some closed captions use the word "angers" as a verb, therefore making them grammatically incorrect.
+|213647|The sounds of pointed dripstone breaking from falling don’t have any closed captions.
+|215831|You cannot trade with wandering traders while holding villager spawn eggs.
+|226684|Pausing the game while drawing a bow causes the arrow to be fired.
+|227327|Dragon fireballs can collide with the ender dragon itself, resulting in floating area effect clouds.
+|233818|Recipe book previews do not display their tooltips when hovered over while the recipe book is closed.
+|233889|Hovering over tabs in the recipe book doesn't display any tooltips.
+|235363|Stonecutter recipe hitboxes are misaligned in height.
+|236052|Z-fighting can be seen around the necks of small armor stands.
+|240966|Lava particles don't glow, unlike dripping obsidian tear particles.
+|243106|The sounds of using flint and steel or fire charges on creepers are controlled by the "Hostile Mobs" sound category instead of "Players".
+|247234|Splash and bubble particles produced when coming into contact with flowing water are displayed slightly too high.
+|251040|Several blocks which can be placed on top of slime blocks cannot be placed on top of honey blocks.
+|251041|Several blocks which can be placed on the bottom of slime blocks cannot be placed on the bottom of honey blocks.
+|251754|Some instances of "third-party" within the game's strings are inconsistently spelled.
+|254668|Pressing Escape on the death screen's title screen warning respawns the player.
+|261386|Tabs in the Creative mode inventory inconsistently react to the mouse being released.
+|262252|The generation of lush caves and dripstone caves is poorly defined.
+|264554|The button highlights of focused trades in the trading UI move to other trades when scrolling.
+|269319|Bringing the camera close to the player in third-person view underwater disables the water overlay and zoom effect.
+|264274|Placing lily pads and frogspawn does not increment their {{cd|used:[block]}} statistics.
+|270272|Any mouse button can be used to select options in the enchanting table UI.
+|270414|Growing area effect clouds that collide with water create bubble and splash particles.
+|270555|The outline of certain slots is obscured before the item is placed within the slot.
+|270793|Mobs with multiple entity type tags corresponding to effect immunity only respect one.
+|271336|Ender dragons dive to the exit portal incorrectly.
+|271337|Ender dragons frequently get stuck flying back and forth between two points.
+|272431|The vertical velocity of ender dragons when flying is incorrect, causing erratic behavior.
+|275975|The "Unknown element name" codec error is missing a space.
+|276058|The motion of some rideable entities stops when getting launched from wind charges.
+|276133|Cannot close the inventory after clicking a recipe in the recipe book with the "Open/Close Inventory" key bind bound to Enter.
+|276879|{{cmd|data}} truncates floats when casting to longs, but rounds down in all other cases.
+|278651|The host name in handshake packets for SRV records is inconsistent.
+|280006|Experience orbs floating around a player no longer fall to the ground when that player leaves the server.
+|280455|Items equippable on the saddle slot that have a custom equipping sound do not play the specified sound when saddling entities.
+|280480|The flint and steel clicking sound is not played when attempting to ignite TNT with a flint and steel when the {{gmr|tnt_explodes}} game rule is set to false.
+|296053|Item frames don't update properly when modifying their {{cd|Facing}} NBT tag.
+|297196|Knockback is synchronized to client with inconsistent delay.
+|297502|Any mouse button can be used to select options in the enchanting table, loom, and stonecutter UIs.
+|297624|The stonecutter UI buttons are not keyboard-navigable, preventing the player from refilling the input by pressing Space.
+|298546|The loom UI buttons are not keyboard-navigable, preventing the player from refilling the inputs by pressing Space.
+|298547|The enchanting table UI buttons are not keyboard-navigable.
+|299060|Setting item frames' direction with commands can cause desyncs.
+|300250|Clouds render behind foggy terrain.
+|300894|The harness layer is not scaled correctly on baby happy ghasts.
+|302022|Experience orbs desync after bouncing on lava.
+|303468|Pets can be teleported to the incorrect coordinates when going through a nether portal.
+|303702|Small gaps still appear in item models.
+|304749|The mouse cursor doesn't change to the pointing hand shape when hovering over recipes in the recipe book.
+|304895|The overworld sky is no longer black in End biomes.
+|305544|Using the middle mouse button in Survival/Creative/Adventure mode and switching to Spectator mode opens the Spectator mode hotbar.
+|306017|The main arm doesn't swing when making a tamed wolf sit or stand while holding a dye matching its collar color.
+|306817|The scroll position in the trading UI is not synced to the visual scroll bar when there is a large number of trades.
+|306853|{{cmd|time}} does not throw errors when a value is too high.
+|307065|Missing optimization for the side faces of the builtin/generated item model.
+|307422|Changing the window size causes warnings in the game log.
+|307672|The {{cd|name_tag_distance}} attribute overrides the {{cd|below_name_distance}} attribute.
+|307830|The game's framerate is limited to 20 fps with the Vulkan rendering backend on some systems.
+|307991|When the GPU in use does not support Vulkan, the game uses the software renderer (llvmpipe) with the Vulkan rendering backend instead of the actual GPU with the OpenGL backend.
+|308037|Unselected tabs in the friends menu show white text instead of gray.
+|308051|The icons on several buttons do not adhere to the UI pixel grid.
+|308361|Small sulfur cubes that split from bucketed sulfur cubes can despawn.
+|308621|Race condition in the dedicated server's compression setup.
+|308747|The social interactions button in the game menu is grayed out in LAN worlds with no players.
+|308994|The Chat Restrictions screen does not display Xbox communication settings that affect the chat.
+|309335|Any mouse button can be used to interact with entries in the world, server, and language selection screens.
+|309336|Any mouse button can be used to select and apply command autocomplete suggestions.
+|309586|The scroll position in the stonecutter UI resets when taking an item out of the result slot.
+|309896|The {{cd|options.allowFriendRequests.tooltip}} and {{cd|options.inGameNotification.tooltip}} strings lack a period, unlike similar strings.
+|309906|The term "Friends List" is inconsistently capitalized across strings.
+|310051|Floating point cancellation artifacts from <samp>bits.fsh</samp>.
+|310088|The taskbar icon displays the Java logo instead of the game's logo.
+|310124|Leaving a menu that was opened using the keyboard doesn't select its button from the previous screen.
+|310131|Placeable entities momentarily appear at the wrong location when placed.
+|310211|The game crashes when a button with scrolling text is outside the game window in a non-scrollable menu.
+|310237|The {{cd|gui.friends.error.generic}} string uses an em dash, unlike similar strings.
+|310341|Pausing the game while drawing a bow causes the bow to get fully drawn.
+|310401|Phantoms can attack through corners.
+|310503|{{cd|LivingEntity}}'s constructor randomizes the yaw in radians instead of degrees.
+|310767|Pipelines always declare a {{cd|D32_FLOAT}} depth attachment format with the Vulkan rendering backend.
+|310854|The buttons in the friends screen have inconsistent outlines.
+|311029|The {{cd|equipment}} entity predicate does not support the saddle slot.
+|311195|Placed armor stands are rotated incorrectly for one tick.
+|311265|The world border renders incorrectly from outside.
+|311312|Endermen and entities eating chorus fruit can still pass through the world border.
+|311382|The "Free trial" and "Try for free" buttons do not use high contrast button textures when the "High Contrast" resource pack is enabled.
+|311422|The {{samp|gui/realms/minigames.png}} texture contains a redstone torch with its old texture.
+|311424|The Right Shift key is recognized as {{cd|key.keyboard.unknown}} ("Not Bound") with certain input methods.
+|311451|Mouse input is not recognized on monitors that are in negative positions on Wayland.
+|311458|The "Adventure" advancement's icon is inconsistent with the Adventure game mode's icon in the game mode switcher.
+|311473|Duplicating items with the scroll wheel in Creative mode can produce ghost items.
+|311520|{{cd|writeToTexture}} and {{cd|copyBufferToTexture}} never check for GL errors, unlike the neighboring methods.
+|311522|The source buffer overrun check in {{cd|FrontendCommandEncoder#writeToTexture}} uses integer arithmetic.
+|311582|The texture of desert pyramid maps has one inconsistent pixel compared to the others.
+|311681|Dispensers can remove TNT from primed sulfur cubes.
+|311726|The water inside waterlogged copper grates has the falling fluid state property set to true.
+|311727|The check for whether a player is standing on air doesn't use the player's updated position.
+|311758|Block breaking particles and sounds are not canceled and continue appearing when opening the game mode switcher.
+|311773|Red and brown mushrooms cannot be placed at any light level, unlike in Bedrock Edition.
+|311777|Block breaking particles and sounds are not canceled and continue appearing when instantly mining a block and swapping the item into the off hand simultaneously.
+|311780|Trigonometric functions don't wrap angles before being applied and aren't fully periodic.
+|311781|The game is not minimized when losing focus in fullscreen mode.
+|311786|Running {{cmd|test run}} with a {{cd|rotationSteps}} value that is out of range causes an error.
+|311788|Teleporting item frames moves them further than it should visually.
+|311818|Traveling to the End in Spectator mode regenerates the obsidian platform.
+|311826|On some systems, tabbing in and out of the game in fullscreen mode while the "Toggle Cinematic Camera" key bind is unbound will toggle it.
+|311836|Minecart sounds are now distorted.
+|311856|An error occurs when writing textures to the buffer with the OpenGL rendering backend.
+|311859|Damaged dyed wolf armor no longer shows cracks in the colored parts.
+|311883|Mobs jitter and slide in crowds when they cannot reach the targeted player.
+|311924|Breaking an armor stand or block-attached entity near a sculk catalyst consumes the player's experience.
+|311932|The Caps Lock key can no longer activate sprinting, sneaking, etc. when the control in question is set to "Hold".
+|311933|The horizontal scroll direction is inverted in the Advancements screen.
+|311949|The "Not Bound" scancode can activate key binds.
+|311954|The OpenGL rendering backend cannot be used when running under XWayland.
+|311963|The {{cd|subtitles.block.poplar_leaves.ambient}} string uses a present participle instead of the present tense, unlike similar strings.
+|311965|The {{cd|commands.posteffect.list.success}} string always pluralizes the word "effects".
+|311966|The tooltip of the "Quit Shortcuts" option calls the Command key "Cmd".
+|311969|Some strings that mention specified slots are missing articles.
+|311970|The {{cd|options.debugGuiScale.tooltip}} string lacks a period, unlike similar strings.
+|311971|Some strings refer to the "LAN" setting as the "multiplayer scope" and write its value as "Off" instead of "OFF".
+|311973|The {{cd|options.worldOptions.guest.command_access.tooltip}} string redundantly includes "or not".
+|311974|The new entity interpolation method introduced in 26.3 causes noticeable stutters compared to prior versions.
+|311977|The closed caption for riding zombie nautiluses is "Nautilus bubbles".
+|311978|Some argument error strings introduce the invalid value with a colon instead of surrounding it with single quotes, unlike similar strings.
+|311992|The code used to join a Realm is inconsistently referred to as both an "Invite Code" and a "Join Code".
+|311994|Delayed block breaking completes early or stalls.
+|311997|The {{cd|options.macFullscreenMenuVisibility.tooltip}} string is improperly capitalized.
+|311999|The {{cd|options.ctrlClickEmulatesRightClick}} string is missing a hyphen between the words "Right" and "Click".
+|312016|The water overlay does not render when the player's head is against a block above them.
+|312035|Attacking an entity in Creative mode, then switching to Survival mode adds 5 ticks of block break delay.
+|312065|Some test coordinate strings are displayed with two sets of square brackets, unlike similar strings.
+|312068|Some strings are missing articles before the word "invalid".
+|312075|The {{cd|options.directionalAudio.off.tooltip}} string is improperly capitalized, unlike similar strings.
+|312077|Some Realms progress screen strings are improperly capitalized, unlike similar strings.
+|312078|The {{cd|options.hideMatchedNames.tooltip}} string is improperly capitalized, unlike similar strings.
+|312079|The {{cd|options.fullscreen.unavailable}} string is improperly capitalized, unlike similar strings.
+|312080|The {{cd|telemetry.event.world_loaded.description}} string is improperly capitalized, unlike similar strings.
+|312082|The {{cd|advancements.husbandry.uh_oh.title}} string is missing a hyphen between the words "Uh" and "Oh".
+|312084|The {{cd|options.fullscreen.entry}} string is missing a hyphen before the word "bit".
+|312087|The word "towards" within the options.vignette.tooltip string isn't spelled in American English.
+|312088|Some application control key name strings are displayed without the "AC" prefix, unlike similar strings.
+|312089|Some strings that name screens are improperly capitalized, unlike similar strings.
+|312091|The {{cd|chat.copy.click}} string is improperly capitalized, unlike similar strings.
+|312092|The {{cd|multiplayer.socialInteractions.not_available}} string is improperly capitalized, unlike similar strings.
+|312102|The {{cd|disconnect.loginFailedInfo.invalidSession}} string is improperly capitalized, unlike similar strings.
+|312103|The entity name "Experience Orbs" isn't capitalized within some game rule description strings, unlike similar strings.
+|312107|The {{cd|selectWorld.backupQuestion.experimental}} string is improperly capitalized, unlike similar strings.
+|312108|The {{cd|jigsaw_block.final_state}} string is improperly capitalized, unlike similar strings.
+|312111|Some Realms snapshot popup strings are improperly capitalized, unlike similar strings.
+|312112|The {{cd|mco.configure.world.invite_codes.subtitle}} string uses the verb "add" instead of "create", unlike similar strings.
+|312120|Enabling the "Exclusive Fullscreen" option while the game is windowed and then entering non-exclusive fullscreen does not update the "Exclusive Fullscreen" option's button to "OFF".
+|312126|The {{cd|options.inGameNotification.tooltip}} string is improperly capitalized, unlike similar strings.
+|312194|Changing post effects can disconnect the player with a {{cd|ConcurrentModificationException}}.
+|312198|Almost no small mushrooms generate on mushroom islands anymore.
+|312213|The game crashes when using custom Superflat presets containing air.
+|312243|Some strings are missing an article before an adjective that follows a verb, unlike similar strings.
+|312252|Some error strings introduce the invalid value with a colon instead of surrounding it with single quotes, unlike similar strings.
+|312258|Some descriptive tooltip and error message strings lack a period, unlike similar strings.
+|312260|Some friends list narration strings are missing articles and possessive determiners.
+|312273|The placement sound is not played when a dispenser places an armor stand.
+|312291|Some jigsaw block tooltip strings are improperly capitalized, unlike similar strings.
+|312299|The {{cd|subtitles.entity.generic.death}} string is formatted inconsistently.
+|312360|Paintings break outside the world border.
+|312398|Clicking on villagers with shears while they are holding out certain items causes the items to drop.
+|312425|Removed data component types present in the {{cd|hidden_components}} field of a {{cd|tooltip_display}} component log a deserialization warning.
+|312430|Falling pointed blocks deal more damage than before.
+|312637|Sculk sensors are not activated when ice melts in the Nether.
+|312640|Any mouse button can be used to select entries in the statistics menu.
+|312641|Any mouse button can be used to open links on the death screen.
+|312644|Dispensers filling glass bottles don't play the bottle filling sound.
+|312645|Dispensers equipping chests on donkeys, mules or llamas don't play the chest equipping sound.
+|312652|Flint and steel and fire charges don't make a sound when igniting sulfur cubes holding TNT.
+|312654|Dispensers consume the durability of flint and steel and play their clicking sound despite there being nothing to ignite.
+|312667|Item tooltips in the statistics menu do not appear when the items are focused with the keyboard.
+|312669|Any mouse button can be used to close the friends and other players menus when clicking outside of them.
+|312670|The narrator doesn't read the messages on the backup, optimize world, and error screens.
+|312672|The narrator reads villager trade offers as "button" without providing any context.
+|312673|The narrator reads the recipe book button and tabs as "button" without providing any context.
+|312674|The search boxes in the language, resource pack, data pack, game rule, and single biome screens are narrated without a name.
+|312678|Spruce wall hanging signs use the oak map color on maps.
+|312682|Lava can start fires next to crimson and warped shelves.
+|312693|Projectiles shot by mobs can no longer break decorated pots, chorus flowers, pointed dripstone, sulfur spikes, or icicles.
+|312695|The server sometimes crashes when a client accepts its code of conduct.
+|312753|{{cmd|item}} uses the wrong evaluation order for {{cd|filtered}} and {{cd|limit_slots}} slot sources.
+|312766|Fire still does not make its extinguishing sound when water flows into it.
+|312768|Any mouse button can be used to drag the scroll bars of the stonecutter, loom, and villager trading menus.
+|312778|Red and brown mushrooms can visually float on top of walls that have the up block state property set to false.
+|312779|Heads and blocks worn by small armor stands are stretched.
+|312785|Any mouse button can be used to select entries in the "Experimental Feature Requirements" screen.
+|312801|Magma cubes stop being visible at a shorter distance than slimes and sulfur cubes of the same size.
+|312803|Lightning removes the wax from a waxed copper golem, unlike waxed copper blocks.
+|312804|Some villager trades still unexpectedly differ from 1.21.11.
+|312806|The narrator does not read the title or message on the confirmation screen for uninviting players from Realms.
+|312823|Any mouse button can be used to select entries in the "Add Realm" screen.
+|312824|Any mouse button can be used to select entries in the "Changes From Last Backup" screen.
+|312825|Dispensers consume the durability of flint and steel and play their clicking sound when facing a sulfur cube holding TNT while the {{cd|tnt_explodes}} game rule is set to {{cd|false}}.
+|312826|{{cmd|kill}} fails to kill the target if it recently survived 3.4028235E38+ damage due to the Resistance effect.
+|312832|Dispensers cannot give carved pumpkins or glowstone to sulfur cubes.
+|312866|Any mouse button can be used to open the "Terms of Service" link on the "Realms Terms of Service" screen.
+|312876|Fire still does not make its extinguishing sound when the block below it is broken.
+|312893|Horses' {{cd|gallopSoundCounter}} is not reset properly.
+|312903|{{cmd|item}} selects fewer slots than expected with nested {{cd|limit_slots}} slot sources inside a {{cd|group}} slot source.
+|312909|The {{cd|campsite_pale_garden_2}} abandoned camp structure never generates.
+|312912|The giant trees in the {{cd|campsite_old_growth_pine_taiga_1}}, {{cd|campsite_old_growth_spruce_taiga_4}}, and {{cd|campsite_snowy_taiga_3}} abandoned camp structures never generate.
+|312913|The trees in several abandoned camp tents do not generate.
+|312940|The sounds of fire charges being shot from dispensers are controlled by the "Hostile Mobs" sound category instead of "Blocks".
+|312941|The sounds of fireworks being shot from dispensers are controlled by the "Friendly Mobs" sound category instead of "Blocks".
+|312942|The sound previews of volume sliders cannot be heard when the "UI" volume slider is turned off.
+|312943|The sounds of dispensers filling bottles with honey from beehives or bee nests are controlled by the "Friendly Mobs" sound category instead of "Blocks".
+|312967|Implicit empty-slot filtering in {{cmd|item modify}} makes slot selection differ from all other commands.
+|313015|Blocks in the head slot of baby humanoid mobs render at full size, unlike helmets.
+|313021|{{cmd|item override}} leaves destination slots unchanged when the source selects no slots.
+|313048|Any mouse button can be used to select the recipe book search field by clicking on the search icon.
+|313079|The "FOV Effects" option doesn't affect the death screen zoom.
+|313080|The "Other Players" tutorial toast ignores the "Notification Time" setting.
+|313081|Typing in the search box of the language menu deselects the selected language.
+|313082|Debug messages for toggling chunk boundaries and entity hitboxes are displayed in chat when the "Reduced Debug Info" option is enabled.
+|313083|The debug shortcut for copying your location still functions when the "Reduced Debug Info" option is enabled.
+|313126|The oversized chunk warning produced by {{cd|RegionFile}} contains a mismatched brace.
+|313141|The speed boost from using a carrot on a stick on a pig or a warped fungus on a stick on a strider is not saved to NBT.
+|313144|{{cd|upgradeWorld.progress.type.regions}} displays as a raw translation key.
+|313186|Water bottles stacked higher than 1 give back 2 glass bottles per 1 use when converting dirt to mud.
+|313204|The usage cooldown on spawn eggs doesn't prevent spawning baby mobs.
+|313278|Dispensers can brush dying armadillos.
+|313333|Silent turtles play their sand breaking and egg laying sounds when laying eggs.
+|313341|Tags aren't shown in the tooltips of items in the Creative mode inventory when the tag search contains capital letters.
+|313342|The game crashes when placing creaking hearts between non-log blocks added to the {{cd|#pale_oak_logs}} tag.
+|313358|Silent foxes play their teleporting sounds after eating chorus fruit.
+|313359|Silent entities play sounds when certain status effects are applied to them.
+|313360|Silent cushions play their placing sound when being placed.
+|313361|Silent entities play the fire extinguishing sound when being extinguished.
+|313362|Silent entities play the thorns damage sound when the thorns enchantment activates.
+|313363|Silent zombies play turtle egg stomping sounds when stomping turtle eggs.
+|313364|Silent zombies play door shaking and breaking sounds when breaking down doors.
+|313365|Silent baby entities play eating sounds when feeding them golden dandelions.
+|313366|Silent foxes play snow breaking sounds when stuck in snow after pouncing.
+|313367|Silent withers play block breaking sounds when breaking blocks.
+|313368|Silent entities play item pickup sounds when picking up items.
+|313369|Silent entities play mace smashing sounds when performing smash attacks using maces.
+|313370|Silent entities play totem activation sounds when using totems of undying.
+|313371|Silent falling suspicious blocks play their breaking sounds when hitting the ground.
+|313391|Approaching fish don't leave water splash trails over waterlogged blocks.
+|313446|Loot table groups with one child stop sequences when their child fails, unlike larger groups.
+|313474|The game crashes when validating POIs when the {{cd|#villagers_can_sleep_on_bed}} tag contains non-bed blocks.
+|313548|Decorated pots play their failed insertion animation when successfully inserting items into them.
+}}
+
+== Navigation ==
+{{Navbox Java Edition versions|26.x}}
+
+[[de:26.4]]
+[[es:Java Edition 26.4]]
+[[fr:Édition Java 26.4]]
+[[ja:Java Edition 26.4]]
+[[lzh:爪哇版二六點四]]
+[[pt:Edição Java 26.4]]
+[[ru:26.4 (Java Edition)]]
+[[zh:Java版26.4]]

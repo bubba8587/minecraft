@@ -59,7 +59,7 @@ def main(argv):
     write(d / f"src/main/resources/assets/{modid}/lang/en_us.json", "{\n}\n")
     # B16 textures16and32: the 32x set's source folder; it ships in the combined pack resourcepacks/bubbas_32x, not
     # the jar, and test runs register it as a built-in pack (specs/textures.md).
-    rp = {"pack": {"description": f"{name} 32x textures (Classic Faithful style)", "min_format": 97, "max_format": 97}}
+    rp = {"pack": {"description": f"{name} 32x textures (Classic Faithful style)", "min_format": 104, "max_format": 104}}
     write(d / f"src/main/resources/resourcepacks/{modid}_32x/pack.mcmeta", json.dumps(rp, indent=2) + "\n")
     (d / f"src/main/resources/resourcepacks/{modid}_32x/assets/{modid}/textures").mkdir(parents=True, exist_ok=True)
     (d / f"src/main/resources/assets/{modid}/textures").mkdir(parents=True, exist_ok=True)

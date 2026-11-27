@@ -38,7 +38,7 @@ public final class DrownedPoses {
 
 	/** How much it is crawling (0 still, 1 moving). */
 	private static float moving(ZombieRenderState state) {
-		return Mth.clamp(state.walkAnimationSpeed * 2.5F, 0.0F, 1.0F);
+		return Math.clamp(state.walkAnimationSpeed * 2.5F, 0.0F, 1.0F);
 	}
 
 	/** Replaces vanilla's 10-degree swim tilt: flat like a swimming player, with the crawl's sway on land. */

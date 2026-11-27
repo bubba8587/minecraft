@@ -276,8 +276,8 @@ public final class CairnSites {
 
 	/** Y of the top ground block from the noise column (no features), or MIN_VALUE when water lies on it. */
 	private static int groundY(ServerLevel level, ChunkGenerator generator, RandomState randomState, int x, int z) {
-		int floor = generator.getBaseHeight(x, z, Heightmap.Types.OCEAN_FLOOR_WG, level, randomState);
-		int surface = generator.getBaseHeight(x, z, Heightmap.Types.WORLD_SURFACE_WG, level, randomState);
+		int floor = generator.getFirstFreeHeight(x, z, Heightmap.Types.OCEAN_FLOOR_WG, level, randomState);
+		int surface = generator.getFirstFreeHeight(x, z, Heightmap.Types.WORLD_SURFACE_WG, level, randomState);
 		return floor == surface ? floor - 1 : Integer.MIN_VALUE;
 	}
 

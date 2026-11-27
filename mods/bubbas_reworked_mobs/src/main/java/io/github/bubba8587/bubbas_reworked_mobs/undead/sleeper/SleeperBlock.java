@@ -149,7 +149,7 @@ public class SleeperBlock extends BaseEntityBlock implements SimpleWaterloggedBl
 
 	@Override
 	protected FluidState getFluidState(BlockState state) {
-		return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
+		return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource() : super.getFluidState(state);
 	}
 
 	@Override

@@ -1,6 +1,7 @@
 // dte:C4
 package io.github.bubba8587.bubbas_infused_gems.registry;
 
+import net.minecraft.commands.suggestions.SuggestionContext;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,7 +13,7 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import io.github.bubba8587.bubbas_infused_gems.effect.WornEffects;
 import io.github.bubba8587.bubbas_infused_gems.gem.Gem;
 import io.github.bubba8587.bubbas_infused_gems.gem.SocketedGems;
-import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.commands.CommandPermissionLevels;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -43,15 +44,15 @@ public final class ModCommands {
 				Commands.literal("gems")
 						.executes(c -> show(c.getSource(), c.getSource().getPlayerOrException()))
 						.then(Commands.argument("player", EntityArgument.player())
-								.requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+								.requires(Commands.hasPermission(CommandPermissionLevels.LEVEL_GAMEMASTERS))
 								.executes(c -> show(c.getSource(), EntityArgument.getPlayer(c, "player"))))
 						.then(Commands.literal("kit")
-								.requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+								.requires(Commands.hasPermission(CommandPermissionLevels.LEVEL_GAMEMASTERS))
 								.then(Commands.argument("effect", StringArgumentType.word())
-										.suggests((c, b) -> SharedSuggestionProvider.suggest(Balance.get().gemEffects, b))
+										.suggests((c, b) -> SuggestionContext.suggest(Balance.get().gemEffects, b))
 										.executes(c -> kit(c.getSource(), StringArgumentType.getString(c, "effect"), "netherite"))
 										.then(Commands.argument("material", StringArgumentType.word())
-												.suggests((c, b) -> SharedSuggestionProvider.suggest(KIT_MATERIALS, b))
+												.suggests((c, b) -> SuggestionContext.suggest(KIT_MATERIALS, b))
 												.executes(c -> kit(c.getSource(), StringArgumentType.getString(c, "effect"),
 														StringArgumentType.getString(c, "material")))
 												.then(Commands.argument("power", com.mojang.brigadier.arguments.IntegerArgumentType.integer(1, 6))

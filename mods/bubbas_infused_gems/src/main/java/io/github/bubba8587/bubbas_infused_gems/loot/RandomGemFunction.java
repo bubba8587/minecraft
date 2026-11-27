@@ -11,6 +11,7 @@ import io.github.bubba8587.bubbas_infused_gems.registry.ModItems;
 import net.minecraft.core.Holder;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.ValidationContext;
 import net.minecraft.world.level.storage.loot.functions.LootItemConditionalFunction;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 
@@ -25,6 +26,10 @@ public class RandomGemFunction extends LootItemConditionalFunction {
 	private RandomGemFunction(Optional<Holder<LootItemCondition>> condition, GemRollSpec spec) {
 		super(condition);
 		this.spec = spec;
+	}
+
+	@Override
+	protected void validateCustom(ValidationContext context) {
 	}
 
 	@Override

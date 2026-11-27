@@ -2,6 +2,7 @@
 package io.github.bubba8587.bubbas_totems_artifacts.statue;
 
 import io.github.bubba8587.bubbas_totems_artifacts.registry.ModBlocks;
+import net.minecraft.world.level.block.sounds.BlockSoundSet;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
@@ -17,7 +18,7 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
-import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.sounds.BlockSoundSets;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -106,8 +107,8 @@ public class TotemStatueBlock extends HorizontalDirectionalBlock {
 		if (player instanceof ServerPlayer serverPlayer) {
 			CriteriaTriggers.PLACED_BLOCK.trigger(serverPlayer, pos, stack);
 		}
-		SoundType sound = state.getSoundType();
-		level.playSound(player, pos, sound.getPlaceSound(), SoundSource.BLOCKS, (sound.getVolume() + 1.0F) / 2.0F, sound.getPitch() * 0.8F);
+		BlockSoundSet sound = state.getSounds(level);
+		sound.placeSound().ifPresent(s -> level.playSound(player, pos, s, SoundSource.BLOCKS, (sound.volume() + 1.0F) / 2.0F, sound.pitch() * 0.8F));
 		level.gameEvent(GameEvent.BLOCK_PLACE, pos, GameEvent.Context.of(player, state));
 		stack.consume(1, player);
 		return InteractionResult.SUCCESS;

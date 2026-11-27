@@ -225,7 +225,7 @@ public final class WornEffects {
 		GemBeacons.expire(entity);
 		Balance b = Balance.get();
 		double regen = GemValues.worn(entity, "regeneration");
-		if (regen > 0.0 && entity.getHealth() < entity.getMaxHealth() && !entity.is(EntityTypeTags.IGNORES_POISON_AND_REGEN)) {
+		if (regen > 0.0 && entity.getHealth() < entity.getMaxHealth() && !entity.is(EntityTypeTags.IMMUNE_TO_REGENERATION)) {
 			entity.heal((float) (b.effect("regeneration").wornNumber("heal_per_second", 0.8) * regen / 20.0));
 		}
 		double saturation = GemValues.worn(entity, "saturation");
@@ -238,7 +238,7 @@ public final class WornEffects {
 		}
 		if (entity.tickCount % 10 == 0) {
 			double poison = GemValues.worn(entity, "poison");
-			if (poison > 0.0 && !entity.is(EntityTypeTags.IGNORES_POISON_AND_REGEN)) {
+			if (poison > 0.0 && !entity.is(EntityTypeTags.IMMUNE_TO_POISON)) {
 				float dmg = (float) Math.min(b.effect("poison").wornNumber("damage_per_second", 1.667) * poison / 2.0, entity.getHealth() - 1.0F);
 				if (dmg > 0.0F) {
 					entity.hurtServer(level, entity.damageSources().magic(), dmg);

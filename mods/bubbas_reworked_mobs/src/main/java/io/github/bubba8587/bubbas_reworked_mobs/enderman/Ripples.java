@@ -344,7 +344,7 @@ public final class Ripples {
 				level.sendParticles(ParticleTypes.REVERSE_PORTAL, pos.getX() + 0.5, pos.getY() + 1.05, pos.getZ() + 0.5, 2, 0.3, 0.05, 0.3, 0.02);
 				if (particlesThisTick % 12 == 1) {
 					BlockState sounding = state.isAir() ? old : state;
-					level.playSound(null, pos, sounding.getSoundType().getPlaceSound(), SoundSource.BLOCKS, 0.6F, 0.8F);
+					sounding.getSounds(level).placeSound().ifPresent(s -> level.playSound(null, pos, s, SoundSource.BLOCKS, 0.6F, 0.8F));
 				}
 			}
 		}

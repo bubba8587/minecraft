@@ -69,8 +69,8 @@ public class BossPiglinCapeLayer<S extends BossPiglinRenderState, M extends Boss
 		@Override
 		public void setupAnim(BossPiglinRenderState state) {
 			super.setupAnim(state);
-			float seat = Mth.clamp(state.seated, 0.0F, 1.0F);
-			float flee = Mth.clamp(state.fleeing, 0.0F, 1.0F);
+			float seat = Math.clamp(state.seated, 0.0F, 1.0F);
+			float flee = Math.clamp(state.fleeing, 0.0F, 1.0F);
 			float walk = state.walkAnimationSpeed * (1.0F - seat);
 			float t = state.ageInTicks;
 			float tilt = TILT + TILT_WALK * walk + flee * (TILT_FLEE + FLAP_FLEE * Mth.sin(state.walkAnimationPos * 0.6662F * 2.0F));

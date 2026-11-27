@@ -1,12 +1,13 @@
 // dte:C4,B16
 package io.github.bubba8587.bubbas_infused_gems.client;
 
+import net.minecraft.client.core.registries.BuiltInClientRegistries;
+import net.minecraft.core.Registry;
 import io.github.bubba8587.bubbas_infused_gems.BubbasInfusedGems;
 import io.github.bubba8587.bubbas_infused_gems.effect.GemEntity;
 import io.github.bubba8587.bubbas_infused_gems.effect.GemTotals;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.minecraft.client.color.item.ItemTintSources;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.item.ItemStack;
 
@@ -18,7 +19,7 @@ public class BubbasInfusedGemsClient implements ClientModInitializer {
 
 	@Override
 	public void onInitializeClient() {
-		ItemTintSources.ID_MAPPER.put(BubbasInfusedGems.id("gem_color"), GemColorSource.MAP_CODEC);
+		Registry.register(BuiltInClientRegistries.ITEM_TINT_SOURCE_TYPE, BubbasInfusedGems.id("gem_color"), GemColorSource.MAP_CODEC);
 		// The local player moves on the client
 		ClientTickEvents.END_CLIENT_TICK.register(mc -> {
 			LocalPlayer player = mc.player;

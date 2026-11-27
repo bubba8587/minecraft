@@ -1,7 +1,10 @@
 // dte:C1,B15
 package io.github.bubba8587.bubbas_reworked_mobs.display;
 
+import net.minecraft.resources.ResourceKey;
+import java.util.Optional;
 import java.util.Map;
+import net.minecraft.world.level.block.sounds.BlockSoundSet;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -24,7 +27,7 @@ import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.SimpleWaterloggedBlock;
-import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.sounds.BlockSoundSets;
 import net.minecraft.world.level.block.SupportType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -115,8 +118,8 @@ public class LootDisplayBlock extends BaseEntityBlock implements SimpleWaterlogg
 
 	/** Buried loot sounds like the ground it is dug from; the rest like the metal it mostly is. */
 	@Override
-	protected SoundType getSoundType(BlockState state) {
-		return state.getValue(PLACEMENT) == DisplayPlacement.BURIED ? SoundType.ROOTED_DIRT : SoundType.CHAIN;
+	protected Optional<ResourceKey<BlockSoundSet>> getSounds(BlockState state) {
+		return Optional.of(state.getValue(PLACEMENT) == DisplayPlacement.BURIED ? BlockSoundSets.ROOTED_DIRT : BlockSoundSets.CHAIN);
 	}
 
 	// --- taking -----------------------------------------------------------------------------------
@@ -197,6 +200,6 @@ public class LootDisplayBlock extends BaseEntityBlock implements SimpleWaterlogg
 
 	@Override
 	protected FluidState getFluidState(BlockState state) {
-		return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
+		return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource() : super.getFluidState(state);
 	}
 }

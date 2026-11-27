@@ -88,7 +88,7 @@ public final class TraderPosts {
 				}
 				ChunkAccess access = level.getChunk(chunk.x(), chunk.z(), ChunkStatus.STRUCTURE_STARTS, true);
 				StructureStart start = access == null ? null : access.getStartForStructure(structure);
-				if (start != null && start.isValid() && start.getPieces().getFirst() instanceof TraderPostPiece piece) {
+				if (start != null && start.getPieces().getFirst() instanceof TraderPostPiece piece) {
 					double dx = piece.centre().getX() - at.getX();
 					double dz = piece.centre().getZ() - at.getZ();
 					if (dx * dx + dz * dz <= bestD) {

@@ -1,6 +1,9 @@
 // dte:C1
 package io.github.bubba8587.bubbas_reworked_mobs.enderman;
 
+import net.minecraft.world.level.biome.CachedChunkBiomeResolver;
+import net.minecraft.world.level.biome.NoiseBiomeResolver;
+import net.minecraft.world.level.levelgen.NoiseColumn;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -17,11 +20,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.NoiseColumn;
 import net.minecraft.world.level.StructureManager;
 import net.minecraft.core.QuartPos;
 import net.minecraft.world.level.biome.BiomeManager;
-import net.minecraft.world.level.biome.BiomeResolver;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
@@ -223,18 +224,13 @@ public final class TerrainOracle {
 		StructureManager structures = new KnownStarts(level, starts);
 		long t0 = System.nanoTime();
 		// Biomes: filled straight from the biome source (what createBiomes does, without queueing on the worldgen pool).
-		BiomeResolver resolver = generator.getBiomeSource().createCachingResolver(randomState);
-		chunk.fillBiomesFromNoise(resolver);
+		NoiseBiomeResolver resolver = generator.getBiomeSource().createCachingResolver(randomState);
+		chunk.fillBiomes(new CachedChunkBiomeResolver(chunk, resolver, BiomeManager.obfuscateSeed(seed)));
 		chunk.setPersistedStatus(net.minecraft.world.level.chunk.status.ChunkStatus.BIOMES);
 		long t1 = System.nanoTime();
-		// Surface rules look biomes up per column: read this chunk's own biomes (as worldgen reads its region's), and
-		// the caching resolver only at its edges.
-		int minQx = QuartPos.fromBlock(pos.getMinBlockX());
-		int minQz = QuartPos.fromBlock(pos.getMinBlockZ());
-		BiomeResolver local = (qx, qy, qz) -> qx >= minQx && qx < minQx + 4 && qz >= minQz && qz < minQz + 4
-				? chunk.getNoiseBiome(qx, qy, qz) : resolver.getNoiseBiome(qx, qy, qz);
-		BiomeManager biomes = new BiomeManager(local, BiomeManager.obfuscateSeed(seed));
-		generator.buildTerrain(chunk, Blender.empty(), randomState, structures, biomes, null, null).join();
+		// Surface rules read this chunk's own biomes
+		java.util.Set<net.minecraft.core.Holder<net.minecraft.world.level.biome.Biome>> possible = chunk.collectBiomesInPalette(new java.util.HashSet<>());
+		generator.buildTerrain(chunk, Blender.empty(), randomState, structures, null, possible).join();
 		long t2 = System.nanoTime();
 		if (PROFILE) {
 			BubbasReworkedMobs.LOGGER.info("[target-world] chunk {}: biomes {} ms, terrain {} ms", pos, (t1 - t0) / 1000000, (t2 - t1) / 1000000);

@@ -159,7 +159,8 @@ public final class BackToSleep extends MoveToBlockGoal {
 			}
 			sleeper.setChanged();
 		}
-		level.playSound(null, at, variant.sound().getPlaceSound(), SoundSource.HOSTILE, 0.6F, 0.7F);
+		level.registryAccess().get(variant.sound()).flatMap(s -> s.value().placeSound())
+				.ifPresent(s -> level.playSound(null, at, s, SoundSource.HOSTILE, 0.6F, 0.7F));
 		mob.discard();
 	}
 }

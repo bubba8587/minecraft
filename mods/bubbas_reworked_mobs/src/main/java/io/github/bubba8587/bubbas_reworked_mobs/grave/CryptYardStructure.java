@@ -53,7 +53,7 @@ public class CryptYardStructure extends Structure {
 			// so a yard doesn't hang over into a river or the sea beside its biome.
 			int cornerY = context.chunkGenerator().getFirstOccupiedHeight(at[i][0], at[i][1], Heightmap.Types.WORLD_SURFACE_WG, context.heightAccessor(),
 					context.randomState());
-			if (!context.validBiome().test(context.biomeResolver().getNoiseBiome(QuartPos.fromBlock(at[i][0]), QuartPos.fromBlock(cornerY),
+			if (!context.validBiome().test(context.noiseBiomeResolver().getNoiseBiome(QuartPos.fromBlock(at[i][0]), QuartPos.fromBlock(cornerY),
 					QuartPos.fromBlock(at[i][1])))) {
 				return Optional.empty();
 			}
@@ -71,7 +71,7 @@ public class CryptYardStructure extends Structure {
 			return Optional.empty();
 		}
 		BlockPos origin = new BlockPos(minX, Math.round(sum / 4.0F), minZ);
-		var biome = context.biomeResolver().getNoiseBiome(QuartPos.fromBlock(minX + width / 2), QuartPos.fromBlock(origin.getY()),
+		var biome = context.noiseBiomeResolver().getNoiseBiome(QuartPos.fromBlock(minX + width / 2), QuartPos.fromBlock(origin.getY()),
 				QuartPos.fromBlock(minZ + depth / 2));
 		YardTrees trees = YardTrees.forBiome(biome);
 		YardKinds.Climate climate = YardKinds.Climate.of(biome);

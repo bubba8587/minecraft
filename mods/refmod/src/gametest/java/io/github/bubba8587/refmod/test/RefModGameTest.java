@@ -231,28 +231,8 @@ public class RefModGameTest {
 
 	@GameTest
 	public void statsCommandPrintsAndGatesOtherPlayers(GameTestHelper helper) throws CommandSyntaxException {
-		ServerPlayer player = helper.makeMockServerPlayerInLevel();
-		player.setAttached(ModAttachments.LAMP_TOGGLES, 7);
-		CommandDispatcher<CommandSourceStack> dispatcher = helper.getLevel().getServer().getCommands().getDispatcher();
-
-		CommandSourceStack self = player.createCommandSourceStack().withSuppressedOutput();
-		helper.assertValueEqual(dispatcher.execute("refmod stats", self), 7, "own stats");
-
-		// Mock players all share one name, so select this one by tag (a UUID selector counts as "entities", not "players").
-		player.addTag("refmod_stats_target");
-		String other = "refmod stats @a[tag=refmod_stats_target,limit=1]";
-		String denial = null;
-		try {
-			dispatcher.execute(other, self);
-		} catch (CommandSyntaxException e) {
-			denial = e.getType() == CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownArgument() ? "unknown argument" : e.getMessage();
-		}
-		helper.assertValueEqual(denial, "unknown argument", "non-op querying another player");
-
-		CommandSourceStack op = helper.getLevel().getServer().createCommandSourceStack().withSuppressedOutput();
-		helper.assertValueEqual(dispatcher.execute(other, op), 7, "op stats for player");
-		helper.getLevel().getServer().getPlayerList().remove(player);
-		helper.succeed();
+		// TODO 26.4: rewrite on Commands.parseBox()/performCommand (getDispatcher() is gone)
+		helper.fail("statsCommandPrintsAndGatesOtherPlayers: not yet ported to the 26.4 command API");
 	}
 
 	// --- 12. Event: lamp breaks are counted ----------------------------------------------------

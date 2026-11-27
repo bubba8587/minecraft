@@ -49,7 +49,7 @@ public final class LootDisplayCommand {
 				at.then(Commands.literal(facing.getSerializedName()).executes(c -> placeAt(c, placement, facing)));
 			}
 			display.then(Commands.literal(placement.getSerializedName())
-					.then(Commands.argument("item", ItemArgument.item(context))
+					.then(Commands.argument("item", ItemArgument.item())
 							.executes(c -> placeLooking(c, placement))
 							.then(at)));
 		}

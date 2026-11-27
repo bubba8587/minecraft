@@ -44,8 +44,8 @@ public final class SleeperBreakout {
 
 	/** The warning, when a stray's wake is scheduled: the ice round it cracks. */
 	public static void crack(ServerLevel level, BlockPos pos) {
-		level.playSound(null, pos, SoundEvents.GLASS_HIT, SoundSource.HOSTILE, 1.0F, 0.6F);
-		level.playSound(null, pos, SoundEvents.POWDER_SNOW_BREAK, SoundSource.HOSTILE, 0.8F, 0.7F);
+		level.playSound(null, pos, SoundEvents.GLASS.hitSound().orElseThrow().value(), SoundSource.HOSTILE, 1.0F, 0.6F);
+		level.playSound(null, pos, SoundEvents.POWDER_SNOW.breakSound().orElseThrow().value(), SoundSource.HOSTILE, 0.8F, 0.7F);
 		level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, Blocks.PACKED_ICE.defaultBlockState()), pos.getX() + 0.5, pos.getY() + 1.0,
 				pos.getZ() + 0.5, 30, 0.6, 0.3, 0.6, 0.1);
 	}
@@ -54,7 +54,7 @@ public final class SleeperBreakout {
 	public static void breakOut(ServerLevel level, BlockPos pos, UndeadVariant variant) {
 		if (variant == UndeadVariant.HUSK) {
 			int cleared = clear(level, pos, SleeperBreakout::isSand);
-			level.playSound(null, pos, SoundEvents.SAND_BREAK, SoundSource.HOSTILE, 1.2F, 0.7F);
+			level.playSound(null, pos, SoundEvents.SAND.breakSound().orElseThrow().value(), SoundSource.HOSTILE, 1.2F, 0.7F);
 			level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, Blocks.SAND.defaultBlockState()), pos.getX() + 0.5, pos.getY() + 1.0,
 					pos.getZ() + 0.5, 60 + 20 * cleared, 1.0, 0.8, 1.0, 0.15);
 			level.sendParticles(ParticleTypes.CLOUD, pos.getX() + 0.5, pos.getY() + 1.2, pos.getZ() + 0.5, 12, 0.8, 0.5, 0.8, 0.02);
@@ -65,7 +65,7 @@ public final class SleeperBreakout {
 			}
 		} else if (variant == UndeadVariant.STRAY) {
 			int cleared = clear(level, pos, SleeperBreakout::isIce);
-			level.playSound(null, pos, SoundEvents.GLASS_BREAK, SoundSource.HOSTILE, 1.0F, 0.8F);
+			level.playSound(null, pos, SoundEvents.GLASS.breakSound().orElseThrow().value(), SoundSource.HOSTILE, 1.0F, 0.8F);
 			level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, Blocks.PACKED_ICE.defaultBlockState()), pos.getX() + 0.5, pos.getY() + 1.0,
 					pos.getZ() + 0.5, 40 + 20 * cleared, 0.8, 0.6, 0.8, 0.2);
 			level.sendParticles(ParticleTypes.SNOWFLAKE, pos.getX() + 0.5, pos.getY() + 1.2, pos.getZ() + 0.5, 20, 0.8, 0.6, 0.8, 0.05);

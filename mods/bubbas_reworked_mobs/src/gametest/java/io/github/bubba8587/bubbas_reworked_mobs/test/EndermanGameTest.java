@@ -1,6 +1,7 @@
 // dte:C1,D2
 package io.github.bubba8587.bubbas_reworked_mobs.test;
 
+import net.minecraft.world.level.levelgen.NoiseColumn;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -27,7 +28,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.monster.Enderman;
-import net.minecraft.world.level.NoiseColumn;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;

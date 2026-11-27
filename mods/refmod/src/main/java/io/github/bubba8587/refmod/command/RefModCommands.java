@@ -4,6 +4,7 @@ package io.github.bubba8587.refmod.command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import io.github.bubba8587.refmod.registry.ModAttachments;
+import net.minecraft.commands.CommandPermissionLevels;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -29,7 +30,7 @@ public final class RefModCommands {
 				.then(Commands.literal("stats")
 						.executes(ctx -> stats(ctx.getSource(), ctx.getSource().getPlayerOrException()))
 						.then(Commands.argument("player", EntityArgument.player())
-								.requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+								.requires(Commands.hasPermission(CommandPermissionLevels.LEVEL_GAMEMASTERS))
 								.executes(ctx -> stats(ctx.getSource(), EntityArgument.getPlayer(ctx, "player"))))));
 	}
 

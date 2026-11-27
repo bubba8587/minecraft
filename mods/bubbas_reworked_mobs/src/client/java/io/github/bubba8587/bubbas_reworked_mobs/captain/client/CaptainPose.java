@@ -24,7 +24,7 @@ public final class CaptainPose {
 	}
 
 	public static void apply(HumanoidModel<?> model, float summoning, float ageInTicks) {
-		float s = Mth.clamp(summoning, 0.0F, 1.0F);
+		float s = Math.clamp(summoning, 0.0F, 1.0F);
 		if (s <= 0.0F) {
 			return;
 		}

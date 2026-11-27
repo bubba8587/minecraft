@@ -1,7 +1,7 @@
 {
   "pack": {
     "description": "Bubba's Extra Recipes: a core set of extra crafting, blasting and smoking recipes",
-    "min_format": 121,
-    "max_format": 121
+    "min_format": 128,
+    "max_format": 128
   }
 }

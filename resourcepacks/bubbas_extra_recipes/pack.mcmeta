@@ -1,7 +1,7 @@
 {
   "pack": {
     "description": "Bubba's Extra Recipes: looks for the recipe pack (Bamboo Paper's green tint)",
-    "min_format": 97,
-    "max_format": 97
+    "min_format": 104,
+    "max_format": 104
   }
 }

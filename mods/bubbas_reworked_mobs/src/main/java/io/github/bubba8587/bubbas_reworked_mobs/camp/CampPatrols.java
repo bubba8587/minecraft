@@ -245,7 +245,7 @@ public final class CampPatrols {
 
 	private static void registerStart(ServerLevel level, Structure structure, ChunkAccess access, ChunkPos chunk) {
 		StructureStart start = access.getStartForStructure(structure);
-		if (start != null && start.isValid() && start.getPieces().getFirst() instanceof CampPiece piece && CampSites.get(level, chunk.pack()) == null) {
+		if (start != null && start.getPieces().getFirst() instanceof CampPiece piece && CampSites.get(level, chunk.pack()) == null) {
 			CampSites.register(level, piece);
 		}
 	}

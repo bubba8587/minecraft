@@ -311,9 +311,9 @@ public class SpunWeb extends Entity {
 			double dw = d.dot(w);
 			double ew = e.dot(w);
 			double denom = len2 * ee - de * de;
-			double t = denom > 1.0E-9 ? Mth.clamp((de * ew - ee * dw) / denom, 0.0, 1.0) : 0.0;
-			double u = ee > 1.0E-9 ? Mth.clamp((ew + t * de) / ee, 0.0, 1.0) : 0.0;
-			t = Mth.clamp((u * de - dw) / len2, 0.0, 1.0);
+			double t = denom > 1.0E-9 ? Math.clamp((de * ew - ee * dw) / denom, 0.0, 1.0) : 0.0;
+			double u = ee > 1.0E-9 ? Math.clamp((ew + t * de) / ee, 0.0, 1.0) : 0.0;
+			t = Math.clamp((u * de - dw) / len2, 0.0, 1.0);
 			Vec3 gap = w.add(d.scale(t)).subtract(e.scale(u));
 			double g2 = gap.lengthSqr();
 			if (g2 <= r2) {
@@ -436,7 +436,7 @@ public class SpunWeb extends Entity {
 			return false;
 		}
 		hits++;
-		level.playSound(null, getX(), getY(), getZ(), SoundEvents.WOOL_BREAK, SoundSource.BLOCKS, 0.5F, 1.8F);
+		level.playSound(null, getX(), getY(), getZ(), SoundEvents.WOOL.breakSound().orElseThrow().value(), SoundSource.BLOCKS, 0.5F, 1.8F);
 		if (hits >= SpiderTuning.WEB_HITS_TO_CUT) {
 			discard();
 		} else {

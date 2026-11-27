@@ -1,11 +1,11 @@
 // dte:C1,B15
 package io.github.bubba8587.bubbas_reworked_mobs.client.grave;
 
+import net.minecraft.client.gui.GuiPipeline;
 import io.github.bubba8587.bubbas_reworked_mobs.BubbasReworkedMobs;
 import io.github.bubba8587.bubbas_reworked_mobs.grave.GraveTextLayout;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractSignEditScreen;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.entity.SignBlockEntity;
 import net.minecraft.world.level.block.entity.SignTextSlot;
@@ -37,7 +37,7 @@ public class GravestoneEditScreen extends AbstractSignEditScreen {
 		for (int[] r : GraveTextLayout.FACE_RECTS) {
 			int w = r[2] - r[0];
 			int h = r[3] - r[1];
-			graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, r[0], 16 - r[3], r[0], 16 - r[3], w, h, 16, 16, FACE_SHADE);
+			graphics.blit(GuiPipeline.TEXTURED, TEXTURE, r[0], 16 - r[3], r[0], 16 - r[3], w, h, 16, 16, FACE_SHADE);
 		}
 	}
 

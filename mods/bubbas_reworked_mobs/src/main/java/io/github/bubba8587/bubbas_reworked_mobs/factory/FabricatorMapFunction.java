@@ -1,6 +1,7 @@
 // dte:C1
 package io.github.bubba8587.bubbas_reworked_mobs.factory;
 
+import net.minecraft.world.level.storage.loot.ValidationContext;
 import java.util.Optional;
 
 import com.mojang.serialization.MapCodec;
@@ -27,6 +28,10 @@ public class FabricatorMapFunction extends LootItemConditionalFunction {
 
 	FabricatorMapFunction(Optional<Holder<LootItemCondition>> condition) {
 		super(condition);
+	}
+
+	@Override
+	protected void validateCustom(ValidationContext context) {
 	}
 
 	@Override

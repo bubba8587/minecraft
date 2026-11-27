@@ -60,13 +60,13 @@ public class DeepseaFortressClientGameTest implements FabricClientGameTest {
 				Structure fortress = s.overworld().registryAccess().lookupOrThrow(Registries.STRUCTURE).getValueOrThrow(DeepseaFortresses.STRUCTURE);
 				for (int y = 62; y > -60; y--) {
 					StructureStart at = s.overworld().structureManager().getStructureAt(centre.atY(y), fortress);
-					if (at.isValid()) {
+					if (at != null) {
 						return at;
 					}
 				}
-				return StructureStart.INVALID_START;
+				return null;
 			});
-			if (!start.isValid()) {
+			if (start == null) {
 				throw new AssertionError("no deep-sea fortress at " + centre);
 			}
 			List<StructurePiece> pieces = start.getPieces();

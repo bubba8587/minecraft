@@ -1,6 +1,7 @@
 // dte:C6
 package io.github.bubba8587.bubbas_totems_artifacts.relic;
 
+import net.minecraft.world.level.biome.NoiseBiomeResolver;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,7 +13,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BiomeTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.biome.BiomeResolver;
 import net.minecraft.world.level.biome.BiomeSource;
 import net.minecraft.world.level.levelgen.RandomState;
 import net.minecraft.world.level.levelgen.XoroshiroRandomSource;
@@ -40,7 +40,7 @@ public final class RelicSites {
 
 		/** Not under an ocean: the biome at sea level there isn't an ocean. */
 		static Land notOcean(BiomeSource source, RandomState randomState) {
-			BiomeResolver resolver = source.createUncachedResolver(randomState);
+			NoiseBiomeResolver resolver = source.createUncachedResolver(randomState);
 			int qy = QuartPos.fromBlock(63);
 			return (x, z) -> !resolver.getNoiseBiome(QuartPos.fromBlock(x), qy, QuartPos.fromBlock(z)).is(BiomeTags.IS_OCEAN);
 		}

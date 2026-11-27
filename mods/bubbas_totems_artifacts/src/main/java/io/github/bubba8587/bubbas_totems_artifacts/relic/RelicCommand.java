@@ -1,13 +1,14 @@
 // dte:C6
 package io.github.bubba8587.bubbas_totems_artifacts.relic;
 
+import net.minecraft.commands.suggestions.SuggestionContext;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import io.github.bubba8587.bubbas_totems_artifacts.BubbasTotemsArtifacts;
+import net.minecraft.commands.CommandPermissionLevels;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -26,18 +27,18 @@ public final class RelicCommand {
 
 	public static void initialize() {
 		CommandRegistrationCallback.EVENT.register((dispatcher, registry, environment) -> dispatcher.register(
-				Commands.literal(BubbasTotemsArtifacts.MOD_ID).requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+				Commands.literal(BubbasTotemsArtifacts.MOD_ID).requires(Commands.hasPermission(CommandPermissionLevels.LEVEL_GAMEMASTERS))
 						.then(Commands.literal("relic_map").then(name().then(Commands.argument("size", IntegerArgumentType.integer(4, 9))
 								.executes(c -> give(c, IntegerArgumentType.getInteger(c, "size"))))))
 						.then(Commands.literal("relic_shred").then(name().then(Commands.argument("size", IntegerArgumentType.integer(4, 9))
 								.then(Commands.argument("count", IntegerArgumentType.integer(1, 9)).executes(c -> giveShred(c))))))
 						.then(Commands.literal("relic_vault").then(Commands.argument("kind", StringArgumentType.word())
-								.suggests((c, b) -> SharedSuggestionProvider.suggest(new String[] { "small", "grand", "crypt" }, b))
+								.suggests((c, b) -> SuggestionContext.suggest(new String[] { "small", "grand", "crypt" }, b))
 								.executes(RelicCommand::vault)))));
 	}
 
 	private static com.mojang.brigadier.builder.RequiredArgumentBuilder<CommandSourceStack, String> name() {
-		return Commands.argument("name", StringArgumentType.word()).suggests((c, b) -> SharedSuggestionProvider.suggest(RelicNames.ALL, b));
+		return Commands.argument("name", StringArgumentType.word()).suggests((c, b) -> SuggestionContext.suggest(RelicNames.ALL, b));
 	}
 
 	private static int give(CommandContext<CommandSourceStack> c, int size) throws com.mojang.brigadier.exceptions.CommandSyntaxException {

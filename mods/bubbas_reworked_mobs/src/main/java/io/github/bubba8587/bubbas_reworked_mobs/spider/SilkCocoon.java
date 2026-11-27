@@ -116,7 +116,7 @@ public class SilkCocoon extends Entity implements Gripper {
 			return null;
 		}
 		poison(victim);
-		level.playSound(null, cocoon.getX(), cocoon.getY(), cocoon.getZ(), SoundEvents.WOOL_PLACE, SoundSource.HOSTILE, 1.0F, 0.6F);
+		level.playSound(null, cocoon.getX(), cocoon.getY(), cocoon.getZ(), SoundEvents.WOOL.placeSound().orElseThrow().value(), SoundSource.HOSTILE, 1.0F, 0.6F);
 		return cocoon;
 	}
 
@@ -192,7 +192,7 @@ public class SilkCocoon extends Entity implements Gripper {
 	public void cut(ServerLevel level, float points) {
 		float left = silk() - points;
 		entityData.set(DATA_SILK, Math.max(0.0F, left));
-		level.playSound(null, getX(), getY() + 0.5, getZ(), SoundEvents.WOOL_BREAK, SoundSource.BLOCKS, 0.8F, 1.4F + random.nextFloat() * 0.3F);
+		level.playSound(null, getX(), getY() + 0.5, getZ(), SoundEvents.WOOL.breakSound().orElseThrow().value(), SoundSource.BLOCKS, 0.8F, 1.4F + random.nextFloat() * 0.3F);
 		if (left <= 0.0F) {
 			release(level);
 		}

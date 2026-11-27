@@ -1,6 +1,8 @@
 // dte:C5
 package io.github.bubba8587.bubbas_reworked_beacons.client;
 
+import net.minecraft.client.core.registries.BuiltInClientRegistries;
+import net.minecraft.core.WritableRegistry;
 import io.github.bubba8587.bubbas_reworked_beacons.menu.ModMenus;
 import io.github.bubba8587.bubbas_reworked_beacons.network.ExtraStatesHandshake;
 import net.fabricmc.api.ClientModInitializer;
@@ -12,6 +14,6 @@ public class BubbasReworkedBeaconsClient implements ClientModInitializer {
 	public void onInitializeClient() {
 		// The upside-down beacon adds a block state
 		ClientConfigurationNetworking.registerGlobalReceiver(ExtraStatesHandshake.TYPE, (payload, context) -> { });
-		MenuScreens.register(ModMenus.BEACON, BeaconItemScreen::new);
+		MenuScreens.register((WritableRegistry<MenuScreens.ScreenConstructor<?, ?>>) BuiltInClientRegistries.MENU_SCREEN, ModMenus.BEACON, BeaconItemScreen::new);
 	}
 }

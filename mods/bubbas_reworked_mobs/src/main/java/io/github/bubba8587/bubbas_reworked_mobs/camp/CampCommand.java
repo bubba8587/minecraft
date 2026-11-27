@@ -145,7 +145,7 @@ public final class CampCommand {
 					ChunkPos chunk = placement.getPotentialStructureChunk(seed, gx * placement.spacing(), gz * placement.spacing());
 					ChunkAccess access = level.getChunk(chunk.x(), chunk.z(), ChunkStatus.STRUCTURE_STARTS, true);
 					StructureStart start = access == null ? null : access.getStartForStructure(structure);
-					if (start != null && start.isValid() && start.getPieces().getFirst() instanceof CampPiece piece && piece.kind() == kind) {
+					if (start != null && start.getPieces().getFirst() instanceof CampPiece piece && piece.kind() == kind) {
 						double dx = piece.centre().getX() - at.getX();
 						double dz = piece.centre().getZ() - at.getZ();
 						if (dx * dx + dz * dz < bestD) {

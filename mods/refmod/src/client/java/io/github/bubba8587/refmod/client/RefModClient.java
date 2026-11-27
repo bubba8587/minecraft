@@ -2,6 +2,7 @@
 package io.github.bubba8587.refmod.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import net.minecraft.client.core.registries.BuiltInClientRegistries;
 import io.github.bubba8587.refmod.RefMod;
 import io.github.bubba8587.refmod.component.TallyCount;
 import io.github.bubba8587.refmod.network.ExtraStatesHandshake;
@@ -10,7 +11,6 @@ import io.github.bubba8587.refmod.registry.ModAttachments;
 import io.github.bubba8587.refmod.registry.ModComponents;
 import io.github.bubba8587.refmod.registry.ModEntities;
 import io.github.bubba8587.refmod.registry.ModItems;
-import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -36,7 +36,7 @@ public class RefModClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
 		// Entity: thrown-item renderer for pebbles.
-		EntityRenderers.register(ModEntities.PEBBLE, ThrownItemRenderer::new);
+		EntityRenderers.register(BuiltInClientRegistries.ENTITY_RENDERER, ModEntities.PEBBLE, ThrownItemRenderer::new);
 
 		// Requirement 18: announce that this client has the extra block states, or the server turns it away.
 		ClientConfigurationNetworking.registerGlobalReceiver(ExtraStatesHandshake.TYPE, (payload, context) -> { });
@@ -62,7 +62,7 @@ public class RefModClient implements ClientModInitializer {
 		HudElementRegistry.attachElementAfter(VanillaHudElements.HOTBAR, RefMod.id("tally_hud"), RefModClient::extractTallyHud);
 	}
 
-	private static void extractTallyHud(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
+	private static void extractTallyHud(GuiGraphicsExtractor graphics) {
 		Minecraft mc = Minecraft.getInstance();
 		if (mc.player == null) {
 			return;

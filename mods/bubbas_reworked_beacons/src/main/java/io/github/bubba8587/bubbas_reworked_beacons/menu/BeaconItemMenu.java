@@ -39,7 +39,7 @@ public class BeaconItemMenu extends AbstractContainerMenu {
 		this.beacon = beacon;
 		this.data = data;
 		this.access = access;
-		this.itemSlot = this.addSlot(new Slot(beacon, 0, 136, 110) {
+		this.itemSlot = this.addSlot(new Slot(beacon, 0, 136, 110, Slot.Section.INPUT) {
 			@Override
 			public boolean mayPlace(ItemStack stack) {
 				return Payloads.find(stack) != null;

@@ -2,6 +2,7 @@
 package io.github.bubba8587.bubbas_reworked_mobs.creeper;
 
 import java.util.ArrayList;
+import net.minecraft.world.level.block.sounds.BlockSoundSet;
 import java.util.List;
 
 import io.github.bubba8587.bubbas_reworked_mobs.BubbasReworkedMobs;
@@ -24,7 +25,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.LevelEvent;
-import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.sounds.BlockSoundSets;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.gamerules.GameRules;
@@ -44,7 +45,7 @@ public final class CreeperPillar {
 
 	/** The block a creeper carries (shown over its head). */
 	public static final AttachmentType<BlockState> CARRIED = AttachmentRegistry.create(BubbasReworkedMobs.id("creeper_carried"),
-			builder -> builder.persistent(BlockState.CODEC).syncWith(ByteBufCodecs.idMapper(Block.BLOCK_STATE_REGISTRY), AttachmentSyncPredicate.all()));
+			builder -> builder.persistent(BlockState.CODEC).syncWith(ByteBufCodecs.idMapper(Block.BLOCK_STATE_REGISTRY::byIdOrThrow, Block.BLOCK_STATE_REGISTRY::getIdOrThrow), AttachmentSyncPredicate.all()));
 
 	/** Job stages. */
 	private enum Stage {
@@ -260,8 +261,8 @@ public final class CreeperPillar {
 
 	private static void place(Level level, BlockPos at, BlockState state) {
 		level.setBlock(at, state, Block.UPDATE_ALL);
-		SoundType sound = state.getSoundType();
-		level.playSound(null, at, sound.getPlaceSound(), SoundSource.BLOCKS, (sound.getVolume() + 1.0F) / 2.0F, sound.getPitch() * 0.8F);
+		BlockSoundSet sound = state.getSounds(level);
+		sound.placeSound().ifPresent(s -> level.playSound(null, at, s, SoundSource.BLOCKS, (sound.volume() + 1.0F) / 2.0F, sound.pitch() * 0.8F));
 		level.gameEvent(GameEvent.BLOCK_PLACE, at, GameEvent.Context.of(state));
 	}
 

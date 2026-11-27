@@ -1,6 +1,7 @@
 // dte:C1,B15,B17
 package io.github.bubba8587.bubbas_reworked_mobs.soulfire;
 
+import net.minecraft.core.dispenser.DispenseBehaviorIds;
 import io.github.bubba8587.bubbas_reworked_mobs.BubbasReworkedMobs;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
@@ -17,7 +18,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
@@ -58,7 +58,7 @@ public final class Soulfire {
 	public static final Item SOUL_BLAZE_POWDER = item("soul_blaze_powder", Item::new,
 			new Item.Properties().brewingFuel(provider("brewing/uses_soul_blaze_powder")));
 	public static final Item SOUL_FIRE_CHARGE = item("soul_fire_charge", SoulFireChargeItem::new,
-			new Item.Properties().useCooldown(SoulfireTuning.THROW_COOLDOWN_SECONDS));
+			new Item.Properties().useCooldown(SoulfireTuning.THROW_COOLDOWN_SECONDS).dispensed(DispenseBehaviorIds.DEFAULT_PROJECTILE));
 
 	/** Set while an entity burns with Soulfire (saved; synced to everyone tracking it, for the blue flames). */
 	public static final AttachmentType<Boolean> SOUL_BURNING = AttachmentRegistry.create(BubbasReworkedMobs.id("soul_burning"),
@@ -86,7 +86,6 @@ public final class Soulfire {
 	}
 
 	public static void initialize() {
-		DispenserBlock.registerProjectileBehavior(SOUL_FIRE_CHARGE);
 		LootTableEvents.MODIFY.register((key, builder, source, registries) -> {
 			if (source == LootTableSource.REPLACED || !SoulfireTuning.BOOK_CHESTS.contains(key.identifier())) {
 				return;

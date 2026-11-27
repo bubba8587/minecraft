@@ -2,6 +2,7 @@
 package io.github.bubba8587.bubbas_reworked_mobs.client;
 
 import io.github.bubba8587.bubbas_reworked_mobs.client.display.LootDisplayRenderer;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import io.github.bubba8587.bubbas_reworked_mobs.client.undead.SleeperRenderer;
 import io.github.bubba8587.bubbas_reworked_mobs.client.undead.WokenSkeletonRenderer;
 import io.github.bubba8587.bubbas_reworked_mobs.client.undead.WokenZombieRenderer;
@@ -24,30 +25,30 @@ public class BubbasReworkedMobsClient implements ClientModInitializer {
 		io.github.bubba8587.bubbas_reworked_mobs.client.creeper.CreeperCarriedBlockLayer.initialize();
 
 		// Undead: sleepers draw through one block entity renderer; woken mobs use vanilla renderers with our walk animations (UndeadGaits).
-		BlockEntityRenderers.register(ModBlockEntities.SLEEPER, SleeperRenderer::new);
-		EntityRenderers.register((EntityType<? extends Skeleton>) ModEntities.woken(UndeadVariant.SKELETON), WokenSkeletonRenderer::new);
-		EntityRenderers.register((EntityType<? extends Zombie>) ModEntities.woken(UndeadVariant.ZOMBIE), WokenZombieRenderer::new);
+		BlockEntityRenderers.register((WritableRegistry<BlockEntityRendererProvider<?, ?>>) BuiltInClientRegistries.BLOCK_ENTITY_RENDERER, ModBlockEntities.SLEEPER, SleeperRenderer::new);
+		EntityRenderers.register(BuiltInClientRegistries.ENTITY_RENDERER, (EntityType<? extends Skeleton>) ModEntities.woken(UndeadVariant.SKELETON), WokenSkeletonRenderer::new);
+		EntityRenderers.register(BuiltInClientRegistries.ENTITY_RENDERER, (EntityType<? extends Zombie>) ModEntities.woken(UndeadVariant.ZOMBIE), WokenZombieRenderer::new);
 		// Husks and strays: the same renderers with their own textures (and the stray's ragged clothes).
-		EntityRenderers.register((EntityType<? extends Zombie>) ModEntities.woken(UndeadVariant.HUSK),
+		EntityRenderers.register(BuiltInClientRegistries.ENTITY_RENDERER, (EntityType<? extends Zombie>) ModEntities.woken(UndeadVariant.HUSK),
 				c -> new WokenZombieRenderer(c, net.minecraft.resources.Identifier.withDefaultNamespace("textures/entity/zombie/husk.png")));
-		EntityRenderers.register((EntityType<? extends Skeleton>) ModEntities.woken(UndeadVariant.STRAY), WokenSkeletonRenderer::stray);
-		EntityRenderers.register((EntityType<? extends net.minecraft.world.entity.monster.zombie.Drowned>) ModEntities.woken(UndeadVariant.DROWNED),
+		EntityRenderers.register(BuiltInClientRegistries.ENTITY_RENDERER, (EntityType<? extends Skeleton>) ModEntities.woken(UndeadVariant.STRAY), WokenSkeletonRenderer::stray);
+		EntityRenderers.register(BuiltInClientRegistries.ENTITY_RENDERER, (EntityType<? extends net.minecraft.world.entity.monster.zombie.Drowned>) ModEntities.woken(UndeadVariant.DROWNED),
 				net.minecraft.client.renderer.entity.DrownedRenderer::new);
 
 		// Loot on display: the item's own model, posed per placement.
-		BlockEntityRenderers.register(ModBlockEntities.LOOT_DISPLAY, LootDisplayRenderer::new);
+		BlockEntityRenderers.register((WritableRegistry<BlockEntityRendererProvider<?, ?>>) BuiltInClientRegistries.BLOCK_ENTITY_RENDERER, ModBlockEntities.LOOT_DISPLAY, LootDisplayRenderer::new);
 		// Gravestones: vanilla's sign text renderer, placed on the stone's face (the stone is a block model).
-		BlockEntityRenderers.register(ModBlockEntities.GRAVESTONE,
+		BlockEntityRenderers.register((WritableRegistry<BlockEntityRendererProvider<?, ?>>) BuiltInClientRegistries.BLOCK_ENTITY_RENDERER, ModBlockEntities.GRAVESTONE,
 				(net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider) io.github.bubba8587.bubbas_reworked_mobs.client.grave.GravestoneRenderer::new);
-		EntityRenderers.register(io.github.bubba8587.bubbas_reworked_mobs.spider.Spiders.NEST_SPIDER,
+		EntityRenderers.register(BuiltInClientRegistries.ENTITY_RENDERER, io.github.bubba8587.bubbas_reworked_mobs.spider.Spiders.NEST_SPIDER,
 				io.github.bubba8587.bubbas_reworked_mobs.client.spider.NestSpiderRenderer::new);
-		EntityRenderers.register(io.github.bubba8587.bubbas_reworked_mobs.spider.Spiders.GIANT_SPIDER,
+		EntityRenderers.register(BuiltInClientRegistries.ENTITY_RENDERER, io.github.bubba8587.bubbas_reworked_mobs.spider.Spiders.GIANT_SPIDER,
 				io.github.bubba8587.bubbas_reworked_mobs.client.spider.GiantSpiderRenderer::new);
-		EntityRenderers.register(io.github.bubba8587.bubbas_reworked_mobs.spider.Spiders.SPUN_WEB,
+		EntityRenderers.register(BuiltInClientRegistries.ENTITY_RENDERER, io.github.bubba8587.bubbas_reworked_mobs.spider.Spiders.SPUN_WEB,
 				io.github.bubba8587.bubbas_reworked_mobs.client.spider.SpunWebRenderer::new);
-		EntityRenderers.register(io.github.bubba8587.bubbas_reworked_mobs.spider.Spiders.SILK_COCOON,
+		EntityRenderers.register(BuiltInClientRegistries.ENTITY_RENDERER, io.github.bubba8587.bubbas_reworked_mobs.spider.Spiders.SILK_COCOON,
 				io.github.bubba8587.bubbas_reworked_mobs.client.spider.SilkCocoonRenderer::new);
-		EntityRenderers.register(io.github.bubba8587.bubbas_reworked_mobs.spider.Spiders.SPIDER_NEST, net.minecraft.client.renderer.entity.NoopRenderer::new);
+		EntityRenderers.register(BuiltInClientRegistries.ENTITY_RENDERER, io.github.bubba8587.bubbas_reworked_mobs.spider.Spiders.SPIDER_NEST, net.minecraft.client.renderer.entity.NoopRenderer::new);
 		io.github.bubba8587.bubbas_reworked_mobs.captain.client.CaptainClient.initialize();
 		io.github.bubba8587.bubbas_reworked_mobs.bosspiglin.client.BossPiglinClient.initialize();
 	}

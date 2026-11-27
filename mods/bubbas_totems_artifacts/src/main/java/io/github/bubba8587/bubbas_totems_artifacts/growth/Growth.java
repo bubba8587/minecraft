@@ -93,7 +93,7 @@ public final class Growth {
 				if (seed.getItem().isEmpty()) {
 					seed.discard();
 				}
-				level.playSound(null, pos, plant.getSoundType().getPlaceSound(), net.minecraft.sounds.SoundSource.BLOCKS, 1.0F, 1.0F);
+				plant.getSounds(level).placeSound().ifPresent(s -> level.playSound(null, pos, s, net.minecraft.sounds.SoundSource.BLOCKS, 1.0F, 1.0F));
 				level.sendParticles(ParticleTypes.HAPPY_VILLAGER, pos.getX() + 0.5, pos.getY() + 0.3, pos.getZ() + 0.5, 6, 0.3, 0.2, 0.3, 0.0);
 				return true;
 			}

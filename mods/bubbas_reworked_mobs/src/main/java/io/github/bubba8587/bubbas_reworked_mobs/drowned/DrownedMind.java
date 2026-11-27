@@ -115,12 +115,12 @@ public final class DrownedMind {
 
 	/** Dragging: how dangerous its hits are, from the grip: 0 at GRIP_START or less, 1 at GRIP_FULL. */
 	public float escalation() {
-		return Mth.clamp((grip - DrownedTuning.GRIP_START) / (DrownedTuning.GRIP_FULL - DrownedTuning.GRIP_START), 0.0F, 1.0F);
+		return Math.clamp((grip - DrownedTuning.GRIP_START) / (DrownedTuning.GRIP_FULL - DrownedTuning.GRIP_START), 0.0F, 1.0F);
 	}
 
 	/** For tests and the client test: set the grip meter (dragging only). */
 	public void setGrip(float value) {
-		grip = Mth.clamp(value, 0.0F, DrownedTuning.GRIP_FULL);
+		grip = Math.clamp(value, 0.0F, DrownedTuning.GRIP_FULL);
 	}
 
 	/** Dragging: the extra drowned holding on now (HELP, not still swimming over). */
@@ -320,9 +320,9 @@ public final class DrownedMind {
 			double t = time * 0.02 + drowned.getId();
 			c = c.add(Math.sin(t) * DrownedTuning.SWAY, 0.0, Math.cos(t * 0.73) * DrownedTuning.SWAY);
 		}
-		double vx = Mth.clamp((c.x - drowned.getX()) * 0.2, -0.05, 0.05);
-		double vz = Mth.clamp((c.z - drowned.getZ()) * 0.2, -0.05, 0.05);
-		double vy = Mth.clamp((targetFeet - drowned.getY()) * 0.25, -DrownedTuning.BOB_SPEED, DrownedTuning.BOB_SPEED);
+		double vx = Math.clamp((c.x - drowned.getX()) * 0.2, -0.05, 0.05);
+		double vz = Math.clamp((c.z - drowned.getZ()) * 0.2, -0.05, 0.05);
+		double vy = Math.clamp((targetFeet - drowned.getY()) * 0.25, -DrownedTuning.BOB_SPEED, DrownedTuning.BOB_SPEED);
 		drowned.setDeltaMovement(vx, vy, vz);
 		face(drowned, s.shoreYaw());
 		Player nearest = level.getNearestPlayer(drowned, DrownedTuning.SENSE_RANGE);
@@ -660,8 +660,8 @@ public final class DrownedMind {
 		}
 		// Holding on: a spring onto its grip point, facing the victim's feet.
 		double k = 0.5;
-		drowned.setDeltaMovement(Mth.clamp(to.x * k, -0.3, 0.3), drowned.isInWater() ? Mth.clamp(to.y * k, -0.3, 0.3) : drowned.getDeltaMovement().y,
-				Mth.clamp(to.z * k, -0.3, 0.3));
+		drowned.setDeltaMovement(Math.clamp(to.x * k, -0.3, 0.3), drowned.isInWater() ? Math.clamp(to.y * k, -0.3, 0.3) : drowned.getDeltaMovement().y,
+				Math.clamp(to.z * k, -0.3, 0.3));
 		double dx = held.getX() - drowned.getX();
 		double dz = held.getZ() - drowned.getZ();
 		face(drowned, (float) (Mth.atan2(dz, dx) * Mth.RAD_TO_DEG) - 90.0F);

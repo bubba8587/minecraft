@@ -1,7 +1,9 @@
 // dte:C1
 package io.github.bubba8587.bubbas_reworked_mobs.undead;
 
+import net.minecraft.resources.ResourceKey;
 import java.util.List;
+import net.minecraft.world.level.block.sounds.BlockSoundSet;
 import java.util.function.Supplier;
 
 import io.github.bubba8587.bubbas_reworked_mobs.undead.entity.WokenDrowned;
@@ -15,7 +17,7 @@ import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.sounds.BlockSoundSets;
 import net.minecraft.world.level.material.MapColor;
 
 /**
@@ -24,39 +26,39 @@ import net.minecraft.world.level.material.MapColor;
  * table ({@code SleeperRenderer}) and the lang/texture lists in datagen.
  */
 public enum UndeadVariant {
-	SKELETON("skeleton", List.of(SleeperPose.SITTING, SleeperPose.LYING, SleeperPose.PRONE), SoundType.BONE_BLOCK, MapColor.QUARTZ, Items.BONE,
+	SKELETON("skeleton", List.of(SleeperPose.SITTING, SleeperPose.LYING, SleeperPose.PRONE), BlockSoundSets.BONE_BLOCK, MapColor.QUARTZ, Items.BONE,
 			() -> EntityType.Builder.of(WokenSkeleton::new, MobCategory.MONSTER).sized(0.6F, 1.99F).eyeHeight(1.74F).ridingOffset(-0.7F)
 					.clientTrackingRange(8).notInPeaceful(),
 			UndeadTuning::wokenSkeletonAttributes),
-	ZOMBIE("zombie", List.of(SleeperPose.SITTING, SleeperPose.LYING, SleeperPose.PRONE), SoundType.MUD, MapColor.COLOR_GREEN, Items.ROTTEN_FLESH,
+	ZOMBIE("zombie", List.of(SleeperPose.SITTING, SleeperPose.LYING, SleeperPose.PRONE), BlockSoundSets.MUD, MapColor.COLOR_GREEN, Items.ROTTEN_FLESH,
 			() -> EntityType.Builder.<WokenZombie>of(WokenZombie::new, MobCategory.MONSTER).sized(0.6F, 1.95F).eyeHeight(1.74F)
 					.passengerAttachments(2.0125F).ridingOffset(-0.7F).clientTrackingRange(8).notInPeaceful(),
 			UndeadTuning::wokenZombieAttributes),
 	/** Deserts: lies buried in sand and bursts out in a puff of it that briefly blinds. */
-	HUSK("husk", List.of(SleeperPose.LYING, SleeperPose.SITTING, SleeperPose.PRONE), SoundType.SAND, MapColor.SAND, Items.ROTTEN_FLESH,
+	HUSK("husk", List.of(SleeperPose.LYING, SleeperPose.SITTING, SleeperPose.PRONE), BlockSoundSets.SAND, MapColor.SAND, Items.ROTTEN_FLESH,
 			() -> EntityType.Builder.<WokenHusk>of(WokenHusk::new, MobCategory.MONSTER).sized(0.6F, 1.95F).eyeHeight(1.74F)
 					.passengerAttachments(2.075F).ridingOffset(-0.7F).clientTrackingRange(8).notInPeaceful(),
 			UndeadTuning::wokenZombieAttributes),
 	/** Shipwrecks: the ship's crew. */
-	DROWNED("drowned", List.of(SleeperPose.LYING, SleeperPose.SITTING, SleeperPose.PRONE), SoundType.WET_GRASS, MapColor.WATER, Items.ROTTEN_FLESH,
+	DROWNED("drowned", List.of(SleeperPose.LYING, SleeperPose.SITTING, SleeperPose.PRONE), BlockSoundSets.WET_GRASS, MapColor.WATER, Items.ROTTEN_FLESH,
 			() -> EntityType.Builder.<WokenDrowned>of(WokenDrowned::new, MobCategory.MONSTER).sized(0.6F, 1.95F).eyeHeight(1.74F)
 					.passengerAttachments(2.075F).ridingOffset(-0.7F).clientTrackingRange(8).notInPeaceful(),
 			UndeadTuning::wokenZombieAttributes),
 	/** Snow: lies frozen in ice or packed snow that cracks as a warning before it breaks free. */
-	STRAY("stray", List.of(SleeperPose.LYING, SleeperPose.SITTING, SleeperPose.PRONE), SoundType.BONE_BLOCK, MapColor.SNOW, Items.BONE,
+	STRAY("stray", List.of(SleeperPose.LYING, SleeperPose.SITTING, SleeperPose.PRONE), BlockSoundSets.BONE_BLOCK, MapColor.SNOW, Items.BONE,
 			() -> EntityType.Builder.of(WokenStray::new, MobCategory.MONSTER).sized(0.6F, 1.99F).eyeHeight(1.74F).ridingOffset(-0.7F)
 					.clientTrackingRange(8).notInPeaceful(),
 			UndeadTuning::wokenSkeletonAttributes);
 
 	private final String name;
 	private final List<SleeperPose> poses;
-	private final SoundType sound;
+	private final ResourceKey<BlockSoundSet> sound;
 	private final MapColor mapColor;
 	private final Item remains;
 	private final Supplier<EntityType.Builder<? extends Monster>> wokenType;
 	private final Supplier<AttributeSupplier.Builder> attributes;
 
-	UndeadVariant(String name, List<SleeperPose> poses, SoundType sound, MapColor mapColor, Item remains,
+	UndeadVariant(String name, List<SleeperPose> poses, ResourceKey<BlockSoundSet> sound, MapColor mapColor, Item remains,
 			Supplier<EntityType.Builder<? extends Monster>> wokenType, Supplier<AttributeSupplier.Builder> attributes) {
 		this.name = name;
 		this.poses = poses;
@@ -96,7 +98,7 @@ public enum UndeadVariant {
 		return this == SKELETON || this == STRAY;
 	}
 
-	public SoundType sound() {
+	public ResourceKey<BlockSoundSet> sound() {
 		return sound;
 	}
 

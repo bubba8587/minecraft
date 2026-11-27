@@ -113,7 +113,7 @@ public class NestSpider extends Spider implements Gripper {
 
 	/** For tests: set the grip while it holds. */
 	public void setGrip(float value) {
-		grip = Mth.clamp(value, 0.0F, SpiderTuning.GRIP_FULL);
+		grip = Math.clamp(value, 0.0F, SpiderTuning.GRIP_FULL);
 	}
 
 	/** Puts it to sleep hanging from the ceiling at {@code anchor} (the ceiling block's underside). */
@@ -268,7 +268,7 @@ public class NestSpider extends Spider implements Gripper {
 			return;
 		}
 		grip = Math.min(SpiderTuning.GRIP_FULL, grip + SpiderTuning.GRIP_RISE_PER_TICK);
-		float tight = Mth.clamp((grip - SpiderTuning.GRIP_START) / (SpiderTuning.GRIP_FULL - SpiderTuning.GRIP_START), 0.0F, 1.0F);
+		float tight = Math.clamp((grip - SpiderTuning.GRIP_START) / (SpiderTuning.GRIP_FULL - SpiderTuning.GRIP_START), 0.0F, 1.0F);
 		if (phase() == Phase.REELING) {
 			Vec3 anchor = anchor();
 			double top = anchor.y - getBbHeight();

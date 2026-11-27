@@ -1,6 +1,7 @@
 // dte:C5
 package io.github.bubba8587.bubbas_reworked_beacons.client;
 
+import net.minecraft.client.gui.GuiPipeline;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,7 +13,6 @@ import io.github.bubba8587.bubbas_reworked_beacons.menu.BeaconItemMenu;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -37,18 +37,18 @@ public class BeaconItemScreen extends AbstractContainerScreen<BeaconItemMenu> {
 	}
 
 	@Override
-	public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
-		super.extractBackground(graphics, mouseX, mouseY, a);
+	public void extractBackground(GuiGraphicsExtractor graphics) {
+		super.extractBackground(graphics);
 		int xo = this.leftPos;
 		int yo = this.topPos;
-		graphics.blit(RenderPipelines.GUI_TEXTURED, BEACON_LOCATION, xo, yo, 0.0F, 0.0F, this.imageWidth, this.imageHeight, 256, 256);
+		graphics.blit(GuiPipeline.TEXTURED, BEACON_LOCATION, xo, yo, 0.0F, 0.0F, this.imageWidth, this.imageHeight, 256, 256);
 		graphics.fill(xo + PANEL_LEFT, yo + 7, xo + PANEL_RIGHT, yo + 100, PANEL);
 		// Vanilla's payment row is gone
 		graphics.fill(xo + 12, yo + 103, xo + 132, yo + 132, GREY);
 	}
 
 	@Override
-	protected void extractLabels(GuiGraphicsExtractor graphics, int xm, int ym) {
+	protected void extractLabels(GuiGraphicsExtractor graphics) {
 		int y = 12;
 		graphics.centeredText(this.font, this.title, this.imageWidth / 2, y, TEXT);
 		y += 14;

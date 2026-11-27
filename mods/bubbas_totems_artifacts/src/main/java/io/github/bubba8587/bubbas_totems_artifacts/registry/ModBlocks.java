@@ -8,7 +8,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.sounds.BlockSoundSets;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
@@ -20,7 +20,7 @@ import net.minecraft.world.level.material.PushReaction;
 public final class ModBlocks {
 	private static final ResourceKey<Block> STATUE_KEY = ResourceKey.create(Registries.BLOCK, BubbasTotemsArtifacts.id("totem_statue"));
 	public static final TotemStatueBlock TOTEM_STATUE = Registry.register(BuiltInRegistries.BLOCK, STATUE_KEY,
-			new TotemStatueBlock(BlockBehaviour.Properties.of().setId(STATUE_KEY).mapColor(MapColor.STONE).sound(SoundType.STONE)
+			new TotemStatueBlock(BlockBehaviour.Properties.of().setId(STATUE_KEY).mapColor(MapColor.STONE).sound(BlockSoundSets.STONE)
 					.strength(1.0F).noOcclusion().pushReaction(PushReaction.POPPED)));
 
 	private ModBlocks() {

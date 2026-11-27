@@ -143,8 +143,8 @@ public final class SoulBurning {
 		if (entity.tickCount % SoulfireTuning.SOUND_INTERVAL == 0 && entity.getRandom().nextInt(SoulfireTuning.SOUND_ONE_IN) == 0 && !entity.isSilent()) {
 			SoundEvent sound = switch (entity.getRandom().nextInt(3)) {
 				case 0 -> SoundEvents.SOUL_ESCAPE.value();
-				case 1 -> SoundEvents.SOUL_SAND_STEP;
-				default -> SoundEvents.SOUL_SOIL_HIT;
+				case 1 -> SoundEvents.SOUL_SAND.stepSound().orElseThrow().value();
+				default -> SoundEvents.SOUL_SOIL.hitSound().orElseThrow().value();
 			};
 			level.playSound(null, entity.getX(), entity.getY(), entity.getZ(), sound, entity.getSoundSource(), 0.6F,
 					0.8F + entity.getRandom().nextFloat() * 0.4F);

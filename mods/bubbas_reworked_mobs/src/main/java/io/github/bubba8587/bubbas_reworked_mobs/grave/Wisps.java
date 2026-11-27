@@ -146,7 +146,7 @@ public final class Wisps {
 					}
 					ChunkAccess start = level.getChunk(ChunkPos.getX(ref), ChunkPos.getZ(ref), ChunkStatus.STRUCTURE_STARTS, false);
 					StructureStart s = start == null ? null : start.getStartForStructure(yard);
-					if (s != null && s.isValid() && !s.getPieces().isEmpty() && s.getPieces().getFirst() instanceof CryptYardPiece piece) {
+					if (s != null && !s.getPieces().isEmpty() && s.getPieces().getFirst() instanceof CryptYardPiece piece) {
 						known.put(ref, new Yard(ref, piece.getBoundingBox(), piece.wispTarget()));
 					}
 				}

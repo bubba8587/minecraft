@@ -122,7 +122,7 @@ public class GemMobEffect extends MobEffect {
 		Balance.EffectData e = Balance.get().effect(this.key);
 		switch (this.key) {
 			case "regeneration" -> {
-				if (!mob.is(EntityTypeTags.IGNORES_POISON_AND_REGEN) && mob.getHealth() < mob.getMaxHealth()) {
+				if (!mob.is(EntityTypeTags.IMMUNE_TO_REGENERATION) && mob.getHealth() < mob.getMaxHealth()) {
 					mob.heal((float) (e.hitUnit() * p / 20.0));
 				}
 			}
@@ -133,7 +133,7 @@ public class GemMobEffect extends MobEffect {
 			}
 			case "poison" -> {
 				float dmg = (float) Math.min(e.hitUnit() * p * DAMAGE_INTERVAL / 20.0, mob.getHealth() - 1.0F);
-				if (dmg > 0.0F && !mob.is(EntityTypeTags.IGNORES_POISON_AND_REGEN)) {
+				if (dmg > 0.0F && !mob.is(EntityTypeTags.IMMUNE_TO_POISON)) {
 					mob.hurtServer(level, mob.damageSources().magic(), dmg);
 				}
 			}

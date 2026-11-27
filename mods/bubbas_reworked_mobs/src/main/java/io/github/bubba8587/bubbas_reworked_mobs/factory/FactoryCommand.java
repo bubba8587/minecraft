@@ -1,6 +1,7 @@
 // dte:C1
 package io.github.bubba8587.bubbas_reworked_mobs.factory;
 
+import net.minecraft.commands.suggestions.SuggestionContext;
 import java.util.Arrays;
 
 import com.mojang.brigadier.arguments.IntegerArgumentType;
@@ -11,7 +12,6 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -47,7 +47,7 @@ public final class FactoryCommand {
 
 	private static java.util.concurrent.CompletableFuture<com.mojang.brigadier.suggestion.Suggestions> mobs(
 			CommandContext<CommandSourceStack> c, com.mojang.brigadier.suggestion.SuggestionsBuilder b) {
-		return SharedSuggestionProvider.suggest(Arrays.stream(FactoryDesign.Mob.values()).map(FactoryDesign.Mob::id), b);
+		return SuggestionContext.suggest(Arrays.stream(FactoryDesign.Mob.values()).map(FactoryDesign.Mob::id), b);
 	}
 
 	private static int locate(CommandContext<CommandSourceStack> c) {

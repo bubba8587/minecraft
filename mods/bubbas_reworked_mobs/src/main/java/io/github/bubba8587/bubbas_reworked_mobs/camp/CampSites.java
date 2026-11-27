@@ -268,7 +268,7 @@ public final class CampSites {
 				continue;
 			}
 			StructureStart start = startChunk.getStartForStructure(structure);
-			if (start == null || !start.isValid()) {
+			if (start == null) {
 				continue;
 			}
 			if (isOutpost) {

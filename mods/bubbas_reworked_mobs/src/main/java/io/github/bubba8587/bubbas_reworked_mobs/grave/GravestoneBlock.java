@@ -7,7 +7,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.sounds.BlockSoundSets;
 import net.minecraft.world.level.block.StandingSignBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
@@ -35,7 +35,7 @@ public class GravestoneBlock extends StandingSignBlock {
 	 * build sign sprite materials for it, which a gravestone doesn't use. Only its
 	 * sounds are read.
 	 */
-	public static final WoodType STONE = new WoodType("bubbas_gravestone", BlockSetType.STONE, SoundType.STONE, SoundType.STONE,
+	public static final WoodType STONE = new WoodType("bubbas_gravestone", BlockSetType.STONE, BlockSoundSets.STONE, BlockSoundSets.STONE,
 			SoundEvents.FENCE_GATE_CLOSE, SoundEvents.FENCE_GATE_OPEN);
 
 	/** The stone facing north/south (rotation 0 or 8): 12 wide, 4 deep, 14 tall, on a 14 x 6 plinth. */

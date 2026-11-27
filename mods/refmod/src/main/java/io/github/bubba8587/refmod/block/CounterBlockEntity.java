@@ -2,6 +2,7 @@
 package io.github.bubba8587.refmod.block;
 
 import io.github.bubba8587.refmod.registry.ModBlockEntities;
+import net.minecraft.core.HolderGetter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -56,7 +57,7 @@ public class CounterBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+	public CompoundTag getUpdateTag(HolderGetter.Provider registries) {
 		return saveCustomOnly(registries);
 	}
 }

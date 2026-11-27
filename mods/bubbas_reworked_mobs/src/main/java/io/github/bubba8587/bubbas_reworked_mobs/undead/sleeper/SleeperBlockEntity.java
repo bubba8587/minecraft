@@ -2,6 +2,7 @@
 package io.github.bubba8587.bubbas_reworked_mobs.undead.sleeper;
 
 import java.util.List;
+import net.minecraft.core.HolderGetter;
 import java.util.UUID;
 
 import io.github.bubba8587.bubbas_reworked_mobs.registry.ModBlockEntities;
@@ -259,7 +260,7 @@ public class SleeperBlockEntity extends BlockEntity implements GameEventListener
 
 	/** The client needs the gear to draw it. */
 	@Override
-	public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+	public CompoundTag getUpdateTag(HolderGetter.Provider registries) {
 		return saveCustomOnly(registries);
 	}
 }

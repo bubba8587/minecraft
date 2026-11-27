@@ -13,16 +13,16 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.sounds.BlockSoundSets;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
 
 public final class ModBlocks {
 	public static final Block SIGNAL_LAMP = register("signal_lamp", SignalLampBlock::new,
-			BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_YELLOW).strength(0.3F).sound(SoundType.GLASS)
+			BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_YELLOW).strength(0.3F).sound(BlockSoundSets.GLASS)
 					.lightLevel(state -> state.getValue(SignalLampBlock.LIT) ? 15 : 0));
 	public static final Block COUNTER_BLOCK = register("counter_block", CounterBlock::new,
-			BlockBehaviour.Properties.of().mapColor(MapColor.STONE).strength(1.5F, 6.0F).sound(SoundType.STONE));
+			BlockBehaviour.Properties.of().mapColor(MapColor.STONE).strength(1.5F, 6.0F).sound(BlockSoundSets.STONE));
 
 	private ModBlocks() {
 	}

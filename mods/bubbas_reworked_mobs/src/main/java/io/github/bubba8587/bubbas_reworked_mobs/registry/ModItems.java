@@ -65,11 +65,11 @@ public final class ModItems {
 	public static final Item NETHER_STAR_SHARD = register("nether_star_shard", Item::new,
 			new Item.Properties().rarity(net.minecraft.world.item.Rarity.UNCOMMON).fireResistant());
 	public static final Item WITHER_CAPTAIN_SPAWN_EGG = register("wither_captain_spawn_egg", net.minecraft.world.item.SpawnEggItem::new,
-			new Item.Properties().spawnEgg(io.github.bubba8587.bubbas_reworked_mobs.captain.Captains.WITHER_CAPTAIN));
+			new Item.Properties().spawns(io.github.bubba8587.bubbas_reworked_mobs.captain.Captains.WITHER_CAPTAIN).dispensed(net.minecraft.core.dispenser.DispenseBehaviorIds.SPAWN_EGG));
 	public static final Item SOULFIRE_BLAZE_SPAWN_EGG = register("soulfire_blaze_spawn_egg", net.minecraft.world.item.SpawnEggItem::new,
-			new Item.Properties().spawnEgg(io.github.bubba8587.bubbas_reworked_mobs.captain.Captains.SOULFIRE_BLAZE));
+			new Item.Properties().spawns(io.github.bubba8587.bubbas_reworked_mobs.captain.Captains.SOULFIRE_BLAZE).dispensed(net.minecraft.core.dispenser.DispenseBehaviorIds.SPAWN_EGG));
 	public static final Item BOSS_PIGLIN_SPAWN_EGG = register("boss_piglin_spawn_egg", net.minecraft.world.item.SpawnEggItem::new,
-			new Item.Properties().spawnEgg(io.github.bubba8587.bubbas_reworked_mobs.bosspiglin.BossPiglins.BOSS_PIGLIN));
+			new Item.Properties().spawns(io.github.bubba8587.bubbas_reworked_mobs.bosspiglin.BossPiglins.BOSS_PIGLIN).dispensed(net.minecraft.core.dispenser.DispenseBehaviorIds.SPAWN_EGG));
 
 	private static Item register(String name, java.util.function.Function<Item.Properties, Item> factory, Item.Properties properties) {
 		ResourceKey<Item> key = ResourceKey.create(Registries.ITEM, BubbasReworkedMobs.id(name));

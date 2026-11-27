@@ -2,6 +2,7 @@
 package io.github.bubba8587.bubbas_reworked_mobs.captain.client;
 
 import io.github.bubba8587.bubbas_reworked_mobs.captain.Captains;
+import net.minecraft.client.core.registries.BuiltInClientRegistries;
 import io.github.bubba8587.bubbas_reworked_mobs.captain.WitherCaptain;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -21,9 +22,9 @@ public final class CaptainClient {
 
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	public static void initialize() {
-		EntityRenderers.register(Captains.WITHER_CAPTAIN, CaptainRenderer::new);
-		EntityRenderers.register(Captains.SOULFIRE_BLAZE, SoulfireBlazeRenderer::new);
-		EntityRenderers.register(Captains.SOULFIRE_CHARGE, context -> new ThrownItemRenderer<>(context, 0.75F, true));
+		EntityRenderers.register(BuiltInClientRegistries.ENTITY_RENDERER, Captains.WITHER_CAPTAIN, CaptainRenderer::new);
+		EntityRenderers.register(BuiltInClientRegistries.ENTITY_RENDERER, Captains.SOULFIRE_BLAZE, SoulfireBlazeRenderer::new);
+		EntityRenderers.register(BuiltInClientRegistries.ENTITY_RENDERER, Captains.SOULFIRE_CHARGE, context -> new ThrownItemRenderer<>(context, 0.75F, true));
 		ModelLayerRegistry.registerModelLayer(CaptainsHelmHornsLayer.LAYER, CaptainsHelmHorns::createLayer);
 		// horns on every humanoid renderer (players, armour stands, zombies, skeletons, the captain)
 		LivingEntityRenderLayerRegistrationCallback.EVENT.register((type, renderer, helper, context) -> {

@@ -1,6 +1,7 @@
 // dte:C1
 package io.github.bubba8587.bubbas_reworked_mobs.camp;
 
+import net.minecraft.world.level.levelgen.NoiseColumn;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -9,7 +10,6 @@ import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.QuartPos;
 import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.NoiseColumn;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.WorldgenRandom;
 import net.minecraft.world.level.levelgen.structure.Structure;
@@ -60,7 +60,7 @@ public class NetherOutpostStructure extends Structure {
 			return Optional.empty();
 		}
 		int y0 = floors.get(random.nextInt(floors.size()));
-		if (!context.validBiome().test(context.biomeResolver().getNoiseBiome(QuartPos.fromBlock(cx), QuartPos.fromBlock(y0 + 1), QuartPos.fromBlock(cz)))) {
+		if (!context.validBiome().test(context.noiseBiomeResolver().getNoiseBiome(QuartPos.fromBlock(cx), QuartPos.fromBlock(y0 + 1), QuartPos.fromBlock(cz)))) {
 			return Optional.empty();
 		}
 		int r = size.radius + EDGE;

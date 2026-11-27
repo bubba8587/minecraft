@@ -1,7 +1,7 @@
 {
   "pack": {
     "description": "Builds Bubba Test World (tools/build-testworld.py, specs/testworld.md). Not for players.",
-    "min_format": 121,
-    "max_format": 121
+    "min_format": 128,
+    "max_format": 128
   }
 }

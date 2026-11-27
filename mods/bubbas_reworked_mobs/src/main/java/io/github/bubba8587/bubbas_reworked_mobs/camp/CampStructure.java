@@ -47,7 +47,7 @@ public class CampStructure extends Structure {
 		for (int i = 0; i < at.length; i++) {
 			int surface = generator.getFirstOccupiedHeight(at[i][0], at[i][1], Heightmap.Types.WORLD_SURFACE_WG, context.heightAccessor(), context.randomState());
 			int floor = generator.getFirstOccupiedHeight(at[i][0], at[i][1], Heightmap.Types.OCEAN_FLOOR_WG, context.heightAccessor(), context.randomState());
-			if (!context.validBiome().test(context.biomeResolver().getNoiseBiome(QuartPos.fromBlock(at[i][0]), QuartPos.fromBlock(surface),
+			if (!context.validBiome().test(context.noiseBiomeResolver().getNoiseBiome(QuartPos.fromBlock(at[i][0]), QuartPos.fromBlock(surface),
 					QuartPos.fromBlock(at[i][1])))) {
 				return Optional.empty();
 			}
@@ -63,7 +63,7 @@ public class CampStructure extends Structure {
 				centreY = surface - 1;
 			}
 		}
-		var biome = context.biomeResolver().getNoiseBiome(QuartPos.fromBlock(cx), QuartPos.fromBlock(centreY), QuartPos.fromBlock(cz));
+		var biome = context.noiseBiomeResolver().getNoiseBiome(QuartPos.fromBlock(cx), QuartPos.fromBlock(centreY), QuartPos.fromBlock(cz));
 		CampKind kind = CampKind.forBiome(biome, random);
 		if (high - low > MAX_SLOPE || centreY < generator.getSeaLevel() - 1 || wet > (kind == CampKind.BOGGED ? 2 : 0)) {
 			return Optional.empty();

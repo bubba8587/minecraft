@@ -38,8 +38,7 @@ public class SocketRandomGemsFunction extends LootItemConditionalFunction {
 	}
 
 	@Override
-	public void validate(ValidationContext context) {
-		super.validate(context);
+	protected void validateCustom(ValidationContext context) {
 		Validatable.validateHolder(context, "count", this.count);
 	}
 

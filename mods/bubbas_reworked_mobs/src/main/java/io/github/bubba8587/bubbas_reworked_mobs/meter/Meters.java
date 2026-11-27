@@ -59,7 +59,7 @@ public final class Meters {
 		if (!(entity.level() instanceof ServerLevel level)) {
 			return lastSent;
 		}
-		int shown = level.getGameRules().get(ModGameRules.SHOW_METERS) ? Mth.clamp(Math.round(value / full * 100.0F), 0, 100) : 0;
+		int shown = level.getGameRules().get(ModGameRules.SHOW_METERS) ? Math.clamp(Math.round(value / full * 100.0F), 0, 100) : 0;
 		if (shown == lastSent) {
 			return lastSent;
 		}

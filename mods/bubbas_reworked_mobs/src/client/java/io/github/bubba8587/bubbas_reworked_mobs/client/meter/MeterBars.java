@@ -1,6 +1,7 @@
 // dte:C1,B19
 package io.github.bubba8587.bubbas_reworked_mobs.client.meter;
 
+import net.minecraft.client.gui.GuiPipeline;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import io.github.bubba8587.bubbas_reworked_mobs.BubbasReworkedMobs;
@@ -9,7 +10,6 @@ import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.client.renderer.rendertype.RenderType;
@@ -154,11 +154,11 @@ public final class MeterBars {
 		int x = (graphics.guiWidth() - WIDTH) / 2;
 		int y = graphics.guiHeight() / 2 + 14;
 		int filled = Math.round(value / 100.0F * WIDTH);
-		graphics.blitSprite(RenderPipelines.GUI_TEXTURED, BACKGROUND[kind], WIDTH, HEIGHT, 0, 0, x, y, WIDTH, HEIGHT);
-		graphics.blitSprite(RenderPipelines.GUI_TEXTURED, NOTCHES_BACKGROUND, WIDTH, HEIGHT, 0, 0, x, y, WIDTH, HEIGHT);
+		graphics.blitSprite(GuiPipeline.TEXTURED, BACKGROUND[kind], WIDTH, HEIGHT, 0, 0, x, y, WIDTH, HEIGHT);
+		graphics.blitSprite(GuiPipeline.TEXTURED, NOTCHES_BACKGROUND, WIDTH, HEIGHT, 0, 0, x, y, WIDTH, HEIGHT);
 		if (filled > 0) {
-			graphics.blitSprite(RenderPipelines.GUI_TEXTURED, PROGRESS[kind], WIDTH, HEIGHT, 0, 0, x, y, filled, HEIGHT);
-			graphics.blitSprite(RenderPipelines.GUI_TEXTURED, NOTCHES_PROGRESS, WIDTH, HEIGHT, 0, 0, x, y, filled, HEIGHT);
+			graphics.blitSprite(GuiPipeline.TEXTURED, PROGRESS[kind], WIDTH, HEIGHT, 0, 0, x, y, filled, HEIGHT);
+			graphics.blitSprite(GuiPipeline.TEXTURED, NOTCHES_PROGRESS, WIDTH, HEIGHT, 0, 0, x, y, filled, HEIGHT);
 		}
 	}
 }

@@ -130,7 +130,7 @@ public final class UndeadGaits {
 	private static final float ARM_SWING = 0.35F;
 
 	private static float smooth(float x) {
-		x = Mth.clamp(x, 0.0F, 1.0F);
+		x = Math.clamp(x, 0.0F, 1.0F);
 		return x * x * (3.0F - 2.0F * x);
 	}
 

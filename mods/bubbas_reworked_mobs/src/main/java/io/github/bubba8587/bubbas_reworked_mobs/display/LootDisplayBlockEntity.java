@@ -2,6 +2,7 @@
 package io.github.bubba8587.bubbas_reworked_mobs.display;
 
 import io.github.bubba8587.bubbas_reworked_mobs.registry.ModBlockEntities;
+import net.minecraft.core.HolderGetter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
@@ -108,7 +109,7 @@ public class LootDisplayBlockEntity extends BlockEntity {
 
 	/** The client needs the item to draw it. */
 	@Override
-	public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+	public CompoundTag getUpdateTag(HolderGetter.Provider registries) {
 		return saveCustomOnly(registries);
 	}
 }
