@@ -62,6 +62,7 @@ Get-ChildItem $target -Filter "*.jar" | ForEach-Object { "  $($_.Name)" }
 # Our 32x textures (B16): the combined resource pack resourcepacks/bubbas_32x, built by tools/pack.py, copied into the
 # profile's resourcepacks/ (replacing only older copies of it) and switched on in options.txt, above any Classic
 # Faithful 32x Jappa (file/CF32J...) entry. Old built-in entries (bubbas_<mod>:bubbas_<mod>_32x) are dropped.
+# Pack switched off in the Modrinth app (renamed to .zip.disabled): the new copy stays disabled and off in options.txt.
 $packScript = Join-Path $root "tools\pack.py"
 if (Get-Command python -ErrorAction SilentlyContinue) { & python $packScript build bubbas_32x } else { & py -3 $packScript build bubbas_32x }
 if ($LASTEXITCODE -ne 0) { throw "Building the 32x resource pack failed." }
@@ -69,9 +70,12 @@ $packVersion = (Get-Content (Join-Path $root "resourcepacks\bubbas_32x\VERSION")
 $packZip = Join-Path $root "build\packs\resourcepacks\bubbas_32x-$packVersion.zip"
 $packDir = Join-Path $modrinth "profiles\$Profile\resourcepacks"
 New-Item -ItemType Directory -Force $packDir | Out-Null
-Get-ChildItem $packDir -Filter "bubbas_32x-*.zip" | Remove-Item -Confirm:$false
-Copy-Item $packZip -Destination $packDir
-Write-Output "  resourcepacks\bubbas_32x-$packVersion.zip"
+$packNames = @(Get-ChildItem $packDir -Filter "bubbas_32x-*" | ForEach-Object Name)
+$packOff = [bool]($packNames -like "*.zip.disabled") -and -not ($packNames -like "*.zip")
+Get-ChildItem $packDir -Filter "bubbas_32x-*.zip*" | Remove-Item -Confirm:$false
+$packName = if ($packOff) { "bubbas_32x-$packVersion.zip.disabled" } else { "bubbas_32x-$packVersion.zip" }
+Copy-Item $packZip -Destination (Join-Path $packDir $packName)
+Write-Output "  resourcepacks\$packName"
 
 $options = Join-Path $modrinth "profiles\$Profile\options.txt"
 $gameRunning = Get-CimInstance Win32_Process -Filter "Name='javaw.exe' OR Name='java.exe'" -ErrorAction SilentlyContinue |
@@ -86,11 +90,11 @@ if ($gameRunning) {
 	$kept = @($packs | Where-Object { $_ -notmatch '^bubbas_[a-z0-9_]+:bubbas_[a-z0-9_]+_32x$' -and $_ -notmatch '^file/bubbas_32x-.*\.zip$' })
 	$cf = -1
 	for ($k = 0; $k -lt $kept.Count; $k++) { if ($kept[$k] -like "file/CF32J*") { $cf = $k } }
-	$new = if ($cf -ge 0) { @($kept[0..$cf]) + $entry + @($kept | Select-Object -Skip ($cf + 1)) } else { $kept + $entry }
+	$new = if ($packOff) { $kept } elseif ($cf -ge 0) { @($kept[0..$cf]) + $entry + @($kept | Select-Object -Skip ($cf + 1)) } else { $kept + $entry }
 	$line = "resourcePacks:" + (ConvertTo-Json @($new) -Compress)
 	if ($i -ge 0) { $lines[$i] = $line } else { $lines += $line }
 	Set-Content -Path $options -Value $lines -Encoding utf8NoBOM
-	Write-Output "  options.txt: $entry switched on"
+	Write-Output ("  options.txt: $entry " + $(if ($packOff) { "left off (disabled in the Modrinth app)" } else { "switched on" }))
 } else {
 	Write-Output "No options.txt in '$Profile' yet: start the game once, then run this again to switch the 32x pack on."
 }
