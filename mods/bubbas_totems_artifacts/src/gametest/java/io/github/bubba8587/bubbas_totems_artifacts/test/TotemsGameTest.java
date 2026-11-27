@@ -342,7 +342,7 @@ public class TotemsGameTest {
 	/**
 	 * Core. A biome search finds the player's own biome at least the minimum distance away and not in the air, and a search skipping that
 	 * spot lands well clear of it; arriving at a target records the find (Found: 1/32) and the next target is never
-	 * the biome underfoot; the memory keeps only the newest 32.
+	 * the biome underfoot; a biome target over loaded land without that biome is dropped without a find; the memory keeps only the newest 32.
 	 */
 	public void seekingFindsAndRemembers(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
@@ -372,6 +372,14 @@ public class TotemsGameTest {
 		var next = totem.get(ModComponents.SEEKING_TARGET);
 		helper.assertTrue(next == null || !next.kind().equals(biome), "picked the biome underfoot again: " + next);
 		helper.assertFalse(totem.has(DataComponents.LODESTONE_TRACKER), "the needle doesn't spin while the next search runs");
+
+		ItemStack ghost = new ItemStack(ModItems.TOTEM_OF_SEEKING);
+		SeekKinds.Kind other = new SeekKinds.Kind(net.minecraft.resources.Identifier.withDefaultNamespace(biome.id().getPath().equals("desert") ? "plains" : "desert"), true);
+		ghost.set(ModComponents.SEEKING_TARGET, new TotemOfSeekingItem.Target(other, GlobalPos.of(level.dimension(), here), Optional.of(here.offset(5, 0, 0))));
+		TotemOfSeekingItem.update(ghost, level, player);
+		var after = ghost.get(ModComponents.SEEKING_TARGET);
+		helper.assertTrue(TotemOfSeekingItem.finds(ghost).isEmpty() && (after == null || !after.kind().equals(other)),
+				"a biome target over land without that biome wasn't dropped: " + after + ", finds " + TotemOfSeekingItem.finds(ghost));
 
 		for (int i = 0; i < TotemsTuning.SEEK_MEMORY + 8; i++) {
 			TotemOfSeekingItem.remember(totem, new TotemOfSeekingItem.Found(biome, GlobalPos.of(level.dimension(), new BlockPos(i * 1000, 0, 0))));

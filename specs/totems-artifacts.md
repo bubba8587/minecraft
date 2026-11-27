@@ -221,6 +221,7 @@ The owner wanted a verb-like name; still open. The Harvest idea was folded into 
   - Structure: within 24 blocks of its spot horizontally (`SEEK_ARRIVE`), or inside one of its pieces within 160 (`SEEK_ARRIVE_INSIDE`).
   - Biome: standing in that biome within 48 blocks of its spot (`SEEK_ARRIVE_BIOME`), so a cave biome means going down.
   - Biome, safety net: within 24 blocks of its spot with the biome anywhere in the player's column (sampled every 4 blocks).
+- **Phantom biome targets:** the biome search reads the current generator, but land generated earlier keeps the biomes it was made with (e.g. the natural test world, built without Tectonic, played with it: a "river" target over saved plains). Within 96 blocks of a biome target (`SEEK_VERIFY`), once its chunk is loaded, the saved column at the spot is checked; without the biome the target is dropped without a find and a new one picked. Structures don't need this: their check reads generated chunks' saved structure references.
 - **On a find:** totem-of-undying particles around the player, an amethyst resonate and a soft level-up chime, and the action bar "Found: Jungle Temple (4/32)". Then the next target is picked from there.
 - **Memory:** components `bubbas_totems_artifacts:seeking_target` (kind, picking spot, found position) and `seeking_found` (kind and position of each find, oldest first). Up to 32 finds (`SEEK_MEMORY`); past that the oldest is forgotten. Tooltip: "Found: 4/32".
 - Old saves: `seeking_type` and `seeking_beacon_until` stay registered (unused) so older totems and compasses still load.
@@ -654,7 +655,7 @@ Most bodies live in the milestone classes below and are called from the core cla
 - `fortificationStopsBlockDamage`: a TNT-type blast inside a 5x3x5 dirt cube next to a holder breaks nothing.
 - `growthSpeedsUpCrops`: 40 boosted ticks in the held box grow a 3x3 wheat patch; one outside the box doesn't grow.
 - `seekingStatueFillsAMap`: an empty map goes into a Seeking statue, a second is refused, and the map pops out with over 90 % of its pixels drawn.
-- `seekingFindsAndRemembers`: a biome search finds the test world's biome at least 128 blocks away, not above the ground, and, skipping that spot, at least 384 from it; arriving records the find and the next target is never the biome underfoot; the memory keeps only the newest 32.
+- `seekingFindsAndRemembers`: a biome search finds the test world's biome at least 128 blocks away, not above the ground, and, skipping that spot, at least 384 from it; arriving records the find and the next target is never the biome underfoot; a biome target over loaded land without that biome is dropped without a find; the memory keeps only the newest 32.
 - `endLandingRules` (body in `BeginningEndGameTest`): top face, side with room, side without room → floor in front, slab top, fire on top → nowhere, bottom face → floor under it, miss → nowhere.
 - `gatheringRingFeedsASideHopper`: an item 6 blocks out ends up in a chest through a side hopper.
 - `herdingPastureKeepsLivestockIn`: a cow is blocked at the pasture edge, not inside; a zombie never.

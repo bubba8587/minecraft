@@ -87,6 +87,10 @@ public class TotemOfSeekingItem extends io.github.bubba8587.bubbas_totems_artifa
 			level.playSound(null, player.blockPosition(), SoundEvents.LODESTONE_COMPASS_LOCK, SoundSource.PLAYERS, 0.6F, 1.0F);
 			return;
 		}
+		if (phantom(level, player, target.kind(), target.pos().get())) {
+			pick(stack, level, player.blockPosition());
+			return;
+		}
 		if (arrived(level, player, target.kind(), target.pos().get())) {
 			remember(stack, new Found(target.kind(), GlobalPos.of(level.dimension(), target.pos().get())));
 			celebrate(level, player, target.kind(), stack);
@@ -143,6 +147,12 @@ public class TotemOfSeekingItem extends io.github.bubba8587.bubbas_totems_artifa
 		}
 		return d <= (double) TotemsTuning.SEEK_ARRIVE_INSIDE * TotemsTuning.SEEK_ARRIVE_INSIDE
 				&& level.structureManager().getStructureWithPieceAt(here, s -> s.is(kind.id())).isValid();
+	}
+
+	/** A biome target whose land, once loaded nearby, doesn't have that biome (generated under other world settings). */
+	static boolean phantom(ServerLevel level, ServerPlayer player, SeekKinds.Kind kind, BlockPos at) {
+		return kind.biome() && Seeker.flatDistSqr(player.blockPosition(), at) <= (double) TotemsTuning.SEEK_VERIFY * TotemsTuning.SEEK_VERIFY
+				&& level.hasChunkAt(at) && !inColumn(level, at, kind);
 	}
 
 	/** Whether the biome is anywhere in this block column. */
