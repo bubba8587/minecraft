@@ -1,6 +1,8 @@
 // dte:C1,B16
 package io.github.bubba8587.bubbas_reworked_mobs.client;
 
+import net.minecraft.client.core.registries.BuiltInClientRegistries;
+import net.minecraft.core.WritableRegistry;
 import io.github.bubba8587.bubbas_reworked_mobs.client.display.LootDisplayRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import io.github.bubba8587.bubbas_reworked_mobs.client.undead.SleeperRenderer;

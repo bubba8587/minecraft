@@ -223,8 +223,8 @@ public class FactoriesClientGameTest implements FabricClientGameTest {
 			level.getChunk(city);
 			var cityStructure = level.registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.STRUCTURE)
 					.getValueOrThrow(net.minecraft.world.level.levelgen.structure.BuiltinStructures.ANCIENT_CITY);
-			boolean real = level.structureManager().getStructureAt(city.atY(-30), cityStructure).isValid()
-					|| level.structureManager().getStructureAt(city.atY(-45), cityStructure).isValid();
+			boolean real = level.structureManager().getStructureAt(city.atY(-30), cityStructure) != null
+					|| level.structureManager().getStructureAt(city.atY(-45), cityStructure) != null;
 			System.out.println("[fabricator] nearest natural " + site + " city " + city.toShortString() + " pad " + site.pad().toShortString()
 					+ "; a real ancient city there: " + real);
 			return new double[] { over.getX() + 0.5, over.getY(), over.getZ() + 0.5, yaw, cx, site.origin().getY() + 1.5, cz, doorYaw };

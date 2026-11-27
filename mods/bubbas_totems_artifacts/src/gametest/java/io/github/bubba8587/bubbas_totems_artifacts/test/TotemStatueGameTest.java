@@ -123,7 +123,7 @@ public class TotemStatueGameTest {
 		helper.assertTrue(placed.is(ModBlocks.TOTEM_STATUE) && TotemStatueBlock.type(placed) == TotemType.UNDYING, "no undying statue placed: " + placed);
 		helper.assertTrue(placed.getValue(TotemStatueBlock.FACING) == Direction.SOUTH, "statue faces " + placed.getValue(TotemStatueBlock.FACING));
 		helper.assertTrue(player.getMainHandItem().isEmpty(), "the totem wasn't used up");
-		List<ItemStack> drops = Block.getDrops(placed, helper.getLevel(), helper.absolutePos(floor.above()), null);
+		List<ItemStack> drops = Block.getDrops(placed, helper.getLevel(), helper.absolutePos(floor.above()), null, null, ItemStack.EMPTY);
 		helper.assertTrue(drops.size() == 1 && drops.getFirst().is(net.minecraft.world.item.Items.TOTEM_OF_UNDYING), "undying statue drops " + drops);
 		helper.getLevel().getServer().getPlayerList().remove(player);
 		helper.succeed();
@@ -137,7 +137,7 @@ public class TotemStatueGameTest {
 	public void everyStatueDropsItsTotemAndOldOnesLoadAsWarding(GameTestHelper helper) {
 		for (TotemType type : TotemType.values()) {
 			BlockState state = TotemStatueBlock.stateFor(type);
-			List<ItemStack> drops = Block.getDrops(state, helper.getLevel(), helper.absolutePos(new BlockPos(1, 1, 1)), null);
+			List<ItemStack> drops = Block.getDrops(state, helper.getLevel(), helper.absolutePos(new BlockPos(1, 1, 1)), null, null, ItemStack.EMPTY);
 			helper.assertTrue(drops.size() == 1 && drops.getFirst().is(type.item()), type + " statue drops " + drops);
 		}
 		net.minecraft.nbt.CompoundTag old = new net.minecraft.nbt.CompoundTag();

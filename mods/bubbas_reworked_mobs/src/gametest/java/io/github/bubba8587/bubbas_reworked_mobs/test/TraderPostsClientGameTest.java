@@ -159,10 +159,10 @@ public class TraderPostsClientGameTest implements FabricClientGameTest {
 					var chunk = placement.getPotentialStructureChunk(level.getSeed(), gx * placement.spacing(), gz * placement.spacing());
 					var start = level.getChunk(chunk.x(), chunk.z(), net.minecraft.world.level.chunk.status.ChunkStatus.STRUCTURE_STARTS, true)
 							.getStartForStructure(structure);
-					if (start != null && start.isValid()) {
+					if (start != null) {
 						n++;
 					}
-					if (level.getUncachedNoiseBiome(chunk.getMiddleBlockX() >> 2, 72 >> 2, chunk.getMiddleBlockZ() >> 2).is(tag)) {
+					if (level.getUncachedBiome(chunk.getMiddleBlockX(), 72, chunk.getMiddleBlockZ()).is(tag)) {
 						inBiome++;
 					}
 				}

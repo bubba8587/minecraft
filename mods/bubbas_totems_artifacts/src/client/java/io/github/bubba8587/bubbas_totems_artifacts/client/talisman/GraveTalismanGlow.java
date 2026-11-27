@@ -1,13 +1,14 @@
 // dte:C6
 package io.github.bubba8587.bubbas_totems_artifacts.client.talisman;
 
+import net.minecraft.client.core.registries.BuiltInClientRegistries;
+import net.minecraft.core.Registry;
 import com.mojang.serialization.MapCodec;
 import io.github.bubba8587.bubbas_totems_artifacts.BubbasTotemsArtifacts;
 import io.github.bubba8587.bubbas_totems_artifacts.registry.ModItems;
 import io.github.bubba8587.bubbas_totems_artifacts.talisman.GraveTalisman;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.renderer.item.properties.numeric.RangeSelectItemModelProperties;
 import net.minecraft.client.renderer.item.properties.numeric.RangeSelectItemModelProperty;
 import net.minecraft.world.entity.ItemOwner;
 import net.minecraft.world.entity.player.Player;
@@ -31,7 +32,9 @@ public final class GraveTalismanGlow {
 
 	/** Registers the item model property; also called by datagen, which needs the codec to write the model. */
 	public static void registerProperty() {
-		RangeSelectItemModelProperties.ID_MAPPER.put(BubbasTotemsArtifacts.id("grave_talisman_glow"), Property.MAP_CODEC);
+		if (!BuiltInClientRegistries.RANGE_SELECT_ITEM_MODEL_PROPERTY_TYPE.containsKey(BubbasTotemsArtifacts.id("grave_talisman_glow"))) {
+			Registry.register(BuiltInClientRegistries.RANGE_SELECT_ITEM_MODEL_PROPERTY_TYPE, BubbasTotemsArtifacts.id("grave_talisman_glow"), Property.MAP_CODEC);
+		}
 	}
 
 	public static void initialize() {

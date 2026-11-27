@@ -218,7 +218,7 @@ public class SleeperNoiseGameTest {
 		// packet handler does: fall 1.25 blocks and report it on the ground.
 		Runnable jump = () -> {
 			player.setOnGround(false);
-			player.doCheckFallDamage(0.0, -1.25, 0.0, true);
+			player.updateFallDistanceAndCheckFallDamageForClientControlledEntity(new net.minecraft.world.phys.Vec3(0.0, -1.25, 0.0), true);
 		};
 		jump.run();
 		later(helper, 12, () -> {

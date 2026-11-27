@@ -102,8 +102,7 @@ public class LootDisplayGameTest {
 		ItemContainerContents contents = display.collectComponents().getOrDefault(DataComponents.CONTAINER, ItemContainerContents.EMPTY);
 		helper.assertTrue(contents.nonEmptyItemCopyStream().anyMatch(s -> ItemStack.matches(s, sword)), "minecraft:container component");
 
-		StructureTemplate template = new StructureTemplate();
-		template.fillFromWorld(level, helper.absolutePos(DISPLAY), new Vec3i(1, 1, 1), false, List.of());
+		StructureTemplate template = StructureTemplate.createFromWorld(level, helper.absolutePos(DISPLAY), new Vec3i(1, 1, 1), "", false, List.of());
 		BlockPos copy = DISPLAY.east(3);
 		template.placeInWorld(level, helper.absolutePos(copy), helper.absolutePos(copy), new StructurePlaceSettings(), level.getRandom(), 2);
 		helper.assertBlockProperty(copy, LootDisplayBlock.PLACEMENT, DisplayPlacement.STUCK);
@@ -225,9 +224,8 @@ public class LootDisplayGameTest {
 		TestFloors.floor(helper, Blocks.DIRT);
 		ServerLevel level = helper.getLevel();
 		BlockPos at = helper.absolutePos(DISPLAY);
-		level.getServer().getCommands().getDispatcher().execute(
-				"bubbas_reworked_mobs display buried minecraft:diamond_sword %d %d %d east".formatted(at.getX(), at.getY(), at.getZ()),
-				level.getServer().createCommandSourceStack().withLevel(level).withSuppressedOutput());
+		level.getServer().getCommands().performPrefixedCommand(level.getServer().createCommandSourceStack().withLevel(level).withSuppressedOutput(),
+				"bubbas_reworked_mobs display buried minecraft:diamond_sword %d %d %d east".formatted(at.getX(), at.getY(), at.getZ()));
 		helper.assertBlockProperty(DISPLAY, LootDisplayBlock.PLACEMENT, DisplayPlacement.BURIED);
 		helper.assertBlockProperty(DISPLAY, LootDisplayBlock.FACING, Direction.EAST);
 		helper.assertTrue(helper.getBlockEntity(DISPLAY, LootDisplayBlockEntity.class).getItem().is(Items.DIAMOND_SWORD), "command item");
@@ -241,9 +239,9 @@ public class LootDisplayGameTest {
 		float pitch = (float) -Math.toDegrees(Math.atan2(look.y, look.horizontalDistance()));
 		player.snapTo(player.getX(), player.getY(), player.getZ(), yaw, pitch);
 		player.setYHeadRot(yaw); // a living entity looks where its head points
-		level.getServer().getCommands().getDispatcher().execute("bubbas_reworked_mobs display stuck minecraft:iron_sword",
-				level.getServer().createCommandSourceStack().withLevel(level).withEntity(player).withPosition(player.position())
-						.withRotation(new Vec2(pitch, yaw)).withSuppressedOutput());
+		level.getServer().getCommands().performPrefixedCommand(level.getServer().createCommandSourceStack().withLevel(level).withEntity(player).withPosition(player.position())
+						.withRotation(new Vec2(pitch, yaw)).withSuppressedOutput(),
+				"bubbas_reworked_mobs display stuck minecraft:iron_sword");
 		BlockPos looked = new BlockPos(5, 1, 4);
 		helper.assertBlockProperty(looked, LootDisplayBlock.PLACEMENT, DisplayPlacement.STUCK);
 		helper.assertBlockProperty(looked, LootDisplayBlock.FACING, Direction.SOUTH);

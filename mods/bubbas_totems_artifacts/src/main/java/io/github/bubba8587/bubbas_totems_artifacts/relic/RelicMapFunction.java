@@ -1,6 +1,7 @@
 // dte:C6
 package io.github.bubba8587.bubbas_totems_artifacts.relic;
 
+import net.minecraft.world.level.storage.loot.ValidationContext;
 import java.util.Optional;
 
 import com.mojang.serialization.Codec;
@@ -25,6 +26,10 @@ public class RelicMapFunction extends LootItemConditionalFunction {
 	RelicMapFunction(Optional<Holder<LootItemCondition>> condition, int size) {
 		super(condition);
 		this.size = size;
+	}
+
+	@Override
+	protected void validateCustom(ValidationContext context) {
 	}
 
 	@Override

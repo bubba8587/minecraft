@@ -9,14 +9,11 @@ import net.minecraft.client.gui.screens.inventory.AbstractSignEditScreen;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.entity.SignBlockEntity;
 import net.minecraft.world.level.block.entity.SignTextSlot;
-import org.joml.Vector3f;
-import org.joml.Vector3fc;
 
 /** The gravestone's edit screen: the stone's front face, with the text laid out as {@link GravestoneRenderer} lays it. */
 public class GravestoneEditScreen extends AbstractSignEditScreen {
 	/** GUI pixels per block pixel. */
 	private static final int PIXEL = 9;
-	private static final Vector3fc TEXT_SCALE = new Vector3f(PIXEL / GraveTextLayout.FONT_PX_PER_BLOCK_PX, PIXEL / GraveTextLayout.FONT_PX_PER_BLOCK_PX, 1.0F);
 	/** Vanilla's shade for a north/south block face. */
 	private static final int FACE_SHADE = 0xFFCCCCCC;
 	private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(BubbasReworkedMobs.MOD_ID, "textures/block/gravestone.png");
@@ -26,8 +23,8 @@ public class GravestoneEditScreen extends AbstractSignEditScreen {
 	}
 
 	@Override
-	protected float getSignYOffset() {
-		return 115.0F;
+	protected int getSignTextYOffset() {
+		return -1;
 	}
 
 	@Override
@@ -42,7 +39,7 @@ public class GravestoneEditScreen extends AbstractSignEditScreen {
 	}
 
 	@Override
-	protected Vector3fc getSignTextScale() {
-		return TEXT_SCALE;
+	protected int getSignTextSpacing() {
+		return 10;
 	}
 }

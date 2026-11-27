@@ -356,7 +356,7 @@ public class CampsClientGameTest implements FabricClientGameTest {
 				cells++;
 				var access = level.getChunk(chunk.x(), chunk.z(), ChunkStatus.STRUCTURE_STARTS, true);
 				StructureStart start = access == null ? null : access.getStartForStructure(structure);
-				if (start != null && start.isValid() && start.getPieces().getFirst() instanceof CampPiece piece) {
+				if (start != null && start.getPieces().getFirst() instanceof CampPiece piece) {
 					byKind.computeIfAbsent(piece.kind(), k -> new ArrayList<>()).add(piece);
 				}
 			}
@@ -417,7 +417,7 @@ public class CampsClientGameTest implements FabricClientGameTest {
 				int x = spawn.getX() + px;
 				int z = spawn.getZ() + pz;
 				int y = generator.getFirstOccupiedHeight(x, z, net.minecraft.world.level.levelgen.Heightmap.Types.WORLD_SURFACE_WG, level, random);
-				var biome = level.getUncachedNoiseBiome(x >> 2, y >> 2, z >> 2);
+				var biome = level.getUncachedBiome(x, y, z);
 				boolean in = false;
 				for (CampPiece camp : camps) {
 					double dx = camp.centre().getX() - x;

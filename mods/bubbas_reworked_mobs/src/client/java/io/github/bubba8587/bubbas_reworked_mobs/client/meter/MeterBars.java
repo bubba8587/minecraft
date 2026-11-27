@@ -7,7 +7,6 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import io.github.bubba8587.bubbas_reworked_mobs.BubbasReworkedMobs;
 import io.github.bubba8587.bubbas_reworked_mobs.meter.Meters;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
-import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.SubmitNodeCollector;
@@ -139,7 +138,7 @@ public final class MeterBars {
 	}
 
 	/** The held player's grip bar, under the crosshair. */
-	private static void extractHud(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
+	private static void extractHud(GuiGraphicsExtractor graphics) {
 		Minecraft mc = Minecraft.getInstance();
 		Entity holder = mc.player == null ? null : mc.player.getVehicle();
 		if (!(holder instanceof Drowned || holder instanceof Gripper)) {

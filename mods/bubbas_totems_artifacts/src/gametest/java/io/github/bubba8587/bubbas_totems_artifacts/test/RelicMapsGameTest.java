@@ -344,7 +344,7 @@ public class RelicMapsGameTest {
 				helper.assertTrue(primeShown(level, piece), kind + " seed " + seed + ": the " + piece.prime() + " isn't on the pedestal");
 				if (piece.prime() == RelicVaultPiece.Prime.STATUE) {
 					BlockPos top = piece.pedestal();
-					List<ItemStack> drops = net.minecraft.world.level.block.Block.getDrops(level.getBlockState(top), level, top, null);
+					List<ItemStack> drops = net.minecraft.world.level.block.Block.getDrops(level.getBlockState(top), level, top, null, null, ItemStack.EMPTY);
 					helper.assertTrue(drops.stream().anyMatch(d -> d.is(piece.primeStatue().item())), kind + ": breaking the statue gives " + drops);
 				} else {
 					ItemStack weapon = primeWeapon(level, piece);
