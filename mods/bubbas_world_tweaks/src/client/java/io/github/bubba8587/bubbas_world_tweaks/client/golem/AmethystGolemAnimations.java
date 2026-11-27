@@ -71,7 +71,8 @@ public final class AmethystGolemAnimations {
 		model.leftArm.xRot = -0.25F;
 	}
 
-	/** Jaw hook: opens the mouth by {@code open} (0-1) once the model has a jaw part. */
+	/** Jaw: opens the mouth by {@code open} (0-1). */
 	private static void mouth(AmethystGolemModel model, float open) {
+		model.jaw.xRot = open * 0.5F;
 	}
 }
