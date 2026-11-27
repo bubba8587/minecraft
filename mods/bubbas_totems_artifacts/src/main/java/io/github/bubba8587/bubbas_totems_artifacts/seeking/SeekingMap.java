@@ -2,7 +2,6 @@
 package io.github.bubba8587.bubbas_totems_artifacts.seeking;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -137,13 +136,13 @@ public final class SeekingMap {
 		Job job = jobs.get(pos);
 		if (job == null || !job.map.equals(id)) {
 			stop(level, pos);
-			jobs.put(pos.immutable(), new Job(id, spots(level, data, pos)));
+			jobs.put(pos.immutable(), new Job(id, spots(level, data)));
 		}
 		level.sendParticles(ParticleTypes.ENCHANT, pos.getX() + 0.5, pos.getY() + 1.4, pos.getZ() + 0.5, 6, 0.4, 0.3, 0.4, 0.6);
 	}
 
-	/** Where the drawing viewer stands, nearest the statue first, so every pixel is within its drawing radius of one spot. */
-	private static List<int[]> spots(ServerLevel level, MapItemSavedData data, BlockPos statue) {
+	/** Where the drawing viewer stands, left to right, top to bottom, so every pixel is within its drawing radius of one spot. */
+	private static List<int[]> spots(ServerLevel level, MapItemSavedData data) {
 		int scale = 1 << data.scale;
 		int width = 128 * scale;
 		int reach = Math.max(1, (int) ((radiusPixels(level, data) - 2) * scale * Math.sqrt(2.0)));
@@ -152,12 +151,11 @@ public final class SeekingMap {
 		int minX = data.centerX - width / 2;
 		int minZ = data.centerZ - width / 2;
 		List<int[]> spots = new ArrayList<>();
-		for (int i = 0; i < n; i++) {
-			for (int j = 0; j < n; j++) {
-				spots.add(new int[] {(int) (minX + (i + 0.5) * cell), (int) (minZ + (j + 0.5) * cell)});
+		for (int row = 0; row < n; row++) {
+			for (int column = 0; column < n; column++) {
+				spots.add(new int[] {(int) (minX + (column + 0.5) * cell), (int) (minZ + (row + 0.5) * cell)});
 			}
 		}
-		spots.sort(Comparator.comparingDouble(s -> Math.pow(s[0] - statue.getX(), 2) + Math.pow(s[1] - statue.getZ(), 2)));
 		return spots;
 	}
 
@@ -197,8 +195,15 @@ public final class SeekingMap {
 			}
 			if (job.loaded == null) {
 				int[] spot = job.spots.get(job.next);
-				int blocks = Math.min(radiusPixels(level, data) * (1 << data.scale), 64 * (1 << data.scale));
-				job.loading = new Ticket(new ChunkPos(spot[0] >> 4, spot[1] >> 4), Math.min(TotemsTuning.SEEK_MAP_MAX_TICKET_RADIUS, (blocks >> 4) + 1));
+				int scale = 1 << data.scale;
+				int reach = (radiusPixels(level, data) + 1) * scale;
+				int half = 64 * scale;
+				int x0 = Math.max(spot[0] - reach, data.centerX - half) >> 4;
+				int x1 = Math.min(spot[0] + reach, data.centerX + half) >> 4;
+				int z0 = Math.max(spot[1] - reach, data.centerZ - half - scale) >> 4;
+				int z1 = Math.min(spot[1] + reach, data.centerZ + half) >> 4;
+				ChunkPos centre = new ChunkPos(Math.floorDiv(x0 + x1, 2), Math.floorDiv(z0 + z1, 2));
+				job.loading = new Ticket(centre, Math.max(x1 - centre.x(), z1 - centre.z()) + 1);
 				job.loaded = level.getChunkSource().addTicketAndLoadWithRadius(TICKET, job.loading.pos(), job.loading.radius());
 				continue;
 			}

@@ -62,8 +62,6 @@ public final class TotemsTuning {
 	public static final int SEEK_ARRIVE = 24;
 	public static final int SEEK_ARRIVE_INSIDE = 160;
 	public static final int SEEK_ARRIVE_BIOME = 48;
-	/** Seeking statue map: largest chunk-loading radius per drawn patch. */
-	public static final int SEEK_MAP_MAX_TICKET_RADIUS = 10;
 	/** Search time per server tick, all searches together. */
 	public static final long SEEK_BUDGET_NANOS = 2_000_000L;
 	/** Cached results kept. */
