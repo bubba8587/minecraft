@@ -18,20 +18,25 @@ side: client and server
 > | **Side** | Client and server |
 > | **Status** | Active |
 
-**Bubba's World Tweaks** is a Fabric mod that adds small touches to the world itself. It makes the Nether's lava seas bubble and erupt, turns their geysers into updrafts, adds the Parasitic enchantment, and sinks flooded fortresses into the deep oceans.
+**Bubba's World Tweaks** is a Fabric mod that adds small touches to the world itself.
+
+- The Nether's lava seas bubble and erupt, and their geysers are updrafts.
+- Adds the Parasitic enchantment.
+- Flooded fortresses sit on the floor of the deep oceans.
 
 ## Lava bubbles and geysers
 
 *Main article: [[Lava Bubbles and Geysers]]*
 
 - Lava bubbles and plops wherever magma lies beneath it.
-- Now and then a bubbling spot erupts as a lava geyser, throwing up black smoke.
+- From time to time a bubbling spot erupts as a lava geyser, throwing up black smoke.
 - Lava geysers and sulfur geysers lift players and speed them up, so circling one climbs.
-## Parasitic
+
+## Parasitic
 
 *Main article: [[Parasitic]]*
 
-- An enchantment from the enchanting table that mends its item with your health instead of experience, now and then, and can kill you.
+- An enchantment from the enchanting table that, from time to time, mends its item with the player's health instead of experience, and can kill the player.
 
 ## Deep-sea fortresses
 
@@ -41,21 +46,19 @@ side: client and server
 
 ## Installation
 
-The mod installs like any Fabric mod (see [[Installing Fabric Mods]]) and is needed on both the server and every player's game.
+- Installs like any Fabric mod (see [[Installing Fabric Mods]]).
+- Needed on both the server and every player's game.
 
 ## Textures
 
-The mod comes with vanilla-style 16x textures. Its 32x textures, in the style of Classic Faithful 32x Jappa, come in a separate resource pack, **Bubba's Mods 32x**, which covers all of Bubba's mods (see [[Installing Resource Packs]]). Put it above Classic Faithful 32x Jappa if you use that pack.
+- Comes with vanilla-style 16x textures.
+- Its 32x textures, in the style of Classic Faithful 32x Jappa, come in a separate resource pack, **Bubba's Mods 32x**, which covers all of Bubba's mods (see [[Installing Resource Packs]]).
+- **Bubba's Mods 32x** goes above Classic Faithful 32x Jappa when both are used.
 
 ## Compatibility
 
-The mod requires Fabric API and works on its own. The geyser lift suits the Glider from [[Bubba's Extra Recipes]], but doesn't need it.
-
-## History
-
-| Version | Changes |
-|---|---|
-| 0.1.0 | Added, with lava bubbles, lava geysers, the geyser lift and Parasitic. Early test version. |
+- Requires Fabric API and works on its own.
+- The geyser lift suits the Glider from [[Bubba's Extra Recipes]], but doesn't need it.
 
 ## See also
 

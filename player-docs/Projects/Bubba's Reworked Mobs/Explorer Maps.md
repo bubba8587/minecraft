@@ -2,7 +2,9 @@
 
 *Part of [[Bubba's Reworked Mobs]].*
 
-**Explorer maps** from [[Bubba's Reworked Mobs]] are three new maps that cartographer villagers sell, for a compass and emeralds. They turn up now and then among the cartographer's usual trades at the levels below.
+**Explorer maps** from [[Bubba's Reworked Mobs]] are three maps that cartographer villagers sell for a compass and emeralds.
+
+- They turn up now and then among the cartographer's usual trades at the levels below.
 
 | Map | Villager level | Cost | Marks |
 |---|---|---|---|
@@ -10,15 +12,8 @@
 | Monster Camp Explorer Map | Journeyman | 8 emeralds | the nearest [[Monster Camps|monster camp]] (white X) |
 | Fabricator Explorer Map | Expert | 20 emeralds | the nearest [[Ancient Fabricators|Ancient Fabricator]] within 3000 blocks, marked on its teleporter |
 
-Fabricator Explorer Maps are only sold by cartographers; they are not found in chests.
-
-The leader of a [[Camp Patrols|camp patrol]] always drops a Monster Camp Explorer Map centred on its own camp, marked with the same white X.
-
-## History
-
-| Version | Changes |
-|---|---|
-| 0.1.0 | Added. |
+- Fabricator Explorer Maps are only sold by cartographers; they are not found in chests.
+- The leader of a [[Camp Patrols|camp patrol]] always drops a Monster Camp Explorer Map centred on its own camp, marked with the same white X.
 
 ## See also
 

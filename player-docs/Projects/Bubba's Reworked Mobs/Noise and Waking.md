@@ -2,7 +2,11 @@
 
 *Part of [[Bubba's Reworked Mobs]].*
 
-**Noise and waking** is the mechanic by which [[Sleeping Undead|sleeping undead]] hear nearby activity and wake up. Each noise disturbs a sleeper a little more, the disturbance fades when things go quiet, and a sleeper wakes once enough noise has added up.
+**Noise and waking** is the mechanic by which [[Sleeping Undead|sleeping undead]] hear nearby activity and wake up.
+
+- Each noise disturbs a sleeper a little more.
+- The disturbance fades when things go quiet.
+- A sleeper wakes once enough noise has added up.
 
 ## Disturbance
 
@@ -23,11 +27,13 @@
 
 ### Distance and walls
 
-Noise fades quickly with distance and is not heard at all beyond 12 blocks. Solid walls muffle it, so sleepers down another hallway do not hear the player.
+- Noise fades quickly with distance and is not heard at all beyond 12 blocks.
+- Solid walls muffle it, so sleepers down another hallway do not hear the player.
 
 ## Warning groan
 
-A sleeping undead that has been disturbed but not yet woken lets out a quiet, low groan. Backing off or going quiet lets it settle.
+- A sleeping undead that has been disturbed but not yet woken lets out a quiet, low groan.
+- Backing off or going quiet lets it settle.
 
 ## Staying quiet
 
@@ -37,7 +43,9 @@ A sleeping undead that has been disturbed but not yet woken lets out a quiet, lo
 
 ## Light
 
-A sleeping undead whose block is brightly lit, at a block light level of 12 or more (a torch right next to it, a lantern, glowstone), hears every noise at 70 % and is that much less likely to wake when robbed. Daylight does not count. Placing the light is itself a noise, like placing any block.
+- A sleeping undead whose block is brightly lit, at a block light level of 12 or more (a torch right next to it, a lantern, glowstone), hears every noise at 70 % and is that much less likely to wake when robbed.
+- Daylight does not count.
+- Placing the light is itself a noise, like placing any block.
 
 ## Bells
 
@@ -48,15 +56,18 @@ A sleeping undead whose block is brightly lit, at a block light level of 12 or m
 
 ## Warding
 
-With [[Bubba's Totems & Artifacts]] installed, each pulse of a held [[Totem of Warding]] settles sleeping undead within 8 blocks a little. Inside a ward made by a Totem of Warding in a beacon with a full 4-layer pyramid, sleeping undead never wake.
+- With [[Bubba's Totems & Artifacts]] installed, each pulse of a held [[Totem of Warding]] settles sleeping undead within 8 blocks a little.
+- Inside a ward made by a Totem of Warding in a beacon with a full 4-layer pyramid, sleeping undead never wake.
 
 ## Chain waking
 
-A waking undead wakes up to four more sleepers within about 6 blocks of it, and those can wake more in turn. Undead woken by their neighbors, or by anything other than a player, do not fight each other when they get up; they go looking for players.
+- A waking undead wakes up to four more sleepers within about 6 blocks of it, and those can wake more in turn.
+- Undead woken by their neighbors, or by anything other than a player, do not fight each other when they get up; they go looking for players.
 
 ## Animals and monsters
 
-- Animals do not wake sleeping undead: cows and pigs can wander through a graveyard safely. Hurting an animal counts as a fight, and fights are loud.
+- Animals do not wake sleeping undead: cows and pigs can wander through a graveyard safely.
+- Hurting an animal counts as a fight, and fights are loud.
 - Other undead walking past do not wake sleepers either; only a neighbor waking up does.
 - Players, other monsters and arrows landing nearby do make noise.
 

@@ -11,46 +11,42 @@
 > | **Cooldown** | 5 seconds |
 > | **Works in a beacon** | Yes, with [[Bubba's Reworked Beacons]] |
 
-The **Totem of the North Wind** is an artifact that gives a gliding player a gust of wind, like a firework rocket. It looks like a pale ice idol with an icicle crown, blowing a gust from puffed cheeks.
+The **Totem of the North Wind** is an artifact that gives a gliding player a gust of wind, like a firework rocket.
+
+- It looks like a pale ice idol with an icicle crown, blowing a gust from puffed cheeks.
 
 ## Obtaining
 
-The totem cannot be crafted. It is found in trial chamber vaults:
-
-- 12 % chance each time a player opens a normal vault.
-- 24 % chance each time a player opens an ominous vault.
-
-Each player can open each vault once, so a whole trial chamber gives about a 45 to 70 % chance of at least one, and it is by far the most common totem there. It is not found in the chambers' ordinary chests.
-
-It is also found in [[Relic Vaults|relic vault]] chests, and a relic vault's pedestal may hold a Totem of the North Wind [[Totem Statue|statue]]; breaking the statue gives the totem.
+- Cannot be crafted.
+- Trial chamber vaults:
+  - 12 % chance each time a player opens a normal vault.
+  - 24 % chance each time a player opens an ominous vault.
+- Each player can open each vault once, so a whole trial chamber gives about a 45 to 70 % chance of at least one; it is by far the most common totem there.
+- Not found in the chambers' ordinary chests.
+- Found in [[Relic Vaults|relic vault]] chests.
+- A relic vault's pedestal may hold a Totem of the North Wind [[Totem Statue|statue]]; breaking the statue gives the totem.
 
 ## Usage
 
-Using the totem while gliding (with Elytra, or with the [[The Glider|Glider]] from [[Bubba's Extra Recipes]]) gives a boost, like a firework rocket:
-
+- Using the totem while gliding (with Elytra, or with the [[The Glider|Glider]] from [[Bubba's Extra Recipes]]) gives a boost, like a firework rocket.
 - The totem is not used up. It then has a 5-second cooldown, shown on the item.
 - The boost never explodes and never hurts.
 - On the Glider the boost is weaker, as with a real rocket.
 - A lead the player holds breaks, as with a rocket.
 - When the player is not gliding, nothing happens and there is no cooldown.
-
-The gust sounds like a wind charge and throws up a puff of snowflakes.
+- The gust sounds like a wind charge and throws up a puff of snowflakes.
 
 ### In a beacon
 
-In a [[Bubba's Reworked Beacons]] beacon, every player gliding anywhere in the beacon's area gets a gust automatically, then a gust again every 5 seconds while they keep gliding there. The beacon screen shows "Gliders in the area get a gust of wind".
-
-The gusts share the totem's cooldown: a player carrying a Totem of the North Wind sees the cooldown on it, and using it by hand does not add an extra gust.
+- In a [[Bubba's Reworked Beacons]] beacon, every player gliding anywhere in the beacon's area gets a gust automatically, then again every 5 seconds while they keep gliding there.
+- The beacon screen shows "Gliders in the area get a gust of wind".
+- The gusts share the totem's cooldown: a player carrying a Totem of the North Wind sees the cooldown on it, and using it by hand does not add an extra gust.
 
 ## Statue
 
-Sneaking and using the totem on a block sets it down as a [[Totem Statue]]. Gliders within 5 blocks of the statue get a gust every 5 seconds, as in a beacon. Mining the statue gives the totem back.
-
-## History
-
-| Version | Changes |
-|---|---|
-| 0.1.0 | Added. |
+- Sneaking and using the totem on a block sets it down as a [[Totem Statue]].
+- Gliders within 5 blocks of the statue get a gust every 5 seconds, as in a beacon.
+- Mining the statue gives the totem back.
 
 ## See also
 

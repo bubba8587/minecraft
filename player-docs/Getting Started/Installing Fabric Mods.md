@@ -1,10 +1,13 @@
 # Installing Fabric Mods
 
-This tutorial explains how to install the mods in this guide. They run on **Fabric**, a lightweight mod loader, and most need **Fabric API** as well.
+This tutorial explains how to install the mods in this guide.
+
+- They run on **Fabric**, a lightweight mod loader.
+- Most need **Fabric API** as well.
 
 ## Using the Modrinth App
 
-The Modrinth App is the easiest method, because it installs a mod's required mods automatically.
+- The easiest method, because it installs a mod's required mods automatically.
 
 1. Install the [Modrinth App](https://modrinth.com/app).
 2. Create a profile for the current Minecraft version (see [[Version Status]]) with **Fabric** as the loader.
@@ -19,11 +22,14 @@ The Modrinth App is the easiest method, because it installs a mod's required mod
 
 ## Servers
 
-Mods that change gameplay must also be installed on the server. Each mod's page states whether it is needed on the client, the server, or both. Place the same `.jar` files in the server's `mods` folder.
+- Mods that change gameplay must also be installed on the server.
+- Each mod's page states whether it is needed on the client, the server, or both.
+- Place the same `.jar` files in the server's `mods` folder.
 
 ## Troubleshooting
 
-If the game crashes on start, check that every required mod is installed and that all of them are made for the same Minecraft version. The crash screen or `logs/latest.log` usually names the missing mod.
+- If the game crashes on start, check that every required mod is installed and that all of them are made for the same Minecraft version.
+- The crash screen or `logs/latest.log` usually names the missing mod.
 
 ## See also
 

@@ -4,6 +4,8 @@ mod: "Bubba's World Tweaks"
 ---
 # Parasitic
 
+*Part of [[Bubba's World Tweaks]].*
+
 > [!infobox] Parasitic
 > | | |
 > |---|---|
@@ -14,11 +16,14 @@ mod: "Bubba's World Tweaks"
 > | **Found** | Enchanting table, villager trades, loot |
 > | **Can't go with** | Mending |
 
-**Parasitic** is an enchantment that mends its item with your health. Every so often a damaged Parasitic item bites you, takes a little health and repairs itself with it. Higher levels take a little more health but give back a good deal more durability for it.
+**Parasitic** is an enchantment that mends its item with the player's health.
+
+- Every so often a damaged Parasitic item bites the player, takes a little health and repairs itself with it.
+- Higher levels take a little more health but give back a good deal more durability for it.
 
 ## How it works
 
-- A Parasitic item only bites while it is damaged, and only while you wear or hold it.
+- A Parasitic item only bites while it is damaged, and only while the player wears or holds it.
 - After a bite it rests for at least half a minute, then bites again at a random moment, usually within a minute or two.
 - Each bite is a random size, up to the level's limit, and always trades health for durability at the same rate for that level:
 
@@ -28,6 +33,6 @@ mod: "Bubba's World Tweaks"
 | II | Three quarters of a heart | 35 |
 | III | One heart | 55 |
 
-- Armour doesn't soften the bite, and **it can kill you**.
+- Armour doesn't soften the bite, and **it can kill the player**.
 - It never bites players in Creative mode.
 - It can't be combined with Mending.

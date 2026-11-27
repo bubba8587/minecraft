@@ -18,7 +18,12 @@ side: client and server
 > | **Side** | Client and server |
 > | **Status** | Active |
 
-**Bubba's Reworked Mining** is a Fabric mod that turns tools into a real progression, from "tough" to "a highly powered machine". Bare wood and stone tools are slow and wear out fast, deepslate is hard going until diamond, and Efficiency and Unbreaking become worth chasing. It also adds rare finds in plain stone, the [[True Unbreaking]] enchantment, and a quartz tool and armor set for the Nether.
+**Bubba's Reworked Mining** is a Fabric mod that turns tools into a real progression, from "tough" to "a highly powered machine".
+
+- Bare wood and stone tools are slow and wear out fast.
+- Deepslate is hard going until diamond.
+- Efficiency and Unbreaking are worth chasing.
+- Adds rare finds in plain stone, the [[True Unbreaking]] enchantment, and a quartz tool and armor set for the Nether.
 
 ## Mining curve
 
@@ -29,44 +34,41 @@ side: client and server
 - **Stone** is a bit slower on stone and very slow on deepslate.
 - **Copper and iron** are about normal on stone, but slow on deepslate, which wears them down fast.
 - **Diamond** mines deepslate as in vanilla, and **netherite** is faster than vanilla.
-- Axes, shovels and hoes follow a gentler version of the same idea.
+- Axes, shovels and hoes follow a gentler version of the same curve.
 
 ## Enchantments
 
 - **Efficiency** multiplies a tool's own speed, so an Efficiency V iron pickaxe mines deepslate a little faster than a bare diamond one.
-- **Unbreaking** is stronger: at level III a tool loses about 1 durability in 7.
+- **Unbreaking** is stronger than in vanilla: at level III a tool loses about 1 durability in 7.
 
 *Main article: [[True Unbreaking]]*
 
-**True Unbreaking** is a new enchantment found only in rare chests: the item never loses durability.
+- **True Unbreaking** is an enchantment found only in rare chests: the item never loses durability.
 
 ## Rare finds
 
 *Main article: [[Rare Finds]]*
 
-Mining stone, granite, diorite, andesite, tuff or deepslate sometimes drops nuggets, and very rarely lapis, an emerald, or (from deepslate) a diamond.
+- Mining stone, granite, diorite, andesite, tuff or deepslate sometimes drops nuggets.
+- Very rarely it drops lapis, an emerald, or (from deepslate) a diamond.
 
 ## Quartz gear
 
 *Main article: [[Quartz Tools and Armor]]*
 
-A white quartz set, about iron's strength, that mines the Nether's blocks much faster.
+- A white quartz set, about iron's strength, that mines the Nether's blocks much faster.
 
 ## Installation
 
-The mod installs like any Fabric mod (see [[Installing Fabric Mods]]) and is needed on both the server and every player's game. Its 32x textures come in the separate **Bubba's Mods 32x** resource pack (see [[Installing Resource Packs]]).
+- Installs like any Fabric mod (see [[Installing Fabric Mods]]).
+- Needed on both the server and every player's game.
+- Its 32x textures come in the separate **Bubba's Mods 32x** resource pack (see [[Installing Resource Packs]]).
 
 ## Compatibility
 
 - [[Bubba's Infused Gems]]: Haste gems speed mining up on top of everything here, like the Haste effect.
 - [[Bubba's Reworked Mobs]]: noble crypts are the best place to find [[True Unbreaking]].
 - Tools from other mods stay vanilla.
-
-## History
-
-| Version | Changes |
-|---|---|
-| 0.1.0 | Added: the mining curve, stronger Efficiency and Unbreaking, rare finds, True Unbreaking, quartz tools and armor. |
 
 ## See also
 

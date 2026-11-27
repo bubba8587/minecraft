@@ -11,20 +11,21 @@
 > | **Tool** | Any (pickaxe fastest) |
 > | **Size** | Smaller than a full block |
 
-A **totem statue** is a totem set down in the world: a small, chunky figure of the totem on a dark stone plinth, in the totem's own colours and look. Every totem has one, and each gives a small version of its totem's effect within 5 blocks of it (see below).
+A **totem statue** is a totem set down in the world: a small, chunky figure of the totem on a dark stone plinth, in the totem's own colours and look.
 
-Some statues glow faintly at night: the Totem of the Beginning's and the Totem of the End's eyes, and the Totem of Fortification's visor. The look is a first version in this early test release.
+- Every totem has one, and each gives a small version of its totem's effect within 5 blocks of it (see below).
+- Some statues glow faintly at night: the Totem of the Beginning's and the Totem of the End's eyes, and the Totem of Fortification's visor.
+- The look is a first version in this early test release.
 
 ## Obtaining
 
-The player sneaks and uses any totem on a block. The statue appears on that block, facing the player, and the totem is used up (in Creative mode it is kept). A totem's cooldown does not stop it being placed.
-
+- The player sneaks and uses any totem on a block.
+- The statue appears on that block, facing the player, and the totem is used up (in Creative mode it is kept).
+- A totem's cooldown does not stop it being placed.
 - Without sneaking, every totem works as usual and places nothing.
 - While sneaking, using a totem on a block always places its statue instead: a sneaking [[Totem of the End]] does not teleport, a sneaking [[Totem of the Beginning]] does not ripple, and a sneaking [[Totem of Seeking]] does not choose a structure.
-
-About half of all [[Relic Vaults|relic vaults]] have a statue on their pedestal, facing the door; breaking it gives its totem.
-
-The [[Grave Talisman]] is not a totem and has no statue.
+- About half of all [[Relic Vaults|relic vaults]] have a statue on their pedestal, facing the door; breaking it gives its totem.
+- The [[Grave Talisman]] is not a totem and has no statue.
 
 ## Effects
 
@@ -44,17 +45,15 @@ Every statue works on the blocks within 5 of it, all the time:
 
 ## Breaking
 
-Mining a statue with any tool, or by hand, drops the totem it was made from. A piston pushing the statue also pops it off as its totem.
+- Mining a statue with any tool, or by hand, drops the totem it was made from.
+- A piston pushing the statue pops it off as its totem.
 
 ## Totem of Undying statue
 
-Sneak and use a vanilla Totem of Undying on a block to set it down as a gold illager idol with emerald eyes. Breaking it gives the Totem of Undying back. It is decoration only, with no effect. A Totem of Undying in your hand still saves you from death as usual, and using it without sneaking does nothing new.
-
-## History
-
-| Version | Changes |
-|---|---|
-| 0.1.0 | Added. Every totem can be set down as a statue, and statues give a small version of their totem's effect. |
+- Sneaking and using a vanilla Totem of Undying on a block sets it down as a gold illager idol with emerald eyes.
+- Breaking it gives the Totem of Undying back.
+- Decoration only, with no effect.
+- A Totem of Undying in the player's hand still saves them from death as usual, and using it without sneaking does nothing different.
 
 ## See also
 

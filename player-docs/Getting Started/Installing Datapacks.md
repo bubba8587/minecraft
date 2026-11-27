@@ -1,6 +1,9 @@
 # Installing Datapacks
 
-This tutorial explains how to add a datapack to a world. Datapacks change the game with Minecraft's own built-in tools, so no mod loader is needed. They are added per world.
+This tutorial explains how to add a datapack to a world.
+
+- Datapacks change the game with Minecraft's own built-in tools, so no mod loader is needed.
+- They are added per world.
 
 ## New world
 
@@ -14,11 +17,13 @@ This tutorial explains how to add a datapack to a world. Datapacks change the ga
 2. Place the `.zip` in the `datapacks` folder.
 3. In game, run `/reload`, or reopen the world.
 
-Some packs that add new dimensions or biomes take effect only after the world is reopened. The command `/datapack list` shows which packs are active.
+- Some packs that add new dimensions or biomes take effect only after the world is reopened.
+- The command `/datapack list` shows which packs are active.
 
 ## Servers
 
-Place the `.zip` in the server's `world/datapacks` folder, then restart the server or run `/reload`.
+1. Place the `.zip` in the server's `world/datapacks` folder.
+2. Restart the server or run `/reload`.
 
 ## See also
 

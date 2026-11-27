@@ -2,7 +2,10 @@
 
 *Part of [[Bubba's Reworked Mining]].*
 
-The **mining curve** is how fast each tool tier mines and how quickly it wears out in [[Bubba's Reworked Mining]]. Every tier mines at its own pace, with stone and deepslate as the steep part of the curve.
+The **mining curve** is how fast each tool tier mines and how quickly it wears out in [[Bubba's Reworked Mining]].
+
+- Every tier mines at its own pace.
+- Stone and deepslate are the steep part of the curve.
 
 ## Pickaxes on stone and deepslate
 
@@ -24,19 +27,19 @@ The **mining curve** is how fast each tool tier mines and how quickly it wears o
 
 ## Other tools and blocks
 
-Axes, shovels, hoes, and pickaxes on other blocks follow a gentler curve:
-
-- wood and stone tools are a little slower than vanilla;
-- iron and up are as vanilla;
-- netherite is a little faster.
-
-Swords wear as in vanilla. Spears, shears and maces are unchanged.
+- Axes, shovels, hoes, and pickaxes on other blocks follow a gentler curve:
+  - wood and stone tools are a little slower than vanilla;
+  - iron and up are as vanilla;
+  - netherite is a little faster.
+- Swords wear as in vanilla.
+- Spears, shears and maces are unchanged from vanilla.
 
 ## Bare hands
 
-Mining by hand is slower than in vanilla, a step below wooden tools. Holding something that isn't a tool (a stick, a block, food) counts as bare hands, as in vanilla.
+- Mining by hand is slower than in vanilla, a step below wooden tools.
+- Holding something that isn't a tool (a stick, a block, food) counts as bare hands, as in vanilla.
 
-| Block | Vanilla | Now |
+| Block | Vanilla | With the mod |
 |---|---|---|
 | Oak log or planks | 3 s | about 4.7 s |
 | Dirt or sand | 0.75 s | about 1.2 s |
@@ -45,7 +48,9 @@ Mining by hand is slower than in vanilla, a step below wooden tools. Holding som
 | Stone (drops nothing, as in vanilla) | 7.5 s | about 47 s |
 | Deepslate (drops nothing, as in vanilla) | 15 s | about 94 s |
 
-Other soft blocks are also about 1.5x slower by hand. Blocks that break instantly in vanilla (grass, flowers, torches, crops, saplings and so on) still break instantly. Haste still speeds up bare hands.
+- Other soft blocks are also about 1.5x slower by hand.
+- Blocks that break instantly in vanilla (grass, flowers, torches, crops, saplings and so on) break instantly.
+- Haste speeds up bare hands.
 
 ## Enchantments and Haste
 
@@ -53,8 +58,7 @@ Other soft blocks are also about 1.5x slower by hand. Blocks that break instantl
 - **Unbreaking** keeps a durability point with odds 1 in 3, 1 in 5 and 1 in 7 at levels I to III. Armor gets the same extra protection.
 - **[[True Unbreaking]]**, found only in rare chests, stops all durability loss.
 - **Haste**, from potions, beacons or [[Bubba's Infused Gems]] Haste gems, multiplies on top.
-
-Tools from other mods stay vanilla.
+- Tools from other mods stay vanilla.
 
 ## See also
 

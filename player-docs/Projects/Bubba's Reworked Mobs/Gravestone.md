@@ -10,12 +10,18 @@
 > | **Tool** | Pickaxe |
 > | **Stacks** | 16 |
 
-A **gravestone** is a stone headstone on a small plinth. It works like a standing sign: the player can write on its front and back, it can face any of 16 directions, and it is solid (players can't walk through it).
+A **gravestone** is a stone headstone on a small plinth that works like a standing sign.
+
+- The player can write on its front and back.
+- It can face any of 16 directions.
+- It is solid: players can't walk through it.
 
 ## Obtaining
 
 - **Stonecutter:** one gravestone from one stone.
-- **Generation:** gravestones stand over the graves in [[Crypt Yards]]. These never carry names: they are blank, or carved with a few letters of the enchanting-table alphabet. They aren't waxed, so the player can carve new words on a found stone.
+- **Generation:** gravestones stand over the graves in [[Crypt Yards]].
+  - These never carry names: they are blank, or carved with a few letters of the enchanting-table alphabet.
+  - They aren't waxed, so the player can carve new words on a found stone.
 
 ## Usage
 
@@ -24,13 +30,8 @@ A **gravestone** is a stone headstone on a small plinth. It works like a standin
 
 ## Breaking
 
-Mining it with a pickaxe gives the gravestone back. Without a pickaxe it drops nothing.
-
-## History
-
-| Version | Changes |
-|---|---|
-| 0.1.0 | Added. |
+- Mining it with a pickaxe gives the gravestone back.
+- Without a pickaxe it drops nothing.
 
 ## See also
 

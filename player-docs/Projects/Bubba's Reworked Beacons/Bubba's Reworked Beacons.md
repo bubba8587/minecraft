@@ -18,37 +18,37 @@ side: client and server
 > | **Side** | Client and server |
 > | **Status** | Active |
 
-**Bubba's Reworked Beacons** is a Fabric mod that reworks the beacon: one item slot replaces the fixed powers and payments, every living thing in range is affected, and two beacons can pair up to work underground. It adds no new blocks or items.
+**Bubba's Reworked Beacons** is a Fabric mod that reworks the beacon: one item slot replaces the fixed powers and payments, every living thing in range is affected, and two beacons can pair up to work underground.
+
+- It adds no new blocks or items.
 
 ## Beacon
 
 *Main article: [[Beacon]]*
 
-A beacon holds one item, which stays in it and decides what the beacon does. On its own the mod accepts six base-gem items that buy vanilla's six powers; other mods add more items. The pyramid sets the range and limits how strong the item can be. A beacon placed under a block hangs upside down, and an upside-down beacon above a normal one makes a pair with a wide area underground.
+- A beacon holds one item, which stays in it and decides what the beacon does.
+- On its own the mod accepts six base-gem items that buy vanilla's six powers; other mods add more items.
+- The pyramid sets the range and limits how strong the item can be.
+- A beacon placed under a block hangs upside down.
+- An upside-down beacon above a normal one makes a pair with a wide area underground.
 
 ## Installation
 
-The mod installs like any Fabric mod (see [[Installing Fabric Mods]]) and is needed on both the server and every player's game; a player without it cannot join a server that has it.
-
-In existing worlds, beacons keep working as sky beacons but lose their old powers; an item has to be put in to give them a power again.
+- Installs like any Fabric mod (see [[Installing Fabric Mods]]).
+- Needed on both the server and every player's game; a player without it cannot join a server that has it.
+- Beacons already in a world when the mod is added work as sky beacons with no power until an item is put in.
 
 ## Textures
 
-The mod uses vanilla's beacon textures; an upside-down beacon is the normal beacon turned over.
+- The mod uses vanilla's beacon textures; an upside-down beacon is the normal beacon turned over.
 
 ## Compatibility
 
-Requires Fabric API. Other Bubba's mods supply beacon items when installed; none of them requires another:
-
-- [[Bubba's Infused Gems]]: Gems go in the slot and give their effects to everything in range (*see [[Gem Effects#In beacons]]*). With it installed, the plain base-gem payments no longer work.
-- [[Bubba's Totems & Artifacts]]: totems go in the slot and work across the area: the [[Totem of Warding]] keeps monsters out, and the [[Totem of Gathering]], [[Totem of Fortification]], [[Totem of Growth]], [[Totem of Seeking]], [[Totem of Herding]], [[Totem of Clear Skies]], [[Totem of the North Wind]] and [[Totem of the Beginning]] each have an area form.
-- [[Bubba's Reworked Mobs]]: the beacons of an [[Ancient Fabricators|Ancient Fabricator]] weaken players near the machine.
-
-## History
-
-| Version | Changes |
-|---|---|
-| 0.1.0 | Added. Early test version. |
+- Requires Fabric API.
+- Other Bubba's mods supply beacon items when installed; none of them requires another:
+  - [[Bubba's Infused Gems]]: Gems go in the slot and give their effects to everything in range (*see [[Gem Effects#In beacons]]*). With it installed, the plain base-gem payments do not work.
+  - [[Bubba's Totems & Artifacts]]: totems go in the slot and work across the area: the [[Totem of Warding]] keeps monsters out, and the [[Totem of Gathering]], [[Totem of Fortification]], [[Totem of Growth]], [[Totem of Seeking]], [[Totem of Herding]], [[Totem of Clear Skies]], [[Totem of the North Wind]] and [[Totem of the Beginning]] each have an area form.
+  - [[Bubba's Reworked Mobs]]: the beacons of an [[Ancient Fabricators|Ancient Fabricator]] weaken players near the machine.
 
 ## See also
 

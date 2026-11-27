@@ -16,38 +16,40 @@ modrinth:
 > | **Side** | Server only (datapack); client and server (mod) |
 > | **Status** | Active |
 
-**Bubba's Extra Recipes** is a datapack that adds a handful of recipes for awkward or grindy items: renewable sand, red sand, clay, calcite, tuff, smooth basalt and glowstone dust, a way to make tridents, and uses for rotten flesh and spare charcoal. It also comes as an optional Fabric mod that adds the Glider, Quartz Shards (quartz from stone) and Synthetic Diamond Ore.
+**Bubba's Extra Recipes** is a datapack that adds a handful of recipes for awkward or grindy items, with an optional Fabric mod that adds features of its own.
+
+- Renewable sand, red sand, clay, calcite, tuff, smooth basalt and glowstone dust.
+- A way to make tridents.
+- Uses for rotten flesh and spare charcoal.
+- The optional mod adds the Glider, Quartz Shards (quartz from stone) and Synthetic Diamond Ore.
 
 ## Recipes
 
 *Main article: [[Recipe List]]*
 
-The pack adds recipes for the crafting table, blast furnace and smoker. No vanilla recipe is replaced. New recipes appear in the recipe book once the player has picked up one of their ingredients.
+- Recipes for the crafting table, blast furnace and smoker.
+- No vanilla recipe is replaced; the saddle uses vanilla's recipe.
+- Recipes appear in the recipe book once the player has picked up one of their ingredients.
 
 ## Companion mod
 
 *Main article: [[Extra Recipes Companion Mod]]*
 
-The companion mod contains the datapack and its resource pack in a single file, and adds two features of its own:
-
+- Contains the datapack and its resource pack in a single file.
 - **[[The Glider]]**: a craftable, weaker relative of the elytra.
+- **Quartz Shards**: quartz from andesite, diorite and granite, via a blast furnace.
 - **[[Synthetic Diamond Ore]]**: diamond ore made in a blast furnace, which rarely drops a diamond when mined.
 
 ## Installation
 
-The datapack is added to a world like any datapack (see [[Installing Datapacks]]). On a server, only the server needs it. Alternatively, the [[Extra Recipes Companion Mod]] can be installed instead; it includes everything in the datapack.
+- The datapack is added to a world like any datapack (see [[Installing Datapacks]]).
+- On a server, only the server needs the datapack.
+- The [[Extra Recipes Companion Mod]] can be installed instead; it includes everything in the datapack.
 
 ## Compatibility
 
-The pack works in plain vanilla and alongside other recipe mods and datapacks, since it does not replace any vanilla recipe.
-
-## History
-
-| Version | Changes |
-|---|---|
-| Datapack 1.0.0 | Made for Minecraft 26.3 from the original recipe set for 26.1. The pack no longer has its own saddle recipe (vanilla's is used), and its former elytra recipe now makes the Glider in the companion mod. |
-| Datapack 1.1.0 | Added recipes for clay (mud and sand), red sand (sand and an iron nugget), and blast furnace recipes for calcite (bone block), tuff (cobbled deepslate) and smooth basalt (basalt). |
-| Mod 0.1.0 | Added the companion mod, with [[The Glider]] and [[Synthetic Diamond Ore]]. |
+- Works in plain vanilla.
+- Works alongside other recipe mods and datapacks, since it does not replace any vanilla recipe.
 
 ## See also
 

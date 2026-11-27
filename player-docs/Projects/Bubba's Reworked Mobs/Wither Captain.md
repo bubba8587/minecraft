@@ -12,7 +12,10 @@
 > | **Summons** | 1-3 [[Soulfire Blaze\|Soulfire Blazes]] at a time |
 > | **Drops** | Nether Star Shards, sometimes the Captain's Helm, often a wither skeleton skull |
 
-A **Wither Captain** is a rare, larger wither skeleton that leads the garrison of a Nether fortress. It wears a horned blackstone helm, shows a blue boss bar, and calls up [[Soulfire Blaze|Soulfire Blazes]] to fight beside it.
+A **Wither Captain** is a rare, larger wither skeleton that leads the garrison of a Nether fortress.
+
+- It wears a horned blackstone helm and shows a blue boss bar.
+- It calls up [[Soulfire Blaze|Soulfire Blazes]] to fight beside it.
 
 ## Spawning
 
@@ -22,7 +25,8 @@ A **Wither Captain** is a rare, larger wither skeleton that leads the garrison o
 
 ## Behavior
 
-- A Wither Captain is a little larger than a wither skeleton and four times as tough. It fights like one, with a stone sword, hits only a little harder, and withers its target.
+- A Wither Captain is a little larger than a wither skeleton and four times as tough.
+- It fights like one, with a stone sword, hits only a little harder, and withers its target.
 - A blue boss bar shows to players within 32 blocks.
 - Once it has started a fight, it does not despawn.
 
@@ -36,7 +40,10 @@ When it first fights a player, and again after it has taken about four hits, the
 - while summoning it takes only a quarter of the damage it normally takes, which makes it the moment to deal with the blazes;
 - a few seconds after the last blaze, it goes back to fighting normally.
 
-It summons no more blazes while four of its blazes are still alive. Its summoned blazes burn out when it dies.
+Limits:
+
+- It summons no more blazes while four of its blazes are alive.
+- Its summoned blazes burn out when it dies.
 
 ## Drops
 
@@ -47,7 +54,7 @@ It summons no more blazes while four of its blazes are still alive. Its summoned
 | Wither skeleton skull | 1 | About 1 in 3 when killed by a player; up to about 1 in 2 with Looting III |
 | Wither skeleton drops (bones, coal) | As a wither skeleton | As a wither skeleton |
 
-It also drops 50 experience.
+- It also drops 50 experience.
 
 ## Captain's Helm
 
@@ -62,15 +69,24 @@ It also drops 50 experience.
 > | **Enchantment** | [[Soulguard]] (always) |
 > | **Obtained** | Wither Captain drop (1 in 4) |
 
-The **Captain's Helm** is a polished blackstone helmet with two curved horns. It protects like a netherite helmet, including its knockback resistance, survives lava as an item, and is repaired with netherite ingots.
+The **Captain's Helm** is a polished blackstone helmet with two curved horns.
 
-Every Captain's Helm comes enchanted with **[[Soulguard]]**, shown in its tooltip, so it has the enchanted shimmer. Its wearer is fully protected from [[Soulfire]]: soul fire and lit soul campfires do no damage and put out the wearer's flames, Soulfire charges do not set them alight (the hit still hurts), and totems work against Soulfire deaths. Ordinary fire and lava still burn.
-
-The horns show whenever it is worn, by players, armor stands and mobs.
+- It protects like a netherite helmet, including its knockback resistance.
+- It survives lava as an item and is repaired with netherite ingots.
+- Every Captain's Helm comes enchanted with **[[Soulguard]]**, shown in its tooltip, so it has the enchanted shimmer.
+- Its wearer is fully protected from [[Soulfire]]:
+  - soul fire and lit soul campfires do no damage and put out the wearer's flames;
+  - Soulfire charges do not set them alight (the hit still hurts);
+  - totems work against Soulfire deaths.
+- Ordinary fire and lava still burn.
+- The horns show whenever it is worn, by players, armor stands and mobs.
 
 ## Nether Star Shard
 
-The **Nether Star Shard** is a broken-off arm of a nether star, dropped by Wither Captains. Four shards craft one nether star, a second, slower source of stars besides the Wither. It survives fire and lava as an item.
+The **Nether Star Shard** is a broken-off arm of a nether star, dropped by Wither Captains.
+
+- Four shards craft one nether star, a second, slower source of stars besides the Wither.
+- It survives fire and lava as an item.
 
 ### Crafting
 
@@ -78,11 +94,12 @@ The **Nether Star Shard** is a broken-off arm of a nether star, dropped by Withe
 |---|---|---|
 | Nether star | 4 Nether Star Shards (anywhere in the grid) | 1 Nether star |
 
-With [[Bubba's Infused Gems]], nether stars make the strongest base gems (see [[Making Infused Gems]]).
+- With [[Bubba's Infused Gems]], nether stars make the strongest base gems (see [[Making Infused Gems]]).
 
 ## Textures
 
-The Wither Captain, its helm and the shard have vanilla-style 16x textures, with 32x versions in **Bubba's Mods 32x**. The Wither Captain and Soulfire Blaze spawn eggs use the vanilla wither skeleton and blaze egg icons.
+- The Wither Captain, its helm and the shard have vanilla-style 16x textures, with 32x versions in **Bubba's Mods 32x**.
+- The Wither Captain and Soulfire Blaze spawn eggs use the vanilla wither skeleton and blaze egg icons.
 
 ## See also
 

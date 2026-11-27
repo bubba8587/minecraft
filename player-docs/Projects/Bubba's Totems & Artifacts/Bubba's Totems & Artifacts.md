@@ -19,21 +19,24 @@ side: client and server
 > | **Side** | Client and server |
 > | **Status** | Active |
 
-**Bubba's Totems & Artifacts** is a Fabric mod that adds **artifacts**: found items that do things potions and enchantments do not. It holds the Grave Talisman and the Totem of Warding, which were part of [[Bubba's Reworked Mobs]] before this mod existed. Found totems can be set down as statues that give a small version of their effect.
+**Bubba's Totems & Artifacts** is a Fabric mod that adds **artifacts**: found items that do things potions and enchantments do not.
 
-Item icons and statues use placeholder art in this early test version. The statues are small, chunky figures, each in its own totem's look.
+- Includes the Grave Talisman, the Totem of Warding and nine more totems.
+- Found totems can be set down as statues that give a small version of their effect.
+- Item icons and statues use placeholder art in this early test version. The statues are small, chunky figures, each in its own totem's look.
 
 ## Grave Talisman
 
 *Main article: [[Grave Talisman]]*
 
-A talisman whose gem glows brighter the closer undead are.
+- A talisman whose gem glows brighter the closer undead are.
 
 ## Totem of Warding
 
 *Main article: [[Totem of Warding]]*
 
-A found item that makes nearby monsters run away while held, and in a beacon from [[Bubba's Reworked Beacons]] keeps an area free of monsters: none spawn there and none can get in.
+- Held: nearby monsters run away.
+- In a beacon from [[Bubba's Reworked Beacons]]: keeps an area free of monsters; none spawn there and none can get in.
 
 ## More totems
 
@@ -52,43 +55,42 @@ A found item that makes nearby monsters run away while held, and in a beacon fro
 
 *Main article: [[Totem Statue]]*
 
-Sneaking and using a totem on a block sets it down as a statue, which gives a small version of the totem's effect around it. Mining the statue gives the totem back.
+- Sneaking and using a totem on a block sets it down as a statue.
+- The statue gives a small version of the totem's effect around it.
+- Mining the statue gives the totem back.
 
 ## Relic maps and vaults
 
 *Main articles: [[Relic Maps]], [[Relic Vaults]]*
 
-Torn relic map shreds turn up in chests across the world, and cartographers sell shreds and, at master level, whole maps. Shreds of the same relic combine into a real map that leads to that relic's buried vault: a sealed room with a totem statue or a fine weapon on its pedestal and chests of treasure. Every world has one vault per relic.
+- Torn relic map shreds turn up in chests across the world.
+- Cartographers sell shreds and, at master level, whole maps.
+- Shreds of the same relic combine into a real map that leads to that relic's buried vault.
+- A vault is a sealed room with a totem statue or a fine weapon on its pedestal and chests of treasure.
+- Every world has one vault per relic.
 
 ## Installation
 
-The mod installs like any Fabric mod (see [[Installing Fabric Mods]]) and is needed on both the server and every player's game.
-
-The items are in the creative inventory under the **Bubba's Totems & Artifacts** tab.
-
-### Upgrading from Bubba's Reworked Mobs
-
-Earlier versions of [[Bubba's Reworked Mobs]] contained the Grave Talisman and the Totem of Warding. Players updating that mod should install this one alongside it: talismans and totems already in a world (in chests, inventories and item frames) then carry over as this mod's items. Without this mod, Minecraft removes them when the world loads.
+- Installs like any Fabric mod (see [[Installing Fabric Mods]]).
+- Needed on both the server and every player's game.
+- The items are in the creative inventory under the **Bubba's Totems & Artifacts** tab.
 
 ## Textures
 
-The mod comes with vanilla-style 16x textures. Its 32x textures, in the style of Classic Faithful 32x Jappa, come in a separate resource pack, **Bubba's Mods 32x**, which covers all of Bubba's mods (see [[Installing Resource Packs]]). Put it above Classic Faithful 32x Jappa if you use that pack.
+- The mod comes with vanilla-style 16x textures.
+- 32x textures, in the style of Classic Faithful 32x Jappa, come in a separate resource pack, **Bubba's Mods 32x**, which covers all of Bubba's mods (see [[Installing Resource Packs]]).
+- Put it above Classic Faithful 32x Jappa if that pack is in use.
 
 ## Compatibility
 
-The mod requires Fabric API and works on its own. Three of Bubba's mods add to it when installed, and none is required:
+- Requires Fabric API and works on its own.
+- Three of Bubba's mods add to it when installed; none is required:
 
 | Installed with | Adds |
 |---|---|
 | [[Bubba's Reworked Mobs]] | The Grave Talisman also senses [[Sleeping Undead|sleeping undead]]; the Totem of Warding calms sleeping undead, and a full ward keeps them asleep; crypts often have a Totem of Warding statue standing guard. [[Endermen|Enderman cairns]] sometimes offer the [[Totem of the Beginning]], and the Totem of the Beginning works only with this mod. The [[Totem of Keeping]] doesn't keep a player's things after a [[Soulfire]] death unless they have [[Soulguard]]. Relic map shreds are also found in crypts, camps, Fabricator offices and cairn trades; some noble crypts hide a [[Relic Vaults|crypt vault]]; vault pedestals show their weapon planted point-down and a skeleton guard sits by it. |
 | [[Bubba's Reworked Beacons]] | Totems fit in a [[Beacon|beacon]] and work across its area: the Totem of Warding wards it, Gathering makes its item ring, Fortification stops explosions breaking blocks, Growth speeds up plants, Seeking points held compasses, Herding keeps animals in, Clear Skies keeps the weather off, the North Wind gives gliders gusts. The Totem of the Beginning in a beacon slowly returns its whole area's ground to how it was generated (with Bubba's Reworked Mobs). |
 | [[Bubba's Infused Gems]] | The weapon on a relic vault's pedestal carries gems, the vault guard's chestplate and sword carry gems, and vault chests also hold rare gems. |
-
-## History
-
-| Version | Changes |
-|---|---|
-| 0.1.0 | Added, with the Grave Talisman and the Totem of Warding (moved from Bubba's Reworked Mobs), totem statues, relic maps and relic vaults. Early test version. |
 
 ## See also
 

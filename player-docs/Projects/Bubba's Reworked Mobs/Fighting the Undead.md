@@ -13,7 +13,7 @@
 
 ## Smite
 
-Each level of Smite gives a chance to destroy a woken undead in one hit, in a burst of soul fire.
+- Each level of Smite gives a chance to destroy a woken undead in one hit, in a burst of soul fire.
 
 | Smite level | Chance per hit |
 |---|---|
@@ -35,7 +35,8 @@ Each level of Smite gives a chance to destroy a woken undead in one hit, in a bu
 
 *Main article: [[Noise and Waking]]*
 
-Sneaking, wool walls and keeping a distance let a player pass sleeping undead without waking them. Woken undead are slow, so running away usually works.
+- Sneaking, wool walls and keeping a distance let a player pass sleeping undead without waking them.
+- Woken undead are slow, so running away usually works.
 
 ## See also
 

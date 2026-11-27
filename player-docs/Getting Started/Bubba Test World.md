@@ -2,11 +2,14 @@
 
 This tutorial describes the **Bubba Test World**, a ready-made creative world with stations for trying the projects' features, and how to get a fresh copy of it.
 
-Some features have no station in this world: [[Drowned]], [[Ancient Fabricators]], [[Trader Posts]], Nether outposts and [[Bubba's Reworked Mining]]. All but Reworked Mining have natural examples in the **Bubba Natural World** (below).
+- Some features have no station in this world: [[Drowned]], [[Ancient Fabricators]], [[Trader Posts]], Nether outposts and [[Bubba's Reworked Mining]].
+- All but Reworked Mining have natural examples in the **Bubba Natural World** (below).
 
 ## Getting the world
 
-The world appears in the world list of the "mod testing" profile after an install. The installed copy belongs to the player: installing again never overwrites it. To get a fresh copy, install with the reset option, which writes over the existing copy; nothing from the old copy is kept.
+- The world appears in the world list of the "mod testing" profile after an install.
+- The installed copy belongs to the player: installing again never overwrites it.
+- To get a fresh copy, install with the reset option, which writes over the existing copy; nothing from the existing copy is kept.
 
 ## World settings
 
@@ -34,21 +37,24 @@ The world appears in the world list of the "mod testing" profile after an instal
 
 ## Bubba Natural World
 
-The **Bubba Natural World** is a second world from normal world generation, installed next to the test world. Signs on a platform at the spawn point teleport to a natural example of each of these:
+- The **Bubba Natural World** is a second world from normal world generation, installed next to the test world.
+- It is a creative world with cheats on.
+- It plays like a normal world: it starts in the morning in clear weather, and time, weather and mob spawning all run as usual.
+- Spider nests are not among the examples, since they cannot be located; the test world's Showcase has one.
+- Signs on a platform at the spawn point teleport to a natural example of each of these:
 
-- crypt yards;
-- a camp of each kind, and a [[Monster Camps#Nether outposts|Nether outpost]] (that sign leads into the Nether);
-- a pillager outpost and a [[Trader Posts|trader post]];
-- a shipwreck with its sleeping crew;
-- an [[Ancient Fabricators|Ancient Fabricator]];
-- an enderman cairn;
-- an old-growth taiga where giant spiders live, with one giant spider always placed there.
-
-It is a creative world with cheats on. Unlike the test world, it plays like a normal world: it starts in the morning in clear weather, and time, weather and mob spawning all run as usual. Spider nests are not among the examples, since they cannot be located; the test world's Showcase has one.
+  - crypt yards;
+  - a camp of each kind, and a [[Monster Camps#Nether outposts|Nether outpost]] (that sign leads into the Nether);
+  - a pillager outpost and a [[Trader Posts|trader post]];
+  - a shipwreck with its sleeping crew;
+  - an [[Ancient Fabricators|Ancient Fabricator]];
+  - an enderman cairn;
+  - an old-growth taiga where giant spiders live, with one giant spider always placed there.
 
 ## Gem testing grounds
 
-The **gem testing grounds** are a set of stations for trying [[Gem Effects|gem effects]] in play, south of the spawn plaza. Most signs there are click signs: right-clicking one runs it.
+- The **gem testing grounds** are a set of stations for trying [[Gem Effects|gem effects]] in play, south of the spawn plaza.
+- Most signs there are click signs: right-clicking one runs it.
 
 ### Wearing a gem set
 
@@ -57,7 +63,8 @@ The **gem testing grounds** are a set of stations for trying [[Gem Effects|gem e
 3. Every gem has two signs, one above the other: the oak sign gives the perfect set, the birch sign below it gives the same set at Base Power V (88% strength). Perfect sets have extras that weaker sets lack (for example, only a perfect Breeze set deflects every projectile), so trying both shows what the perfect set adds. Stations that test such an extra have both signs as well.
 4. Signs on the right are helpful gems, signs on the left harmful ones. The lower row on the left gives Speed in every armor material, for comparing materials, and holds the Take off, Empty bag, No effects, Survival and Creative signs.
 
-Each station below also has signs for the gems it tests. The armor stands past the wardrobe wear showcase sets; clicking a piece takes it.
+- Each station below also has signs for the gems it tests.
+- The armor stands past the wardrobe wear showcase sets; clicking a piece takes it.
 
 ### Stations
 
@@ -78,11 +85,14 @@ Each station below also has signs for the gems it tests. The armor stands past t
 | Food bench | Signs that make the player hungry or fill the food bar, and a chest of food, for Hunger and Saturation. Hunger only counts in survival. |
 | Mining wall | Dirt, stone, deepslate, obsidian and logs to mine in survival, for Haste and Mining Fatigue. A chest holds netherite, diamond and iron pickaxes, shovels and axes, plain and with Efficiency V, to compare Haste with and without Efficiency; signs give a pickaxe and rebuild the wall. |
 
-Survival and Creative signs at the stations switch the game mode, since damage, hunger and archers only matter in survival.
+- Survival and Creative signs at the stations switch the game mode, since damage, hunger and archers only matter in survival.
 
 ## Boss arena
 
-The **boss arena** is a walled arena south of the dark room and the food bench, entered through a gate in its north wall. Each boss is a tough mob in gem gear built around a combination of [[Gem Effects|gem effects]]. The signs on the outside of the north wall summon one boss at a time (summoning another removes the first); bosses only fight back against a player in survival.
+- The **boss arena** is a walled arena south of the dark room and the food bench, entered through a gate in its north wall.
+- Each boss is a tough mob in gem gear built around a combination of [[Gem Effects|gem effects]].
+- The signs on the outside of the north wall summon one boss at a time (summoning another removes the first).
+- Bosses only fight back against a player in survival.
 
 | Boss | Mob | Gem combination |
 |---|---|---|
@@ -95,7 +105,7 @@ The **boss arena** is a walled arena south of the dark room and the food bench, 
 | Phantom | Zombie | Perfect Invisibility armor and a Darkness sword |
 | Stalker | Husk | Silence and Invisibility armor, next to two sleeping skeletons it does not wake |
 
-The Counter kits signs beside them give the player a set built against each boss:
+- The Counter kits signs beside them give the player a set built against each boss:
 
 | Kit | Against | Contents |
 |---|---|---|
@@ -108,15 +118,16 @@ The Counter kits signs beside them give the player a set built against each boss
 | Lantern | Phantom | Night Vision set, Glowing sword |
 | Hunter | Stalker | Silence set, sword with Glowing and Slowness |
 
-A Clear arena sign removes the boss and everything it dropped.
+- A Clear arena sign removes the boss and everything it dropped.
 
 ## Beacons and warding
 
-The **beacons and warding** stations are for trying [[Beacon|beacons]] from [[Bubba's Reworked Beacons]] and the [[Totem of Warding]]. They lie east and west of the boss arena, with one room high above it.
+- The **beacons and warding** stations are for trying [[Beacon|beacons]] from [[Bubba's Reworked Beacons]] and the [[Totem of Warding]].
+- They lie east and west of the boss arena, with one room high above it.
 
 | Station | What to try |
 |---|---|
-| Beacon yard | Four beacons open to the sky on pyramids of 1, 2, 3 and 4 layers, each with a sign and a chest. A gem from the chest goes into the beacon: the pyramid caps its Base Power (I, III, V or VI) and sets the range (20 to 50 blocks). Each chest holds perfect and Base Power V gems, plus the old payment items, which are not accepted while [[Bubba's Infused Gems]] is installed. |
+| Beacon yard | Four beacons open to the sky on pyramids of 1, 2, 3 and 4 layers, each with a sign and a chest. A gem from the chest goes into the beacon: the pyramid caps its Base Power (I, III, V or VI) and sets the range (20 to 50 blocks). Each chest holds perfect and Base Power V gems, plus vanilla's beacon payment items, which are not accepted while [[Bubba's Infused Gems]] is installed. |
 | Poison trap | A beacon west of the boss arena holding a Poison gem poisons everything around it, the player included. A pig and a cow in a pen show it; the zombie beside them is undead and immune. Signs mark the edge. |
 | Paired beacons | A sign south of the mining wall teleports the player up to a closed room with a beacon in the floor and an upside-down beacon above it. A Totem of Warding from the chest goes into the floor beacon: the area 150 blocks around is warded at that height, and with the 4-layer pyramids the sleepers in the room stay asleep even when the bell rings. A sign on the wall leads back down. |
 | Spawn test | Two dark boxes near the paired beacons room, one inside the ward and one above it. The Spawns on sign turns natural spawning on for the whole world; after a while on the ground, the Count spawns sign tells how many mobs are in each box. The Spawns off sign turns spawning off again, and Clear boxes empties them. |

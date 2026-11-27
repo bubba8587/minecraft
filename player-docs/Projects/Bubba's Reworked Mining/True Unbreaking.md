@@ -15,7 +15,9 @@
 
 ## Obtaining
 
-True Unbreaking is never offered by the enchanting table or by villagers, and never appears as a random enchantment on loot. It is found only as an enchanted book in chests:
+- Never offered by the enchanting table or by villagers.
+- Never appears as a random enchantment on loot.
+- Found only as an enchanted book in chests:
 
 | Chest | Chance of a book |
 |---|---|
@@ -27,15 +29,11 @@ True Unbreaking is never offered by the enchanting table or by villagers, and ne
 
 ## Usage
 
-The book is applied at an anvil, like any enchanted book. It works on tools, weapons, armor, shields, the elytra, the [[The Glider|Glider]] and anything else that wears out. An item with True Unbreaking takes no durability damage at all.
-
-It cannot be combined with Mending. Plain Unbreaking, made stronger by this mod (see [[Mining Curve]]), stays the everyday way to make tools last.
-
-## History
-
-| Version | Changes |
-|---|---|
-| 0.1.0 | Added. |
+- The book is applied at an anvil, like any enchanted book.
+- Works on tools, weapons, armor, shields, the elytra, the [[The Glider|Glider]] and anything else that wears out.
+- An item with True Unbreaking takes no durability damage at all.
+- Cannot be combined with Mending.
+- Plain Unbreaking, made stronger by this mod (see [[Mining Curve]]), is the everyday way to make tools last.
 
 ## See also
 

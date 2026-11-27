@@ -10,12 +10,6 @@ A **shipwreck crew** is the sleeping drowned that [[Bubba's Reworked Mobs]] plac
 - They wake like any [[Sleeping Undead]], from noise (see [[Noise and Waking]]), and get up as [[Drowned]] that lurk in the water.
 - A sleeping drowned can be mined with Silk Touch and placed again like other sleepers (the item is called "Sleeping Drowned").
 
-## History
-
-| Version | Changes |
-|---|---|
-| 0.1.0 | Added. |
-
 ## See also
 
 - [[Sleeping Undead]]

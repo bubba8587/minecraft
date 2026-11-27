@@ -12,15 +12,19 @@
 > | **Sky range** | 20 / 30 / 40 / 50 blocks (1 to 4 layers) |
 > | **Paired range** | 60 / 90 / 120 / 150 blocks (1 to 4 layers) |
 
-A **beacon** in [[Bubba's Reworked Beacons]] holds one item that decides what it does, instead of vanilla's power buttons and payment. Its effect reaches every living thing in its area, players and mobs alike, including the player who built it. Beacons can also hang upside down, and a pair of beacons works underground.
+A **beacon** in [[Bubba's Reworked Beacons]] holds one item that decides what it does, instead of vanilla's power buttons and payment.
+
+- Its effect reaches every living thing in its area, players and mobs alike, including the player who built it.
+- Beacons can hang upside down, and a pair of beacons works underground.
 
 ## Usage
 
 ### The screen
 
-The beacon screen has one item slot, with no power buttons and no payment row. The item **stays in the beacon** and can be taken out again; breaking the beacon drops it. Hoppers cannot put items into beacons.
-
-The screen shows the beacon's state, then the item's name and what it does, in the item's own tooltip words:
+- The beacon screen has one item slot, with no power buttons and no payment row.
+- The item **stays in the beacon** and can be taken out again; breaking the beacon drops it.
+- Hoppers cannot put items into beacons.
+- The screen shows the beacon's state, then the item's name and what it does, in the item's own tooltip words:
 
 | Line | Meaning |
 |---|---|
@@ -33,9 +37,9 @@ The screen shows the beacon's state, then the item's name and what it does, in t
 
 ### Effects
 
-Every 4 seconds the beacon gives its effect to every living thing in its area, players and mobs (not spectators). The effect lasts 9 seconds plus 2 seconds per pyramid layer, as in vanilla, so it fades soon after leaving the area.
-
-The pyramid limits the item's Base Power (for items from other mods that have one):
+- Every 4 seconds the beacon gives its effect to every living thing in its area, players and mobs (not spectators).
+- The effect lasts 9 seconds plus 2 seconds per pyramid layer, as in vanilla, so it fades soon after leaving the area.
+- The pyramid limits the item's Base Power (for items from other mods that have one):
 
 | Pyramid layers | Highest Base Power |
 |---|---|
@@ -46,7 +50,8 @@ The pyramid limits the item's Base Power (for items from other mods that have on
 
 ### Payments
 
-Without other mods, the beacon takes six base-gem items, and the item chosen is the power. A 4-layer pyramid raises the power to level II.
+- Without other mods, the beacon takes six base-gem items, and the item chosen is the power.
+- A 4-layer pyramid raises the power to level II.
 
 | Item | Power | Pyramid needed | With a 4-layer pyramid |
 |---|---|---|---|
@@ -57,38 +62,40 @@ Without other mods, the beacon takes six base-gem items, and the item chosen is 
 | Prismarine Shard | Strength | 3 | Strength II |
 | Nether Star | Regeneration | 3 | Regeneration II |
 
-Emeralds, iron, gold and netherite ingots are no longer accepted. With [[Bubba's Infused Gems]] installed these payments are switched off, and finished Gems go in the slot instead (*see [[Gem Effects#In beacons]]*). With [[Bubba's Totems & Artifacts]], totems also fit (the [[Totem of Warding]] and others with an area form).
+- Emeralds, iron, gold and netherite ingots are not accepted.
+- With [[Bubba's Infused Gems]] installed these payments are switched off, and finished Gems go in the slot instead (*see [[Gem Effects#In beacons]]*).
+- With [[Bubba's Totems & Artifacts]], totems also fit (the [[Totem of Warding]] and others with an area form).
 
 ## Range
 
 ### Sky beacon
 
-A beacon with a pyramid below and the usual clear beam to the sky works over vanilla's area: 20, 30, 40 or 50 blocks out to each side for 1 to 4 layers, from that far below the beacon up to the top of the world.
+- A beacon with a pyramid below and the usual clear beam to the sky works over vanilla's area.
+- Range: 20, 30, 40 or 50 blocks out to each side for 1 to 4 layers, from that far below the beacon up to the top of the world.
 
 ### Seeing the edges
 
-Whenever a beacon's effect changes (an item goes in or is swapped, the pyramid grows or shrinks, a pair forms), short columns of coloured particles rise at the four corners of its area for about three seconds, in the colour of the item's effect. Sky beacons show them on the ground at each corner; paired beacons at all eight corners of their box, top and bottom. Underground those corners are often inside solid rock, so they show only where the corner is open. To check a beacon's edges again, take its item out and put it back.
+- Whenever a beacon's effect changes (an item goes in or is swapped, the pyramid grows or shrinks, a pair forms), short columns of coloured particles rise at the corners of its area for about three seconds, in the colour of the item's effect.
+- Sky beacons show them on the ground at each of the four corners; paired beacons at all eight corners of their box, top and bottom.
+- Underground those corners are often inside solid rock, so they show only where the corner is open.
+- To check a beacon's edges again, take its item out and put it back.
 
 ### Upside-down beacon
 
-Placing a beacon against the underside of a block hangs it upside down, like a hanging lantern; it stays when that block is removed. On its own an upside-down beacon does nothing: no beam, no effect and no item. Its pyramid is built upside down above it.
+- Placing a beacon against the underside of a block hangs it upside down, like a hanging lantern; it stays when that block is removed.
+- On its own an upside-down beacon does nothing: no beam, no effect and no item.
+- Its pyramid is built upside down above it.
 
 ### Paired beacons
 
-A normal beacon with its pyramid below and an upside-down beacon straight above it, with its pyramid above, form a pair when only clear blocks (air, glass, anything a beacon beam passes through) are between them. There is no limit on the gap. The item goes in the bottom beacon.
-
+- A normal beacon with its pyramid below and an upside-down beacon straight above it, with its pyramid above, form a pair when only clear blocks (air, glass, anything a beacon beam passes through) are between them.
+- There is no limit on the gap.
+- The item goes in the bottom beacon.
 - The smaller of the two pyramids sets the range: **60, 90, 120 or 150 blocks** out to each side (three times a sky beacon's), from 10 blocks below the floor pyramid to 10 blocks above the ceiling pyramid.
 - A white beam joins the two beacons while the pair works. A block in the beam turns the pair off: no beam and no effect.
 - The usual beacon sounds play for pairs.
 - A beacon that could pair and also sees the sky works as a pair.
-
-Paired beacons trade the sky beacon's full-height column for a wide, low box that fits mines, bases and crypts.
-
-## History
-
-| Version | Changes |
-|---|---|
-| 0.1.0 | Added. |
+- Paired beacons trade the sky beacon's full-height column for a wide, low box that fits mines, bases and crypts.
 
 ## See also
 

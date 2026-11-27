@@ -9,7 +9,11 @@
 > | **Location** | Fairly flat, dry ground in plains, meadows, forests, dark forests, taigas, snowy plains and taigas, savannas, deserts, swamps, windswept hills and the pale garden |
 > | **Contains** | [[Gravestone\|Gravestones]], [[Sleeping Undead\|sleeping undead]], sometimes a crypt |
 
-A **crypt yard** is an old graveyard behind an iron-bar fence with stone brick posts and a gate. A single soul lantern hangs on one gate post, and a path leads in from the gate. Rows of graves fill the yard, each a [[Gravestone]] over a plot of coarse or rooted dirt, some with flowers or weeds. One or two old trees of the local wood grow where a grave would be; in deserts, dead bushes grow on the graves instead.
+A **crypt yard** is an old graveyard behind an iron-bar fence with stone brick posts and a gate.
+
+- A single soul lantern hangs on one gate post, and a path leads in from the gate.
+- Rows of graves fill the yard, each a [[Gravestone]] over a plot of coarse or rooted dirt, some with flowers or weeds.
+- One or two old trees of the local wood grow where a grave would be; in deserts, dead bushes grow on the graves instead.
 
 ## Generation
 
@@ -18,11 +22,12 @@ A **crypt yard** is an old graveyard behind an iron-bar fence with stone brick p
 
 ### Sizes
 
-Yards range from a **lone family plot** (two or three graves, no path, never a crypt) through small and medium yards to **large** yards over 20 blocks across.
+- Yards range from a **lone family plot** (two or three graves, no path, never a crypt) through small and medium yards to **large** yards over 20 blocks across.
 
 ### States of decay
 
 Each yard is in one state:
+
 - **Kept:** the whole fence standing, a neat gravel path, stones upright, flowers on the graves.
 - **Overgrown:** gaps in the fence, mossy posts, grass and moss through the path, a few stones askew or fallen.
 - **Sunken:** the plots have settled into hollows, the path is muddy, some stones lean, more of the fence is down.
@@ -31,10 +36,10 @@ Each yard is in one state:
 
 ### Desert and snowy yards
 
+*See also: [[Sleeping Undead#Husks and strays]]*
+
 - **Deserts:** the crypts hold mostly husks buried in sand, and the graves hold resting husks.
 - **Snowy places:** the crypts hold mostly strays frozen in clear ice, and the graves hold resting strays.
-
-See [[Sleeping Undead#Husks and strays]].
 
 ## The resting dead
 
@@ -46,11 +51,21 @@ See [[Sleeping Undead#Husks and strays]].
 
 ## Crypts
 
-Many yards have stairs at the far end leading down to a crypt. Bigger yards have richer crypts. Unlike the yard's dead, the [[Sleeping Undead|sleepers]] down here **do wake**. A sleeper lying in a niche wakes standing in front of it.
-
-- **Pauper's ossuary** (small and medium yards): a cramped tunnel of cobblestone, packed mud and dirt with bones in the walls, lined with niches. Almost every niche holds a sleeper with little or nothing on, some stacked two high. A candle or two and a chest of poor things: bones, rotten flesh, string, coal, iron nuggets, rarely an emerald.
-- **Family vault:** a candlelit stone brick room, skeletons and zombies in niches along both walls, and a small altar with a chest of the family's things: gold nuggets, some iron, sometimes an emerald, a name tag or an enchanted book. With [[Bubba's Totems & Artifacts]], sometimes a [[Grave Talisman]].
-- **Noble crypt** (medium and large yards): polished andesite and chiseled stone, an entry hall, a pillared chamber with a sarcophagus holding an armoured sleeper under a stone lid, and two side halls lined with niches of sleepers, a little under half of them in full iron, chainmail or gold armour, some armed. With [[Bubba's Infused Gems]], some of them wear gemmed gear ([[Noble Finery]]).
+- Many yards have stairs at the far end leading down to a crypt.
+- Bigger yards have richer crypts.
+- Unlike the yard's dead, the [[Sleeping Undead|sleepers]] down here **do wake**. A sleeper lying in a niche wakes standing in front of it.
+- **Pauper's ossuary** (small and medium yards):
+  - a cramped tunnel of cobblestone, packed mud and dirt with bones in the walls, lined with niches;
+  - almost every niche holds a sleeper with little or nothing on, some stacked two high;
+  - a candle or two and a chest of poor things: bones, rotten flesh, string, coal, iron nuggets, rarely an emerald.
+- **Family vault:**
+  - a candlelit stone brick room, skeletons and zombies in niches along both walls;
+  - a small altar with a chest of the family's things: gold nuggets, some iron, sometimes an emerald, a name tag or an enchanted book;
+  - with [[Bubba's Totems & Artifacts]], sometimes a [[Grave Talisman]].
+- **Noble crypt** (medium and large yards):
+  - polished andesite and chiseled stone, an entry hall, and a pillared chamber with a sarcophagus holding an armoured sleeper under a stone lid;
+  - two side halls lined with niches of sleepers, a little under half of them in full iron, chainmail or gold armour, some armed;
+  - with [[Bubba's Infused Gems]], some of them wear gemmed gear ([[Noble Finery]]).
 
 ### Noble crypt loot
 
@@ -61,7 +76,10 @@ Many yards have stairs at the far end leading down to a crypt. Bigger yards have
 
 ### With Bubba's Totems & Artifacts
 
-- **Warding statues:** crypts often have a [[Totem Statue|Totem of Warding statue]] standing among the sleepers, facing the way in. While it stands, the sleepers near it never wake. Breaking the statue gives the totem, and the sleepers can wake again.
+- **Warding statues:**
+  - Crypts often have a [[Totem Statue|Totem of Warding statue]] standing among the sleepers, facing the way in.
+  - While it stands, the sleepers near it never wake.
+  - Breaking the statue gives the totem, and the sleepers can wake again.
 
   | Crypt | Statue chance |
   |---|---|
@@ -69,18 +87,14 @@ Many yards have stairs at the far end leading down to a crypt. Bigger yards have
   | Family vault | 65 % |
   | Pauper's ossuary | 35 % |
 
-- **Relic vaults:** about a third of noble crypts hide a small [[Relic Vaults|relic vault]] behind the far wall, between the two family chests: an old stair leads down from there to a sealed treasure room. Nothing shows it from inside the crypt; it is found by breaking through the wall.
+- **Relic vaults:**
+  - About a third of noble crypts hide a small [[Relic Vaults|relic vault]] behind the far wall, between the two family chests: an old stair leads down from there to a sealed treasure room.
+  - Nothing shows it from inside the crypt; it is found by breaking through the wall.
 - **Relic maps:** crypt chests also hold [[Relic Maps|relic map shreds]].
 
 ## Commands
 
-Operators can build any kind with `/bubbas_reworked_mobs graveyard build <lone|small|medium|large> <kept|overgrown|sunken|collapsed|nearly_gone> <none|pauper|family|noble>` (see [[Reworked Mobs Commands]]).
-
-## History
-
-| Version | Changes |
-|---|---|
-| 0.1.0 | Added: crypt yards in five states of decay and four sizes; the resting dead; the pauper's ossuary, family vault and noble crypt; desert and snowy yards. |
+- Operators can build any kind with `/bubbas_reworked_mobs graveyard build <lone|small|medium|large> <kept|overgrown|sunken|collapsed|nearly_gone> <none|pauper|family|noble>` (see [[Reworked Mobs Commands]]).
 
 ## See also
 

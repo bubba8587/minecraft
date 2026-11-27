@@ -13,7 +13,9 @@
 > | **Size** | 2-3 (small camp), 3-4 (medium), 4-5 (large) |
 > | **Leader drops** | A map to its camp |
 
-A **camp patrol** is a small band of a monster camp's monsters that leaves the camp to look for players in the land around it. Patrols carry a camp's danger out across its land, so clearing a camp makes the whole area round it safer.
+A **camp patrol** is a small band of a monster camp's monsters that leaves the camp to look for players in the land around it.
+
+- Patrols carry a camp's danger out across its land, so clearing a camp makes the whole area round it safer.
 
 ## Spawning
 
@@ -27,17 +29,21 @@ A **camp patrol** is a small band of a monster camp's monsters that leaves the c
 ## Behavior
 
 - A patrol has **2-3 members from a small camp, 3-4 from a medium one and 4-5 from a large one**, the leader included.
-- The patrol first heads toward where the player stood when it appeared, then wanders the camp's land, keeping together. Its members attack any player they see.
+- The patrol first heads toward where the player stood when it appeared, then wanders the camp's land, keeping together.
+- Its members attack any player they see.
 - Patrol members are ordinary monsters of the camp's kind, with the usual chance of armor and weapons. They despawn like ordinary monsters.
 - Patrols are not part of the camp's roster: killing a patrol does not clear the camp or count toward clearing it.
 
 ### The leader
 
-The **leader** carries the camp's banner on its head. It is otherwise an ordinary member of the patrol. When killed, it always drops a **Monster Camp Explorer Map** centred on its camp, with the camp marked by a white X. The banner itself does not drop.
+- The **leader** carries the camp's banner on its head. It is otherwise an ordinary member of the patrol.
+- When killed, it always drops a **Monster Camp Explorer Map** centred on its camp, with the camp marked by a white X.
+- The banner itself does not drop.
 
 ### Riders
 
-Camps with a stable (every large camp and about half of medium ones; see [[Monster Camps#Stables]]) often send their patrols out riding. The leader always rides, and each other member half the time.
+- Camps with a stable (every large camp and about half of medium ones; see [[Monster Camps#Stables]]) often send their patrols out riding.
+- The leader always rides, and each other member half the time.
 
 | Camp | Riders |
 |---|---|
@@ -54,13 +60,7 @@ Camps with a stable (every large camp and about half of medium ones; see [[Monst
 
 ## Commands
 
-Operators can call up a patrol with `/bubbas_reworked_mobs camp patrol [<kind>] [mounted|foot]` (see [[Reworked Mobs Commands]]).
-
-## History
-
-| Version | Changes |
-|---|---|
-| 0.1.0 | Added. |
+- Operators can call up a patrol with `/bubbas_reworked_mobs camp patrol [<kind>] [mounted|foot]` (see [[Reworked Mobs Commands]]).
 
 ## See also
 

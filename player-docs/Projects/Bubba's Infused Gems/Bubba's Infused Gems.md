@@ -20,13 +20,19 @@ side: client and server
 
 **Bubba's Infused Gems** is a Fabric mod that lets the player brew a potion into a gem, enchant the gem, and set it into armor or a weapon, giving a permanent version of the potion's effect.
 
-Armor gems affect the wearer all the time; weapon gems affect whatever the weapon hits. Gems below the very best are weaker than a real potion; only a perfect set matches the strongest potion (and goes past it for movement effects). Gems of the same effect stack, and some gems carry a drawback.
-
-In this test version the gem textures are simple placeholders. Every gem effect works in armor and in weapons.
+- Armor gems affect the wearer all the time; weapon gems affect whatever the weapon hits.
+- Every gem effect works in armor and in weapons.
+- Gems below the very best are weaker than a real potion; only a perfect set matches the strongest potion (and goes past it for movement effects).
+- Gems of the same effect stack, and some gems carry a drawback.
+- The gem textures are simple placeholders.
 
 ## Obtaining
 
-Gems are brewed, enchanted and socketed by the player (below), or found: finished Gems and gemmed armor turn up rarely in chests, vaults, fishing treasure and hero gifts, and on mobs that spawn in armor. Six effects (Haste, Luck, Health Boost, Hero of the Village, Mining Fatigue, Resistance) come only from loot. *Main article: [[Finding Gems]]*
+*Main article: [[Finding Gems]]*
+
+- Gems are brewed, enchanted and socketed by the player (below).
+- Finished Gems and gemmed armor are also found rarely in chests, vaults, fishing treasure and hero gifts, and on mobs that spawn in armor.
+- Six effects come only from loot: Haste, Luck, Health Boost, Hero of the Village, Mining Fatigue and Resistance.
 
 ## Items
 
@@ -45,29 +51,30 @@ Gems are brewed, enchanted and socketed by the player (below), or found: finishe
 
 ## Commands
 
-`/gems` lists the player's combined gem effects. *Main article: [[Infused Gems Commands]]*
+*Main article: [[Infused Gems Commands]]*
+
+- `/gems` lists the player's combined gem effects.
 
 ## Installation
 
-The mod is installed like any Fabric mod (see [[Installing Fabric Mods]]) and is needed on both the server and every player's game. Ready-made Infused Gems and Gems are in the creative inventory under **Bubba's Infused Gems**, and the [[Bubba Test World]] has a Gems station.
+- Installed like any Fabric mod (see [[Installing Fabric Mods]]).
+- Needed on both the server and every player's game.
+- Ready-made Infused Gems and Gems are in the creative inventory under **Bubba's Infused Gems**.
+- The [[Bubba Test World]] has a Gems station.
 
 ## Textures
 
-The mod comes with vanilla-style 16x textures. Its 32x textures, in the style of Classic Faithful 32x Jappa, come in a separate resource pack, **Bubba's Mods 32x**, which covers all of Bubba's mods (see [[Installing Resource Packs]]). Put it above Classic Faithful 32x Jappa if you use that pack.
+- The mod comes with vanilla-style 16x textures.
+- Its 32x textures, in the style of Classic Faithful 32x Jappa, come in a separate resource pack, **Bubba's Mods 32x**, which covers all of Bubba's mods (see [[Installing Resource Packs]]).
+- **Bubba's Mods 32x** goes above Classic Faithful 32x Jappa when both are used.
 
 ## Compatibility
 
-Requires Fabric API. Mods that also give armor effects (such as trim-effect mods) can be installed alongside it; how their effects combine with gem effects has not been checked yet.
-
-With [[Bubba's Reworked Beacons]] installed, a Gem can be placed in a beacon, which gives the gem's effects to every living thing in its area; the beacon then no longer takes the plain base-gem payments. *Main article: [[Gem Effects#In beacons]]*. Without it, the mod works the same.
-
-With [[Bubba's Reworked Mobs]] installed, its Potion of [[Soulguard]] brews a Soulguard gem, which protects its wearer fully from [[Soulfire]]. *Main article: [[Gem Effects#Gems beyond potions]]*
-
-## History
-
-| Version | Changes |
-|---|---|
-| 0.1.0 | Added. Early test version. |
+- Requires Fabric API.
+- Mods that also give armor effects (such as trim-effect mods) can be installed alongside it; how their effects combine with gem effects has not been checked.
+- [[Bubba's Reworked Beacons]]: a Gem can be placed in a beacon, which gives the gem's effects to every living thing in its area; the beacon then does not take the plain base-gem payments. *Main article: [[Gem Effects#In beacons]]*
+- [[Bubba's Reworked Mobs]]: its Potion of [[Soulguard]] brews a Soulguard gem, which protects its wearer fully from [[Soulfire]]. *Main article: [[Gem Effects#Gems beyond potions]]*
+- Without either mod, Infused Gems works the same.
 
 ## See also
 

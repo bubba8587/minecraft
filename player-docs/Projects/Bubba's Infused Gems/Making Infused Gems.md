@@ -15,7 +15,8 @@ An **Infused Gem** is a gem brewed with a potion in a brewing stand, carrying th
 
 ### Brewing
 
-The player places a potion in a bottle slot of a brewing stand and a **base gem** in the ingredient slot, with blaze powder as fuel. As with any brew, one base gem infuses all three bottle slots.
+- The player places a potion in a bottle slot of a brewing stand and a **base gem** in the ingredient slot, with blaze powder as fuel.
+- As with any brew, one base gem infuses all three bottle slots.
 
 | Bottle slot | Ingredient | Result |
 |---|---|---|
@@ -38,7 +39,8 @@ The player places a potion in a bottle slot of a brewing stand and a **base gem*
 
 ### Base gems
 
-The base gem sets the gem's **Base Power level**, which affects strength only, and matters a lot: a nether star gem is two and a half times as strong as an amethyst one.
+- The base gem sets the gem's **Base Power level**, which affects strength only.
+- It matters a lot: a nether star gem is two and a half times as strong as an amethyst one.
 
 | Base Power | Base gem | Strength |
 |---|---|---|
@@ -49,7 +51,7 @@ The base gem sets the gem's **Base Power level**, which affects strength only, a
 | V | Prismarine shard | 88% |
 | VI | Nether star | 100% |
 
-With [[Bubba's Reworked Mobs]] installed, nether stars have a second source: four Nether Star Shards, dropped by the rare [[Wither Captain]], craft one nether star.
+- With [[Bubba's Reworked Mobs]] installed, nether stars have a second source: four Nether Star Shards, dropped by the rare [[Wither Captain]], craft one nether star.
 
 ## Properties
 
@@ -57,12 +59,11 @@ With [[Bubba's Reworked Mobs]] installed, nether stars have a second source: fou
 - **Potion strength**: a strong (glowstone) potion makes a stronger gem, a long (redstone) potion a slightly stronger one. The finished Gem's tooltip shows it as *Infusion I* (normal), *II* (long) or *III* (strong); gems brewed from an item show *Infusion III*.
 - **Form**: normal, splash or lingering, the potion's form. It can't be changed after brewing. It sets the highest enchant level: normal reaches Enchant I, splash Enchant II, lingering Enchant III. *Main article: [[Enchanting Gems]]*
 - Gems brewed from items (golden apples, wither roses, stews and the rest) have no form. Their names show none, for example *Infused Gem: Base Power IV, Absorption*, and they reach Enchant III like a lingering potion's; collecting the items is the cost.
-
-The item name shows these, for example *Infused Gem: Base Power III, Speed (Splash)*, and the tooltip names the potion and the highest enchant level, for example *Strong potion, up to Enchant III*.
+- The item name shows these, for example *Infused Gem: Base Power III, Speed (Splash)*, and the tooltip names the potion and the highest enchant level, for example *Strong potion, up to Enchant III*.
 
 ## Supported potions
 
-Every potion brews a gem: Swiftness, Strength, Leaping, Regeneration, Turtle Master, Fire Resistance, Water Breathing, Night Vision, Invisibility, Slow Falling, Luck, Healing, Poison, Slowness, Weakness, Harming, Wind Charged, Weaving, Oozing and Infested. So do the items in the table above.
+- Every potion brews a gem: Swiftness, Strength, Leaping, Regeneration, Turtle Master, Fire Resistance, Water Breathing, Night Vision, Invisibility, Slow Falling, Luck, Healing, Poison, Slowness, Weakness, Harming, Wind Charged, Weaving, Oozing and Infested. So do the items in the table above.
 
 - A Wind Charged potion makes a **Wind Burst** gem.
 - With [[Bubba's Reworked Mobs]] installed, the Potion of [[Soulguard]] brews a **Soulguard** gem too. Without that mod there is no Soulguard gem.

@@ -1,8 +1,10 @@
 # Home
 
-Welcome to the player guide for **Bubba's** Minecraft mods, datapacks and resource packs. It describes what each project adds, how to install it and what it works with. It is written for players, so it says nothing about how the projects are built.
+Welcome to the player guide for **Bubba's** Minecraft mods, datapacks and resource packs.
 
-All projects target the latest full release of Minecraft. [[Version Status]] names the current version and any project paused while it catches up.
+- Describes what each project adds, how to install it and what it works with.
+- Written for players: nothing here covers how the projects are built.
+- All projects target the latest full release of Minecraft; [[Version Status]] names the current version and any paused project.
 
 ## Projects
 
@@ -14,9 +16,9 @@ All projects target the latest full release of Minecraft. [[Version Status]] nam
 | [[Bubba's Reworked Beacons]] | Fabric mod | Beacons with one item slot instead of fixed powers, and paired beacons that work underground. |
 | [[Bubba's Totems & Artifacts]] | Fabric mod | Found artifacts: the Grave Talisman and eleven totems, many of which also work in a beacon or as a statue, and relic maps that lead to buried vaults. |
 | [[Bubba's Reworked Mining]] | Fabric mod | A steep tool curve from slow bare tools to an enchanted machine, rare finds in stone, True Unbreaking, and quartz gear for the Nether. |
-| [[Bubba's World Tweaks]] | Fabric mod | Small touches to the world: bubbling lava, lava geysers, and geyser updrafts to ride. |
+| [[Bubba's World Tweaks]] | Fabric mod | Small touches to the world: bubbling lava, lava geysers, geyser updrafts to ride, the Parasitic enchantment and deep-sea fortresses. |
 
-Each project has a folder in `Projects/`: an overview page named after the project, plus a page per topic.
+- Each project has a folder in `Projects/`: an overview page named after the project, plus a page per topic.
 
 ## What each mod adds
 
@@ -47,6 +49,8 @@ Each project has a folder in `Projects/`: an overview page named after the proje
 
 **[[Bubba's World Tweaks]]**
 - [[Lava Bubbles and Geysers]]: lava bubbles over magma and erupts in geysers of black smoke; lava and sulfur geysers lift and speed up players above them, so circling one climbs.
+- [[Parasitic]], an enchantment that mends its item with the player's health.
+- Flooded [[Deep-Sea Fortresses]] on deep-ocean floors.
 
 **[[Bubba's Extra Recipes]]**
 - A [[Recipe List]] for awkward or grindy items, as a datapack.

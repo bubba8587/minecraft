@@ -10,13 +10,20 @@
 > | **Strength** | Mostly weak; better in harder places |
 > | **Found-only gems** | Haste, Luck, Health Boost, Hero of the Village, Mining Fatigue, Resistance |
 
-**Found gems** are finished Gems, and armor and weapons with Gems already set in them, that turn up as loot in structures and on mobs. Found loot is rare and mostly weak; harder places give better gems, and gemmed mobs make harder places more dangerous. Six gem effects have no brewing source of their own and are found only (Luck can also be brewed from a Luck potion, which has no survival recipe).
+**Found gems** are finished Gems, and armor and weapons with Gems already set in them, that turn up as loot in structures and on mobs.
+
+- Found loot is rare and mostly weak; harder places give better gems.
+- Gemmed mobs make harder places more dangerous.
+- Six gem effects have no brewing source of their own and are found only (Luck can also be brewed from a Luck potion, which has no survival recipe).
 
 ## Obtaining
 
 ### Chests, vaults and other loot
 
-Each place below has a small chance per chest (fishing: per treasure catch; hero gift: per gift; elder guardian: per kill by a player) of one extra item on top of the usual loot: a Gem of any brewable effect, or a piece of armor (about a fifth of the time) or a weapon (about a seventh of the time) with gems set in it. Gems in weapons are mostly harmful effects such as Poison or Slowness. Where the table names found-only gems, about a third of these extras are one of them instead.
+- Each place below has a small chance per chest (fishing: per treasure catch; hero gift: per gift; elder guardian: per kill by a player) of one extra item on top of the usual loot.
+- The extra item is a Gem of any brewable effect, or a piece of armor (about a fifth of the time) or a weapon (about a seventh of the time) with gems set in it.
+- Gems in weapons are mostly harmful effects such as Poison or Slowness.
+- Where the table names found-only gems, about a third of these extras are one of them instead.
 
 | Where | Level | Chance | Found-only gems there |
 |---|---|---|---|
@@ -44,7 +51,10 @@ Each place below has a small chance per chest (fishing: per treasure catch; hero
 
 ### Mobs
 
-Mobs that spawn with armor or a weapon sometimes have gems set in them, and they get those gems' effects like a player would (a zombie with a Glowing gem glows; undead follow the usual undead rules). A gemmed weapon puts its gems' effects on whatever the mob hits: a skeleton's gemmed bow fires tipped arrows, a drowned's gemmed trident poisons. A piece drops with the usual chance for mob equipment and keeps its gems. Mobs out in the open rarely have gems; mobs in dangerous places have them far more often.
+- Mobs that spawn with armor or a weapon sometimes have gems set in them, and they get those gems' effects like a player would (a zombie with a Glowing gem glows; undead follow the usual undead rules).
+- A gemmed weapon puts its gems' effects on whatever the mob hits: a skeleton's gemmed bow fires tipped arrows, a drowned's gemmed trident poisons.
+- A piece drops with the usual chance for mob equipment and keeps its gems.
+- Mobs out in the open rarely have gems; mobs in dangerous places have them far more often.
 
 | Mob | Chance per armor piece or weapon | Level |
 |---|---|---|
@@ -56,7 +66,7 @@ Mobs that spawn with armor or a weapon sometimes have gems set in them, and they
 
 ## Strength
 
-A found Gem is made as if it had been brewed and enchanted: its Base Power level and Enchant level depend on where it was found.
+- A found Gem is made as if it had been brewed and enchanted: its Base Power level and Enchant level depend on where it was found.
 
 | Level | Base Power | Enchant | Potion strength | Gemmed armor | Gemmed weapons | Gems per piece |
 |---|---|---|---|---|---|---|
@@ -65,11 +75,13 @@ A found Gem is made as if it had been brewed and enchanted: its Base Power level
 | Hard | II to IV | I or II | Any | Iron or diamond | Iron or diamond sword, diamond axe, bow, crossbow, trident | 1 or 2 |
 | Ominous | III to VI | II or III | Any | Diamond | Diamond sword, diamond axe, bow, crossbow, trident, mace | 1 to 3 (weapons hold 2) |
 
-Only ominous vaults give Base Power VI gems, and those are always **perfect** (Enchant III, full strength) of any effect. A perfect gem from a vault nearly always comes with a drawback; about 1 in 20 is clean. Everywhere else, found brewable gems stay below Base Power VI.
+- Only ominous vaults give Base Power VI gems, and those are always **perfect** (Enchant III, full strength) of any effect.
+- A perfect gem from a vault nearly always comes with a drawback; about 1 in 20 is clean.
+- Everywhere else, found brewable gems stay below Base Power VI.
 
 ## Compatibility
 
-All of the loot above is data, so a data pack can change the chances or remove gems from any place.
+- All of the loot above is data, so a data pack can change the chances or remove gems from any place.
 
 ## See also
 

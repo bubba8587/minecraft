@@ -4,6 +4,8 @@ mod: "Bubba's World Tweaks"
 ---
 # Deep-Sea Fortresses
 
+*Part of [[Bubba's World Tweaks]].*
+
 > [!infobox] Deep-Sea Fortress
 > | | |
 > |---|---|
@@ -12,11 +14,47 @@ mod: "Bubba's World Tweaks"
 > | **Found in** | Deep oceans |
 > | **Rarity** | About as rare as ocean monuments |
 
-**Deep-sea fortresses.** On the floor of deep oceans (deep, deep lukewarm, deep cold and deep frozen ocean) there are now flooded fortresses: the same sprawling layout as a Nether fortress, built of stone bricks (some mossy, some cracked) with prismarine trim, cyan stained glass windows (a few broken out) and sea lanterns lighting the corridors, bridges and halls. They look old and worn: a couple of slanting breaks run through each one where the sea has eaten away walls, floors and bridges, and in deep lukewarm ocean they are overgrown with clumps of coral. They are about as rare as ocean monuments, sit in the sea floor with their pillars reaching down to it (sand heaped round their feet), and are always well underwater, their tops at least 6 blocks below the surface. Tall fortresses sink into the seabed: their lowest levels are flooded tunnels and rooms in the rock, reached by swimming down through the fortress.
+A **deep-sea fortress** is a flooded fortress on the floor of a deep ocean, with the same sprawling layout as a Nether fortress.
 
-- Inside are **drowned**, and a **guardian spawner** in the spawner room (dark prismarine floor). Guardians only come from the spawner, which spawns at the same rate as a Nether fortress's blaze spawner.
-- **Barrels** (instead of chests) hold ocean treasure: iron, gold, emeralds, the odd diamond, prismarine shards and crystals, sponges, a gold block now and then, cooked fish, maps to buried treasure, coast armor trims, nautilus armor, nautilus shells, and rarely a **Heart of the Sea**.
-- **Conduit shrine:** in the middle of the central bridge crossing is a ring of prismarine and sea lanterns around an empty spot on a little pedestal. Put a conduit there (build one from a Heart of the Sea and nautilus shells) and it switches on: Conduit Power around it, and it attacks nearby drowned.
-- **Bubble lifts:** the tall stair rooms have two bubble columns up through the landing: soul sand lifts you up, magma pulls you down. A sea lantern marks the top of each, two blocks above the landing so there is room to step off.
-- **Finding one:** dolphins you feed fish can lead you to one, and about one in four buried-treasure maps from shipwreck map chests is a **Deep-Sea Fortress Map** instead. `/locate structure bubbas_world_tweaks:deepsea_fortress` works too.
-- Works with Tectonic's deeper oceans: the fortress sits on the deeper floor.
+## Generation
+
+- Found in deep, deep lukewarm, deep cold and deep frozen ocean.
+- About as rare as ocean monuments.
+- Sits in the sea floor, with its pillars reaching down to it and sand heaped round their feet.
+- Always well underwater: its top is at least 6 blocks below the surface.
+- Tall fortresses sink into the seabed: their lowest levels are flooded tunnels and rooms in the rock, reached by swimming down through the fortress.
+- With Tectonic's deeper oceans, the fortress sits on the deeper floor.
+
+## Appearance
+
+- Built of stone bricks (some mossy, some cracked) with prismarine trim.
+- Cyan stained glass windows, a few broken out.
+- Sea lanterns light the corridors, bridges and halls.
+- Looks old and worn: a couple of slanting breaks run through each one where the sea has eaten away walls, floors and bridges.
+- In deep lukewarm ocean it is overgrown with clumps of coral.
+
+## Mobs
+
+- **Drowned** live inside.
+- A **guardian spawner** sits in the spawner room (dark prismarine floor).
+- Guardians only come from the spawner, which spawns at the same rate as a Nether fortress's blaze spawner.
+
+## Loot
+
+- **Barrels** (instead of chests) hold ocean treasure: iron, gold, emeralds, the odd diamond, prismarine shards and crystals, sponges, the occasional gold block, cooked fish, maps to buried treasure, coast armor trims, nautilus armor, nautilus shells, and rarely a **Heart of the Sea**.
+
+## Conduit shrine
+
+- In the middle of the central bridge crossing is a ring of prismarine and sea lanterns around an empty spot on a little pedestal.
+- A conduit placed there (built from a Heart of the Sea and nautilus shells) switches on: Conduit Power around it, and it attacks nearby drowned.
+
+## Bubble lifts
+
+- The tall stair rooms have two bubble columns up through the landing: soul sand lifts the player up, magma pulls them down.
+- A sea lantern marks the top of each, two blocks above the landing so there is room to step off.
+
+## Finding one
+
+- Dolphins fed fish can lead the player to one.
+- About one in four buried-treasure maps from shipwreck map chests is a **Deep-Sea Fortress Map** instead.
+- `/locate structure bubbas_world_tweaks:deepsea_fortress` also finds one.

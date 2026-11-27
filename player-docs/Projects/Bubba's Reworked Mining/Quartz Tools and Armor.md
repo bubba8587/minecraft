@@ -10,7 +10,9 @@
 > | **Strength** | About iron's |
 > | **Tool durability** | 220 uses |
 
-**Quartz tools and armor** are a white quartz set made for the Nether: **Quartz Sword, Shovel, Pickaxe, Axe, Hoe, Helmet, Chestplate, Leggings and Boots**.
+**Quartz tools and armor** are a white quartz set made for the Nether.
+
+- **Quartz Sword, Shovel, Pickaxe, Axe, Hoe, Helmet, Chestplate, Leggings and Boots**.
 
 ## Crafting
 
@@ -20,37 +22,29 @@
 
 ## Strength
 
-Quartz is about iron's level.
-
-- Its tools harvest what iron harvests (including diamond ore) and do iron's damage, with a little less durability (220 uses).
+- About iron's level.
+- Tools harvest what iron harvests (including diamond ore) and do iron's damage, with a little less durability (220 uses).
 - They mine deepslate like iron does: slowly and with heavy wear.
-- **Ancient debris still needs diamond.**
+- **Ancient debris needs diamond.**
 - The armor protects like iron, lasts a little less, and sounds like iron when put on.
 
 ## In the Nether
 
-Quartz tools mine the Nether's natural blocks **1.6 times faster**:
-
-- netherrack;
-- nether bricks of every kind, and nether brick slabs, stairs, walls and fences;
-- basalt, blackstone and gilded blackstone;
-- soul sand and soul soil, nylium, magma blocks, wart blocks;
-- glowstone and shroomlight;
-- nether quartz ore and nether gold ore;
-- crimson and warped stems and hyphae (stripped too);
-- bone blocks.
-
-Obsidian and ancient debris get no bonus.
+- Quartz tools mine the Nether's natural blocks **1.6 times faster**:
+  - netherrack;
+  - nether bricks of every kind, and nether brick slabs, stairs, walls and fences;
+  - basalt, blackstone and gilded blackstone;
+  - soul sand and soul soil, nylium, magma blocks, wart blocks;
+  - glowstone and shroomlight;
+  - nether quartz ore and nether gold ore;
+  - crimson and warped stems and hyphae (stripped too);
+  - bone blocks.
+- Obsidian and ancient debris get no bonus.
 
 ## Textures
 
-The set is bright quartz white with faint rose-grey veins. A 32x version comes in the **Bubba's Mods 32x** resource pack.
-
-## History
-
-| Version | Changes |
-|---|---|
-| 0.1.0 | Added. |
+- Bright quartz white with faint rose-grey veins.
+- A 32x version comes in the **Bubba's Mods 32x** resource pack.
 
 ## See also
 

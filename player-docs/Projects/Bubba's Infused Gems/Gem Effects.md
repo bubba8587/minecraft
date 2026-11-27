@@ -2,21 +2,29 @@
 
 *Part of [[Bubba's Infused Gems]].*
 
-**Gem effects** are the permanent potion effects that socketed Gems give: to the wearer from armor, and to the target from weapons. Every gem effect works in both.
+**Gem effects** are the permanent potion effects that socketed Gems give: to the wearer from armor, and to the target from weapons.
+
+- Every gem effect works in both armor and weapons.
 
 ## Behavior
 
-Any Gem fits armor or a weapon; **where it is set decides who gets its effects**. In armor, the wearer gets them all the time while wearing it. In a weapon, whatever the weapon hits gets them. Bonus effects and drawbacks follow the same rule, so a Poison gem in armor poisons its wearer, and a Regeneration gem on a sword heals the target. Mobs wearing gemmed armor or holding gemmed weapons are affected the same way.
+- Any Gem fits armor or a weapon; **where it is set decides who gets its effects**.
+- In armor, the wearer gets them all the time while wearing it.
+- In a weapon, whatever the weapon hits gets them.
+- Bonus effects and drawbacks follow the same rule, so a Poison gem in armor poisons its wearer, and a Regeneration gem on a sword heals the target.
+- Mobs wearing gemmed armor or holding gemmed weapons are affected the same way.
 
 ### Strength
 
-Gems below the best are weaker than a real potion. The best possible build is twelve perfect gems of one effect in a full set of netherite armor (or two in a netherite weapon). Only that build reaches the top, so a perfect set is worth chasing. The perfect armor set:
+- Gems below the best are weaker than a real potion.
+- The best possible build is twelve perfect gems of one effect in a full set of netherite armor (or two in a netherite weapon). Only that build reaches the top.
+- The perfect armor set:
 
-- gives the full strongest potion permanently for fighting effects (Strength, Resistance, Turtle Master, Regeneration, Health Boost, Absorption);
-- makes on/off effects complete: Fire Resistance and Water Breathing become the real effect, and Night Vision, Conduit Power and Invisibility work fully;
-- goes past any potion for movement effects (Haste, Speed, Jump Boost, Dolphin's Grace, Slow Falling) and Luck.
-
-Harmful gems in armor stay at 90%. A perfect weapon hits with the strongest potion's level.
+  - gives the full strongest potion permanently for fighting effects (Strength, Resistance, Turtle Master, Regeneration, Health Boost, Absorption);
+  - makes on/off effects complete: Fire Resistance and Water Breathing become the real effect, and Night Vision, Conduit Power and Invisibility work fully;
+  - goes past any potion for movement effects (Haste, Speed, Jump Boost, Dolphin's Grace, Slow Falling) and Luck.
+- Harmful gems in armor stay at 90%.
+- A perfect weapon hits with the strongest potion's level.
 
 What else sets a gem's strength:
 
@@ -28,17 +36,19 @@ What else sets a gem's strength:
 
 ### Gems and potions together
 
-A gem and a potion (or beacon, or other source) of the same effect do not add up: the stronger one applies. A Speed gem set worn while a Speed II potion is active does nothing extra; under a Speed I potion it only adds the part above Speed I. The same goes for an effect a weapon gem puts on a target that already has the real effect.
+- A gem and a potion (or beacon, or other source) of the same effect do not add up: the stronger one applies.
+- A Speed gem set worn while a Speed II potion is active does nothing extra; under a Speed I potion it only adds the part above Speed I.
+- The same goes for an effect a weapon gem puts on a target that already has the real effect.
 
 ### Undead
 
-As with potions, Healing and Harming are reversed on undead, in armor and on weapons: a Healing gem worn by a zombie makes hits on it hurt more, and a Harming weapon heals undead targets. Undead ignore Poison and Regeneration gems, spiders ignore Poison, and wither skeletons ignore Wither.
-
-The `/gems` command shows the player's combined totals. *Main article: [[Infused Gems Commands]]*
+- As with potions, Healing and Harming are reversed on undead, in armor and on weapons: a Healing gem worn by a zombie makes hits on it hurt more, and a Harming weapon heals undead targets.
+- Undead ignore Poison and Regeneration gems, spiders ignore Poison, and wither skeletons ignore Wither.
+- The `/gems` command shows the player's combined totals. *Main article: [[Infused Gems Commands]]*
 
 ## In armor
 
-Values are for the best build (the perfect set); weaker builds give less.
+- Values are for the best build (the perfect set); weaker builds give less.
 
 | Gem | Effect on the wearer |
 |---|---|
@@ -63,7 +73,7 @@ Values are for the best build (the perfect set); weaker builds give less.
 | Hero of the Village | Cheaper villager trades (up to 30% cheaper; found gems only) |
 | Luck | A little more luck, up to a bit more than a Luck potion (mostly found; a Luck potion also brews one) |
 
-Harmful gems in armor affect the wearer:
+- Harmful gems in armor affect the wearer:
 
 | Gem | Effect on the wearer |
 |---|---|
@@ -80,7 +90,7 @@ Harmful gems in armor affect the wearer:
 
 ## Gems beyond potions
 
-Some gems do what their source does, rather than apply its potion.
+- Some gems do what their source does, rather than apply its potion.
 
 | Gem | Source | In armor | In a weapon |
 |---|---|---|---|
@@ -92,20 +102,21 @@ Some gems do what their source does, rather than apply its potion.
 | Breeze | Breeze rod | A chance to deflect incoming projectiles, like a breeze: the chance grows with strength (about half the time at half strength), and the perfect set deflects every time. Wind charges get through, as they do with a real breeze | Gives it to the target (pointless) |
 | Soulguard (needs [[Bubba's Reworked Mobs]]) | Potion of Soulguard | Full [[Soulguard]] from any Soulguard gem, however strong; the tooltip just says *+ Soulguard* | Gives the target Soulguard for a few seconds |
 
-The **Soulguard** gem exists only with [[Bubba's Reworked Mobs]] installed. It has no strength: any one gem worn, or one in a beacon, gives the whole effect, full protection from [[Soulfire]]. It is never another gem's bonus or drawback.
-
-Gem effects look the same as the real effect: poisoned or withered hearts, the green food bar of Hunger, the healing heart wave of Regeneration, the effect's icon and particles.
+- The **Soulguard** gem exists only with [[Bubba's Reworked Mobs]] installed.
+  - It has no strength: any one gem worn, or one in a beacon, gives the whole effect, full protection from [[Soulfire]].
+  - It is never another gem's bonus or drawback.
+- Gem effects look the same as the real effect: poisoned or withered hearts, the green food bar of Hunger, the healing heart wave of Regeneration, the effect's icon and particles.
 
 ## In weapons
 
-Each hit gives the target an effect for a few seconds, refreshed (never added up) by every hit. Mobs and players are affected the same way. Each effect has one thing that grows with the gem's strength:
-
-- Damage and weakening effects (Poison, Wither, Slowness, Weakness, Mining Fatigue, Hunger) get **stronger**: the best weapon matches a Poison II or Slowness IV potion. They last 4 seconds with a weak gem, up to 8 seconds with the best.
-- Screen effects (Blindness, Darkness, Nausea, Glowing) last **longer**.
-- Levitation lifts **faster and longer**.
-- Weaving and Ender work by **chance**.
-
-The effect appears in the target's effects as a percentage, for example *Poison 46%*.
+- Each hit gives the target an effect for a few seconds, refreshed (never added up) by every hit.
+- Mobs and players are affected the same way.
+- Each effect has one thing that grows with the gem's strength:
+  - Damage and weakening effects (Poison, Wither, Slowness, Weakness, Mining Fatigue, Hunger) get **stronger**: the best weapon matches a Poison II or Slowness IV potion. They last 4 seconds with a weak gem, up to 8 seconds with the best.
+  - Screen effects (Blindness, Darkness, Nausea, Glowing) last **longer**.
+  - Levitation lifts **faster and longer**.
+  - Weaving and Ender work by **chance**.
+- The effect appears in the target's effects as a percentage, for example *Poison 46%*.
 
 | Gem | Effect on the target |
 |---|---|
@@ -130,17 +141,20 @@ The effect appears in the target's effects as a percentage, for example *Poison 
 | Diamond sword, two good splash gems | 1.10 health per second for 5.3 s | 40% slower for 5.3 s |
 | Netherite sword, two perfect gems (the best) | 1.67 health per second for 8 s | 60% slower for 8 s |
 
-Swords, axes, spears, maces and tridents apply their gems on every hit, including sweeps and thrown tridents.
+- Swords, axes, spears, maces and tridents apply their gems on every hit, including sweeps and thrown tridents.
 
 ### Bows and crossbows
 
-Bows and crossbows with gems turn every arrow they fire into a tipped arrow with the gems' effects. The arrow flies and trails like a tipped arrow, but picked up again it is a plain arrow; an arrow in flight keeps its gems when the world is saved. When a real tipped arrow of the same effect is fired, the stronger effect applies; they do not add up.
+- Bows and crossbows with gems turn every arrow they fire into a tipped arrow with the gems' effects.
+- The arrow flies and trails like a tipped arrow, but picked up again it is a plain arrow.
+- An arrow in flight keeps its gems when the world is saved.
+- When a real tipped arrow of the same effect is fired, the stronger effect applies; they do not add up.
 
 ## In beacons
 
 *See also: [[Beacon]]*
 
-With [[Bubba's Reworked Beacons]] installed, a finished Gem can be placed in a beacon's item slot. It stays in the beacon and can be taken out again.
+- With [[Bubba's Reworked Beacons]] installed, a finished Gem can be placed in a beacon's item slot. It stays in the beacon and can be taken out again.
 
 - The beacon gives the gem's effects, as if worn, to **every living thing in its area**: players and mobs, including the player who built it. A harmful gem makes a trap for everyone; only the player's own gems protect against it.
 - Everything on the gem counts: its main effect, its bonus and its drawback.
@@ -148,7 +162,7 @@ With [[Bubba's Reworked Beacons]] installed, a finished Gem can be placed in a b
 - A perfect gem in a full 4-layer beacon is worth half a perfect armor set of that gem.
 - A beacon and the player's own armor (or another beacon, or a potion) of the same effect do not add up: the stronger one applies.
 - The effect lasts a little longer than the beacon's pulse (9 seconds plus 2 per pyramid layer, as in vanilla), so it fades soon after leaving the area.
-- With this mod installed, the beacon's plain payments (an amethyst shard for Speed and so on) no longer work; only finished Gems and other mods' beacon items, such as the [[Totem of Warding]], fit the slot.
+- With this mod installed, the beacon's plain payments (an amethyst shard for Speed and so on) do not work; only finished Gems and other mods' beacon items, such as the [[Totem of Warding]], fit the slot.
 
 | Gem (perfect, 4 layers) | Effect in range |
 |---|---|
@@ -166,4 +180,7 @@ With [[Bubba's Reworked Beacons]] installed, a finished Gem can be placed in a b
 
 ## Found gems
 
-Found-only gems (Haste, Resistance, Health Boost, Hero of the Village, Mining Fatigue) and most Luck gems come from loot. Mobs that spawn in gemmed armor get its effects. *Main article: [[Finding Gems]]*
+*Main article: [[Finding Gems]]*
+
+- Found-only gems (Haste, Resistance, Health Boost, Hero of the Village, Mining Fatigue) and most Luck gems come from loot.
+- Mobs that spawn in gemmed armor get its effects.

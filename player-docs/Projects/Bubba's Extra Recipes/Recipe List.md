@@ -2,7 +2,10 @@
 
 *Part of [[Bubba's Extra Recipes]].*
 
-The **recipe list** covers every crafting, blasting and smoking recipe added by [[Bubba's Extra Recipes]]. None of them replaces a vanilla recipe. Each appears in the recipe book once the player has picked up one of its ingredients.
+The **recipe list** covers every crafting, blasting and smoking recipe added by [[Bubba's Extra Recipes]].
+
+- None of them replaces a vanilla recipe.
+- Each appears in the recipe book once the player has picked up one of its ingredients.
 
 ## Crafting
 
@@ -33,11 +36,12 @@ The **recipe list** covers every crafting, blasting and smoking recipe added by 
 
 ### Bamboo Paper
 
-Bamboo Paper works anywhere paper does. With the pack's resource pack it is light green; without it, it looks like plain paper.
+- Works anywhere paper does.
+- With the pack's resource pack it is light green; without it, it looks like plain paper.
 
 ## Blasting
 
-All of these are made in a blast furnace.
+- All made in a blast furnace.
 
 | Name | Ingredient | Result | Time | Experience |
 |---|---|---|---|---|
@@ -50,13 +54,13 @@ All of these are made in a blast furnace.
 | [[Synthetic Diamond Ore]] | Block of coal | Deepslate diamond ore, named "Synthetic Diamond Ore" | 200 s | 5 |
 
 - Quartz from andesite, diorite or granite is only in the [[Extra Recipes Companion Mod]], as Quartz Shards (four make one nether quartz).
-- Cobbled deepslate still smelts into deepslate in a normal furnace; only the blast furnace makes tuff.
-- Basalt still smelts into smooth basalt in a normal furnace too, as in vanilla.
+- Cobbled deepslate smelts into deepslate in a normal furnace; only the blast furnace makes tuff.
+- Basalt also smelts into smooth basalt in a normal furnace, as in vanilla.
 - With the datapack alone, Synthetic Diamond Ore mines like normal diamond ore. With the [[Extra Recipes Companion Mod]] it rarely drops a diamond; see [[Synthetic Diamond Ore]].
 
 ## Smoking
 
-All of these are made in a smoker.
+- All made in a smoker.
 
 | Name | Ingredient | Result | Time | Experience |
 |---|---|---|---|---|
