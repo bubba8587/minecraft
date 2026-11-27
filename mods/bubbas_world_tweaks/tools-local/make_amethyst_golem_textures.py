@@ -2,11 +2,11 @@
 # dte:C8,B16
 """Amethyst Golem entity texture and spawn egg, 16x (vanilla style) and 32x (Classic Faithful 32x Jappa style).
 
-Palette: vanilla's geode blocks (amethyst block, amethyst cluster, calcite, smooth basalt). The 32x is drawn at 32x
-from the same face plan, palette shades only, grain as two-pixel clumps (specs/textures.md), not upscaled.
-The box list matches AmethystGolemModel.createBodyLayer().
+Palette: vanilla's amethyst cluster and bud crystal ramp (lilac to pink), all amethyst, plus deep geode purples for
+the mouth and belly hole. The 32x is drawn at 32x from the same face plan, palette shades only, grain as two-pixel
+clumps (specs/textures.md), not upscaled. The box list matches AmethystGolemModel.createBodyLayer().
 
-Usage: python3 make_amethyst_golem_textures.py [--preview DIR]
+Usage: python3 make_amethyst_golem_textures.py [--dark-eyes] [--preview DIR]
 """
 import sys
 from pathlib import Path
@@ -23,18 +23,21 @@ ENTITY = Path("assets/bubbas_world_tweaks/textures/entity/amethyst_golem/amethys
 EGG = Path("assets/bubbas_world_tweaks/textures/item/amethyst_golem_spawn_egg.png")
 
 # Material ramps, darkest to lightest (vanilla block colours)
+# Crystal ramp (amethyst cluster / buds)
+CRY = [(100, 71, 158), (122, 91, 181), (141, 106, 204), (179, 142, 243), (207, 160, 243), (254, 203, 230),
+	(255, 253, 213)]
 RAMPS = {
-	"ame": [(70, 43, 125), (93, 58, 154), (100, 71, 158), (122, 91, 181), (141, 106, 204), (166, 120, 241),
-			(200, 144, 240), (254, 203, 230)],
-	"cry": [(84, 57, 138), (100, 71, 158), (122, 91, 181), (141, 106, 204), (179, 142, 243), (207, 160, 243),
-			(254, 203, 230), (255, 253, 213)],
-	"cal": [(179, 179, 179), (201, 201, 196), (217, 219, 215), (237, 236, 230), (240, 245, 244), (255, 255, 255)],
-	"bas": [(27, 38, 50), (50, 51, 61), (58, 59, 72), (79, 75, 79), (92, 92, 92), (105, 105, 105)],
+	"ame": [(84, 57, 138)] + CRY[:5],
+	"cry": [(84, 57, 138)] + CRY,
 	"dark": [(30, 18, 52), (46, 26, 82), (70, 43, 125)],
 }
-BASE = {"ame": 4, "cry": 3, "cal": 3, "bas": 3, "dark": 1}
+BASE = {"ame": 4, "cry": 3, "dark": 1}
 EYE = (27, 22, 44)
 GLINT = (240, 245, 244)
+EYE_WHITE = (240, 245, 244)
+PUPIL = (46, 26, 82)
+EYE_RIM = (100, 71, 158)
+DARK_EYES = False
 
 # (name, u, v, w, h, d) per cube, as in the model
 BOXES = [
@@ -94,20 +97,18 @@ def shade(mat, level):
 
 
 def fill(mat, X, Y, s, bias=0, seed=0):
-	"""Material grain: 16x per-pixel mottling like the vanilla block, 32x two-pixel clumps one shade either way."""
+	"""Material grain: 16x per-pixel mottling, 32x two-pixel clumps one shade either way; no pink glints (they go beige in shade)."""
 	base = BASE[mat] + bias
 	if s == 1:
 		n = pixelart.hash01(X, Y, seed + 11)
 		m = pixelart.hash01(X // 2, Y // 2, seed + 5)
 		off = 0
-		if n < 0.2:
+		if n < 0.14:
 			off = -1
-		elif n > 0.78:
+		elif n > 0.84:
 			off = 1
-		if m > 0.86 and mat in ("ame", "cal"):
+		if m > 0.9 and mat == "ame" and off < 1:
 			off += 1
-		if mat == "ame" and n > 0.975:
-			off = 4
 		return shade(mat, base + off)
 	n = pixelart.hash01(X // 2 + (Y % 2), Y, seed + 3)
 	m = pixelart.hash01(X // 4, Y // 4, seed + 9)
@@ -116,10 +117,8 @@ def fill(mat, X, Y, s, bias=0, seed=0):
 		off = 1
 	elif n < 0.15:
 		off = -1
-	if m > 0.85 and mat in ("ame", "cal"):
+	if m > 0.85 and mat == "ame":
 		off += 1
-	if mat == "ame" and pixelart.hash01(X // 2, Y // 2, seed + 21) > 0.975:
-		off = 4
 	return shade(mat, base + off)
 
 
@@ -129,15 +128,32 @@ def grid_at(rows16, rows32, s, x, y):
 
 
 # Face features: one character per pixel at 16x and at 32x (same layout, refined at 32x)
-# a amethyst, s amethyst one shade down, l one up, e eye, w eye glint, k eye rim, d mouth/geode dark, D darkest,
-# c calcite, C calcite shadow, k/j geode rim, p crystal pink, q crystal lilac, m mouth line
+# a amethyst, s amethyst one shade down, l one up, W eye white, P pupil, r eye rim, e dark eye, w dark-eye glint,
+# k eye rim (dark eyes), d mouth/geode dark, D darkest, k/j geode rim, p crystal pink, q crystal lilac,
+# K crystal light lilac, x budding pit, m mouth line
 FACE16 = [
+	"llllllll",
+	"aWWaaWWa",
+	"aWPaaPWa",
+	"assaassa",
+]
+FACE32 = [
+	"llllllllllllllll",
+	"aaaaaaaaaaaaaaaa",
+	"aarWWraaaarWWraa",
+	"arWWWWraarWWWWra",
+	"arWWPPraarPPWWra",
+	"arWWPPraarPPWWra",
+	"aarWWraaaarWWraa",
+	"aassssaaaassssaa",
+]
+FACE16_DARK = [
 	"llllllll",
 	"aweaawea",
 	"aeeaaeea",
 	"aaaaaaaa",
 ]
-FACE32 = [
+FACE32_DARK = [
 	"llllllllllllllll",
 	"llllllllllllllll",
 	"aakeekaaaakeekaa",
@@ -149,7 +165,7 @@ FACE32 = [
 ]
 
 JAW16 = [
-	"maam",
+	"aaaa",
 	"amma",
 ]
 JAW32 = [
@@ -170,7 +186,7 @@ SOUND16 = [
 
 
 def sound32(x, y):
-	"""The belly's geode hole at 32x: calcite rim, dark inside with crystals growing up from the bottom."""
+	"""The belly's geode hole at 32x: deep amethyst rim, dark inside with crystals growing up from the bottom."""
 	if y < 2:
 		return "s"
 	dx, dy = x + 0.5 - 8.0, y + 0.5 - 6.0
@@ -193,10 +209,10 @@ SOUND32 = ["".join(sound32(x, y) for x in range(16)) for y in range(12)]
 BACK16 = [
 	"ssssssss",
 	"aaaaaaaa",
-	"aqaaaaaa",
-	"ajaaaaqa",
-	"aaaaaaja",
-	"aaaqaaaa",
+	"aKaaaaaa",
+	"axaaaaKa",
+	"aaaaaaxa",
+	"aaaKaaaa",
 ]
 BACK32 = ["".join(ch * 2 for ch in row) for row in BACK16 for _ in (0, 1)]
 
@@ -205,6 +221,7 @@ def feature(ch):
 	return {
 		"e": EYE, "w": GLINT, "k": RAMPS["ame"][1], "j": RAMPS["ame"][2], "d": RAMPS["dark"][1], "D": RAMPS["dark"][0],
 		"m": RAMPS["dark"][1], "p": RAMPS["cry"][6], "q": RAMPS["cry"][4],
+		"W": EYE_WHITE, "P": PUPIL, "r": EYE_RIM, "x": RAMPS["cry"][1], "K": RAMPS["cry"][5],
 	}.get(ch)
 
 
@@ -213,8 +230,6 @@ def featured(rows16, rows32, s, seed=0):
 		ch = grid_at(rows16, rows32, s, x, y)
 		if ch in "asl":
 			return fill("ame", X, Y, s, {"a": 0, "s": -1, "l": 1}[ch], seed)
-		if ch in "cC":
-			return shade("cal", 2 if ch == "c" else 0)
 		return feature(ch)
 	return fn
 
@@ -236,10 +251,8 @@ def banded(rows, seed=0):
 	def fn(x, y, W, H, X, Y):
 		r = y // S
 		mat, b = rows[r]
-		nxt = rows[r + 1][0] if r + 1 < len(rows) else None
-		if mat == "bas" and r > 0 and rows[r - 1][0] != "bas" and y % S == 0:
-			b += 2
-		if nxt != mat and y % S == S - 1:
+		nxt = rows[r + 1] if r + 1 < len(rows) else None
+		if nxt is not None and nxt != (mat, b) and y % S == S - 1:
 			b -= 1
 		return fill(mat, X, Y, S, b, seed)
 	return fn
@@ -260,7 +273,7 @@ def jaw_top():
 
 
 def top_skull():
-	# calcite ring round the crystal bases, budding-dark where they grow out (cx, cz in face texels)
+	# budding-dark bed where the crystals grow out, a shaded ring round it (cx, cz in face texels)
 	def fn(x, y, W, H, X, Y):
 		fx, fy = (x + 0.5) / S, (y + 0.5) / S
 		dx, dy = (fx - 4.0) / 3.3, (fy - 3.6) / 2.9
@@ -268,29 +281,29 @@ def top_skull():
 		wob = (pixelart.hash01(int(fx * 2), int(fy * 2), 31) - 0.5) * 0.25
 		if r < 0.45:
 			return RAMPS["dark"][2] if pixelart.hash01(X // S, Y // S, 8) > 0.4 else RAMPS["ame"][1]
-		if r < 1.0 + wob:
-			b = 0 if r > 0.62 else -1
-			return fill("cal", X, Y, S, b, 2)
+		if r < 0.8 + wob:
+			return fill("ame", X, Y, S, -2, 2)
 		return fill("ame", X, Y, S, 1, 2)
 	return fn
 
 
 def prism(face, tip=False):
 	"""Crystal shaft: lit left edge, darker right edge, lighter toward the point."""
-	lv = {"front": 4, "left": 3, "right": 4, "back": 3, "top": 5, "bottom": 1}[face]
+	lv = {"front": 5, "left": 4, "right": 5, "back": 4, "top": 5, "bottom": 2}[face]
 
 	def fn(x, y, W, H, X, Y):
 		if face in ("top", "bottom"):
 			return shade("cry", lv + (1 if tip else 0))
-		level = lv + (1 if tip else 0)
+		level = lv
 		if not tip:
 			t = y / max(1, H - 1)
-			level += 1 if t < 0.3 else (-1 if t > 0.75 else 0)
+			level += -2 if t > 0.75 else (-1 if t > 0.45 else 0)
 		if x < S and W > S:
 			level += 1
 		elif x >= W - S and W > 2 * S:
-			level -= 1
-		return shade("cry", level)
+			level -= 2
+		# sides stay lilac: pink only on up-facing faces
+		return shade("cry", min(level, 5))
 	return fn
 
 
@@ -304,7 +317,8 @@ def paint(s):
 	sk = F["skull"]
 	cv.face(sk["top"], top_skull())
 	cv.face(sk["bottom"], dark_inside())
-	cv.face(sk["front"], featured(FACE16, FACE32, s, 1))
+	face16, face32 = (FACE16_DARK, FACE32_DARK) if DARK_EYES else (FACE16, FACE32)
+	cv.face(sk["front"], featured(face16, face32, s, 1))
 	for side in ("right", "left", "back"):
 		cv.face(sk[side], mat_face("ame", 0, False, 1))
 	for name, inner in (("cheek_r", "left"), ("cheek_l", "right")):
@@ -336,25 +350,25 @@ def paint(s):
 	cv.face(bd["top"], mat_face("ame", -1, False, 3))
 	cv.face(bd["bottom"], mat_face("ame", -2, False, 3))
 
-	# Arms: amethyst with basalt hands
+	# Arms: amethyst, hands a shade deeper
 	for name in ("arm_r", "arm_l"):
-		rows = [("ame", 1)] + [("ame", 0)] * 4 + [("bas", 0), ("bas", -1)]
+		rows = [("ame", 1)] + [("ame", 0)] * 4 + [("ame", -1), ("ame", -1)]
 		for side, rect in F[name].items():
 			if side == "top":
 				cv.face(rect, mat_face("ame", 1, False, 5))
 			elif side == "bottom":
-				cv.face(rect, mat_face("bas", -1, False, 5))
+				cv.face(rect, mat_face("ame", -2, False, 5))
 			else:
 				cv.face(rect, banded(rows, 5))
 
-	# Legs: basalt feet
+	# Legs: amethyst, feet a shade deeper
 	for name in ("leg_r", "leg_l"):
-		rows = [("ame", -1), ("ame", -1), ("bas", 0), ("bas", -1)]
+		rows = [("ame", 0), ("ame", 0), ("ame", -1), ("ame", -1)]
 		for side, rect in F[name].items():
 			if side == "top":
 				cv.face(rect, mat_face("ame", -1, False, 7))
 			elif side == "bottom":
-				cv.face(rect, mat_face("bas", -2, False, 7))
+				cv.face(rect, mat_face("ame", -3, False, 7))
 			else:
 				cv.face(rect, banded(rows, 7))
 
@@ -368,7 +382,7 @@ def paint(s):
 	return cv.img
 
 
-# Spawn egg: amethyst egg, crystal cluster crown, golem face, calcite-ringed geode belly, basalt feet
+# Spawn egg: amethyst egg, crystal cluster crown, golem face, amethyst feet
 EGG_GRID = [
 	"........t.......",
 	".......tK.......",
@@ -376,11 +390,11 @@ EGG_GRID = [
 	"....t..qKS..t...",
 	"....Kq.qKS.KS...",
 	".....qKqKSKS....",
-	".....oqqKSSo....",
+	".....oSSSSSo....",
 	"....oLllllao....",
 	"...oLllllllao...",
-	"...oLweaaweso...",
-	"...oleeaaeeso...",
+	"...oLWWaaWWso...",
+	"...olWPaaPWso...",
 	"...olaammaaso...",
 	"...oaaaaaasso...",
 	"....oaaaasso....",
@@ -388,17 +402,20 @@ EGG_GRID = [
 	"....bb....bb....",
 ]
 EGG_PAL = {
-	"o": (70, 43, 125), "L": (200, 144, 240), "l": (166, 120, 241), "a": (141, 106, 204), "s": (122, 91, 181),
-	"t": (254, 203, 230), "K": (207, 160, 243), "q": (179, 142, 243), "S": (141, 106, 204),
-	"w": GLINT, "e": EYE, "m": (46, 26, 82), "b": (50, 51, 61),
+	"o": CRY[0], "L": CRY[3], "l": CRY[3], "a": CRY[3], "s": CRY[2],
+	"t": CRY[5], "K": CRY[4], "q": CRY[3], "S": CRY[1],
+	"W": EYE_WHITE, "P": PUPIL, "w": GLINT, "e": EYE, "m": (46, 26, 82), "b": CRY[1],
 }
 EGG_MAT = {"L": "ame", "l": "ame", "a": "ame", "s": "ame", "t": "cry", "K": "cry", "q": "cry", "S": "cry"}
 
 
 def egg(s):
+	grid = EGG_GRID
+	if DARK_EYES:
+		grid = [r.replace("LWWaaWWs", "Lweaawes").replace("lWPaaPWs", "leeaaees") for r in EGG_GRID]
 	if s == 1:
-		return pixelart.render(EGG_GRID, EGG_PAL)
-	return pixelart.render32(EGG_GRID, EGG_PAL, material=EGG_MAT, outline="o", cf=True, grain=("ame",), seed=4)
+		return pixelart.render(grid, EGG_PAL)
+	return pixelart.render32(grid, EGG_PAL, material=EGG_MAT, outline="o", cf=True, grain=("ame",), seed=4)
 
 
 def save(img, root, rel):
@@ -417,8 +434,12 @@ def preview(dirpath):
 
 
 if __name__ == "__main__":
-	if len(sys.argv) > 2 and sys.argv[1] == "--preview":
-		preview(sys.argv[2])
+	args = sys.argv[1:]
+	if "--dark-eyes" in args:
+		DARK_EYES = True
+		args.remove("--dark-eyes")
+	if len(args) > 1 and args[0] == "--preview":
+		preview(args[1])
 	else:
 		save(paint(1), RES, ENTITY)
 		save(paint(2), PACK32, ENTITY)

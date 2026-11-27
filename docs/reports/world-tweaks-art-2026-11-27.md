@@ -4,7 +4,7 @@ Builder's report for `specs/world-tweaks.md` (Amethyst Golem) and `docs/art-todo
 
 ## What it looks like (player-facing)
 
-A small, chunky purple golem about one and a half blocks tall counting its crystals (the body itself is copper golem height). Made of amethyst, with a cluster of pale lilac crystals growing out of the top of its head, big dark eyes with a little glint, a small smile, dark stone (basalt) hands and feet, and a dark crystal-lined hole in its belly like a geode, or the sound hole of an instrument. Seen from above, a white calcite ring sits round the base of the crystals, like inside a real geode. The spawn egg is a round amethyst egg with the golem's face and a crystal cluster on top.
+A small, chunky lilac golem about one and a half blocks tall counting its crystals (the body itself is copper golem height). Made all of amethyst in the light lilac of amethyst clusters, with a cluster of lilac crystals (pink-tipped on top) growing out of the top of its head, big white eyes with dark pupils, a small smile, hands and feet a shade deeper, and a dark crystal-lined hole in its belly like a geode, or the sound hole of an instrument. The spawn egg is a round lilac egg with the golem's white-eyed face and a crystal cluster on top.
 
 ## Model (spec facts)
 
@@ -21,16 +21,17 @@ A small, chunky purple golem about one and a half blocks tall counting its cryst
 ## Textures
 
 - Generator: `mods/bubbas_world_tweaks/tools-local/make_amethyst_golem_textures.py` (replaces the deleted placeholder script). Writes the 64x64 entity texture, its 128x128 32x twin, and the spawn egg 16x + 32x. `--preview DIR` writes enlarged previews.
-- Palette, vanilla geode block colours only: amethyst block (body), amethyst cluster (crystals, pink tips), calcite (ring round the crystals on the head top), smooth basalt (hands, feet), plus three deep geode purples for the mouth and belly hole. No vanilla or CF32J pixels are copied, so no `CREDITS.md` entry.
-- 16x: vanilla-style per-pixel mottling like the amethyst block, with its pink glints. 32x: drawn at 32x from the same face plan in Classic Faithful 32x Jappa style (palette shades only, grain in two-pixel clumps), with refined features: round eyes with a one-pixel glint, a curved smile, a round rimmed belly hole. The spawn egg's 32x uses `pixelart.render32(cf=True)`.
+- Palette (recoloured 2026-11-27 on owner feedback: "all amethyst, maybe white eyes, palette more like the crystal than the block"): vanilla's amethyst cluster / bud crystal ramp only, body based on its light lilac (179, 142, 243) with mottling one shade either way, edges and shadows in the cluster's darker purples; three deep geode purples for the mouth, the belly hole and the crystal bed on the head top. No basalt, no calcite, no amethyst block colours. Eyes: white (240, 245, 244) with dark purple pupils (and a deep amethyst rim at 32x). No vanilla or CF32J pixels are copied, so no `CREDITS.md` entry.
+- `--dark-eyes` writes (or with `--preview`, previews) the earlier dark eyes with a glint on the new palette, for comparison. The committed textures are the white-eyed ones.
+- 16x: vanilla-style per-pixel mottling, one shade either way, no pink glints. 32x: drawn at 32x from the same face plan in Classic Faithful 32x Jappa style (palette shades only, grain in two-pixel clumps), with refined features: round white eyes with 2x2 pupils, a curved smile, a round rimmed belly hole. The spawn egg's 32x uses `pixelart.render32(cf=True)`.
 - `python3 tools/texcheck.py bubbas_world_tweaks`: OK.
 
 ## Choices the owner might want to tweak
 
-- No calcite on the body: a white calcite ring round the belly hole read as a third eye or a second mouth from a distance, so the hole's rim is darker amethyst instead; calcite only shows on the head top.
-- Basalt hands and feet ground it visually and stand for the geode's outer crust. They could be amethyst instead.
-- The 16x smile is four pixels wide on two rows. Up close it reads a little like a cat's mouth; the 32x one is a clean curve.
-- The crystal tips are the cluster's pale pink, which looks a little beige in shade.
+- All amethyst (owner): the calcite ring on the head top was dropped (it was the only non-amethyst left and didn't help the silhouette); the crystals now grow from a budding-dark bed with a shaded ring, which separates the crown from the head. Hands and feet are amethyst one shade deeper.
+- No pink glints on the body and pink only on up-facing crystal faces: pink and cream on side faces go beige under the game's side shading (that was the beige-tips problem), so crystal sides stay lilac.
+- The 16x face: white 2x2 eyes with a one-pixel pupil at the inner bottom, and a two-pixel mouth (the earlier four-pixel smile's corners sat right under the pupils and read as a second pair of eyes). The 32x face has round eyes with 2x2 pupils and a curved smile.
+- Owner pick pending: white eyes (default) vs the old dark eyes on the new palette (`--dark-eyes`); comparison face shots were handed over.
 - An earlier try put small crystal buds on the shoulders. They read as thumbs and were dropped.
 - The spawn egg has no belly hole: on a 16 px egg it read as a second mouth.
 
