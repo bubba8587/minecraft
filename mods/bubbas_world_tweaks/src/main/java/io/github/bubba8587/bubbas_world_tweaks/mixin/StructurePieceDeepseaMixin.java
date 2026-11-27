@@ -56,7 +56,12 @@ abstract class StructurePieceDeepseaMixin {
 			return original.call(level, pos, state, flags);
 		}
 		int y = pos.getY() - this.boundingBox.minY();
-		return original.call(level, pos, FortressBlocks.swap((StructurePiece) (Object) this, state, pos, x, y, z), flags);
+		boolean placed = original.call(level, pos, FortressBlocks.swap((StructurePiece) (Object) this, state, pos, x, y, z), flags);
+		BlockState below = level.getBlockState(pos.below());
+		if (!below.isAir() && below.getFluidState().isEmpty()) {
+			DeepseaFortresses.pillarFoot(pos);
+		}
+		return placed;
 	}
 
 	@Inject(method = "createChest(Lnet/minecraft/world/level/ServerLevelAccessor;Lnet/minecraft/world/level/levelgen/structure/BoundingBox;Lnet/minecraft/util/RandomSource;Lnet/minecraft/core/BlockPos;Lnet/minecraft/resources/ResourceKey;Lnet/minecraft/world/level/block/state/BlockState;)Z",

@@ -6,6 +6,7 @@ import java.util.List;
 
 import io.github.bubba8587.bubbas_world_tweaks.BubbasWorldTweaks;
 import net.fabricmc.fabric.api.loot.v3.LootTableEvents;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -33,6 +34,7 @@ public final class DeepseaFortresses {
 	public static final float SHIPWRECK_MAP_SHARE = 0.25F;
 
 	private static final ThreadLocal<Boolean> PLACING = ThreadLocal.withInitial(() -> Boolean.FALSE);
+	private static final ThreadLocal<List<BlockPos>> PILLAR_FEET = ThreadLocal.withInitial(ArrayList::new);
 
 	private DeepseaFortresses() {
 	}
@@ -66,11 +68,24 @@ public final class DeepseaFortresses {
 	/** Runs piece placement with the deep-sea block swap on. */
 	public static void placing(Runnable placement) {
 		boolean outer = PLACING.get();
+		List<BlockPos> outerFeet = PILLAR_FEET.get();
 		PLACING.set(Boolean.TRUE);
+		PILLAR_FEET.set(new ArrayList<>());
 		try {
 			placement.run();
 		} finally {
 			PLACING.set(outer);
+			PILLAR_FEET.set(outerFeet);
 		}
+	}
+
+	/** Notes the bottom block of a support pillar placed in this chunk. */
+	public static void pillarFoot(BlockPos pos) {
+		PILLAR_FEET.get().add(pos.immutable());
+	}
+
+	/** Bottom blocks of the support pillars placed so far in this chunk. */
+	public static List<BlockPos> pillarFeet() {
+		return PILLAR_FEET.get();
 	}
 }

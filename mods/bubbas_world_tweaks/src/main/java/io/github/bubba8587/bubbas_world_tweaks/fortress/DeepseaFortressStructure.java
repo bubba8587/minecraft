@@ -74,6 +74,7 @@ public class DeepseaFortressStructure extends Structure {
 	public void afterPlace(WorldGenLevel level, StructureManager structureManager, ChunkGenerator generator, RandomSource random,
 			BoundingBox chunkBB, ChunkPos chunkPos, PiecesContainer pieces) {
 		ConduitShrine.place(level, chunkBB, pieces.pieces().getFirst().getBoundingBox());
+		SandPiles.place(level, chunkBB, DeepseaFortresses.pillarFeet(), pieces.pieces());
 	}
 
 	@Override

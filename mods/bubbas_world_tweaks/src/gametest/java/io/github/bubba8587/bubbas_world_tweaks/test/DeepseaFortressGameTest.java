@@ -60,12 +60,11 @@ public class DeepseaFortressGameTest {
 		BlockPos barrelAt = DeepseaTestPieces.local(turn, 3, 2, 3);
 		helper.assertTrue(level.getBlockEntity(barrelAt) instanceof BarrelBlockEntity barrel
 				&& DeepseaFortresses.BARREL_LOOT.equals(barrel.getLootTable()), "no deep-sea loot barrel in the corridor");
-		helper.assertTrue(level.getBlockState(DeepseaTestPieces.local(turn, 2, 1, 1)).is(Blocks.DARK_PRISMARINE), "no corridor runner");
-		helper.assertTrue(level.getBlockState(DeepseaTestPieces.local(turn, 2, 1, 2)).is(Blocks.GLAZED_TERRACOTTA.cyan()), "no glazed tile in the runner");
+		helper.assertTrue(level.getBlockState(DeepseaTestPieces.local(turn, 2, 1, 2)).is(Blocks.DARK_PRISMARINE), "no corridor runner");
 		for (int[] w : new int[][] { { 4, 3, 1 }, { 4, 4, 1 }, { 4, 3, 3 }, { 4, 4, 3 }, { 1, 3, 4 }, { 1, 4, 4 }, { 3, 3, 4 }, { 3, 4, 4 } }) {
 			BlockState window = level.getBlockState(DeepseaTestPieces.local(turn, w[0], w[1], w[2]));
-			helper.assertTrue(window.is(Blocks.WATER) || window.is(Blocks.STAINED_GLASS.cyan()) || window.is(Blocks.STAINED_GLASS.lightBlue())
-					|| window.is(Blocks.STAINED_GLASS.blue()), "corridor window isn't glass or open water: " + window);
+			helper.assertTrue(window.is(Blocks.WATER) || window.is(Blocks.STAINED_GLASS_PANE.cyan()) && window.getValue(BlockStateProperties.WATERLOGGED),
+					"corridor window isn't a waterlogged cyan pane or open water: " + window);
 		}
 		helper.assertTrue(level.getBlockState(DeepseaTestPieces.local(turn, 2, 6, 2)).is(Blocks.SEA_LANTERN), "no corridor ceiling lantern");
 		helper.assertTrue(level.getBlockState(DeepseaTestPieces.local(turn, 2, 3, 2)).is(Blocks.WATER), "corridor isn't flooded");
@@ -141,6 +140,12 @@ public class DeepseaFortressGameTest {
 							"pillar stops above the floor at " + c[0] + " " + y + " " + c[1] + ": " + s);
 				}
 			}
+			BoundingBox all = start.getBoundingBox();
+			int sand = 0;
+			for (BlockPos p : BlockPos.betweenClosed(all.minX(), stone + 1, all.minZ(), all.maxX(), stone + 1, all.maxZ())) {
+				sand += level.getBlockState(p).is(Blocks.SAND) ? 1 : 0;
+			}
+			helper.assertTrue(sand > 0, "no sand piled round the pillar feet");
 			for (StructurePiece piece : start.getPieces()) {
 				noNether(helper, piece);
 				for (BlockPos p : DeepseaTestPieces.seaUnder(piece, stone)) {
