@@ -1,9 +1,12 @@
 // dte:C8
 package io.github.bubba8587.bubbas_world_tweaks.test;
 
+import java.util.stream.Stream;
+
 import io.github.bubba8587.bubbas_world_tweaks.golem.AmethystGolem;
 import io.github.bubba8587.bubbas_world_tweaks.golem.AmethystGolems;
 import io.github.bubba8587.bubbas_world_tweaks.golem.GolemSong;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.worldselection.WorldCreationUiState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
@@ -19,6 +22,9 @@ import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContex
 /** Amethyst Golem and its spawn egg by eye, at 16x and 32x (client test part "golem"). */
 @SuppressWarnings("UnstableApiUsage")
 public class AmethystGolemClientGameTest implements FabricClientGameTest {
+	/** Ticks between the notes of the singing test song. */
+	private static final int NOTE_SPACING = 16;
+
 	@Override
 	public void runTest(ClientGameTestContext context) {
 		if (!ClientTests.run("golem")) {
@@ -103,7 +109,7 @@ public class AmethystGolemClientGameTest implements FabricClientGameTest {
 		}
 	}
 
-	/** Behaviour poses: recording, singing on its jukebox, dancing to a disc (16x only). */
+	/** Behaviour poses: recording, singing on its jukebox (on a note, between notes), waiting for the beat, dancing (16x only). */
 	private static void states(ClientGameTestContext context, TestServerContext server, int x, int y, int z) {
 		double gx = x + 0.5;
 		double gz = z + 0.5;
@@ -117,14 +123,15 @@ public class AmethystGolemClientGameTest implements FabricClientGameTest {
 		shot(context, gx, y, gz, -40.0F, 2.4, 0.95, 12.0F, "golem-recording-side");
 		server.runOnServer(s -> golem(s).toggleRecording(s.overworld()));
 
-		// Its own jukebox under it, a long song, the day clock running up to a beat
+		// Its own jukebox under it, a song of spaced notes, the day clock running up to a beat
 		server.runCommand("setblock %d %d %d minecraft:jukebox".formatted(x, y - 1, z));
 		context.waitTicks(5);
+		int[] tune = {4, 12, 20, 9, 16, 24, 7, 14, 22, 11};
 		server.runOnServer(s -> {
 			AmethystGolem golem = golem(s);
-			int[] song = new int[100];
+			int[] song = new int[tune.length * 3];
 			for (int i = 0; i < song.length; i++) {
-				song[i] = GolemSong.pack(i * 4, (i * 5) % GolemSong.NOTES);
+				song[i] = GolemSong.pack(i * NOTE_SPACING, tune[i % tune.length]);
 			}
 			golem.setSong(new GolemSong(song));
 			if (!golem.claimJukebox(s.overworld())) {
@@ -134,12 +141,30 @@ public class AmethystGolemClientGameTest implements FabricClientGameTest {
 		server.runCommand("time set 5990");
 		server.runCommand("gamerule advance_time true");
 		context.waitTicks(30);
-		if (!context.computeOnClient(mc -> mc.level.getEntitiesOfClass(AmethystGolem.class, mc.player.getBoundingBox().inflate(16)).stream()
-				.anyMatch(AmethystGolem::isSinging))) {
+		if (!context.computeOnClient(mc -> clientGolems(mc).anyMatch(AmethystGolem::isSinging))) {
 			throw new AssertionError("golem on its jukebox is not singing after the beat");
 		}
-		shot(context, gx, y, gz, 0.0F, 2.4, 0.75, 8.0F, "golem-singing");
-		shot(context, gx, y, gz, -40.0F, 2.4, 0.95, 12.0F, "golem-singing-side");
+
+		// The moment of a note (mouth open, crystals flicked), then halfway between two notes
+		freezeAfterNote(context, server, 1);
+		shot(context, gx, y, gz, 0.0F, 2.4, 0.75, 8.0F, "golem-singing-note");
+		shot(context, gx, y, gz, -40.0F, 2.4, 0.95, 12.0F, "golem-singing-note-side");
+		shot(context, gx, y, gz, 0.0F, 1.3, 1.05, 18.0F, "golem-singing-note-close");
+		server.runOnServer(s -> s.tickRateManager().setFrozen(false));
+		freezeAfterNote(context, server, NOTE_SPACING / 2);
+		shot(context, gx, y, gz, 0.0F, 2.4, 0.75, 8.0F, "golem-singing-between");
+		shot(context, gx, y, gz, -40.0F, 2.4, 0.95, 12.0F, "golem-singing-between-side");
+		server.runOnServer(s -> s.tickRateManager().setFrozen(false));
+
+		// Song over, the next beat far off: it waits on the jukebox
+		server.runOnServer(s -> golem(s).setSong(golem(s).song()));
+		server.runCommand("time set 6200");
+		context.waitTicks(20);
+		if (!context.computeOnClient(mc -> clientGolems(mc).anyMatch(g -> g.isWaiting() && !g.isSinging()))) {
+			throw new AssertionError("golem between songs is not waiting for the beat");
+		}
+		shot(context, gx, y, gz, 0.0F, 2.4, 0.75, 8.0F, "golem-waiting");
+		shot(context, gx, y, gz, -40.0F, 2.4, 0.95, 12.0F, "golem-waiting-side");
 		server.runCommand("gamerule advance_time false");
 
 		// A disc in the jukebox: it dances
@@ -149,14 +174,36 @@ public class AmethystGolemClientGameTest implements FabricClientGameTest {
 			}
 		});
 		context.waitTicks(10);
-		if (!context.computeOnClient(mc -> mc.level.getEntitiesOfClass(AmethystGolem.class, mc.player.getBoundingBox().inflate(16)).stream()
-				.anyMatch(AmethystGolem::isDancing))) {
+		if (!context.computeOnClient(mc -> clientGolems(mc).anyMatch(AmethystGolem::isDancing))) {
 			throw new AssertionError("golem is not dancing to the disc");
 		}
 		shot(context, gx, y, gz, 0.0F, 2.4, 0.75, 8.0F, "golem-dancing");
 		context.waitTicks(7);
 		shot(context, gx, y, gz, -40.0F, 2.4, 0.95, 12.0F, "golem-dancing-side");
 		BubbasWorldTweaksClientGameTest.hud(context, true);
+	}
+
+	/** Freezes the server (and the golem with it) the given number of ticks after one of its notes. */
+	private static void freezeAfterNote(ClientGameTestContext context, TestServerContext server, int since) {
+		for (int i = 0; i < 400; i++) {
+			if (server.computeOnServer(s -> {
+				AmethystGolem golem = golem(s);
+				if (golem.tickCount - golem.noteTick() != since) {
+					return false;
+				}
+				s.tickRateManager().setFrozen(true);
+				return true;
+			})) {
+				context.waitTicks(3);
+				return;
+			}
+			context.waitTick();
+		}
+		throw new AssertionError("golem sang no note to freeze on");
+	}
+
+	private static Stream<AmethystGolem> clientGolems(Minecraft mc) {
+		return mc.level.getEntitiesOfClass(AmethystGolem.class, mc.player.getBoundingBox().inflate(16)).stream();
 	}
 
 	private static AmethystGolem golem(MinecraftServer server) {

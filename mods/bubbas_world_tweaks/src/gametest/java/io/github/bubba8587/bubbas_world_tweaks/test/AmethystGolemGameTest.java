@@ -48,7 +48,7 @@ public final class AmethystGolemGameTest {
 		return golem;
 	}
 
-	/** Note blocks played while recording come back in order, at their pitches and spacing, tuned by shards, on beats. */
+	/** Note blocks played while recording come back in order, at their pitches and spacing, tuned by shards, on beats, each with a note event. */
 	public static void recordsAndPlaysBack(GameTestHelper helper) {
 		floor(helper);
 		ServerLevel level = helper.getLevel();
@@ -77,9 +77,21 @@ public final class AmethystGolemGameTest {
 			helper.assertTrue(singer.tickSong(level, 100, beat + 1).isEmpty(), "started off the beat");
 			List<Integer> sung = new ArrayList<>();
 			for (long t = 0; t < 11; t++) {
-				sung.addAll(singer.tickSong(level, 200 + t, 2L * beat + t));
+				int before = singer.notesSung();
+				IntList now = singer.tickSong(level, 200 + t, 2L * beat + t);
+				helper.assertTrue(singer.notesSung() - before == now.size(), "tick " + t + ": " + now.size() + " notes but "
+						+ (singer.notesSung() - before) + " note events");
+				sung.addAll(now);
 			}
 			helper.assertTrue(sung.equals(List.of(5, 17, 10)), "sang " + sung);
+			AmethystGolem listener = AmethystGolems.AMETHYST_GOLEM.create(level, EntitySpawnReason.TRIGGERED);
+			for (int note : sung) {
+				listener.tickCount++;
+				listener.handleEntityEvent(AmethystGolem.noteEvent(note));
+				helper.assertTrue(listener.lastNote() == note && listener.noteTick() == listener.tickCount,
+						"note event for " + note + " read back as " + listener.lastNote());
+			}
+			helper.assertTrue(listener.notesSung() == 3 && listener.noteGap() == 1, "note events counted " + listener.notesSung());
 			singer.tuneUp(level);
 			sung.clear();
 			for (long t = 0; t < 11; t++) {
