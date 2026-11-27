@@ -414,6 +414,36 @@ public class TotemsGameTest {
 		helper.succeed();
 	}
 
+	/**
+	 * Core. An empty map used on a Seeking statue goes in (a second map is refused while it works), and after a while
+	 * pops out of the statue's front filled in: almost every pixel drawn.
+	 */
+	public void seekingStatueFillsAMap(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		BlockPos statue = new BlockPos(8, 1, 8);
+		helper.setBlock(statue, io.github.bubba8587.bubbas_totems_artifacts.statue.TotemStatueBlock.stateFor(io.github.bubba8587.bubbas_totems_artifacts.statue.TotemType.SEEKING));
+		ServerPlayer player = TestSupport.survivalPlayer(helper);
+		player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.MAP, 2));
+		BlockPos at = helper.absolutePos(statue);
+		helper.assertTrue(io.github.bubba8587.bubbas_totems_artifacts.seeking.SeekingMap.insert(level, at, player, InteractionHand.MAIN_HAND), "the map didn't go in");
+		helper.assertFalse(io.github.bubba8587.bubbas_totems_artifacts.seeking.SeekingMap.insert(level, at, player, InteractionHand.MAIN_HAND), "a busy statue took a second map");
+		helper.assertTrue(player.getMainHandItem().getCount() == 1, "maps left in hand: " + player.getMainHandItem().getCount());
+		level.getServer().getPlayerList().remove(player);
+		helper.succeedWhen(() -> {
+			var out = level.getEntitiesOfClass(ItemEntity.class, new AABB(at).inflate(3), e -> e.getItem().is(Items.FILLED_MAP));
+			helper.assertTrue(out.size() == 1, "no map popped out yet");
+			var data = net.minecraft.world.item.MapItem.getSavedData(out.getFirst().getItem(), level);
+			int drawn = 0;
+			for (byte c : data.colors) {
+				if (c != 0) {
+					drawn++;
+				}
+			}
+			helper.assertTrue(drawn > 128 * 128 * 9 / 10, "only " + drawn + " of " + 128 * 128 + " pixels drawn");
+			helper.assertTrue(io.github.bubba8587.bubbas_totems_artifacts.seeking.SeekingMap.display(level, at) == null, "the map is still inside");
+		});
+	}
+
 	/** Milestone. The ring walk visits every cell of each square ring exactly once. */
 	@GameTest(maxTicks = 5)
 	public void seekingRingCoversEveryCell(GameTestHelper helper) {

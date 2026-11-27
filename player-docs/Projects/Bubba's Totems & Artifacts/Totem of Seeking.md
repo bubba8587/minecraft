@@ -54,8 +54,19 @@ The **Totem of Seeking** is an artifact that points toward a random structure or
 ## Statue
 
 - Sneaking and using the totem on a block sets it down as a [[Totem Statue]].
-- The statue has no effect.
-- Mining it gives the totem back.
+- Mining it gives the totem back, along with any map inside.
+
+### Filling maps
+
+- Using a map on the statue puts it inside.
+  - A filled map is drawn in across its whole area: places you've never visited are filled in, and places already on the map are brought up to date.
+  - An empty map first becomes a map of the statue's surroundings, then gets filled in.
+- After a while the map pops back out of the statue's front, with a chime and green sparkles.
+  - A small map takes seconds. The biggest maps take a few minutes, because the statue has to load (and if needed generate) all the land they show.
+- While it works, enchanting-table glyphs drift around the statue.
+- It holds one map at a time; another map can't go in until the first comes out.
+- Locked maps and maps of another dimension pop straight back out unchanged.
+- Copies of the map update along with it.
 
 ## See also
 

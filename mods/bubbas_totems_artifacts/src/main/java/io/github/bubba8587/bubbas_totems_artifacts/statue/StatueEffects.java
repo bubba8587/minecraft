@@ -21,7 +21,7 @@ public final class StatueEffects {
 	/** Whether this statue type has an area effect. */
 	public static boolean pulses(TotemType type) {
 		return switch (type) {
-			case WARDING, GATHERING, FORTIFICATION, GROWTH, HERDING, CLEAR_SKIES, NORTH_WIND, BEGINNING -> true;
+			case WARDING, GATHERING, FORTIFICATION, GROWTH, HERDING, CLEAR_SKIES, NORTH_WIND, BEGINNING, SEEKING -> true;
 			default -> false;
 		};
 	}
@@ -55,6 +55,7 @@ public final class StatueEffects {
 					io.github.bubba8587.bubbas_totems_artifacts.beginning.BeginningAreas.pulse(level, pos, TotemsTuning.STATUE_RADIUS);
 				}
 			}
+			case SEEKING -> io.github.bubba8587.bubbas_totems_artifacts.seeking.SeekingMap.pulse(level, pos);
 			default -> {
 			}
 		}

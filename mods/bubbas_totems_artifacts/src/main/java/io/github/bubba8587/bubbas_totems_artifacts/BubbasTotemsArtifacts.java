@@ -47,6 +47,7 @@ public class BubbasTotemsArtifacts implements ModInitializer {
 		io.github.bubba8587.bubbas_totems_artifacts.northwind.NorthWind.initialize();
 		io.github.bubba8587.bubbas_totems_artifacts.gathering.GatheringRing.initialize();
 		Seeker.initialize();
+		io.github.bubba8587.bubbas_totems_artifacts.seeking.SeekingMap.initialize();
 		io.github.bubba8587.bubbas_totems_artifacts.statue.UndyingStatue.initialize();
 		TotemsLoot.initialize();
 		io.github.bubba8587.bubbas_totems_artifacts.relic.Relics.initialize();

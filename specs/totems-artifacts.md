@@ -203,7 +203,7 @@ The owner wanted a verb-like name; still open. The Harvest idea was folded into 
 - **No POIs** (owner): vanilla only knows POIs in chunks that have generated.
 - **Mystery** (owner): the tooltip shows only the count; the target's name appears when it is found.
 - No target kind possible (e.g. a single-biome flat world without structures): no target, the needle spins.
-- No beacon form (owner: none for now; a new beacon or statue mechanic may come later). The statue still has no effect.
+- No beacon form (owner: none for now; a new beacon mechanic may come later). The statue fills maps (below).
 
 ### The search (`Seeker`, never freezing the server)
 
@@ -224,6 +224,16 @@ The owner wanted a verb-like name; still open. The Harvest idea was folded into 
 - **Memory:** components `bubbas_totems_artifacts:seeking_target` (kind, picking spot, found position) and `seeking_found` (kind and position of each find, oldest first). Up to 32 finds (`SEEK_MEMORY`); past that the oldest is forgotten. Tooltip: "Found: 4/32".
 - Old saves: `seeking_type` and `seeking_beacon_until` stay registered (unused) so older totems and compasses still load.
 - Names: biomes use their own names; structures use `structure.<ns>.<path>` (the key other locator mods read; ours adds vanilla's, e.g. "Jungle Temple", "Plains Village", "Ruined Portal"), else the id in title case.
+
+### Statue: fills a map (`seeking/SeekingMap`, owner 2026-11-26)
+
+- **Polaroid (owner):** use a map (filled or empty) on a Seeking statue; it goes into a hidden slot, is drawn in over time, then pops out of the statue's front (item entity with a little outward push, cartography-table sound, happy-villager sparkles). One map at a time: a busy statue refuses another (`insert` false, FAIL). No taking it out early; breaking the statue drops it.
+  - An empty map becomes `MapItem.create(level, statue x, statue z, scale 0, tracking)` first. Locked maps and maps of another dimension are ejected unchanged at the next pulse.
+- **The slot (B15, no block entity):** an `item_display` with zero scale at the statue's centre, tagged `bubbas_totems_artifacts.seeking_map`, carrying the map; found by an AABB query on the statue's block. If the statue goes (removal hook `affectNeighborsAfterRemoval`, or the job sees it gone), the map drops.
+- **Drawing is vanilla's:** `MapItem.update` from a Fabric `FakePlayer` stood at a series of spots, 16 calls per spot (vanilla draws one column stripe in 16 per call). The spots are a grid over the map, each cell's half-diagonal within the drawing radius less 2 pixels (128 / 2^scale pixels, halved under a ceiling), nearest the statue first: 1 spot for a scale-0 Overworld map, 256 for scale 4.
+- **Never generating on the main thread:** before each spot is drawn, its patch is loaded with our ticket type `bubbas_totems_artifacts:seeking_map` (loading only, no simulation, no timeout) via `addTicketAndLoadWithRadius`, radius = the drawn half-extent in chunks + 1, at most 10 (`SEEK_MAP_MAX_TICKET_RADIUS`). The spot is drawn once that future completes; the previous patch's ticket is dropped after the next one draws (fewer reloads at overlaps). Jobs advance every server tick (one spot at most per job per tick); the statue's 20-tick pulse starts a job and puts out enchant particles.
+- Jobs live in memory per level and statue: a server restart or unloaded statue chunk drops the job and its tickets, and the next pulse starts the map again from scratch.
+- Copies of the map (same map id) update live, like any map.
 
 **Prior art:** Explorer's Compass (CC-BY-NC-SA, no 26.3), OmniCompass (MIT, 26.1.2), Luna's Structure Compass (MIT, 1.21.8): structure compasses that pick from a GUI list and run a locate. None does random wandering targets with a found memory, and none has a 26.3 build to depend on (B9).
 
@@ -398,7 +408,8 @@ A statue gives a weaker form of its totem's area effect in an **11x11x11 box** r
 | Clear Skies | no rain, snow or lightning |
 | North Wind | gliders get a gust every 5 s (builder's choice, see Totem of the North Wind) |
 | The Beginning | an area pulse every 15 s (see Totem of the Beginning) |
-| Keeping, Seeking, the End | nothing (no area form) |
+| Seeking | fills a map put in it, then ejects it (see Totem of Seeking) |
+| Keeping, the End | nothing (no area form) |
 
 <a id="relic-maps-and-relic-vaults-owner-2026-11-24-built-2026-11-24"></a>
 ### Totem art: precious-material idols (owner, 2026-11-23)
@@ -641,6 +652,7 @@ Most bodies live in the milestone classes below and are called from the core cla
 - `gatheringPullsNearbyItems`: an armor stand holding it pulls a dirt item from 6 blocks; an item 12 blocks away stays.
 - `fortificationStopsBlockDamage`: a TNT-type blast inside a 5x3x5 dirt cube next to a holder breaks nothing.
 - `growthSpeedsUpCrops`: 40 boosted ticks in the held box grow a 3x3 wheat patch; one outside the box doesn't grow.
+- `seekingStatueFillsAMap`: an empty map goes into a Seeking statue, a second is refused, and the map pops out with over 90 % of its pixels drawn.
 - `seekingFindsAndRemembers`: a biome search finds the test world's biome at least 128 blocks away and, skipping that spot, at least 384 from it; arriving records the find and the next target is never the biome underfoot; the memory keeps only the newest 32.
 - `endLandingRules` (body in `BeginningEndGameTest`): top face, side with room, side without room → floor in front, slab top, fire on top → nowhere, bottom face → floor under it, miss → nowhere.
 - `gatheringRingFeedsASideHopper`: an item 6 blocks out ends up in a chest through a side hopper.

@@ -44,7 +44,7 @@ Parked ideas and open items, newest first within each project. Agents add to it 
 - **Totem icon borders (owner, 2026-11-24: "better, but some of the borders are still borked"):** the precious-material icons' outlines are uneven on some totems (sheet: `build/art-review/now-totem-icons-16x-top-32x-bottom.png`). Look at each icon's outline at 16x and 32x against vanilla's and Classic Faithful's Totem of Undying (one clean dark outline shade, no gaps or doubled pixels where arms, crowns and emblems meet the body); fix in `tools/totems-textures.py` / `tools/warding-textures.py` and `tools/pixelart.py` (`render32` snap/inner outline). Evolve, don't redesign.
 - **Statues:** every totem has an agent-made statue; person-made statue designs and the mod icon later (`docs/art-todo.md`).
 - **Totems built 2026-11-16** (Keeping, Gathering, Fortification, Growth, Seeking; `specs/totems-artifacts.md`): owner to review the builder's calls (Gathering in a beacon, Growth strength and name, loot); the Gathering texture reads like gingerbread (art row).
-- **Totem of Seeking in a beacon or as a statue (owner, 2026-11-26):** the compass-pointing beacon form was removed with the switch to random targets; a new, unique beacon/statue mechanic for it is welcome when one comes up.
+- **Totem of Seeking in a beacon (owner, 2026-11-26):** the compass-pointing beacon form was removed with the switch to random targets; a new, unique beacon mechanic for it is welcome when one comes up (the statue now fills maps).
 - **Totem ideas dropped** (owner, 2026-11-16): Fold (animal breeding), Stillness (no despawning).
 
 ## Bubba's Extra Recipes

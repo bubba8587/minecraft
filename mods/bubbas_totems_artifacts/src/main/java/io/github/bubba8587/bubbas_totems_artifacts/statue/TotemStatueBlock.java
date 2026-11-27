@@ -8,7 +8,10 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.advancements.triggers.CriteriaTriggers;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.phys.BlockHitResult;
+import io.github.bubba8587.bubbas_totems_artifacts.seeking.SeekingMap;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -77,6 +80,24 @@ public class TotemStatueBlock extends HorizontalDirectionalBlock {
 	protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
 		if (!level.getBlockTicks().hasScheduledTick(pos, this)) {
 			level.scheduleTick(pos, this, 1);
+		}
+	}
+
+	@Override
+	protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+		if (type(state) != TotemType.SEEKING || !SeekingMap.accepts(stack)) {
+			return InteractionResult.TRY_WITH_EMPTY_HAND;
+		}
+		if (level instanceof ServerLevel serverLevel) {
+			return SeekingMap.insert(serverLevel, pos, player, hand) ? InteractionResult.SUCCESS : InteractionResult.FAIL;
+		}
+		return InteractionResult.SUCCESS;
+	}
+
+	@Override
+	protected void affectNeighborsAfterRemoval(BlockState state, ServerLevel level, BlockPos pos, boolean movedByPiston) {
+		if (type(state) == TotemType.SEEKING) {
+			SeekingMap.removed(level, pos);
 		}
 	}
 

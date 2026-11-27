@@ -41,7 +41,8 @@ Every statue works on the blocks within 5 of it, all the time:
 | [[Totem of Clear Skies]] | No rain, snow or lightning. |
 | [[Totem of the North Wind]] | Gliding players get a gust of wind every 5 seconds. |
 | [[Totem of the Beginning]] | Every 15 seconds, some of the dug-out ground comes back to how it was generated (with [[Bubba's Reworked Mobs]]). |
-| [[Totem of Keeping]], [[Totem of Seeking]], [[Totem of the End]] | Nothing. |
+| [[Totem of Seeking]] | Fills in a map put inside it, then pops it back out (see [[Totem of Seeking#Filling maps]]). |
+| [[Totem of Keeping]], [[Totem of the End]] | Nothing. |
 
 ## Breaking
 
