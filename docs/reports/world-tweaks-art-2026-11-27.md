@@ -38,3 +38,16 @@ A small, chunky lilac golem about one and a half blocks tall counting its crysta
 ## Client test shots (part "golem")
 
 Added to `AmethystGolemClientGameTest` (new lines only): `golem-compare` (next to a vanilla copper golem and an amethyst cluster on an amethyst block), `golem-far` (about 9 blocks), `golem-top` (from above), `golem-face` (face close up), each at 16x and 32x.
+
+## Second pass: white highlights and a calmer 16x face (2026-11-27)
+
+Owner: "texture needs to have more white bits in it to match the crystal." Also the 16x face read as a surprised "oh".
+
+- Reference: vanilla's `amethyst_cluster.png` has 17 near-white pixels of 140 (pink-white 254,203,230 and cream 255,253,213), placed as a ridge up the lit edge of each shard and at the points, never as speckle. The buds follow the same rule.
+- Crystals: each shard face has a pink-white ridge up its lit edge (top 70%), next to the shard's dark edge; the points (tip boxes) are pink-white all round, the centre shard's upper segment pink-white on its lit half, and every crystal top face pink-white. No cream on crystals: under the game's side shading cream reads khaki (measured 145,116,131 on a shaded tip top).
+- Body glints: hand-placed facet glints (`GLINTS` in the generator: box, face, streak pixels) on the head top, head sides and back, body front/sides/back, shoulders, arms, legs and cheek sides; none on the head front, so the eyes stay the only white there. 16x: pink-white pixels with a one-shade-darker facet pixel beside them. 32x: one-pixel diagonal pink-white ridges with light lilac on the lit side and one shade down on the shadow side; cream cores only on up-facing faces (head top, shoulders). The belly crystals and back pits keep their pink-white.
+- 16x face: eyes are 2x2 with a tall 1x2 pupil on the inner side (no more white bar with a 1-px pupil), no dark row under them; the smile is a small soft U on the jaw (corners in the lighter mouth purple 70,43,125 under the pupils, two-pixel bottom), right below the eyes, with the grain round the face kept from going darker (`A` in the face grids). The jaw's lower row and the body's top row are plain amethyst now (the old shadow row there merged with the mouth into an open-mouth look), and the belly hole sits one row lower, so mouth and hole are clearly apart.
+- 32x face: same eyes; the smile moved up one row on the jaw (corners, then a six-pixel line), the belly hole 1.6 px lower to match.
+- Spawn egg: cream crystal points, pink-white lit edges on the shards, two pink-white glints on the egg's upper left, tall pupils, and a small smile like the golem's.
+- `--dark-eyes` still works (eyes only; mouth, hole and glints are shared).
+- Checked in client shots (part "golem"): face 16x/32x, front, side, back, compare 16x/32x, far, top, singing-note-close, waiting, egg 16x/32x. Body glints in shade read pale mauve rather than white (the game's side shading), crown ridges and points read pink-white like the cluster, most clearly from above.

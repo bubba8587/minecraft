@@ -128,14 +128,14 @@ def grid_at(rows16, rows32, s, x, y):
 
 
 # Face features: one character per pixel at 16x and at 32x (same layout, refined at 32x)
-# a amethyst, s amethyst one shade down, l one up, W eye white, P pupil, r eye rim, e dark eye, w dark-eye glint,
+# a amethyst, A amethyst without dark grain (round the face), s amethyst one shade down, l one up, W eye white, P pupil, r eye rim, e dark eye, w dark-eye glint,
 # k eye rim (dark eyes), d mouth/geode dark, D darkest, k/j geode rim, p crystal pink, q crystal lilac,
-# K crystal light lilac, x budding pit, m mouth line
+# K crystal light lilac, x budding pit, m mouth line, n mouth corner
 FACE16 = [
 	"llllllll",
-	"aWWaaWWa",
-	"aWPaaPWa",
-	"assaassa",
+	"AWPAAPWA",
+	"AWPAAPWA",
+	"AAAAAAAA",
 ]
 FACE32 = [
 	"llllllllllllllll",
@@ -164,32 +164,37 @@ FACE32_DARK = [
 	"aaaaaaaaaaaaaaaa",
 ]
 
+# Smile on the jaw (drops open when singing); soft corners
 JAW16 = [
-	"aaaa",
-	"amma",
+	"nAAn",
+	"AnnA",
 ]
 JAW32 = [
-	"maaaaaam",
-	"amaaaama",
-	"aammmmaa",
-	"ssssssss",
+	"naaaaaan",
+	"anmmmmna",
+	"aaaaaaaa",
+	"aaaaaaaa",
 ]
+CHEEK_R16 = ["aa", "aa"]
+CHEEK_L16 = ["aa", "aa"]
+CHEEK_R32 = ["aaaa", "aaaa", "aaaa", "aaaa"]
+CHEEK_L32 = ["aaaa", "aaaa", "aaaa", "aaaa"]
 
 SOUND16 = [
-	"ssssssss",
+	"aaaaaaaa",
+	"aaaaaaaa",
 	"aaakkaaa",
 	"aakDdkaa",
 	"aakqpkaa",
 	"aaakkaaa",
-	"aaaaaaaa",
 ]
 
 
 def sound32(x, y):
 	"""The belly's geode hole at 32x: deep amethyst rim, dark inside with crystals growing up from the bottom."""
 	if y < 2:
-		return "s"
-	dx, dy = x + 0.5 - 8.0, y + 0.5 - 6.0
+		return "a"
+	dx, dy = x + 0.5 - 8.0, y + 0.5 - 7.6
 	r = (dx * dx + dy * dy) ** 0.5
 	if r > 3.9:
 		return "a"
@@ -220,7 +225,7 @@ BACK32 = ["".join(ch * 2 for ch in row) for row in BACK16 for _ in (0, 1)]
 def feature(ch):
 	return {
 		"e": EYE, "w": GLINT, "k": RAMPS["ame"][1], "j": RAMPS["ame"][2], "d": RAMPS["dark"][1], "D": RAMPS["dark"][0],
-		"m": RAMPS["dark"][1], "p": RAMPS["cry"][6], "q": RAMPS["cry"][4],
+		"m": RAMPS["dark"][1], "n": RAMPS["dark"][2], "p": RAMPS["cry"][6], "q": RAMPS["cry"][4],
 		"W": EYE_WHITE, "P": PUPIL, "r": EYE_RIM, "x": RAMPS["cry"][1], "K": RAMPS["cry"][5],
 	}.get(ch)
 
@@ -228,6 +233,9 @@ def feature(ch):
 def featured(rows16, rows32, s, seed=0):
 	def fn(x, y, W, H, X, Y):
 		ch = grid_at(rows16, rows32, s, x, y)
+		if ch == "A":
+			c = fill("ame", X, Y, s, 0, seed)
+			return c if sum(c) >= sum(shade("ame", BASE["ame"])) else shade("ame", BASE["ame"])
 		if ch in "asl":
 			return fill("ame", X, Y, s, {"a": 0, "s": -1, "l": 1}[ch], seed)
 		return feature(ch)
@@ -287,24 +295,91 @@ def top_skull():
 	return fn
 
 
-def prism(face, tip=False):
-	"""Crystal shaft: lit left edge, darker right edge, lighter toward the point."""
-	lv = {"front": 5, "left": 4, "right": 5, "back": 4, "top": 5, "bottom": 2}[face]
+def prism(face, tip=False, mid=False):
+	"""Crystal shaft like the vanilla cluster: a pink-white ridge up the lit edge and a pink-white point, darker toward the base."""
+	lv = {"front": 5, "left": 4, "right": 5, "back": 4}.get(face, 0)
 
 	def fn(x, y, W, H, X, Y):
-		if face in ("top", "bottom"):
-			return shade("cry", lv + (1 if tip else 0))
-		level = lv
-		if not tip:
-			t = y / max(1, H - 1)
-			level += -2 if t > 0.75 else (-1 if t > 0.45 else 0)
+		if face == "top":
+			return shade("cry", 6)
+		if face == "bottom":
+			return shade("cry", 2)
+		t = y / max(1, H - 1)
+		if tip:
+			return shade("cry", 6)
+		if mid:
+			if y < H // 2:
+				return shade("cry", 6 if x < W // 2 else 5)
+			return shade("cry", lv - 1 if x < W - S else lv - 2)
+		level = lv + (-2 if t > 0.75 else (-1 if t > 0.45 else 0))
 		if x < S and W > S:
-			level += 1
+			level = 6 if (t <= 0.7 and (x == 0 or t <= 0.4)) else level + 1
 		elif x >= W - S and W > 2 * S:
 			level -= 2
-		# sides stay lilac: pink only on up-facing faces
-		return shade("cry", min(level, 5))
+		return shade("cry", level)
 	return fn
+
+
+# Facet glints: (box, face) -> streaks, each a run of 16x face pixels (brightest first)
+GLINTS = {
+	("skull", "top"): [[(1, 0), (0, 1)], [(7, 2)], [(6, 6), (5, 6)], [(0, 5)]],
+	("skull", "right"): [[(2, 0), (1, 1)], [(5, 2)]],
+	("skull", "left"): [[(4, 0), (5, 1)], [(1, 2)]],
+	("skull", "back"): [[(1, 0), (0, 1)], [(6, 0)], [(4, 2), (5, 3)]],
+	("body", "front"): [[(1, 1), (0, 2)], [(7, 3), (6, 4)]],
+	("body", "right"): [[(2, 1), (1, 2)], [(4, 4)]],
+	("body", "left"): [[(2, 1), (3, 2)], [(0, 4)]],
+	("body", "back"): [[(6, 1), (7, 2)], [(0, 4)]],
+	("arm_r", "top"): [[(0, 0)]],
+	("arm_l", "top"): [[(2, 0)]],
+	("arm_r", "right"): [[(1, 0), (0, 1)], [(2, 4)]],
+	("arm_l", "left"): [[(1, 0), (2, 1)], [(0, 4)]],
+	("arm_r", "front"): [[(0, 1)]],
+	("arm_l", "front"): [[(2, 1)]],
+	("arm_r", "back"): [[(2, 2)]],
+	("arm_l", "back"): [[(0, 2)]],
+	("leg_r", "right"): [[(1, 0)]],
+	("leg_l", "left"): [[(2, 0)]],
+	("leg_r", "front"): [[(0, 0)]],
+	("leg_l", "front"): [[(2, 0)]],
+	("cheek_r", "right"): [[(1, 0)]],
+	("cheek_l", "left"): [[(2, 0)]],
+}
+
+
+def glints(cv, rect, streaks, top):
+	"""Facet glints: a pink-white ridge (cream on up-facing faces at 32x) with a darker facet beside it.
+
+	A streak runs down-left unless its second pixel is to the right (down-right). At 32x each 16x pixel becomes a
+	one-pixel diagonal ridge with light lilac on its lit side and one shade down on its shadow side."""
+	x0, y0, w, h = rect
+	s = cv.s
+	white, cream, light, dark = CRY[5], CRY[6], CRY[4], RAMPS["ame"][3]
+	ridge, flank = {}, {}
+	for streak in streaks:
+		right = len(streak) > 1 and streak[1][0] > streak[0][0]
+		for i, (gx, gy) in enumerate(streak):
+			if s == 1:
+				ridge[(gx, gy)] = white
+				flank[(gx - 1, gy + 1) if right else (gx + 1, gy + 1)] = dark
+				continue
+			bx, by = gx * 2, gy * 2
+			if right:
+				ridge[(bx, by)] = cream if (top and i == 0) else white
+				ridge[(bx + 1, by + 1)] = white
+				flank[(bx, by + 1)] = dark
+				flank.setdefault((bx + 1, by), light)
+			else:
+				ridge[(bx + 1, by)] = cream if (top and i == 0) else white
+				ridge[(bx, by + 1)] = white
+				flank[(bx + 1, by + 1)] = dark
+				flank.setdefault((bx, by), light)
+	for (x, y), c in flank.items():
+		if (x, y) not in ridge and 0 <= x < w * s and 0 <= y < h * s:
+			cv.px[x0 * s + x, y0 * s + y] = c + (255,)
+	for (x, y), c in ridge.items():
+		if 0 <= x < w * s and 0 <= y < h * s:
+			cv.px[x0 * s + x, y0 * s + y] = c + (255,)
 
 
 def paint(s):
@@ -325,6 +400,9 @@ def paint(s):
 		for side, rect in F[name].items():
 			if side == inner or side == "top":
 				cv.face(rect, dark_inside())
+			elif side == "front":
+				r16, r32 = (CHEEK_R16, CHEEK_R32) if name == "cheek_r" else (CHEEK_L16, CHEEK_L32)
+				cv.face(rect, featured(r16, r32, s, 1))
 			else:
 				cv.face(rect, mat_face("ame", -1 if side == "bottom" else 0, side != "bottom", 1))
 	for side, rect in F["throat"].items():
@@ -375,44 +453,47 @@ def paint(s):
 	# Crystals
 	for name in ("crystal_center", "mid_center", "crystal_left", "crystal_right", "crystal_back"):
 		for side, rect in F[name].items():
-			cv.face(rect, prism(side))
+			cv.face(rect, prism(side, mid=name == "mid_center"))
 	for name in ("tip_center", "tip_left", "tip_right", "tip_back"):
 		for side, rect in F[name].items():
 			cv.face(rect, prism(side, tip=True))
+
+	for (name, side), streaks in GLINTS.items():
+		glints(cv, F[name][side], streaks, side == "top")
 	return cv.img
 
 
 # Spawn egg: amethyst egg, crystal cluster crown, golem face, amethyst feet
 EGG_GRID = [
-	"........t.......",
+	"........c.......",
 	".......tK.......",
-	".......KKS......",
-	"....t..qKS..t...",
-	"....Kq.qKS.KS...",
+	".......tKS......",
+	"....c..tKS..c...",
+	"....tq.qKS.tS...",
 	".....qKqKSKS....",
 	".....oSSSSSo....",
-	"....oLllllao....",
-	"...oLllllllao...",
-	"...oLWWaaWWso...",
+	"....oLgllllo....",
+	"...oLglllllao...",
+	"...oLWPaaPWso...",
 	"...olWPaaPWso...",
-	"...olaammaaso...",
-	"...oaaaaaasso...",
+	"...olanaanaso...",
+	"...oaaannasso...",
 	"....oaaaasso....",
 	"....bboooobb....",
 	"....bb....bb....",
 ]
 EGG_PAL = {
 	"o": CRY[0], "L": CRY[3], "l": CRY[3], "a": CRY[3], "s": CRY[2],
-	"t": CRY[5], "K": CRY[4], "q": CRY[3], "S": CRY[1],
-	"W": EYE_WHITE, "P": PUPIL, "w": GLINT, "e": EYE, "m": (46, 26, 82), "b": CRY[1],
+	"t": CRY[5], "c": CRY[6], "g": CRY[5], "K": CRY[4], "q": CRY[3], "S": CRY[1],
+	"W": EYE_WHITE, "P": PUPIL, "w": GLINT, "e": EYE, "m": (46, 26, 82), "n": (70, 43, 125), "b": CRY[1],
 }
-EGG_MAT = {"L": "ame", "l": "ame", "a": "ame", "s": "ame", "t": "cry", "K": "cry", "q": "cry", "S": "cry"}
+EGG_MAT = {"L": "ame", "l": "ame", "a": "ame", "s": "ame", "t": "cry", "c": "cry", "K": "cry", "q": "cry", "S": "cry"}
 
 
 def egg(s):
 	grid = EGG_GRID
 	if DARK_EYES:
-		grid = [r.replace("LWWaaWWs", "Lweaawes").replace("lWPaaPWs", "leeaaees") for r in EGG_GRID]
+		grid = [r.replace("LWPaaPWs", "Lweaawes").replace("lWPaaPWs", "leeaaees") for r in EGG_GRID]
 	if s == 1:
 		return pixelart.render(grid, EGG_PAL)
 	return pixelart.render32(grid, EGG_PAL, material=EGG_MAT, outline="o", cf=True, grain=("ame",), seed=4)
