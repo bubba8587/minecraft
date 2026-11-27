@@ -56,7 +56,9 @@ public final class TotemsTuning {
 	/** Biome search sample spacing, across and up. */
 	public static final int SEEK_BIOME_STEP = 64;
 	public static final int SEEK_BIOME_STEP_Y = 64;
-	/** Arrival: within this many blocks of a structure's spot, or inside one of its pieces within the next; in a biome within the last of its spot. */
+	/** Biome search: a hit is checked down its column from the ground at this spacing (never counted in the air). */
+	public static final int SEEK_BIOME_STEP_GROUND = 16;
+	/** Arrival: within this many blocks of a structure's spot, or inside one of its pieces within the next; in a biome within the last of its spot (or within the first of it with the biome anywhere in that column). */
 	public static final int SEEK_ARRIVE = 24;
 	public static final int SEEK_ARRIVE_INSIDE = 160;
 	public static final int SEEK_ARRIVE_BIOME = 48;

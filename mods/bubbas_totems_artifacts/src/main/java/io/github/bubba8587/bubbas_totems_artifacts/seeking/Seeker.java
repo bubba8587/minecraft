@@ -245,8 +245,12 @@ public final class Seeker {
 		}
 	}
 
-	/** Vanilla's /locate biome order (a square spiral of columns, heights outward from the origin's), resumable, sampling the biome noise only. */
+	/**
+	 * Vanilla's /locate biome order (a square spiral of columns, heights outward from the origin's), resumable, sampling
+	 * the biome noise only; a hit counts only at or below the ground (from the generator's height estimate), never in the air.
+	 */
 	private static final class BiomeSearch implements Search {
+		private final ServerLevel level;
 		private final BlockPos origin;
 		private final List<BlockPos> skip;
 		private final Holder<Biome> biome;
@@ -256,6 +260,7 @@ public final class Seeker {
 		private @Nullable BlockPos best;
 
 		BiomeSearch(ServerLevel level, Holder<Biome> biome, BlockPos origin, List<BlockPos> skip) {
+			this.level = level;
 			this.origin = origin;
 			this.skip = skip;
 			this.biome = biome;
@@ -283,13 +288,34 @@ public final class Seeker {
 					continue;
 				}
 				for (int y : this.ys) {
-					if (this.resolver.getNoiseBiome(QuartPos.fromBlock(x), QuartPos.fromBlock(y), QuartPos.fromBlock(z)).is(this.biome)) {
-						this.best = new BlockPos(x, y, z);
-						return true;
+					if (is(x, y, z)) {
+						BlockPos grounded = grounded(x, z);
+						if (grounded != null) {
+							this.best = grounded;
+							return true;
+						}
+						break;
 					}
 				}
 			}
 			return false;
+		}
+
+		/** The biome sample at a block. */
+		private boolean is(int x, int y, int z) {
+			return this.resolver.getNoiseBiome(QuartPos.fromBlock(x), QuartPos.fromBlock(y), QuartPos.fromBlock(z)).is(this.biome);
+		}
+
+		/** The highest spot of the biome in this column at or below the ground, if any. */
+		private @Nullable BlockPos grounded(int x, int z) {
+			int ground = this.level.getChunkSource().getGenerator().getBaseHeight(x, z, net.minecraft.world.level.levelgen.Heightmap.Types.WORLD_SURFACE_WG,
+					this.level, this.level.getChunkSource().randomState());
+			for (int y = ground; y > this.level.getMinY(); y -= TotemsTuning.SEEK_BIOME_STEP_GROUND) {
+				if (is(x, y, z)) {
+					return new BlockPos(x, y, z);
+				}
+			}
+			return null;
 		}
 	}
 

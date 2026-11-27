@@ -209,7 +209,7 @@ The owner wanted a verb-like name; still open. The Harvest idea was folded into 
 
 - **Distance band:** a target is at least 128 blocks (`SEEK_MIN_DISTANCE`) and at most 2000 (`SEEK_REACH`) from where it was picked, horizontally. Nothing in the band: a new kind is picked on the next check.
 - **Structures:** vanilla's /locate order for one structure (concentric rings, then the random-spread grid ring by ring, stopping at the first ring with an allowed hit, then past the reach). It **never loads or generates chunks:** a candidate counts when vanilla's quick structure check says a start is there or would be generated there (in rare cases a structure that fails to fit still counts). In the client test world the first result (a stronghold) matched /locate exactly.
-- **Biomes:** vanilla's /locate biome order (a square spiral of columns, heights outward from the picker's), every 64 blocks across and up (`SEEK_BIOME_STEP`, `SEEK_BIOME_STEP_Y`), sampling the biome noise only.
+- **Biomes:** vanilla's /locate biome order (a square spiral of columns, heights outward from the picker's), every 64 blocks across and up (`SEEK_BIOME_STEP`, `SEEK_BIOME_STEP_Y`), sampling the biome noise only. A hit only counts at or below the ground: the generator's height estimate for that column (`getBaseHeight`, `WORLD_SURFACE_WG`), then down the column every 16 blocks (`SEEK_BIOME_STEP_GROUND`); the spot is the highest such sample. (Biome noise also answers in the air, where it can name a biome the ground below doesn't have: a river at y 231 over land was once a target nobody could stand in.)
 - **Already found:** a search skips spots near the totem's recorded finds of that kind in that dimension: 64 blocks for a structure (`SEEK_SKIP_STRUCTURE`), 384 for a biome (`SEEK_SKIP_BIOME`).
 - **2 ms per tick budget** for all searches together (`SEEK_BUDGET_NANOS`). Results are cached by dimension, kind, picking spot and skip list (512 entries, `SEEK_CACHE_SIZE`; cleared on server stop). The found position is saved on the totem, so it survives restarts without searching again.
 
@@ -220,6 +220,7 @@ The owner wanted a verb-like name; still open. The Harvest idea was folded into 
 - **Arrival:**
   - Structure: within 24 blocks of its spot horizontally (`SEEK_ARRIVE`), or inside one of its pieces within 160 (`SEEK_ARRIVE_INSIDE`).
   - Biome: standing in that biome within 48 blocks of its spot (`SEEK_ARRIVE_BIOME`), so a cave biome means going down.
+  - Biome, safety net: within 24 blocks of its spot with the biome anywhere in the player's column (sampled every 4 blocks).
 - **On a find:** totem-of-undying particles around the player, an amethyst resonate and a soft level-up chime, and the action bar "Found: Jungle Temple (4/32)". Then the next target is picked from there.
 - **Memory:** components `bubbas_totems_artifacts:seeking_target` (kind, picking spot, found position) and `seeking_found` (kind and position of each find, oldest first). Up to 32 finds (`SEEK_MEMORY`); past that the oldest is forgotten. Tooltip: "Found: 4/32".
 - Old saves: `seeking_type` and `seeking_beacon_until` stay registered (unused) so older totems and compasses still load.
@@ -653,7 +654,7 @@ Most bodies live in the milestone classes below and are called from the core cla
 - `fortificationStopsBlockDamage`: a TNT-type blast inside a 5x3x5 dirt cube next to a holder breaks nothing.
 - `growthSpeedsUpCrops`: 40 boosted ticks in the held box grow a 3x3 wheat patch; one outside the box doesn't grow.
 - `seekingStatueFillsAMap`: an empty map goes into a Seeking statue, a second is refused, and the map pops out with over 90 % of its pixels drawn.
-- `seekingFindsAndRemembers`: a biome search finds the test world's biome at least 128 blocks away and, skipping that spot, at least 384 from it; arriving records the find and the next target is never the biome underfoot; the memory keeps only the newest 32.
+- `seekingFindsAndRemembers`: a biome search finds the test world's biome at least 128 blocks away, not above the ground, and, skipping that spot, at least 384 from it; arriving records the find and the next target is never the biome underfoot; the memory keeps only the newest 32.
 - `endLandingRules` (body in `BeginningEndGameTest`): top face, side with room, side without room → floor in front, slab top, fire on top → nowhere, bottom face → floor under it, miss → nowhere.
 - `gatheringRingFeedsASideHopper`: an item 6 blocks out ends up in a chest through a side hopper.
 - `herdingPastureKeepsLivestockIn`: a cow is blocked at the pasture edge, not inside; a zombie never.

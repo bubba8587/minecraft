@@ -38,6 +38,7 @@ The **Totem of Seeking** is an artifact that points toward a random structure or
 
 - **Structure:** you've found it when you're within 24 blocks of where the needle points, or inside the structure.
 - **Biome:** you've found it when you're standing in that biome, within 48 blocks of where the needle points.
+  - Right at the spot (within 24 blocks), it also counts if the biome is anywhere above or below you, so a cave biome can be found from the surface there.
 - When you find a target:
   - Totem particles burst around you and a chime plays.
   - A message shows what you found and the count, for example "Found: Jungle Temple (4/32)".

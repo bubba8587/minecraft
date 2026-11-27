@@ -133,13 +133,27 @@ public class TotemOfSeekingItem extends io.github.bubba8587.bubbas_totems_artifa
 		BlockPos here = player.blockPosition();
 		double d = Seeker.flatDistSqr(here, at);
 		if (kind.biome()) {
-			return d <= (double) TotemsTuning.SEEK_ARRIVE_BIOME * TotemsTuning.SEEK_ARRIVE_BIOME && level.getBiome(here).is(kind.id());
+			if (d <= (double) TotemsTuning.SEEK_ARRIVE_BIOME * TotemsTuning.SEEK_ARRIVE_BIOME && level.getBiome(here).is(kind.id())) {
+				return true;
+			}
+			return d <= (double) TotemsTuning.SEEK_ARRIVE * TotemsTuning.SEEK_ARRIVE && inColumn(level, here, kind);
 		}
 		if (d <= (double) TotemsTuning.SEEK_ARRIVE * TotemsTuning.SEEK_ARRIVE) {
 			return true;
 		}
 		return d <= (double) TotemsTuning.SEEK_ARRIVE_INSIDE * TotemsTuning.SEEK_ARRIVE_INSIDE
 				&& level.structureManager().getStructureWithPieceAt(here, s -> s.is(kind.id())).isValid();
+	}
+
+	/** Whether the biome is anywhere in this block column. */
+	private static boolean inColumn(ServerLevel level, BlockPos at, SeekKinds.Kind kind) {
+		BlockPos.MutableBlockPos p = at.mutable();
+		for (int y = level.getMaxY(); y >= level.getMinY(); y -= 4) {
+			if (level.getBiome(p.setY(y)).is(kind.id())) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/** The find: totem particles, a chime and its name with the count. */

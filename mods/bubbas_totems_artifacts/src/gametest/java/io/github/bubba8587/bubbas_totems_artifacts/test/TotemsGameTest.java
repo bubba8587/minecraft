@@ -340,7 +340,7 @@ public class TotemsGameTest {
 	// --- Seeking ---------------------------------------------------------------------------------------
 
 	/**
-	 * Core. A biome search finds the player's own biome at least the minimum distance away, and a search skipping that
+	 * Core. A biome search finds the player's own biome at least the minimum distance away and not in the air, and a search skipping that
 	 * spot lands well clear of it; arriving at a target records the find (Found: 1/32) and the next target is never
 	 * the biome underfoot; the memory keeps only the newest 32.
 	 */
@@ -356,6 +356,9 @@ public class TotemsGameTest {
 		helper.assertTrue(first.isPresent(), "no " + biome.id() + " found around a " + biome.id() + " test world");
 		double min = TotemsTuning.SEEK_MIN_DISTANCE;
 		helper.assertTrue(flat(first.get(), here) >= min, "found " + first.get() + ", closer than " + min + " to " + here);
+		int ground = level.getChunkSource().getGenerator().getBaseHeight(first.get().getX(), first.get().getZ(),
+				net.minecraft.world.level.levelgen.Heightmap.Types.WORLD_SURFACE_WG, level, level.getChunkSource().randomState());
+		helper.assertTrue(first.get().getY() <= ground, "found " + first.get() + " in the air above the ground at " + ground);
 		Optional<BlockPos> second = Seeker.lookupNow(level, biome, here, List.of(first.get()));
 		helper.assertTrue(second.isPresent() && flat(second.get(), first.get()) >= TotemsTuning.SEEK_SKIP_BIOME,
 				"skipping " + first.get() + " found " + second);
