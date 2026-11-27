@@ -5,8 +5,8 @@ import java.util.Optional;
 
 import io.github.bubba8587.bubbas_totems_artifacts.BubbasTotemsArtifacts;
 import io.github.bubba8587.bubbas_totems_artifacts.registry.ModItems;
-import io.github.bubba8587.bubbas_totems_artifacts.seeking.SeekingTypes;
-import io.github.bubba8587.bubbas_totems_artifacts.seeking.StructureSeeker;
+import io.github.bubba8587.bubbas_totems_artifacts.seeking.SeekKinds;
+import io.github.bubba8587.bubbas_totems_artifacts.seeking.Seeker;
 import io.github.bubba8587.bubbas_totems_artifacts.seeking.TotemOfSeekingItem;
 import net.minecraft.client.gui.screens.worldselection.WorldCreationUiState;
 import net.minecraft.core.BlockPos;
@@ -182,30 +182,28 @@ public class TotemsClientGameTest implements FabricClientGameTest {
 			server.runCommand("kill @e[type=item]");
 			server.runCommand("gamemode survival @p");
 
-			// --- Seeking: points at the nearest structure, checked against vanilla's /locate ---------------
+			// --- Seeking: points at a structure its search found, checked against vanilla's /locate ---------
 			BlockPos target = server.computeOnServer(s -> {
 				ServerPlayer p = s.getPlayerList().getPlayers().getFirst();
 				ServerLevel level = p.level();
 				p.getInventory().clearContent();
-				StructureSeeker.clear();
-				for (SeekingTypes.SeekType type : SeekingTypes.ALL) {
-					var set = type.resolve(level.registryAccess());
-					if (set.size() == 0) {
-						continue;
-					}
-					Optional<BlockPos> ours = StructureSeeker.lookupNow(level, type, p.blockPosition());
+				Seeker.clear();
+				for (SeekKinds.Kind kind : SeekKinds.structures(level)) {
+					Optional<BlockPos> ours = Seeker.lookupNow(level, kind, p.blockPosition(), java.util.List.of());
 					if (ours.isEmpty()) {
 						continue;
 					}
-					var vanilla = level.getChunkSource().getGenerator().findNearestMapStructure(level, set, p.blockPosition(), 100, false);
-					BubbasTotemsArtifacts.LOGGER.info("Seeking {}: ours {} (from {}), vanilla /locate {}", type.id().getPath(), ours.get(), p.blockPosition(),
+					var holder = SeekKinds.structure(level, kind).orElseThrow();
+					var vanilla = level.getChunkSource().getGenerator().findNearestMapStructure(level, net.minecraft.core.HolderSet.direct(holder), p.blockPosition(), 100, false);
+					BubbasTotemsArtifacts.LOGGER.info("Seeking {}: ours {} (from {}), vanilla /locate {}", kind.id(), ours.get(), p.blockPosition(),
 							vanilla == null ? null : vanilla.getFirst());
-					if (vanilla == null || Math.sqrt(ours.get().distSqr(p.blockPosition())) > Math.sqrt(vanilla.getFirst().distSqr(p.blockPosition())) + 1.0) {
-						throw new AssertionError("Seeking " + type.id() + " found " + ours.get() + " but vanilla /locate found " + (vanilla == null ? null : vanilla.getFirst()));
+					if (vanilla == null) {
+						throw new AssertionError("Seeking " + kind.id() + " found " + ours.get() + " but vanilla /locate found nothing");
 					}
 					ItemStack totem = new ItemStack(ModItems.TOTEM_OF_SEEKING);
-					TotemOfSeekingItem.choose(totem, type);
-					TotemOfSeekingItem.update(totem, level, p.blockPosition());
+					totem.set(io.github.bubba8587.bubbas_totems_artifacts.registry.ModComponents.SEEKING_TARGET,
+							new TotemOfSeekingItem.Target(kind, net.minecraft.core.GlobalPos.of(level.dimension(), p.blockPosition()), ours));
+					TotemOfSeekingItem.pointAt(totem, level, ours.get());
 					p.setItemInHand(InteractionHand.MAIN_HAND, totem);
 					p.getInventory().setItem(1, new ItemStack(Items.COMPASS));
 					return ours.get();

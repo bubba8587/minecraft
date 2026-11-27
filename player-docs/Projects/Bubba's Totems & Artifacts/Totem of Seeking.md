@@ -9,9 +9,9 @@
 > | **Stackable** | No |
 > | **Obtained** | Found in chests, trial chamber vaults and relic vaults |
 > | **Works from** | Anywhere in the inventory |
-> | **Works in a beacon** | Yes, with [[Bubba's Reworked Beacons]] |
+> | **Works in a beacon** | No |
 
-The **Totem of Seeking** is an artifact that points toward the nearest structure of a chosen kind, like a compass.
+The **Totem of Seeking** is an artifact that points toward a random structure or biome, like a compass. When you reach it, it picks somewhere new.
 
 ## Obtaining
 
@@ -22,53 +22,38 @@ The **Totem of Seeking** is an artifact that points toward the nearest structure
 
 ## Usage
 
-### Choosing a structure
-
-- Using the totem on a structure's typical block (placed anywhere) makes it seek that kind of structure.
-- A lodestone sound plays and a message such as "Seeking: Jungle Temple" appears; the tooltip then reads "Seeks: Jungle Temple".
-- Using it on any other block does nothing.
-
-| Structure | Block to use it on |
-|---|---|
-| Village | Hay bale or bell |
-| Desert pyramid | Chiseled sandstone |
-| Jungle temple | Mossy cobblestone |
-| Swamp hut | Cauldron |
-| Igloo | Snow block |
-| Pillager outpost | Dark oak log |
-| Woodland mansion | Dark oak planks |
-| Ocean monument | Prismarine, prismarine bricks, dark prismarine or sea lantern |
-| Ruined portal | Crying obsidian |
-| Mineshaft | Rail |
-| Abandoned camp | Campfire |
-| Trail ruins | Decorated pot |
-| Stronghold | Cracked or chiseled stone bricks |
-| Trial chambers | Tuff bricks or chiseled tuff bricks |
-| Ancient city | Reinforced deepslate or sculk shrieker |
-| Nether fortress | Nether bricks or nether brick fence |
-| Bastion remnant | Gilded blackstone or polished blackstone bricks |
-| End city | Purpur block or purpur pillar |
-
-- Shipwrecks, ocean ruins, buried treasure, nether fossils and [[Relic Vaults|relic vaults]] cannot be sought.
-
 ### Pointing
 
-- Anywhere in the inventory, the totem's needle points to the nearest structure of its kind, like a lodestone compass.
-- The needle spins while nothing is chosen, while the first search is still running, and when there is no such structure in the current dimension (for example a nether fortress sought from the Overworld).
-- Once the player reaches the structure, the totem keeps pointing at it.
+- Anywhere in your inventory, the totem's needle points to its current target, like a lodestone compass.
+- The target is a random structure or biome in your dimension, between about 128 and 2000 blocks away.
+  - Structures include villages, temples, strongholds, trial chambers, mansions and structures from other mods, like [[Deep-Sea Fortresses|deep-sea fortresses]].
+  - [[Relic Vaults]] are never targets.
+  - Biomes include cave biomes, so some targets are underground.
+  - It never picks the biome you're standing in.
+- The totem doesn't say what it's pointing at. You find out when you get there.
+- The needle spins while the totem is picking a new target. A lodestone click plays when it settles.
+- If you change dimensions, it picks a new target in the new dimension.
 
-### In a beacon
+### Finding
 
-- In a [[Bubba's Reworked Beacons]] beacon, every ordinary compass held in the beacon's area points to the nearest structure of the totem's kind, searched from the beacon.
-- The compass shimmers like a lodestone compass but keeps the name "Compass".
-- It turns back into a plain compass about 5 seconds after it leaves the area.
-- Compasses bound to a lodestone are left alone.
-- The beacon screen reads, for example, "Compasses point to the nearest Jungle Temple".
-- A totem with no structure chosen does nothing in a beacon.
+- **Structure:** you've found it when you're within 24 blocks of where the needle points, or inside the structure.
+- **Biome:** you've found it when you're standing in that biome, within 48 blocks of where the needle points.
+- When you find a target:
+  - Totem particles burst around you and a chime plays.
+  - A message shows what you found and the count, for example "Found: Jungle Temple (4/32)".
+  - The totem picks the next target from where you're standing.
+
+### Memory
+
+- The totem remembers its last 32 finds and won't lead you back to them.
+  - A remembered structure is never picked again.
+  - A remembered biome is only picked again at least 384 blocks from where you found it.
+- After 32 finds, the oldest is forgotten.
+- The tooltip shows how full the memory is, for example "Found: 4/32".
 
 ## Statue
 
-- Sneaking and using the totem on a block sets it down as a [[Totem Statue]] instead of choosing a structure.
+- Sneaking and using the totem on a block sets it down as a [[Totem Statue]].
 - The statue has no effect.
 - Mining it gives the totem back.
 

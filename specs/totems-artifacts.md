@@ -25,7 +25,7 @@ What stays in Reworked Mobs (`specs/undead.md`): sleepers, the hearing/disturban
 Previews (client test screenshots, still current): `docs/previews/totems/`
 - `textures-16x-32x.png`, `hotbar-16x-and-32x.png`: the Warding, Keeping, Gathering, Fortification, Growth and Seeking icons at 16x and 32x.
 - `gathering-pulling.png`: a held Gathering totem pulling items.
-- `seeking-ahead-turned-turned32x.png`: the Seeking needle facing the found village, turned 90 degrees, and at 32x.
+- `seeking-ahead-turned-turned32x.png`: the Seeking needle facing its found structure, turned 90 degrees, and at 32x.
 
 ## Design rules for totems (owner)
 
@@ -38,10 +38,10 @@ Previews (client test screenshots, still current): `docs/previews/totems/`
 ## Shared mechanics
 
 - **Items:** every totem is `stacksTo(1)`, found only (no recipes), in the mod's creative tab "Bubba's Totems & Artifacts". Rarity `UNCOMMON`, except the Beginning and the End (`RARE`). No new blocks except the statue (B15).
-- **Held** = main or off hand of any living thing, players and mobs alike (B18; `totems/Held`). Keeping and Seeking also work anywhere in the inventory.
+- **Held** = main or off hand of any living thing, players and mobs alike (B18; `totems/Held`). Keeping and Seeking also work anywhere in the inventory (Seeking: players only).
 - **Numbers** live in `totems/TotemsTuning` (Warding: `warding/WardingTuning`; relics: `relic/RelicTuning`). All are starting values for the owner to tune.
 - **Areas:** beacon and statue areas live in `totems/TotemAreas` (one `Kind` per totem; each area lapses unless refreshed, like `Wards`). `TotemAreas` doesn't depend on Reworked Beacons.
-- **Beacon payloads** (Reworked Beacons optional): one class per totem under the entrypoint `bubbas_reworked_beacons:payload` in `fabric.mod.json`: `compat/WardingBeaconPayload`, `GatheringBeaconPayload`, `FortificationBeaconPayload`, `GrowthBeaconPayload`, `SeekingBeaconPayload`, `BeginningBeaconPayload`, `HerdingBeaconPayload`, `ClearSkiesBeaconPayload`, `NorthWindBeaconPayload`. Each accepts only its own totem; power 1, 1 layer needed. Each pulse refreshes the area for `AREA_LIFETIME_TICKS` (100), so it lapses about 5 s after the beacon stops. Only these classes touch the beacons API. Keeping and the End have no payload.
+- **Beacon payloads** (Reworked Beacons optional): one class per totem under the entrypoint `bubbas_reworked_beacons:payload` in `fabric.mod.json`: `compat/WardingBeaconPayload`, `GatheringBeaconPayload`, `FortificationBeaconPayload`, `GrowthBeaconPayload`, `BeginningBeaconPayload`, `HerdingBeaconPayload`, `ClearSkiesBeaconPayload`, `NorthWindBeaconPayload`. Each accepts only its own totem; power 1, 1 layer needed. Each pulse refreshes the area for `AREA_LIFETIME_TICKS` (100), so it lapses about 5 s after the beacon stops. Only these classes touch the beacons API. Keeping, Seeking and the End have no payload.
 - **Sneak-use on a block always places the totem's statue** (see Totem statue).
 
 ### How totems are found (`totems/TotemsLoot`)
@@ -193,57 +193,39 @@ The owner wanted a verb-like name; still open. The Harvest idea was folded into 
 
 **Prior art:** growth accelerators and twerk mods (Crop Growth Modifier, Twerk Crop Growth, Sprinklerz); nothing on 26.3 as an item or beacon; hand-rolled (no library).
 
-## Totem of Seeking (`seeking/TotemOfSeekingItem`, `SeekingTypes`, `StructureSeeker`, `SeekingBeacon`, `mixin/CompassItemMixin`, `compat/SeekingBeaconPayload`)
+## Totem of Seeking (`seeking/TotemOfSeekingItem`, `SeekKinds`, `Seeker`)
 
-### Choosing what to seek
+### Targets
 
-Use (right-click) the totem on a structure's **signature block** (placed anywhere). Lodestone-lock sound and action bar "Seeking: Jungle Temple"; tooltip "Seeks: Jungle Temple", or "Use on a structure's block to choose what to seek" when nothing is chosen. Other blocks: nothing happens. The list is the builder's proposal; the owner may prefer another way (open question).
+- The totem points to a **random target**: a structure or a biome of the holder's dimension, half and half (owner, 2026-11-26). Reaching it records the find and picks the next target from there.
+- **Structures:** every structure whose structure set uses a random-spread or concentric-rings placement in this dimension (vanilla's and other mods', e.g. deep-sea fortresses, crypt yards, monster camps; relic vaults use their own placement, so the maps stay the way to them). A random structure set first, then a random structure in it, so the five village kinds or seven ruined portal kinds don't crowd out the rest.
+- **Biomes:** every biome the dimension's biome source can make, never the one under the holder.
+- **No POIs** (owner): vanilla only knows POIs in chunks that have generated.
+- **Mystery** (owner): the tooltip shows only the count; the target's name appears when it is found.
+- No target kind possible (e.g. a single-biome flat world without structures): no target, the needle spins.
+- No beacon form (owner: none for now; a new beacon or statue mechanic may come later). The statue still has no effect.
 
-| Structure | Signature block(s) |
-|---|---|
-| Village (any) | hay bale, bell |
-| Desert Pyramid | chiseled sandstone |
-| Jungle Temple | mossy cobblestone |
-| Swamp Hut | cauldron |
-| Igloo | snow block |
-| Pillager Outpost | dark oak log |
-| Woodland Mansion | dark oak planks |
-| Ocean Monument | prismarine bricks, dark prismarine, prismarine, sea lantern |
-| Ruined Portal (any) | crying obsidian |
-| Mineshaft (any) | rail |
-| Abandoned Camp (any) | campfire |
-| Trail Ruins | decorated pot |
-| Stronghold | cracked stone bricks, chiseled stone bricks |
-| Trial Chambers | tuff bricks, chiseled tuff bricks |
-| Ancient City | reinforced deepslate, sculk shrieker |
-| Nether Fortress | nether bricks, nether brick fence |
-| Bastion Remnant | gilded blackstone, polished blackstone bricks |
-| End City | purpur block, purpur pillar |
+### The search (`Seeker`, never freezing the server)
 
-Not seekable (no good signature block): shipwrecks, ocean ruins, buried treasure (explorer maps cover those), nether fossils, relic vaults.
+- **Distance band:** a target is at least 128 blocks (`SEEK_MIN_DISTANCE`) and at most 2000 (`SEEK_REACH`) from where it was picked, horizontally. Nothing in the band: a new kind is picked on the next check.
+- **Structures:** vanilla's /locate order for one structure (concentric rings, then the random-spread grid ring by ring, stopping at the first ring with an allowed hit, then past the reach). It **never loads or generates chunks:** a candidate counts when vanilla's quick structure check says a start is there or would be generated there (in rare cases a structure that fails to fit still counts). In the client test world the first result (a stronghold) matched /locate exactly.
+- **Biomes:** vanilla's /locate biome order (a square spiral of columns, heights outward from the picker's), every 64 blocks across and up (`SEEK_BIOME_STEP`, `SEEK_BIOME_STEP_Y`), sampling the biome noise only.
+- **Already found:** a search skips spots near the totem's recorded finds of that kind in that dimension: 64 blocks for a structure (`SEEK_SKIP_STRUCTURE`), 384 for a biome (`SEEK_SKIP_BIOME`).
+- **2 ms per tick budget** for all searches together (`SEEK_BUDGET_NANOS`). Results are cached by dimension, kind, picking spot and skip list (512 entries, `SEEK_CACHE_SIZE`; cleared on server stop). The found position is saved on the totem, so it survives restarts without searching again.
 
-### Pointing (B17)
+### Pointing and finding (B17)
 
-- Vanilla's lodestone compass: the totem carries an untracked `minecraft:lodestone_tracker` aimed at the structure; its item model is a `minecraft:compass` (target `lodestone`) dispatch over 16 needle frames.
-- No target (nothing chosen, first search still running, nothing in this dimension, e.g. a fortress in the Overworld): the needle spins like a compass in the Nether.
-- Works anywhere in the inventory, like a compass; checks every 20 ticks (`SEEK_UPDATE_TICKS`).
-- Once the player reaches the structure, the totem keeps pointing at it, like an explorer map ("point to the next one" would need a "found" memory; open question, not built).
+- Vanilla's lodestone compass: the totem carries an untracked `minecraft:lodestone_tracker` aimed at the target; its item model is a `minecraft:compass` (target `lodestone`) dispatch over 16 needle frames. While a search runs, the needle spins; when it answers, a quiet lodestone-lock sound plays.
+- Works anywhere in a **player's** inventory (not spectators); checks every 20 ticks (`SEEK_UPDATE_TICKS`). A target from another dimension is dropped and a new one picked in the current dimension.
+- **Arrival:**
+  - Structure: within 24 blocks of its spot horizontally (`SEEK_ARRIVE`), or inside one of its pieces within 160 (`SEEK_ARRIVE_INSIDE`).
+  - Biome: standing in that biome within 48 blocks of its spot (`SEEK_ARRIVE_BIOME`), so a cave biome means going down.
+- **On a find:** totem-of-undying particles around the player, an amethyst resonate and a soft level-up chime, and the action bar "Found: Jungle Temple (4/32)". Then the next target is picked from there.
+- **Memory:** components `bubbas_totems_artifacts:seeking_target` (kind, picking spot, found position) and `seeking_found` (kind and position of each find, oldest first). Up to 32 finds (`SEEK_MEMORY`); past that the oldest is forgotten. Tooltip: "Found: 4/32".
+- Old saves: `seeking_type` and `seeking_beacon_until` stay registered (unused) so older totems and compasses still load.
+- Names: biomes use their own names; structures use `structure.<ns>.<path>` (the key other locator mods read; ours adds vanilla's, e.g. "Jungle Temple", "Plains Village", "Ruined Portal"), else the id in title case.
 
-### The search, never freezing the server
-
-- `StructureSeeker` is vanilla's /locate search (`ChunkGenerator.findNearestMapStructure`: concentric rings for strongholds, then the random-spread grid ring by ring to 100 rings (`SEEK_MAX_RINGS`), stopping at the first ring with a hit), cut into steps.
-- **2 ms per tick budget** for all searches together (`SEEK_BUDGET_NANOS`).
-- It **never loads or generates chunks:** a candidate counts when vanilla's quick structure check says a start is there or would be generated there. (Vanilla confirms that by generating the chunk's structure starts, so in rare cases a structure that fails to fit still counts.)
-- Results are cached per dimension, type and 256-block cell of the asker's position (`SEEK_CELL_BLOCKS`; shared by everyone in the cell; 512 entries, `SEEK_CACHE_SIZE`, oldest dropped; cleared on server stop). While a new search runs, the needle keeps its old target.
-- In the client test's world the result matched vanilla's /locate exactly (village at 240, 0, 128).
-
-### In a beacon
-
-- Every **vanilla compass held** (either hand, anyone, B18) in the beacon's area points to the nearest structure of the totem's type, searched from the beacon.
-- The compass gets an untracked lodestone target plus `bubbas_totems_artifacts:seeking_beacon_until`; it shimmers like a lodestone compass but keeps the name "Compass". 100 ticks after it was last reached (`SEEK_COMPASS_LIFETIME_TICKS`) it turns plain again. Lodestone-bound compasses are left alone.
-- Screen line: "Compasses point to the nearest Jungle Temple". A totem with no type does nothing; its screen line says "Choose a structure first: use the totem on its block".
-
-**Prior art:** Explorer's Compass (CC-BY-NC-SA, no 26.3), OmniCompass (MIT, 26.1.2), Luna's Structure Compass (MIT, 1.21.8): structure compasses that pick from a GUI list and run a locate. Read for ideas only. Hand-rolled because none has a 26.3 build to depend on (B9); our block-choosing and no-chunk-load stepped search is different anyway.
+**Prior art:** Explorer's Compass (CC-BY-NC-SA, no 26.3), OmniCompass (MIT, 26.1.2), Luna's Structure Compass (MIT, 1.21.8): structure compasses that pick from a GUI list and run a locate. None does random wandering targets with a found memory, and none has a 26.3 build to depend on (B9).
 
 <a id="totem-of-herding-herdingherding-built-2026-11-22"></a>
 ## Totem of Herding (`herding/Herding`)
@@ -372,7 +354,7 @@ Owner's design. Player page: `Totem of the End.md`.
 - **Block:** `bubbas_totems_artifacts:totem_statue` ("Totem Statue"). **B15 reason (owner-approved):** one shared block for every totem, so a found totem can be set down. No block entity.
 - **Placing (owner-approved):** sneak and use any totem on a block. Sneaking is required so that holding a totem for its pulse never places it by accident; without sneaking the click does nothing. The statue faces the player and the totem is used up (creative keeps it). The Grave Talisman is not a totem and has no statue.
   - `statue/StatueTotemItem` is an `Item` whose `useOn` places the statue when sneaking (PASS otherwise, so `use()` still runs). Every totem item is or extends `StatueTotemItem`, so sneak-to-place lives in one place.
-  - **Sneak-use on a block always places the statue** (builder's choice): a sneaking Totem of the End doesn't teleport, the Beginning doesn't ripple, Seeking doesn't pick a structure.
+  - **Sneak-use on a block always places the statue** (builder's choice): a sneaking Totem of the End doesn't teleport, the Beginning doesn't ripple.
   - A totem's item cooldown doesn't block placing (see Totem of Warding, Held).
 - **Breaking** (any tool, pickaxe fastest, strength 1) drops the totem back; pistons pop it off as its totem. Shape: 10x10 footprint, 14 high (plinth and column).
 - **Which totem:** `statue/TotemType`, in order: WARDING, KEEPING, GATHERING, FORTIFICATION, GROWTH, SEEKING, BEGINNING, END, HERDING, CLEAR_SKIES, NORTH_WIND, with `forItem(Item)`. WARDING is first, so it is the default, and statues saved before the `totem` property existed load as Warding.
@@ -632,7 +614,6 @@ Owner decisions still pending (built as described above until decided):
 
 - **Mob holders:** should mobs holding a Totem of Warding pulse, and may woken undead pick one up? (built as yes, agent's choice)
 - **Names:** the Grave Talisman's name; the Totem of Growth's name (owner wanted a verb-like word).
-- **Seeking:** signature blocks (built) or a picker screen; keep pointing at a found structure (built) or "point to the next one".
 - **Builder's calls to review:** Keeping counts anywhere in the inventory and keeps XP levels; the totem loot tables and chances; Gathering's beacon ring; Growth's strength; the Beginning's ripple choices (what counts as built, protection radius) and the End's landing choices and End city 5 %; the RARE rarity of both; trapped monsters in a ward fight rather than cower.
 - **Herding** counts every animal except tamed pets, so bees, axolotls and the like too (builder).
 - **North Wind statue:** gusts gliders within 5 blocks (builder's choice), or decorative only?
@@ -660,7 +641,7 @@ Most bodies live in the milestone classes below and are called from the core cla
 - `gatheringPullsNearbyItems`: an armor stand holding it pulls a dirt item from 6 blocks; an item 12 blocks away stays.
 - `fortificationStopsBlockDamage`: a TNT-type blast inside a 5x3x5 dirt cube next to a holder breaks nothing.
 - `growthSpeedsUpCrops`: 40 boosted ticks in the held box grow a 3x3 wheat patch; one outside the box doesn't grow.
-- `seekingChoosesAndPoints`: mossy cobblestone chooses jungle temple, stone chooses nothing; a village search finishes and the totem points at the result (spins in the test world, which has no structures).
+- `seekingFindsAndRemembers`: a biome search finds the test world's biome at least 128 blocks away and, skipping that spot, at least 384 from it; arriving records the find and the next target is never the biome underfoot; the memory keeps only the newest 32.
 - `endLandingRules` (body in `BeginningEndGameTest`): top face, side with room, side without room → floor in front, slab top, fire on top → nowhere, bottom face → floor under it, miss → nowhere.
 - `gatheringRingFeedsASideHopper`: an item 6 blocks out ends up in a chest through a side hopper.
 - `herdingPastureKeepsLivestockIn`: a cow is blocked at the pasture edge, not inside; a zombie never.
@@ -672,9 +653,9 @@ Most bodies live in the milestone classes below and are called from the core cla
 
 ### Milestone
 
-- **`TotemsGameTest`:** keep_inventory on doesn't use the Keeping totem (`keepingNotUsedWithKeepInventory`); own fresh throws and never-pickup items aren't pulled, others' throws are (`gatheringSkipsOwnThrowsAndDisplays`); the same blast without a holder breaks blocks (`explosionWithoutTotemBreaksBlocks`); only blocks within 8 of the holder are spared (`fortificationOnlyNearTheHolder`); a real held Growth totem (armor stand, random_tick_speed 100, 400 ticks) beats vanilla (`heldGrowthOutpacesVanilla`); the stepped search matches vanilla /locate for every type that exists (`seekingMatchesVanillaLocate`; none in the server test world, so the client test checks it in a world with villages); the ring walk covers every cell once (`seekingRingCoversEveryCell`); every totem's loot (`totemsAreFoundInLoot`: chest tables rolled as chests, each at about its chance over 300 rolls; the evoker as entity loot: Keeping at about `EVOKER_KEEPING` (25 %), never Warding, its Totem of Undying every time); `totemsAreArtifacts` (every statue totem one per stack and not common; the talisman one per stack); old Reworked Mobs ids load as these items (`oldReworkedMobsIdsLoadAsTheseItems`).
+- **`TotemsGameTest`:** keep_inventory on doesn't use the Keeping totem (`keepingNotUsedWithKeepInventory`); own fresh throws and never-pickup items aren't pulled, others' throws are (`gatheringSkipsOwnThrowsAndDisplays`); the same blast without a holder breaks blocks (`explosionWithoutTotemBreaksBlocks`); only blocks within 8 of the holder are spared (`fortificationOnlyNearTheHolder`); a real held Growth totem (armor stand, random_tick_speed 100, 400 ticks) beats vanilla (`heldGrowthOutpacesVanilla`); the stepped structure search is no further than vanilla /locate for every structure kind whose /locate answer is in the distance band (`seekingMatchesVanillaLocate`; none in the server test world, so the client test checks it in a world with structures); the ring walk covers every cell once (`seekingRingCoversEveryCell`); every totem's loot (`totemsAreFoundInLoot`: chest tables rolled as chests, each at about its chance over 300 rolls; the evoker as entity loot: Keeping at about `EVOKER_KEEPING` (25 %), never Warding, its Totem of Undying every time); `totemsAreArtifacts` (every statue totem one per stack and not common; the talisman one per stack); old Reworked Mobs ids load as these items (`oldReworkedMobsIdsLoadAsTheseItems`).
 - **`NewTotemsGameTest`:** `gatheringStatueRingsItemsForASideHopper` (an item in range is ringed and collected by a side hopper into a chest; a touching chest stays empty; an item beyond the radius is untouched); `growthPlantsDroppedSeeds` (a wheat seed is planted on farmland, exactly one); `growthNeedsRoomAround`; `growthNeverStacksPlants` (200 tries each: sugar cane, bamboo and cactus items never planted on top of their own kind; crops, saplings and flowers count as plants; an oak sapling is still planted on dirt); plus the bodies of the core ring, pasture, Clear Skies and statue-area tests.
-- **`TotemsBeaconGameTest`** (real only with `-PwithBeacons`): `gatheringBeaconStartsTheRing`; `fortificationBeaconProtectsItsArea` (the area survives a blast); `growthBeaconSetsItsArea` (a 4-layer area has strength 4 and reaches 45 blocks); `seekingBeaconPointsCompasses` (a held compass points at the search result, keeps the name "Compass", and turns plain after its time); `payloadsAcceptTheirTotems` (each payload accepts only its own totem).
+- **`TotemsBeaconGameTest`** (real only with `-PwithBeacons`): `gatheringBeaconStartsTheRing`; `fortificationBeaconProtectsItsArea` (the area survives a blast); `growthBeaconSetsItsArea` (a 4-layer area has strength 4 and reaches 45 blocks); `payloadsAcceptTheirTotems` (each payload accepts only its own totem).
 - **`BeginningEndGameTest`:** `endTeleportsWhereAimedWithCooldown` (real use: unsafe aim → FAIL, no cooldown, no move; aim at a block 10 away → there, cooldown on, not used up); `endHeldMakesEyeContactHarmless` (vanilla `isBeingStaredBy`: true without, false with the totem in the off hand); `beginningPulsesOnlyWithReworkedMobs` (with `-PwithMobs`: SUCCESS, count stays 1, cooldown full; without: PASS and no cooldown). Not tested: outside the overworld (`Ripples.supported` covers it with the same check).
 - **`BeginningAreaGameTest`** (needs `-PwithMobs`, beacon part `-PwithBeacons`): `beginningBeaconRevertsAHole` and `beginningStatueRevertsAHole` (each reverts most of a dug hole over one rhythm window; ore spots only get ore).
 - **Reworked Mobs side** (`specs/endermen.md`): core `ReworkedMobsCoreGameTest.endermanRippleRestoresGroundButNotBuilds` (body in `EndermanTotemsGameTest`: a hole fills with grass on stone, a dirt pillar goes, sand on the top layer turns to grass, a 3x3 pit with a plank floor keeps its air); milestone `EndermanTotemsGameTest.offeringLaidOncePerCairn` (laid once on display; a player takes it with an empty hand; never laid again, also after it's taken), `pulseOddsTerrainOverOre`, `pulseRepeatsAndBuilds`.
@@ -697,7 +678,7 @@ Most bodies live in the milestone classes below and are called from the core cla
 
 - `talisman`: the glow at each distance in hand and hotbar (vanilla husk, skeleton, zombie, so it runs without Reworked Mobs).
 - `warding`: the Totem of Warding in the hotbar, its pulse ring and cooldown sweep in first and third person.
-- `totems` (`TotemsClientGameTest`): every totem in the hotbar at 16x and 32x; Gathering before/pulling/after; the beacon ring (`totems-gathering-ring`, `-later`: items orbiting, one entering the side hopper) and the statue ring (`totems-gathering-statue-ring`); Seeking held facing the found village (needle up) and turned 90 degrees (needle to the side), 16x and 32x, with the result checked against vanilla /locate in that world; the Beginning and the End in the hotbar and held in first person (`totems-hotbar`, `totems-held-beginning`, `totems-held-end`, and their `-32x`); with `-PwithMobs`, `totems-beginning-pulse` (revert puffs on grass).
+- `totems` (`TotemsClientGameTest`): every totem in the hotbar at 16x and 32x; Gathering before/pulling/after; the beacon ring (`totems-gathering-ring`, `-later`: items orbiting, one entering the side hopper) and the statue ring (`totems-gathering-statue-ring`); Seeking held facing its found structure (needle up) and turned 90 degrees (needle to the side), 16x and 32x, with the result checked against vanilla /locate in that world; the Beginning and the End in the hotbar and held in first person (`totems-hotbar`, `totems-held-beginning`, `totems-held-end`, and their `-32x`); with `-PwithMobs`, `totems-beginning-pulse` (revert puffs on grass).
 - `statues` (`StatuesClientGameTest`): all 11 statues in a row, close pairs and at night, each at 32x too.
 - `northwind`: see Totem of the North Wind.
 - `relics` (`RelicsClientGameTest`): `relics-inventory(-32x)`, `relics-tooltip(-32x)`, `relics-map` (finished map in hand), `relics-vault-grand-door/-back/-side/-pedestal/-pedestal-close/-stair` (grand built with a weapon seed), `relics-vault-small-door/-pedestal/-pedestal-close` (statue seed), `relics-crypt-wall/-stair/-vault` (with `-PwithMobs`), and the pedestal with Totems alone (glow item frame).

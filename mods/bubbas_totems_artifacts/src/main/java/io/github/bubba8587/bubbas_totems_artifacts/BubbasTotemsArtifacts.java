@@ -9,7 +9,7 @@ import io.github.bubba8587.bubbas_totems_artifacts.registry.ModBlocks;
 import io.github.bubba8587.bubbas_totems_artifacts.registry.ModComponents;
 import io.github.bubba8587.bubbas_totems_artifacts.registry.ModCreativeTabs;
 import io.github.bubba8587.bubbas_totems_artifacts.registry.ModItems;
-import io.github.bubba8587.bubbas_totems_artifacts.seeking.StructureSeeker;
+import io.github.bubba8587.bubbas_totems_artifacts.seeking.Seeker;
 import io.github.bubba8587.bubbas_totems_artifacts.totems.TotemsLoot;
 import io.github.bubba8587.bubbas_totems_artifacts.warding.Wards;
 import net.minecraft.resources.Identifier;
@@ -46,7 +46,7 @@ public class BubbasTotemsArtifacts implements ModInitializer {
 		io.github.bubba8587.bubbas_totems_artifacts.skies.ClearSkies.initialize();
 		io.github.bubba8587.bubbas_totems_artifacts.northwind.NorthWind.initialize();
 		io.github.bubba8587.bubbas_totems_artifacts.gathering.GatheringRing.initialize();
-		StructureSeeker.initialize();
+		Seeker.initialize();
 		io.github.bubba8587.bubbas_totems_artifacts.statue.UndyingStatue.initialize();
 		TotemsLoot.initialize();
 		io.github.bubba8587.bubbas_totems_artifacts.relic.Relics.initialize();

@@ -23,7 +23,7 @@ A **totem statue** is a totem set down in the world: a small, chunky figure of t
 - The statue appears on that block, facing the player, and the totem is used up (in Creative mode it is kept).
 - A totem's cooldown does not stop it being placed.
 - Without sneaking, every totem works as usual and places nothing.
-- While sneaking, using a totem on a block always places its statue instead: a sneaking [[Totem of the End]] does not teleport, a sneaking [[Totem of the Beginning]] does not ripple, and a sneaking [[Totem of Seeking]] does not choose a structure.
+- While sneaking, using a totem on a block always places its statue instead: a sneaking [[Totem of the End]] does not teleport, and a sneaking [[Totem of the Beginning]] does not ripple.
 - About half of all [[Relic Vaults|relic vaults]] have a statue on their pedestal, facing the door; breaking it gives its totem.
 - The [[Grave Talisman]] is not a totem and has no statue.
 

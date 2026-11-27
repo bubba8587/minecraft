@@ -108,7 +108,7 @@ Nothing is released yet: every mod is 0.1.0 in `develop`.
 - built: Totem of Gathering: held; in a beacon, a floating ring of items and XP for a side hopper ([§](totems-artifacts.md#totem-of-gathering-gatheringgathering-totemofgatheringitem-compatgatheringbeaconpayload))
 - built: Totem of Fortification ([§](totems-artifacts.md#totem-of-fortification-fortificationfortification-mixinserverexplosionmixin-compatfortificationbeaconpayload))
 - built: Totem of Growth, also plants dropped seeds ([§](totems-artifacts.md#totem-of-growth-working-name-growthgrowth-totemofgrowthitem-compatgrowthbeaconpayload))
-- built: Totem of Seeking ([§](totems-artifacts.md#totem-of-seeking-seekingtotemofseekingitem-seekingtypes-structureseeker-seekingbeacon-mixincompassitemmixin-compatseekingbeaconpayload))
+- built: Totem of Seeking ([§](totems-artifacts.md#totem-of-seeking-seekingtotemofseekingitem-seekkinds-seeker))
 - built: Totem of Herding ([§](totems-artifacts.md#totem-of-herding-herdingherding))
 - built: Totem of Clear Skies ([§](totems-artifacts.md#totem-of-clear-skies-skiesclearskies))
 - built: Totem of the North Wind: a rocket boost while gliding; in a beacon or as a statue, for gliders in the area ([§](totems-artifacts.md#totem-of-the-north-wind-northwindtotemofnorthwinditem-northwindnorthwind-compatnorthwindbeaconpayload))

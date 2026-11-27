@@ -46,12 +46,22 @@ public final class TotemsTuning {
 	public static final int PLANT_REACH = 3;
 	/** How often a held Totem of Seeking asks for its target. */
 	public static final int SEEK_UPDATE_TICKS = 20;
-	/** Search radius in structure-spacing steps, like /locate and explorer maps. */
-	public static final int SEEK_MAX_RINGS = 100;
+	/** Targets are picked at least this far and at most this far from where the last one was found (horizontal blocks). */
+	public static final int SEEK_MIN_DISTANCE = 128;
+	public static final int SEEK_REACH = 2000;
+	/** Recorded finds kept per totem; a search skips these spots (a structure's within this many blocks, a biome's within that many). */
+	public static final int SEEK_MEMORY = 32;
+	public static final int SEEK_SKIP_STRUCTURE = 64;
+	public static final int SEEK_SKIP_BIOME = 384;
+	/** Biome search sample spacing, across and up. */
+	public static final int SEEK_BIOME_STEP = 64;
+	public static final int SEEK_BIOME_STEP_Y = 64;
+	/** Arrival: within this many blocks of a structure's spot, or inside one of its pieces within the next; in a biome within the last of its spot. */
+	public static final int SEEK_ARRIVE = 24;
+	public static final int SEEK_ARRIVE_INSIDE = 160;
+	public static final int SEEK_ARRIVE_BIOME = 48;
 	/** Search time per server tick, all searches together. */
 	public static final long SEEK_BUDGET_NANOS = 2_000_000L;
-	/** Results are cached per area of this size: moving into a new one searches again. */
-	public static final int SEEK_CELL_BLOCKS = 256;
 	/** Cached results kept. */
 	public static final int SEEK_CACHE_SIZE = 512;
 	/** Used: the ground within this many blocks goes back to how it generated. */
@@ -77,8 +87,6 @@ public final class TotemsTuning {
 	public static final int GROWTH_STATUE_EXTRA = 1;
 	/** A beacon's Fortification or Growth area lasts this long after its last pulse. */
 	public static final int AREA_LIFETIME_TICKS = 100;
-	/** A compass pointed by a Seeking beacon keeps pointing this long after the last pulse that reached it. */
-	public static final int SEEK_COMPASS_LIFETIME_TICKS = 100;
 	/** Trial chamber vaults: each of the seven everyday totems (not Warding or North Wind, which have their own odds; not Beginning or End). */
 	public static final float TRIAL_CHANCE = 0.007F;
 	public static final float TRIAL_CHANCE_OMINOUS = 0.014F;

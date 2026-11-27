@@ -17,7 +17,7 @@ Area effects were first needed by two projects: Bubba's Infused Gems (gems broad
 |---|---|
 | Reworked Beacons alone | the reworked beacon; gem-base payments buy vanilla's six powers (Standalone, below) |
 | + Infused Gems | gems go in the slot and broadcast their effect; the standalone payments are off (owner) |
-| + Totems & Artifacts | totems go in the slot: Warding wards the area; Gathering, Fortification, Growth, Seeking, Herding, Clear Skies, the North Wind and the Beginning have area forms too (`specs/totems-artifacts.md`) |
+| + Totems & Artifacts | totems go in the slot: Warding wards the area; Gathering, Fortification, Growth, Herding, Clear Skies, the North Wind and the Beginning have area forms too (`specs/totems-artifacts.md`) |
 | + Reworked Mobs | the Ancient Fabricator's Fabricator Heart works in its beacons (Mining Fatigue III, Weakness and Slowness on players in the area; `specs/mob-factory.md`) |
 | Gems, Totems or Mobs without Beacons | beacons stay vanilla; those mods work exactly as they do now |
 

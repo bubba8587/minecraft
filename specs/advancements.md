@@ -43,7 +43,7 @@ Totals: **87 advancements** (80 for single mods and 7 that need two mods). **46 
 | **Fortune and Glory** | Open a chest in a grand relic vault, the nine-piece kind | challenge | Dig Here |
 | **Totem Pole** | Hold every kind of totem, all eleven of them | challenge | Dig Here |
 | **Can't Take It With You** | Die with a Totem of Keeping and keep everything anyway | goal | Totems & Artifacts |
-| **Seek and Ye Shall Find** | Tell a Totem of Seeking what to look for | task | Totems & Artifacts |
+| **Seek and Ye Shall Find** | Find what a Totem of Seeking led you to | task | Totems & Artifacts |
 | **Blink and You'll Miss It** | Teleport with a Totem of the End | task | Totems & Artifacts |
 | **Should Have Read the Tooltip** | Go for a swim holding a Totem of the End | task, hidden | Blink and You'll Miss It |
 | **Second Wind** | Catch a gust from a Totem of the North Wind while gliding | task | Totems & Artifacts |
@@ -64,7 +64,7 @@ Totals: **87 advancements** (80 for single mods and 7 that need two mods). **46 
 - **Fortune and Glory** (`grand_vault`): V `player_generates_container_loot`: loot table `bubbas_totems_artifacts:chests/relic_vault_grand`
 - **Totem Pole** (`all_totems`): V `inventory_changed`: one criterion per totem, all required (like vanilla's "Monsters Hunted")
 - **Can't Take It With You** (`keeping`): C `keeping_saved`: in the Totem of Keeping death mixin, when a totem is used up
-- **Seek and Ye Shall Find** (`seeking`): V `item_used_on_block` with `totem_of_seeking` (check; else C in the Seeking choose code)
+- **Seek and Ye Shall Find** (`seeking`): C `seeking_found`: in the Totem of Seeking, on a find
 - **Blink and You'll Miss It** (`end_teleport`): C `end_teleport`: in the Totem of the End teleport, after a landing
 - **Should Have Read the Tooltip** (`end_water`): C `end_water`: where water hurts a holder of the totem
 - **Second Wind** (`north_wind`): C `north_wind_gust`: in the North Wind boost, held or from a statue

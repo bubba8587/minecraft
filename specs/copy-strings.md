@@ -65,7 +65,7 @@ Descriptive strings (owner's wording):
 - The Totem of Gathering pulls items & XP toward its holder or location.
 - The Totem of Fortification protects areas from explosions.
 - The Totem of Growth accelerates crop growth and even replants seeds in valid areas- try it with a tree farm!
-- The Totem of Seeking guides you toward structures and biomes, if you know what you're looking for.
+- The Totem of Seeking leads you somewhere new, and remembers where it has been.
 - There's a mysterious, ancient power hidden in the Totem of the Beginning...
 - The Totem of Herding draws animals to your hand, and keeps them from wandering when placed down.
 - The Totem of the End grants you the power and status of an Enderman.

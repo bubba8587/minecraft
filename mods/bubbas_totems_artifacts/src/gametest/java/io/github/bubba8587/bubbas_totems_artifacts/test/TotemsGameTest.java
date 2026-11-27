@@ -1,6 +1,7 @@
 // dte:C6
 package io.github.bubba8587.bubbas_totems_artifacts.test;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -10,8 +11,8 @@ import io.github.bubba8587.bubbas_totems_artifacts.growth.Growth;
 import io.github.bubba8587.bubbas_totems_artifacts.keeping.Keeping;
 import io.github.bubba8587.bubbas_totems_artifacts.registry.ModComponents;
 import io.github.bubba8587.bubbas_totems_artifacts.registry.ModItems;
-import io.github.bubba8587.bubbas_totems_artifacts.seeking.SeekingTypes;
-import io.github.bubba8587.bubbas_totems_artifacts.seeking.StructureSeeker;
+import io.github.bubba8587.bubbas_totems_artifacts.seeking.SeekKinds;
+import io.github.bubba8587.bubbas_totems_artifacts.seeking.Seeker;
 import io.github.bubba8587.bubbas_totems_artifacts.seeking.TotemOfSeekingItem;
 import io.github.bubba8587.bubbas_totems_artifacts.totems.TotemsLoot;
 import io.github.bubba8587.bubbas_totems_artifacts.totems.TotemsTuning;
@@ -21,6 +22,7 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.resources.Identifier;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.GlobalPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.resources.ResourceKey;
@@ -338,68 +340,77 @@ public class TotemsGameTest {
 	// --- Seeking ---------------------------------------------------------------------------------------
 
 	/**
-	 * Core. Used on mossy cobblestone, the totem seeks jungle temples (and says so); used on plain stone nothing
-	 * changes. A search for villages finishes (in steps, never loading chunks) and the totem then points where it found
-	 * one, or spins when there is none in reach.
+	 * Core. A biome search finds the player's own biome at least the minimum distance away, and a search skipping that
+	 * spot lands well clear of it; arriving at a target records the find (Found: 1/32) and the next target is never
+	 * the biome underfoot; the memory keeps only the newest 32.
 	 */
-	public void seekingChoosesAndPoints(GameTestHelper helper) {
+	public void seekingFindsAndRemembers(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
-		StructureSeeker.clear();
+		Seeker.clear();
 		ServerPlayer player = TestSupport.survivalPlayer(helper);
 		Vec3 at = helper.absoluteVec(new Vec3(12.5, 1.0, 8.5));
 		player.snapTo(at.x, at.y, at.z, 0.0F, 0.0F);
-		ItemStack totem = new ItemStack(ModItems.TOTEM_OF_SEEKING);
-		player.setItemInHand(InteractionHand.MAIN_HAND, totem);
-		helper.setBlock(new BlockPos(13, 1, 8), Blocks.STONE);
-		helper.setBlock(new BlockPos(13, 1, 9), Blocks.MOSSY_COBBLESTONE);
-		var stone = new BlockHitResult(Vec3.atCenterOf(helper.absolutePos(new BlockPos(13, 1, 8))), Direction.WEST, helper.absolutePos(new BlockPos(13, 1, 8)), false);
-		totem.useOn(new UseOnContext(player, InteractionHand.MAIN_HAND, stone));
-		helper.assertFalse(totem.has(ModComponents.SEEKING_TYPE), "plain stone chose a type");
-		var mossy = new BlockHitResult(Vec3.atCenterOf(helper.absolutePos(new BlockPos(13, 1, 9))), Direction.WEST, helper.absolutePos(new BlockPos(13, 1, 9)), false);
-		totem.useOn(new UseOnContext(player, InteractionHand.MAIN_HAND, mossy));
-		helper.assertTrue(SeekingTypes.byId(totem.get(ModComponents.SEEKING_TYPE)).map(t -> t.id().getPath().equals("jungle_temple")).orElse(false),
-				"mossy cobblestone chose " + totem.get(ModComponents.SEEKING_TYPE));
+		BlockPos here = player.blockPosition();
+		SeekKinds.Kind biome = new SeekKinds.Kind(level.getBiome(here).unwrapKey().orElseThrow().identifier(), true);
+		Optional<BlockPos> first = Seeker.lookupNow(level, biome, here, List.of());
+		helper.assertTrue(first.isPresent(), "no " + biome.id() + " found around a " + biome.id() + " test world");
+		double min = TotemsTuning.SEEK_MIN_DISTANCE;
+		helper.assertTrue(flat(first.get(), here) >= min, "found " + first.get() + ", closer than " + min + " to " + here);
+		Optional<BlockPos> second = Seeker.lookupNow(level, biome, here, List.of(first.get()));
+		helper.assertTrue(second.isPresent() && flat(second.get(), first.get()) >= TotemsTuning.SEEK_SKIP_BIOME,
+				"skipping " + first.get() + " found " + second);
 
-		var village = SeekingTypes.byId(net.minecraft.resources.Identifier.fromNamespaceAndPath("bubbas_totems_artifacts", "village")).orElseThrow();
-		TotemOfSeekingItem.choose(totem, village);
-		Optional<BlockPos> found = StructureSeeker.lookupNow(level, village, player.blockPosition());
-		TotemOfSeekingItem.update(totem, level, player.blockPosition());
-		LodestoneTracker tracker = totem.get(DataComponents.LODESTONE_TRACKER);
-		helper.assertTrue(tracker != null && !tracker.tracked(), "no untracked lodestone target after the search");
-		helper.assertTrue(tracker.target().map(g -> g.pos()).equals(found), "points at " + tracker.target() + ", found " + found);
+		ItemStack totem = new ItemStack(ModItems.TOTEM_OF_SEEKING);
+		BlockPos spot = here.offset(10, 0, 0);
+		totem.set(ModComponents.SEEKING_TARGET, new TotemOfSeekingItem.Target(biome, GlobalPos.of(level.dimension(), here), Optional.of(spot)));
+		TotemOfSeekingItem.update(totem, level, player);
+		var found = TotemOfSeekingItem.finds(totem);
+		helper.assertTrue(found.size() == 1 && found.getFirst().pos().pos().equals(spot), "arriving recorded " + found);
+		var next = totem.get(ModComponents.SEEKING_TARGET);
+		helper.assertTrue(next == null || !next.kind().equals(biome), "picked the biome underfoot again: " + next);
+		helper.assertFalse(totem.has(DataComponents.LODESTONE_TRACKER), "the needle doesn't spin while the next search runs");
+
+		for (int i = 0; i < TotemsTuning.SEEK_MEMORY + 8; i++) {
+			TotemOfSeekingItem.remember(totem, new TotemOfSeekingItem.Found(biome, GlobalPos.of(level.dimension(), new BlockPos(i * 1000, 0, 0))));
+		}
+		found = TotemOfSeekingItem.finds(totem);
+		helper.assertTrue(found.size() == TotemsTuning.SEEK_MEMORY && found.getLast().pos().pos().getX() == (TotemsTuning.SEEK_MEMORY + 7) * 1000,
+				"memory holds " + found.size() + ", newest " + found.getLast());
 		level.getServer().getPlayerList().remove(player);
 		helper.succeed();
 	}
 
+	private static double flat(BlockPos a, BlockPos b) {
+		return Math.sqrt(Math.pow(a.getX() - b.getX(), 2) + Math.pow(a.getZ() - b.getZ(), 2));
+	}
+
 	/**
-	 * Milestone. The stepped search finds what vanilla's /locate finds (findNearestMapStructure, no new references) for
-	 * every type that exists in this world, within a structure-spacing of it (vanilla stops at the first hit in a ring;
-	 * ours keeps the nearest of that ring).
+	 * Milestone. For every structure kind of the dimension, the stepped search is no further than vanilla's /locate
+	 * (findNearestMapStructure, no new references) whenever vanilla's answer is within the totem's distance band.
 	 */
 	@GameTest(structure = FIELD, maxTicks = 20)
 	public void seekingMatchesVanillaLocate(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
-		StructureSeeker.clear();
+		Seeker.clear();
 		BlockPos origin = helper.absolutePos(new BlockPos(12, 1, 8));
 		int compared = 0;
 		StringBuilder log = new StringBuilder();
-		for (SeekingTypes.SeekType type : SeekingTypes.ALL) {
-			var set = type.resolve(level.registryAccess());
-			if (set.size() == 0) {
+		for (SeekKinds.Kind kind : SeekKinds.structures(level)) {
+			var holder = SeekKinds.structure(level, kind);
+			if (holder.isEmpty()) {
 				continue;
 			}
-			Optional<BlockPos> ours = StructureSeeker.lookupNow(level, type, origin);
-			var vanilla = level.getChunkSource().getGenerator().findNearestMapStructure(level, set, origin, 20, false);
-			if (vanilla == null) {
+			var vanilla = level.getChunkSource().getGenerator().findNearestMapStructure(level, net.minecraft.core.HolderSet.direct(holder.get()), origin, 20, false);
+			if (vanilla == null || flat(vanilla.getFirst(), origin) < TotemsTuning.SEEK_MIN_DISTANCE || flat(vanilla.getFirst(), origin) > TotemsTuning.SEEK_REACH) {
 				continue;
 			}
+			Optional<BlockPos> ours = Seeker.lookupNow(level, kind, origin, List.of());
 			compared++;
-			double vanillaDist = Math.sqrt(vanilla.getFirst().distSqr(origin));
-			double oursDist = ours.map(p -> Math.sqrt(p.distSqr(origin))).orElse(Double.MAX_VALUE);
-			log.append(type.id().getPath()).append(": ours ").append(ours.orElse(null)).append(" vanilla ").append(vanilla.getFirst()).append("; ");
-			helper.assertTrue(oursDist <= vanillaDist + 1.0, type.id() + " ours " + ours + " is further than vanilla's " + vanilla.getFirst());
+			log.append(kind.id().getPath()).append(": ours ").append(ours.orElse(null)).append(" vanilla ").append(vanilla.getFirst()).append("; ");
+			helper.assertTrue(ours.map(p -> flat(p, origin)).orElse(Double.MAX_VALUE) <= flat(vanilla.getFirst(), origin) + 1.0,
+					kind.id() + " ours " + ours + " is further than vanilla's " + vanilla.getFirst());
 		}
-		io.github.bubba8587.bubbas_totems_artifacts.BubbasTotemsArtifacts.LOGGER.info("Seeking vs /locate ({} types): {}", compared, log);
+		io.github.bubba8587.bubbas_totems_artifacts.BubbasTotemsArtifacts.LOGGER.info("Seeking vs /locate ({} kinds): {}", compared, log);
 		helper.succeed();
 	}
 
@@ -410,7 +421,7 @@ public class TotemsGameTest {
 			java.util.Set<Long> seen = new java.util.HashSet<>();
 			int cells = r == 0 ? 1 : 8 * r;
 			for (int i = 0; i < cells; i++) {
-				int[] d = StructureSeeker.ringCell(r, i);
+				int[] d = Seeker.ringCell(r, i);
 				helper.assertTrue(Math.max(Math.abs(d[0]), Math.abs(d[1])) == r, "cell " + i + " of ring " + r + " is off the ring");
 				seen.add(((long) d[0] << 32) ^ (d[1] & 0xffffffffL));
 			}

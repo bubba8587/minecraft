@@ -44,7 +44,7 @@ side: client and server
 - [[Totem of Gathering]]: pulls in dropped items; in a beacon, items and experience circle it for a hopper to collect.
 - [[Totem of Fortification]]: stops explosions from breaking blocks.
 - [[Totem of Growth]]: makes plants grow faster and plants dropped seeds.
-- [[Totem of Seeking]]: points toward a chosen kind of structure.
+- [[Totem of Seeking]]: points toward a random structure or biome, then a new one once you find it.
 - [[Totem of the Beginning]]: slowly returns the ground around its user to how it was first generated (reusable, with a cooldown; needs Bubba's Reworked Mobs).
 - [[Totem of the End]]: endermen treat its holder as one of their own; teleports its user to the block they aim at.
 - [[Totem of Herding]]: animals follow its holder; in a beacon, they stay in the area.
@@ -89,7 +89,7 @@ side: client and server
 | Installed with | Adds |
 |---|---|
 | [[Bubba's Reworked Mobs]] | The Grave Talisman also senses [[Sleeping Undead|sleeping undead]]; the Totem of Warding calms sleeping undead, and a full ward keeps them asleep; crypts often have a Totem of Warding statue standing guard. [[Endermen|Enderman cairns]] sometimes offer the [[Totem of the Beginning]], and the Totem of the Beginning works only with this mod. The [[Totem of Keeping]] doesn't keep a player's things after a [[Soulfire]] death unless they have [[Soulguard]]. Relic map shreds are also found in crypts, camps, Fabricator offices and cairn trades; some noble crypts hide a [[Relic Vaults|crypt vault]]; vault pedestals show their weapon planted point-down and a skeleton guard sits by it. |
-| [[Bubba's Reworked Beacons]] | Totems fit in a [[Beacon|beacon]] and work across its area: the Totem of Warding wards it, Gathering makes its item ring, Fortification stops explosions breaking blocks, Growth speeds up plants, Seeking points held compasses, Herding keeps animals in, Clear Skies keeps the weather off, the North Wind gives gliders gusts. The Totem of the Beginning in a beacon slowly returns its whole area's ground to how it was generated (with Bubba's Reworked Mobs). |
+| [[Bubba's Reworked Beacons]] | Totems fit in a [[Beacon|beacon]] and work across its area: the Totem of Warding wards it, Gathering makes its item ring, Fortification stops explosions breaking blocks, Growth speeds up plants, Herding keeps animals in, Clear Skies keeps the weather off, the North Wind gives gliders gusts. The Totem of the Beginning in a beacon slowly returns its whole area's ground to how it was generated (with Bubba's Reworked Mobs). |
 | [[Bubba's Infused Gems]] | The weapon on a relic vault's pedestal carries gems, the vault guard's chestplate and sword carry gems, and vault chests also hold rare gems. |
 
 ## See also

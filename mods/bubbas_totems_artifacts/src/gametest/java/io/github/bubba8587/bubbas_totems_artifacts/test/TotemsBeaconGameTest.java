@@ -1,20 +1,12 @@
 // dte:C6
 package io.github.bubba8587.bubbas_totems_artifacts.test;
 
-import io.github.bubba8587.bubbas_totems_artifacts.registry.ModComponents;
 import io.github.bubba8587.bubbas_totems_artifacts.registry.ModItems;
-import io.github.bubba8587.bubbas_totems_artifacts.seeking.SeekingTypes;
-import io.github.bubba8587.bubbas_totems_artifacts.seeking.StructureSeeker;
-import io.github.bubba8587.bubbas_totems_artifacts.seeking.TotemOfSeekingItem;
 import io.github.bubba8587.bubbas_totems_artifacts.totems.TotemAreas;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityTypes;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -94,37 +86,6 @@ public class TotemsBeaconGameTest {
 		helper.succeed();
 	}
 
-	/**
-	 * Seeking: a compass held in the area points where the totem's search found a village (or spins if there is none
-	 * in reach), stays a "Compass" by name, and turns plain again once its time runs out; a lodestone compass is left alone.
-	 */
-	@GameTest(structure = TestSupport.FIELD, maxTicks = 20)
-	public void seekingBeaconPointsCompasses(GameTestHelper helper) {
-		if (!withBeacons()) {
-			helper.succeed();
-			return;
-		}
-		ServerLevel level = helper.getLevel();
-		StructureSeeker.clear();
-		ItemStack totem = new ItemStack(ModItems.TOTEM_OF_SEEKING);
-		var village = SeekingTypes.byId(Identifier.fromNamespaceAndPath("bubbas_totems_artifacts", "village")).orElseThrow();
-		TotemOfSeekingItem.choose(totem, village);
-		BlockPos beacon = new BlockPos(1, 1, 1);
-		ArmorStand stand = helper.spawn(EntityTypes.ARMOR_STAND, new BlockPos(8, 1, 8));
-		stand.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.COMPASS));
-		var found = StructureSeeker.lookupNow(level, village, helper.absolutePos(beacon));
-		WithBeacons.pulse(helper, ModItems.TOTEM_OF_SEEKING, totem, beacon, 1);
-		ItemStack compass = stand.getMainHandItem();
-		helper.assertTrue(compass.has(ModComponents.SEEKING_BEACON_UNTIL), "the compass wasn't reached");
-		var tracker = compass.get(DataComponents.LODESTONE_TRACKER);
-		helper.assertTrue(tracker != null && tracker.target().map(g -> g.pos()).equals(found), "points at " + tracker + ", found " + found);
-		helper.assertTrue(compass.getHoverName().getString().equals("Compass"), "named " + compass.getHoverName().getString());
-		compass.set(ModComponents.SEEKING_BEACON_UNTIL, level.getGameTime() - 1);
-		compass.inventoryTick(level, stand, EquipmentSlot.MAINHAND);
-		helper.assertFalse(compass.has(DataComponents.LODESTONE_TRACKER) || compass.has(ModComponents.SEEKING_BEACON_UNTIL), "the compass didn't turn plain");
-		helper.succeed();
-	}
-
 	/** Every new payload accepts its own totem only; Keeping has no beacon use. */
 	@GameTest(maxTicks = 5)
 	public void payloadsAcceptTheirTotems(GameTestHelper helper) {
@@ -143,14 +104,12 @@ public class TotemsBeaconGameTest {
 				return new io.github.bubba8587.bubbas_totems_artifacts.compat.GatheringBeaconPayload();
 			} else if (item == ModItems.TOTEM_OF_FORTIFICATION) {
 				return new io.github.bubba8587.bubbas_totems_artifacts.compat.FortificationBeaconPayload();
-			} else if (item == ModItems.TOTEM_OF_GROWTH) {
-				return new io.github.bubba8587.bubbas_totems_artifacts.compat.GrowthBeaconPayload();
 			}
-			return new io.github.bubba8587.bubbas_totems_artifacts.compat.SeekingBeaconPayload();
+			return new io.github.bubba8587.bubbas_totems_artifacts.compat.GrowthBeaconPayload();
 		}
 
 		static boolean acceptsOnly() {
-			Item[] totems = {ModItems.TOTEM_OF_GATHERING, ModItems.TOTEM_OF_FORTIFICATION, ModItems.TOTEM_OF_GROWTH, ModItems.TOTEM_OF_SEEKING};
+			Item[] totems = {ModItems.TOTEM_OF_GATHERING, ModItems.TOTEM_OF_FORTIFICATION, ModItems.TOTEM_OF_GROWTH};
 			for (Item owner : totems) {
 				var payload = payloadFor(owner);
 				for (Item other : new Item[] {ModItems.TOTEM_OF_GATHERING, ModItems.TOTEM_OF_FORTIFICATION, ModItems.TOTEM_OF_GROWTH,
