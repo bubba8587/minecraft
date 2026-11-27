@@ -2,7 +2,9 @@
 package io.github.bubba8587.bubbas_world_tweaks.test;
 
 import io.github.bubba8587.bubbas_world_tweaks.fortress.ConduitShrine;
+import io.github.bubba8587.bubbas_world_tweaks.fortress.DeepseaFortressStructure;
 import io.github.bubba8587.bubbas_world_tweaks.fortress.DeepseaFortresses;
+import net.minecraft.world.level.levelgen.structure.pieces.StructurePiecesBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
@@ -101,6 +103,22 @@ public class DeepseaFortressGameTest {
 		helper.succeed();
 	}
 
+	/** On the shallowest allowed floor every layout fits under the top gap, sinking into the floor as far as it needs. */
+	@GameTest(structure = DeepseaTestPieces.ROOM)
+	public void tallFortressesSinkToFit(GameTestHelper helper) {
+		int sea = 63;
+		int floor = sea - DeepseaFortressStructure.MIN_DEPTH;
+		int sank = 0;
+		for (long seed = 1; seed <= 40; seed++) {
+			StructurePiecesBuilder builder = new StructurePiecesBuilder();
+			int sink = DeepseaFortressStructure.layOut(builder, RandomSource.create(seed), 0, 0, floor, sea);
+			helper.assertTrue(builder.getBoundingBox().maxY() <= sea - DeepseaFortressStructure.TOP_GAP, "top too near the surface, seed " + seed);
+			sank += sink > 0 ? 1 : 0;
+		}
+		helper.assertTrue(sank > 0, "no layout needed to sink: the test floor is too deep to cover sinking");
+		helper.succeed();
+	}
+
 	/** A whole fortress over a hand-built sea: nothing Nether left, a guardian spawner, below sea level, no air in, beside or under it, pillars down to the floor. */
 	@GameTest(structure = DeepseaTestPieces.ROOM, maxTicks = 400)
 	public void wholeFortressIsASeaFortress(GameTestHelper helper) {
@@ -111,7 +129,7 @@ public class DeepseaFortressGameTest {
 		int found = 0;
 		for (long seed = 1; seed <= 3 && found == 0; seed++) {
 			StructureStart start = DeepseaTestPieces.fortress(level, seed, 30000 + (int) seed * 512, 30000, floor, sea, stone);
-			helper.assertTrue(start.getBoundingBox().maxY() <= sea - 2, "fortress top above sea level: " + start.getBoundingBox());
+			helper.assertTrue(start.getBoundingBox().maxY() <= sea - DeepseaFortressStructure.TOP_GAP, "fortress top too near the surface: " + start.getBoundingBox());
 			BoundingBox cb = start.getPieces().getFirst().getBoundingBox();
 			helper.assertTrue(cb.minY() == floor + 1, "start crossing not seated on the floor");
 			int[][] armEnds = { { cb.minX() + 9, cb.minZ() + 1 }, { cb.minX() + 9, cb.maxZ() - 1 }, { cb.minX() + 1, cb.minZ() + 9 },

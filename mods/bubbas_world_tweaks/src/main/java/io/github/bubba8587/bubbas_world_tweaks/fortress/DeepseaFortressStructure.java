@@ -26,14 +26,10 @@ public class DeepseaFortressStructure extends Structure {
 	public static final MapCodec<DeepseaFortressStructure> CODEC = simpleCodec(DeepseaFortressStructure::new);
 	/** Half the start crossing's width: its centre from its corner. */
 	private static final int START_HALF = 9;
-	/** Offset of the four floor samples around the start. */
-	private static final int SAMPLE_REACH = 40;
-	/** Shallowest floor allowed under the fortress, in blocks below sea level. */
-	private static final int MIN_DEPTH = 14;
+	/** Shallowest floor allowed under the start crossing's centre, in blocks below sea level. */
+	public static final int MIN_DEPTH = 22;
 	/** Gap kept between the fortress top and sea level. */
-	private static final int TOP_GAP = 2;
-	/** Most the start crossing may sink into the floor to keep the top under the sea; deeper and the spot is skipped. */
-	private static final int MAX_SINK = 3;
+	public static final int TOP_GAP = 6;
 
 	public DeepseaFortressStructure(StructureSettings settings) {
 		super(settings);
@@ -49,17 +45,8 @@ public class DeepseaFortressStructure extends Structure {
 		if (floor > sea - MIN_DEPTH) {
 			return Optional.empty();
 		}
-		int[][] around = { { -SAMPLE_REACH, -SAMPLE_REACH }, { SAMPLE_REACH, -SAMPLE_REACH }, { -SAMPLE_REACH, SAMPLE_REACH },
-				{ SAMPLE_REACH, SAMPLE_REACH } };
-		for (int[] d : around) {
-			if (floor(context, x + START_HALF + d[0], z + START_HALF + d[1]) > sea - MIN_DEPTH) {
-				return Optional.empty();
-			}
-		}
 		StructurePiecesBuilder builder = new StructurePiecesBuilder();
-		if (layOut(builder, context.random(), x, z, floor, sea) > MAX_SINK) {
-			return Optional.empty();
-		}
+		layOut(builder, context.random(), x, z, floor, sea);
 		return Optional.of(new GenerationStub(new BlockPos(x + START_HALF, floor, z + START_HALF), Either.right(builder)));
 	}
 
