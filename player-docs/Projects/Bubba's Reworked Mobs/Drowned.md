@@ -14,7 +14,7 @@ A **drowned** in [[Bubba's Reworked Mobs]] is a tough lurker that waits in shall
 ## Spawning
 
 - Drowned spawn in water as in vanilla.
-- The reduced monster rate (see [[Monster Spawning]]) holds them back less than other monsters: a player travelling along a coast or river can expect a handful nearby, up to about five in one stretch of water.
+- The reduced monster rate (see [[Monster Spawning]]) holds them back less than other monsters: once the reduced limit is full, a drowned can still spawn naturally as long as fewer than five drowned are within about 48 blocks of the spot, so a player travelling along a coast or river can expect up to five nearby.
 - Zombies that drown turn into drowned.
 - Drowned from spawners and trial spawners behave as normal vanilla drowned.
 - The crew sleeping inside shipwrecks wake up as reworked drowned (see [[Shipwreck Crew]]).

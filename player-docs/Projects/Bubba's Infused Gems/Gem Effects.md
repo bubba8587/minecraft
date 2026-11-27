@@ -182,5 +182,5 @@ What else sets a gem's strength:
 
 *Main article: [[Finding Gems]]*
 
-- Found-only gems (Haste, Resistance, Health Boost, Hero of the Village, Mining Fatigue) and most Luck gems come from loot.
+- Six effects are found only, in loot: Haste, Luck, Health Boost, Hero of the Village, Mining Fatigue and Resistance (Luck can also be brewed from a Luck potion, which has no survival recipe).
 - Mobs that spawn in gemmed armor get its effects.

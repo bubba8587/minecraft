@@ -8,7 +8,7 @@
 > | **Type** | Item |
 > | **Rarity** | Uncommon |
 > | **Stackable** | Yes (16), with shreds of the same name, size and pieces |
-> | **Obtained** | Chest loot in most structures; apprentice cartographers; caretaker endermen's cairn trades |
+> | **Obtained** | Chest loot in most structures; apprentice cartographers (master cartographers sell finished maps); caretaker endermen's cairn trades |
 > | **Sizes** | 4 pieces or 9 pieces |
 > | **Leads to** | That relic's [[Relic Vaults|relic vault]] |
 
@@ -17,7 +17,8 @@ A **relic map shred** is a torn piece of an old map; shreds of the same relic pu
 ## Obtaining
 
 - Found in many chests: dungeons, mineshafts, shipwrecks, buried treasure, desert and jungle temples, igloos, strongholds, woodland mansions, pillager outposts, ancient cities, ruined portals, ocean ruins, villages (cartographers most often), trial chamber corridors and bastions.
-- With [[Bubba's Reworked Mobs]] installed, also in [[Crypt Yards|crypt]] chests, [[Monster Camps|monster camp]] chests, [[Ancient Fabricators|Fabricator]] offices, and the caretaker endermen's [[Trading at Cairns|cairn trades]].
+- With [[Bubba's Reworked Mobs]] installed, also in [[Crypt Yards|crypt]] chests, [[Monster Camps|monster camp]] chests and [[Ancient Fabricators|Fabricator]] offices.
+- With [[Bubba's Reworked Mobs]] installed, each answer the caretaker endermen give at a [[Trading at Cairns|cairn trade pad]] has a 10 % chance to come with a shred as well.
 - Relic vaults hold more shreds of other relics.
 
 | Found in | Chance per chest |
@@ -30,7 +31,7 @@ A **relic map shred** is a torn piece of an old map; shreds of the same relic pu
 | Village weaponsmith and toolsmith, trial chamber corridor, bastion | 10 % |
 | Village house | 8 % |
 | With Bubba's Reworked Mobs: noble / family / pauper crypt | 50 % / 35 % / 15 % |
-| With Bubba's Reworked Mobs: monster camp, Fabricator office, cairn trade | 30 %, 25 %, 10 % |
+| With Bubba's Reworked Mobs: monster camp, Fabricator office | 30 %, 25 % |
 
 - A found shred is usually a single piece, sometimes two or three, never a whole map.
 - About a third of shreds belong to nine-piece maps.

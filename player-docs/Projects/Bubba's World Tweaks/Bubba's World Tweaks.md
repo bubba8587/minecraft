@@ -36,7 +36,7 @@ side: client and server
 
 *Main article: [[Parasitic]]*
 
-- An enchantment from the enchanting table that, from time to time, mends its item with the player's health instead of experience, and can kill the player.
+- An ordinary enchantment (enchanting table, villager trades, enchanted loot) that, from time to time, mends its item with the player's health instead of experience, and can kill the player.
 
 ## Deep-sea fortresses
 

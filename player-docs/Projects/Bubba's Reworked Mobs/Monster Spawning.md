@@ -17,7 +17,7 @@ Most monsters a player meets come from places instead:
 
 - **Creepers** do not spawn randomly at all. Each player has one watching creeper at night instead (see [[Creepers]]).
 - **Endermen** in the overworld mostly spawn near enderman cairns, and only a few anywhere (see [[Endermen]]).
-- **Drowned** spawn naturally near water past the cut, as long as fewer than five are within about 48 blocks (see [[Drowned]]).
+- **Drowned** can still spawn naturally once the reduced limit is full, as long as fewer than five drowned are within about 48 blocks of the spot, so up to five gather near a player by the water (see [[Drowned]]).
 
 ## Unchanged
 

@@ -13,13 +13,21 @@ mod: "Bubba's World Tweaks"
 > | **Mod** | [[Bubba's World Tweaks]] |
 > | **Levels** | I-III |
 > | **Goes on** | Anything with durability |
-> | **Found** | Enchanting table, villager trades, loot |
+> | **Found** | Enchanting table, villager trades (enchanted books and gear), enchanted loot, enchanted gear on mobs |
 > | **Can't go with** | Mending |
 
 **Parasitic** is an enchantment that mends its item with the player's health.
 
 - Every so often a damaged Parasitic item bites the player, takes a little health and repairs itself with it.
 - Higher levels take a little more health but give back a good deal more durability for it.
+
+## Obtaining
+
+- Parasitic is an ordinary enchantment, not a treasure one, so it turns up wherever ordinary enchantments do:
+  - the enchanting table, as rarely as Fortune or Looting;
+  - villager trades: librarians' enchanted books and the enchanted tools, weapons and armour villagers sell;
+  - enchanted items in chest loot and fishing;
+  - enchanted gear that mobs spawn with.
 
 ## How it works
 

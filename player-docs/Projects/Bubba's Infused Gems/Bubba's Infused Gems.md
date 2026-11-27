@@ -32,7 +32,7 @@ side: client and server
 
 - Gems are brewed, enchanted and socketed by the player (below).
 - Finished Gems and gemmed armor are also found rarely in chests, vaults, fishing treasure and hero gifts, and on mobs that spawn in armor.
-- Six effects come only from loot: Haste, Luck, Health Boost, Hero of the Village, Mining Fatigue and Resistance.
+- Six effects are found only, in loot: Haste, Luck, Health Boost, Hero of the Village, Mining Fatigue and Resistance (Luck can also be brewed from a Luck potion, which has no survival recipe).
 
 ## Items
 
