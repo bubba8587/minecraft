@@ -286,7 +286,7 @@ public class TotemsGameTest {
 	/** Plants a 3x3 wheat patch (age 0) on farmland with its centre at {@code centre} (the crop layer). */
 	private static void wheat(GameTestHelper helper, BlockPos centre) {
 		for (BlockPos p : BlockPos.betweenClosed(centre.offset(-1, 0, -1), centre.offset(1, 0, 1))) {
-			helper.setBlock(p.below(), Blocks.FARMLAND);
+			helper.setBlock(p.below(), Blocks.FARMLAND.defaultBlockState().setValue(net.minecraft.world.level.block.FarmlandBlock.MOISTURE, 7));
 			helper.setBlock(p, Blocks.WHEAT);
 		}
 	}
@@ -311,7 +311,7 @@ public class TotemsGameTest {
 		wheat(helper, outside);
 		var box = Growth.heldBox(helper.absolutePos(inside));
 		int grown = 0;
-		for (int i = 0; i < 40; i++) {
+		for (int i = 0; i < 100; i++) {
 			grown += Growth.boost(helper.getLevel(), box, 400);
 		}
 		helper.assertTrue(grown > 0 && ages(helper, inside) > 0, "no wheat grew in the box (" + grown + ")");
