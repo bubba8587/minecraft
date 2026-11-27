@@ -42,8 +42,8 @@ public final class WardingTuning {
 	public static final Map<ResourceKey<LootTable>, Float> LOOT = Map.of(
 			BuiltInLootTables.WOODLAND_MANSION, 0.20F,
 			BuiltInLootTables.ANCIENT_CITY, 0.12F,
-			BuiltInLootTables.TRIAL_CHAMBERS_REWARD, 0.01F,
-			BuiltInLootTables.TRIAL_CHAMBERS_REWARD_OMINOUS, 0.02F,
+			BuiltInLootTables.TRIAL_CHAMBERS_REWARD, 0.03F,
+			BuiltInLootTables.TRIAL_CHAMBERS_REWARD_OMINOUS, 0.06F,
 			// Bubba's Reworked Mobs' noble crypts (specs/graveyards.md), keyed by id: without that mod the table never exists.
 			ResourceKey.create(net.minecraft.core.registries.Registries.LOOT_TABLE,
 					net.minecraft.resources.Identifier.fromNamespaceAndPath("bubbas_reworked_mobs", "chests/crypt_noble")), 0.12F);

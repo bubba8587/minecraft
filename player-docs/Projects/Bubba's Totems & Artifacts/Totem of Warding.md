@@ -34,8 +34,8 @@ Chests and vaults add a totem on top of their normal loot:
 |---|---|
 | Woodland mansion chest | 20% per chest |
 | Ancient city chest | 12% per chest |
-| Trial chambers vault | 1% per opening |
-| Ominous trial chambers vault | 2% per opening |
+| Trial chambers vault | 3% per opening |
+| Ominous trial chambers vault | 6% per opening |
 | Noble crypt chest (with [[Bubba's Reworked Mobs]]) | 12% per chest |
 
 [[Relic Vaults|Relic vault]] chests sometimes hold one too, and a relic vault's pedestal may hold a Totem of Warding statue.

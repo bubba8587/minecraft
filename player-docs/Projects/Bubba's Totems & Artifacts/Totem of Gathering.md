@@ -15,7 +15,7 @@ The **Totem of Gathering** is an artifact that pulls in dropped items.
 
 ## Obtaining
 
-The Totem of Gathering cannot be crafted. It is found in mineshaft, dungeon and pillager outpost chests, and in [[Relic Vaults|relic vault]] chests. It is also found in trial chamber vaults: a 0.3 % chance each time a player opens a normal vault, and 0.6 % for an ominous vault.
+The Totem of Gathering cannot be crafted. It is found in mineshaft, dungeon and pillager outpost chests, and in [[Relic Vaults|relic vault]] chests. It is also found in trial chamber vaults: a 0.7 % chance each time a player opens a normal vault, and 1.4 % for an ominous vault.
 
 A [[Relic Vaults|relic vault's]] pedestal may also hold a Totem of Gathering [[Totem Statue|statue]]; breaking the statue gives the totem.
 

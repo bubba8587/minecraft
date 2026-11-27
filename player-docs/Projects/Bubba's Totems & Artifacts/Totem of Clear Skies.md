@@ -14,7 +14,7 @@ The **Totem of Clear Skies** is an artifact that keeps the weather off.
 
 ## Obtaining
 
-The Totem of Clear Skies cannot be crafted. It is found in igloo chests, desert village houses and shipwreck supply chests, and in [[Relic Vaults|relic vault]] chests. It is also found in trial chamber vaults: a 0.3 % chance each time a player opens a normal vault, and 0.6 % for an ominous vault.
+The Totem of Clear Skies cannot be crafted. It is found in igloo chests, desert village houses and shipwreck supply chests, and in [[Relic Vaults|relic vault]] chests. It is also found in trial chamber vaults: a 0.7 % chance each time a player opens a normal vault, and 1.4 % for an ominous vault.
 
 A [[Relic Vaults|relic vault's]] pedestal may also hold a Totem of Clear Skies [[Totem Statue|statue]]; breaking the statue gives the totem.
 

@@ -17,10 +17,10 @@ The **Totem of the North Wind** is an artifact that gives a gliding player a gus
 
 The totem cannot be crafted. It is found in trial chamber vaults:
 
-- 4 % chance each time a player opens a normal vault.
-- 8 % chance each time a player opens an ominous vault.
+- 12 % chance each time a player opens a normal vault.
+- 24 % chance each time a player opens an ominous vault.
 
-Each player can open each vault once, so a whole trial chamber gives about a 20 to 35 % chance of one, and it is by far the most common totem there. It is not found in the chambers' ordinary chests.
+Each player can open each vault once, so a whole trial chamber gives about a 45 to 70 % chance of at least one, and it is by far the most common totem there. It is not found in the chambers' ordinary chests.
 
 It is also found in [[Relic Vaults|relic vault]] chests, and a relic vault's pedestal may hold a Totem of the North Wind [[Totem Statue|statue]]; breaking the statue gives the totem.
 

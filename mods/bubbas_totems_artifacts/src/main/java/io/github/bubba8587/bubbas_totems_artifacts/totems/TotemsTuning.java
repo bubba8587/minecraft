@@ -80,8 +80,8 @@ public final class TotemsTuning {
 	/** A compass pointed by a Seeking beacon keeps pointing this long after the last pulse that reached it. */
 	public static final int SEEK_COMPASS_LIFETIME_TICKS = 100;
 	/** Trial chamber vaults: each of the seven everyday totems (not Warding or North Wind, which have their own odds; not Beginning or End). */
-	public static final float TRIAL_CHANCE = 0.003F;
-	public static final float TRIAL_CHANCE_OMINOUS = 0.006F;
+	public static final float TRIAL_CHANCE = 0.007F;
+	public static final float TRIAL_CHANCE_OMINOUS = 0.014F;
 	/** Evokers: a Totem of Keeping beside their Totem of Undying. */
 	public static final float EVOKER_KEEPING = 0.25F;
 	public static final ResourceKey<LootTable> EVOKER = ResourceKey.create(net.minecraft.core.registries.Registries.LOOT_TABLE,
@@ -102,8 +102,8 @@ public final class TotemsTuning {
 			BuiltInLootTables.TRIAL_CHAMBERS_REWARD_OMINOUS, TRIAL_CHANCE_OMINOUS);
 	/** Totem of the North Wind loot: trial chamber vaults (normal and ominous). */
 	public static final Map<ResourceKey<LootTable>, Float> NORTH_WIND_LOOT = Map.of(
-			BuiltInLootTables.TRIAL_CHAMBERS_REWARD, 0.04F,
-			BuiltInLootTables.TRIAL_CHAMBERS_REWARD_OMINOUS, 0.08F);
+			BuiltInLootTables.TRIAL_CHAMBERS_REWARD, 0.12F,
+			BuiltInLootTables.TRIAL_CHAMBERS_REWARD_OMINOUS, 0.24F);
 	/** Totem of Keeping: rare and deep, and evokers (renewable through raids, as Undying is). */
 	public static final Map<ResourceKey<LootTable>, Float> KEEPING_LOOT = Map.of(
 			BuiltInLootTables.ANCIENT_CITY, 0.06F,

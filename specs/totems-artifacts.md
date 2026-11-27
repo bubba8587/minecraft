@@ -50,7 +50,7 @@ One extra pool per table and totem, added on top of the normal loot, through `Lo
 
 | Totem | Chance per chest |
 |---|---|
-| Warding | woodland mansion 20 %, ancient city 12 %, trial chambers vault 1 %, ominous vault 2 %, Reworked Mobs noble crypt 12 % *(chest rates: agent's choice)*. Not from evokers (owner). With Reworked Mobs, crypt warding statues (noble 85 % per wing, family 65 %, pauper 35 %; `GraveTuning.CRYPT_STATUE_*`) are its biggest source (see Totem statue) |
+| Warding | woodland mansion 20 %, ancient city 12 %, trial chambers vault 3 %, ominous vault 6 %, Reworked Mobs noble crypt 12 % *(chest rates: agent's choice)*. Not from evokers (owner). With Reworked Mobs, crypt warding statues (noble 85 % per wing, family 65 %, pauper 35 %; `GraveTuning.CRYPT_STATUE_*`) are its biggest source (see Totem statue) |
 | Keeping | ancient city 6 %, end city treasure 8 %, stronghold library 10 %, woodland mansion 8 %, trial vaults; evoker 25 % (`EVOKER_KEEPING`, owner) beside vanilla's guaranteed Totem of Undying, so it is renewable through raids |
 | Gathering | abandoned mineshaft 4 % (owner), simple dungeon 8 %, pillager outpost 12 %, trial vaults |
 | Fortification | desert pyramid 15 % (the TNT trap), bastion "other" 8 %, stronghold crossing 8 %, trial vaults |
@@ -58,12 +58,12 @@ One extra pool per table and totem, added on top of the normal loot, through `Lo
 | Seeking | shipwreck map 12 %, buried treasure 10 %, big underwater ruin 8 %, village cartographer 10 %, trial vaults |
 | Herding | village shepherd 12 %, butcher 8 %, tannery 8 %, trial vaults |
 | Clear Skies | igloo 12 %, desert village house 6 %, shipwreck supply 5 %, trial vaults |
-| North Wind | trial chamber vaults 4 % normal, 8 % ominous (owner: trial chambers are its source); also relic vault chests and pedestals |
+| North Wind | trial chamber vaults 12 % normal, 24 % ominous (owner: trial chambers are its source, and players will want several for beacon and statue flight routes); also relic vault chests and pedestals |
 | The End | end city treasure 5 % |
 | The Beginning | no chest table: a once-ever cairn offering (see Totem of the Beginning) |
 | Grave Talisman | Reworked Mobs family vault 15 %, noble crypt 25 % (`TALISMAN_LOOT`) |
 
-"Trial vaults" is `TotemsTuning.TRIAL_CHANCE` 0.3 % per normal trial chamber vault opening and `TRIAL_CHANCE_OMINOUS` 0.6 % per ominous one (owner, 2026-11-26: North Wind is the trial chamber totem, the rest are rare extras there; a vault opening gives any totem about 7 %, ominous 14 %, and over half of those are North Wind), for each of those seven totems; vaults roll per player, like all trial vault loot. Warding and North Wind keep their own vault odds; the Beginning and the End are not in trial chambers.
+"Trial vaults" is `TotemsTuning.TRIAL_CHANCE` 0.7 % per normal trial chamber vault opening and `TRIAL_CHANCE_OMINOUS` 1.4 % per ominous one (owner, 2026-11-26: North Wind is the trial chamber totem, the rest are rare extras there; a vault opening gives any totem about 20 %, ominous 40 %, slightly under the old 25 %/49 %, and about 60 % of those are North Wind), for each of those seven totems; vaults roll per player, like all trial vault loot. Warding and North Wind keep their own vault odds; the Beginning and the End are not in trial chambers.
 
 Relic vault chests and pedestals also hold totems (see Relic maps and relic vaults). Loot placement and chances are the agent's proposal, for the owner to review.
 
@@ -278,7 +278,7 @@ Owner's design; *(builder's choice)* marks what the owner didn't pick.
 - **As a statue:** the same, within the statue radius (5). *(Builder's choice, not yet confirmed by the owner: it follows the rule that a statue gives its totem's area effect in a small radius, making a statue a launch pad or boost ring. The owner may prefer a decorative-only statue.)*
 - **Cooldown (B19 noHiddenCooldowns):** hand use, beacon and statue share one timer: the item cooldown group of the totem's id (`ItemCooldowns`). So a North Wind totem anywhere in the inventory shows the sweep, and there are no double gusts. Without a totem on the player, the gusts themselves are the rhythm (one fires the moment the cooldown ends), like the other beacon totems. Only players glide, so there is no mob path.
 - **Area tick:** beacon pulses (`TotemAreas.put`, `AREA_LIFETIME_TICKS`) and statue pulses (`StatueEffects`) set a `TotemAreas.Kind.NORTH_WIND` area. `ServerTickEvents.END_LEVEL_TICK` walks `level.players()` only while the level has a live North Wind area: fall-flying, not spectator, off cooldown, inside a box → gust and `NORTH_WIND_AREA_COOLDOWN_TICKS`.
-- **Found** (owner, 2026-11-26): trial chamber vaults, 4 % per normal vault opening, 8 % per ominous one (`chests/trial_chambers/reward`, `reward_ominous`, through `TotemsLoot`). Vaults roll once per player per vault, so a full trial chamber gives roughly a 20 to 35 % chance. Not in the chambers' ordinary chests. Also in relic vault chests (weight 2) and as a relic vault pedestal statue.
+- **Found** (owner, 2026-11-26): trial chamber vaults, 12 % per normal vault opening, 24 % per ominous one (`chests/trial_chambers/reward`, `reward_ominous`, through `TotemsLoot`). Vaults roll once per player per vault, so a full trial chamber gives roughly a 45 to 70 % chance of at least one. Not in the chambers' ordinary chests. Also in relic vault chests (weight 2) and as a relic vault pedestal statue.
 - **Numbers** (`TotemsTuning`): `NORTH_WIND_COOLDOWN_TICKS` 100, `NORTH_WIND_AREA_COOLDOWN_TICKS` 100 (5 s, owner: "nerf CD by like 2s"), `NORTH_WIND_FLIGHT` 1, `NORTH_WIND_LOOT` 0.03 / 0.06.
 - **Tests:**
   - Core `BubbasTotemsArtifactsCoreGameTest.northWindGustsGlidersOnly` (body `NorthWindGameTest.usedWhileGlidingBoosts`): not gliding → PASS, no cooldown, no rocket; gliding → success, cooldown on, the totem still in hand, one rocket owned by the player, the player pushed along their look (> 0.5 blocks/tick).
