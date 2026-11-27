@@ -89,7 +89,7 @@ public final class CreeperPillar {
 			mind.nextPillarTime = now + CreeperTuning.PILLAR_RETRY_TICKS;
 			return false;
 		}
-		mind.nextPillarTime = now + CreeperTuning.PILLAR_COOLDOWN_TICKS;
+		mind.nextPillarTime = now + CreeperTuning.PILLAR_RETRY_TICKS;
 		plan = found;
 		stage = Stage.TO_SOURCE;
 		placed = 0;
@@ -192,6 +192,7 @@ public final class CreeperPillar {
 				placed++;
 				if (placed >= p.fill().size()) {
 					mind.pillar = p.base();
+					mind.nextPillarTime = level.getGameTime() + CreeperTuning.PILLAR_COOLDOWN_TICKS;
 					plan = null;
 					return true;
 				}

@@ -49,14 +49,14 @@ A **creeper** in [[Bubba's Reworked Mobs]] is a nervous watcher rather than a hu
   - It has to see the player coming (glass doesn't stop it, walls and leaves do), so while it's tucked fully behind its cover it won't notice.
   - It waits about 10 seconds before creeping closer again.
 - **Sneaking up:** a player who sneaks toward a creeper makes it walk back behind cover farther away and stay hidden.
-- **On open ground** with nothing at all to hide behind: it stays about 12 blocks off and stares. It edges back while the player looks at it, and backs away if the player comes closer than about 10 blocks.
+- **On open ground** with nothing at all to hide behind: it stays about 12 blocks off and stares. It edges back while the player looks at it (then holds still, staring, about 16 blocks off), and backs away if the player comes closer than about 10 blocks.
 - **Building its own cover:** in open fields with no cover, and only with the `mobGriefing` game rule on, it makes some.
   - It digs up two surface blocks near it, one at a time, carries each on its head, and stacks them into a 2-high pillar to hide behind, then peeks from behind it like it does behind a tree.
   - Blocks are moved exactly as they are, never dropped: a grass block stays a grass block.
   - It never digs a hole deeper than 1 block.
   - If a single block already sticks up out of the ground at a good spot, it only adds one block on top.
   - If the player looks at it while it builds, it freezes and stares until they look away. Walking at it makes it run off, and it puts the block it was carrying back where it came from.
-  - Each creeper builds at most one pillar every 5 minutes; after that it simply uses the pillar it built.
+  - Each creeper builds at most one pillar every 5 minutes; after that it simply uses the pillar it built. If it gives up partway (for example it runs off), it tries again after about 30 seconds.
 
 ### Startling
 

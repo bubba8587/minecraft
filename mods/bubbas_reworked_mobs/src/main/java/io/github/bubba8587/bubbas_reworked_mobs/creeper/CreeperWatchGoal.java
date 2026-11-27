@@ -201,9 +201,13 @@ public final class CreeperWatchGoal extends Goal {
 			if (creeper.getNavigation().isDone() || ticks % 10 == 0) {
 				walkAway(target, 6, CreeperTuning.BACKOFF_SPEED);
 			}
-		} else if (sees && distance < CreeperTuning.COMFORT_DISTANCE + CreeperTuning.OPEN_LOOKED_AT_EXTRA && looked) {
-			if (creeper.getNavigation().isDone()) {
-				walkAway(target, 5, CreeperTuning.WATCH_SPEED);
+		} else if (sees && looked) {
+			if (distance < CreeperTuning.COMFORT_DISTANCE + CreeperTuning.OPEN_LOOKED_AT_EXTRA) {
+				if (creeper.getNavigation().isDone()) {
+					walkAway(target, 5, CreeperTuning.WATCH_SPEED);
+				}
+			} else {
+				creeper.getNavigation().stop();
 			}
 		} else if (ticks - lastSeen > CreeperTuning.LOST_VIEW_TICKS || distance > CreeperTuning.COMFORT_DISTANCE + 1.5) {
 			if (creeper.getNavigation().isDone() || ticks % 20 == 0) {
