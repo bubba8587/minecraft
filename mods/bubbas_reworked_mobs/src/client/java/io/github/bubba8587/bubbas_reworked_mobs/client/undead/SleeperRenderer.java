@@ -66,6 +66,10 @@ public class SleeperRenderer implements BlockEntityRenderer<SleeperBlockEntity, 
 				SkeletonRenderState::new, Identifier.withDefaultNamespace("textures/entity/skeleton/stray.png"),
 				ModelLayers.STRAY, ModelLayers.STRAY_ARMOR, SleeperRenderer::skeletonModel, ModelLayers.STRAY_OUTER_LAYER,
 				Identifier.withDefaultNamespace("textures/entity/skeleton/stray_overlay.png")));
+		variants.put(UndeadVariant.FROSTBITE, new PosedHumanoid<ZombieRenderState, ZombieModel<ZombieRenderState>>(context.entityModelSet(), equipment,
+				ZombieRenderState::new, Identifier.withDefaultNamespace("textures/entity/zombie/frostbite.png"),
+				ModelLayers.FROSTBITE, ModelLayers.FROSTBITE_ARMOR, SleeperRenderer::zombieModel, ModelLayers.FROSTBITE_OUTER_LAYER,
+				Identifier.withDefaultNamespace("textures/entity/zombie/frostbite_outer_layer.png")));
 	}
 
 	private static SkeletonModel<SkeletonRenderState> skeletonModel(ModelPart root, SleeperPose pose) {

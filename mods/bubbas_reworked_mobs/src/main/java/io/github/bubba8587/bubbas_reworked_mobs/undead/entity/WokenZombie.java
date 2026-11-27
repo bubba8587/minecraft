@@ -81,4 +81,10 @@ public class WokenZombie extends Zombie {
 	protected boolean convertsInWater() {
 		return false;
 	}
+
+	/** Stays our type: 26.4 would turn it into a vanilla frostbite in powder snow. */
+	@Override
+	protected boolean convertsWhenFreezing() {
+		return false;
+	}
 }

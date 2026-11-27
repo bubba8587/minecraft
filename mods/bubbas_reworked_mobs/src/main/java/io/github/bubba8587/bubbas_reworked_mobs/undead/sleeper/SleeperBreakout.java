@@ -63,7 +63,7 @@ public final class SleeperBreakout {
 					EntitySelector.NO_CREATIVE_OR_SPECTATOR)) {
 				player.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, UndeadTuning.HUSK_BLIND_TICKS, 0));
 			}
-		} else if (variant == UndeadVariant.STRAY) {
+		} else if (variant == UndeadVariant.STRAY || variant == UndeadVariant.FROSTBITE) {
 			int cleared = clear(level, pos, SleeperBreakout::isIce);
 			level.playSound(null, pos, SoundEvents.GLASS.breakSound().orElseThrow().value(), SoundSource.HOSTILE, 1.0F, 0.8F);
 			level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, Blocks.PACKED_ICE.defaultBlockState()), pos.getX() + 0.5, pos.getY() + 1.0,

@@ -1,0 +1,46 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "condition": {
+        "type": "minecraft:survives_explosion"
+      },
+      "entries": [
+        {
+          "type": "minecraft:alternatives",
+          "children": [
+            {
+              "type": "minecraft:item",
+              "condition": {
+                "type": "minecraft:all_of",
+                "terms": [
+                  {
+                    "type": "minecraft:match_tool",
+                    "predicate": {
+                      "items": "#bubbas_reworked_mobs:sleeper_harvest_tools"
+                    }
+                  },
+                  "minecraft:tool/can_silk_touch"
+                ]
+              },
+              "modifier": {
+                "type": "minecraft:copy_state",
+                "block": "bubbas_reworked_mobs:frostbite_sleeper",
+                "properties": [
+                  "pose",
+                  "resting"
+                ]
+              },
+              "name": "bubbas_reworked_mobs:frostbite_sleeper"
+            },
+            {
+              "type": "minecraft:item",
+              "name": "minecraft:rotten_flesh"
+            }
+          ]
+        }
+      ],
+      "rolls": 1
+    }
+  ]
+}

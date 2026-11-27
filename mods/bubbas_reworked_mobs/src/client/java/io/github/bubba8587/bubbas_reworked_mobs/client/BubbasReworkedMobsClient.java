@@ -34,6 +34,8 @@ public class BubbasReworkedMobsClient implements ClientModInitializer {
 		EntityRenderers.register(BuiltInClientRegistries.ENTITY_RENDERER, (EntityType<? extends Zombie>) ModEntities.woken(UndeadVariant.HUSK),
 				c -> new WokenZombieRenderer(c, net.minecraft.resources.Identifier.withDefaultNamespace("textures/entity/zombie/husk.png")));
 		EntityRenderers.register(BuiltInClientRegistries.ENTITY_RENDERER, (EntityType<? extends Skeleton>) ModEntities.woken(UndeadVariant.STRAY), WokenSkeletonRenderer::stray);
+		EntityRenderers.register(BuiltInClientRegistries.ENTITY_RENDERER, (EntityType<? extends Zombie>) ModEntities.woken(UndeadVariant.FROSTBITE),
+				c -> new WokenZombieRenderer(c, net.minecraft.resources.Identifier.withDefaultNamespace("textures/entity/zombie/frostbite.png")));
 		EntityRenderers.register(BuiltInClientRegistries.ENTITY_RENDERER, (EntityType<? extends net.minecraft.world.entity.monster.zombie.Drowned>) ModEntities.woken(UndeadVariant.DROWNED),
 				net.minecraft.client.renderer.entity.DrownedRenderer::new);
 

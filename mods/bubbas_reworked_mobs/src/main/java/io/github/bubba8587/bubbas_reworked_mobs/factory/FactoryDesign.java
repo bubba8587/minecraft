@@ -1017,6 +1017,9 @@ public final class FactoryDesign {
 		this.attached.remove(new BlockPos(19, 6, 2));
 		this.attached.remove(new BlockPos(19, 6, 3));
 		this.attached.remove(new BlockPos(18, 6, 3));
+		// An empty chest on the jukebox: the 26.4 jukebox playlist replays the disc
+		solid(19, 7, 2, Blocks.CHEST.defaultBlockState().setValue(ChestBlock.FACING, Direction.WEST));
+		this.attached.remove(new BlockPos(19, 7, 2));
 		// Window sill: a ledge out over the platform, carried on upside-down stairs.
 		for (int x = 10; x <= 13; x++) {
 			for (int z = -1; z <= 1; z++) {

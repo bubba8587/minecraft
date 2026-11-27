@@ -129,13 +129,17 @@ public class ModDataGenerator implements DataGeneratorEntrypoint {
 			ResourceKey<EntityType<?>> husk = key(UndeadVariant.HUSK);
 			ResourceKey<EntityType<?>> stray = key(UndeadVariant.STRAY);
 			ResourceKey<EntityType<?>> drowned = key(UndeadVariant.DROWNED);
-			builder(ModTags.WOKEN_UNDEAD).add(skeleton, zombie, husk, stray, drowned);
-			builder(ModTags.GRABS_LOOT).add(skeleton, zombie, husk, stray, drowned);
+			ResourceKey<EntityType<?>> frostbite = key(UndeadVariant.FROSTBITE);
+			builder(ModTags.WOKEN_UNDEAD).add(skeleton, zombie, husk, stray, drowned, frostbite);
+			builder(ModTags.GRABS_LOOT).add(skeleton, zombie, husk, stray, drowned, frostbite);
 			// #skeletons and #zombies feed #minecraft:undead (smite, potions, wither targeting).
 			builder(EntityTypeTags.SKELETONS).add(skeleton, stray);
-			builder(EntityTypeTags.ZOMBIES).add(zombie, husk, drowned);
+			builder(EntityTypeTags.ZOMBIES).add(zombie, husk, drowned, frostbite);
 			// Husks don't burn by day (vanilla), so the daylight tag lists the others, not the whole woken tag.
-			builder(EntityTypeTags.BURN_IN_DAYLIGHT).add(skeleton, zombie, stray, drowned);
+			builder(EntityTypeTags.BURN_IN_DAYLIGHT).add(skeleton, zombie, stray, drowned, frostbite);
+			// Frostbites walk on powder snow and brittle ice (vanilla's own tags for it).
+			builder(EntityTypeTags.POWDER_SNOW_WALKABLE_MOBS).add(frostbite);
+			builder(EntityTypeTags.DOES_NOT_BREAK_BRITTLE_ICE).add(frostbite);
 			builder(EntityTypeTags.NO_ANGER_FROM_WIND_CHARGE).addTag(ModTags.WOKEN_UNDEAD);
 			builder(ModTags.DOES_NOT_WAKE_SLEEPERS).forceAddTag(EntityTypeTags.UNDEAD);
 		}
@@ -171,6 +175,8 @@ public class ModDataGenerator implements DataGeneratorEntrypoint {
 			builder.add(ModItems.sleeper(UndeadVariant.STRAY), "Sleeping Stray");
 			builder.add(ModEntities.woken(UndeadVariant.HUSK), "Husk");
 			builder.add(ModEntities.woken(UndeadVariant.STRAY), "Stray");
+			builder.add(ModItems.sleeper(UndeadVariant.FROSTBITE), "Sleeping Frostbite");
+			builder.add(ModEntities.woken(UndeadVariant.FROSTBITE), "Frostbite");
 			builder.add(ModItems.sleeper(UndeadVariant.DROWNED), "Sleeping Drowned");
 			builder.add(ModEntities.woken(UndeadVariant.DROWNED), "Drowned");
 			builder.add("item.bubbas_reworked_mobs.sleeper.form", "%s (%s)");
@@ -263,6 +269,7 @@ public class ModDataGenerator implements DataGeneratorEntrypoint {
 			particleOnly(gen, ModBlocks.sleeper(UndeadVariant.HUSK), TextureMapping.getBlockTexture(Blocks.SAND));
 			particleOnly(gen, ModBlocks.sleeper(UndeadVariant.STRAY), TextureMapping.getBlockTexture(Blocks.PACKED_ICE));
 			particleOnly(gen, ModBlocks.sleeper(UndeadVariant.DROWNED), TextureMapping.getBlockTexture(Blocks.PRISMARINE));
+			particleOnly(gen, ModBlocks.sleeper(UndeadVariant.FROSTBITE), TextureMapping.getBlockTexture(Blocks.PACKED_ICE));
 			// Loot on display: the renderer draws the item; break particles are neutral iron.
 			particleOnly(gen, ModBlocks.LOOT_DISPLAY, TextureMapping.getBlockTexture(Blocks.IRON_BLOCK));
 			// Gravestones: 16 rotations like a standing sign, from four hand-made models (models/block/gravestone_rot_0..3,
@@ -295,6 +302,8 @@ public class ModDataGenerator implements DataGeneratorEntrypoint {
 						java.util.Optional.of(net.minecraft.resources.Identifier.withDefaultNamespace("skeleton/stray")), 0.0F);
 				case DROWNED -> new net.minecraft.client.renderer.special.SkullSpecialRenderer.Unbaked(zombie,
 						java.util.Optional.of(net.minecraft.resources.Identifier.withDefaultNamespace("zombie/drowned")), 0.0F);
+				case FROSTBITE -> new net.minecraft.client.renderer.special.SkullSpecialRenderer.Unbaked(zombie,
+						java.util.Optional.of(net.minecraft.resources.Identifier.withDefaultNamespace("zombie/frostbite")), 0.0F);
 			};
 		}
 

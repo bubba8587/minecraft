@@ -48,7 +48,7 @@ def main(argv):
         "icon": f"assets/{modid}/icon.png", "environment": "*",
         "entrypoints": {"main": [f"{pkg}.{cls}"], "client": [f"{pkg}.client.{cls}Client"]},
         "mixins": [f"{modid}.mixins.json", {"config": f"{modid}.client.mixins.json", "environment": "client"}],
-        "depends": {"fabricloader": ">=${loader_version}", "minecraft": "~${minecraft_version}",
+        "depends": {"fabricloader": ">=${loader_version}", "minecraft": "${minecraft_dependency}",
                     "java": ">=${java_version}", "fabric-api": "*"},
     }
     write(d / "src/main/resources/fabric.mod.json", json.dumps(fmj, indent="\t") + "\n")

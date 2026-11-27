@@ -1,6 +1,7 @@
 // dte:C1
 package io.github.bubba8587.bubbas_reworked_mobs.undead;
 
+import io.github.bubba8587.bubbas_reworked_mobs.undead.entity.WokenFrostbite;
 import net.minecraft.resources.ResourceKey;
 import java.util.List;
 import net.minecraft.world.level.block.sounds.BlockSoundSet;
@@ -48,7 +49,12 @@ public enum UndeadVariant {
 	STRAY("stray", List.of(SleeperPose.LYING, SleeperPose.SITTING, SleeperPose.PRONE), BlockSoundSets.BONE_BLOCK, MapColor.SNOW, Items.BONE,
 			() -> EntityType.Builder.of(WokenStray::new, MobCategory.MONSTER).sized(0.6F, 1.99F).eyeHeight(1.74F).ridingOffset(-0.7F)
 					.clientTrackingRange(8).notInPeaceful(),
-			UndeadTuning::wokenSkeletonAttributes);
+			UndeadTuning::wokenSkeletonAttributes),
+	/** 26.4 Ice Caves: frozen in ice like a stray, a zombie whose hits freeze. */
+	FROSTBITE("frostbite", List.of(SleeperPose.LYING, SleeperPose.SITTING, SleeperPose.PRONE), BlockSoundSets.MUD, MapColor.ICE, Items.ROTTEN_FLESH,
+			() -> EntityType.Builder.<WokenFrostbite>of(WokenFrostbite::new, MobCategory.MONSTER).sized(0.6F, 1.95F).eyeHeight(1.74F)
+					.passengerAttachments(2.0125F).ridingOffset(-0.7F).clientTrackingRange(8).notInPeaceful(),
+			UndeadTuning::wokenZombieAttributes);
 
 	private final String name;
 	private final List<SleeperPose> poses;
@@ -90,6 +96,7 @@ public enum UndeadVariant {
 			case HUSK -> net.minecraft.sounds.SoundEvents.HUSK_AMBIENT;
 			case DROWNED -> net.minecraft.sounds.SoundEvents.DROWNED_AMBIENT_WATER;
 			case STRAY -> net.minecraft.sounds.SoundEvents.STRAY_AMBIENT;
+			case FROSTBITE -> net.minecraft.sounds.SoundEvents.FROSTBITE_AMBIENT;
 		};
 	}
 
