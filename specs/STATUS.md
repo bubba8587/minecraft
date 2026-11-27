@@ -157,6 +157,7 @@ Nothing is released yet: every mod is 0.1.0 in `develop`.
 - built: lava geysers with black smoke ([§](world-tweaks.md#as-built-2026-11-22-agent-3))
 - built: lift and speed from lava and sulfur geysers ([§](world-tweaks.md#as-built-2026-11-22-agent-3))
 - built: bubble art redrawn from vanilla lava, soot plume, slow and sparse bubbles ([§](world-tweaks.md#art-redo-and-slower-bubbles-2026-11-22-agent-3-owner-feedback))
+- designed: Amethyst Golem: records note blocks, sings them back in chimes, dances at jukeboxes, wind chime when empty ([§](world-tweaks.md#amethyst-golem-designed-not-built))
 
 ## Repo
 - designed (low priority, owner): settings for every mod: game rules in a per-mod category, structure datapacks at world creation, optional Mod Menu button ([§](settings.md))

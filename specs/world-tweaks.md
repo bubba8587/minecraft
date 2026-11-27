@@ -3,7 +3,7 @@
 
 **Status: built.** Player pages: `player-docs/Projects/Bubba's World Tweaks/`.
 
-Mod id `bubbas_world_tweaks`. A small mod for world and environment features that aren't mobs, recipes or tools (owner: "i'm sure we'll have others").
+Mod id `bubbas_world_tweaks`. A small mod for world and environment features that aren't hostile mobs, recipes or tools (owner: "i'm sure we'll have others"). Golems live here too (owner, 2026-11-27): small built creatures that make the world feel alive, never a stand-in for another mod's utility.
 
 ## Lava bubbles and lava geysers (owner's design)
 
@@ -207,6 +207,43 @@ Not the mod: the first client screenshots were taken in the client test's flat w
 - Bridge spans have water under them between pillars, as in vanilla's fortress; if the owner wants solid foundations or extra pillars under bridges, that's a design change.
 - Many vanilla-terrain spots sink the fortress 1-3 blocks into the floor (lower rooms dig in); spots needing more are skipped, so vanilla oceans get somewhat fewer fortresses than monuments; Tectonic gets the full rate.
 - No automated test yet that a shipwreck chest yields a fortress map about 1 in 4 times (checked by hand above), or for drowned/guardian spawns in the boxes.
+
+## Golems (owner, 2026-11-27)
+
+Golems in World Tweaks are flavor and play, not tools. **Rule (owner):** a golem must not supplant or fill gaps in another mod's utility, above all Totems & Artifacts, Reworked Beacons and Infused Gems. So no buffs, no warding or fighting for the player, no item gathering, farming, herding, terrain repair, light sources or locating. Amethyst is a gem and beacon material, so an amethyst golem is never a source of shards.
+
+Other golem ideas pitched to the owner, not yet picked: magma golem riding lava geysers, grave-tender iron golem at crypt yards, storm-chasing copper golems, snowball-fight snow golems, ice sled golem.
+
+### Amethyst Golem (designed, not built)
+
+A small built golem that records note block tunes and sings them back in amethyst chimes.
+
+- **Built only (owner):** never spawns naturally. Built like every vanilla golem: a carved pumpkin placed on top of amethyst blocks (pattern below, open). No new blocks (B15).
+- **Recording (owner):** right-click it and it starts listening. Every note block played nearby is stored (pitch and timing) until it's right-clicked again. Time cap: long (builder's start: 5 minutes); notes are a few bytes each, so storage is cheap.
+  - If it heard nothing between the two clicks, the recording is wiped.
+- **Singing in amethyst (owner):** it plays its recording back with amethyst chime sounds at the recorded pitches, not the note block instruments.
+- **Tuning (owner):** right-click with an amethyst shard (not used up) to step the whole song up a semitone, wrapping around like a note block.
+- **Jukebox as workstation (owner):** the nearest jukebox is its assigned spot, like a villager's job block.
+  - If a jukebox nearby is playing a disc, it dances to it (like an allay).
+  - Otherwise it stands on its jukebox and sings its recorded song.
+- **Wind chime (owner):** a golem with no recording echoes the world instead: every vibration above a floor becomes an amethyst chime, pitched by the vibration's kind (vanilla's vibration frequencies).
+- **Noise (owner):** its sounds are ordinary noise. Nothing special for Reworked Mobs; if sleepers there hear it like any other noise, that's fine. Don't special-case it.
+- **Drops:** never more amethyst than it was built from.
+
+**How (builder's plan, to check against the 26.3 source):**
+
+- Listening uses vanilla's game event system, the way the allay hears note blocks (`GameEvent.NOTE_BLOCK_PLAY`), reading pitch from the note block's `NOTE` state at the event position. A plain listener rather than a vibration listener, so distance doesn't add a travel delay that would bend the timing.
+- Dancing uses `GameEvent.JUKEBOX_PLAY` / `JUKEBOX_STOP_PLAY` like the allay.
+- The jukebox spot: a POI search (`specs/vanilla-subsystems.md`), one golem per jukebox like a claimed job site.
+- The build pattern: hook the carved pumpkin's golem check, next to vanilla's snow, iron and copper golem patterns.
+- Recording stored on the entity as (tick offset, pitch) pairs.
+
+**Open (owner):**
+
+- Pattern: one amethyst block under the pumpkin (copper golem size) or two stacked (snow golem size).
+- When it sings: always on a loop with a pause, or only when a player is near.
+- The wind chime floor (which vibrations are too small to echo; builder's start: ignore footsteps).
+- Whether several golems can share one jukebox and sing together.
 
 ## Open (owner)
 
