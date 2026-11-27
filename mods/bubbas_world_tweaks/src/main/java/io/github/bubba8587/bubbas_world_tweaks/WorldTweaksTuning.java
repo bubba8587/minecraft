@@ -49,4 +49,19 @@ public final class WorldTweaksTuning {
 	public static final float PARASITIC_BITE_CHANCE = 0.05F;
 	/** A bite takes this share of the level's caps at least (up to all of them), health and repair alike. */
 	public static final float PARASITIC_MIN_SHARE = 0.25F;
+
+	// --- Amethyst Golem ---
+	/** Longest recording, in ticks (5 minutes), and the most notes it keeps. */
+	public static final int GOLEM_RECORD_CAP_TICKS = 6000;
+	public static final int GOLEM_MAX_NOTES = 4096;
+	/** Songs start only when the day clock is a multiple of this (1 in-game hour). */
+	public static final int GOLEM_BEAT_TICKS = 1000;
+	/** Wind chime: vibrations at or above this vanilla frequency (1-15) chime; how far it feels them (the sculk sensor's 8). */
+	public static final int GOLEM_CHIME_FLOOR = 2;
+	public static final int GOLEM_CHIME_RADIUS = 8;
+	/** How far it looks for a free jukebox, and how often (ticks). */
+	public static final int GOLEM_JUKEBOX_RADIUS = 16;
+	public static final int GOLEM_JUKEBOX_CHECK_TICKS = 100;
+	/** Loudness of its chimes (1 = heard 16 blocks away). */
+	public static final float GOLEM_CHIME_VOLUME = 1.0F;
 }

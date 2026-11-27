@@ -1,9 +1,15 @@
 // dte:C8
 package io.github.bubba8587.bubbas_world_tweaks.test;
 
+import io.github.bubba8587.bubbas_world_tweaks.golem.AmethystGolem;
 import io.github.bubba8587.bubbas_world_tweaks.golem.AmethystGolems;
+import io.github.bubba8587.bubbas_world_tweaks.golem.GolemSong;
 import net.minecraft.client.gui.screens.worldselection.WorldCreationUiState;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.entity.JukeboxBlockEntity;
 
 import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
@@ -75,7 +81,69 @@ public class AmethystGolemClientGameTest implements FabricClientGameTest {
 				context.takeScreenshot("golem-egg" + (x32 ? "-32x" : ""));
 			}
 			BubbasWorldTweaksClientGameTest.setPack(context, false);
+
+			states(context, server, x, y, z);
 		}
+	}
+
+	/** Behaviour poses: recording, singing on its jukebox, dancing to a disc (16x only). */
+	private static void states(ClientGameTestContext context, TestServerContext server, int x, int y, int z) {
+		double gx = x + 0.5;
+		double gz = z + 0.5;
+		server.runCommand("item replace entity @p hotbar.0 with minecraft:air");
+		server.runCommand("gamemode spectator @p");
+		BubbasWorldTweaksClientGameTest.hud(context, false);
+
+		server.runOnServer(s -> golem(s).toggleRecording(s.overworld()));
+		context.waitTicks(10);
+		shot(context, gx, y, gz, 0.0F, 2.4, 0.75, 8.0F, "golem-recording");
+		shot(context, gx, y, gz, -40.0F, 2.4, 0.95, 12.0F, "golem-recording-side");
+		server.runOnServer(s -> golem(s).toggleRecording(s.overworld()));
+
+		// Its own jukebox under it, a long song, the day clock running up to a beat
+		server.runCommand("setblock %d %d %d minecraft:jukebox".formatted(x, y - 1, z));
+		context.waitTicks(5);
+		server.runOnServer(s -> {
+			AmethystGolem golem = golem(s);
+			int[] song = new int[100];
+			for (int i = 0; i < song.length; i++) {
+				song[i] = GolemSong.pack(i * 4, (i * 5) % GolemSong.NOTES);
+			}
+			golem.setSong(new GolemSong(song));
+			if (!golem.claimJukebox(s.overworld())) {
+				throw new AssertionError("golem could not claim the jukebox under it");
+			}
+		});
+		server.runCommand("time set 5990");
+		server.runCommand("gamerule advance_time true");
+		context.waitTicks(30);
+		if (!context.computeOnClient(mc -> mc.level.getEntitiesOfClass(AmethystGolem.class, mc.player.getBoundingBox().inflate(16)).stream()
+				.anyMatch(AmethystGolem::isSinging))) {
+			throw new AssertionError("golem on its jukebox is not singing after the beat");
+		}
+		shot(context, gx, y, gz, 0.0F, 2.4, 0.75, 8.0F, "golem-singing");
+		shot(context, gx, y, gz, -40.0F, 2.4, 0.95, 12.0F, "golem-singing-side");
+		server.runCommand("gamerule advance_time false");
+
+		// A disc in the jukebox: it dances
+		server.runOnServer(s -> {
+			if (s.overworld().getBlockEntity(new BlockPos(x, y - 1, z)) instanceof JukeboxBlockEntity jukebox) {
+				jukebox.setTheItem(new ItemStack(Items.MUSIC_DISC_CAT));
+			}
+		});
+		context.waitTicks(10);
+		if (!context.computeOnClient(mc -> mc.level.getEntitiesOfClass(AmethystGolem.class, mc.player.getBoundingBox().inflate(16)).stream()
+				.anyMatch(AmethystGolem::isDancing))) {
+			throw new AssertionError("golem is not dancing to the disc");
+		}
+		shot(context, gx, y, gz, 0.0F, 2.4, 0.75, 8.0F, "golem-dancing");
+		context.waitTicks(7);
+		shot(context, gx, y, gz, -40.0F, 2.4, 0.95, 12.0F, "golem-dancing-side");
+		BubbasWorldTweaksClientGameTest.hud(context, true);
+	}
+
+	private static AmethystGolem golem(MinecraftServer server) {
+		return server.overworld().getEntities(AmethystGolems.AMETHYST_GOLEM, e -> true).getFirst();
 	}
 
 	/** Camera at a yaw around the golem, dist blocks away, eye height above its feet. */

@@ -113,4 +113,28 @@ public class BubbasWorldTweaksCoreGameTest {
 		helper.assertEntityPresent(AmethystGolems.AMETHYST_GOLEM, block, 0.6);
 		helper.succeed();
 	}
+
+	/** Amethyst Golem: note blocks heard while recording are sung back in order and pitch, on a beat. */
+	@GameTest(maxTicks = 60)
+	public void amethystGolemRecordsAndSings(GameTestHelper helper) {
+		AmethystGolemGameTest.recordsAndPlaysBack(helper);
+	}
+
+	/** Amethyst Golem: a recording that heard nothing wipes the song. */
+	@GameTest(maxTicks = 60)
+	public void amethystGolemEmptyRecordingWipes(GameTestHelper helper) {
+		AmethystGolemGameTest.emptyRecordingWipes(helper);
+	}
+
+	/** Amethyst Golem: songs start on the beat and a late golem falls in step. */
+	@GameTest
+	public void amethystGolemSongsStartOnTheBeat(GameTestHelper helper) {
+		AmethystGolemGameTest.songsStartOnTheBeatInStep(helper);
+	}
+
+	/** Amethyst Golem: the wind chime floor. */
+	@GameTest(maxTicks = 60)
+	public void amethystGolemWindChimeFloor(GameTestHelper helper) {
+		AmethystGolemGameTest.windChimeFloor(helper);
+	}
 }
