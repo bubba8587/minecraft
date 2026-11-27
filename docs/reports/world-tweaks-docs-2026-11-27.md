@@ -65,3 +65,27 @@ For the docs merge into `specs/world-tweaks.md` ("Amethyst Golem": change "desig
 - Wind chime radius 8 (sculk sensor) rather than the allay's 16, so it reacts to its surroundings and not the whole base.
 - Drops nothing.
 - Recording a note within 16 blocks uses the event's notification radius (16), same as how far the allay hears note blocks.
+
+## Singing follows the music (animation builder, 2026-11-27)
+
+Player-facing (replaces "head tipped back" in the Singing bullet):
+- **Singing:** with each note its mouth pops open and eases shut and the crystals on its head flick and swell; higher notes tip its head further back. Between notes it sways side to side in time with the tune. Wind chimes get the same per-note mouth and crystal pop.
+- **Waiting for the beat:** a golem with a song standing on its jukebox, between songs, waits calmly with its head a little bowed and its hands folded in front, mouth closed, until the next hour starts its song.
+
+Spec facts:
+- Synced flags: `singing` now means performing (a song in progress, or within 10 ticks of a wind chime); new `waiting` = has a song, on its jukebox, not dancing or recording, no song in progress. Client blends both poses in and out over 5 ticks (`perform`/`wait` floats stepped 0.2 per client tick, interpolated by partial ticks).
+- **Per-note sync:** every chime (song note, shard tuning chime, wind chime) calls `level.broadcastEntityEvent(golem, 100 + note)` (entity events 100-124; vanilla uses up to 72). Clients decode it in `AmethystGolem.handleEntityEvent` and record the note's entity tick, pitch, previous pitch, gap since the previous note and the sway step. Cost: one `ClientboundEntityEventPacket` (entity id + 1 byte) per note per tracking player, only to players tracking the golem; nothing per tick. Notes sharing a tick (chords) count once for timing and keep the highest pitch.
+- **Animation** (`client/golem/AmethystGolemAnimations`, all from `ageInTicks`/partial ticks via the render state's `sinceNote`):
+  - Note envelope: 1.5 tick attack, 5.5 tick quadratic decay. A note that lands before the last one decayed starts its attack from the level the last one had reached, so fast passages keep the mouth fluttering open instead of snapping shut.
+  - Jaw: `0.55 rad x envelope` (plus 0.12 rad held open while performing).
+  - Crystals: each of the four crystals rings with a damped flick (`sin(1.9 s + phase) x e^(-0.35 s)`, 0.16-0.22 rad, stronger for higher notes), and the crystal cluster swells up to 14% with the envelope. Ring ends 14 ticks after the note.
+  - Head: tipped back 0.2 + 0.3 x pitch rad (pitch 0-1 over the note block range), eased over 3 ticks from the previous note's tilt, plus a small pop with the envelope.
+  - Sway: body and head roll to alternate sides; one half swing lasts as many notes as fit in about 12 ticks (`round(12 / gap)` notes, gap clamped 2-36 ticks), eased with smoothstep; a note after a finished swing starts a new one.
+  - Waiting pose: head bowed 0.2 rad with a slow breath, head turning damped, arms forward 0.75 rad and turned inward so the hands fold in front.
+  - Dance and listen poses unchanged; they take priority over sing and wait.
+- Client cost: a handful of floats per golem per frame; no allocation.
+
+Tests:
+- Core `amethystGolemRecordsAndSings` now also asserts every sung note fires exactly one note event (`notesSung` counter advances by the notes sung that tick), and that a golem receiving `noteEvent(n)` through `handleEntityEvent` reads back note `n`, its tick and the gap.
+- Client part `golem` `states()`: a 30-note song with notes 16 ticks apart; the server is frozen (`tickRateManager().setFrozen`) exactly 1 tick after a note for `golem-singing-note`, `-side`, `-close`, and 8 ticks after one for `golem-singing-between`, `-side`; then the song is reset and the clock set off the beat, asserts `isWaiting && !isSinging` on the client, `golem-waiting`, `golem-waiting-side`. (Replaces `golem-singing`, `golem-singing-side`.)
+- Milestone objectives: a chord (two notes the same tick) opens the mouth once at the higher pitch; the waiting flag clears when it is pushed off its jukebox, starts dancing or recording.

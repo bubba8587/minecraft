@@ -55,6 +55,13 @@ public class AmethystGolem extends AbstractGolem implements VibrationSystem {
 	private static final EntityDataAccessor<Boolean> DATA_DANCING = SynchedEntityData.defineId(AmethystGolem.class, EntityDataSerializers.BOOLEAN);
 	private static final EntityDataAccessor<Boolean> DATA_SINGING = SynchedEntityData.defineId(AmethystGolem.class, EntityDataSerializers.BOOLEAN);
 	private static final EntityDataAccessor<Boolean> DATA_RECORDING = SynchedEntityData.defineId(AmethystGolem.class, EntityDataSerializers.BOOLEAN);
+	private static final EntityDataAccessor<Boolean> DATA_WAITING = SynchedEntityData.defineId(AmethystGolem.class, EntityDataSerializers.BOOLEAN);
+	/** Entity events {@code NOTE_EVENT + note} (100-124): one note sung. */
+	private static final int NOTE_EVENT = 100;
+	/** Ticks a half swing of the singing sway aims for. */
+	private static final int SWAY_TICKS = 12;
+	/** Per-tick step of the perform and wait pose blends. */
+	private static final float BLEND_STEP = 0.2F;
 	/** Ticks the singing pose holds after a wind chime. */
 	private static final int CHIME_POSE_TICKS = 10;
 
@@ -76,6 +83,20 @@ public class AmethystGolem extends AbstractGolem implements VibrationSystem {
 	private int chimeTicks;
 	private int chimes;
 
+	private int notesSung;
+	private int note = 12;
+	private int prevNote = 12;
+	private int noteTick = -1000;
+	private int noteGap = 1000;
+	private int swayTick = -1000;
+	private int swayLength = SWAY_TICKS;
+	private int swayBeats;
+	private boolean swayRight;
+	private float perform;
+	private float performO;
+	private float wait;
+	private float waitO;
+
 	public AmethystGolem(EntityType<? extends AmethystGolem> type, Level level) {
 		super(type, level);
 	}
@@ -90,6 +111,7 @@ public class AmethystGolem extends AbstractGolem implements VibrationSystem {
 		builder.define(DATA_DANCING, false);
 		builder.define(DATA_SINGING, false);
 		builder.define(DATA_RECORDING, false);
+		builder.define(DATA_WAITING, false);
 	}
 
 	@Override
@@ -114,6 +136,11 @@ public class AmethystGolem extends AbstractGolem implements VibrationSystem {
 
 	public boolean isRecording() {
 		return this.entityData.get(DATA_RECORDING);
+	}
+
+	/** Has a song and stands on its jukebox, but is between songs, waiting for the next beat. */
+	public boolean isWaiting() {
+		return this.entityData.get(DATA_WAITING);
 	}
 
 	public GolemSong song() {
@@ -156,6 +183,12 @@ public class AmethystGolem extends AbstractGolem implements VibrationSystem {
 	@Override
 	public void tick() {
 		super.tick();
+		if (this.level().isClientSide()) {
+			this.performO = this.perform;
+			this.waitO = this.wait;
+			this.perform = approach(this.perform, this.isSinging());
+			this.wait = approach(this.wait, this.isWaiting());
+		}
 		if (this.level() instanceof ServerLevel level && this.isAlive()) {
 			VibrationSystem.Ticker.tick(level, this.vibrationData, this.vibrationUser);
 			long now = level.getGameTime();
@@ -176,7 +209,12 @@ public class AmethystGolem extends AbstractGolem implements VibrationSystem {
 				this.chimeTicks--;
 			}
 			this.entityData.set(DATA_SINGING, this.songStart >= 0 || this.chimeTicks > 0);
+			this.entityData.set(DATA_WAITING, this.songStart < 0 && this.canSing());
 		}
+	}
+
+	private static float approach(float value, boolean on) {
+		return on ? Math.min(1.0F, value + BLEND_STEP) : Math.max(0.0F, value - BLEND_STEP);
 	}
 
 	/**
@@ -218,10 +256,96 @@ public class AmethystGolem extends AbstractGolem implements VibrationSystem {
 		level.playSound(null, this.getX(), this.getY() + 1.0, this.getZ(), SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.NEUTRAL,
 				WorldTweaksTuning.GOLEM_CHIME_VOLUME, GolemSong.pitch(note));
 		this.noteParticle(level, note);
+		this.noteSung(note);
+		level.broadcastEntityEvent(this, noteEvent(note));
 	}
 
 	private void noteParticle(ServerLevel level, int note) {
 		level.sendParticles(ParticleTypes.NOTE, this.getX(), this.getY() + 1.5, this.getZ(), 0, note / 24.0, 0.0, 0.0, 1.0);
+	}
+
+	// --- Note sync ---
+
+	/** The entity event that tells clients a note (0-24) was sung. */
+	public static byte noteEvent(int note) {
+		return (byte) (NOTE_EVENT + note);
+	}
+
+	@Override
+	public void handleEntityEvent(byte id) {
+		if (id >= NOTE_EVENT && id < NOTE_EVENT + GolemSong.NOTES) {
+			this.noteSung(id - NOTE_EVENT);
+		} else {
+			super.handleEntityEvent(id);
+		}
+	}
+
+	/** Marks a note sung this tick (on the server as it plays, on clients from the entity event). */
+	private void noteSung(int note) {
+		this.notesSung++;
+		if (this.tickCount == this.noteTick) {
+			this.note = Math.max(this.note, note);
+			return;
+		}
+		this.noteGap = this.tickCount - this.noteTick;
+		this.noteTick = this.tickCount;
+		this.prevNote = this.note;
+		this.note = note;
+		int gap = Math.clamp(this.noteGap, 2, 3 * SWAY_TICKS);
+		int beats = Math.max(1, Math.round((float) SWAY_TICKS / gap));
+		if (++this.swayBeats >= beats || this.tickCount - this.swayTick > this.swayLength) {
+			this.swayBeats = 0;
+			this.swayRight = !this.swayRight;
+			this.swayTick = this.tickCount;
+			this.swayLength = gap * beats;
+		}
+	}
+
+	/** Notes sung (server) or heard of (client) so far. */
+	public int notesSung() {
+		return this.notesSung;
+	}
+
+	/** The latest note (0-24); the highest one of a chord. */
+	public int lastNote() {
+		return this.note;
+	}
+
+	public int prevNote() {
+		return this.prevNote;
+	}
+
+	/** Entity tick of the latest note. */
+	public int noteTick() {
+		return this.noteTick;
+	}
+
+	/** Ticks between the latest note and the one before it. */
+	public int noteGap() {
+		return this.noteGap;
+	}
+
+	/** Entity tick the current half swing started, its length, and which way it goes. */
+	public int swayTick() {
+		return this.swayTick;
+	}
+
+	public int swayLength() {
+		return this.swayLength;
+	}
+
+	public boolean swayRight() {
+		return this.swayRight;
+	}
+
+	/** Client: how far the singing pose is blended in (0-1). */
+	public float perform(float partialTicks) {
+		return this.performO + (this.perform - this.performO) * partialTicks;
+	}
+
+	/** Client: how far the waiting pose is blended in (0-1). */
+	public float waiting(float partialTicks) {
+		return this.waitO + (this.wait - this.waitO) * partialTicks;
 	}
 
 	// --- Recording ---
