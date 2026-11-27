@@ -58,7 +58,13 @@ public class DeepseaFortressGameTest {
 		BlockPos barrelAt = DeepseaTestPieces.local(turn, 3, 2, 3);
 		helper.assertTrue(level.getBlockEntity(barrelAt) instanceof BarrelBlockEntity barrel
 				&& DeepseaFortresses.BARREL_LOOT.equals(barrel.getLootTable()), "no deep-sea loot barrel in the corridor");
-		helper.assertTrue(level.getBlockState(DeepseaTestPieces.local(turn, 2, 1, 2)).is(Blocks.DARK_PRISMARINE), "no corridor runner");
+		helper.assertTrue(level.getBlockState(DeepseaTestPieces.local(turn, 2, 1, 1)).is(Blocks.DARK_PRISMARINE), "no corridor runner");
+		helper.assertTrue(level.getBlockState(DeepseaTestPieces.local(turn, 2, 1, 2)).is(Blocks.GLAZED_TERRACOTTA.cyan()), "no glazed tile in the runner");
+		for (int[] w : new int[][] { { 4, 3, 1 }, { 4, 4, 1 }, { 4, 3, 3 }, { 4, 4, 3 }, { 1, 3, 4 }, { 1, 4, 4 }, { 3, 3, 4 }, { 3, 4, 4 } }) {
+			BlockState window = level.getBlockState(DeepseaTestPieces.local(turn, w[0], w[1], w[2]));
+			helper.assertTrue(window.is(Blocks.WATER) || window.is(Blocks.STAINED_GLASS.cyan()) || window.is(Blocks.STAINED_GLASS.lightBlue())
+					|| window.is(Blocks.STAINED_GLASS.blue()), "corridor window isn't glass or open water: " + window);
+		}
 		helper.assertTrue(level.getBlockState(DeepseaTestPieces.local(turn, 2, 6, 2)).is(Blocks.SEA_LANTERN), "no corridor ceiling lantern");
 		helper.assertTrue(level.getBlockState(DeepseaTestPieces.local(turn, 2, 3, 2)).is(Blocks.WATER), "corridor isn't flooded");
 		helper.succeed();
@@ -146,13 +152,13 @@ public class DeepseaFortressGameTest {
 		DeepseaTestPieces.place(helper, room, true);
 		ServerLevel level = helper.getLevel();
 		helper.succeedWhen(() -> {
-			for (int y = 2; y <= 8; y++) {
+			for (int y = 2; y <= 9; y++) {
 				BlockState up = level.getBlockState(DeepseaTestPieces.local(room, 2, y, 2));
 				BlockState down = level.getBlockState(DeepseaTestPieces.local(room, 4, y, 2));
 				helper.assertTrue(up.is(Blocks.BUBBLE_COLUMN) && !up.getValue(BubbleColumnBlock.DRAG_DOWN), "no up column at y " + y + ": " + up);
 				helper.assertTrue(down.is(Blocks.BUBBLE_COLUMN) && down.getValue(BubbleColumnBlock.DRAG_DOWN), "no down column at y " + y + ": " + down);
 			}
-			helper.assertTrue(level.getBlockState(DeepseaTestPieces.local(room, 2, 9, 2)).is(Blocks.SEA_LANTERN), "no lantern over the lift");
+			helper.assertTrue(level.getBlockState(DeepseaTestPieces.local(room, 2, 10, 2)).is(Blocks.SEA_LANTERN), "no lantern over the lift");
 		});
 	}
 

@@ -1,7 +1,10 @@
 // dte:C8
 package io.github.bubba8587.bubbas_world_tweaks.fortress;
 
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.GlazedTerracottaBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.StructurePiece;
 import net.minecraft.world.level.levelgen.structure.structures.NetherFortressPieces;
@@ -12,13 +15,15 @@ final class FortressTrim {
 	private static final BlockState LIGHT = Blocks.SEA_LANTERN.defaultBlockState();
 	private static final BlockState TRIM = Blocks.PRISMARINE_BRICKS.defaultBlockState();
 	private static final BlockState DARK = Blocks.DARK_PRISMARINE.defaultBlockState();
+	private static final Block GLAZED = Blocks.GLAZED_TERRACOTTA.cyan();
 	/** Lantern spacing along bridge parapets. */
 	private static final int PARAPET_LIGHT_SPACING = 6;
-	/** Stairs room lifts: their columns (local x), row (z) and top cell (y, just above the landing). */
+	/** Stairs room lifts: their columns (local x), row (z), the landing they pass through (y) and their top cell (y). */
 	static final int LIFT_UP_X = 2;
 	static final int LIFT_DOWN_X = 4;
 	static final int LIFT_Z = 2;
-	static final int LIFT_TOP = 8;
+	static final int LIFT_LANDING = 7;
+	static final int LIFT_TOP = 9;
 
 	private FortressTrim() {
 	}
@@ -58,9 +63,23 @@ final class FortressTrim {
 		}
 		if (piece instanceof NetherFortressPieces.StairsRoom) {
 			BlockState lift = lift(x, y, z);
-			return lift != null ? lift : y == 7 && x == 3 && z == 2 ? LIGHT : room(x, y, z, false);
+			return lift != null ? lift : y == LIFT_LANDING && x == 3 && z == 2 ? LIGHT : room(x, y, z, false);
 		}
 		return null;
+	}
+
+	/** Whether a vanilla fence here is a window in a wall (glazed) rather than a railing (prismarine wall). */
+	static boolean isWindow(StructurePiece piece, int x, int y, int z) {
+		if (piece instanceof NetherFortressPieces.BridgeStraight || piece instanceof NetherFortressPieces.MonsterThrone) {
+			return false;
+		}
+		if (piece instanceof NetherFortressPieces.CastleEntrance || piece instanceof NetherFortressPieces.CastleStalkRoom) {
+			return y == 10 || y == 11;
+		}
+		if (piece instanceof NetherFortressPieces.CastleCorridorTBalconyPiece) {
+			return y >= 4 || z == 0;
+		}
+		return true;
 	}
 
 	/** What a deep-sea fortress puts where the vanilla piece clears to air, other than water. */
@@ -79,7 +98,7 @@ final class FortressTrim {
 		if (y == 1) {
 			return x == LIFT_UP_X ? Blocks.SOUL_SAND.defaultBlockState() : Blocks.MAGMA_BLOCK.defaultBlockState();
 		}
-		if (y == LIFT_TOP - 1) {
+		if (y == LIFT_LANDING) {
 			return Blocks.WATER.defaultBlockState();
 		}
 		return null;
@@ -93,10 +112,13 @@ final class FortressTrim {
 		return null;
 	}
 
-	/** Small corridors: a dark runner down the floor, one ceiling lantern. */
+	/** Small corridors: a dark runner down the floor with a glazed tile at its middle, one ceiling lantern. */
 	private static @Nullable BlockState corridor(int x, int y, int z, boolean crossing) {
 		if (y == 6 && x == 2 && z == 2) {
 			return LIGHT;
+		}
+		if (y == 1 && x == 2 && z == 2) {
+			return glazed(x, z, 2);
 		}
 		if (y == 1 && (x == 2 || crossing && z == 2)) {
 			return DARK;
@@ -123,7 +145,7 @@ final class FortressTrim {
 		return x == 2 && (y == 10 && z == 4 || y == 6 && z == 8) ? LIGHT : null;
 	}
 
-	/** Entrance hall and garden hall: floor border, door frames, ceiling lanterns, prismarine merlons, the well rim. */
+	/** Entrance hall and garden hall: floor border with glazed corners and midpoints, door frames, ceiling lanterns, prismarine merlons, the well rim. */
 	private static @Nullable BlockState hall(int x, int y, int z, boolean well) {
 		if (y == 11 && (x == 4 || x == 8) && (z == 4 || z == 8)) {
 			return LIGHT;
@@ -139,7 +161,7 @@ final class FortressTrim {
 			return DARK;
 		}
 		if (y == 4 && x >= 2 && x <= 10 && z >= 2 && z <= 10 && (x == 2 || x == 10 || z == 2 || z == 10)) {
-			return TRIM;
+			return (x == 2 || x == 6 || x == 10) && (z == 2 || z == 6 || z == 10) ? glazed(x, z, 6) : TRIM;
 		}
 		if (well && y == 5 && x >= 5 && x <= 7 && z >= 5 && z <= 7) {
 			return TRIM;
@@ -158,10 +180,10 @@ final class FortressTrim {
 		return null;
 	}
 
-	/** Room crossing and stairs room: floor border, lintels; the crossing also lights its corner pillars and floor centre. */
+	/** Room crossing and stairs room: floor border with glazed corners, lintels; the crossing also lights its corner pillars and floor centre. */
 	private static @Nullable BlockState room(int x, int y, int z, boolean crossing) {
 		if (y == 1 && x >= 1 && x <= 5 && z >= 1 && z <= 5 && (x == 1 || x == 5 || z == 1 || z == 5)) {
-			return TRIM;
+			return (x == 1 || x == 5) && (z == 1 || z == 5) ? glazed(x, z, 3) : TRIM;
 		}
 		if (crossing && y == 1 && x == 3 && z == 3) {
 			return LIGHT;
@@ -173,5 +195,11 @@ final class FortressTrim {
 			return DARK;
 		}
 		return null;
+	}
+
+	/** Cyan glazed terracotta turned a quarter per quadrant round the centre (c, c), so the tiles form a ring pattern. */
+	private static BlockState glazed(int x, int z, int c) {
+		Direction facing = x <= c && z < c ? Direction.NORTH : x > c && z <= c ? Direction.EAST : x >= c && z > c ? Direction.SOUTH : Direction.WEST;
+		return GLAZED.defaultBlockState().setValue(GlazedTerracottaBlock.FACING, facing);
 	}
 }

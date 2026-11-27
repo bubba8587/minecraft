@@ -23,6 +23,10 @@ public final class FortressBlocks {
 	private static final int MOSSY = 20;
 	private static final int CRACKED = 10;
 	private static final int MOSSY_STAIRS = 25;
+	/** Share of window blocks left empty (water), in percent. */
+	private static final int BROKEN_WINDOW = 25;
+	/** Window glass colours; each piece takes one. */
+	private static final Block[] WINDOW_GLASS = { Blocks.STAINED_GLASS.cyan(), Blocks.STAINED_GLASS.lightBlue(), Blocks.STAINED_GLASS.blue() };
 
 	private FortressBlocks() {
 	}
@@ -43,6 +47,9 @@ public final class FortressBlocks {
 			return waterlogged(stairs.withPropertiesOf(state));
 		}
 		if (block == Blocks.NETHER_BRICK_FENCE) {
+			if (FortressTrim.isWindow(piece, x, y, z)) {
+				return window(piece, pos);
+			}
 			return waterlogged(Blocks.PRISMARINE_WALL.defaultBlockState());
 		}
 		if (block == Blocks.LAVA) {
@@ -67,6 +74,16 @@ public final class FortressBlocks {
 			return Blocks.CRACKED_STONE_BRICKS.defaultBlockState();
 		}
 		return Blocks.STONE_BRICKS.defaultBlockState();
+	}
+
+	/** A window block: stained glass in the piece's colour, or water where the pane is gone. */
+	private static BlockState window(StructurePiece piece, BlockPos pos) {
+		if (roll(pos) < BROKEN_WINDOW) {
+			return Blocks.WATER.defaultBlockState();
+		}
+		BoundingBox box = piece.getBoundingBox();
+		int colour = (int) Math.floorMod(Mth.getSeed(box.minX(), box.minY(), box.minZ()), (long) WINDOW_GLASS.length);
+		return WINDOW_GLASS[colour].defaultBlockState();
 	}
 
 	private static int roll(BlockPos pos) {

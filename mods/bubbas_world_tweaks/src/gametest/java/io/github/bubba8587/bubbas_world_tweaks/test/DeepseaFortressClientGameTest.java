@@ -82,6 +82,19 @@ public class DeepseaFortressClientGameTest implements FabricClientGameTest {
 				}
 			}
 			for (StructurePiece piece : pieces) {
+				if (piece instanceof NetherFortressPieces.RoomCrossing) {
+					shot(context, sp, at(piece, 3.5, 5.0, 0.6), piece.getOrientation().toYRot(), 50.0F, "deepsea-room-floor");
+					break;
+				}
+			}
+			for (StructurePiece piece : pieces) {
+				if (piece instanceof NetherFortressPieces.CastleEntrance || piece instanceof NetherFortressPieces.CastleStalkRoom) {
+					shot(context, sp, at(piece, 6.5, 9.5, 1.5), piece.getOrientation().toYRot(), 35.0F, "deepsea-hall-floor");
+					shot(context, sp, at(piece, 6.5, 10.6, 2.5), piece.getOrientation().toYRot() + 90.0F, 0.0F, "deepsea-hall-windows");
+					break;
+				}
+			}
+			for (StructurePiece piece : pieces) {
 				if (piece instanceof NetherFortressPieces.StairsRoom) {
 					shot(context, sp, at(piece, 3.5, 4.2, 0.4), piece.getOrientation().toYRot(), 15.0F, "deepsea-lifts");
 					break;
