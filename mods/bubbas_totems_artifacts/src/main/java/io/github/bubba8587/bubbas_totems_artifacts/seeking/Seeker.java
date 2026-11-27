@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 import io.github.bubba8587.bubbas_totems_artifacts.totems.TotemsTuning;
 import net.minecraft.core.BlockPos;
@@ -14,6 +15,12 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.core.QuartPos;
 import net.minecraft.core.SectionPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.visitors.CollectFields;
+import net.minecraft.nbt.visitors.FieldSelector;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
@@ -21,6 +28,7 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.BiomeResolver;
+import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.ChunkGeneratorStructureState;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureCheckResult;
@@ -247,7 +255,9 @@ public final class Seeker {
 
 	/**
 	 * Vanilla's /locate biome order (a square spiral of columns, heights outward from the origin's), resumable, sampling
-	 * the biome noise only; a hit counts only at or below the ground (from the generator's height estimate), never in the air.
+	 * the biome noise; a hit counts only at or below the ground (the generator's height estimate), never in the air. In
+	 * land already generated the saved biomes win: the hit's column must hold the biome in the loaded chunk, or in the
+	 * saved chunk read off-thread (the search waits for it).
 	 */
 	private static final class BiomeSearch implements Search {
 		private final ServerLevel level;
@@ -258,6 +268,9 @@ public final class Seeker {
 		private final Iterator<BlockPos.MutableBlockPos> spiral;
 		private final int[] ys;
 		private @Nullable BlockPos best;
+		private @Nullable BlockPos candidate;
+		private @Nullable CollectFields scanned;
+		private @Nullable CompletableFuture<Void> scan;
 
 		BiomeSearch(ServerLevel level, Holder<Biome> biome, BlockPos origin, List<BlockPos> skip) {
 			this.level = level;
@@ -277,28 +290,84 @@ public final class Seeker {
 		@Override
 		public boolean step(long deadline) {
 			while (System.nanoTime() < deadline) {
+				if (this.candidate != null) {
+					Boolean saved = savedHas(this.candidate);
+					if (saved == null) {
+						return false;
+					}
+					if (saved) {
+						this.best = this.candidate;
+						return true;
+					}
+					this.candidate = null;
+					continue;
+				}
 				if (!this.spiral.hasNext()) {
 					return true;
 				}
 				BlockPos.MutableBlockPos column = this.spiral.next();
 				int x = this.origin.getX() + column.getX() * TotemsTuning.SEEK_BIOME_STEP;
 				int z = this.origin.getZ() + column.getZ() * TotemsTuning.SEEK_BIOME_STEP;
-				BlockPos flat = new BlockPos(x, this.origin.getY(), z);
-				if (!allowed(flat, this.origin, this.skip, TotemsTuning.SEEK_SKIP_BIOME)) {
+				if (!allowed(new BlockPos(x, this.origin.getY(), z), this.origin, this.skip, TotemsTuning.SEEK_SKIP_BIOME)) {
 					continue;
 				}
 				for (int y : this.ys) {
 					if (is(x, y, z)) {
-						BlockPos grounded = grounded(x, z);
-						if (grounded != null) {
-							this.best = grounded;
-							return true;
-						}
+						this.candidate = grounded(x, z);
 						break;
 					}
 				}
 			}
 			return false;
+		}
+
+		/**
+		 * Whether generated land at this spot holds the biome somewhere in its column: true/false, or null while the
+		 * saved chunk is being read. Land not generated yet: true (the generator will make what the noise says).
+		 */
+		private @Nullable Boolean savedHas(BlockPos at) {
+			int qx = QuartPos.fromBlock(at.getX());
+			int qz = QuartPos.fromBlock(at.getZ());
+			ChunkAccess loaded = this.level.getChunkSource().getChunkNow(SectionPos.blockToSectionCoord(at.getX()), SectionPos.blockToSectionCoord(at.getZ()));
+			if (loaded != null) {
+				for (int qy = QuartPos.fromBlock(this.level.getMinY()); qy <= QuartPos.fromBlock(this.level.getMaxY()); qy++) {
+					if (loaded.getNoiseBiome(qx, qy, qz).is(this.biome)) {
+						return true;
+					}
+				}
+				return false;
+			}
+			if (this.scan == null) {
+				this.scanned = new CollectFields(new FieldSelector(StringTag.TYPE, "Status"), new FieldSelector(ListTag.TYPE, "sections"));
+				this.scan = this.level.getChunkSource().chunkScanner().scanChunk(new ChunkPos(at.getX() >> 4, at.getZ() >> 4), this.scanned);
+				return null;
+			}
+			if (!this.scan.isDone()) {
+				return null;
+			}
+			CollectFields fields = this.scanned;
+			boolean failed = this.scan.isCompletedExceptionally();
+			this.scan = null;
+			this.scanned = null;
+			if (failed || !(fields.getResult() instanceof CompoundTag chunk)) {
+				return true;
+			}
+			ListTag sections = chunk.getListOrEmpty("sections");
+			var codec = this.level.palettedContainerFactory().biomeContainerCodec();
+			boolean any = false;
+			for (int i = 0; i < sections.size(); i++) {
+				var biomes = sections.getCompoundOrEmpty(i).getCompound("biomes").flatMap(tag -> codec.parse(NbtOps.INSTANCE, tag).result());
+				if (biomes.isEmpty()) {
+					continue;
+				}
+				any = true;
+				for (int qy = 0; qy < 4; qy++) {
+					if (biomes.get().get(qx & 3, qy, qz & 3).is(this.biome)) {
+						return true;
+					}
+				}
+			}
+			return !any;
 		}
 
 		/** The biome sample at a block. */

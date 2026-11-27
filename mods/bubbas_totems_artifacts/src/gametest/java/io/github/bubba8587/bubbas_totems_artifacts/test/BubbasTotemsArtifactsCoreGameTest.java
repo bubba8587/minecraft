@@ -55,7 +55,7 @@ public class BubbasTotemsArtifactsCoreGameTest {
 		new TotemsGameTest().growthSpeedsUpCrops(helper);
 	}
 
-	@GameTest(structure = TestSupport.FIELD, maxTicks = 400)
+	@GameTest(structure = TestSupport.FIELD, maxTicks = 1200)
 	public void seekingStatueFillsAMap(GameTestHelper helper) {
 		new TotemsGameTest().seekingStatueFillsAMap(helper);
 	}

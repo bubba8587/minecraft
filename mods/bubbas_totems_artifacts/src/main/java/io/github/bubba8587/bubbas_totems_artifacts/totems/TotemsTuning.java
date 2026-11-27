@@ -62,8 +62,6 @@ public final class TotemsTuning {
 	public static final int SEEK_ARRIVE = 24;
 	public static final int SEEK_ARRIVE_INSIDE = 160;
 	public static final int SEEK_ARRIVE_BIOME = 48;
-	/** Within this many blocks of a biome target, its loaded land is checked for the biome; without it the target is dropped. */
-	public static final int SEEK_VERIFY = 96;
 	/** Seeking statue map: largest chunk-loading radius per drawn patch. */
 	public static final int SEEK_MAP_MAX_TICKET_RADIUS = 10;
 	/** Search time per server tick, all searches together. */

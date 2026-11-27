@@ -342,7 +342,7 @@ public class TotemsGameTest {
 	/**
 	 * Core. A biome search finds the player's own biome at least the minimum distance away and not in the air, and a search skipping that
 	 * spot lands well clear of it; arriving at a target records the find (Found: 1/32) and the next target is never
-	 * the biome underfoot; a biome target over loaded land without that biome is dropped without a find; the memory keeps only the newest 32.
+	 * the biome underfoot; a spot whose generated land was repainted to another biome is passed over; the memory keeps only the newest 32.
 	 */
 	public void seekingFindsAndRemembers(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
@@ -373,13 +373,19 @@ public class TotemsGameTest {
 		helper.assertTrue(next == null || !next.kind().equals(biome), "picked the biome underfoot again: " + next);
 		helper.assertFalse(totem.has(DataComponents.LODESTONE_TRACKER), "the needle doesn't spin while the next search runs");
 
-		ItemStack ghost = new ItemStack(ModItems.TOTEM_OF_SEEKING);
-		SeekKinds.Kind other = new SeekKinds.Kind(net.minecraft.resources.Identifier.withDefaultNamespace(biome.id().getPath().equals("desert") ? "plains" : "desert"), true);
-		ghost.set(ModComponents.SEEKING_TARGET, new TotemOfSeekingItem.Target(other, GlobalPos.of(level.dimension(), here), Optional.of(here.offset(5, 0, 0))));
-		TotemOfSeekingItem.update(ghost, level, player);
-		var after = ghost.get(ModComponents.SEEKING_TARGET);
-		helper.assertTrue(TotemOfSeekingItem.finds(ghost).isEmpty() && (after == null || !after.kind().equals(other)),
-				"a biome target over land without that biome wasn't dropped: " + after + ", finds " + TotemOfSeekingItem.finds(ghost));
+		BlockPos painted = first.get();
+		level.getChunk(painted);
+		String other = biome.id().getPath().equals("desert") ? "minecraft:plains" : "minecraft:desert";
+		int cx = painted.getX() & ~15;
+		int cz = painted.getZ() & ~15;
+		for (int y = level.getMinY(); y < level.getMaxY(); y += 64) {
+			level.getServer().getCommands().performPrefixedCommand(level.getServer().createCommandSourceStack().withLevel(level).withSuppressedOutput(),
+					"fillbiome %d %d %d %d %d %d %s".formatted(cx, y, cz, cx + 15, Math.min(y + 63, level.getMaxY()), cz + 15, other));
+		}
+		Seeker.clear();
+		Optional<BlockPos> repainted = Seeker.lookupNow(level, biome, here, List.of());
+		helper.assertTrue(repainted.isPresent() && (repainted.get().getX() >> 4 != painted.getX() >> 4 || repainted.get().getZ() >> 4 != painted.getZ() >> 4),
+				"the search still chose " + repainted + " in a chunk whose saved biomes are " + other);
 
 		for (int i = 0; i < TotemsTuning.SEEK_MEMORY + 8; i++) {
 			TotemOfSeekingItem.remember(totem, new TotemOfSeekingItem.Found(biome, GlobalPos.of(level.dimension(), new BlockPos(i * 1000, 0, 0))));
@@ -452,6 +458,7 @@ public class TotemsGameTest {
 			}
 			helper.assertTrue(drawn > 128 * 128 * 9 / 10, "only " + drawn + " of " + 128 * 128 + " pixels drawn");
 			helper.assertTrue(io.github.bubba8587.bubbas_totems_artifacts.seeking.SeekingMap.display(level, at) == null, "the map is still inside");
+			io.github.bubba8587.bubbas_totems_artifacts.BubbasTotemsArtifacts.LOGGER.info("Seeking statue: map filled and out after {} ticks", helper.getTick());
 		});
 	}
 

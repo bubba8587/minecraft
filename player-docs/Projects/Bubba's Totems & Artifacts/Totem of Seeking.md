@@ -29,11 +29,11 @@ The **Totem of Seeking** is an artifact that points toward a random structure or
   - Structures include villages, temples, strongholds, trial chambers, mansions and structures from other mods, like [[Deep-Sea Fortresses|deep-sea fortresses]].
   - [[Relic Vaults]] are never targets.
   - Biomes include cave biomes, so some targets are underground.
+  - In land that already exists, it goes by the biomes actually there, even if a terrain mod was added later.
   - It never picks the biome you're standing in.
 - The totem doesn't say what it's pointing at. You find out when you get there.
 - The needle spins while the totem is picking a new target. A lodestone click plays when it settles.
 - If you change dimensions, it picks a new target in the new dimension.
-- If you get near a biome target and the land there turns out not to have that biome (land made before a terrain mod was added), the needle spins and it quietly picks a new target.
 
 ### Finding
 
