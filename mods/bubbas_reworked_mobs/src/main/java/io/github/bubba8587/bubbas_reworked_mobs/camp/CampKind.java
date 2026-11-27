@@ -36,7 +36,9 @@ public enum CampKind {
 	BOGGED(EntityTypes.BOGGED, DyeColor.GRAY, List.of(new Layer(BannerPatterns.GRADIENT_UP, DyeColor.GREEN), new Layer(BannerPatterns.SKULL,
 			DyeColor.LIME))),
 	PIGLIN(EntityTypes.PIGLIN, DyeColor.BLACK, List.of(new Layer(BannerPatterns.PIGLIN, DyeColor.YELLOW), new Layer(BannerPatterns.TRIANGLES_BOTTOM,
-			DyeColor.ORANGE)));
+			DyeColor.ORANGE))),
+	FROSTBITE(EntityTypes.FROSTBITE, DyeColor.CYAN, List.of(new Layer(BannerPatterns.SKULL, DyeColor.WHITE), new Layer(BannerPatterns.TRIANGLES_BOTTOM,
+			DyeColor.LIGHT_BLUE)));
 
 	/** One layer of a camp banner: a vanilla pattern in a colour. */
 	public record Layer(ResourceKey<BannerPattern> pattern, DyeColor color) {
@@ -70,7 +72,7 @@ public enum CampKind {
 
 	/** Whether its mobs shoot (archers on the towers, a bow for the leader). */
 	public boolean archers() {
-		return this != ZOMBIE && this != HUSK;
+		return this != ZOMBIE && this != HUSK && this != FROSTBITE;
 	}
 
 	/** Whether its mobs burn by day (patrols only at night). */
@@ -81,7 +83,7 @@ public enum CampKind {
 	/** Its patrols' mount, or null (bogged and piglins go on foot). */
 	public @Nullable EntityType<? extends Mob> mount() {
 		return switch (this) {
-			case ZOMBIE -> EntityTypes.ZOMBIE_HORSE;
+			case ZOMBIE, FROSTBITE -> EntityTypes.ZOMBIE_HORSE;
 			case SKELETON, STRAY -> EntityTypes.SKELETON_HORSE;
 			case HUSK -> EntityTypes.CAMEL_HUSK;
 			default -> null;
@@ -93,7 +95,7 @@ public enum CampKind {
 		return this == PIGLIN;
 	}
 
-	/** The camp kind for a biome: husks in deserts and badlands, strays in snow, bogged in swamps, else skeletons or zombies. */
+	/** The camp kind for a biome: husks in deserts and badlands, strays or frostbites in snow, bogged in swamps, else skeletons or zombies. */
 	public static CampKind forBiome(Holder<Biome> biome, RandomSource random) {
 		boolean skeletons = random.nextBoolean(); // rolled always, so the stream doesn't depend on the biome
 		if (biome.is(Biomes.DESERT) || biome.is(BiomeTags.IS_BADLANDS)) {
@@ -103,7 +105,7 @@ public enum CampKind {
 			return BOGGED;
 		}
 		if (biome.value().getBaseTemperature() < 0.15F) {
-			return STRAY;
+			return skeletons ? STRAY : FROSTBITE;
 		}
 		return skeletons ? SKELETON : ZOMBIE;
 	}
@@ -113,7 +115,7 @@ public enum CampKind {
 	/** Tower posts and seats. */
 	public BlockState log() {
 		return switch (this) {
-			case SKELETON, STRAY -> Blocks.SPRUCE_LOG.defaultBlockState();
+			case SKELETON, STRAY, FROSTBITE -> Blocks.SPRUCE_LOG.defaultBlockState();
 			case ZOMBIE -> Blocks.DARK_OAK_LOG.defaultBlockState();
 			case HUSK -> Blocks.STRIPPED_ACACIA_LOG.defaultBlockState();
 			case BOGGED -> Blocks.MANGROVE_LOG.defaultBlockState();
@@ -123,7 +125,7 @@ public enum CampKind {
 
 	public BlockState planks() {
 		return switch (this) {
-			case SKELETON, STRAY -> Blocks.SPRUCE_PLANKS.defaultBlockState();
+			case SKELETON, STRAY, FROSTBITE -> Blocks.SPRUCE_PLANKS.defaultBlockState();
 			case ZOMBIE -> Blocks.DARK_OAK_PLANKS.defaultBlockState();
 			case HUSK -> Blocks.ACACIA_PLANKS.defaultBlockState();
 			case BOGGED -> Blocks.MANGROVE_PLANKS.defaultBlockState();
@@ -133,7 +135,7 @@ public enum CampKind {
 
 	public BlockState slab() {
 		return switch (this) {
-			case SKELETON, STRAY -> Blocks.SPRUCE_SLAB.defaultBlockState();
+			case SKELETON, STRAY, FROSTBITE -> Blocks.SPRUCE_SLAB.defaultBlockState();
 			case ZOMBIE -> Blocks.DARK_OAK_SLAB.defaultBlockState();
 			case HUSK -> Blocks.ACACIA_SLAB.defaultBlockState();
 			case BOGGED -> Blocks.MANGROVE_SLAB.defaultBlockState();
@@ -143,7 +145,7 @@ public enum CampKind {
 
 	public BlockState fence() {
 		return switch (this) {
-			case SKELETON, STRAY -> Blocks.SPRUCE_FENCE.defaultBlockState();
+			case SKELETON, STRAY, FROSTBITE -> Blocks.SPRUCE_FENCE.defaultBlockState();
 			case ZOMBIE -> Blocks.DARK_OAK_FENCE.defaultBlockState();
 			case HUSK -> Blocks.ACACIA_FENCE.defaultBlockState();
 			case BOGGED -> Blocks.MANGROVE_FENCE.defaultBlockState();
@@ -154,7 +156,7 @@ public enum CampKind {
 	/** The stable's gate. */
 	public BlockState fenceGate() {
 		return switch (this) {
-			case SKELETON, STRAY -> Blocks.SPRUCE_FENCE_GATE.defaultBlockState();
+			case SKELETON, STRAY, FROSTBITE -> Blocks.SPRUCE_FENCE_GATE.defaultBlockState();
 			case ZOMBIE -> Blocks.DARK_OAK_FENCE_GATE.defaultBlockState();
 			case HUSK -> Blocks.ACACIA_FENCE_GATE.defaultBlockState();
 			case BOGGED -> Blocks.MANGROVE_FENCE_GATE.defaultBlockState();
@@ -165,7 +167,7 @@ public enum CampKind {
 	/** The undead mount kept in a camp's stable: zombie horses, camel husks, else skeleton horses (none for piglins). */
 	public EntityType<? extends Mob> undeadMount() {
 		return switch (this) {
-			case ZOMBIE -> EntityTypes.ZOMBIE_HORSE;
+			case ZOMBIE, FROSTBITE -> EntityTypes.ZOMBIE_HORSE;
 			case HUSK -> EntityTypes.CAMEL_HUSK;
 			case SKELETON, STRAY, BOGGED, PIGLIN -> EntityTypes.SKELETON_HORSE;
 		};
@@ -174,7 +176,7 @@ public enum CampKind {
 	/** Wooden stairs of ramps and the winding tower. */
 	public BlockState woodStairs() {
 		return switch (this) {
-			case SKELETON, STRAY -> Blocks.SPRUCE_STAIRS.defaultBlockState();
+			case SKELETON, STRAY, FROSTBITE -> Blocks.SPRUCE_STAIRS.defaultBlockState();
 			case ZOMBIE -> Blocks.DARK_OAK_STAIRS.defaultBlockState();
 			case HUSK -> Blocks.ACACIA_STAIRS.defaultBlockState();
 			case BOGGED -> Blocks.MANGROVE_STAIRS.defaultBlockState();
@@ -185,7 +187,7 @@ public enum CampKind {
 	/** Stairs of the underground room's tunnel. */
 	public BlockState stairs() {
 		return switch (this) {
-			case SKELETON, STRAY -> Blocks.COBBLESTONE_STAIRS.defaultBlockState();
+			case SKELETON, STRAY, FROSTBITE -> Blocks.COBBLESTONE_STAIRS.defaultBlockState();
 			case ZOMBIE -> Blocks.MOSSY_COBBLESTONE_STAIRS.defaultBlockState();
 			case HUSK -> Blocks.SANDSTONE_STAIRS.defaultBlockState();
 			case BOGGED -> Blocks.MUD_BRICK_STAIRS.defaultBlockState();
@@ -203,7 +205,7 @@ public enum CampKind {
 					: Blocks.PODZOL.defaultBlockState();
 			case HUSK -> roll < 0.5F ? Blocks.SAND.defaultBlockState() : roll < 0.8F ? Blocks.COARSE_DIRT.defaultBlockState()
 					: Blocks.SMOOTH_SANDSTONE.defaultBlockState();
-			case STRAY -> roll < 0.4F ? Blocks.SNOW_BLOCK.defaultBlockState() : roll < 0.75F ? Blocks.GRAVEL.defaultBlockState()
+			case STRAY, FROSTBITE -> roll < 0.4F ? Blocks.SNOW_BLOCK.defaultBlockState() : roll < 0.75F ? Blocks.GRAVEL.defaultBlockState()
 					: Blocks.PACKED_ICE.defaultBlockState();
 			case BOGGED -> roll < 0.45F ? Blocks.MUD.defaultBlockState() : roll < 0.75F ? Blocks.PACKED_MUD.defaultBlockState()
 					: Blocks.COARSE_DIRT.defaultBlockState();
@@ -221,7 +223,7 @@ public enum CampKind {
 					: Blocks.TUFF.defaultBlockState();
 			case HUSK -> roll < 0.5F ? Blocks.SANDSTONE.defaultBlockState() : roll < 0.8F ? Blocks.SMOOTH_SANDSTONE.defaultBlockState()
 					: Blocks.TERRACOTTA.defaultBlockState();
-			case STRAY -> roll < 0.45F ? Blocks.STONE.defaultBlockState() : roll < 0.75F ? Blocks.PACKED_ICE.defaultBlockState()
+			case STRAY, FROSTBITE -> roll < 0.45F ? Blocks.STONE.defaultBlockState() : roll < 0.75F ? Blocks.PACKED_ICE.defaultBlockState()
 					: Blocks.DIORITE.defaultBlockState();
 			case BOGGED -> roll < 0.45F ? Blocks.MUD_BRICKS.defaultBlockState() : roll < 0.75F ? Blocks.MOSSY_COBBLESTONE.defaultBlockState()
 					: Blocks.PACKED_MUD.defaultBlockState();
@@ -243,7 +245,7 @@ public enum CampKind {
 		return switch (this) {
 			case SKELETON, ZOMBIE -> roll < 0.5F ? Blocks.SHORT_GRASS.defaultBlockState() : Blocks.FERN.defaultBlockState();
 			case HUSK -> Blocks.DEAD_BUSH.defaultBlockState();
-			case STRAY -> Blocks.SNOW.defaultBlockState();
+			case STRAY, FROSTBITE -> Blocks.SNOW.defaultBlockState();
 			case BOGGED -> roll < 0.5F ? Blocks.BROWN_MUSHROOM.defaultBlockState() : Blocks.MOSS_CARPET.defaultBlockState();
 			case PIGLIN -> roll < 0.6F ? Blocks.CRIMSON_ROOTS.defaultBlockState() : Blocks.NETHER_SPROUTS.defaultBlockState();
 		};

@@ -1,6 +1,12 @@
 // dte:C1
 package io.github.bubba8587.bubbas_reworked_mobs.undead;
 
+import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
+import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
+import net.minecraft.world.level.biome.Biomes;
+import net.minecraft.world.level.levelgen.GenerationStep;
+import net.minecraft.world.level.levelgen.placement.PlacedFeature;
+import net.minecraft.core.Registry;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -56,7 +62,11 @@ public final class UndeadCombat {
 	private UndeadCombat() {
 	}
 
+	public static final ResourceKey<PlacedFeature> FROZEN_FROSTBITE = ResourceKey.create(Registries.PLACED_FEATURE, BubbasReworkedMobs.id("frozen_frostbite"));
+
 	public static void initialize() {
+		Registry.register(BuiltInRegistries.FEATURE_TYPE, BubbasReworkedMobs.id("frozen_frostbite"), FrozenFrostbiteFeature.CODEC);
+		BiomeModifications.addFeature(BiomeSelectors.includeByKey(Biomes.ICE_CAVES), GenerationStep.Decoration.UNDERGROUND_DECORATION, FROZEN_FROSTBITE);
 		ServerLivingEntityEvents.AFTER_DAMAGE.register((victim, source, baseDamage, damage, blocked) -> {
 			if (!blocked && baseDamage > 0.0F) {
 				shredArmor(victim, source);

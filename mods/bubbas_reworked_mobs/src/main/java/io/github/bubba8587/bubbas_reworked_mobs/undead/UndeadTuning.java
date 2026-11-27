@@ -142,4 +142,10 @@ public final class UndeadTuning {
 				.add(Attributes.ATTACK_DAMAGE, FIST_DAMAGE)
 				.add(Attributes.SPAWN_REINFORCEMENTS_CHANCE, 0.0);
 	}
+
+	/** Ice Caves Frostbite sleepers: chance per chunk, columns searched, height band. */
+	public static final float FROZEN_FROSTBITE_CHUNK_CHANCE = 0.12F;
+	public static final int FROZEN_FROSTBITE_COLUMN_TRIES = 6;
+	public static final int FROZEN_FROSTBITE_MAX_Y = 40;
+	public static final int FROZEN_FROSTBITE_MIN_Y = -50;
 }
