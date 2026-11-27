@@ -67,6 +67,7 @@ public final class GemDescribe {
 			case "ender" -> f("%.0f%% blink chance", 100 * Math.min(1.0, e.wornNumber("chance", 0.5) * s / b.cap));
 			case "breeze" -> f("%.0f%% deflect chance", 100 * Math.min(1.0, e.wornNumber("chance", 0.5) * s / b.cap));
 			case "infested" -> f("%.1f%% silverfish chance when hurt", 10 * s);
+			case "freezing" -> f("%.0f%% of the way to frozen", 100 * e.wornNumber("frozen_share", 0.9) * s);
 			default -> f("%.0f%%", 100 * s);
 		};
 	}

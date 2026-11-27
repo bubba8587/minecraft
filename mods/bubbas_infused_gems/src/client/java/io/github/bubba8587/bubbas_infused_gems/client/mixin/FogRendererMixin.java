@@ -19,7 +19,7 @@ import org.spongepowered.asm.mixin.injection.At;
 public abstract class FogRendererMixin {
 	@ModifyReturnValue(method = "setupFog", at = @At("RETURN"))
 	private FogData bubbas$gemFog(FogData fog, Camera camera, int renderDistanceInChunks, DeltaTracker deltaTracker, float darkenWorldAmount,
-			ClientLevel level) {
+			ClientLevel level, boolean shouldCreateBossFog) {
 		if (!(camera.entity() instanceof LivingEntity entity)) {
 			return fog;
 		}

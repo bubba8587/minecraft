@@ -236,6 +236,13 @@ public final class WornEffects {
 		if (hunger > 0.0 && entity instanceof Player player) {
 			player.causeFoodExhaustion((float) (b.effect("hunger").wornNumber("exhaustion_per_tick", 0.015) * hunger));
 		}
+		double freezing = GemValues.worn(entity, "freezing");
+		if (freezing > 0.0 && entity.canFreeze()) {
+			int held = (int) (b.effect("freezing").wornNumber("frozen_share", 0.9) * freezing * entity.getTicksRequiredToFreeze());
+			if (entity.getTicksFrozen() < held) {
+				entity.setTicksFrozen(Math.min(held, entity.getTicksFrozen() + 4));
+			}
+		}
 		if (entity.tickCount % 10 == 0) {
 			double poison = GemValues.worn(entity, "poison");
 			if (poison > 0.0 && !entity.is(EntityTypeTags.IMMUNE_TO_POISON)) {

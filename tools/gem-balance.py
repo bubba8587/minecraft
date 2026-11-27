@@ -19,7 +19,34 @@ import html, itertools, json, math, random, re, sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-SRC = ROOT / "build" / "mcsrc" / "26.3" / "common" / "net" / "minecraft"
+def _mc_version():
+	for line in (ROOT / "gradle.properties").read_text(encoding="utf8").splitlines():
+		if line.startswith("minecraft_version="):
+			return line.split("=", 1)[1].strip()
+	return "26.3"
+MC = _mc_version()
+def _mcsrc():
+	here = ROOT / "build" / "mcsrc" / MC
+	if here.exists():
+		return here
+	import subprocess
+	try:
+		common = subprocess.run(["git", "rev-parse", "--git-common-dir"], cwd=ROOT, capture_output=True, text=True).stdout.strip()
+		main = (ROOT / common).resolve().parent / "build" / "mcsrc" / MC
+		return main if main.exists() else here
+	except OSError:
+		return here
+MCSRC = _mcsrc()
+SRC = MCSRC / "common" / "net" / "minecraft"
+
+def mob_effects_source():
+	"""MobEffects.java on one line, with 26.4's MobEffectIds.X constants put back as their "x" id strings."""
+	text = re.sub(r"\s+", " ", (SRC / "world/effect/MobEffects.java").read_text(encoding="utf-8"))
+	ids_file = SRC / "world/effect/MobEffectIds.java"
+	if ids_file.exists():
+		ids = dict(re.findall(r'ResourceKey<MobEffect> ([A-Z_]+) = createKey\("([a-z_]+)"\)', ids_file.read_text(encoding="utf-8")))
+		text = re.sub(r"MobEffectIds\.([A-Z_]+)", lambda m: f'"{ids.get(m.group(1), m.group(1).lower())}"', text)
+	return text
 OUT_MD = ROOT / "docs" / "research" / "effect-gems-balance.md"
 OUT_HTML = ROOT / "build" / "gem-balance.html"
 
@@ -534,6 +561,14 @@ for key, name, src_item, ticks, is_hit, how, src in [
 		anchor=how + " (on/off effect: the strength goes into duration)",
 		impl="The vanilla effect itself, for a duration scaled by s. Mostly felt by players (PvP, and gemmed mob gear hitting players).",
 		src=src)
+# 26.4: the Freezing potion (brewed from Ice Balls) makes a Freezing gem (owner, BACKLOG "26.4 Freezing gem").
+effect("freezing", name="Freezing", potion="freezing", role="harmful", kind="onoff",
+	variants={"normal": (900, 0), "long": (1800, 0)},
+	hit=hit_anchor(1800, 0, False), unit=None, unit_fmt=None,
+	wearer=lambda s: f"frost on the wearer: held {0.9 * s:.0%} of the way to frozen (slowed and shaking, never frozen solid, no freeze damage)",
+	anchor="Strongest potion (long Freezing), as drunk: Freezing for 1:30, freezing as if in powder snow (on/off effect: the strength goes into duration)",
+	impl="The vanilla Freezing effect itself, for a duration scaled by s. Leather armour and being on fire counter it; undead are immune (vanilla).",
+	src="MobEffects.FREEZING, FreezingMobEffect, Potions.LONG_FREEZING")
 # Drawback-only (armor bad rolls, on the wearer). Slowness, weakness, mining fatigue and hunger above double as drawbacks.
 effect("unluck", name="Bad Luck", potion=None, role="negative", variants={}, level_one=1.0,
 	anchor="Bad Luck I: luck -1",
@@ -1009,7 +1044,7 @@ SRC_EXPECT_FILES = {
 
 def verify_source(errors):
 	if not SRC.exists():
-		return "skipped (no build/mcsrc/26.3; run tools/mcsrc.py)"
+		return "skipped (no build/mcsrc/" + MC + "; run tools/mcsrc.py)"
 	potions = (SRC / "world/item/alchemy/Potions.java").read_text(encoding="utf-8")
 	potions = re.sub(r"\s+", " ", potions)
 	n = 0
@@ -1029,12 +1064,12 @@ def verify_source(errors):
 		if re.search(rf'new Potion\("{missing}"', potions):
 			errors.append(f"source: a {missing} potion now exists; make that gem brewable from it")
 		n += 1
-	brew = ROOT / "build" / "mcsrc" / "26.3" / "vanilla" / "data" / "minecraft" / "recipe" / "brewing"
+	brew = MCSRC / "vanilla" / "data" / "minecraft" / "recipe" / "brewing"
 	if brew.exists():
 		if any('"minecraft:luck"' in f.read_text(encoding="utf-8") for f in brew.glob("*.json")):
 			errors.append("source: a survival Luck brewing recipe now exists; Luck gems can become craftable")
 		n += 1
-	effects = re.sub(r"\s+", " ", (SRC / "world/effect/MobEffects.java").read_text(encoding="utf-8"))
+	effects = mob_effects_source()
 	for pat in SRC_EXPECT_EFFECTS:
 		if not re.search(r"register\( ?" + pat, effects):
 			errors.append(f"source: MobEffects.java no longer matches {pat}")
@@ -1046,7 +1081,7 @@ def verify_source(errors):
 			if not re.search(pat, text):
 				errors.append(f"source: {rel} no longer matches {pat}")
 			n += 1
-	return f"{n} facts matched against build/mcsrc/26.3"
+	return f"{n} facts matched against build/mcsrc/{MC}"
 
 # ---------------------------------------------------------------- the model
 W = sum(STACK_R ** j for j in range(SLOTS * len(PIECES)))
@@ -1171,11 +1206,11 @@ def run_checks():
 
 	# 2b. Every 26.3 status effect is classified: a gem (craftable or found), drawback-only, or not a gem.
 	if SRC.exists():
-		mob = re.sub(r"\s+", " ", (SRC / "world/effect/MobEffects.java").read_text(encoding="utf-8"))
+		mob = mob_effects_source()
 		ids = set(re.findall(r'Holder<MobEffect> [A-Z_]+ = register\( ?"([a-z_]+)"', mob))
 		known = (set(GEM_EFFECTS) - set(MOD_EFFECTS) - set(OTHER_MOD_EFFECTS)) | set(NOT_GEMS) | set(DRAWBACK_ONLY)
 		if ids != known:
-			errors.append(f"status effects not classified: {sorted(ids - known)}; classified but not in 26.3: {sorted(known - ids)}")
+			errors.append(f"status effects not classified: {sorted(ids - known)}; classified but not in {MC}: {sorted(known - ids)}")
 		n_ids = len(ids)
 	else:
 		n_ids = len((set(GEM_EFFECTS) - set(MOD_EFFECTS) - set(OTHER_MOD_EFFECTS)) | set(NOT_GEMS) | set(DRAWBACK_ONLY))
@@ -1187,7 +1222,7 @@ def run_checks():
 			errors.append(f"{k}: potion source without a potion")
 	crafted = sum(1 for k in GEM_EFFECTS if E[k]["source"][0] != "found")
 	found = sum(1 for k in GEM_EFFECTS if E[k]["source"][0] == "found")
-	notes.append(f"all {n_ids} status effects in 26.3 are classified: {crafted} craftable gems, {found} found-only gems, {len(DRAWBACK_ONLY)} drawback-only, {len(NOT_GEMS)} not gems")
+	notes.append(f"all {n_ids} status effects in {MC} are classified: {crafted} craftable gems, {found} found-only gems, {len(DRAWBACK_ONLY)} drawback-only, {len(NOT_GEMS)} not gems")
 
 	# 3. Every armor layout x gem count: the stack reaches CAP only with full netherite, 12 gems.
 	head_opts = [None] + list(MATERIALS)
@@ -1526,7 +1561,7 @@ def fmt(x, d=2):
 def document(notes):
 	S = []  # ("h1"|"h2"|"h3"|"p"|"ul"|"ol"|"table", ...)
 	S.append(("h1", "Bubba's Infused Gems: balance model"))
-	S.append(("p", "Generated by `tools/gem-balance.py` from the owner's design in `specs/effect-gems.md`. Do not edit by hand: change the script and rerun it. Vanilla numbers come from the decompiled Minecraft 26.3 source and the script re-checks them against it."))
+	S.append(("p", "Generated by `tools/gem-balance.py` from the owner's design in `specs/effect-gems.md`. Do not edit by hand: change the script and rerun it. Vanilla numbers come from the decompiled Minecraft " + MC + " source and the script re-checks them against it."))
 	S.append(("h2", "The formula in plain words"))
 	S.append(("ul", [
 		"**A gem doesn't care where it goes** (owner). Every gem, from any potion, item or loot, fits armor (3 slots a piece) or a weapon (2 slots). **The slot decides who its effects reach:** in armor, the wearer; in a weapon, what it hits (bows and crossbows: the arrow). All of a gem's effects go the same way: main effect, any other effect and any drawback. So a Poison gem in your armor poisons you, and a Regeneration gem on a sword heals the target: allowed, just pointless.",
@@ -1545,7 +1580,7 @@ def document(notes):
 	S.append(("h2", "Factor tables"))
 	S.append(("h3", "Gem Power level (the base gem; strength only)"))
 	S.append(("table", ["Gem Power", "Base gem", "Factor", "Why here"], [[inf(b).split(" (")[0], n, fmt(f), w] for b, n, f, w in BASE_GEMS]))
-	S.append(("h3", "Potion variant (by what that effect really has in 26.3)"))
+	S.append(("h3", "Potion variant (by what that effect really has in " + MC + ")"))
 	S.append(("table", ["Variants that exist", "normal", "long", "strong"], [
 		["normal + long + strong (Swiftness, Strength, Leaping, Regeneration, Poison, Slowness, Turtle Master)", "0.80", "0.85", "1.00"],
 		["normal + long (Fire Resistance, Night Vision, Invisibility, Water Breathing, Slow Falling, Weakness)", "0.90", "1.00", "-"],
@@ -1563,7 +1598,7 @@ def document(notes):
 			", ".join(f"{kind} {gr}" + (f" ({GRADES[gr]:.2f})" if kind == "other" else f" ({DRAWBACK_ONE:.2f}, fixed)") for kind, gr in ex) or "-", f"{p:.0%}"]
 			for t, outs in TIERS.items() for lab, g, ex, p in outs]))
 	S.append(("h3", "Armor material"))
-	S.append(("table", ["Material", "Factor", "Vanilla 26.3 (ArmorMaterials)"],
+	S.append(("table", ["Material", "Factor", "Vanilla " + MC + " (ArmorMaterials)"],
 		[[m, fmt(f), why] for m, (f, why) in sorted(MATERIALS.items(), key=lambda x: (x[1][0], x[0]))]))
 	S.append(("h3", "Matching run (helmet - chestplate - leggings - boots)"))
 	S.append(("table", ["Run length of the piece", "Factor", "Example"], [
@@ -1575,7 +1610,7 @@ def document(notes):
 	S.append(("p", f"With 6 perfect gems: netherite helmet + boots give {hb:.3f}, netherite helmet + chestplate give {hc:.3f}. Touching pieces win, as the owner asked."))
 	S.append(("h3", "Weapon material (proposal: a factor, like armor)"))
 	S.append(("p", "Yes for consistency: the same gem is stronger in a better weapon, exactly as in better armor, so a netherite weapon is part of the single best build. Swords, axes and spears come in every material. Bows, crossbows, tridents and maces have none, so they get a fixed diamond-level factor: they can't be upgraded, and at diamond-level the best build stays unique to netherite."))
-	S.append(("table", ["Weapon", "Factor", "Vanilla 26.3"],
+	S.append(("table", ["Weapon", "Factor", "Vanilla " + MC + ""],
 		[[m, fmt(f), why] for m, (f, why) in sorted({**WEAPON_MATERIALS, **WEAPON_FIXED}.items(), key=lambda x: (x[1][0], x[0]))]))
 	S.append(("h3", "Stacking weight per gem (strongest first)"))
 	S.append(("table", ["Gem #"] + [str(i + 1) for i in range(12)],
@@ -1584,7 +1619,7 @@ def document(notes):
 		 ["Weapon: running total (perfect gems)"] + [f"{CAP * sum(STACK_R ** j for j in range(i + 1)) / WW:.3f}" if i < WEAPON_SLOTS else "-" for i in range(12)]]))
 
 	S.append(("h2", "Every status effect: craftable, found-only, or not a gem"))
-	S.append(("p", "Every one of the 40 status effects in 26.3 (the script reads them from the source and fails if one is missing). Any gem goes into armor or a weapon. An effect with a potion is brewed from it. One without a potion is brewed from a vanilla item that already carries it: in 26.3 the brewing stand's bottle slot takes any item that a brewing recipe names as its input (BrewingStandMenu.PotionSlot asks the recipes, PotionIngredient.isPotionInput), so this is data, no menu change. Stews are told apart by their stew effect with Fabric API's components ingredient. An effect with no sensible item is a **found-only** gem: loot and mob gear, never brewed."))
+	S.append(("p", "Every status effect in " + MC + " (the script reads them from the source and fails if one is missing). Any gem goes into armor or a weapon. An effect with a potion is brewed from it. One without a potion is brewed from a vanilla item that already carries it: in " + MC + " the brewing stand's bottle slot takes any item that a brewing recipe names as its input (BrewingStandMenu.PotionSlot asks the recipes, PotionIngredient.isPotionInput), so this is data, no menu change. Stews are told apart by their stew effect with Fabric API's components ingredient. An effect with no sensible item is a **found-only** gem: loot and mob gear, never brewed."))
 	S.append(("table", ["Effect", "Kind", "How it's had"],
 		[[E[k]["name"], "beneficial" if E[k]["good"] else "harmful", source_text(k)] for k in GEM_EFFECTS]
 		+ [[E[k]["name"], "harmful", "Drawback only: " + why] for k, why in DRAWBACK_ONLY.items()]
@@ -1674,7 +1709,7 @@ def document(notes):
 			+ [potency_text(k, drawback_total(n)) for n in dcols] for k in HARMFUL_DRAWBACKS + BENEFICIAL_DRAWBACKS]))
 
 	S.append(("h3", "How each effect is made partial"))
-	S.append(("table", ["Effect", "Implementation", "Source (26.3)"], [[E[k]["name"], E[k]["impl"], E[k]["src"]] for k in E]))
+	S.append(("table", ["Effect", "Implementation", "Source (" + MC + ")"], [[E[k]["name"], E[k]["impl"], E[k]["src"]] for k in E]))
 	S.append(("p", "Worn (armor) effects are attribute modifiers, data components or small tick and damage hooks, not potion effect instances: vanilla levels are whole numbers and their icons and timers would claim a full level. Hit-applied (weapon) effects, and weapon drawbacks on the target, are gem mob effects whose amplifier counts strength in 1% steps, with vanilla's icon and timer; a gem arrow carries one as its potion contents with a duration scale of 1. A gem and a potion of the same effect don't add up: the stronger applies (owner)."))
 
 	S.append(("h2", "Progression ladders"))
@@ -1870,6 +1905,7 @@ WORN = {
 	"ender": {"hit_diameter": ENDER_HIT_DIAMETER, "confused_ticks": ENDER_CONFUSED_TICKS, "chance": ENDER_CHANCE_BEST, "diameter_min": ENDER_DIAMETER[0], "diameter_max": ENDER_DIAMETER[1]},
 	"breeze": {"chance": BREEZE_CHANCE_BEST},
 	"infested": {"hurt_chance": 1.0},
+	"freezing": {"frozen_share": 0.9},
 }
 # Amplifier of each effect's 1.0 level (what a vanilla instance is compared against: "the stronger applies"). Effects
 # with a potion take their strongest variant's; the rest are listed.
@@ -2027,7 +2063,7 @@ LOOT_GEMS_DIR = DATA / "loot_table" / "gems"
 LOOT_INJECT_DIR = DATA / "loot_table" / "inject"
 MODIFIER_DIR = DATA / "item_modifier"
 GENERATED_DIRS = [RECIPE_DIR, LOOT_GEMS_DIR, LOOT_INJECT_DIR, MODIFIER_DIR]
-VANILLA_DATA = ROOT / "build" / "mcsrc" / "26.3" / "vanilla" / "data" / "minecraft"
+VANILLA_DATA = MCSRC / "vanilla" / "data" / "minecraft"
 ARMOR_PIECES = ["helmet", "chestplate", "leggings", "boots"]
 INFUSION_LEVEL = {b: i + 1 for i, (b, _, _, _) in enumerate(BASE_GEMS)}
 
@@ -2147,7 +2183,7 @@ def check_loot(errors, notes):
 		if level not in LOOT or not 0 < chance <= 0.25 or not (fnd or general):
 			errors.append(f"loot: bad place {t}")
 		if VANILLA_DATA.exists() and not (VANILLA_DATA / "loot_table" / f"{t}.json").exists():
-			errors.append(f"loot: vanilla 26.3 has no loot table {t}")
+			errors.append(f"loot: vanilla {MC} has no loot table {t}")
 		if VANILLA_DATA.exists() and (VANILLA_DATA / "loot_table" / f"{t}.json").exists():
 			vtype = json.loads((VANILLA_DATA / "loot_table" / f"{t}.json").read_text(encoding="utf-8")).get("type")
 			if vtype != f"minecraft:{ctx}":
@@ -2157,7 +2193,7 @@ def check_loot(errors, notes):
 				errors.append(f"loot: {t} lists {k}, which is not a found-only gem")
 	for t in TRIAL_EQUIPMENT[0]:
 		if VANILLA_DATA.exists() and not (VANILLA_DATA / "loot_table" / f"{t}.json").exists():
-			errors.append(f"loot: vanilla 26.3 has no loot table {t}")
+			errors.append(f"loot: vanilla {MC} has no loot table {t}")
 	for level in LOOT:
 		for item in level_pieces(level) + level_weapons(level):
 			if not re.search(rf"Item {item.split(':')[1].upper()} = ", (SRC / "world/item/Items.java").read_text(encoding="utf-8")) and SRC.exists():
@@ -2179,7 +2215,7 @@ def check_loot(errors, notes):
 	notes.append(f"loot: {len(LOOT_PLACES)} vanilla tables get one extra roll (chance {min(p[3] for p in LOOT_PLACES):.0%}-{max(p[3] for p in LOOT_PLACES):.0%}); "
 		"each level's best gem beats the level below; only ominous vaults give perfect gems (any effect, Gem Power VI, tier 3), "
 		f"with a drawback except {PERFECT_CLEAN_CHANCE:.0%} of the time; nowhere else gives a craftable gem Gem Power VI; "
-		"every found-only gem is listed at exactly the levels its source names; every table and item exists in 26.3")
+		"every found-only gem is listed at exactly the levels its source names; every table and item exists in " + MC + "")
 
 def check_export(errors):
 	"""The WORN numbers match the effect table (the descriptions the owner reads)."""
