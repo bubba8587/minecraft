@@ -4,6 +4,8 @@ package io.github.bubba8587.bubbas_world_tweaks.test;
 import io.github.bubba8587.bubbas_world_tweaks.fortress.ConduitShrine;
 import io.github.bubba8587.bubbas_world_tweaks.fortress.DeepseaFortressStructure;
 import io.github.bubba8587.bubbas_world_tweaks.fortress.DeepseaFortresses;
+import io.github.bubba8587.bubbas_world_tweaks.fortress.FortressBlocks;
+import io.github.bubba8587.bubbas_world_tweaks.fortress.TearPiece;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePiecesBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -51,7 +53,7 @@ public class DeepseaFortressGameTest {
 			helper.assertTrue(!level.getBlockState(p).isAir(), "air left in the spawner room at " + p);
 		}
 		helper.assertTrue(level.getBlockState(DeepseaTestPieces.local(throne, 3, 1, 1)).is(Blocks.DARK_PRISMARINE), "spawner room floor isn't dark prismarine");
-		helper.assertTrue(level.getBlockState(DeepseaTestPieces.local(throne, 0, 5, 8)).is(Blocks.SEA_LANTERN), "no sea lantern in the spawner room");
+		helper.assertTrue(level.getBlockState(DeepseaTestPieces.local(throne, 3, 5, 8)).is(Blocks.SEA_LANTERN), "no sea lantern in the spawner room");
 		helper.assertTrue(level.getBlockState(DeepseaTestPieces.local(throne, 1, 0, 0)).is(BlockTags.STONE_BRICKS), "walls aren't stone bricks");
 		BlockState wall = level.getBlockState(DeepseaTestPieces.local(throne, 1, 6, 3));
 		helper.assertTrue(wall.is(Blocks.PRISMARINE_WALL) && wall.getValue(BlockStateProperties.WATERLOGGED), "fence isn't a waterlogged prismarine wall");
@@ -66,7 +68,8 @@ public class DeepseaFortressGameTest {
 			helper.assertTrue(window.is(Blocks.WATER) || window.is(Blocks.STAINED_GLASS_PANE.cyan()) && window.getValue(BlockStateProperties.WATERLOGGED),
 					"corridor window isn't a waterlogged cyan pane or open water: " + window);
 		}
-		helper.assertTrue(level.getBlockState(DeepseaTestPieces.local(turn, 2, 6, 2)).is(Blocks.SEA_LANTERN), "no corridor ceiling lantern");
+		helper.assertTrue(level.getBlockState(DeepseaTestPieces.local(turn, 2, 6, 2)).is(Blocks.SEA_LANTERN) == FortressBlocks.lit(turn),
+				"corridor ceiling lantern doesn't match the piece's lit choice");
 		helper.assertTrue(level.getBlockState(DeepseaTestPieces.local(turn, 2, 3, 2)).is(Blocks.WATER), "corridor isn't flooded");
 		helper.succeed();
 	}
@@ -100,6 +103,36 @@ public class DeepseaFortressGameTest {
 		barrel.unpackLootTable(null);
 		helper.assertTrue(!barrel.isEmpty(), "barrel loot rolled nothing");
 		helper.succeed();
+	}
+
+	/** An erosion tear through a spawner room washes out stonework along its path but leaves the spawner and the ground. */
+	@GameTest(structure = DeepseaTestPieces.ROOM, maxTicks = 100)
+	public void tearErodesStonework(GameTestHelper helper) {
+		NetherFortressPieces.MonsterThrone throne = DeepseaTestPieces.throne(helper);
+		DeepseaTestPieces.place(helper, throne, true);
+		ServerLevel level = helper.getLevel();
+		BoundingBox b = throne.getBoundingBox();
+		BlockPos spawner = DeepseaTestPieces.local(throne, 3, 5, 5);
+		BlockPos ground = new BlockPos(b.minX(), b.minY() - 1, b.minZ());
+		BlockState groundBefore = level.getBlockState(ground);
+		BlockPos from = new BlockPos(b.minX() - 4, b.maxY() + 2, b.minZ() + 1);
+		BlockPos to = new BlockPos(b.maxX() + 4, b.minY() + 2, b.minZ() + 1);
+		TearPiece tear = new TearPiece(from, to, 2);
+		int stoneBefore = stonework(level, b);
+		tear.postProcess(level, level.structureManager(), level.getChunkSource().getGenerator(), RandomSource.create(1L), tear.getBoundingBox(),
+				new net.minecraft.world.level.ChunkPos(b.minX() >> 4, b.minZ() >> 4), from);
+		helper.assertTrue(stonework(level, b) < stoneBefore, "the tear wore nothing away");
+		helper.assertTrue(level.getBlockState(spawner).is(Blocks.SPAWNER), "the tear took the spawner");
+		helper.assertTrue(level.getBlockState(ground).equals(groundBefore), "the tear cut the ground");
+		helper.succeed();
+	}
+
+	private static int stonework(ServerLevel level, BoundingBox b) {
+		int n = 0;
+		for (BlockPos p : BlockPos.betweenClosed(b.minX(), b.minY(), b.minZ(), b.maxX(), b.maxY(), b.maxZ())) {
+			n += level.getBlockState(p).is(BlockTags.STONE_BRICKS) ? 1 : 0;
+		}
+		return n;
 	}
 
 	/** On the shallowest allowed floor every layout fits under the top gap, sinking into the floor as far as it needs. */

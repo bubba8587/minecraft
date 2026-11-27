@@ -1,7 +1,9 @@
 // dte:C8
 package io.github.bubba8587.bubbas_world_tweaks.fortress;
 
+import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.StructurePiece;
 import net.minecraft.world.level.levelgen.structure.structures.NetherFortressPieces;
@@ -13,7 +15,7 @@ final class FortressTrim {
 	private static final BlockState TRIM = Blocks.PRISMARINE_BRICKS.defaultBlockState();
 	private static final BlockState DARK = Blocks.DARK_PRISMARINE.defaultBlockState();
 	/** Lantern spacing along bridge parapets. */
-	private static final int PARAPET_LIGHT_SPACING = 6;
+	private static final int PARAPET_LIGHT_SPACING = 12;
 	/** Stairs room lifts: their columns (local x), row (z), the landing they pass through (y) and their top cell (y). */
 	static final int LIFT_UP_X = 2;
 	static final int LIFT_DOWN_X = 4;
@@ -33,14 +35,14 @@ final class FortressTrim {
 			return bridge(x, y, z);
 		}
 		if (piece instanceof NetherFortressPieces.CastleSmallCorridorCrossingPiece) {
-			return corridor(x, y, z, true);
+			return corridor(x, y, z, true, lit(piece));
 		}
 		if (piece instanceof NetherFortressPieces.CastleSmallCorridorPiece || piece instanceof NetherFortressPieces.CastleSmallCorridorLeftTurnPiece
 				|| piece instanceof NetherFortressPieces.CastleSmallCorridorRightTurnPiece) {
-			return corridor(x, y, z, false);
+			return corridor(x, y, z, false, lit(piece));
 		}
 		if (piece instanceof NetherFortressPieces.CastleCorridorTBalconyPiece) {
-			return balcony(x, y, z);
+			return balcony(x, y, z, lit(piece));
 		}
 		if (piece instanceof NetherFortressPieces.CastleCorridorStairsPiece) {
 			return stairs(x, y, z);
@@ -62,6 +64,12 @@ final class FortressTrim {
 			return lift != null ? lift : y == LIFT_LANDING && x == 3 && z == 2 ? LIGHT : room(x, y, z, false);
 		}
 		return null;
+	}
+
+	/** Whether this corridor or balcony piece has its ceiling lantern: about every other one, by the piece's position. */
+	static boolean lit(StructurePiece piece) {
+		BoundingBox b = piece.getBoundingBox();
+		return Math.floorMod(Mth.getSeed(b.minX(), b.minY(), b.minZ()), 2L) == 0;
 	}
 
 	/** Whether a vanilla fence here is a window in a wall (glazed) rather than a railing (prismarine wall). */
@@ -109,8 +117,8 @@ final class FortressTrim {
 	}
 
 	/** Small corridors: a dark runner down the floor, one ceiling lantern. */
-	private static @Nullable BlockState corridor(int x, int y, int z, boolean crossing) {
-		if (y == 6 && x == 2 && z == 2) {
+	private static @Nullable BlockState corridor(int x, int y, int z, boolean crossing, boolean lit) {
+		if (lit && y == 6 && x == 2 && z == 2) {
 			return LIGHT;
 		}
 		if (y == 1 && (x == 2 || crossing && z == 2)) {
@@ -120,8 +128,8 @@ final class FortressTrim {
 	}
 
 	/** T balcony: runner, ceiling lantern, prismarine balcony sill. */
-	private static @Nullable BlockState balcony(int x, int y, int z) {
-		if (y == 6 && x == 4 && z == 2) {
+	private static @Nullable BlockState balcony(int x, int y, int z, boolean lit) {
+		if (lit && y == 6 && x == 4 && z == 2) {
 			return LIGHT;
 		}
 		if (y == 1 && x == 4) {
@@ -133,14 +141,14 @@ final class FortressTrim {
 		return null;
 	}
 
-	/** Corridor stairs: two ceiling lanterns over the flight. */
+	/** Corridor stairs: a ceiling lantern over the flight. */
 	private static @Nullable BlockState stairs(int x, int y, int z) {
-		return x == 2 && (y == 10 && z == 4 || y == 6 && z == 8) ? LIGHT : null;
+		return x == 2 && y == 10 && z == 4 ? LIGHT : null;
 	}
 
 	/** Entrance hall and garden hall: floor border, door frames, ceiling lanterns, prismarine merlons, the well rim. */
 	private static @Nullable BlockState hall(int x, int y, int z, boolean well) {
-		if (y == 11 && (x == 4 || x == 8) && (z == 4 || z == 8)) {
+		if (y == 11 && (x == 4 && z == 4 || x == 8 && z == 8)) {
 			return LIGHT;
 		}
 		if (y == 13) {
@@ -162,13 +170,13 @@ final class FortressTrim {
 		return null;
 	}
 
-	/** The spawner room: dark prismarine floor, prismarine rim, lanterns in the back corners. */
+	/** The spawner room: dark prismarine floor, prismarine rim, a lantern in the middle of the back wall. */
 	private static @Nullable BlockState throne(int x, int y, int z) {
 		if (y == 1) {
 			return DARK;
 		}
 		if (y == 5) {
-			return z == 8 && (x == 0 || x == 6) ? LIGHT : TRIM;
+			return z == 8 && x == 3 ? LIGHT : TRIM;
 		}
 		return null;
 	}
@@ -181,7 +189,7 @@ final class FortressTrim {
 		if (crossing && y == 1 && x == 3 && z == 3) {
 			return LIGHT;
 		}
-		if (crossing && y == 6 && (x == 0 || x == 6) && (z == 0 || z == 6)) {
+		if (crossing && y == 6 && (x == 0 && z == 0 || x == 6 && z == 6)) {
 			return LIGHT;
 		}
 		if (y == 6 && (x >= 2 && x <= 4 && (z == 0 || z == 6) || crossing && z >= 2 && z <= 4 && (x == 0 || x == 6))) {

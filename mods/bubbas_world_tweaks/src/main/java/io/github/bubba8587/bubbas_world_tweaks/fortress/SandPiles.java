@@ -28,7 +28,7 @@ public final class SandPiles {
 		if (feet.isEmpty()) {
 			return;
 		}
-		List<BoundingBox> near = pieces.stream().map(StructurePiece::getBoundingBox).filter(b -> b.intersects(chunkBB.inflatedBy(REACH + 1))).toList();
+		List<BoundingBox> near = pieces.stream().filter(p -> !(p instanceof TearPiece)).map(StructurePiece::getBoundingBox).filter(b -> b.intersects(chunkBB.inflatedBy(REACH + 1))).toList();
 		for (BlockPos foot : feet) {
 			for (int dx = -REACH; dx <= REACH; dx++) {
 				for (int dz = -REACH; dz <= REACH; dz++) {

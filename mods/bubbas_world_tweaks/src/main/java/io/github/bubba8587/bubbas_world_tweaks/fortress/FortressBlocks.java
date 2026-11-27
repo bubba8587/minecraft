@@ -6,6 +6,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.BarrelBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -60,6 +61,25 @@ public final class FortressBlocks {
 			return waterlogged(Blocks.SEA_PICKLE.defaultBlockState().setValue(SeaPickleBlock.PICKLES, 1 + roll(pos) % SeaPickleBlock.MAX_PICKLES));
 		}
 		return waterlogged(state);
+	}
+
+	/** Whether this corridor or balcony piece has a ceiling lantern. */
+	public static boolean lit(StructurePiece piece) {
+		return FortressTrim.lit(piece);
+	}
+
+	/** Whether erosion wears this block away: the fortress's own stonework, glass and fittings, not the seabed or its loot and spawner. */
+	public static boolean erodes(BlockState state) {
+		return state.is(BlockTags.STONE_BRICKS) || state.is(Blocks.STONE_BRICK_STAIRS) || state.is(Blocks.MOSSY_STONE_BRICK_STAIRS)
+				|| state.is(Blocks.PRISMARINE) || state.is(Blocks.PRISMARINE_BRICKS) || state.is(Blocks.DARK_PRISMARINE) || state.is(Blocks.PRISMARINE_WALL)
+				|| state.is(Blocks.SEA_LANTERN) || state.is(Blocks.STAINED_GLASS_PANE.cyan()) || state.is(Blocks.SEA_PICKLE)
+				|| state.is(Blocks.MAGMA_BLOCK) || state.is(Blocks.SOUL_SAND);
+	}
+
+	/** Whether this block's shape follows its neighbours (walls, panes, stairs), so it needs a fix-up after erosion beside it. */
+	public static boolean reshapes(BlockState state) {
+		return state.is(Blocks.PRISMARINE_WALL) || state.is(Blocks.STAINED_GLASS_PANE.cyan()) || state.is(Blocks.STONE_BRICK_STAIRS)
+				|| state.is(Blocks.MOSSY_STONE_BRICK_STAIRS);
 	}
 
 	/** Stone bricks, mossy or cracked by position. */

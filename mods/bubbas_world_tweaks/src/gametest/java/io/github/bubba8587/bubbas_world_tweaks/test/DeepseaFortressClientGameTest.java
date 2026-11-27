@@ -100,6 +100,15 @@ public class DeepseaFortressClientGameTest implements FabricClientGameTest {
 					break;
 				}
 			}
+			int tears = 0;
+			for (StructurePiece piece : pieces) {
+				if (piece instanceof io.github.bubba8587.bubbas_world_tweaks.fortress.TearPiece && tears < 2) {
+					BlockPos c = piece.getBoundingBox().getCenter();
+					System.out.println("DEEPSEA client: tear " + piece.getBoundingBox());
+					shot(context, sp, open(server, new Vec3(c.getX() + 0.5, c.getY() + 9, c.getZ() - 7.5)), 0.0F, 45.0F, "deepsea-tear-" + tears++);
+				}
+			}
+			System.out.println("DEEPSEA client: biome " + server.computeOnServer(s -> s.overworld().getBiome(fb.getCenter()).getRegisteredName()));
 			BlockPos heart = ConduitShrine.heart(fb);
 			server.runOnServer(s -> s.overworld().setBlock(heart, Blocks.CONDUIT.defaultBlockState(), 3));
 			context.waitTicks(100);

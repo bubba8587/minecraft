@@ -7,6 +7,7 @@ import java.util.List;
 import io.github.bubba8587.bubbas_world_tweaks.BubbasWorldTweaks;
 import net.fabricmc.fabric.api.loot.v3.LootTableEvents;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceType;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -24,6 +25,8 @@ import net.minecraft.world.level.storage.loot.LootTable;
 public final class DeepseaFortresses {
 	public static final StructureType<DeepseaFortressStructure> TYPE = Registry.register(BuiltInRegistries.STRUCTURE_TYPE,
 			BubbasWorldTweaks.id("deepsea_fortress"), () -> DeepseaFortressStructure.CODEC);
+	public static final StructurePieceType TEAR_PIECE = Registry.register(BuiltInRegistries.STRUCTURE_PIECE, BubbasWorldTweaks.id("deepsea_tear"),
+			(StructurePieceType.ContextlessType) TearPiece::new);
 	public static final ResourceKey<Structure> STRUCTURE = ResourceKey.create(Registries.STRUCTURE, BubbasWorldTweaks.id("deepsea_fortress"));
 	public static final ResourceKey<LootTable> BARREL_LOOT = ResourceKey.create(Registries.LOOT_TABLE,
 			BubbasWorldTweaks.id("chests/deepsea_fortress"));
