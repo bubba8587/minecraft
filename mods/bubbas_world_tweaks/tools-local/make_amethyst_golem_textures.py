@@ -166,8 +166,8 @@ FACE32_DARK = [
 
 # Smile on the jaw (drops open when singing); soft corners
 JAW16 = [
-	"nAAn",
-	"AnnA",
+	"cuuc",
+	"AAAA",
 ]
 JAW32 = [
 	"naaaaaan",
@@ -175,8 +175,8 @@ JAW32 = [
 	"aaaaaaaa",
 	"aaaaaaaa",
 ]
-CHEEK_R16 = ["aa", "aa"]
-CHEEK_L16 = ["aa", "aa"]
+CHEEK_R16 = ["AA", "AA"]
+CHEEK_L16 = ["AA", "AA"]
 CHEEK_R32 = ["aaaa", "aaaa", "aaaa", "aaaa"]
 CHEEK_L32 = ["aaaa", "aaaa", "aaaa", "aaaa"]
 
@@ -225,7 +225,7 @@ BACK32 = ["".join(ch * 2 for ch in row) for row in BACK16 for _ in (0, 1)]
 def feature(ch):
 	return {
 		"e": EYE, "w": GLINT, "k": RAMPS["ame"][1], "j": RAMPS["ame"][2], "d": RAMPS["dark"][1], "D": RAMPS["dark"][0],
-		"m": RAMPS["dark"][1], "n": RAMPS["dark"][2], "p": RAMPS["cry"][6], "q": RAMPS["cry"][4],
+		"m": RAMPS["dark"][1], "n": RAMPS["dark"][2], "c": RAMPS["ame"][2], "u": RAMPS["ame"][1], "p": RAMPS["cry"][6], "q": RAMPS["cry"][4],
 		"W": EYE_WHITE, "P": PUPIL, "r": EYE_RIM, "x": RAMPS["cry"][1], "K": RAMPS["cry"][5],
 	}.get(ch)
 
@@ -295,91 +295,138 @@ def top_skull():
 	return fn
 
 
-def prism(face, tip=False, mid=False):
-	"""Crystal shaft like the vanilla cluster: a pink-white ridge up the lit edge and a pink-white point, darker toward the base."""
-	lv = {"front": 5, "left": 4, "right": 5, "back": 4}.get(face, 0)
-
-	def fn(x, y, W, H, X, Y):
-		if face == "top":
-			return shade("cry", 6)
-		if face == "bottom":
-			return shade("cry", 2)
-		t = y / max(1, H - 1)
-		if tip:
-			return shade("cry", 6)
-		if mid:
-			if y < H // 2:
-				return shade("cry", 6 if x < W // 2 else 5)
-			return shade("cry", lv - 1 if x < W - S else lv - 2)
-		level = lv + (-2 if t > 0.75 else (-1 if t > 0.45 else 0))
-		if x < S and W > S:
-			level = 6 if (t <= 0.7 and (x == 0 or t <= 0.4)) else level + 1
-		elif x >= W - S and W > 2 * S:
-			level -= 2
-		return shade("cry", level)
-	return fn
+# Whites: cream-white on up-facing faces (full light), cool near-white on shaded faces (cream goes khaki there,
+# pink-white goes mauve); pink-white only as a mid-tone between white and lilac
+CREAM = (255, 251, 236)
+ICE = (250, 248, 255)
+PINKW = CRY[5]
 
 
-# Facet glints: (box, face) -> streaks, each a run of 16x face pixels (brightest first)
-GLINTS = {
-	("skull", "top"): [[(1, 0), (0, 1)], [(7, 2)], [(6, 6), (5, 6)], [(0, 5)]],
-	("skull", "right"): [[(2, 0), (1, 1)], [(5, 2)]],
-	("skull", "left"): [[(4, 0), (5, 1)], [(1, 2)]],
-	("skull", "back"): [[(1, 0), (0, 1)], [(6, 0)], [(4, 2), (5, 3)]],
-	("body", "front"): [[(1, 1), (0, 2)], [(7, 3), (6, 4)]],
-	("body", "right"): [[(2, 1), (1, 2)], [(4, 4)]],
-	("body", "left"): [[(2, 1), (3, 2)], [(0, 4)]],
-	("body", "back"): [[(6, 1), (7, 2)], [(0, 4)]],
-	("arm_r", "top"): [[(0, 0)]],
-	("arm_l", "top"): [[(2, 0)]],
-	("arm_r", "right"): [[(1, 0), (0, 1)], [(2, 4)]],
-	("arm_l", "left"): [[(1, 0), (2, 1)], [(0, 4)]],
-	("arm_r", "front"): [[(0, 1)]],
-	("arm_l", "front"): [[(2, 1)]],
-	("arm_r", "back"): [[(2, 2)]],
-	("arm_l", "back"): [[(0, 2)]],
-	("leg_r", "right"): [[(1, 0)]],
-	("leg_l", "left"): [[(2, 0)]],
-	("leg_r", "front"): [[(0, 0)]],
-	("leg_l", "front"): [[(2, 0)]],
-	("cheek_r", "right"): [[(1, 0)]],
-	("cheek_l", "left"): [[(2, 0)]],
+# In-game light on each crystal face (measured in client shots; the game's entity shading, 1.0 on top faces):
+# white where it stays white, lilac where shading would turn white grey
+CRYSTAL_LIGHT = {
+	"center": {"front": 0.71, "back": 0.71, "left": 0.57, "right": 0.57},
+	"left": {"front": 0.89, "right": 0.78, "back": 0.51, "left": 0.40},
+	"right": {"back": 0.86, "left": 0.74, "front": 0.53, "right": 0.42},
+	"back": {"front": 0.90, "left": 0.71, "right": 0.71, "back": 0.40},
 }
 
 
-def glints(cv, rect, streaks, top):
-	"""Facet glints: a pink-white ridge (cream on up-facing faces at 32x) with a darker facet beside it.
+def prism(crystal, face, tip=False, mid=False):
+	"""Crystal shaft like the vanilla cluster: white point and top, white ridge up well-lit faces, pink-white mid-tone."""
+	light = CRYSTAL_LIGHT[crystal].get(face, 0)
+	bright, lit = light >= 0.78, light >= 0.68
 
-	A streak runs down-left unless its second pixel is to the right (down-right). At 32x each 16x pixel becomes a
-	one-pixel diagonal ridge with light lilac on its lit side and one shade down on its shadow side."""
+	def fn(x, y, W, H, X, Y):
+		if face == "top":
+			return CREAM
+		if face == "bottom":
+			return shade("cry", 2)
+		if tip:
+			return ICE if lit else shade("cry", 4)
+		t = y / max(1, H - 1)
+		col, ncol = x // S, W // S
+		if mid:
+			if y < H // 2:
+				return ICE if lit and (col == 0 or bright) else (PINKW if lit else shade("cry", 4))
+			return shade("cry", 4 if col == 0 else 3)
+		if col == 0:
+			if lit and t <= (0.75 if bright else 0.5):
+				return ICE
+			if t <= (0.85 if bright else 0.6):
+				return PINKW if lit else shade("cry", 4)
+			return shade("cry", 3)
+		if col == ncol - 1:
+			return shade("cry", (4 if lit else 3) - (2 if t > 0.6 else (1 if t > 0.3 else 0)))
+		if t <= (0.5 if bright else 0.3):
+			return PINKW if lit else shade("cry", 4)
+		return shade("cry", (4 if t <= 0.75 else 3))
+	return fn
+
+
+# Facet stamps: chunky white facets, a light lilac rim and a dark facet edge below. C brightest, W white,
+# l light lilac, s shadow facet, . untouched. The 32x versions are drawn in two-pixel clumps (CF32J style).
+STAMPS = {
+	"big": (["CWl", "Wls", "ls."], [
+		"CCWWll",
+		"CCWWll",
+		"WWWlss",
+		"WWlls.",
+		"llss..",
+		"lss...",
+	]),
+	"small": (["WW", "ls"], [
+		"CWWl",
+		"WWWl",
+		"llss",
+		"lss.",
+	]),
+	"tall": (["Wl", "Ws", "s."], [
+		"CWl.",
+		"WWll",
+		"WWls",
+		"Wlss",
+		"lss.",
+		"ss..",
+	]),
+	"cap": (["CWW", "WWl", "Wls"], [
+		"CCWWWW",
+		"CCCWWW",
+		"WWWWll",
+		"WWWlll",
+		"WWllss",
+		"Wllss.",
+	]),
+}
+
+# (box, face) -> [(stamp, x, y, mirrored)] in 16x face pixels; none on the head front so the eyes stay clear
+FACETS = {
+	("skull", "top"): [("big", 0, 0, False), ("big", 5, 0, True), ("small", 0, 5, False), ("small", 6, 5, True)],
+	("skull", "back"): [("big", 0, 0, False), ("small", 6, 0, True)],
+	("skull", "right"): [("small", 1, 0, False), ("small", 4, 2, False)],
+	("skull", "left"): [("small", 4, 0, True), ("small", 1, 2, True)],
+	("body", "front"): [("big", 0, 0, False), ("small", 6, 0, True), ("tall", 6, 3, True)],
+	("body", "back"): [("big", 5, 0, True), ("small", 0, 0, False), ("small", 3, 2, False)],
+	("body", "right"): [("small", 1, 0, False), ("small", 2, 3, False)],
+	("body", "left"): [("small", 2, 0, True), ("small", 1, 3, True)],
+	("arm_r", "top"): [("cap", 0, 0, False)],
+	("arm_l", "top"): [("cap", 0, 0, True)],
+	("arm_r", "front"): [("small", 0, 0, False), ("small", 1, 4, False)],
+	("arm_l", "front"): [("small", 1, 0, True), ("small", 0, 4, True)],
+	("arm_r", "right"): [("tall", 0, 0, False), ("small", 1, 4, False)],
+	("arm_l", "left"): [("tall", 1, 0, True), ("small", 0, 4, True)],
+	("arm_r", "back"): [("small", 1, 0, True)],
+	("arm_l", "back"): [("small", 0, 0, False)],
+	("leg_r", "front"): [("small", 0, 0, False)],
+	("leg_l", "front"): [("small", 1, 0, True)],
+	("leg_r", "right"): [("small", 1, 0, False)],
+	("leg_l", "left"): [("small", 1, 0, True)],
+	("cheek_r", "right"): [("small", 1, 0, False)],
+	("cheek_l", "left"): [("small", 1, 0, True)],
+}
+
+
+# Side faces (half light in game): lilac-white, which keeps its hue where white would go grey
+SIDE_WHITE = ((242, 230, 255), (228, 208, 255))
+
+
+def facets(cv, rect, stamps, top, side):
 	x0, y0, w, h = rect
 	s = cv.s
-	white, cream, light, dark = CRY[5], CRY[6], CRY[4], RAMPS["ame"][3]
-	ridge, flank = {}, {}
-	for streak in streaks:
-		right = len(streak) > 1 and streak[1][0] > streak[0][0]
-		for i, (gx, gy) in enumerate(streak):
-			if s == 1:
-				ridge[(gx, gy)] = white
-				flank[(gx - 1, gy + 1) if right else (gx + 1, gy + 1)] = dark
-				continue
-			bx, by = gx * 2, gy * 2
-			if right:
-				ridge[(bx, by)] = cream if (top and i == 0) else white
-				ridge[(bx + 1, by + 1)] = white
-				flank[(bx, by + 1)] = dark
-				flank.setdefault((bx + 1, by), light)
-			else:
-				ridge[(bx + 1, by)] = cream if (top and i == 0) else white
-				ridge[(bx, by + 1)] = white
-				flank[(bx + 1, by + 1)] = dark
-				flank.setdefault((bx, by), light)
-	for (x, y), c in flank.items():
-		if (x, y) not in ridge and 0 <= x < w * s and 0 <= y < h * s:
-			cv.px[x0 * s + x, y0 * s + y] = c + (255,)
-	for (x, y), c in ridge.items():
-		if 0 <= x < w * s and 0 <= y < h * s:
-			cv.px[x0 * s + x, y0 * s + y] = c + (255,)
+	if side:
+		pal = {"C": SIDE_WHITE[0], "W": SIDE_WHITE[1], "l": CRY[4], "s": RAMPS["ame"][2]}
+	else:
+		pal = {"C": (255, 255, 250) if top else (255, 255, 255), "W": CREAM if top else ICE, "l": CRY[4], "s": RAMPS["ame"][2]}
+	for name, sx, sy, mirror in stamps:
+		grid = STAMPS[name][0 if s == 1 else 1]
+		for gy, row in enumerate(grid):
+			if mirror:
+				row = row[::-1]
+			for gx, ch in enumerate(row):
+				x, y = sx * s + gx, sy * s + gy
+				if ch == "." or not (0 <= x < w * s and 0 <= y < h * s):
+					continue
+				cv.px[x0 * s + x, y0 * s + y] = pal[ch] + (255,)
 
 
 def paint(s):
@@ -452,28 +499,29 @@ def paint(s):
 
 	# Crystals
 	for name in ("crystal_center", "mid_center", "crystal_left", "crystal_right", "crystal_back"):
+		crystal = "center" if name == "mid_center" else name.split("_")[1]
 		for side, rect in F[name].items():
-			cv.face(rect, prism(side, mid=name == "mid_center"))
+			cv.face(rect, prism(crystal, side, mid=name == "mid_center"))
 	for name in ("tip_center", "tip_left", "tip_right", "tip_back"):
 		for side, rect in F[name].items():
-			cv.face(rect, prism(side, tip=True))
+			cv.face(rect, prism(name.split("_")[1], side, tip=True))
 
-	for (name, side), streaks in GLINTS.items():
-		glints(cv, F[name][side], streaks, side == "top")
+	for (name, side), stamps in FACETS.items():
+		facets(cv, F[name][side], stamps, side == "top", side in ("left", "right"))
 	return cv.img
 
 
 # Spawn egg: amethyst egg, crystal cluster crown, golem face, amethyst feet
 EGG_GRID = [
 	"........c.......",
-	".......tK.......",
-	".......tKS......",
+	".......hK.......",
+	".......hKS......",
 	"....c..tKS..c...",
-	"....tq.qKS.tS...",
-	".....qKqKSKS....",
+	"....hq.qKS.hS...",
+	".....tKqKSKS....",
 	".....oSSSSSo....",
-	"....oLgllllo....",
-	"...oLglllllao...",
+	"....ohhglllo....",
+	"...ohLlllllao...",
 	"...oLWPaaPWso...",
 	"...olWPaaPWso...",
 	"...olanaanaso...",
@@ -484,7 +532,7 @@ EGG_GRID = [
 ]
 EGG_PAL = {
 	"o": CRY[0], "L": CRY[3], "l": CRY[3], "a": CRY[3], "s": CRY[2],
-	"t": CRY[5], "c": CRY[6], "g": CRY[5], "K": CRY[4], "q": CRY[3], "S": CRY[1],
+	"t": CRY[5], "c": CREAM, "h": ICE, "g": CRY[5], "K": CRY[4], "q": CRY[3], "S": CRY[1],
 	"W": EYE_WHITE, "P": PUPIL, "w": GLINT, "e": EYE, "m": (46, 26, 82), "n": (70, 43, 125), "b": CRY[1],
 }
 EGG_MAT = {"L": "ame", "l": "ame", "a": "ame", "s": "ame", "t": "cry", "c": "cry", "K": "cry", "q": "cry", "S": "cry"}
