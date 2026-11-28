@@ -54,8 +54,8 @@ public final class WorldTweaksTuning {
 	/** Longest recording, in ticks (5 minutes), and the most notes it keeps. */
 	public static final int GOLEM_RECORD_CAP_TICKS = 6000;
 	public static final int GOLEM_MAX_NOTES = 4096;
-	/** Songs start only when the day clock is a multiple of this (1 in-game hour). */
-	public static final int GOLEM_BEAT_TICKS = 1000;
+	/** Songs start only when the day clock is a multiple of this (1 second). */
+	public static final int GOLEM_BEAT_TICKS = 20;
 	/** Wind chime: vibrations at or above this vanilla frequency (1-15) chime; how far it feels them (the sculk sensor's 8). */
 	public static final int GOLEM_CHIME_FLOOR = 2;
 	public static final int GOLEM_CHIME_RADIUS = 8;

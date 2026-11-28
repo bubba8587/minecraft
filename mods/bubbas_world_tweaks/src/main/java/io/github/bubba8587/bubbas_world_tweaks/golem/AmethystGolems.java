@@ -9,6 +9,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.ai.village.poi.PoiType;
@@ -38,6 +39,10 @@ public final class AmethystGolems {
 	private static final ResourceKey<Item> EGG_KEY = ResourceKey.create(Registries.ITEM, BubbasWorldTweaks.id("amethyst_golem_spawn_egg"));
 	public static final Item AMETHYST_GOLEM_SPAWN_EGG = Registry.register(BuiltInRegistries.ITEM, EGG_KEY,
 			new SpawnEggItem(new Item.Properties().spawnEgg(AMETHYST_GOLEM).setId(EGG_KEY)));
+
+	/** Its singing chime: vanilla's amethyst shimmer at full volume. */
+	public static final SoundEvent SING = Registry.register(BuiltInRegistries.SOUND_EVENT, BubbasWorldTweaks.id("entity.amethyst_golem.sing"),
+			SoundEvent.createVariableRangeEvent(BubbasWorldTweaks.id("entity.amethyst_golem.sing")));
 
 	/** Jukeboxes as a point of interest with one ticket: one golem per jukebox. */
 	public static final ResourceKey<PoiType> JUKEBOX_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, BubbasWorldTweaks.id("golem_jukebox"));

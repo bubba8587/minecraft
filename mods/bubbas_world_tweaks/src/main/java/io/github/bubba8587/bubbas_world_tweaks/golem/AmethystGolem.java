@@ -253,7 +253,7 @@ public class AmethystGolem extends AbstractGolem implements VibrationSystem {
 	}
 
 	private void chime(ServerLevel level, int note) {
-		level.playSound(null, this.getX(), this.getY() + 1.0, this.getZ(), SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.NEUTRAL,
+		level.playSound(null, this.getX(), this.getY() + 1.0, this.getZ(), AmethystGolems.SING, SoundSource.NEUTRAL,
 				WorldTweaksTuning.GOLEM_CHIME_VOLUME, GolemSong.pitch(note));
 		this.noteParticle(level, note);
 		this.noteSung(note);
@@ -396,7 +396,7 @@ public class AmethystGolem extends AbstractGolem implements VibrationSystem {
 			}
 			this.song = new GolemSong(packed);
 			this.tuning = 0;
-			this.cue(level, SoundEvents.AMETHYST_BLOCK_CHIME, 1.6F, ParticleTypes.HAPPY_VILLAGER, 6);
+			this.cue(level, AmethystGolems.SING, 1.6F, ParticleTypes.HAPPY_VILLAGER, 6);
 		}
 		this.take.clear();
 		this.songStart = -1;

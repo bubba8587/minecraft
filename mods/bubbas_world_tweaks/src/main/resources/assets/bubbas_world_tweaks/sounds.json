@@ -1,0 +1,11 @@
+{
+	"entity.amethyst_golem.sing": {
+		"sounds": [
+			{
+				"name": "minecraft:block/amethyst/shimmer",
+				"volume": 1.0
+			}
+		],
+		"subtitle": "subtitles.bubbas_world_tweaks.entity.amethyst_golem.sing"
+	}
+}

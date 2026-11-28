@@ -120,14 +120,14 @@ public final class AmethystGolemGameTest {
 	public static void songsStartOnTheBeatInStep(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
 		int beat = WorldTweaksTuning.GOLEM_BEAT_TICKS;
-		GolemSong song = new GolemSong(new int[] {GolemSong.pack(0, 0), GolemSong.pack(400, 12), GolemSong.pack(beat + 200, 24)});
+		GolemSong song = new GolemSong(new int[] {GolemSong.pack(0, 0), GolemSong.pack(beat / 2, 12), GolemSong.pack(beat + beat / 4, 24)});
 		int period = song.period(beat);
 		helper.assertTrue(period == 2 * beat, "a song over one beat long takes two: " + period);
 		AmethystGolem first = onJukebox(helper, new BlockPos(1, 1, 1), song);
 		AmethystGolem late = onJukebox(helper, new BlockPos(3, 1, 1), song);
 		List<Long> firstTicks = new ArrayList<>();
 		List<Long> lateTicks = new ArrayList<>();
-		long offset = 7 * beat + 300;
+		long offset = 7 * beat + beat / 3;
 		for (long now = 0; now < 5 * beat; now++) {
 			long anchor = now + offset;
 			if (!first.tickSong(level, now, anchor).isEmpty()) {

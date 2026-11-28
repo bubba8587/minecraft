@@ -222,12 +222,13 @@ A small built golem that records note block tunes and sings them back in amethys
 - **Recording (owner):** right-click it and it starts listening. Every note block played nearby is stored (pitch and timing) until it's right-clicked again. Time cap: long (builder's start: 5 minutes); notes are a few bytes each, so storage is cheap.
   - If it heard nothing between the two clicks, the recording is wiped.
 - **Singing in amethyst (owner):** it plays its recording back with amethyst chime sounds at the recorded pitches, not the note block instruments.
+  - **Loudness:** its own sound event `bubbas_world_tweaks:entity.amethyst_golem.sing` plays vanilla's `block/amethyst/shimmer` at volume 1.0. Vanilla's `block.amethyst_block.chime` plays the same file at 0.2, which the owner found nearly inaudible.
 - **Tuning (owner):** right-click with an amethyst shard (not used up) to step the whole song up a semitone, wrapping around like a note block.
 - **Jukebox as workstation (owner):** the nearest jukebox is its assigned spot, like a villager's job block.
   - If a jukebox nearby is playing a disc, it dances to it (like an allay).
   - Otherwise it stands on its jukebox and sings its recorded song **non-stop** (owner).
   - **One golem per jukebox (owner).** For a choir, put jukeboxes side by side and record the same tune into each golem.
-- **Synced starts (owner):** a song only ever starts on a fixed beat of the day clock (builder's start: every in-game hour, day time a multiple of 1000 ticks = 50 s). When a song ends it waits for the next beat. Golems with the same song stay in step, and a new one falls in at the next beat.
+- **Synced starts (owner):** a song only ever starts on a fixed beat of the day clock (every second, day time a multiple of 20 ticks; owner: a 1000-tick hour beat left golems silent most of the time). When a song ends it waits for the next beat. Golems with the same song stay in step, and a new one falls in at the next beat.
 - **Wind chime (owner):** a golem with no recording echoes the world instead: every vibration at or above a **numeric floor** on vanilla's vibration frequency (1-15) becomes an amethyst chime, pitched by that frequency. Owner: the floor is the only filter, no other exceptions. Builder's start: 2 (footsteps are 1).
 - **Noise (owner):** its sounds are ordinary noise. Nothing special for Reworked Mobs; if sleepers there hear it like any other noise, that's fine. Don't special-case it.
 - **Drops:** never more amethyst than it was built from.
@@ -240,7 +241,7 @@ A small built golem that records note block tunes and sings them back in amethys
 - The build pattern: hook the carved pumpkin's golem check, next to vanilla's snow, iron and copper golem patterns.
 - Recording stored on the entity as (tick offset, pitch) pairs.
 
-**Open (owner):** the numbers: recording cap (5 min), beat spacing (1 in-game hour), wind chime floor (2).
+**Open (owner):** the numbers: recording cap (5 min), beat spacing (1 s), wind chime floor (2).
 
 ## Open (owner)
 
