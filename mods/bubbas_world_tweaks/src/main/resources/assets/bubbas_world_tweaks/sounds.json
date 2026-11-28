@@ -1,10 +1,7 @@
 {
 	"entity.amethyst_golem.sing": {
 		"sounds": [
-			"minecraft:block/amethyst/resonate1",
-			"minecraft:block/amethyst/resonate2",
-			"minecraft:block/amethyst/resonate3",
-			"minecraft:block/amethyst/resonate4"
+			"minecraft:block/amethyst/resonate1"
 		],
 		"subtitle": "subtitles.bubbas_world_tweaks.entity.amethyst_golem.sing"
 	}
